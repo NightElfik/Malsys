@@ -1,0 +1,187 @@
+\documentclass[12pt, a4paper]{article}
+
+\usepackage{comment}
+\usepackage{fancyhdr}
+\usepackage[czech]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+\usepackage[pdftex]{graphicx}
+\usepackage{hyperref}
+\usepackage[all]{hypcap}
+\usepackage{indentfirst}	% ident first paragraphs too
+\usepackage{anysize}	% \marginsize command
+\usepackage{subfig}
+\usepackage{url}
+\usepackage{color}
+
+
+\pagestyle{fancyplain}
+\marginsize{2cm}{2cm}{2cm}{2cm}
+
+\title{Malsys -- TODO list}
+\author{Marek Fišer}
+
+
+\begin{document}
+
+\maketitle
+
+Tento seznam představuje moje nápady, co by se dalo udělat. Není to specifikace.
+
+
+%------------------------------------------------------------------------------
+\section{Obecně}
+\begin{itemize}
+	\item všechny části, které budou komunikovat s uživatelem budou hlavně v angličtině, ale návrh by měl (alespoň trochu) počítat s možností lokalizace
+\end{itemize}
+
+
+%------------------------------------------------------------------------------
+\section{Knihovna pro generování L-systému}
+DLL knihovna
+
+\subsection{Parser vstupu}
+\begin{itemize}
+	\item návrh syntaxe zápisu L-sysému, důraz na čitelnost a snadnou rozšiřitelnost
+		
+		syntaxe by měla být nezávislá na netisknutelných znacích, a tím pádem i na formátování
+	
+	\item podpora UTF (pravděpodobně UTF-8)
+
+	\item datové struktury pro reprezentaci \uv{syrových} (naparsovaných) dat, měly by umožňovat definovat L-systém přímo, bez nutnosti parsovat (měly by probíhat kontroly na korektnost hodnot)
+	
+	\item tokenizer + parser v F\# (FsLex a FsYacc), který bude parsovat přímo do datových struktur
+	
+	\item součástí parseru bude část, která bude parsovat aritmetické výrazy, u ní důraz na rozšiřitelnost (nové operátory, funkce)
+	
+	\item parser by měl co nejlépe a nejpřesněji ohlásit kde je syntaktická chyba, měl by být zotavitelný (nezastaví se na první chybě, ale chybnou oblast přeskočí a parsuje dál -- snazší ladění syntaktických chyb pro uživatele)
+	
+	\item reversní parser (vypisovač) -- dostane struktury a vrátí text L-systému
+	
+		jeho součástí by mohl být i formátovač, který dostane validní kód a ten jednotně zformátuje
+\end{itemize}
+
+\subsection{Vyhodnocování L-systému}
+\begin{itemize}
+	\item návrh jednotlivých nezávislých komponent (a jejich rozhraní) pro generování L-systému -- přepisovací systém by měl být nezávislý na renderování, což umožní mít mnoho různých (různě specializovaných a optimalizovaných) komponent
+
+		každá komponenta by měla mít na starosti jen jednu (jednoduchou) činnost a tu poskytovat přes rozhraní ostatním komponentám, aby se o ní nemusely starat komponenty, které se o ní starat nechtějí -- renderer chce kreslit čáry, ne počítat si dle symbolů kde je právě poloha \uv{želvy}
+
+		na druhou stranu návrh musí podporovat určitou rozšiřitelnost, např. symboly můžou mít definovány instrukce, kterým bude rozumět jen uživatelem definovaná komponenta, ostatní komponenty mu k nim musí dát přístup
+
+		návrh by měl podporovat také zařazení dalších komponent do celku (jakési pluginy), např. enviromentální modul
+	\item implementace základních přepisovacích systémů s podporou podmíněných, kontextových a stochastických přepisovacích pravidel
+	\item implementace základních rendererů pro render do bitmapy a do SVG
+\end{itemize}
+
+
+%------------------------------------------------------------------------------
+\section{Desktopová GUI aplikace}
+takový \uv{chytřejší} textový editor
+
+\subsection{Rozhraní}
+\begin{itemize}
+	\item zvážit jakou technologii použít (pravděpodobně WinForms vs WPF)
+	
+	\item návrh GUI
+	
+	\item úzká spolupráce s parserem, syntax highlighting, přehledné zobrazování syntaktických chyb, formátování kódu
+	
+	\item důraz na pohodlnou práci (aby se v poznámkovém bloku nepsalo lépe), tzn. textový editor musí obsahovat všechny obvyklé funkce, zejména zpět/vpřed
+	
+	\item možnost práce jak přímo s textem tak pomocí klikacích výběrů -- to by mělo zejména sloužit pro přehled všech možností, které jdou v daném kontextu nastavit
+	
+	\item živé náhledy (pro pohodlné ladění L-systému) s nastavitelnými parametry
+\end{itemize}
+
+\subsection{Renderování}
+\begin{itemize}
+	\item pomocí renderovacího serveru
+	
+	\item možnost ovládání fronty rendereovacího serveru pomocí GUI, zobrazování dostupných údajů o tom co se právě renderuje
+	
+	\item i po ukončení GUI editoru může pokračovat renderování L-systémů
+\end{itemize}
+
+
+%------------------------------------------------------------------------------
+\section{Renderovací server}
+konzolová aplikace
+
+\begin{itemize}
+	\item umožní zařazování úkolů k renderování do fronty s nastavitelnými parametry
+	
+	\item k samotnému renderování používá knihovnu
+	
+	\item ovládání pomocí konzole (textové příkazy)
+	
+	\item rozumná paralelizace vykonávání jednotlivých úkolů (počet paralelně běžících není větší než počet jader procesoru)
+	
+	\item prioritní fronta -- některé úkolů se díky prioritě spočítají dříve (to je užitečné např. když běží výpočet několika L-systémů, který trvá velice dlouho a uživatel chce vypočítat jeden malý a nechce čekat)
+	
+	\item možnost ovládat frontu (odebírat a řadit úkoly)
+	
+	\item různé politiky renderování, např. kolik prostředků si brát, zda renderovat jen když uživatel nepracuje (jako spořič)
+	
+	\item timeout pro úkol (jak dlouho se snažit počítat)
+	
+	\item zvážit zda neudělat komunikaci se serverem přes síť (TCP/IP), to by mohl být dobrý základ pro snadné oddělení výpočetně náročné části od ovládání
+
+také by se pak dalo uvažovat o rozkládání zátěže mezi více serverů, které mezi sebou mohou komunikovat a předávat si úkoly
+\end{itemize}
+
+
+%------------------------------------------------------------------------------
+\section{Web}
+jednoduché webové rozhraní pro možnost generování L-systémů z webu
+
+\begin{itemize}
+	\item rozhodnout technologii (pravděpodobně PHP vs ASP.NET)
+	
+	\item jednoduché rozhraní pro render L-systému
+	
+	\item mnoho ukázek + dokumentace jak používat (ne nutně vše-pokrývající), důraz na jednoduchost, srozumitelnost
+	
+	\item malé L-systémy se zobrazí přímo (timeout pár sekund)
+	
+	\item možnost zaslání výsledku na mail -- jediná možnost jak vygenerovat větší L-systémy
+	
+	\item příjímání úkolů přes mail
+	
+	\item úzká spolupráce s render serverem
+	
+	\item historie renderovaných předpisů
+\end{itemize}
+
+
+
+
+
+
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

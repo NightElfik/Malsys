@@ -1,2 +1,18 @@
+
+# .NET rubbish
 /Malsys/bin
 /Malsys/obj
+
+# LaTeX rubbish
+*.aux
+*.log
+*.toc
+*.out
+*.synctex
+
+# do not need to version, can generate anytime
+/doc/TodoList/main.pdf
+
+# Windows rubbish 
+Thumbs.db
+ehthumbs.db
