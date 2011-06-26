@@ -1,0 +1,28 @@
+/**
+ * Pre-process define can be defined only on begin of scope and replaces all
+ * ocurences of given token with replacment (even in other define).
+ */ 
+lsystem Define() {
+	#define F G
+	
+	{
+		#define lol axiom = F;
+		lol
+	}
+	i = 3;
+	
+	F -> F+F--F+F;
+}
+
+// ... will produce ...
+
+lsystem Define() {
+	axiom = G;
+	i = 3;
+	
+	G -> G+G--G+G;
+}
+
+
+
+

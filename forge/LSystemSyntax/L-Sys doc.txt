@@ -1,0 +1,28 @@
+/**
+ * Rose leaf.
+ * 
+ * @source The Algorithmic Beauty of Plants, p. 126
+ * 
+ * @param la Initial length - main segment.
+ * @param ra Growth rate - main segment.
+ * @param lb Initial length - lateral segment.
+ * @param rb Growth rate - lateral segment.
+ * @param lc Initial length - marginal notch.
+ * @param rc Growth rate - marginal notch.
+ */  
+lsystem RoseLeaf(la = 5, ra = 1.15, lb = 1.3, rb = 1.25, lc = 3, rc = 1.19) {
+	// symbols `{` and `}` will be probably forbiden in final version.
+	axiom = [{A(0,0).}] [{A(0,1).}];
+	angle = 60;
+	initialAngle = 150;
+	i = 25;
+	
+	A to Z: Nothing;
+	G: MoveForward;
+	
+	A(t,d)		? d == 0	-> . G(la, ra) . [+B(t) G(lc, rc, t) .}] [+B(t) {.] A(t+1, d);
+	A(t,d)		? d == 1	-> . G(la, ra) . [-B(t) G(lc rc, t) .}] [-B(t) {.] A(t+1, d);
+	B(t)		? t > 0		-> G(lb, rb) B(t-1);
+	G(s,r)		? t > 1		-> G(s*r, r, t - 1);
+	G(s,r,t)	? t == -1	-> G(s*r, r, -1);
+}

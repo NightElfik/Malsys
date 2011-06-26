@@ -1,0 +1,12 @@
+/**
+ * Variables can contain only number.
+ */
+lsystem VarsTest(arg, optArg = 0) {
+	let var = arg + optArg;
+	let one = 1^2;
+	let two = one + one;
+	
+	axiom = F(one + two);
+	
+	F(x) -> F(x+one)+F(two)
+}

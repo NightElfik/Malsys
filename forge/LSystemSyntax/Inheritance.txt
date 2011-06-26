@@ -1,0 +1,24 @@
+/**
+ * Inheritance similar to C# or Java.
+ */ 
+lsystem HTreeBase(baseLen, angle, ratio) {
+	axiom = [F(baseLen)] | F(baseLen);
+	
+	F(x) -> H(x) [+(angle) F(x * ratio)] [-(angle) F(x * ratio)];
+}
+
+/**
+ * Use `extends` keyword or `:`? Extends gives more semantic meaning, everybody
+ * can understand it, but `:` is shorter to write.
+ */ 
+lsystem PythagorasTree(baseLen) extends HTreeBase(baseLen, 1 / sqrt(2), 45) {
+	axiom = +(90) F(baseLen); // overrides axiom definition from HTreeBase
+}
+
+// How to hide / overwrite rewrite rules?
+
+
+
+
+
+

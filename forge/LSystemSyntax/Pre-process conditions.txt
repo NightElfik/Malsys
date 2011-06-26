@@ -1,0 +1,33 @@
+/**
+ * Pre-process conditions. They are evaluated after L-System is called with
+ * params.
+ */ 
+lsystem Koch(angle) {
+	axiom = F;
+	i = 3;
+	
+	#if angle < 90
+		F -> F+F--F+F;
+	#else
+		F -> F+F-F-F+F;
+	#endif
+}
+
+/**
+ * Similar effect can be done by regular condition.
+ */
+lsystem Koch(angle) {
+	axiom = F;
+	i = 3;
+	
+	F -> F+F- F( if(angle < 90, stepLength, 0) ) -F+F;
+}
+
+
+
+
+
+
+
+
+

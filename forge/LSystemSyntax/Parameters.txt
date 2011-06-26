@@ -1,0 +1,15 @@
+/**
+ * L-System with parameters.
+ */ 
+lsystem HTree(baseLen, angle, ratio) {
+	axiom = F(baseLen);
+	
+	F(x) -> H(x) [+(angle) F(x * ratio)] [-(angle) F(x * ratio)];
+}
+
+/**
+ * Default values of parameters (can be specified from right most params to left).
+ */ 
+lsystem HTree(baseLen, angle = 90, ratio = 1 / sqrt(2)) {
+	...
+}

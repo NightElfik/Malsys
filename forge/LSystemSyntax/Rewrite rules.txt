@@ -1,0 +1,30 @@
+/**
+ * All possible forms of rewrite rule.
+ */ 
+lsystem RewriteRules {
+	// basic
+	F -> abcdEF;
+	
+	// eraser
+	F -> ;
+	
+	// parameters
+	F(x, y, z) -> F(z, y, x);
+	
+	// condition
+	F(x) ?(x < 5 || sqrt(x) == 2) -> F(x^3);
+	
+	// probability weight
+	F :(50 / 11) -> FFFF;
+	F :(1)       -> FFF;
+	F            -> FF; // default probability 1
+	
+	// contexts
+	lCtxt < F > RcTXT -> RpLC;
+	
+	// Disambiguity? Probably not if left side cannot be empty.
+	-> -> F; // symbol - with not specified right context
+	
+	// everything together
+	L < F(x) > R ?(x > 0) :(10) -> RF(x*x)L;
+}
