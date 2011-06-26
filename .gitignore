@@ -1,7 +1,10 @@
 
 # .NET rubbish
-/Malsys/bin
-/Malsys/obj
+*.suo
+/src/Malsys.Core/bin
+/src/Malsys.Core/obj
+/src/Malsys.Gui/bin
+/src/Malsys.Gui/obj
 
 # LaTeX rubbish
 *.aux
