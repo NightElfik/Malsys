@@ -12,19 +12,25 @@ lsystem RewriteRules {
 	F(x, y, z) -> F(z, y, x);
 	
 	// condition
-	F(x) ?(x < 5 || sqrt(x) == 2) -> F(x^3);
+	F(x) ?{x < 5 || sqrt(x) == 2} -> F(x^3);
+	// condition with vars
+	F(x) ?{y=sqrt(x); y < 10} -> F(y);
 	
 	// probability weight
-	F :(50 / 11) -> FFFF;
-	F :(1)       -> FFF;
-	F            -> FF; // default probability 1
+	F(x) :{x / 100} -> FFF;
+	F :{1} -> FFF;
+	F -> FF; // default probability 1
+	// probability with vars
+	F(x) :{z = x^x; z/100} -> F(z)FF;
 	
-	// contexts
+	// context
 	lCtxt < F > RcTXT -> RpLC;
+	// context with params
+	l(x) < F(y) > r(z) -> f(x-y+z);
 	
 	// Disambiguity? Probably not if left side cannot be empty.
 	-> -> F; // symbol - with not specified right context
 	
 	// everything together
-	L < F(x) > R ?(x > 0) :(10) -> RF(x*x)L;
+	L < F(x) > R ?{x > 0} :{10} -> RF(x*x)L;
 }

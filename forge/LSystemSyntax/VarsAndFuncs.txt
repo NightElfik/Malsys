@@ -1,0 +1,31 @@
+/* Global vars and funcs */
+
+let pi = 3.141592653;
+let e = 2.718281828;
+let deg2rad(angle, customPi = pi, i80 = 180) {
+	let ratio = customPi / i80;
+	angle * ratio;
+}
+
+
+/**
+ * Local variables can contain only number.
+ */
+lsystem VarsTest(arg, optArg = 0) {
+	let var = arg + optArg;
+	let one = 1^2;
+	let two = one + one;
+	
+	axiom = F(one + two);
+	
+	F(x) -> F(x+one)+F(two);
+}
+
+/**
+ * Local function can return only number.
+ */
+lsystem FuncTest(arg) {
+	let myFunc(x, y) { sqrt(x * x + y * y); }
+	
+	axiom = F(myFunc(arg, 12));
+}
