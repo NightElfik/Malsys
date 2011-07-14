@@ -1,0 +1,77 @@
+﻿{
+module Malsys.Parser.Lexer
+
+open System
+open Microsoft.FSharp.Text.Lexing
+
+open Malsys.Parser.Parser
+
+type LexerException =
+    inherit ApplicationException
+    val LexerMessage : string
+    val Position : Position
+    new() = { LexerMessage = ""; Position = Position.Empty }
+    new(msg, pos) = { LexerMessage = msg; Position = pos }
+    override this.Message with get() = sprintf "%s in `%s` at line %d column %d." this.LexerMessage this.Position.FileName this.Position.Line this.Position.Column
+
+
+let lexeme lexbuf = LexBuffer<char>.LexemeString lexbuf
+
+let keywords =
+    [  
+        ("let", LET);
+        ("lsystem", LSYSTEM);
+    ] |> Map.ofList
+}
+
+
+let digit = ['0'-'9']
+let char = ['a'-'z' 'A'-'Z'] 
+let whitespace = [' ' '\t']
+let newline = ('\n' | '\r' '\n')
+let float = ['-']?digit+('.'digit+)?(['e''E']digit+)?
+let identifier = char(char|digit|['-' '_' '.'])*
+
+let slc = "//"
+let mlcBegin = "/*"
+let mlcEnd = "*/"
+
+
+rule tokenize = parse
+    | whitespace  { tokenize lexbuf }
+    | newline  { lexbuf.EndPos <- lexbuf.EndPos.NextLine; tokenize lexbuf }
+    | identifier  {
+        match keywords.TryFind(lexeme lexbuf) with   
+        | Some(token) -> token   
+        | None -> ID(lexeme lexbuf) }
+    | float  { FLOAT (Double.Parse(lexeme lexbuf, System.Globalization.CultureInfo.InvariantCulture.NumberFormat)) }
+    | mlcBegin  { multiLineComment lexbuf.StartPos lexbuf; tokenize lexbuf }
+    | slc  {
+        match singleLineComment lexbuf with
+        | Some () -> tokenize lexbuf
+        | None -> EOF
+    }
+    | "="  { EQUALS }
+    | ";"  { SEMI }
+    | "("  { LPAREN }
+    | ")"  { RPAREN }
+    | "{"  { LBRACE }
+    | "}"  { RBRACE }
+    | "+"  { PLUS (lexeme lexbuf) }
+    | "-"  { MINUS (lexeme lexbuf) }
+    | "*"  { ASTER (lexeme lexbuf) }
+    | "/"  { SLASH (lexeme lexbuf) }
+    | eof  { EOF }
+    | _  { raise <| LexerException(sprintf "Unrecognized input `%s`" (lexeme lexbuf), lexbuf.StartPos) }
+    
+and multiLineComment pos = parse
+    | mlcBegin  { multiLineComment lexbuf.StartPos lexbuf; multiLineComment pos lexbuf } // nesting of comments
+    | mlcEnd  { () }
+    | newline  { lexbuf.EndPos <- lexbuf.EndPos.NextLine; multiLineComment pos lexbuf }
+    | eof  { raise <| LexerException("Unterminated comment", pos) }
+    | _  { multiLineComment pos lexbuf }
+
+and singleLineComment = parse
+    | newline  { lexbuf.EndPos <- lexbuf.EndPos.NextLine; Some () }
+    | eof  { None }
+    | _  { singleLineComment lexbuf }

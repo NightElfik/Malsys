@@ -1,0 +1,104 @@
+﻿%{
+
+open Malsys.Ast
+
+%}
+
+%token <string> ID
+%token LET LSYSTEM
+%token EQUALS SEMI LPAREN RPAREN LBRACE RBRACE
+%token <float> FLOAT
+%token <string> PLUS MINUS ASTER SLASH
+%token EOF
+
+%left PLUS MINUS         // lowest priproty
+%left ASTER SLASH
+%nonassoc UMINUS
+
+%start start
+%type <InputFile> start
+
+%%
+
+start: StatementsList  { new InputFile($1) }
+
+StatementsList:
+    |   { new ResizeArray<IInputFileStatement>() }
+    | StatementsList Statement  { $1.Add($2); $1 }
+
+Statement:
+    | VarDef  { $1 :> IInputFileStatement }
+    | Lsystem  { $1 :> IInputFileStatement }
+
+VarDef: LetKw Id EQUALS Expression SEMI {
+    let (bPos, ePos) = parseState.ResultRange
+    new VariableDefinition($1, $2, $4, bPos.Line, bPos.Column, ePos.Line, ePos.Column)
+}
+
+
+Lsystem: LsysKw Id LBRACE LsysStatementsList RBRACE  {
+    let (bPos, ePos) = parseState.ResultRange
+    new Lsystem($1, $2, $4, ePos.Line, ePos.Column)
+}
+
+LsysStatementsList:
+    |   { new ResizeArray<ILsystemStatement>() }
+    | LsysStatementsList LsysStatement { $1.Add($2); $1 }
+
+LsysStatement:
+    | VarDef  { $1 :> ILsystemStatement }
+
+
+Expression: Expr  {
+    let (bPos, ePos) = parseState.ResultRange
+    Expression($1, bPos.Line, bPos.Column, ePos.Line, ePos.Column)
+}
+
+Expr:
+    | FLOAT  {
+        let (bPos, ePos) = parseState.ResultRange
+        new ConstantExpressionNode($1, bPos.Line, bPos.Column, ePos.Line, ePos.Column) :> ExpressionNode
+    }
+    | ID  {
+        let (bPos, ePos) = parseState.ResultRange
+        new VariableExpressionNode($1, bPos.Line, bPos.Column, ePos.Line, ePos.Column) :> ExpressionNode
+    }
+    | LPAREN Expr RPAREN  {
+        let (bPos, ePos) = parseState.ResultRange
+        ParenthesisExpressionNode($2, bPos.Line, bPos.Column, ePos.Line, ePos.Column) :> ExpressionNode
+    }
+    | Expr PLUS Expr  {
+        let (bPos, ePos) = parseState.ResultRange
+        FunctionExpressionNode($2, 2uy, bPos.Line, bPos.Column, ePos.Line, ePos.Column, $1, $3) :> ExpressionNode
+    }
+    | Expr MINUS Expr  {
+        let (bPos, ePos) = parseState.ResultRange
+        FunctionExpressionNode($2, 2uy, bPos.Line, bPos.Column, ePos.Line, ePos.Column, $1, $3) :> ExpressionNode
+    }
+    | Expr ASTER Expr  {
+        let (bPos, ePos) = parseState.ResultRange
+        FunctionExpressionNode($2, 2uy, bPos.Line, bPos.Column, ePos.Line, ePos.Column, $1, $3) :> ExpressionNode
+    }
+    | Expr SLASH Expr  {
+        let (bPos, ePos) = parseState.ResultRange
+        FunctionExpressionNode($2, 2uy, bPos.Line, bPos.Column, ePos.Line, ePos.Column, $1, $3) :> ExpressionNode
+    }
+    | MINUS Expr %prec UMINUS  {
+        let (bPos, ePos) = parseState.ResultRange
+        FunctionExpressionNode($1, 1uy, bPos.Line, bPos.Column, ePos.Line, ePos.Column, $2) :> ExpressionNode
+    }
+
+Id: ID  {
+    let (bPos, ePos) = parseState.ResultRange
+    new Identificator($1, bPos.Line, bPos.Column, ePos.Line, ePos.Column)
+}
+
+LsysKw: LSYSTEM  {
+    let (bPos, ePos) = parseState.ResultRange
+    new Keyword(bPos.Line, bPos.Column, ePos.Line, ePos.Column)
+}
+
+LetKw: LET  {
+    let (bPos, ePos) = parseState.ResultRange
+    new Keyword(bPos.Line, bPos.Column, ePos.Line, ePos.Column)
+}

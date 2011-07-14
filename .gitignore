@@ -1,10 +1,22 @@
 
 # .NET rubbish
 *.suo
+*.vsmdi
+/src/Malsys.Ast/bin
+/src/Malsys.Ast/obj
+
 /src/Malsys.Core/bin
 /src/Malsys.Core/obj
+
 /src/Malsys.Gui/bin
 /src/Malsys.Gui/obj
+
+/src/Malsys.Parser/bin
+/src/Malsys.Parser/obj
+
+/src/Malsys.Tests/bin
+/src/Malsys.Tests/obj
+/src/TestResults
 
 # LaTeX rubbish
 *.aux
