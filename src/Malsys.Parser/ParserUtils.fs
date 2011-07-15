@@ -2,6 +2,7 @@
 
 open Lexer
 open Parser
+open System
 open System.IO
 open Microsoft.FSharp.Text.Lexing
 

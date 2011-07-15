@@ -2,7 +2,7 @@
 using System.Collections.ObjectModel;
 
 namespace Malsys.Ast {
-	public interface ILsystemStatement { }
+	public interface ILsystemStatement : IAstVisitable { }
 
 	public class Lsystem : Token, IInputFileStatement {
 		public readonly Keyword Keyword;
@@ -16,5 +16,13 @@ namespace Malsys.Ast {
 			Name = name;
 			Statements = new ReadOnlyCollection<ILsystemStatement>(statements);
 		}
+
+		#region IAstVisitable Members
+
+		public void Accept(IAstVisitor visitor) {
+			visitor.Visit(this);
+		}
+
+		#endregion
 	}
 }

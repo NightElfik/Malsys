@@ -30,7 +30,7 @@ let char = ['a'-'z' 'A'-'Z']
 let whitespace = [' ' '\t']
 let newline = ('\n' | '\r' '\n')
 let float = ['-']?digit+('.'digit+)?(['e''E']digit+)?
-let identifier = char(char|digit|['-' '_' '.'])*
+let identifier = (char|'_')(char|digit|['-' '_' '.'])*
 
 let slc = "//"
 let mlcBegin = "/*"
@@ -51,18 +51,30 @@ rule tokenize = parse
         | Some () -> tokenize lexbuf
         | None -> EOF
     }
-    | "="  { EQUALS }
     | ";"  { SEMI }
+    | ","  { COMMA }
     | "("  { LPAREN }
     | ")"  { RPAREN }
     | "{"  { LBRACE }
     | "}"  { RBRACE }
+    | "?"  { QMARK }
+    | ":"  { COLON }
+    | "="  { EQUALS (lexeme lexbuf) }
     | "+"  { PLUS (lexeme lexbuf) }
     | "-"  { MINUS (lexeme lexbuf) }
     | "*"  { ASTER (lexeme lexbuf) }
     | "/"  { SLASH (lexeme lexbuf) }
+    | "\\"  { BSLASH (lexeme lexbuf) }
+    | "<"  { LTHAN (lexeme lexbuf) }
+    | ">"  { GTHAN (lexeme lexbuf) }
+    | "|"  { PIPE (lexeme lexbuf) }
+    | "&"  { AND (lexeme lexbuf) }
+    | "!"  { EXCLAM (lexeme lexbuf) }
+    | "%"  { PERC (lexeme lexbuf) }
+    | "^"  { CARET (lexeme lexbuf) }
+    | "~"  { TILDE (lexeme lexbuf) }
     | eof  { EOF }
-    | _  { raise <| LexerException(sprintf "Unrecognized input `%s`" (lexeme lexbuf), lexbuf.StartPos) }
+    | _  { UNRECOGNIZED (lexeme lexbuf) }
     
 and multiLineComment pos = parse
     | mlcBegin  { multiLineComment lexbuf.StartPos lexbuf; multiLineComment pos lexbuf } // nesting of comments

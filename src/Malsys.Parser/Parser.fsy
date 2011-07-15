@@ -1,104 +1,292 @@
 ﻿%{
 
+open System
 open Malsys.Ast
+open Microsoft.FSharp.Text.Parsing
+
+type ParserException<'a> =
+    inherit ApplicationException
+    val ErrorContext : ParseErrorContext<'a>
+    //new() = { ErrorContext = null }
+    new(ctxt) = { ErrorContext = ctxt }
+    override this.Message with get() = this.ErrorContext.Message
+        //let state = this.ErrorContext.ParseState
+        //let (pos, _) = state.ResultRange
+        //sprintf "Parse error %s in `%s` at line %d column %d." this.ErrorContext.Message pos.FileName pos.Line pos.Column }
+
+let parse_error_rich = Some (fun (ctxt: ParseErrorContext<_>) -> 
+    raise <| ParserException(ctxt))
 
 %}
 
-%token <string> ID
+%token <string> ID UNRECOGNIZED
 %token LET LSYSTEM
-%token EQUALS SEMI LPAREN RPAREN LBRACE RBRACE
+%token SEMI COMMA LPAREN RPAREN LBRACE RBRACE QMARK COLON
 %token <float> FLOAT
-%token <string> PLUS MINUS ASTER SLASH
+%token <string> EQUALS PLUS MINUS ASTER SLASH BSLASH LTHAN GTHAN PIPE AND EXCLAM PERC CARET TILDE
 %token EOF
 
-%left PLUS MINUS         // lowest priproty
-%left ASTER SLASH
-%nonassoc UMINUS
+// lowest priproty
+%left OP_OR
+%left OP_AND
+%nonassoc OP_CMP
+%left OP_ADD
+%left OP_MULT
+%right OP_POW
+%nonassoc OP_UNARY
+// highest priority
 
 %start start
 %type <InputFile> start
 
 %%
 
-start: StatementsList  { new InputFile($1) }
+start:
+    | StatementsList
+      { new InputFile($1) }
 
 StatementsList:
-    |   { new ResizeArray<IInputFileStatement>() }
-    | StatementsList Statement  { $1.Add($2); $1 }
+    |
+      { new ResizeArray<IInputFileStatement>() }
+    | StatementsList Statement
+      { $1.Add($2); $1 }
 
 Statement:
-    | VarDef  { $1 :> IInputFileStatement }
-    | Lsystem  { $1 :> IInputFileStatement }
+    | VarDef
+      { $1 :> IInputFileStatement }
+    | Lsystem
+      { $1 :> IInputFileStatement }
 
-VarDef: LetKw Id EQUALS Expression SEMI {
-    let (bPos, ePos) = parseState.ResultRange
-    new VariableDefinition($1, $2, $4, bPos.Line, bPos.Column, ePos.Line, ePos.Column)
-}
+VarDefsList:
+    |
+      { new ResizeArray<VariableDefinition>() }
+    | VarDefsList VarDef
+      { $1.Add($2); $1 }
+
+VarDef:
+    | LetKw Id EQUALS Expression SEMI
+      { let (bPos, ePos) = parseState.ResultRange
+        new VariableDefinition($1, $2, $4, bPos.Line, bPos.Column, ePos.Line, ePos.Column) }
 
 
-Lsystem: LsysKw Id LBRACE LsysStatementsList RBRACE  {
-    let (bPos, ePos) = parseState.ResultRange
-    new Lsystem($1, $2, $4, ePos.Line, ePos.Column)
-}
+Lsystem:
+    | LsysKw Id LBRACE LsysStatementsList RBRACE
+      { let (bPos, ePos) = parseState.ResultRange
+        new Lsystem($1, $2, $4, ePos.Line, ePos.Column) }
 
 LsysStatementsList:
-    |   { new ResizeArray<ILsystemStatement>() }
-    | LsysStatementsList LsysStatement { $1.Add($2); $1 }
+    |
+      { new ResizeArray<ILsystemStatement>() }
+    | LsysStatementsList LsysStatement
+      { $1.Add($2); $1 }
 
 LsysStatement:
-    | VarDef  { $1 :> ILsystemStatement }
+    | VarDef
+      { $1 :> ILsystemStatement }
+    | RewriteRule
+      { $1 :> ILsystemStatement }
 
 
-Expression: Expr  {
-    let (bPos, ePos) = parseState.ResultRange
-    Expression($1, bPos.Line, bPos.Column, ePos.Line, ePos.Column)
-}
+RewriteRule:
+    | MaybeLCtxt SymbolPattern MaybeRCtxt MaybeCondition MaybeProbab MINUS GTHAN SymbolsWithParamsList SEMI
+      { let (bPos, ePos) = parseState.ResultRange
+        new RewriteRule($1, $2, $3, $4, $5, $8, bPos.Line, bPos.Column, ePos.Line, ePos.Column) }
+
+MaybeLCtxt:
+    |
+      { null }
+    | LTHAN SymbolsPatternsList LTHAN
+      { let (bPos, ePos) = parseState.ResultRange
+        new RrContext($2, bPos.Line, bPos.Column, ePos.Line, ePos.Column) }
+
+MaybeRCtxt:
+    |
+      { null }
+    | GTHAN SymbolsPatternsList GTHAN
+      { let (bPos, ePos) = parseState.ResultRange
+        new RrContext($2, bPos.Line, bPos.Column, ePos.Line, ePos.Column) }
+
+MaybeCondition:
+    |
+      { null }
+    | QMARK LBRACE VarDefsList Expression RBRACE
+      { let (bPos, ePos) = parseState.ResultRange
+        new RrCondition($3, $4, bPos.Line, bPos.Column, ePos.Line, ePos.Column) }
+
+MaybeProbab:
+    |
+      { null }
+    | COLON LBRACE VarDefsList Expression RBRACE
+      { let (bPos, ePos) = parseState.ResultRange
+        new RrProbability($3, $4, bPos.Line, bPos.Column, ePos.Line, ePos.Column) }
+
+
+SymbolsPatternsList:
+    |
+      { new ResizeArray<SymbolPattern>() }
+    | SymbolsPatternsList SymbolPattern
+      { $1.Add($2); $1 }
+
+SymbolPattern:
+    | Symbol
+      { let (bPos, ePos) = parseState.ResultRange
+        new SymbolPattern($1, bPos.Line, bPos.Column, ePos.Line, ePos.Column) }
+    | Symbol LPAREN IdsCommaList RPAREN
+      { let (bPos, ePos) = parseState.ResultRange
+        new SymbolPattern($1, $3, bPos.Line, bPos.Column, ePos.Line, ePos.Column) }
+    
+SymbolsWithParamsList:
+    |
+      { new ResizeArray<SymbolWithParams>() }
+    | SymbolsWithParamsList SymbolWithParams
+      { $1.Add($2); $1 }
+
+SymbolWithParams:
+    | Symbol
+      { let (bPos, ePos) = parseState.ResultRange
+        new SymbolWithParams($1, bPos.Line, bPos.Column, ePos.Line, ePos.Column) }
+    | Symbol LPAREN ExpressionCommaList RPAREN
+      { let (bPos, ePos) = parseState.ResultRange
+        new SymbolWithParams($1, $3, bPos.Line, bPos.Column, ePos.Line, ePos.Column) }
+
+Symbol:
+    | ID
+      { let (bPos, ePos) = parseState.ResultRange
+        new Symbol($1, bPos.Line, bPos.Column, ePos.Line, ePos.Column) }
+    | UNRECOGNIZED
+      { let (bPos, ePos) = parseState.ResultRange
+        new Symbol($1, bPos.Line, bPos.Column, ePos.Line, ePos.Column) }
+    | PLUS
+      { let (bPos, ePos) = parseState.ResultRange
+        new Symbol($1, bPos.Line, bPos.Column, ePos.Line, ePos.Column) }
+    | MINUS
+      { let (bPos, ePos) = parseState.ResultRange
+        new Symbol($1, bPos.Line, bPos.Column, ePos.Line, ePos.Column) }
+    | ASTER
+      { let (bPos, ePos) = parseState.ResultRange
+        new Symbol($1, bPos.Line, bPos.Column, ePos.Line, ePos.Column) }
+    | SLASH
+      { let (bPos, ePos) = parseState.ResultRange
+        new Symbol($1, bPos.Line, bPos.Column, ePos.Line, ePos.Column) }
+
+
+ExpressionCommaList:
+    |
+      { new ResizeArray<Expression>() }
+    | ExpressionCommaListNonEmpty
+      { $1 }
+
+ExpressionCommaListNonEmpty:
+    | Expression
+      { let mutable x = new ResizeArray<Expression>() in x.Add($1); x }
+    | ExpressionCommaListNonEmpty COMMA Expression
+      { $1.Add($3); $1 }
+
+Expression:
+    | Expr
+      { let (bPos, ePos) = parseState.ResultRange
+        new Expression($1, bPos.Line, bPos.Column, ePos.Line, ePos.Column) }
 
 Expr:
-    | FLOAT  {
-        let (bPos, ePos) = parseState.ResultRange
-        new ConstantExpressionNode($1, bPos.Line, bPos.Column, ePos.Line, ePos.Column) :> ExpressionNode
-    }
-    | ID  {
-        let (bPos, ePos) = parseState.ResultRange
-        new VariableExpressionNode($1, bPos.Line, bPos.Column, ePos.Line, ePos.Column) :> ExpressionNode
-    }
-    | LPAREN Expr RPAREN  {
-        let (bPos, ePos) = parseState.ResultRange
-        ParenthesisExpressionNode($2, bPos.Line, bPos.Column, ePos.Line, ePos.Column) :> ExpressionNode
-    }
-    | Expr PLUS Expr  {
-        let (bPos, ePos) = parseState.ResultRange
-        FunctionExpressionNode($2, 2uy, bPos.Line, bPos.Column, ePos.Line, ePos.Column, $1, $3) :> ExpressionNode
-    }
-    | Expr MINUS Expr  {
-        let (bPos, ePos) = parseState.ResultRange
-        FunctionExpressionNode($2, 2uy, bPos.Line, bPos.Column, ePos.Line, ePos.Column, $1, $3) :> ExpressionNode
-    }
-    | Expr ASTER Expr  {
-        let (bPos, ePos) = parseState.ResultRange
-        FunctionExpressionNode($2, 2uy, bPos.Line, bPos.Column, ePos.Line, ePos.Column, $1, $3) :> ExpressionNode
-    }
-    | Expr SLASH Expr  {
-        let (bPos, ePos) = parseState.ResultRange
-        FunctionExpressionNode($2, 2uy, bPos.Line, bPos.Column, ePos.Line, ePos.Column, $1, $3) :> ExpressionNode
-    }
-    | MINUS Expr %prec UMINUS  {
-        let (bPos, ePos) = parseState.ResultRange
-        FunctionExpressionNode($1, 1uy, bPos.Line, bPos.Column, ePos.Line, ePos.Column, $2) :> ExpressionNode
-    }
+    | FLOAT
+      { let (bPos, ePos) = parseState.ResultRange
+        new ConstantExpressionNode($1, bPos.Line, bPos.Column, ePos.Line, ePos.Column) :> ExpressionNode }
+    | ID
+      { let (bPos, ePos) = parseState.ResultRange
+        new VariableExpressionNode($1, bPos.Line, bPos.Column, ePos.Line, ePos.Column) :> ExpressionNode }
+    | LPAREN Expr RPAREN
+      { let (bPos, ePos) = parseState.ResultRange
+        new ParenthesisExpressionNode($2, bPos.Line, bPos.Column, ePos.Line, ePos.Column) :> ExpressionNode }
+    | Expr OpOr Expr %prec OP_OR
+      { let (bPos, ePos) = parseState.ResultRange
+        new FunctionExpressionNode($2, 2uy, bPos.Line, bPos.Column, ePos.Line, ePos.Column, $1, $3) :> ExpressionNode }
+    | Expr OpAnd Expr %prec OP_AND
+      { let (bPos, ePos) = parseState.ResultRange
+        new FunctionExpressionNode($2, 2uy, bPos.Line, bPos.Column, ePos.Line, ePos.Column, $1, $3) :> ExpressionNode }
+    | Expr OpCmp Expr %prec OP_CMP
+      { let (bPos, ePos) = parseState.ResultRange
+        new FunctionExpressionNode($2, 2uy, bPos.Line, bPos.Column, ePos.Line, ePos.Column, $1, $3) :> ExpressionNode }
+    | Expr OpAdd Expr %prec OP_ADD
+      { let (bPos, ePos) = parseState.ResultRange
+        new FunctionExpressionNode($2, 2uy, bPos.Line, bPos.Column, ePos.Line, ePos.Column, $1, $3) :> ExpressionNode }
+    | Expr OpMult Expr %prec OP_MULT
+      { let (bPos, ePos) = parseState.ResultRange
+        new FunctionExpressionNode($2, 2uy, bPos.Line, bPos.Column, ePos.Line, ePos.Column, $1, $3) :> ExpressionNode }
+    | Expr OpPow Expr %prec OP_POW
+      { let (bPos, ePos) = parseState.ResultRange
+        new FunctionExpressionNode($2, 2uy, bPos.Line, bPos.Column, ePos.Line, ePos.Column, $1, $3) :> ExpressionNode }
+    | OpUnary Expr %prec OP_UNARY
+      { let (bPos, ePos) = parseState.ResultRange
+        new FunctionExpressionNode($1, 1uy, bPos.Line, bPos.Column, ePos.Line, ePos.Column, $2) :> ExpressionNode }
+        
+OpOr:
+    | PIPE PIPE
+      { $1 + $2 }
+        
+OpAnd:
+    | AND AND
+      { $1 + $2 }
+     
+OpCmp:
+    | LTHAN
+      { $1 }
+    | GTHAN
+      { $1 }
+    | LTHAN EQUALS
+      { $1 + $2 }
+    | GTHAN EQUALS
+      { $1 + $2 }
+    | EQUALS EQUALS
+      { $1 + $2 }
+        
+OpAdd:
+    | PLUS
+      { $1 }
+    | MINUS
+      { $1 }
 
-Id: ID  {
-    let (bPos, ePos) = parseState.ResultRange
-    new Identificator($1, bPos.Line, bPos.Column, ePos.Line, ePos.Column)
-}
+OpMult:
+    | ASTER
+      { $1 }
+    | SLASH
+      { $1 }
+    | BSLASH
+      { $1 }
+        
+OpPow:
+    | CARET
+      { $1 }
 
-LsysKw: LSYSTEM  {
-    let (bPos, ePos) = parseState.ResultRange
-    new Keyword(bPos.Line, bPos.Column, ePos.Line, ePos.Column)
-}
+OpUnary:
+    | PLUS
+      { $1 }
+    | MINUS
+      { $1 }
 
-LetKw: LET  {
-    let (bPos, ePos) = parseState.ResultRange
-    new Keyword(bPos.Line, bPos.Column, ePos.Line, ePos.Column)
-}
+
+IdsCommaList:
+    |
+      { new ResizeArray<Identificator>() }
+    | IdsCommaListNonEmpty
+      { $1 }
+
+IdsCommaListNonEmpty:
+    | Id
+      { let mutable x = new ResizeArray<Identificator>() in x.Add($1); x }
+    | IdsCommaListNonEmpty COMMA Id
+      { $1.Add($3); $1 }
+
+Id:
+    | ID
+      { let (bPos, ePos) = parseState.ResultRange
+        new Identificator($1, bPos.Line, bPos.Column, ePos.Line, ePos.Column) }
+
+LsysKw:
+    | LSYSTEM
+      { let (bPos, ePos) = parseState.ResultRange
+        new Keyword(bPos.Line, bPos.Column, ePos.Line, ePos.Column) }
+
+LetKw:
+    | LET
+      { let (bPos, ePos) = parseState.ResultRange
+        new Keyword(bPos.Line, bPos.Column, ePos.Line, ePos.Column) }

@@ -1,6 +1,6 @@
 ﻿
 namespace Malsys.Ast {
-	public class Expression : Token {
+	public class Expression : Token, IAstVisitable {
 		public readonly ExpressionNode RootNode;
 
 		public Expression(ExpressionNode rootNode, int beginLine, int beginColumn, int endLine, int endColumn)
@@ -8,22 +8,25 @@ namespace Malsys.Ast {
 
 			RootNode = rootNode;
 		}
+
+		#region IAstVisitable Members
+
+		public void Accept(IAstVisitor visitor) {
+			visitor.Visit(this);
+		}
+
+		#endregion
 	}
 
-	[System.Serializable]
-	public class MyException : System.Exception {
-		public MyException() { }
-		public MyException(string message) : base(message) { }
-		public MyException(string message, System.Exception inner) : base(message, inner) { }
-		protected MyException(
-		  System.Runtime.Serialization.SerializationInfo info,
-		  System.Runtime.Serialization.StreamingContext context)
-			: base(info, context) { }
-	}
-
-	public abstract class ExpressionNode : Token {
+	public abstract class ExpressionNode : Token, IAstVisitable {
 		public ExpressionNode(int beginLine, int beginColumn, int endLine, int endColumn)
 			: base(beginLine, beginColumn, endLine, endColumn) { }
+
+		#region IAstVisitable Members
+
+		public abstract void Accept(IAstVisitor visitor);
+
+		#endregion
 	}
 
 	public class ParenthesisExpressionNode : ExpressionNode {
@@ -34,6 +37,10 @@ namespace Malsys.Ast {
 
 			Node = node;
 		}
+
+		public override void Accept(IAstVisitor visitor) {
+			visitor.Visit(this);
+		}
 	}
 
 	public class ConstantExpressionNode : ExpressionNode {
@@ -42,6 +49,10 @@ namespace Malsys.Ast {
 		public ConstantExpressionNode(double value, int beginLine, int beginColumn, int endLine, int endColumn)
 			: base(beginLine, beginColumn, endLine, endColumn) {
 			Value = value;
+		}
+
+		public override void Accept(IAstVisitor visitor) {
+			visitor.Visit(this);
 		}
 	}
 
@@ -52,6 +63,10 @@ namespace Malsys.Ast {
 			: base(beginLine, beginColumn, endLine, endColumn) {
 
 			Name = name;
+		}
+
+		public override void Accept(IAstVisitor visitor) {
+			visitor.Visit(this);
 		}
 	}
 
@@ -66,6 +81,10 @@ namespace Malsys.Ast {
 			Syntax = syntax;
 			Arity = arity;
 			Arguments = arguments;
+		}
+
+		public override void Accept(IAstVisitor visitor) {
+			visitor.Visit(this);
 		}
 	}
 }

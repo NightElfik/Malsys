@@ -12,5 +12,13 @@ namespace Malsys.Ast {
 			Name = name;
 			Expression = expression;
 		}
+
+		#region IAstVisitable Members
+
+		public void Accept(IAstVisitor visitor) {
+			visitor.Visit(this);
+		}
+
+		#endregion
 	}
 }

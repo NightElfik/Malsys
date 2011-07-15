@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Malsys.Parser;
 
@@ -16,8 +12,7 @@ namespace Malsys.Tests.Parser {
 		public void DebugTest() {
 			string testInput = @"
 lsystem LsysName {
-	let x = 3 + a * 5;
-	let a = a;
+	< lctx(t) < A(_,n,a,m,e) > r(c)t(x,t) > ?{let a = 10; a*a^b-c} :{let b = x; n} -> r(a*b,c*d+4)e(f)PLAc;
 }";
 			var lsys = ParserUtils.ParseFromString(testInput);
 

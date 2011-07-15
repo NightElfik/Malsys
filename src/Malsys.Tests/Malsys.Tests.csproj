@@ -50,7 +50,6 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Parser\CommentsTests.cs" />
     <Compile Include="Parser\DebugTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
