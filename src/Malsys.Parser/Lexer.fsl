@@ -4,15 +4,8 @@ module Malsys.Parser.Lexer
 open System
 open Microsoft.FSharp.Text.Lexing
 
+open Malsys
 open Malsys.Parser.Parser
-
-type LexerException =
-    inherit ApplicationException
-    val LexerMessage : string
-    val Position : Position
-    new() = { LexerMessage = ""; Position = Position.Empty }
-    new(msg, pos) = { LexerMessage = msg; Position = pos }
-    override this.Message with get() = sprintf "%s in `%s` at line %d column %d." this.LexerMessage this.Position.FileName this.Position.Line this.Position.Column
 
 
 let lexeme lexbuf = LexBuffer<char>.LexemeString lexbuf
@@ -29,8 +22,10 @@ let digit = ['0'-'9']
 let char = ['a'-'z' 'A'-'Z'] 
 let whitespace = [' ' '\t']
 let newline = ('\n' | '\r' '\n')
-let float = ['-']?digit+('.'digit+)?(['e''E']digit+)?
-let identifier = (char|'_')(char|digit|['-' '_' '.'])*
+
+let float = digit+ ('.' digit+)? (['e' 'E'] digit+)?
+let identifier = (char | '_') (char | digit | ['-' '_' '.'])*
+let operators = '^'|'+'|'-'|'!'|'*'|'/'|"\\"|'%'|"<="|">="|"=="|"&&"|"^^"|"||"
 
 let slc = "//"
 let mlcBegin = "/*"
@@ -51,28 +46,19 @@ rule tokenize = parse
         | Some () -> tokenize lexbuf
         | None -> EOF
     }
-    | ";"  { SEMI }
-    | ","  { COMMA }
-    | "("  { LPAREN }
-    | ")"  { RPAREN }
-    | "{"  { LBRACE }
-    | "}"  { RBRACE }
-    | "?"  { QMARK }
-    | ":"  { COLON }
-    | "="  { EQUALS (lexeme lexbuf) }
-    | "+"  { PLUS (lexeme lexbuf) }
-    | "-"  { MINUS (lexeme lexbuf) }
-    | "*"  { ASTER (lexeme lexbuf) }
-    | "/"  { SLASH (lexeme lexbuf) }
-    | "\\"  { BSLASH (lexeme lexbuf) }
-    | "<"  { LTHAN (lexeme lexbuf) }
-    | ">"  { GTHAN (lexeme lexbuf) }
-    | "|"  { PIPE (lexeme lexbuf) }
-    | "&"  { AND (lexeme lexbuf) }
-    | "!"  { EXCLAM (lexeme lexbuf) }
-    | "%"  { PERC (lexeme lexbuf) }
-    | "^"  { CARET (lexeme lexbuf) }
-    | "~"  { TILDE (lexeme lexbuf) }
+    | operators  { OPERATOR (lexeme lexbuf) }
+    | ';'  { SEMI }
+    | ','  { COMMA }
+    | '('  { LPAREN }
+    | ')'  { RPAREN }
+    | '{'  { LBRACE }
+    | '}'  { RBRACE }
+    | '?'  { QMARK }
+    | ':'  { COLON }
+    | '='  { EQUALS }
+    | "->"  { RARROW }
+    | '<'  { LT (lexeme lexbuf) }
+    | '>'  { GT (lexeme lexbuf) }
     | eof  { EOF }
     | _  { UNRECOGNIZED (lexeme lexbuf) }
     

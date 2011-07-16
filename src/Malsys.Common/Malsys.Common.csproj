@@ -5,14 +5,13 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{4DE67417-39CA-4AEC-AC75-9584112268F0}</ProjectGuid>
+    <ProjectGuid>{433E2485-4265-4656-A197-D0EB315618E1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Malsys.Ast</RootNamespace>
-    <AssemblyName>Malsys.Ast</AssemblyName>
+    <RootNamespace>Malsys.Common</RootNamespace>
+    <AssemblyName>Malsys.Common</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -32,33 +31,26 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FSharp.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="FSharp.PowerPack, Version=2.0.0.0, Culture=neutral, PublicKeyToken=a19089b1c74d0809, processorArchitecture=MSIL">
+      <HintPath>C:\Program Files (x86)\FSharpPowerPack-2.0.0.0\bin\FSharp.PowerPack.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Expression.cs" />
-    <Compile Include="FloatConstant.cs" />
-    <Compile Include="IAstVisitable.cs" />
-    <Compile Include="IAstVisitor.cs" />
-    <Compile Include="Identificator.cs" />
-    <Compile Include="InputFile.cs" />
-    <Compile Include="Keyword.cs" />
-    <Compile Include="Lsystem.cs" />
-    <Compile Include="RewriteRule.cs" />
-    <Compile Include="Symbol.cs" />
-    <Compile Include="Token.cs" />
+    <Compile Include="Exceptions\ParserException.cs" />
+    <Compile Include="Exceptions\LexerException.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Helpers\CharHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="VariableDefinition.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Malsys.Common\Malsys.Common.csproj">
-      <Project>{433E2485-4265-4656-A197-D0EB315618E1}</Project>
-      <Name>Malsys.Common</Name>
-    </ProjectReference>
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -2,11 +2,15 @@
 # .NET rubbish
 *.suo
 *.vsmdi
+
+/src/Malsys/bin
+/src/Malsys/obj
+
 /src/Malsys.Ast/bin
 /src/Malsys.Ast/obj
 
-/src/Malsys.Core/bin
-/src/Malsys.Core/obj
+/src/Malsys.Common/bin
+/src/Malsys.Common/obj
 
 /src/Malsys.Gui/bin
 /src/Malsys.Gui/obj

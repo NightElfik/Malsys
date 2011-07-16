@@ -14,9 +14,8 @@ namespace Malsys.Ast {
 		void Visit(SymbolPattern symbolPattern);
 		void Visit(SymbolWithParams symbolWithParams);
 		void Visit(Expression expression);
-		void Visit(ParenthesisExpressionNode parenthesisExpressionNode);
-		void Visit(ConstantExpressionNode constantExpressionNode);
-		void Visit(VariableExpressionNode variableExpressionNode);
-		void Visit(FunctionExpressionNode functionExpressionNode);
+		void Visit(FloatConstant floatConstant);
+		void Visit(ExpressionFunction floatConstant);
+		
 	}
 }

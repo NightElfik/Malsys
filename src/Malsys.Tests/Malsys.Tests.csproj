@@ -58,10 +58,6 @@
       <Project>{4DE67417-39CA-4AEC-AC75-9584112268F0}</Project>
       <Name>Malsys.Ast</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Malsys.Core\Malsys.Core.csproj">
-      <Project>{97B55CB5-A8EA-4757-BF64-9C2478D3CAD0}</Project>
-      <Name>Malsys.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Malsys.Gui\Malsys.Gui.csproj">
       <Project>{D04C5DFA-7E90-46A8-90E0-295F25AA81BE}</Project>
       <Name>Malsys.Gui</Name>
@@ -70,10 +66,12 @@
       <Project>{8CAA0257-FE49-4CD8-97C1-86185F44E08C}</Project>
       <Name>Malsys.Parser</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Malsys\Malsys.csproj">
+      <Project>{E80C526F-83F8-4899-B5DE-1F584E2C3D77}</Project>
+      <Name>Malsys</Name>
+    </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Core\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

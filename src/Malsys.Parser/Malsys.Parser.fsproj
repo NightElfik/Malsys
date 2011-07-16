@@ -73,6 +73,11 @@
       <Project>{4de67417-39ca-4aec-ac75-9584112268f0}</Project>
       <Private>True</Private>
     </ProjectReference>
+    <ProjectReference Include="..\Malsys.Common\Malsys.Common.csproj">
+      <Name>Malsys.Common</Name>
+      <Project>{433e2485-4265-4656-a197-d0eb315618e1}</Project>
+      <Private>True</Private>
+    </ProjectReference>
   </ItemGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -12,7 +12,8 @@ namespace Malsys.Tests.Parser {
 		public void DebugTest() {
 			string testInput = @"
 lsystem LsysName {
-	< lctx(t) < A(_,n,a,m,e) > r(c)t(x,t) > ?{let a = 10; a*a^b-c} :{let b = x; n} -> r(a*b,c*d+4)e(f)PLAc;
+	//< lctx(t) < A(_,n,a,m,e) > r(c)t(x,t) > ?{let a = 10; a*a^b-c} :{let b = x; n} -> r(a*b,c*d+4)e(f)PLAc;
+	let a = 1+2^-f(a,b,c);
 }";
 			var lsys = ParserUtils.ParseFromString(testInput);
 

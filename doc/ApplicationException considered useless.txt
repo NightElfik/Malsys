@@ -1,0 +1,14 @@
+http://blogs.msdn.com/b/kcwalina/archive/2006/06/23/644822.aspx
+
+ApplicationException considered useless
+
+
+We have a guideline that bans using the ApplicationException. Here is the related excerpt from the Framework Design Guidelines:
+
+Do not throw or derive from System.ApplicationException.
+
+JEFFREY RICHTER: System.ApplicationException is a class that should not be part of the .NET Framework. The original idea was that classes derived from SystemException would indicate exceptions thrown from the CLR (or system) itself, whereas non-CLR exceptions would be derived from ApplicationException. However, a lot of exception classes didn’t follow this pattern. For example, TargetInvocationException (which is thrown by the CLR) is derived from ApplicationException. So, the ApplicationException class lost all meaning. The reason to derive from this base class is to allow some code higher up the call stack to catch the base class. It was no longer possible to catch all application exceptions.
+
+ 
+
+Today, somebody asked me whether they should go through their code-base and remove all references to the exception.  I answered  that it’s not worth the effort. “ApplicationException is not considered harmful, just useless.” J
