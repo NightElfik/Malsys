@@ -18,18 +18,26 @@ let toAstPos range =
 %token LET LSYSTEM
 %token EQUALS SEMI COMMA LPAREN RPAREN LBRACE RBRACE QMARK COLON RARROW
 %token <float> FLOAT
-%token <string> OPERATOR LT GT
+%token <string> OPERATOR
 %token EOF
 
 
 %start start
 %type <InputFile> start
 
+%start parseExpression
+%type <Expression> parseExpression
+
 %%
+
 
 start:
     | StatementsList
       { new InputFile($1) }
+
+parseExpression:
+    | Expression
+      { $1 }
 
 StatementsList:
     |
@@ -78,13 +86,13 @@ RewriteRule:
 MaybeLCtxt:
     |
       { null }
-    | SymbolsPatternsList LT
-      { new RrContext($1, toAstPos parseState.ResultRange) }
+    | LBRACE SymbolsPatternsList RBRACE
+      { new RrContext($2, toAstPos parseState.ResultRange) }
 
 MaybeRCtxt:
     |
       { null }
-    | GT SymbolsPatternsList
+    | LBRACE SymbolsPatternsList RBRACE
       { new RrContext($2, toAstPos parseState.ResultRange) }
 
 MaybeCondition:
@@ -155,9 +163,9 @@ ExprBuilder:
       { new ResizeArray<IExpressionMember>() }
     | ExprBuilder Float
       { $1.Add($2); $1 }
-    | ExprBuilder Operator
-      { $1.Add($2); $1 }
     | ExprBuilder Id
+      { $1.Add($2); $1 }
+    | ExprBuilder Operator
       { $1.Add($2); $1 }
     | ExprBuilder ExprFunc
       { $1.Add($2); $1 }
@@ -182,7 +190,17 @@ IdsCommaListNonEmpty:
       { $1.Add($3); $1 }
 
 Id:
+    | ReId
+      { $1 }
+    | UnId
+      { $1 }
+      
+ReId:
     | ID
+      { new Identificator($1, toAstPos parseState.ResultRange) }
+
+UnId:
+    | UNRECOGNIZED
       { new Identificator($1, toAstPos parseState.ResultRange) }
 
 LsysKw:
@@ -192,12 +210,9 @@ LsysKw:
 LetKw:
     | LET
       { new Keyword(toAstPos parseState.ResultRange) }
+
 Operator:
     | OPERATOR
-      { new Operator($1, toAstPos parseState.ResultRange) }
-    | LT
-      { new Operator($1, toAstPos parseState.ResultRange) }
-    | GT
       { new Operator($1, toAstPos parseState.ResultRange) }
 
 Float:

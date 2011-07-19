@@ -27,7 +27,7 @@ lsystem LsysName {
 		public void LexerDebugTest() {
 			string testInput = @"
 lsystem LsysName {
-	let a = 1+2^-f(a,b,c);
+	let a = 1+2^-f(a€,ττϕ,ϕ);
 }";
 			Console.WriteLine(testInput);
 			Console.WriteLine();

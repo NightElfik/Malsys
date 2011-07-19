@@ -102,6 +102,9 @@ namespace Malsys.Expressions {
 
 				KnownArithmeticFunction fun = (KnownArithmeticFunction)fi.GetValue(null);
 
+				Debug.Assert(!funCache.ContainsKey(new Key(fun.Name, fun.Arity)),
+					"Name-arity pair `{0}`{1}` of known function is not unique.".Fmt(fun.Name, fun.Arity));
+
 				funCache.Add(new Key(fun.Name, fun.Arity), fun);
 			}
 		}

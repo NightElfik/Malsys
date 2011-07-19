@@ -58,10 +58,11 @@
     <Compile Include="DataTypes\SymbolPattern.cs" />
     <Compile Include="DataTypes\VariableValuesArray.cs" />
     <Compile Include="Expressions\ArithmeticFunction.cs" />
-    <Compile Include="Expressions\ArithmeticOperator.cs" />
+    <Compile Include="Expressions\KnownArithmeticOperator.cs" />
     <Compile Include="Expressions\FloatArithmeticHelper.cs" />
     <Compile Include="Expressions\IEvaluable.cs" />
     <Compile Include="Expressions\KnownArithmeticFunction.cs" />
+    <Compile Include="Expressions\KnownConstant.cs" />
     <Compile Include="Expressions\PostfixExpression.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

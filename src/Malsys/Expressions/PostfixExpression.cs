@@ -86,8 +86,5 @@ namespace Malsys {
 			return stack.Pop();
 		}
 
-		//internal object[] GetMembers() {
-		//    return members;
-		//}
 	}
 }

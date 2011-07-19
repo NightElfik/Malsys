@@ -7,129 +7,217 @@ namespace Malsys.Compilers {
 
 	public static class ExpressionCompiler {
 
-		public static PostfixExpression Compile(Expression expr, MessagesCollection msgs) {
-			var members = compile(expr, msgs);
+		public static bool TryCompile(Expression expr, MessagesCollection msgs, out PostfixExpression expression) {
 
-			if (msgs.ErrorOcured) {
-				return null;
+			var postfix = new List<object>();
+
+			if (tryCompile(expr, msgs, postfix)) {
+				expression = new PostfixExpression(postfix);
+				return true;
 			}
 			else {
-				return new PostfixExpression(members);
+				expression = null;
+				return false;
 			}
 		}
 
 
-		private static List<object> compile(Expression expr, MessagesCollection msgs) {
+		private static bool tryCompile(Expression expr, MessagesCollection msgs, List<object> postfix) {
 
-			List<object> postfix = new List<object>();
-			Stack<ArithmeticOperator> opStack = new Stack<ArithmeticOperator>();
+			Stack<KnownArithmeticOperator> opStack = new Stack<KnownArithmeticOperator>();
 
 			State state = State.ExcpectingOperand;
 
-			if (state == State.ExcpectingOperand) {
-				for (int i = 0; i < expr.Members.Count; i++) {
-					var member = expr.Members[i];
+			for (int i = 0; i < expr.Members.Count; i++) {
+				var member = expr.Members[i];
+
+				if (state == State.ExcpectingOperand) {
+
 					if (member is FloatConstant) {
 						postfix.Add(((FloatConstant)member).Value);
 						state = State.ExcpectingOperator;
 					}
-					else if (member is Identificator) {
-						postfix.Add(((Identificator)member).Name);
-						state = State.ExcpectingOperator;
-					}
-					else if (member is Operator) { // operator while excpecting operand? It must be unary!
-						ArithmeticOperator op;
 
-						if (ArithmeticOperator.TryParse(((Operator)member).Syntax, 1, out op)) {
+					else if (member is Identificator) {
+						Identificator id = (Identificator)member;
+						KnownConstant cnst;
+
+						if (KnownConstant.TryParse(id.Name, out cnst)) {
+							// known constant
+							postfix.Add(cnst.Value);
+						}
+						else {
+							// variable
+							postfix.Add(id.Name);
+							state = State.ExcpectingOperator;
+
+						}
+					}
+
+					else if (member is Operator) {
+						// operator while excpecting operand? It must be unary!
+						KnownArithmeticOperator op;
+
+						if (KnownArithmeticOperator.TryParse(((Operator)member).Syntax, 1, out op)) {
 							pushOperator(op, postfix, opStack);
 						}
 						else {
 							msgs.AddMessage("Unknown unary operator `{1}`.".Fmt(((Operator)member).Syntax),
 								CompilerMessageType.Error, member.Position);
-							return null;
+							return false;
 						}
 
 						// still excpecting operand
 					}
+
 					else if (member is ExpressionFunction) {
 						var funCall = (ExpressionFunction)member;
 
-						addFunction(funCall, postfix, msgs);
+						tryCompileFunctionCall(funCall, postfix, msgs);
 						if (msgs.ErrorOcured) {
-							return null;
+							return false;
 						}
 
 						state = State.ExcpectingOperator;
 					}
-					else if (member is Expression) {
-						var pfx = compile((Expression)member, msgs);
-						if (msgs.ErrorOcured) {
-							return null;
-						}
 
-						postfix.AddRange(pfx);
+					else if (member is Expression) {
+						if (!tryCompile((Expression)member, msgs, postfix)) {
+							return false;
+						}
 					}
+
 					else {
 						Debug.Fail("Unhandled type in Ast.Expression.");
-						msgs.AddMessage("Compiler error.", CompilerMessageType.Error, expr.Position);
+						msgs.AddMessage("Compiler error.", CompilerMessageType.Error, member.Position);
+						return false;
+					}
+				}
+				else { // excpecting operator
+
+					if (member is FloatConstant) {
+						msgs.AddMessage("Unexcpected constatnt, excpecting operator.",
+							CompilerMessageType.Error, member.Position);
+						return false;
+					}
+
+					else if (member is Identificator) {
+						msgs.AddMessage("Unexcpected variable `{0}`, excpecting operator.".Fmt(((Identificator)member).Name),
+							CompilerMessageType.Error, member.Position);
+						return false;
+					}
+
+					else if (member is Operator) {
+						// operator must be binary
+						KnownArithmeticOperator op;
+
+						if (KnownArithmeticOperator.TryParse(((Operator)member).Syntax, 2, out op)) {
+							pushOperator(op, postfix, opStack);
+						}
+						else {
+							msgs.AddMessage("Unknown binary operator `{1}`.".Fmt(((Operator)member).Syntax),
+								CompilerMessageType.Error, member.Position);
+							return false;
+						}
+
+						state = State.ExcpectingOperand;
+					}
+
+					else if (member is ExpressionFunction) {
+						// Function while excpecting binary operator?
+						// So directly before function is operand.
+						// Lets add implicit multiplication between them.
+						var funCall = (ExpressionFunction)member;
+
+						tryCompileFunctionCall(funCall, postfix, msgs);
+						if (msgs.ErrorOcured) {
+							return false;
+						}
+
+						// implicit multiplication
+						postfix.Add(KnownArithmeticOperator.Multiply);
+
+						// still excpecting operator
+					}
+
+					else if (member is Expression) {
+						// Expression (probably in parenthesis) while excpecting binary operator?
+						// So directly before it is operand.
+						// Lets add implicit multiplication between them.
+
+						if (!tryCompile((Expression)member, msgs, postfix)) {
+							return false;
+						}
+
+						// implicit multiplication
+						postfix.Add(KnownArithmeticOperator.Multiply);
+
+						// still excpecting operator
+					}
+
+					else {
+						Debug.Fail("Unhandled type in Ast.Expression.");
+						msgs.AddMessage("Compiler error.", CompilerMessageType.Error, member.Position);
+						return false;
 					}
 				}
 			}
-			else { // excpecting operator
 
-			}
-
-			return postfix;
+			return true;
 		}
 
 
-		private static void pushOperator(ArithmeticOperator op, List<object> postfix, Stack<ArithmeticOperator> opStack) {
-			while (opStack.Count > 0) {
-				ArithmeticOperator opTop = opStack.Peek();
-				if (op.ActivePrecedence > opTop.Precedence) {
-					postfix.Add(opStack.Pop());
-				}
-				else {
-					break;
-				}
+		private static void pushOperator(KnownArithmeticOperator op, List<object> postfix, Stack<KnownArithmeticOperator> opStack) {
+
+			while (opStack.Count > 0 && op.ActivePrecedence > opStack.Peek().Precedence) {
+				postfix.Add(opStack.Pop());
 			}
 
 			opStack.Push(op);
 		}
 
-		private static void addFunction(ExpressionFunction funCall, List<object> postfix, MessagesCollection msgs) {
-
-			var cmpArgs = new List<object>[funCall.Arguments.Count];
-
-			for (int i = 0; i < funCall.Arguments.Count; i++) {
-				cmpArgs[i] = compile(funCall.Arguments[i], msgs);
-
-				if (cmpArgs[i].Count == 0 || msgs.ErrorOcured) {
-					msgs.AddMessage("Failed to compile {0}. argument of function `{1}`.".Fmt(i, funCall.NameId.Name),
-						CompilerMessageType.Error, funCall.Arguments[i].Position);
-					return;
-				}
-			}
+		/// <summary>
+		/// Tries to compile given function call into postfix expression and appnds it into given list.
+		/// Any messages (like errors) are writen into given messages collection.
+		/// </summary>
+		private static bool tryCompileFunctionCall(ExpressionFunction funCall, List<object> postfix, MessagesCollection msgs) {
 
 			KnownArithmeticFunction fun;
 
 			if (KnownArithmeticFunction.TryGet(funCall.NameId.Name, funCall.Arity, out fun)) {
 				Debug.Assert(fun.Arity == funCall.Arity, "Obtained function has bad arity.");
 
-				foreach (var arg in cmpArgs) {
-					postfix.AddRange(arg);
+				for (int i = 0; i < funCall.Arguments.Count; i++) {
+					if (!tryCompile(funCall.Arguments[i], msgs, postfix)) {
+						msgs.AddMessage("Failed to compile {0}. argument of function `{1}`.".Fmt(i, funCall.NameId.Name),
+							CompilerMessageType.Error, funCall.Arguments[i].Position);
+					}
+				}
+
+				if (msgs.ErrorOcured) {
+					return false;
 				}
 
 				postfix.Add(fun);
 			}
 			else {
-				var args = new PostfixExpression[cmpArgs.Length];
+				var args = new PostfixExpression[funCall.Arguments.Count];
 				for (int i = 0; i < args.Length; i++) {
-					args[i] = new PostfixExpression(cmpArgs[i]);
+					PostfixExpression expr;
+					if (TryCompile(funCall.Arguments[i], msgs, out expr)) {
+						args[i] = expr;
+					}
+					else {
+						msgs.AddMessage("Failed to compile {0}. argument of function `{1}`.".Fmt(i, funCall.NameId.Name),
+							CompilerMessageType.Error, funCall.Arguments[i].Position);
+						return false;
+					}
 				}
 
 				postfix.Add(new ArithmeticFunction(funCall.NameId.Name, funCall.Arity, args));
 			}
+
+			return true;
 		}
 
 

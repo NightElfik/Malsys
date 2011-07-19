@@ -25,7 +25,7 @@ let newline = ('\n' | '\r' '\n')
 
 let float = digit+ ('.' digit+)? (['e' 'E'] digit+)?
 let identifier = (char | '_') (char | digit | ['-' '_' '.'])*
-let operators = '^'|'+'|'-'|'!'|'*'|'/'|"\\"|'%'|"<="|">="|"=="|"&&"|"^^"|"||"
+let operators = '^'|'+'|'-'|'!'|'*'|'/'|"\\"|'%'|'<'|'>'|"<="|">="|"=="|"&&"|"^^"|"||"
 
 let slc = "//"
 let mlcBegin = "/*"
@@ -57,8 +57,6 @@ rule tokenize = parse
     | ':'  { COLON }
     | '='  { EQUALS }
     | "->"  { RARROW }
-    | '<'  { LT (lexeme lexbuf) }
-    | '>'  { GT (lexeme lexbuf) }
     | eof  { EOF }
     | _  { UNRECOGNIZED (lexeme lexbuf) }
     
