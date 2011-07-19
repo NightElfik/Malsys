@@ -13,9 +13,6 @@ namespace Malsys.Expressions {
 
 		#region Operator definitions
 
-		public static readonly KnownArithmeticOperator Sqrt = new KnownArithmeticOperator(CharHelper.Sqrt.ToString(), 1, 2, 3,
-			(a) => { return Math.Sqrt(a[0]); });
-
 		/// <summary>
 		/// Power operator (right associative -- it is not poped by itself).
 		/// </summary>

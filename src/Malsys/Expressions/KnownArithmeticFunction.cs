@@ -43,7 +43,7 @@ namespace Malsys.Expressions {
 
 		#endregion
 
-		#region Sqrt, log, log10
+		#region Sqrt, log, log10, sum, product, average
 
 		public static readonly KnownArithmeticFunction Sqrt = new KnownArithmeticFunction("sqrt", 1,
 			(a) => { return Math.Sqrt(a[0]); });
@@ -56,6 +56,15 @@ namespace Malsys.Expressions {
 
 		public static readonly KnownArithmeticFunction Log10 = new KnownArithmeticFunction("log10", 1,
 			(a) => { return Math.Log10(a[0]); });
+
+		public static readonly KnownArithmeticFunction Sum = new KnownArithmeticFunction("sum", AnyArity,
+			(a) => { return a.Sum(); });
+
+		public static readonly KnownArithmeticFunction Product = new KnownArithmeticFunction("prod", AnyArity,
+			(a) => { return a.Aggregate((acc, val) => acc * val); });
+
+		public static readonly KnownArithmeticFunction Average = new KnownArithmeticFunction("avg", AnyArity,
+			(a) => { return a.Average(); });
 
 		#endregion
 

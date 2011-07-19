@@ -2,6 +2,7 @@
 module Malsys.Parsing.Lexer
 
 open System
+open System.Globalization
 open Microsoft.FSharp.Text.Lexing
 
 open Malsys
@@ -10,22 +11,48 @@ open Malsys.Parsing.Parser
 
 let lexeme lexbuf = LexBuffer<char>.LexemeString lexbuf
 
+let invariantCulture = CultureInfo.InvariantCulture
+let floatStyle = NumberStyles.AllowDecimalPoint ||| NumberStyles.AllowExponent
+
 let keywords =
-    [  
+    [
         ("let", LET);
         ("lsystem", LSYSTEM);
     ] |> Map.ofList
+
 }
 
 
-let digit = ['0'-'9']
-let char = ['a'-'z' 'A'-'Z'] 
+let letter = '\Lu' | '\Ll' | '\Lt' | '\Lm' | '\Lo' | '\Nl'
+let digit = '\Nd'
+
+let firstOpChar = '!'|'$'|'%'|'&'|'*'|'+'|'-'|'.'|'/'|'\\'|'<'|'>'|'@'|'^'|'|'|'~'
+let opChar = firstOpChar | '='|'?'|':'
+let operator = firstOpChar opChar*
+
 let whitespace = [' ' '\t']
 let newline = ('\n' | '\r' '\n')
 
-let float = digit+ ('.' digit+)? (['e' 'E'] digit+)?
-let identifier = (char | '_') (char | digit | ['-' '_' '.'])*
-let operators = '^'|'+'|'-'|'!'|'*'|'/'|"\\"|'%'|'<'|'>'|"<="|">="|"=="|"&&"|"^^"|"||"
+let floatp = digit+ '.' digit*
+let floate = digit+ ('.' digit*)? ['e' 'E'] ['+' '-']? digit+
+let float = floatp | floate
+
+let hex = ['0'-'9'] | ['A'-'F'] | ['a'-'f']
+let int =
+    ( digit+
+    | '0' ('b'| 'B') (['0'-'1'])+
+    | '0' ('o'| 'O') (['0'-'7'])+
+    | '0' ('x'| 'X') hex+ )
+let hexInt = '#' hex+
+
+let connectingChar = '\Pc'
+let combiningChar = '\Mn' | '\Mc'
+let formattingChar = '\Cf'
+
+let idFirstChar = letter | '_'
+let idChar = letter | connectingChar | combiningChar | formattingChar | digit | ['\'']
+
+let id = idFirstChar idChar*
 
 let slc = "//"
 let mlcBegin = "/*"
@@ -33,41 +60,82 @@ let mlcEnd = "*/"
 
 
 rule tokenize = parse
-    | whitespace  { tokenize lexbuf }
-    | newline  { lexbuf.EndPos <- lexbuf.EndPos.NextLine; tokenize lexbuf }
-    | identifier  {
-        match keywords.TryFind(lexeme lexbuf) with   
-        | Some(token) -> token   
+    | whitespace
+      { tokenize lexbuf }
+    | newline
+      { lexbuf.EndPos <- lexbuf.EndPos.NextLine  // set new line into leser state
+        tokenize lexbuf }
+    | id
+      { match keywords.TryFind(lexeme lexbuf) with
+        | Some(token) -> token  // keyword
         | None -> ID(lexeme lexbuf) }
-    | float  { FLOAT (Double.Parse(lexeme lexbuf, System.Globalization.CultureInfo.InvariantCulture.NumberFormat)) }
-    | mlcBegin  { multiLineComment lexbuf.StartPos lexbuf; tokenize lexbuf }
-    | slc  {
-        match singleLineComment lexbuf with
-        | Some () -> tokenize lexbuf
-        | None -> EOF
-    }
-    | operators  { OPERATOR (lexeme lexbuf) }
-    | ';'  { SEMI }
-    | ','  { COMMA }
-    | '('  { LPAREN }
-    | ')'  { RPAREN }
-    | '{'  { LBRACE }
-    | '}'  { RBRACE }
-    | '?'  { QMARK }
-    | ':'  { COLON }
-    | '='  { EQUALS }
-    | "->"  { RARROW }
-    | eof  { EOF }
-    | _  { UNRECOGNIZED (lexeme lexbuf) }
-    
+    | int
+      { let s = lexeme lexbuf
+        let n = try int64 s with _ -> raise <| LexerException(sprintf "Failed to parse `%s` as integer." s, lexbuf.StartPos, lexbuf.EndPos)
+        FLOAT <| double n }
+    | hexInt
+      { let s = "0x" + (lexeme lexbuf).Substring(1)
+        let n = try int64 s with _ -> raise <| LexerException(sprintf "Failed to parse `%s` as hexagonal integer." s, lexbuf.StartPos, lexbuf.EndPos)
+        FLOAT <| double n }
+    | float
+      { let mutable d = 0.0
+        if Double.TryParse(lexeme lexbuf, floatStyle, invariantCulture, &d) then
+            FLOAT d
+        else
+            raise <| LexerException(sprintf "Failed to parse `%s` as folat." (lexeme lexbuf), lexbuf.StartPos, lexbuf.EndPos)}
+    | mlcBegin
+      { multiLineComment lexbuf.StartPos lexbuf
+        tokenize lexbuf }
+    | slc
+      { match singleLineComment lexbuf with
+        | Some () -> tokenize lexbuf  // did not reached end of file
+        | None -> EOF }
+    | ';'
+      { SEMI }
+    | ','
+      { COMMA }
+    | '('
+      { LPAREN }
+    | ')'
+      { RPAREN }
+    | '{'
+      { LBRACE }
+    | '}'
+      { RBRACE }
+    | '?'
+      { QMARK }
+    | ':'
+      { COLON }
+    | '='
+      { EQUALS }
+    | "->"
+      { RARROW }
+    | operator
+      { OPERATOR (lexeme lexbuf) }
+    | eof
+      { EOF }
+    | _
+      { raise <| LexerException(sprintf "Unrecognized input `%s`." (lexeme lexbuf), lexbuf.StartPos, lexbuf.EndPos) }
+
 and multiLineComment pos = parse
-    | mlcBegin  { multiLineComment lexbuf.StartPos lexbuf; multiLineComment pos lexbuf } // nesting of comments
-    | mlcEnd  { () }
-    | newline  { lexbuf.EndPos <- lexbuf.EndPos.NextLine; multiLineComment pos lexbuf }
-    | eof  { raise <| LexerException("Unterminated comment.", pos, lexbuf.EndPos) }
-    | _  { multiLineComment pos lexbuf }
+    | mlcBegin
+      { multiLineComment lexbuf.StartPos lexbuf  // nested comment
+        multiLineComment pos lexbuf }
+    | mlcEnd
+      { () }
+    | newline
+      { lexbuf.EndPos <- lexbuf.EndPos.NextLine
+        multiLineComment pos lexbuf }
+    | eof
+      { raise <| LexerException("Unterminated comment.", pos, lexbuf.EndPos) }
+    | _
+      { multiLineComment pos lexbuf }
 
 and singleLineComment = parse
-    | newline  { lexbuf.EndPos <- lexbuf.EndPos.NextLine; Some () }
-    | eof  { None }
-    | _  { singleLineComment lexbuf }
+    | newline
+      { lexbuf.EndPos <- lexbuf.EndPos.NextLine
+        Some () }
+    | eof
+      { None }
+    | _
+      { singleLineComment lexbuf }
