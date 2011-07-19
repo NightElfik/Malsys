@@ -1,30 +1,16 @@
 ﻿using System;
 
 namespace Malsys.Expressions {
-	public delegate double EvaluateDelegate(double[] parameters);
-
-	/// <summary>
-	/// Immutable arithmetic function.
-	/// </summary>
 	public class ArithmeticFunction {
-		public readonly string Syntax;
-		public readonly byte Arity;
+		public string Syntax { get; set; }
+		public byte Arity { get; set; }
 
-		private readonly EvaluateDelegate evalFunction;
+		public PostfixExpression[] Arguments { get; set; }
 
-		public ArithmeticFunction(string syntax, byte arity, EvaluateDelegate evalFunc) {
+		public ArithmeticFunction(string syntax, byte arity, PostfixExpression[] arguments) {
 			Syntax = syntax;
 			Arity = arity;
-			evalFunction = evalFunc;
-		}
-
-		public double Evaluate(params double[] values) {
-#if DEBUG
-			if (values.Length < Arity) {
-				throw new ArgumentException("Failed to evaluate function `{0}'{1}` with only {2} argument(s).".Fmt(Syntax, Arity, values.Length));
-			}
-#endif
-			return evalFunction.Invoke(values);
+			Arguments = arguments;
 		}
 
 		public override string ToString() {

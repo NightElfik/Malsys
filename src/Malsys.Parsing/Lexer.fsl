@@ -1,11 +1,11 @@
 ﻿{
-module Malsys.Parser.Lexer
+module Malsys.Parsing.Lexer
 
 open System
 open Microsoft.FSharp.Text.Lexing
 
 open Malsys
-open Malsys.Parser.Parser
+open Malsys.Parsing.Parser
 
 
 let lexeme lexbuf = LexBuffer<char>.LexemeString lexbuf
@@ -66,7 +66,7 @@ and multiLineComment pos = parse
     | mlcBegin  { multiLineComment lexbuf.StartPos lexbuf; multiLineComment pos lexbuf } // nesting of comments
     | mlcEnd  { () }
     | newline  { lexbuf.EndPos <- lexbuf.EndPos.NextLine; multiLineComment pos lexbuf }
-    | eof  { raise <| LexerException("Unterminated comment", pos) }
+    | eof  { raise <| LexerException("Unterminated comment.", pos, lexbuf.EndPos) }
     | _  { multiLineComment pos lexbuf }
 
 and singleLineComment = parse

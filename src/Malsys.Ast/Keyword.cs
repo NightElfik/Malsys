@@ -1,13 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿
 namespace Malsys.Ast {
-	public class Keyword : Token, IAstVisitable {
-		public Keyword(int beginLine, int beginColumn, int endLine, int endColumn)
-			: base(beginLine, beginColumn, endLine, endColumn) {
+	public class Keyword : IToken, IAstVisitable {
+		public Keyword(Position pos) {
+			Position = pos;
 		}
+
+		#region IToken Members
+
+		public Position Position { get; private set; }
+
+		#endregion
 
 		#region IAstVisitable Members
 

@@ -1,15 +1,16 @@
-﻿using System.Linq;
+﻿using System;
 using System.Collections.Generic;
-using System;
+using System.Linq;
+using Malsys.Expressions;
 
-namespace Malsys.Expressions {
+namespace Malsys {
 	/// <summary>
 	/// Postfix expression is arithmetic expression in Reverse Polish notation (RPN).
 	/// </summary>
 	/// <remarks>
 	/// It can contain members of type <c>double</c> (constant value), <c>string</c> (variable) and <see cref="ArithmeticFunction"/> (function).
 	/// </remarks>
-	public class PostfixExpression {
+	public class PostfixExpression : IVariableValue {
 		#region Static members
 
 		public static readonly PostfixExpression Empty = new PostfixExpression() { members = new object[0] };
@@ -59,17 +60,17 @@ namespace Malsys.Expressions {
 				else if (mbr is string) {
 					throw new FormatException("Unknown variable `{0}`.".Fmt(mbr));
 				}
-				else if (mbr is ArithmeticFunction) {
-					ArithmeticFunction fun = (ArithmeticFunction)mbr;
+				else if (mbr is IEvaluable) {
+					IEvaluable evaluable = (IEvaluable)mbr;
 
 					// TODO: improve arguments sending, maybe pool for double arrays or use some global array?
 					// but keep thread safety
-					double[] prms = new double[fun.Arity];
-					for (int j = fun.Arity - 1; j >= 0; j--) {
+					double[] prms = new double[evaluable.Arity];
+					for (int j = evaluable.Arity - 1; j >= 0; j--) {
 						prms[j] = stack.Pop();
 					}
 
-					stack.Push(fun.Evaluate(prms));
+					stack.Push(evaluable.Evaluate(prms));
 				}
 #if DEBUG
 				else {
@@ -84,5 +85,9 @@ namespace Malsys.Expressions {
 
 			return stack.Pop();
 		}
+
+		//internal object[] GetMembers() {
+		//    return members;
+		//}
 	}
 }

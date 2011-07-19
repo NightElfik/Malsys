@@ -3,6 +3,9 @@ using System.Runtime.Serialization;
 using Microsoft.FSharp.Text.Parsing;
 
 namespace Malsys {
+	/// <summary>
+	/// Parser exception for F# parser. It is really hell to write this class in F#.
+	/// </summary>
 	[Serializable]
 	public class ParserException<Tok> : Exception {
 		public string ParserMessage { get; private set; }
@@ -26,7 +29,7 @@ namespace Malsys {
 		public override string Message {
 			get {
 				var pos = ErrorContext.ParseState.ResultRange.Item1;
-				return "Parse error `{0}` in `{1}` at line {2} col {3}.".Fmt(ErrorContext.Message.TrimEnd('.'), pos.FileName, pos.Line, pos.Column);
+				return "Parser error `{0}` in `{1}` at line {2} col {3}.".Fmt(ErrorContext.Message.TrimEnd('.'), pos.FileName, pos.Line, pos.Column);
 			}
 		}
 

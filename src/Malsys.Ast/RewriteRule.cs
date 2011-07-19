@@ -2,7 +2,7 @@
 using System.Collections.ObjectModel;
 
 namespace Malsys.Ast {
-	public class RewriteRule : Token, ILsystemStatement {
+	public class RewriteRule : IToken, ILsystemStatement {
 		public readonly RrContext LeftContext;
 		public readonly SymbolPattern Pattern;
 		public readonly RrContext RightContext;
@@ -11,8 +11,7 @@ namespace Malsys.Ast {
 		public readonly ReadOnlyCollection<SymbolWithParams> Replacement;
 
 		public RewriteRule(RrContext lctxt, SymbolPattern pattern, RrContext rctxt, RrCondition cond, RrProbability probab,
-				IList<SymbolWithParams> replac, int beginLine, int beginColumn, int endLine, int endColumn)
-			: base(beginLine, beginColumn, endLine, endColumn) {
+				IList<SymbolWithParams> replac, Position pos) {
 
 			LeftContext = lctxt;
 			Pattern = pattern;
@@ -20,7 +19,14 @@ namespace Malsys.Ast {
 			Condition = cond;
 			Probability = probab;
 			Replacement = new ReadOnlyCollection<SymbolWithParams>(replac);
+			Position = pos;
 		}
+
+		#region IToken Members
+
+		public Position Position { get; private set; }
+
+		#endregion
 
 		#region IAstVisitable Members
 
@@ -31,14 +37,19 @@ namespace Malsys.Ast {
 		#endregion
 	}
 
-	public class RrContext : Token, IAstVisitable {
+	public class RrContext : IToken, IAstVisitable {
 		public readonly ReadOnlyCollection<SymbolPattern> Patterns;
 
-		public RrContext(IList<SymbolPattern> patterns, int beginLine, int beginColumn, int endLine, int endColumn)
-			: base(beginLine, beginColumn, endLine, endColumn) {
-
+		public RrContext(IList<SymbolPattern> patterns, Position pos) {
 			Patterns = new ReadOnlyCollection<SymbolPattern>(patterns);
+			Position = pos;
 		}
+
+		#region IToken Members
+
+		public Position Position { get; private set; }
+
+		#endregion
 
 		#region IAstVisitable Members
 
@@ -49,16 +60,21 @@ namespace Malsys.Ast {
 		#endregion
 	}
 
-	public class RrCondition : Token, IAstVisitable {
+	public class RrCondition : IToken, IAstVisitable {
 		public readonly ReadOnlyCollection<VariableDefinition> VariableDefinitions;
 		public readonly Expression Expression;
 
-		public RrCondition(IList<VariableDefinition> varDefs, Expression expr, int beginLine, int beginColumn, int endLine, int endColumn)
-			: base(beginLine, beginColumn, endLine, endColumn) {
-
+		public RrCondition(IList<VariableDefinition> varDefs, Expression expr, Position pos) {
 			VariableDefinitions = new ReadOnlyCollection<VariableDefinition>(varDefs);
 			Expression = expr;
+			Position = pos;
 		}
+
+		#region IToken Members
+
+		public Position Position { get; private set; }
+
+		#endregion
 
 		#region IAstVisitable Members
 
@@ -69,16 +85,21 @@ namespace Malsys.Ast {
 		#endregion
 	}
 
-	public class RrProbability : Token, IAstVisitable {
+	public class RrProbability : IToken, IAstVisitable {
 		public readonly ReadOnlyCollection<VariableDefinition> VariableDefinitions;
 		public readonly Expression Expression;
 
-		public RrProbability(IList<VariableDefinition> varDefs, Expression expr, int beginLine, int beginColumn, int endLine, int endColumn)
-			: base(beginLine, beginColumn, endLine, endColumn) {
-
+		public RrProbability(IList<VariableDefinition> varDefs, Expression expr, Position pos) {
 			VariableDefinitions = new ReadOnlyCollection<VariableDefinition>(varDefs);
 			Expression = expr;
+			Position = pos;
 		}
+
+		#region IToken Members
+
+		public Position Position { get; private set; }
+
+		#endregion
 
 		#region IAstVisitable Members
 

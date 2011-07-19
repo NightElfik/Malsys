@@ -15,8 +15,8 @@
 /src/Malsys.Gui/bin
 /src/Malsys.Gui/obj
 
-/src/Malsys.Parser/bin
-/src/Malsys.Parser/obj
+/src/Malsys.Parsing/bin
+/src/Malsys.Parsing/obj
 
 /src/Malsys.Tests/bin
 /src/Malsys.Tests/obj

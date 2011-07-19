@@ -9,23 +9,26 @@ namespace Malsys {
 	[Serializable]
 	public class LexerException : Exception {
 		public string LexerMessage { get; private set; }
-		public Position Position { get; private set; }
+		public Position BeginPosition { get; private set; }
+		public Position EndPosition { get; private set; }
 
 		public LexerException() { }
-		public LexerException(string message, Position position) {
+		public LexerException(string message, Position beginPosition, Position endPosition) {
 			LexerMessage = message;
-			Position = position;
+			BeginPosition = beginPosition;
+			EndPosition = endPosition;
 		}
-		public LexerException(string message, Position position, Exception inner)
+		public LexerException(string message, Position beginPosition, Position endPosition, Exception inner)
 			: base(message, inner) {
 
 			LexerMessage = message;
-			Position = position;
+			BeginPosition = beginPosition;
+			EndPosition = endPosition;
 		}
 
 		public override string Message {
 			get {
-				return "{0} in `{1}` at line {2} col {3}.".Fmt(LexerMessage.TrimEnd('.'), Position.FileName, Position.Line, Position.Column);
+				return "{0} in `{1}` at line {2} col {3}.".Fmt(LexerMessage.TrimEnd('.'), BeginPosition.FileName, BeginPosition.Line, BeginPosition.Column);
 			}
 		}
 

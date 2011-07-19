@@ -1,9 +1,9 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Malsys.Gui", "Malsys.Gui\Malsys.Gui.csproj", "{D04C5DFA-7E90-46A8-90E0-295F25AA81BE}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Malsys.Parser", "Malsys.Parser\Malsys.Parser.fsproj", "{8CAA0257-FE49-4CD8-97C1-86185F44E08C}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Malsys.Parsing", "Malsys.Parsing\Malsys.Parsing.fsproj", "{8CAA0257-FE49-4CD8-97C1-86185F44E08C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Malsys.Ast", "Malsys.Ast\Malsys.Ast.csproj", "{4DE67417-39CA-4AEC-AC75-9584112268F0}"
 EndProject

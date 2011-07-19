@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿
 namespace Malsys.Ast {
-	public class FloatConstant : IToken, IAstVisitable, IExpressionMember {
-		public readonly double Value;
+	public class Operator : IToken, IAstVisitable, IExpressionMember {
+		public readonly string Syntax;
 
-		public FloatConstant(double value, Position pos) {
-			Value = value;
+		public Operator(string syntax, Position pos) {
+			Syntax = syntax;
 			Position = pos;
 		}
 

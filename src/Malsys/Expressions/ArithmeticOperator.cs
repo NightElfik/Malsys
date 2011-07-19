@@ -1,22 +1,25 @@
 ﻿using System;
-using System.Reflection;
 using System.Collections.Generic;
+using System.Reflection;
+using Key = System.Tuple<string, byte>;
 
 namespace Malsys.Expressions {
 	/// <summary>
-	/// Immutable arithmetic operator.
+	/// Immutable.
 	/// </summary>
-	public class ArithmeticOperator : ArithmeticFunction {
+	public class ArithmeticOperator : IEvaluable {
 		#region Static members
 
 		#region Operator definitions
 
-		public static readonly ArithmeticOperator Sqrt = new ArithmeticOperator(CharHelper.Sqrt.ToString(), 1, 2, 3, (a) => { return Math.Sqrt(a[0]); });
+		public static readonly ArithmeticOperator Sqrt = new ArithmeticOperator(CharHelper.Sqrt.ToString(), 1, 2, 3,
+			(a) => { return Math.Sqrt(a[0]); });
 
 		/// <summary>
 		/// Power operator (right associative -- it is not poped by itself).
 		/// </summary>
-		public static readonly ArithmeticOperator Power = new ArithmeticOperator("^", 2, 3, 3, (a) => { return Math.Pow(a[0], a[1]); });
+		public static readonly ArithmeticOperator Power = new ArithmeticOperator("^", 2, 3, 3,
+			(a) => { return Math.Pow(a[0], a[1]); });
 
 		/// <summary>
 		/// Unary plus -- the most important operator ;)
@@ -65,13 +68,14 @@ namespace Malsys.Expressions {
 		
 		#endregion
 
-		static Dictionary<string, ArithmeticOperator>[] opCache; 
 
+		static Dictionary<Key, ArithmeticOperator> opCache; 
+
+		/// <summary>
+		/// Builds operators cache.
+		/// </summary>
 		static ArithmeticOperator() {
-			opCache = new Dictionary<string, ArithmeticOperator>[2];
-			for (int i = 0; i < opCache.Length; i++) {
-				opCache[i] = new Dictionary<string, ArithmeticOperator>();
-			}
+			opCache = new Dictionary<Key, ArithmeticOperator>();
 
 			foreach (FieldInfo fi in typeof(ArithmeticOperator).GetFields(BindingFlags.Public | BindingFlags.Static)) {
 				if (!fi.FieldType.Equals(typeof(ArithmeticOperator))) {
@@ -79,29 +83,22 @@ namespace Malsys.Expressions {
 				}
 
 				ArithmeticOperator op = (ArithmeticOperator)fi.GetValue(null);
-#if DEBUG
-				if (op.Arity == 0 || op.Arity > opCache.Length) {
-					throw new InvalidOperationException("Failed to initialize operator cahce. Invalid operator `{0}`.".Fmt(op.ToString()));
-				}
-#endif
-				opCache[op.Arity - 1].Add(op.Syntax, op);
+
+				opCache.Add(new Key(op.Syntax, op.Arity), op);
 			}
 		}
 
 		/// <summary>
-		/// Tries to parse given string and arity as operator.
+		/// Tries to parse given string as operator with given arity.
 		/// </summary>
-		public static bool TryParse(string str, byte arity, out ArithmeticOperator result) {
-			if (arity == 0 || arity > opCache.Length) {
-				result = null;
-				return false;
-			}
-
-			return opCache[arity].TryGetValue(str, out result);
+		public static bool TryParse(string syntax, byte arity, out ArithmeticOperator result) {
+			return opCache.TryGetValue(new Key(syntax, arity), out result);
 		}
 
 		#endregion
 
+		public readonly string Syntax;
+		public readonly byte Arity;
 		/// <summary>
 		/// Normal precedence.
 		/// </summary>
@@ -116,11 +113,30 @@ namespace Malsys.Expressions {
 		/// </summary>
 		public readonly byte ActivePrecedence;
 
-		public ArithmeticOperator(string syntax, byte arity, byte prec, byte activePrec, EvaluateDelegate evalFunc)
-			: base(syntax, arity, evalFunc) {
+		private EvaluateDelegate evalFunction;
 
+
+		private ArithmeticOperator(string syntax, byte arity, byte prec, byte activePrec, EvaluateDelegate evalFunc){
+			Syntax = syntax;
+			Arity = arity;
+			evalFunction = evalFunc;
 			Precedence = prec;
 			ActivePrecedence = activePrec;
 		}
+
+		#region IEvaluable Members
+
+		byte IEvaluable.Arity { get { return Arity; } }
+
+		public double Evaluate(params double[] args) {
+#if DEBUG
+			if (args.Length != Arity) {
+				throw new ArgumentException("Failed to evaluate operator `{0}'{1}` with {2} argument(s).".Fmt(Syntax, Arity, args.Length));
+			}
+#endif
+			return evalFunction.Invoke(args);
+		}
+
+		#endregion
 	}
 }

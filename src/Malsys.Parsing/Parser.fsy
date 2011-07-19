@@ -1,0 +1,206 @@
+﻿%{
+
+open System
+open Microsoft.FSharp.Text.Parsing
+
+open Malsys
+open Malsys.Ast
+
+let parse_error_rich = Some (fun (ctxt: ParseErrorContext<_>) -> 
+    raise <| ParserException(ctxt))
+
+let toAstPos range =
+    new Position(range)
+
+%}
+
+%token <string> ID UNRECOGNIZED
+%token LET LSYSTEM
+%token EQUALS SEMI COMMA LPAREN RPAREN LBRACE RBRACE QMARK COLON RARROW
+%token <float> FLOAT
+%token <string> OPERATOR LT GT
+%token EOF
+
+
+%start start
+%type <InputFile> start
+
+%%
+
+start:
+    | StatementsList
+      { new InputFile($1) }
+
+StatementsList:
+    |
+      { new ResizeArray<IInputFileStatement>() }
+    | StatementsList Statement
+      { $1.Add($2); $1 }
+
+Statement:
+    | VarDef
+      { $1 :> IInputFileStatement }
+    | Lsystem
+      { $1 :> IInputFileStatement }
+
+VarDefsList:
+    |
+      { new ResizeArray<VariableDefinition>() }
+    | VarDefsList VarDef
+      { $1.Add($2); $1 }
+
+VarDef:
+    | LetKw Id EQUALS Expression SEMI
+      { new VariableDefinition($1, $2, $4, toAstPos parseState.ResultRange) }
+
+
+Lsystem:
+    | LsysKw Id LBRACE LsysStatementsList RBRACE
+      { new Lsystem($1, $2, $4, toAstPos parseState.ResultRange) }
+
+LsysStatementsList:
+    |
+      { new ResizeArray<ILsystemStatement>() }
+    | LsysStatementsList LsysStatement
+      { $1.Add($2); $1 }
+
+LsysStatement:
+    | VarDef
+      { $1 :> ILsystemStatement }
+    | RewriteRule
+      { $1 :> ILsystemStatement }
+
+
+RewriteRule:
+    | MaybeLCtxt SymbolPattern MaybeRCtxt MaybeCondition MaybeProbab RARROW SymbolsWithParamsList SEMI
+      { new RewriteRule($1, $2, $3, $4, $5, $7, toAstPos parseState.ResultRange) }
+
+MaybeLCtxt:
+    |
+      { null }
+    | SymbolsPatternsList LT
+      { new RrContext($1, toAstPos parseState.ResultRange) }
+
+MaybeRCtxt:
+    |
+      { null }
+    | GT SymbolsPatternsList
+      { new RrContext($2, toAstPos parseState.ResultRange) }
+
+MaybeCondition:
+    |
+      { null }
+    | QMARK LBRACE VarDefsList Expression RBRACE
+      { new RrCondition($3, $4, toAstPos parseState.ResultRange) }
+
+MaybeProbab:
+    |
+      { null }
+    | COLON LBRACE VarDefsList Expression RBRACE
+      { new RrProbability($3, $4, toAstPos parseState.ResultRange) }
+
+
+SymbolsPatternsList:
+    |
+      { new ResizeArray<SymbolPattern>() }
+    | SymbolsPatternsList SymbolPattern
+      { $1.Add($2); $1 }
+
+SymbolPattern:
+    | Symbol
+      { new SymbolPattern($1, toAstPos parseState.ResultRange) }
+    | Symbol LPAREN IdsCommaList RPAREN
+      { new SymbolPattern($1, $3, toAstPos parseState.ResultRange) }
+    
+SymbolsWithParamsList:
+    |
+      { new ResizeArray<SymbolWithParams>() }
+    | SymbolsWithParamsList SymbolWithParams
+      { $1.Add($2); $1 }
+
+SymbolWithParams:
+    | Symbol
+      { new SymbolWithParams($1, toAstPos parseState.ResultRange) }
+    | Symbol LPAREN ExpressionCommaList RPAREN
+      { new SymbolWithParams($1, $3, toAstPos parseState.ResultRange) }
+
+Symbol:
+    | ID
+      { new Symbol($1, toAstPos parseState.ResultRange) }
+    | UNRECOGNIZED
+      { new Symbol($1, toAstPos parseState.ResultRange) }
+    | OPERATOR
+      { new Symbol($1, toAstPos parseState.ResultRange) }
+
+
+ExpressionCommaList:
+    |
+      { new ResizeArray<Expression>() }
+    | ExpressionCommaListNonEmpty
+      { $1 }
+
+ExpressionCommaListNonEmpty:
+    | Expression
+      { let mutable x = new ResizeArray<Expression>() in x.Add($1); x }
+    | ExpressionCommaListNonEmpty COMMA Expression
+      { $1.Add($3); $1 }
+
+        
+Expression:
+    | ExprBuilder
+      { new Expression($1, toAstPos parseState.ResultRange) }
+
+ExprBuilder:
+    |
+      { new ResizeArray<IExpressionMember>() }
+    | ExprBuilder Float
+      { $1.Add($2); $1 }
+    | ExprBuilder Operator
+      { $1.Add($2); $1 }
+    | ExprBuilder Id
+      { $1.Add($2); $1 }
+    | ExprBuilder ExprFunc
+      { $1.Add($2); $1 }
+    | ExprBuilder LPAREN Expression RPAREN
+      { $1.Add($3); $1 }
+      
+ExprFunc:
+    | Id LPAREN ExpressionCommaList RPAREN
+      { new ExpressionFunction($1, $3, toAstPos parseState.ResultRange) }
+
+
+IdsCommaList:
+    |
+      { new ResizeArray<Identificator>() }
+    | IdsCommaListNonEmpty
+      { $1 }
+
+IdsCommaListNonEmpty:
+    | Id
+      { let mutable x = new ResizeArray<Identificator>() in x.Add($1); x }
+    | IdsCommaListNonEmpty COMMA Id
+      { $1.Add($3); $1 }
+
+Id:
+    | ID
+      { new Identificator($1, toAstPos parseState.ResultRange) }
+
+LsysKw:
+    | LSYSTEM
+      { new Keyword(toAstPos parseState.ResultRange) }
+
+LetKw:
+    | LET
+      { new Keyword(toAstPos parseState.ResultRange) }
+Operator:
+    | OPERATOR
+      { new Operator($1, toAstPos parseState.ResultRange) }
+    | LT
+      { new Operator($1, toAstPos parseState.ResultRange) }
+    | GT
+      { new Operator($1, toAstPos parseState.ResultRange) }
+
+Float:
+    | FLOAT
+      { new FloatConstant($1, toAstPos parseState.ResultRange) }
+    

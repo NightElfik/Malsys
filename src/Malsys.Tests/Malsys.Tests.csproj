@@ -33,6 +33,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FSharp.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="FSharp.PowerPack, Version=2.0.0.0, Culture=neutral, PublicKeyToken=a19089b1c74d0809, processorArchitecture=MSIL">
+      <HintPath>C:\Program Files (x86)\FSharpPowerPack-2.0.0.0\bin\FSharp.PowerPack.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System" />
@@ -50,7 +54,7 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Parser\DebugTests.cs" />
+    <Compile Include="Parsing\DebugTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -62,9 +66,9 @@
       <Project>{D04C5DFA-7E90-46A8-90E0-295F25AA81BE}</Project>
       <Name>Malsys.Gui</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Malsys.Parser\Malsys.Parser.fsproj">
+    <ProjectReference Include="..\Malsys.Parsing\Malsys.Parsing.fsproj">
       <Project>{8CAA0257-FE49-4CD8-97C1-86185F44E08C}</Project>
-      <Name>Malsys.Parser</Name>
+      <Name>Malsys.Parsing</Name>
     </ProjectReference>
     <ProjectReference Include="..\Malsys\Malsys.csproj">
       <Project>{E80C526F-83F8-4899-B5DE-1F584E2C3D77}</Project>

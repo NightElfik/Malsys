@@ -1,13 +1,18 @@
 ﻿
 namespace Malsys.Ast {
-	public class Identificator : Token, IAstVisitable {
+	public class Identificator : IToken, IAstVisitable, IExpressionMember {
 		public readonly string Name;
 
-		public Identificator(string name, int beginLine, int beginColumn, int endLine, int endColumn)
-			: base(beginLine, beginColumn, endLine, endColumn) {
-
+		public Identificator(string name, Position pos) {
 			Name = name;
+			Position = pos;
 		}
+
+		#region IToken Members
+
+		public Position Position { get; private set; }
+
+		#endregion
 
 		#region IAstVisitable Members
 

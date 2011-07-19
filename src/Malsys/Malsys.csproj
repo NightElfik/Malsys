@@ -32,6 +32,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FSharp.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="FSharp.PowerPack, Version=2.0.0.0, Culture=neutral, PublicKeyToken=a19089b1c74d0809, processorArchitecture=MSIL">
+      <HintPath>C:\Program Files (x86)\FSharpPowerPack-2.0.0.0\bin\FSharp.PowerPack.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -41,10 +45,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Compilers\CompilerMessage.cs" />
+    <Compile Include="Compilers\ExpressionCompiler.cs" />
+    <Compile Include="Compilers\LsystemCompiler.cs" />
+    <Compile Include="Compilers\MessagesCollection.cs" />
+    <Compile Include="DataTypes\OptionalParameter.cs" />
+    <Compile Include="DataTypes\Symbol.cs" />
+    <Compile Include="DataTypes\VariableDefinition.cs" />
+    <Compile Include="DataTypes\IVariableValue.cs" />
     <Compile Include="DataTypes\LsystemDefinition.cs" />
+    <Compile Include="DataTypes\RewriteRule.cs" />
+    <Compile Include="DataTypes\SymbolPattern.cs" />
+    <Compile Include="DataTypes\VariableValuesArray.cs" />
     <Compile Include="Expressions\ArithmeticFunction.cs" />
     <Compile Include="Expressions\ArithmeticOperator.cs" />
     <Compile Include="Expressions\FloatArithmeticHelper.cs" />
+    <Compile Include="Expressions\IEvaluable.cs" />
+    <Compile Include="Expressions\KnownArithmeticFunction.cs" />
     <Compile Include="Expressions\PostfixExpression.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -57,13 +74,12 @@
       <Project>{433E2485-4265-4656-A197-D0EB315618E1}</Project>
       <Name>Malsys.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Malsys.Parser\Malsys.Parser.fsproj">
+    <ProjectReference Include="..\Malsys.Parsing\Malsys.Parsing.fsproj">
       <Project>{8CAA0257-FE49-4CD8-97C1-86185F44E08C}</Project>
-      <Name>Malsys.Parser</Name>
+      <Name>Malsys.Parsing</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Compiler\" />
     <Folder Include="Extensions\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
