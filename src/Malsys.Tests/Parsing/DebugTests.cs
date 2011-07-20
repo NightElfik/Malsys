@@ -14,8 +14,12 @@ namespace Malsys.Tests.Parsing {
 		public void ParserDebugTest() {
 			string testInput = @"
 lsystem LsysName {
-	{ lctx(t) } A(_,n,a,m,e) { r(c)t(x,t) } ?{let a = 10; a*a^b-c} :{let b = x; n} -> r(a*b,c*d+4)e(f)PLAc;
-	//let a = 1+2^-f(a,b,c);
+	/*{ lctx(t) } A(_,n,a,m,e) { r(c)t(x,t) } ?{let a = 10;let b = b; a*a^b-c} :{let b = x; n} ->
+		{let r = pi; let e = e*e } r(a*b,c*d+4)e(f)PLAc;*/
+
+	let a = 1+2^-f(a,b,c);
+	let pi = 3.14159;
+	let τ = {{a},2,{}};
 }";
 			var lexBuff = LexBuffer<char>.FromString(testInput);
 			var lsys = ParserUtils.parse(lexBuff, "testInput");
@@ -25,9 +29,9 @@ lsystem LsysName {
 		[TestMethod]
 		public void LexerDebugTest() {
 			string testInput = @"
-lsystem LsysName {
-	//let a = 1+2^ -f(a,ττϕ,ϕ);
-	{ lctx(t) } A(_,n,a,m,e) { r(c)t(x,t) } ?{let a = 10; a*a^b-c} :{let b = x; n} -> r(a*b,c*d+4)e(f)PLAc;
+lsystem Unikód {
+	let pi = 3.14159;
+	//{ lctx(t) } A(_,n,a,m,e) { r(c)t(x,t) } ?{let a = 10; a*a^b-c} :{let b = x; n} -> r(a*b,c*d+4)e(f)PLAc;
 }";
 			Console.WriteLine(testInput);
 			Console.WriteLine();

@@ -3,21 +3,27 @@ using System.Collections.ObjectModel;
 
 namespace Malsys.Ast {
 	public class RewriteRule : IToken, ILsystemStatement {
-		public readonly RrContext LeftContext;
 		public readonly SymbolPattern Pattern;
+
+		public readonly RrContext LeftContext;
 		public readonly RrContext RightContext;
+
 		public readonly RrCondition Condition;
+
 		public readonly RrProbability Probability;
+
+		public readonly ReadOnlyCollection<VariableDefinition> VariableDefinitions;
 		public readonly ReadOnlyCollection<SymbolWithParams> Replacement;
 
 		public RewriteRule(RrContext lctxt, SymbolPattern pattern, RrContext rctxt, RrCondition cond, RrProbability probab,
-				IList<SymbolWithParams> replac, Position pos) {
+				IList<VariableDefinition> varDefs, IList<SymbolWithParams> replac, Position pos) {
 
 			LeftContext = lctxt;
 			Pattern = pattern;
 			RightContext = rctxt;
 			Condition = cond;
 			Probability = probab;
+			VariableDefinitions = new ReadOnlyCollection<VariableDefinition>(varDefs);
 			Replacement = new ReadOnlyCollection<SymbolWithParams>(replac);
 			Position = pos;
 		}

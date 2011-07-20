@@ -1,5 +1,4 @@
 ﻿
 namespace Malsys {
-	public interface IVariableValue {
-	}
+	public interface IVariableValue { }
 }

@@ -57,13 +57,22 @@
     <Compile Include="DataTypes\RewriteRule.cs" />
     <Compile Include="DataTypes\SymbolPattern.cs" />
     <Compile Include="DataTypes\VariableValuesArray.cs" />
-    <Compile Include="Expressions\ArithmeticFunction.cs" />
-    <Compile Include="Expressions\KnownArithmeticOperator.cs" />
+    <Compile Include="Expressions\Function.cs" />
+    <Compile Include="Expressions\ValuesArray.cs" />
+    <Compile Include="Expressions\Constant.cs" />
+    <Compile Include="Expressions\EvalException.cs" />
+    <Compile Include="Expressions\IValue.cs" />
+    <Compile Include="Expressions\IPostfixExpressionMember.cs" />
+    <Compile Include="Expressions\KnownOperator.cs" />
     <Compile Include="Expressions\FloatArithmeticHelper.cs" />
     <Compile Include="Expressions\IEvaluable.cs" />
-    <Compile Include="Expressions\KnownArithmeticFunction.cs" />
+    <Compile Include="Expressions\KnownFunction.cs" />
     <Compile Include="Expressions\KnownConstant.cs" />
     <Compile Include="Expressions\PostfixExpression.cs" />
+    <Compile Include="Expressions\Variable.cs" />
+    <Compile Include="Extensions\DoubleExtensions.cs" />
+    <Compile Include="Extensions\IntExtensions.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -80,11 +89,9 @@
       <Name>Malsys.Parsing</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Extensions\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>

@@ -1,14 +1,18 @@
-﻿
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
+
 namespace Malsys.Ast {
+	public interface IVariableValue { }
+
 	public class VariableDefinition : IToken, IInputFileStatement, ILsystemStatement {
 		public readonly Keyword Keyword;
 		public readonly Identificator Name;
-		public readonly Expression Expression;
+		public readonly IVariableValue Value;
 
-		public VariableDefinition(Keyword keyword, Identificator name, Expression expression, Position pos) {
+		public VariableDefinition(Keyword keyword, Identificator name, IVariableValue value, Position pos) {
 			Keyword = keyword;
 			Name = name;
-			Expression = expression;
+			Value = value;
 			Position = pos;
 		}
 
@@ -25,5 +29,18 @@ namespace Malsys.Ast {
 		}
 
 		#endregion
+	}
+
+
+	public class VariableValuesArray : IVariableValue {
+		public readonly ReadOnlyCollection<IVariableValue> Values;
+
+		public VariableValuesArray() {
+			Values = new ReadOnlyCollection<IVariableValue>(new IVariableValue[0]);
+		}
+
+		public VariableValuesArray(IList<IVariableValue> values) {
+			Values = new ReadOnlyCollection<IVariableValue>(values);
+		}
 	}
 }

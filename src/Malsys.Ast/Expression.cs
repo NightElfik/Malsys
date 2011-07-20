@@ -6,7 +6,7 @@ namespace Malsys.Ast {
 	/// <summary>
 	/// Expression tree, partially linearized.
 	/// </summary>
-	public class Expression : IToken, IAstVisitable, IExpressionMember {
+	public class Expression : IToken, IAstVisitable, IVariableValue {
 		public readonly ReadOnlyCollection<IExpressionMember> Members;
 
 		public Expression(IList<IExpressionMember> members, Position pos) {
@@ -31,6 +31,30 @@ namespace Malsys.Ast {
 
 	public interface IExpressionMember : IToken, IAstVisitable { }
 
+	public class ExpressionIndexer : IToken, IAstVisitable, IExpressionMember {
+		public readonly Expression Index;
+
+		public ExpressionIndexer(Expression index, Position pos) {
+			Index = index;
+			Position = pos;
+		}
+
+
+		#region IToken Members
+
+		public Position Position { get; private set; }
+
+		#endregion
+
+		#region IAstVisitable Members
+
+		public void Accept(IAstVisitor visitor) {
+			visitor.Visit(this);
+		}
+
+		#endregion
+	}
+
 	public class ExpressionFunction : IToken, IAstVisitable, IExpressionMember {
 
 		public byte Arity {
@@ -48,6 +72,30 @@ namespace Malsys.Ast {
 			Arguments = new ReadOnlyCollection<Expression>(args);
 			Position = pos;
 		}
+
+		#region IToken Members
+
+		public Position Position { get; private set; }
+
+		#endregion
+
+		#region IAstVisitable Members
+
+		public void Accept(IAstVisitor visitor) {
+			visitor.Visit(this);
+		}
+
+		#endregion
+	}
+
+	public class ExpressionBracketed : IToken, IAstVisitable, IExpressionMember {
+		public readonly Expression Expression;
+
+		public ExpressionBracketed(Expression expression, Position pos) {
+			Expression = expression;
+			Position = pos;
+		}
+
 
 		#region IToken Members
 

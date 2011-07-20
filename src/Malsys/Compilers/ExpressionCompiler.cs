@@ -9,7 +9,7 @@ namespace Malsys.Compilers {
 
 		public static bool TryCompile(Expression expr, MessagesCollection msgs, out PostfixExpression expression) {
 
-			var postfix = new List<object>();
+			var postfix = new List<IPostfixExpressionMember>();
 
 			if (tryCompile(expr, msgs, postfix)) {
 				expression = new PostfixExpression(postfix);
@@ -22,9 +22,9 @@ namespace Malsys.Compilers {
 		}
 
 
-		private static bool tryCompile(Expression expr, MessagesCollection msgs, List<object> postfix) {
+		private static bool tryCompile(Expression expr, MessagesCollection msgs, List<IPostfixExpressionMember> postfix) {
 
-			Stack<KnownArithmeticOperator> opStack = new Stack<KnownArithmeticOperator>();
+			Stack<KnownOperator> opStack = new Stack<KnownOperator>();
 
 			State state = State.ExcpectingOperand;
 
@@ -34,7 +34,7 @@ namespace Malsys.Compilers {
 				if (state == State.ExcpectingOperand) {
 
 					if (member is FloatConstant) {
-						postfix.Add(((FloatConstant)member).Value);
+						postfix.Add(((FloatConstant)member).Value.ToConst());
 						state = State.ExcpectingOperator;
 					}
 
@@ -44,11 +44,11 @@ namespace Malsys.Compilers {
 
 						if (KnownConstant.TryParse(id.Name, out cnst)) {
 							// known constant
-							postfix.Add(cnst.Value);
+							postfix.Add(cnst.Value.ToConst());
 						}
 						else {
 							// variable
-							postfix.Add(id.Name);
+							postfix.Add(id.Name.ToVar());
 							state = State.ExcpectingOperator;
 
 						}
@@ -56,9 +56,9 @@ namespace Malsys.Compilers {
 
 					else if (member is Operator) {
 						// operator while excpecting operand? It must be unary!
-						KnownArithmeticOperator op;
+						KnownOperator op;
 
-						if (KnownArithmeticOperator.TryParse(((Operator)member).Syntax, 1, out op)) {
+						if (KnownOperator.TryParse(((Operator)member).Syntax, 1, out op)) {
 							pushOperator(op, postfix, opStack);
 						}
 						else {
@@ -81,8 +81,14 @@ namespace Malsys.Compilers {
 						state = State.ExcpectingOperator;
 					}
 
-					else if (member is Expression) {
-						if (!tryCompile((Expression)member, msgs, postfix)) {
+					else if (member is ExpressionIndexer) {
+						msgs.AddMessage("Unexcpected indexer, excpecting operand.",
+							CompilerMessageType.Error, member.Position);
+						return false;
+					}
+
+					else if (member is ExpressionBracketed) {
+						if (!tryCompile(((ExpressionBracketed)member).Expression, msgs, postfix)) {
 							return false;
 						}
 					}
@@ -109,9 +115,9 @@ namespace Malsys.Compilers {
 
 					else if (member is Operator) {
 						// operator must be binary
-						KnownArithmeticOperator op;
+						KnownOperator op;
 
-						if (KnownArithmeticOperator.TryParse(((Operator)member).Syntax, 2, out op)) {
+						if (KnownOperator.TryParse(((Operator)member).Syntax, 2, out op)) {
 							pushOperator(op, postfix, opStack);
 						}
 						else {
@@ -121,6 +127,19 @@ namespace Malsys.Compilers {
 						}
 
 						state = State.ExcpectingOperand;
+					}
+
+					else if (member is ExpressionIndexer) {
+						// apply indexer on previous operand
+						var indexer = (ExpressionIndexer)member;
+
+						PostfixExpression indexExpr;
+						if (!TryCompile(indexer.Index, msgs, out indexExpr)) {
+							msgs.AddMessage("Failed to compile indexer's value.", CompilerMessageType.Error, member.Position);
+							return false;
+						}
+
+						// still excpecting operator
 					}
 
 					else if (member is ExpressionFunction) {
@@ -135,22 +154,22 @@ namespace Malsys.Compilers {
 						}
 
 						// implicit multiplication
-						postfix.Add(KnownArithmeticOperator.Multiply);
+						postfix.Add(KnownOperator.Multiply);
 
 						// still excpecting operator
 					}
 
-					else if (member is Expression) {
+					else if (member is ExpressionBracketed) {
 						// Expression (probably in parenthesis) while excpecting binary operator?
 						// So directly before it is operand.
 						// Lets add implicit multiplication between them.
 
-						if (!tryCompile((Expression)member, msgs, postfix)) {
+						if (!tryCompile(((ExpressionBracketed)member).Expression, msgs, postfix)) {
 							return false;
 						}
 
 						// implicit multiplication
-						postfix.Add(KnownArithmeticOperator.Multiply);
+						postfix.Add(KnownOperator.Multiply);
 
 						// still excpecting operator
 					}
@@ -167,7 +186,7 @@ namespace Malsys.Compilers {
 		}
 
 
-		private static void pushOperator(KnownArithmeticOperator op, List<object> postfix, Stack<KnownArithmeticOperator> opStack) {
+		private static void pushOperator(KnownOperator op, List<IPostfixExpressionMember> postfix, Stack<KnownOperator> opStack) {
 
 			while (opStack.Count > 0 && op.ActivePrecedence > opStack.Peek().Precedence) {
 				postfix.Add(opStack.Pop());
@@ -180,11 +199,11 @@ namespace Malsys.Compilers {
 		/// Tries to compile given function call into postfix expression and appnds it into given list.
 		/// Any messages (like errors) are writen into given messages collection.
 		/// </summary>
-		private static bool tryCompileFunctionCall(ExpressionFunction funCall, List<object> postfix, MessagesCollection msgs) {
+		private static bool tryCompileFunctionCall(ExpressionFunction funCall, List<IPostfixExpressionMember> postfix, MessagesCollection msgs) {
 
-			KnownArithmeticFunction fun;
+			KnownFunction fun;
 
-			if (KnownArithmeticFunction.TryGet(funCall.NameId.Name, funCall.Arity, out fun)) {
+			if (KnownFunction.TryGet(funCall.NameId.Name, funCall.Arity, out fun)) {
 				Debug.Assert(fun.Arity == funCall.Arity, "Obtained function has bad arity.");
 
 				for (int i = 0; i < funCall.Arguments.Count; i++) {
@@ -214,7 +233,7 @@ namespace Malsys.Compilers {
 					}
 				}
 
-				postfix.Add(new ArithmeticFunction(funCall.NameId.Name, funCall.Arity, args));
+				postfix.Add(new Function(funCall.NameId.Name, funCall.Arity, args));
 			}
 
 			return true;

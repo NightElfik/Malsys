@@ -6,11 +6,6 @@ namespace Malsys {
 	public static class CharHelper {
 
 		/// <summary>
-		/// €
-		/// </summary>
-		public const char Euro = '\u20ac';
-
-		/// <summary>
 		/// √
 		/// </summary>
 		public const char Sqrt = '\u221a';
@@ -29,6 +24,11 @@ namespace Malsys {
 		/// ϕ
 		/// </summary>
 		public const char Phi = '\u03D5';
+
+		/// <summary>
+		/// ∞​
+		/// </summary>
+		public const char Infinity = '\u221E';
 
 	}
 }

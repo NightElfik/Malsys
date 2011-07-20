@@ -6,7 +6,7 @@ open Microsoft.FSharp.Text.Parsing
 open Malsys
 open Malsys.Ast
 
-let parse_error_rich = Some (fun (ctxt: ParseErrorContext<_>) -> 
+let parse_error_rich = Some (fun (ctxt: ParseErrorContext<_>) ->
     raise <| ParserException(ctxt))
 
 let toAstPos range =
@@ -16,7 +16,8 @@ let toAstPos range =
 
 %token <string> ID UNRECOGNIZED
 %token LET LSYSTEM
-%token EQUALS SEMI COMMA LPAREN RPAREN LBRACE RBRACE QMARK COLON RARROW
+%token EQUALS SEMI COMMA QMARK COLON RARROW
+%token LPAREN RPAREN LBRACE RBRACE LBRACK RBRACK
 %token <float> FLOAT
 %token <string> OPERATOR
 %token EOF
@@ -46,20 +47,53 @@ StatementsList:
       { $1.Add($2); $1 }
 
 Statement:
-    | VarDef
+    | VarDef SEMI
       { $1 :> IInputFileStatement }
     | Lsystem
       { $1 :> IInputFileStatement }
 
+
+// Empty OR variable definitions list divided by semicolon
 VarDefsList:
     |
       { new ResizeArray<VariableDefinition>() }
-    | VarDefsList VarDef
-      { $1.Add($2); $1 }
+    | VarDefsListNonEmpty
+      { $1 }
+
+// Empty OR variable definitions list divided by semicolon with extra semicolon on the end
+VarDefsListSemi:
+    |
+      { new ResizeArray<VariableDefinition>() }
+    | VarDefsListNonEmpty SEMI
+      { $1 }
+
+VarDefsListNonEmpty:
+    | VarDef
+      { let mutable x = new ResizeArray<VariableDefinition>() in x.Add($1); x }
+    | VarDefsListNonEmpty SEMI VarDef
+      { $1.Add($3); $1 }
 
 VarDef:
-    | LetKw Id EQUALS Expression SEMI
+    | LetKw Id EQUALS VarValue
       { new VariableDefinition($1, $2, $4, toAstPos parseState.ResultRange) }
+
+VarValue:
+    | Expression
+      { $1 :> IVariableValue }
+    | LBRACE VarValueList RBRACE
+      { $2 :> IVariableValue }
+
+VarValueList:
+    |
+      { new VariableValuesArray() }
+    | VarValueListNonEmpty
+      { new VariableValuesArray($1) }
+
+VarValueListNonEmpty:
+    | VarValue
+      { let mutable x = new ResizeArray<IVariableValue>() in x.Add($1); x }
+    | VarValueListNonEmpty COMMA VarValue
+      { $1.Add($3); $1 }
 
 
 Lsystem:
@@ -73,15 +107,15 @@ LsysStatementsList:
       { $1.Add($2); $1 }
 
 LsysStatement:
-    | VarDef
+    | VarDef SEMI
       { $1 :> ILsystemStatement }
-    | RewriteRule
+    | RewriteRule SEMI
       { $1 :> ILsystemStatement }
 
 
 RewriteRule:
-    | MaybeLCtxt SymbolPattern MaybeRCtxt MaybeCondition MaybeProbab RARROW SymbolsWithParamsList SEMI
-      { new RewriteRule($1, $2, $3, $4, $5, $7, toAstPos parseState.ResultRange) }
+    | MaybeLCtxt SymbolPattern MaybeRCtxt MaybeCondition MaybeProbab RARROW MaybeVarDefs SymbolsWithParamsList
+      { new RewriteRule($1, $2, $3, $4, $5, $7, $8, toAstPos parseState.ResultRange) }
 
 MaybeLCtxt:
     |
@@ -98,14 +132,20 @@ MaybeRCtxt:
 MaybeCondition:
     |
       { null }
-    | QMARK LBRACE VarDefsList Expression RBRACE
+    | QMARK LBRACE VarDefsListSemi Expression RBRACE
       { new RrCondition($3, $4, toAstPos parseState.ResultRange) }
 
 MaybeProbab:
     |
       { null }
-    | COLON LBRACE VarDefsList Expression RBRACE
+    | COLON LBRACE VarDefsListSemi Expression RBRACE
       { new RrProbability($3, $4, toAstPos parseState.ResultRange) }
+
+MaybeVarDefs:
+    |
+      { null }
+    | LBRACE VarDefsList RBRACE
+      { $2 }
 
 
 SymbolsPatternsList:
@@ -119,7 +159,7 @@ SymbolPattern:
       { new SymbolPattern($1, toAstPos parseState.ResultRange) }
     | Symbol LPAREN IdsCommaList RPAREN
       { new SymbolPattern($1, $3, toAstPos parseState.ResultRange) }
-    
+
 SymbolsWithParamsList:
     |
       { new ResizeArray<SymbolWithParams>() }
@@ -153,7 +193,7 @@ ExpressionCommaListNonEmpty:
     | ExpressionCommaListNonEmpty COMMA Expression
       { $1.Add($3); $1 }
 
-        
+
 Expression:
     | ExprBuilder
       { new Expression($1, toAstPos parseState.ResultRange) }
@@ -167,14 +207,24 @@ ExprBuilder:
       { $1.Add($2); $1 }
     | ExprBuilder Operator
       { $1.Add($2); $1 }
+    | ExprBuilder ExprIndexer
+      { $1.Add($2); $1 }
     | ExprBuilder ExprFunc
       { $1.Add($2); $1 }
-    | ExprBuilder LPAREN Expression RPAREN
-      { $1.Add($3); $1 }
-      
+    | ExprBuilder ExprParen
+      { $1.Add($2); $1 }
+
+ExprIndexer:
+    | LBRACK Expression RBRACK
+      { new ExpressionIndexer($2, toAstPos parseState.ResultRange) }
+
 ExprFunc:
     | Id LPAREN ExpressionCommaList RPAREN
       { new ExpressionFunction($1, $3, toAstPos parseState.ResultRange) }
+
+ExprParen:
+    | LPAREN Expression RPAREN
+      { new ExpressionBracketed($2, toAstPos parseState.ResultRange) }
 
 
 IdsCommaList:
@@ -194,7 +244,7 @@ Id:
       { $1 }
     | UnId
       { $1 }
-      
+
 ReId:
     | ID
       { new Identificator($1, toAstPos parseState.ResultRange) }
@@ -218,4 +268,3 @@ Operator:
 Float:
     | FLOAT
       { new FloatConstant($1, toAstPos parseState.ResultRange) }
-    

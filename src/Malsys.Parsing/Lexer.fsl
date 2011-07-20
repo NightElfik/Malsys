@@ -90,26 +90,18 @@ rule tokenize = parse
       { match singleLineComment lexbuf with
         | Some () -> tokenize lexbuf  // did not reached end of file
         | None -> EOF }
-    | ';'
-      { SEMI }
-    | ','
-      { COMMA }
-    | '('
-      { LPAREN }
-    | ')'
-      { RPAREN }
-    | '{'
-      { LBRACE }
-    | '}'
-      { RBRACE }
-    | '?'
-      { QMARK }
-    | ':'
-      { COLON }
-    | '='
-      { EQUALS }
-    | "->"
-      { RARROW }
+    | ';' { SEMI }
+    | ',' { COMMA }
+    | '(' { LPAREN }
+    | ')' { RPAREN }
+    | '{' { LBRACE }
+    | '}' { RBRACE }
+    | '[' { LBRACK }
+    | ']' { RBRACK }
+    | '?' { QMARK }
+    | ':' { COLON }
+    | '=' { EQUALS }
+    | "->" { RARROW }
     | operator
       { OPERATOR (lexeme lexbuf) }
     | eof

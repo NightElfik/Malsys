@@ -1,8 +1,10 @@
 ﻿
 namespace Malsys.Expressions {
-	public interface IEvaluable {
+	public delegate IValue EvaluateDelegate(IValue[] parameters);
+
+	public interface IEvaluable : IPostfixExpressionMember {
 		byte Arity { get; }
 
-		double Evaluate(params double[] args);
+		IValue Evaluate(params IValue[] args);
 	}
 }

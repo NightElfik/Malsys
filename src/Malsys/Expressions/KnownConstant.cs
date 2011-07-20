@@ -12,6 +12,11 @@ namespace Malsys.Expressions {
 		public static readonly KnownConstant True = new KnownConstant("true", 1.0);
 		public static readonly KnownConstant False = new KnownConstant("false", 1.0);
 
+		public static readonly KnownConstant Nan = new KnownConstant("nan", double.NaN);
+		public static readonly KnownConstant Infty = new KnownConstant("infty", double.PositiveInfinity);
+		public static readonly KnownConstant Infinity = new KnownConstant(CharHelper.Infinity.ToString(), double.PositiveInfinity);
+		public static readonly KnownConstant InfinityStr = new KnownConstant("infinity", double.PositiveInfinity);
+
 		public static readonly KnownConstant Pi = new KnownConstant(CharHelper.Pi.ToString(), Math.PI);
 		public static readonly KnownConstant PiStr = new KnownConstant("pi", Math.PI);
 
@@ -26,10 +31,10 @@ namespace Malsys.Expressions {
 		#endregion
 
 
-		static Dictionary<string, KnownConstant> constCache; 
+		static Dictionary<string, KnownConstant> constCache;
 
 		/// <summary>
-		/// Builds constants cache.
+		/// Builds constants cache from definitions in this class.
 		/// </summary>
 		static KnownConstant() {
 			constCache = new Dictionary<string, KnownConstant>();
@@ -39,11 +44,13 @@ namespace Malsys.Expressions {
 					continue;
 				}
 
+
 				KnownConstant cnst = (KnownConstant)fi.GetValue(null);
+				string key = cnst.Name.ToLowerInvariant();
 
-				Debug.Assert(!constCache.ContainsKey(cnst.Name), "Name `{0}` of known constant is not unique.".Fmt(cnst.Name));
+				Debug.Assert(!constCache.ContainsKey(key), "Name `{0}` of known constant is not unique.".Fmt(key));
 
-				constCache.Add(cnst.Name, cnst);
+				constCache.Add(key, cnst);
 			}
 		}
 

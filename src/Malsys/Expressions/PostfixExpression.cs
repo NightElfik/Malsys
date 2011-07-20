@@ -7,13 +7,10 @@ namespace Malsys {
 	/// <summary>
 	/// Postfix expression is arithmetic expression in Reverse Polish notation (RPN).
 	/// </summary>
-	/// <remarks>
-	/// It can contain members of type <c>double</c> (constant value), <c>string</c> (variable) and <see cref="ArithmeticFunction"/> (function).
-	/// </remarks>
 	public class PostfixExpression : IVariableValue {
 		#region Static members
 
-		public static readonly PostfixExpression Empty = new PostfixExpression() { members = new object[0] };
+		public static readonly PostfixExpression Empty = new PostfixExpression() { members = new IPostfixExpressionMember[0] };
 		public static readonly PostfixExpression[] EmptyArray = new PostfixExpression[0];
 
 		#endregion
@@ -29,30 +26,30 @@ namespace Malsys {
 		#endregion
 
 
-		private object[] members;
+		private IPostfixExpressionMember[] members;
 
 
 		#region Constructors
 
 		private PostfixExpression() { }
 
-		public PostfixExpression(params object[] members) {
+		public PostfixExpression(params IPostfixExpressionMember[] members) {
 			this.members = members;
 		}
 
-		public PostfixExpression(IList<object> members) {
+		public PostfixExpression(IList<IPostfixExpressionMember> members) {
 			this.members = members.ToArray();
 		}
 
 		#endregion
 
 		/// <summary>
-		/// Evaluates postfix expression. If it contains any variable (<c>string</c>) throws <c>FormatException</c>.
+		/// Evaluates postfix expression.
 		/// </summary>
-		public double Evaluate() {
-			Stack<double> stack = new Stack<double>(4);
+		public IPostfixExpressionMember Evaluate() {
+			Stack<IPostfixExpressionMember> stack = new Stack<IPostfixExpressionMember>(4);
 
-			for (int i = 0; i < members.Length; i++) {
+			/*for (int i = 0; i < members.Length; i++) {
 				object mbr = members[i];
 				if (mbr is double) {
 					stack.Push((double)mbr);
@@ -81,10 +78,9 @@ namespace Malsys {
 
 			if (stack.Count != 1) {
 				throw new FormatException("Too much operands to evaluate expression.");
-			}
+			}*/
 
 			return stack.Pop();
 		}
-
 	}
 }
