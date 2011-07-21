@@ -1,6 +1,6 @@
 ﻿
 namespace Malsys.Ast {
-	public interface IAstVisitable {
+	public interface IAstVisitable : IToken {
 		void Accept(IAstVisitor visitor);
 	}
 }

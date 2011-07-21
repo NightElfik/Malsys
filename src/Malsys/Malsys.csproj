@@ -47,17 +47,24 @@
   <ItemGroup>
     <Compile Include="Compilers\CompilerMessage.cs" />
     <Compile Include="Compilers\ExpressionCompiler.cs" />
+    <Compile Include="Compilers\ExpressionCompilerParameters.cs" />
     <Compile Include="Compilers\LsystemCompiler.cs" />
     <Compile Include="Compilers\MessagesCollection.cs" />
+    <Compile Include="Compilers\ValueCompiler.cs" />
     <Compile Include="DataTypes\OptionalParameter.cs" />
     <Compile Include="DataTypes\Symbol.cs" />
+    <Compile Include="DataTypes\UserFunction.cs" />
     <Compile Include="DataTypes\VariableDefinition.cs" />
-    <Compile Include="DataTypes\IVariableValue.cs" />
+    <Compile Include="Expressions\IExpressionValue.cs" />
     <Compile Include="DataTypes\LsystemDefinition.cs" />
     <Compile Include="DataTypes\RewriteRule.cs" />
     <Compile Include="DataTypes\SymbolPattern.cs" />
-    <Compile Include="DataTypes\VariableValuesArray.cs" />
-    <Compile Include="Expressions\Function.cs" />
+    <Compile Include="Expressions\ExpressionValuesArray.cs" />
+    <Compile Include="Expressions\ArgsStorage.cs" />
+    <Compile Include="Expressions\UnknownFunction.cs" />
+    <Compile Include="Expressions\Indexer.cs" />
+    <Compile Include="Expressions\PostfixExpressionsEvaluator.cs" />
+    <Compile Include="Expressions\UserFunctionEvaluator.cs" />
     <Compile Include="Expressions\ValuesArray.cs" />
     <Compile Include="Expressions\Constant.cs" />
     <Compile Include="Expressions\EvalException.cs" />
@@ -70,6 +77,7 @@
     <Compile Include="Expressions\KnownConstant.cs" />
     <Compile Include="Expressions\PostfixExpression.cs" />
     <Compile Include="Expressions\Variable.cs" />
+    <Compile Include="Expressions\ExpressionValueEvaluator.cs" />
     <Compile Include="Extensions\DoubleExtensions.cs" />
     <Compile Include="Extensions\IntExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />

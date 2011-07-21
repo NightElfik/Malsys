@@ -1,9 +1,36 @@
-﻿
-namespace Malsys.Expressions {
-	public class ValuesArray : IValue {
-		public IValue[] Values;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
-		#region IArithmeticValue Members
+namespace Malsys.Expressions {
+	/// <summary>
+	/// Immutable.
+	/// </summary>
+	public class ValuesArray : IValue {
+
+		public IValue this[int i] { get { return values[i]; } }
+		public int Length { get { return values.Length; } }
+
+		private IValue[] values;
+
+
+		public ValuesArray(IList<IValue> values) {
+			this.values = new IValue[values.Count];
+			for (int i = 0; i < values.Count; i++) {
+				this.values[i] = values[i];
+			}
+		}
+
+		/// <summary>
+		/// Faster version of constructing ValuesArray.
+		/// Use only if no other reference will exist on given array.
+		/// Do not copy elements from given array, just takes its reference.
+		/// </summary>
+		internal ValuesArray(IValue[] immutableValues) {
+			values = immutableValues;
+		}
+
+
+		#region IValue Members
 
 		public bool IsConstant { get { return false; } }
 		public bool IsArray { get { return true; } }
@@ -19,12 +46,12 @@ namespace Malsys.Expressions {
 			}
 			else {
 				ValuesArray o = (ValuesArray)other;
-				int cmp = Values.Length.CompareTo(o.Values.Length);
+				int cmp = values.Length.CompareTo(o.values.Length);
 
 				if (cmp == 0) {
 					// arrays have same length
-					for (int i = 0; i < Values.Length; i++) {
-						cmp = Values[i].CompareTo(o.Values[i]);
+					for (int i = 0; i < values.Length; i++) {
+						cmp = values[i].CompareTo(o.values[i]);
 						if (cmp != 0) {
 							return cmp;  // values at index i are first different
 						}

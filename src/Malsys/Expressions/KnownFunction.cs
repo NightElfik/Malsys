@@ -98,7 +98,7 @@ namespace Malsys.Expressions {
 		public static readonly KnownFunction Average = new KnownFunction("avg", AnyArity,
 			(a) => {
 				ensureParam(-1, IArithmeticValueType.Constant, a);
-				return (a.Aggregate(0.0, (acc, val) => acc + (Constant)val) / a.Length).ToConst();
+				return (a.Aggregate(0.0, (acc, val) => acc + (Constant)val) / a.ArgsCount).ToConst();
 			});
 
 		#endregion
@@ -169,7 +169,7 @@ namespace Malsys.Expressions {
 					return 0.0.ToConst();
 				}
 				else {
-					return ((ValuesArray)a[0]).Values.Length.ToConst();
+					return ((ValuesArray)a[0]).Length.ToConst();
 				}
 			});
 
@@ -224,9 +224,9 @@ namespace Malsys.Expressions {
 		/// Ensures parameter from given array at given index to be given type and throws exception if it is not.
 		/// </summary>
 		/// <param name="argNum">Zero-based argument number, if it is negative, checks all arguments in given array.</param>
-		private static void ensureParam(int argNum, IArithmeticValueType desiredType, IValue[] args) {
+		private static void ensureParam(int argNum, IArithmeticValueType desiredType, ArgsStorage args) {
 			if (argNum < 0) {
-				for (int i = 0; i < args.Length; i++) {
+				for (int i = 0; i < args.ArgsCount; i++) {
 					ensureParam(i, desiredType, args);
 				}
 			}
@@ -255,11 +255,13 @@ namespace Malsys.Expressions {
 
 		#region IEvaluable Members
 
-		byte IEvaluable.Arity { get { return Arity; } }
+		int IEvaluable.Arity { get { return Arity; } }
+		string IEvaluable.Name { get { return "function"; } }
+		public string Syntax { get { return Name; } }
 
-		public IValue Evaluate(params IValue[] args) {
-			if (args.Length != Arity) {
-				throw new ArgumentException("Failed to evaluate function `{0}` with {1} argument(s), it needs {2}.".Fmt(Name, args.Length, Arity));
+		public IValue Evaluate(ArgsStorage args) {
+			if (args.ArgsCount != Arity) {
+				throw new EvalException("Failed to evaluate function `{0}` with {1} argument(s), it needs {2}.".Fmt(Name, args.ArgsCount, Arity));
 			}
 
 			try {
@@ -275,8 +277,10 @@ namespace Malsys.Expressions {
 		#region IPostfixExpressionMember Members
 
 		public bool IsConstant { get { return false; } }
+		public bool IsArray { get { return false; } }
 		public bool IsVariable { get { return false; } }
 		public bool IsEvaluable { get { return true; } }
+		public bool IsUnknownFunction { get { return false; } }
 
 		#endregion
 	}

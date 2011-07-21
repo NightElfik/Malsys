@@ -22,7 +22,7 @@ lsystem LsysName {
 	let τ = {{a},2,{}};
 }";
 			var lexBuff = LexBuffer<char>.FromString(testInput);
-			var lsys = ParserUtils.parse(lexBuff, "testInput");
+			var lsys = ParserUtils.parseLsystemStatements(lexBuff, "testInput");
 
 		}
 

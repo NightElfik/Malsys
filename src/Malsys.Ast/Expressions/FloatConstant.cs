@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿
 namespace Malsys.Ast {
 	public class FloatConstant : IToken, IAstVisitable, IExpressionMember {
 		public readonly double Value;
@@ -23,6 +19,18 @@ namespace Malsys.Ast {
 		public void Accept(IAstVisitor visitor) {
 			visitor.Visit(this);
 		}
+
+		#endregion
+
+		#region IExpressionMember Members
+
+		public bool IsConstant { get { return true; } }
+		public bool IsVariable { get { return false; } }
+		public bool IsArray { get { return false; } }
+		public bool IsOperator { get { return false; } }
+		public bool IsFunction { get { return false; } }
+		public bool IsIndexer { get { return false; } }
+		public bool IsBracketedExpression { get { return false; } }
 
 		#endregion
 	}

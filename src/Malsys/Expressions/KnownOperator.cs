@@ -153,7 +153,7 @@ namespace Malsys.Expressions {
 		/// <summary>
 		/// Ensures parameters of unary operator and throws exception if they dont match.
 		/// </summary>
-		private static void ensureParams(IArithmeticValueType desiredType, IValue[] args) {
+		private static void ensureParams(IArithmeticValueType desiredType, ArgsStorage args) {
 			if (args[0].Type != desiredType) {
 				throw new EvalException("As operand was excpected {0}, but it is {1}.".Fmt(
 					desiredType == IArithmeticValueType.Constant ? "value" : "array",
@@ -164,7 +164,7 @@ namespace Malsys.Expressions {
 		/// <summary>
 		/// Ensures parameters of binary operator and throws exception if they dont match.
 		/// </summary>
-		private static void ensureParams(IArithmeticValueType desiredType0, IArithmeticValueType desiredType1, IValue[] args) {
+		private static void ensureParams(IArithmeticValueType desiredType0, IArithmeticValueType desiredType1, ArgsStorage args) {
 			if (args[0].Type != desiredType0) {
 				throw new EvalException("As left operand was excpected {0}, but it is {1}.".Fmt(
 					desiredType0 == IArithmeticValueType.Constant ? "value" : "array",
@@ -208,11 +208,13 @@ namespace Malsys.Expressions {
 
 		#region IEvaluable Members
 
-		byte IEvaluable.Arity { get { return Arity; } }
+		int IEvaluable.Arity { get { return Arity; } }
+		public string Name { get { return "operator"; } }
+		string IEvaluable.Syntax { get { return Syntax; } }
 
-		public IValue Evaluate(params IValue[] args) {
-			if (args.Length != Arity) {
-				throw new ArgumentException("Failed to evaluate operator `{0}` with {1} argument(s), it needs {2}.".Fmt(Syntax, args.Length, Arity));
+		public IValue Evaluate(ArgsStorage args) {
+			if (args.ArgsCount != Arity) {
+				throw new EvalException("Failed to evaluate operator `{0}` with {1} argument(s), it needs {2}.".Fmt(Syntax, args.ArgsCount, Arity));
 			}
 
 			try {
@@ -228,8 +230,16 @@ namespace Malsys.Expressions {
 		#region IPostfixExpressionMember Members
 
 		public bool IsConstant { get { return false; } }
+		public bool IsArray { get { return false; } }
 		public bool IsVariable { get { return false; } }
 		public bool IsEvaluable { get { return true; } }
+		public bool IsUnknownFunction { get { return false; } }
+
+		#endregion
+
+		#region IEvaluable Members
+
+
 
 		#endregion
 	}

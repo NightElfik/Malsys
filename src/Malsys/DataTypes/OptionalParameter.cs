@@ -1,8 +1,9 @@
-﻿
+﻿using Malsys.Expressions;
+
 namespace Malsys {
 	public class OptionalParameter {
 		public string Name { get; set; }
-		public IVariableValue DefaultValue { get; set; }
+		public IExpressionValue DefaultValue { get; set; }
 
 		public bool IsOptional {
 			get { return DefaultValue != null; }
@@ -19,7 +20,7 @@ namespace Malsys {
 			DefaultValue = null;
 		}
 
-		public OptionalParameter(string name, IVariableValue defaultValue) {
+		public OptionalParameter(string name, IExpressionValue defaultValue) {
 			Name = name;
 			DefaultValue = defaultValue;
 		}

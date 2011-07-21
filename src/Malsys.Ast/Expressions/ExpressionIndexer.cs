@@ -1,12 +1,13 @@
 ﻿
 namespace Malsys.Ast {
-	public class Identificator : IToken, IAstVisitable, IExpressionMember {
-		public readonly string Name;
+	public class ExpressionIndexer : IToken, IAstVisitable, IExpressionMember {
+		public readonly Expression Index;
 
-		public Identificator(string name, Position pos) {
-			Name = name;
+		public ExpressionIndexer(Expression index, Position pos) {
+			Index = index;
 			Position = pos;
 		}
+
 
 		#region IToken Members
 
@@ -25,11 +26,11 @@ namespace Malsys.Ast {
 		#region IExpressionMember Members
 
 		public bool IsConstant { get { return false; } }
-		public bool IsVariable { get { return true; } }
+		public bool IsVariable { get { return false; } }
 		public bool IsArray { get { return false; } }
 		public bool IsOperator { get { return false; } }
 		public bool IsFunction { get { return false; } }
-		public bool IsIndexer { get { return false; } }
+		public bool IsIndexer { get { return true; } }
 		public bool IsBracketedExpression { get { return false; } }
 
 		#endregion

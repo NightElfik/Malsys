@@ -58,17 +58,17 @@ namespace Malsys.Ast {
 
 	public class SymbolWithParams : IToken, IAstVisitable {
 		public readonly Symbol Symbol;
-		public readonly ReadOnlyCollection<Expression> Parameters;
+		public readonly ReadOnlyCollection<IValue> Parameters;
 
 		public SymbolWithParams(Symbol symbol, Position pos) {
 			Symbol = symbol;
-			Parameters = new ReadOnlyCollection<Expression>(new Expression[0]);
+			Parameters = new ReadOnlyCollection<IValue>(new IValue[0]);
 			Position = pos;
 		}
 
-		public SymbolWithParams(Symbol symbol, IList<Expression> parameters, Position pos) {
+		public SymbolWithParams(Symbol symbol, IList<IValue> parameters, Position pos) {
 			Symbol = symbol;
-			Parameters = new ReadOnlyCollection<Expression>(parameters);
+			Parameters = new ReadOnlyCollection<IValue>(parameters);
 			Position = pos;
 		}
 

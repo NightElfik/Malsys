@@ -7,8 +7,8 @@ namespace Malsys.Ast {
 		void Visit(ExpressionFunction expressionFunction);
 		void Visit(ExpressionIndexer expressionIndexer);
 		void Visit(FloatConstant floatConstant);
+		void Visit(FunctionDefinition functionDefinition);
 		void Visit(Identificator identificator);
-		void Visit(InputFile inputFile);
 		void Visit(Keyword keyword);
 		void Visit(Lsystem lsystem);
 		void Visit(Operator op);
@@ -19,6 +19,7 @@ namespace Malsys.Ast {
 		void Visit(Symbol symbol);
 		void Visit(SymbolPattern symbolPattern);
 		void Visit(SymbolWithParams symbolWithParams);
+		void Visit(ValuesArray valuesArray);
 		void Visit(VariableDefinition variableDefinition);
 	}
 }
