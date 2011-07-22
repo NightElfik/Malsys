@@ -4,42 +4,25 @@ using Malsys.Ast;
 using Malsys.Expressions;
 
 namespace Malsys.Compilers {
-	/// <summary>
-	/// Compiles expression from AST.
-	/// </summary>
 	public static class ExpressionCompiler {
 
 		/// <summary>
-		/// Tries to compile expression from AST to postfix expression.
+		/// Tries to compile expression from AST.
 		/// </summary>
-		public static bool TryCompile(Expression expr, ExpressionCompilerParameters prms, out PostfixExpression expression) {
+		public static bool TryCompile(Expression expr, ExpressionCompilerParameters prms, out IExpression expression) {
 
-			var postfix = new List<IPostfixExpressionMember>();
-
-			if (tryCompile(expr, prms, postfix)) {
-				expression = new PostfixExpression(postfix);
-				return true;
-			}
-			else {
-				expression = null;
-				return false;
-			}
-		}
-
-
-		private static bool tryCompile(Expression expr, ExpressionCompilerParameters prms, List<IPostfixExpressionMember> postfix) {
-
-			Stack<KnownOperator> opStack = new Stack<KnownOperator>();
+			Stack<OperatorCore> optorsStack = new Stack<OperatorCore>();
+			Stack<IExpression> operandsStack = new Stack<IExpression>();
 
 			State state = State.ExcpectingOperand;
+			expression = null;
 
-			for (int i = 0; i < expr.Members.Count; i++) {
-				var member = expr.Members[i];
+			foreach (var member in expr.Members) {
 
 				if (state == State.ExcpectingOperand) {
 
 					if (member.IsConstant) {
-						postfix.Add(((FloatConstant)member).Value.ToConst());
+						operandsStack.Push(((FloatConstant)member).Value.ToConst());
 						state = State.ExcpectingOperator;
 					}
 
@@ -51,19 +34,21 @@ namespace Malsys.Compilers {
 
 						if (KnownConstant.TryParse(name, out cnst)) {
 							// known constant
-							postfix.Add(cnst.Value.ToConst());
+							operandsStack.Push(cnst.Value.ToConst());
 						}
 						else {
 							// variable
-							postfix.Add(id.Name.ToVar());
-							state = State.ExcpectingOperator;
+							operandsStack.Push(name.ToVar());
 						}
+
+						state = State.ExcpectingOperator;
 					}
 
 					if (member.IsArray) {
-						IExpressionValue result;
-						if (ValueCompiler.TryCompile((Ast.ValuesArray)member, prms, out result)) {
-							postfix.Add((ExpressionValuesArray)result); // safe cast because member is array
+						ExpressionValuesArray resultArr;
+
+						if (ValueCompiler.TryCompile((Ast.ValuesArray)member, prms, out resultArr)) {
+							operandsStack.Push(resultArr);
 						}
 						else {
 							return false;
@@ -74,10 +59,13 @@ namespace Malsys.Compilers {
 
 					else if (member.IsOperator) {
 						// operator while excpecting operand? It must be unary!
-						KnownOperator op;
+						OperatorCore op;
 
-						if (KnownOperator.TryParse(((Operator)member).Syntax, 1, out op)) {
-							pushOperator(op, postfix, opStack);
+						if (OperatorCore.TryGet(((Operator)member).Syntax, 1, out op)) {
+							if (!tryPushOperator(op, operandsStack, optorsStack)) {
+								prms.Messages.AddMessage("Too few operands.", CompilerMessageType.Error, member.Position);
+								return false;
+							}
 						}
 						else {
 							prms.Messages.AddMessage("Unknown unary operator `{1}`.".Fmt(((Operator)member).Syntax),
@@ -91,8 +79,12 @@ namespace Malsys.Compilers {
 					else if (member.IsFunction) {
 						var funCall = (ExpressionFunction)member;
 
-						tryCompileFunctionCall(funCall, postfix, prms);
-						if (prms.Messages.ErrorOcured) {
+						IExpression resultFun;
+
+						if (tryCompileFunctionCall(funCall, prms, out resultFun)) {
+							operandsStack.Push(resultFun);
+						}
+						else {
 							return false;
 						}
 
@@ -100,15 +92,21 @@ namespace Malsys.Compilers {
 					}
 
 					else if (member.IsIndexer) {
-						prms.Messages.AddMessage("Unexcpected indexer, excpecting operand.",
-							CompilerMessageType.Error, member.Position);
+						prms.Messages.AddMessage("Unexcpected indexer, excpecting operand.", CompilerMessageType.Error, member.Position);
 						return false;
 					}
 
 					else if (member.IsBracketedExpression) {
-						if (!tryCompile(((ExpressionBracketed)member).Expression, prms, postfix)) {
+						IExpression exprResult;
+
+						if (TryCompile(((ExpressionBracketed)member).Expression, prms, out exprResult)) {
+							operandsStack.Push(exprResult);
+						}
+						else {
 							return false;
 						}
+
+						state = State.ExcpectingOperator;
 					}
 
 					else {
@@ -120,8 +118,7 @@ namespace Malsys.Compilers {
 				else { // excpecting operator
 
 					if (member.IsConstant) {
-						prms.Messages.AddMessage("Unexcpected constatnt, excpecting operator.",
-							CompilerMessageType.Error, member.Position);
+						prms.Messages.AddMessage("Unexcpected constatnt, excpecting operator.", CompilerMessageType.Error, member.Position);
 						return false;
 					}
 
@@ -133,10 +130,13 @@ namespace Malsys.Compilers {
 
 					else if (member.IsOperator) {
 						// operator must be binary
-						KnownOperator op;
+						OperatorCore op;
 
-						if (KnownOperator.TryParse(((Operator)member).Syntax, 2, out op)) {
-							pushOperator(op, postfix, opStack);
+						if (OperatorCore.TryGet(((Operator)member).Syntax, 2, out op)) {
+							if (!tryPushOperator(op, operandsStack, optorsStack)) {
+								prms.Messages.AddMessage("Too few operands.", CompilerMessageType.Error, member.Position);
+								return false;
+							}
 						}
 						else {
 							prms.Messages.AddMessage("Unknown binary operator `{1}`.".Fmt(((Operator)member).Syntax),
@@ -151,12 +151,18 @@ namespace Malsys.Compilers {
 						// apply indexer on previous operand
 						var indexer = (ExpressionIndexer)member;
 
-						PostfixExpression indexExpr;
+						IExpression indexExpr;
 						if (!TryCompile(indexer.Index, prms, out indexExpr)) {
 							prms.Messages.AddMessage("Failed to compile indexer's value.", CompilerMessageType.Error, member.Position);
 							return false;
 						}
 
+						if (operandsStack.Count < 1) {
+							prms.Messages.AddMessage("Failed to compile indexer. No operand to apply on.", CompilerMessageType.Error, member.Position);
+							return false;
+						}
+
+						operandsStack.Push(new Indexer(operandsStack.Pop(), indexExpr));
 						// still excpecting operator
 					}
 
@@ -166,13 +172,17 @@ namespace Malsys.Compilers {
 						// Lets add implicit multiplication between them.
 						var funCall = (ExpressionFunction)member;
 
-						tryCompileFunctionCall(funCall, postfix, prms);
-						if (prms.Messages.ErrorOcured) {
+						IExpression resultFun;
+
+						if (tryCompileFunctionCall(funCall, prms, out resultFun)) {
+							operandsStack.Push(resultFun);
+						}
+						else {
 							return false;
 						}
 
 						// implicit multiplication
-						postfix.Add(KnownOperator.Multiply);
+						optorsStack.Push(OperatorCore.Multiply);
 
 						// still excpecting operator
 					}
@@ -182,12 +192,17 @@ namespace Malsys.Compilers {
 						// So directly before it is operand.
 						// Lets add implicit multiplication between them.
 
-						if (!tryCompile(((ExpressionBracketed)member).Expression, prms, postfix)) {
+						IExpression exprResult;
+
+						if (TryCompile(((ExpressionBracketed)member).Expression, prms, out exprResult)) {
+							operandsStack.Push(exprResult);
+						}
+						else {
 							return false;
 						}
 
 						// implicit multiplication
-						postfix.Add(KnownOperator.Multiply);
+						optorsStack.Push(OperatorCore.Multiply);
 
 						// still excpecting operator
 					}
@@ -204,72 +219,62 @@ namespace Malsys.Compilers {
 		}
 
 
-		private static void pushOperator(KnownOperator op, List<IPostfixExpressionMember> postfix, Stack<KnownOperator> opStack) {
+		private static bool tryPushOperator(OperatorCore op, Stack<IExpression> operandsStack, Stack<OperatorCore> optorStack) {
 
-			while (opStack.Count > 0 && op.ActivePrecedence > opStack.Peek().Precedence) {
-				postfix.Add(opStack.Pop());
-			}
+			while (optorStack.Count > 0 && op.ActivePrecedence > optorStack.Peek().Precedence) {
 
-			opStack.Push(op);
-		}
-
-		/// <summary>
-		/// Tries to compile given function call into postfix expression and appnds it into given list.
-		/// Any messages (like errors) are writen into given messages collection.
-		/// </summary>
-		private static bool tryCompileFunctionCall(ExpressionFunction funCall, List<IPostfixExpressionMember> postfix, ExpressionCompilerParameters prms) {
-
-			KnownFunction fun;
-			string name = prms.CaseSensitiveFunsNames ? funCall.NameId.Name : funCall.NameId.Name.ToLower();
-
-			if (KnownFunction.TryGet(name, funCall.Arity, out fun)) {
-				Debug.Assert(fun.Arity == funCall.Arity, "Obtained function has bad arity.");
-
-				for (int i = 0; i < funCall.Arguments.Count; i++) {
-					bool err = false;
-
-					if (funCall.Arguments[i].IsExpression) {
-						if (!tryCompile((Expression)funCall.Arguments[i], prms, postfix)) {
-							err = true;
-						}
-					}
-					else {  // array
-						IExpressionValue arr;
-						if (ValueCompiler.TryCompile(funCall.Arguments[i], prms, out arr)) {
-							postfix.Add((ExpressionValuesArray)arr); // safe cast because funCall.Arguments[i] is array
-						}
-						else {
-							err = true;
-						}
-					}
-
-					if (err) {
-						prms.Messages.AddMessage("Failed to compile {0}. argument of function `{1}`.".Fmt(i, funCall.NameId.Name),
-							CompilerMessageType.Error, funCall.Arguments[i].Position);
-					}
-				}
-
-				if (prms.Messages.ErrorOcured) {
+				var opTop = optorStack.Peek();
+				if (opTop.Arity > operandsStack.Count) {
 					return false;
 				}
 
-				postfix.Add(fun);
+				if (opTop.Arity == 1) {
+					operandsStack.Push(new UnaryOperator(opTop.Syntax, opTop.Precedence, opTop.ActivePrecedence,
+						opTop.EvalFunction, operandsStack.Pop(), opTop.ParamsTypes[0]));
+				}
+				else {
+					Debug.Assert(opTop.Arity == 2, "Excpected binary operator.");
+
+					var right = operandsStack.Pop();
+					var left = operandsStack.Pop();
+
+					operandsStack.Push(new BinaryOperator(opTop.Syntax, opTop.Precedence, opTop.ActivePrecedence,
+						opTop.EvalFunction, left, opTop.ParamsTypes[0], right, opTop.ParamsTypes[1]));
+
+				}
+			}
+
+			optorStack.Push(op);
+			return true;
+		}
+
+
+		private static bool tryCompileFunctionCall(ExpressionFunction funCall, ExpressionCompilerParameters prms, out IExpression result) {
+
+			FunctionCore fun;
+			string name = prms.CaseSensitiveFunsNames ? funCall.NameId.Name : funCall.NameId.Name.ToLower();
+
+			IExpression[] args = new IExpression[funCall.ArgumentsCount];
+
+			for (int i = 0; i < funCall.ArgumentsCount; i++) {
+				if (!ValueCompiler.TryCompile(funCall.arguments[i], prms, out args[i])) {
+					prms.Messages.AddMessage("Failed to compile {0}. argument of function `{1}`.".Fmt(i, funCall.NameId.Name),
+						CompilerMessageType.Error, funCall.arguments[i].Position);
+				}
+			}
+
+			if (prms.Messages.ErrorOcured) {
+				result = null;
+				return false;
+			}
+
+			if (FunctionCore.TryGet(name, funCall.ArgumentsCount, out fun)) {
+				Debug.Assert(fun.ParametersCount == funCall.ArgumentsCount, "Excpected function with {0} params, but it has {1}.".Fmt(funCall.ArgumentsCount, fun.ParametersCount));
+
+				result = new Function(name, fun.EvalFunction, args, fun.ParamsTypes);
 			}
 			else {
-				var args = new IExpressionValue[funCall.Arguments.Count];
-				for (int i = 0; i < args.Length; i++) {
-					IExpressionValue expr;
-					if (ValueCompiler.TryCompile(funCall.Arguments[i], prms, out expr)) {
-						args[i] = expr;
-					}
-					else {
-						prms.Messages.AddMessage("Failed to compile {0}. argument of function `{1}`.".Fmt(i, funCall.NameId.Name),
-							CompilerMessageType.Error, funCall.Arguments[i].Position);
-						return false;
-					}
-				}
-
-				postfix.Add(new UnknownFunction(funCall.NameId.Name, funCall.Arity, args));
+				result = new UserFunction(name, args);
 			}
 
 			return true;

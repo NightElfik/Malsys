@@ -1,24 +1,24 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Linq;
 
 namespace Malsys.Ast {
 	public class ExpressionFunction : IToken, IAstVisitable, IExpressionMember {
 
-		public byte Arity {
-			get {
-				Debug.Assert(Arguments.Count < byte.MaxValue, "Too many arguments.");
-				return (byte)Arguments.Count;
-			}
-		}
+		public IValue this[int i] { get { return arguments[i]; } }
+
+		public readonly int ArgumentsCount;
 
 		public readonly Identificator NameId;
-		public readonly ReadOnlyCollection<IValue> Arguments;
+		public readonly IValue[] arguments;
 
 		public ExpressionFunction(Identificator name, IList<IValue> args, Position pos) {
 			NameId = name;
-			Arguments = new ReadOnlyCollection<IValue>(args);
+			arguments = args.ToArray();
 			Position = pos;
+
+			ArgumentsCount = arguments.Length;
 		}
 
 		#region IToken Members

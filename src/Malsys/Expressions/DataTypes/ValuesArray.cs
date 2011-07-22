@@ -34,7 +34,7 @@ namespace Malsys.Expressions {
 
 		public bool IsConstant { get { return false; } }
 		public bool IsArray { get { return true; } }
-		public IArithmeticValueType Type { get { return IArithmeticValueType.Array; } }
+		public ExpressionValueType Type { get { return ExpressionValueType.Array; } }
 
 		#endregion
 

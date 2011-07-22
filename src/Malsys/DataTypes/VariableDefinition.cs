@@ -2,7 +2,12 @@
 
 namespace Malsys {
 	public class VariableDefinition {
-		public string Name { get; set; }
-		public IExpressionValue Value { get; set; }
+		public readonly string Name;
+		public readonly IExpression Value;
+
+		public VariableDefinition(string name, IExpression val) {
+			Name = name;
+			Value = val;
+		}
 	}
 }

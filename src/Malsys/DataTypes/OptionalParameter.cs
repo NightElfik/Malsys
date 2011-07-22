@@ -3,7 +3,7 @@
 namespace Malsys {
 	public class OptionalParameter {
 		public string Name { get; set; }
-		public IExpressionValue DefaultValue { get; set; }
+		public IExpression DefaultValue { get; set; }
 
 		public bool IsOptional {
 			get { return DefaultValue != null; }
@@ -20,7 +20,7 @@ namespace Malsys {
 			DefaultValue = null;
 		}
 
-		public OptionalParameter(string name, IExpressionValue defaultValue) {
+		public OptionalParameter(string name, IExpression defaultValue) {
 			Name = name;
 			DefaultValue = defaultValue;
 		}

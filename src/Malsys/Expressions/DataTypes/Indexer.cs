@@ -4,13 +4,18 @@ namespace Malsys.Expressions {
 	/// <summary>
 	/// Immutable.
 	/// </summary>
-	public class Indexer : IEvaluable, IPostfixExpressionMember {
+	public class Indexer : IExpression, IExpressionVisitable {
+
+		public readonly IExpression Array;
+		public readonly IExpression Index;
+
+		public Indexer(IExpression array, IExpression index) {
+			Array = array;
+			Index = index;
+		}
+
 
 		#region IEvaluable Members
-
-		public int Arity { get { return 2; } }
-		public string Name { get { return "indexer"; } }
-		public string Syntax { get { return "[]"; } }
 
 		public IValue Evaluate(ArgsStorage args) {
 			if (args.ArgsCount != 2) {
@@ -40,13 +45,11 @@ namespace Malsys.Expressions {
 
 		#endregion
 
-		#region IPostfixExpressionMember Members
+		#region IExpressionVisitable Members
 
-		public bool IsConstant { get { return false; } }
-		public bool IsArray { get { return false; } }
-		public bool IsVariable { get { return false; } }
-		public bool IsEvaluable { get { return true; } }
-		public bool IsUnknownFunction { get { return false; } }
+		public void Accept(IExpressionVisitor visitor) {
+			visitor.Visit(this);
+		}
 
 		#endregion
 	}

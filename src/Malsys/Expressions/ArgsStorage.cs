@@ -13,13 +13,18 @@ namespace Malsys.Expressions {
 
 		private IValue[] args = new IValue[8];
 
+
+		public ArgsStorage() {
+			Clear();
+		}
+
 		/// <summary>
 		/// Drops all previously stored arguments and takes (pops) given number of new arguments from given stack.
 		/// Top of stack is last agrument.
 		/// Do not check weather is enough items in stack.
 		/// </summary>
-		public void TakeArgs(int argsCount, Stack<IValue> stack) {
-			// ensure capacity
+		public void PopArgs(int argsCount, Stack<IValue> stack) {
+			// ensure internal capacity
 			if (args.Length < argsCount) {
 				args = new IValue[argsCount + 2];
 			}
@@ -30,6 +35,11 @@ namespace Malsys.Expressions {
 				args[i] = stack.Pop();
 			}
 		}
+
+		public void Clear() {
+			ArgsCount = 0;
+		}
+
 
 		#region IEnumerable Members
 
