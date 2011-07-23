@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Malsys.Expressions {
@@ -7,17 +8,17 @@ namespace Malsys.Expressions {
 	/// </summary>
 	public class ValuesArray : IValue {
 
+		public static ValuesArray Empty = new ValuesArray(new IValue[0]);
+
+
 		public IValue this[int i] { get { return values[i]; } }
 		public int Length { get { return values.Length; } }
 
 		private IValue[] values;
 
 
-		public ValuesArray(IList<IValue> values) {
-			this.values = new IValue[values.Count];
-			for (int i = 0; i < values.Count; i++) {
-				this.values[i] = values[i];
-			}
+		public ValuesArray(IEnumerable<IValue> vals) {
+			values = vals.ToArray();
 		}
 
 		/// <summary>
@@ -25,8 +26,8 @@ namespace Malsys.Expressions {
 		/// Use only if no other reference will exist on given array.
 		/// Do not copy elements from given array, just takes its reference.
 		/// </summary>
-		internal ValuesArray(IValue[] immutableValues) {
-			values = immutableValues;
+		internal ValuesArray(IValue[] immutableVals) {
+			values = immutableVals;
 		}
 
 		public override string ToString() {

@@ -31,6 +31,9 @@ namespace Malsys.Tests.Expressions {
 			evalAndCompareD(tn, "0x6F", 111.0);
 			evalAndCompareD(tn, "0XAbCdEf", 11259375.0);
 
+			evalAndCompare(tn, "{}", ValuesArray.Empty);
+			evalAndCompare(tn, "{{},{{}}}", new ValuesArray(new IValue[] { ValuesArray.Empty, new ValuesArray(new IValue[] { ValuesArray.Empty }) }));
+
 			evalAndCompareD(tn, "true", 1.0);
 			evalAndCompareD(tn, "false", 0.0);
 
@@ -64,17 +67,34 @@ namespace Malsys.Tests.Expressions {
 			evalAndCompareD(tn, "1 + 1", 2.0);
 			evalAndCompareD(tn, "0 - 1", -1.0);
 
+			evalAndCompareD(tn, "7 < 7.001", 1.0);
 			evalAndCompareD(tn, "7 < 7", 0.0);
 			evalAndCompareD(tn, "7.001 < 7", 0.0);
+			evalAndCompareD(tn, "999 < {}", 1.0);
+			evalAndCompareD(tn, "{1,2,3} < {1,2,4}", 1.0);
+
+			evalAndCompareD(tn, "7 > 7.001", 0.0);
 			evalAndCompareD(tn, "7 > 7", 0.0);
 			evalAndCompareD(tn, "7.001 > 7", 1.0);
+			evalAndCompareD(tn, "{{}} > {}", 1.0);
+			evalAndCompareD(tn, "{1,2} > {0, 0, 0}", 0.0);
+
+			evalAndCompareD(tn, "7 <= 7.001", 1.0);
 			evalAndCompareD(tn, "7 <= 7", 1.0);
 			evalAndCompareD(tn, "7.001 <= 7", 0.0);
+			evalAndCompareD(tn, "{{}} <= {{}}", 1.0);
+			evalAndCompareD(tn, "{1,2,{}} <= {1,2,3}", 0.0);
+
+			evalAndCompareD(tn, "7 >= 7.001", 0.0);
 			evalAndCompareD(tn, "7 >= 7", 1.0);
 			evalAndCompareD(tn, "7.001 >= 7", 1.0);
+			evalAndCompareD(tn, "6 >= {5}", 0.0);
+			evalAndCompareD(tn, "{{{8}}} >= {{{7}}}", 1.0);
 
 			evalAndCompareD(tn, "7 == 7", 1.0);
 			evalAndCompareD(tn, "7.001 == 7", 0.0);
+			evalAndCompareD(tn, "{} == {}", 1.0);
+			evalAndCompareD(tn, "{} == {{}}", 0.0);
 			evalAndCompareD(tn, "nan == nan", 0.0);
 			evalAndCompareD(tn, "infty == infty", 0.0);
 
@@ -196,6 +216,29 @@ namespace Malsys.Tests.Expressions {
 
 		}
 
+		[TestMethod]
+		public void OperatorPrecedenceTest() {
+			const string tn = "Operator precedence test";
+
+			evalAndCompareD(tn, "5 - 1 - 1 - 1", 2.0);
+			evalAndCompareD(tn, "5 - 1 * 3", 2.0);
+			evalAndCompareD(tn, "5 + -3", 2.0);
+
+			evalAndCompareD(tn, "-1 ^ 2", -1);
+			evalAndCompareD(tn, "-2 ^ -2", -0.25);
+			evalAndCompareD(tn, "-2 ^ -2 ^ -2 ^ -2", -0.558296564952432106);
+			evalAndCompareD(tn, "3^2^3", 6561.0);
+
+			evalAndCompareD(tn, "2+3 > 2*2", 1.0);
+			evalAndCompareD(tn, "8 < 8 || 8 > 8", 0.0);
+			evalAndCompareD(tn, "2 * abs(-1)^5 == 2", 1.0);
+
+			evalAndCompareD(tn, "1 && 1 || 1 && 0", 1.0);
+			evalAndCompareD(tn, "1 && 1 ^^ 1 && 0", 1.0);
+			evalAndCompareD(tn, "1 && 1 ^^ 1 && 0 || 1 && 0 ^^ 0 && 1", 1.0);
+		}
+
+
 		private void evalAndCompareD(string testName, string exprStr, double exceptedValue) {
 			evalAndCompare(testName, exprStr, exceptedValue.ToConst());
 		}
@@ -215,22 +258,24 @@ namespace Malsys.Tests.Expressions {
 
 		private IValue parseCompileEvaluateExpression(string testName, string exprStr) {
 
-			// parse
 			Console.WriteLine(exprStr);
 
-			var lexBuff = LexBuffer<char>.FromString(exprStr);
-			var parsedExpr = ParserUtils.parseExpression(lexBuff, testName);
+			// lexing
 			Console.WriteLine(getTokensFromStr(exprStr));
+
+			// parsing
+			var lexBuff = LexBuffer<char>.FromString(exprStr);
+			var parsedVal = ParserUtils.parseExpression(lexBuff, testName);
 
 
 			// compile
-			IExpression compiledExpr;
-
 			var ecp = new ExpressionCompilerParameters();
 			ecp.CaseSensitiveVarsNames = false;
 			ecp.CaseSensitiveFunsNames = false;
 
-			if (ExpressionCompiler.TryCompile(parsedExpr, ecp, out compiledExpr)) {
+			IExpression compiledExpr;
+
+			if (ExpressionCompiler.TryCompile(parsedVal, ecp, out compiledExpr)) {
 				// write something
 			}
 			else {

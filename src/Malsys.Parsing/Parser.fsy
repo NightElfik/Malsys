@@ -77,31 +77,8 @@ VarDefsListNonEmpty:
       { $1.Add($3); $1 }
 
 VarDef:
-    | LetKw Id EQUALS Value
+    | LetKw Id EQUALS Expression
       { new VariableDefinition($1, $2, $4, toAstPos parseState.ResultRange) }
-
-
-Value:
-    | Expression
-      { $1 :> IValue }
-    | ValuesArray
-      { $1 :> IValue }
-
-ValuesArray:
-    | LBRACE ValuesList RBRACE
-      { new ValuesArray($2, toAstPos parseState.ResultRange) }
-
-ValuesList:
-    |
-      { new ResizeArray<IValue>() }
-    | ValuesListNonEmpty
-      { $1 }
-
-ValuesListNonEmpty:
-    | Value
-      { let mutable x = new ResizeArray<IValue>() in x.Add($1); x }
-    | ValuesListNonEmpty COMMA Value
-      { $1.Add($3); $1 }
 
 
 FuncDef:
@@ -123,9 +100,9 @@ OptParamsListNonEmpty:
 
 OptParam:
     | Id
-      { new OptionalParameter($1) }
-    | Id EQUALS Value
-      { new OptionalParameter($1, $3) }
+      { new OptionalParameter($1, toAstPos parseState.ResultRange) }
+    | Id EQUALS Expression
+      { new OptionalParameter($1, $3, toAstPos parseState.ResultRange) }
 
 
 Lsystem:
@@ -155,25 +132,25 @@ MaybeLCtxt:
     |
       { null }
     | LBRACE SymbolsPatternsList RBRACE
-      { new RrContext($2, toAstPos parseState.ResultRange) }
+      { new SymbolPatternsList($2, toAstPos parseState.ResultRange) }
 
 MaybeRCtxt:
     |
       { null }
     | LBRACE SymbolsPatternsList RBRACE
-      { new RrContext($2, toAstPos parseState.ResultRange) }
+      { new SymbolPatternsList($2, toAstPos parseState.ResultRange) }
 
 MaybeCondition:
     |
       { null }
     | QMARK LBRACE VarDefsListSemi Expression RBRACE
-      { new RrCondition($3, $4, toAstPos parseState.ResultRange) }
+      { new RichExpression($3, $4, toAstPos parseState.ResultRange) }
 
 MaybeProbab:
     |
       { null }
     | COLON LBRACE VarDefsListSemi Expression RBRACE
-      { new RrProbability($3, $4, toAstPos parseState.ResultRange) }
+      { new RichExpression($3, $4, toAstPos parseState.ResultRange) }
 
 MaybeVarDefs:
     |
@@ -196,21 +173,38 @@ SymbolPattern:
 
 SymbolsWithParamsList:
     |
-      { new ResizeArray<SymbolWithParams>() }
-    | SymbolsWithParamsList SymbolWithParams
+      { new ResizeArray<SymbolWithArgs>() }
+    | SymbolsWithParamsList SymbolWithArgs
       { $1.Add($2); $1 }
 
-SymbolWithParams:
+SymbolWithArgs:
     | Symbol
-      { new SymbolWithParams($1, toAstPos parseState.ResultRange) }
-    | Symbol LPAREN ValuesList RPAREN
-      { new SymbolWithParams($1, $3, toAstPos parseState.ResultRange) }
+      { new SymbolWithArgs($1, toAstPos parseState.ResultRange) }
+    | Symbol LPAREN ExpressionsList RPAREN
+      { new SymbolWithArgs($1, $3, toAstPos parseState.ResultRange) }
 
 Symbol:
     | ID
       { new Symbol($1, toAstPos parseState.ResultRange) }
     | OPERATOR
       { new Symbol($1, toAstPos parseState.ResultRange) }
+
+
+ExpressionsArray:
+    | LBRACE ExpressionsList RBRACE
+      { new ExpressionsArray($2, toAstPos parseState.ResultRange) }
+
+ExpressionsList:
+    |
+      { new ResizeArray<Expression>() }
+    | ExpressionsListNonEmpty
+      { $1 }
+
+ExpressionsListNonEmpty:
+    | Expression
+      { let mutable x = new ResizeArray<Expression>() in x.Add($1); x }
+    | ExpressionsListNonEmpty COMMA Expression
+      { $1.Add($3); $1 }
 
 
 // expression can not be empty
@@ -221,22 +215,17 @@ Expression:
       { new Expression($1, toAstPos parseState.ResultRange) }
 
 ExpressionNonEmpty:
-    | ExprFirstMember
+    | ExprMember
       { let mutable x = new ResizeArray<IExpressionMember>() in x.Add($1); x }
     | ExpressionNonEmpty ExprMember
       { $1.Add($2); $1 }
 
 ExprMember:
-    | ExprFirstMember
-      { $1 }
-    | ValuesArray
-      { $1 :> IExpressionMember }
-
-// expression can not start with array value to aviod conflicts
-ExprFirstMember:
     | Float
       { $1 :> IExpressionMember }
     | Id
+      { $1 :> IExpressionMember }
+    | ExpressionsArray
       { $1 :> IExpressionMember }
     | Operator
       { $1 :> IExpressionMember }
@@ -253,7 +242,7 @@ ExprIndexer:
       { new ExpressionIndexer($2, toAstPos parseState.ResultRange) }
 
 ExprFunc:
-    | Id LPAREN ValuesList RPAREN
+    | Id LPAREN ExpressionsList RPAREN
       { new ExpressionFunction($1, $3, toAstPos parseState.ResultRange) }
 
 ExprParen:

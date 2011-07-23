@@ -1,24 +1,32 @@
 ﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Malsys.Ast {
-	public class ValuesArray : IValue, IExpressionMember {
+	/// <summary>
+	/// Immutable.
+	/// </summary>
+	public class ExpressionsArray : IExpressionMember {
 
-		public IValue this[int i] { get { return Values[i]; } }
-		public int Length { get { return Values.Count; } }
+		public Expression this[int i] { get { return values[i]; } }
+		public readonly int MembersCount;
 
-		public readonly ReadOnlyCollection<IValue> Values;
+		private Expression[] values;
 
 
-		public ValuesArray(Position pos) {
-			Values = new ReadOnlyCollection<IValue>(new IValue[0]);
+		public ExpressionsArray(Position pos) {
+			values = new Expression[0];
 			Position = pos;
+
+			MembersCount = values.Length;
 		}
 
-		public ValuesArray(IList<IValue> values, Position pos) {
-			Values = new ReadOnlyCollection<IValue>(values);
+		public ExpressionsArray(IEnumerable<Expression> vals, Position pos) {
+			values = vals.ToArray();
 			Position = pos;
+
+			MembersCount = values.Length;
 		}
+
 
 		#region IToken Members
 
@@ -37,13 +45,6 @@ namespace Malsys.Ast {
 		#region IExpressionMember Members
 
 		public ExpressionMemberType MemberType { get { return ExpressionMemberType.Array; } }
-
-		#endregion
-
-		#region IValue Members
-
-		public bool IsExpression { get { return false; } }
-		public bool IsArray { get { return true; } }
 
 		#endregion
 	}

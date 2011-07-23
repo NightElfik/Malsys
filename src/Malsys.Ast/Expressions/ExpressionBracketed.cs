@@ -1,6 +1,10 @@
 ﻿
 namespace Malsys.Ast {
+	/// <summary>
+	/// Immutable.
+	/// </summary>
 	public class ExpressionBracketed : IToken, IAstVisitable, IExpressionMember {
+
 		public readonly Expression Expression;
 
 		public ExpressionBracketed(Expression expression, Position pos) {

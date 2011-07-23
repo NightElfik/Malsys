@@ -7,7 +7,8 @@ namespace Malsys.Expressions {
 	public static class ExpressionEvaluator {
 
 		[ThreadStatic]
-		private static ExpressionEvalVisitor evalVisitor = new ExpressionEvalVisitor();
+		private static ExpressionEvalVisitor evalVisitor;
+
 
 		/// <summary>
 		/// Evaluates expression with no defined variables nor functions.
@@ -17,6 +18,10 @@ namespace Malsys.Expressions {
 		}
 
 		public static IValue Evaluate(IExpression expr, VarMap variables, FunMap functions) {
+
+			if (evalVisitor == null) {
+				evalVisitor = new ExpressionEvalVisitor();
+			}
 
 			return evalVisitor.Evaluate(expr, variables, functions);
 		}

@@ -1,25 +1,28 @@
 ﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 
 namespace Malsys.Ast {
+	/// <summary>
+	/// Immutable.
+	/// </summary>
 	public class ExpressionFunction : IToken, IAstVisitable, IExpressionMember {
 
-		public IValue this[int i] { get { return arguments[i]; } }
-
-		public readonly int ArgumentsCount;
+		public Expression this[int i] { get { return arguments[i]; } }
 
 		public readonly Identificator NameId;
-		public readonly IValue[] arguments;
+		public readonly int ArgumentsCount;
 
-		public ExpressionFunction(Identificator name, IList<IValue> args, Position pos) {
+		private Expression[] arguments;
+
+
+		public ExpressionFunction(Identificator name, IList<Expression> args, Position pos) {
 			NameId = name;
 			arguments = args.ToArray();
 			Position = pos;
 
 			ArgumentsCount = arguments.Length;
 		}
+
 
 		#region IToken Members
 

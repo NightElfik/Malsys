@@ -16,7 +16,7 @@ namespace Malsys.Compilers {
 
 			State state = State.ExcpectingOperand;
 
-			foreach (var member in expr.Members) {
+			foreach (var member in expr) {
 				switch (state) {
 					case State.ExcpectingOperand:
 						state = handleAsOperand(member, optorsStack, operandsStack, prms);
@@ -92,15 +92,21 @@ namespace Malsys.Compilers {
 					return State.ExcpectingOperator;
 
 				case ExpressionMemberType.Array:
-					ExpressionValuesArray resultArr;
 
-					if (ValueCompiler.TryCompile((Ast.ValuesArray)member, prms, out resultArr)) {
-						operandsStack.Push(resultArr);
-					}
-					else {
-						return State.Error;
+					var arr = (ExpressionsArray)member;
+					IExpression[] resArr = new IExpression[arr.MembersCount];
+
+					for (int i = 0; i < resArr.Length; i++) {
+						IExpression val;
+						if (TryCompile(arr[i], prms, out val)) {
+							resArr[i] = val;
+						}
+						else {
+							return State.Error;
+						}
 					}
 
+					operandsStack.Push(new ExpressionValuesArray(resArr));
 					return State.ExcpectingOperator;
 
 				case ExpressionMemberType.Operator:
@@ -310,9 +316,9 @@ namespace Malsys.Compilers {
 			IExpression[] args = new IExpression[funCall.ArgumentsCount];
 
 			for (int i = 0; i < funCall.ArgumentsCount; i++) {
-				if (!ValueCompiler.TryCompile(funCall.arguments[i], prms, out args[i])) {
+				if (!TryCompile(funCall[i], prms, out args[i])) {
 					prms.Messages.AddMessage("Failed to compile {0}. argument of function `{1}`.".Fmt(i, funCall.NameId.Name),
-						CompilerMessageType.Error, funCall.arguments[i].Position);
+						CompilerMessageType.Error, funCall[i].Position);
 				}
 			}
 

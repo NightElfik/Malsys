@@ -1,105 +1,52 @@
 ﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Malsys.Ast {
+	/// <summary>
+	/// Immutable.
+	/// </summary>
 	public class RewriteRule : IToken, ILsystemStatement {
+
 		public readonly SymbolPattern Pattern;
 
-		public readonly RrContext LeftContext;
-		public readonly RrContext RightContext;
+		public readonly SymbolPatternsList LeftContext;
+		public readonly SymbolPatternsList RightContext;
 
-		public readonly RrCondition Condition;
+		public readonly RichExpression Condition;
 
-		public readonly RrProbability Probability;
+		public readonly RichExpression Probability;
 
-		public readonly ReadOnlyCollection<VariableDefinition> VariableDefinitions;
-		public readonly ReadOnlyCollection<SymbolWithParams> Replacement;
+		public readonly int LocalVariableDefsCount;
+		public readonly int ReplacementSymbolsCount;
 
-		public RewriteRule(RrContext lctxt, SymbolPattern pattern, RrContext rctxt, RrCondition cond, RrProbability probab,
-				IList<VariableDefinition> varDefs, IList<SymbolWithParams> replac, Position pos) {
+		private VariableDefinition[] variableDefs;
+		private SymbolWithArgs[] replacement;
+
+
+		public RewriteRule(SymbolPatternsList lctxt, SymbolPattern pattern, SymbolPatternsList rctxt, RichExpression cond, RichExpression probab,
+				IEnumerable<VariableDefinition> varDefs, IEnumerable<SymbolWithArgs> replac, Position pos) {
 
 			LeftContext = lctxt;
 			Pattern = pattern;
 			RightContext = rctxt;
 			Condition = cond;
 			Probability = probab;
-			VariableDefinitions = new ReadOnlyCollection<VariableDefinition>(varDefs);
-			Replacement = new ReadOnlyCollection<SymbolWithParams>(replac);
+			variableDefs = varDefs.ToArray();
+			replacement = replac.ToArray();
 			Position = pos;
+
+			LocalVariableDefsCount = variableDefs.Length;
+			ReplacementSymbolsCount = replacement.Length;
 		}
 
-		#region IToken Members
-
-		public Position Position { get; private set; }
-
-		#endregion
-
-		#region IAstVisitable Members
-
-		public void Accept(IAstVisitor visitor) {
-			visitor.Visit(this);
+		public VariableDefinition GetVariableDefinition(int i) {
+			return variableDefs[i];
 		}
 
-		#endregion
-	}
-
-	public class RrContext : IToken, IAstVisitable {
-		public readonly ReadOnlyCollection<SymbolPattern> Patterns;
-
-		public RrContext(IList<SymbolPattern> patterns, Position pos) {
-			Patterns = new ReadOnlyCollection<SymbolPattern>(patterns);
-			Position = pos;
+		public SymbolWithArgs GetReplacSumbol(int i) {
+			return replacement[i];
 		}
 
-		#region IToken Members
-
-		public Position Position { get; private set; }
-
-		#endregion
-
-		#region IAstVisitable Members
-
-		public void Accept(IAstVisitor visitor) {
-			visitor.Visit(this);
-		}
-
-		#endregion
-	}
-
-	public class RrCondition : IToken, IAstVisitable {
-		public readonly ReadOnlyCollection<VariableDefinition> VariableDefinitions;
-		public readonly Expression Expression;
-
-		public RrCondition(IList<VariableDefinition> varDefs, Expression expr, Position pos) {
-			VariableDefinitions = new ReadOnlyCollection<VariableDefinition>(varDefs);
-			Expression = expr;
-			Position = pos;
-		}
-
-		#region IToken Members
-
-		public Position Position { get; private set; }
-
-		#endregion
-
-		#region IAstVisitable Members
-
-		public void Accept(IAstVisitor visitor) {
-			visitor.Visit(this);
-		}
-
-		#endregion
-	}
-
-	public class RrProbability : IToken, IAstVisitable {
-		public readonly ReadOnlyCollection<VariableDefinition> VariableDefinitions;
-		public readonly Expression Expression;
-
-		public RrProbability(IList<VariableDefinition> varDefs, Expression expr, Position pos) {
-			VariableDefinitions = new ReadOnlyCollection<VariableDefinition>(varDefs);
-			Expression = expr;
-			Position = pos;
-		}
 
 		#region IToken Members
 

@@ -1,17 +1,27 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Malsys.Ast {
 	/// <summary>
-	/// Expression tree, partially linearized.
+	/// Immutable.
 	/// </summary>
-	public class Expression : IToken, IAstVisitable, IValue {
-		public readonly ReadOnlyCollection<IExpressionMember> Members;
+	public class Expression : IToken, IAstVisitable, IEnumerable<IExpressionMember> {
 
-		public Expression(IList<IExpressionMember> members, Position pos) {
-			Members = new ReadOnlyCollection<IExpressionMember>(members);
+		public IExpressionMember this[int i] { get { return members[i]; } }
+
+		public readonly int MembersCount;
+
+		private IExpressionMember[] members;
+
+
+		public Expression(IEnumerable<IExpressionMember> mmbrs, Position pos) {
+			members = mmbrs.ToArray();
 			Position = pos;
+
+			MembersCount = members.Length;
 		}
+
 
 		#region IToken Members
 
@@ -27,10 +37,19 @@ namespace Malsys.Ast {
 
 		#endregion
 
-		#region IValue Members
+		#region IEnumerable Members
 
-		public bool IsExpression { get { return true; } }
-		public bool IsArray { get { return false; } }
+		IEnumerator IEnumerable.GetEnumerator() {
+			return members.GetEnumerator();
+		}
+
+		#endregion
+
+		#region IEnumerable<IExpressionMember> Members
+
+		public IEnumerator<IExpressionMember> GetEnumerator() {
+			return ((IEnumerable<IExpressionMember>)members).GetEnumerator();
+		}
 
 		#endregion
 	}

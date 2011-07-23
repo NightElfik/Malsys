@@ -1,9 +1,14 @@
 ﻿
 namespace Malsys.Ast {
+	/// <summary>
+	/// Immutable.
+	/// </summary>
 	public class Keyword : IToken, IAstVisitable {
+
 		public Keyword(Position pos) {
 			Position = pos;
 		}
+
 
 		#region IToken Members
 

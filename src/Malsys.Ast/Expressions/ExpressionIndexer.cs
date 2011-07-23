@@ -1,7 +1,12 @@
 ﻿
 namespace Malsys.Ast {
+	/// <summary>
+	/// Immutable.
+	/// </summary>
 	public class ExpressionIndexer : IToken, IAstVisitable, IExpressionMember {
+
 		public readonly Expression Index;
+
 
 		public ExpressionIndexer(Expression index, Position pos) {
 			Index = index;

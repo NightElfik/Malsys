@@ -1,12 +1,18 @@
 ﻿
 namespace Malsys.Ast {
+	/// <summary>
+	/// Immutable.
+	/// </summary>
 	public class Operator : IToken, IAstVisitable, IExpressionMember {
+
 		public readonly string Syntax;
+
 
 		public Operator(string syntax, Position pos) {
 			Syntax = syntax;
 			Position = pos;
 		}
+
 
 		#region IToken Members
 

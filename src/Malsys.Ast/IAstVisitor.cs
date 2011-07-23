@@ -12,14 +12,14 @@ namespace Malsys.Ast {
 		void Visit(Keyword keyword);
 		void Visit(Lsystem lsystem);
 		void Visit(Operator op);
+		void Visit(OptionalParameter optionalParameter);
 		void Visit(RewriteRule rewriteRule);
-		void Visit(RrCondition condition);
-		void Visit(RrContext context);
-		void Visit(RrProbability probability);
+		void Visit(RichExpression richExpression);
+		void Visit(SymbolPatternsList symbolPatternsList);
 		void Visit(Symbol symbol);
 		void Visit(SymbolPattern symbolPattern);
-		void Visit(SymbolWithParams symbolWithParams);
-		void Visit(ValuesArray valuesArray);
+		void Visit(SymbolWithArgs symbolWithParams);
+		void Visit(ExpressionsArray valuesArray);
 		void Visit(VariableDefinition variableDefinition);
 	}
 }

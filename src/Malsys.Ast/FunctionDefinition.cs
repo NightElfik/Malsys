@@ -1,28 +1,31 @@
 ﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Malsys.Ast {
-	public class FunctionDefinition : IToken, IInputFileStatement, IExpressionInteractiveStatement {
+	/// <summary>
+	/// Immutable.
+	/// </summary>
+	public class FunctionDefinition : RichExpression, IInputFileStatement {
+
 		public readonly Keyword Keyword;
 		public readonly Identificator Name;
-		public readonly ReadOnlyCollection<OptionalParameter> Parameters;
-		public readonly ReadOnlyCollection<VariableDefinition> VariableDefinitions;
-		public readonly Expression Expression;
+		public readonly int ParametersCount;
 
-		public FunctionDefinition(Keyword keyword, Identificator name, IList<OptionalParameter> parameters, IList<VariableDefinition> varDefs, Expression expr, Position pos) {
+		private OptionalParameter[] parameters;
+
+
+		public FunctionDefinition(Keyword keyword, Identificator name, IEnumerable<OptionalParameter> prms,
+				IEnumerable<VariableDefinition> varDefs, Expression expr, Position pos) : base(varDefs, expr, pos) {
+
 			Keyword = keyword;
 			Name = name;
-			Parameters = new ReadOnlyCollection<OptionalParameter>(parameters);
-			VariableDefinitions = new ReadOnlyCollection<VariableDefinition>(varDefs);
-			Expression = expr;
-			Position = pos;
+			parameters = prms.ToArray();
 		}
 
-		#region IToken Members
+		public OptionalParameter GetOptionalParameter(int i) {
+			return parameters[i];
+		}
 
-		public Position Position { get; private set; }
-
-		#endregion
 
 		#region IAstVisitable Members
 

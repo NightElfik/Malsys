@@ -50,7 +50,6 @@
     <Compile Include="Compilers\ExpressionCompilerParameters.cs" />
     <Compile Include="Compilers\LsystemCompiler.cs" />
     <Compile Include="Compilers\MessagesCollection.cs" />
-    <Compile Include="Compilers\ValueCompiler.cs" />
     <Compile Include="DataTypes\OptionalParameter.cs" />
     <Compile Include="DataTypes\Symbol.cs" />
     <Compile Include="DataTypes\FunctionDefinition.cs" />

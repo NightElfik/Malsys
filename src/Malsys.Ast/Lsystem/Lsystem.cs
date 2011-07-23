@@ -1,34 +1,51 @@
 ﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Malsys.Ast {
 	public interface ILsystemStatement : IAstVisitable { }
 
+	/// <summary>
+	/// Immutable.
+	/// </summary>
 	public class Lsystem : IToken, IInputFileStatement {
+
+		public ILsystemStatement this[int i] { get { return statements[i]; } }
+
 		public readonly Keyword Keyword;
 		public readonly Identificator Name;
-		/// <summary>
-		/// If it is null, in input were not parenthesis (no params at all).
-		/// If it is array with zero length, empy parenthesis were in input.
-		/// </summary>
-		public readonly ReadOnlyCollection<OptionalParameter> Parameters;
-		public readonly ReadOnlyCollection<ILsystemStatement> Statements;
+		public readonly int ParametersCount;
+		public readonly int StatementsCount;
 
-		public Lsystem(Keyword keyword, Identificator name, IList<ILsystemStatement> statements, Position pos) {
+		private OptionalParameter[] parameters;
+		private ILsystemStatement[] statements;
+
+
+		public Lsystem(Keyword keyword, Identificator name, IEnumerable<ILsystemStatement> satetmnts, Position pos) {
 			Keyword = keyword;
 			Name = name;
-			Parameters = null;
-			Statements = new ReadOnlyCollection<ILsystemStatement>(statements);
+			parameters = null;
+			statements = satetmnts.ToArray();
 			Position = pos;
+
+			ParametersCount = 0;
+			StatementsCount = statements.Length;
 		}
 
-		public Lsystem(Keyword keyword, Identificator name, IList<OptionalParameter> parameters, IList<ILsystemStatement> statements, Position pos) {
+		public Lsystem(Keyword keyword, Identificator name, IEnumerable<OptionalParameter> prms, IEnumerable<ILsystemStatement> satetmnts, Position pos) {
 			Keyword = keyword;
 			Name = name;
-			Parameters = new ReadOnlyCollection<OptionalParameter>(parameters);
-			Statements = new ReadOnlyCollection<ILsystemStatement>(statements);
+			parameters = prms.ToArray();
+			statements = satetmnts.ToArray();
 			Position = pos;
+
+			ParametersCount = parameters.Length;
+			StatementsCount = statements.Length;
 		}
+
+		public OptionalParameter GetOptionalParameter(int i) {
+			return parameters[i];
+		}
+
 
 		#region IToken Members
 

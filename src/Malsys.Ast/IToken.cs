@@ -6,6 +6,9 @@ namespace Malsys.Ast {
 		Position Position { get; }
 	}
 
+	/// <summary>
+	/// Immutable.
+	/// </summary>
 	public struct Position {
 		public static readonly Position Unknown = new Position(-1, -1, -1, -1);
 

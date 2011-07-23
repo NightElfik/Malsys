@@ -1,19 +1,22 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-
+﻿
 namespace Malsys.Ast {
+	/// <summary>
+	/// Immutable.
+	/// </summary>
+	public class VariableDefinition : IToken, IInputFileStatement, ILsystemStatement {
 
-	public class VariableDefinition : IToken, IInputFileStatement, ILsystemStatement, IExpressionInteractiveStatement {
 		public readonly Keyword Keyword;
 		public readonly Identificator Name;
-		public readonly IValue Value;
+		public readonly Expression Expression;
 
-		public VariableDefinition(Keyword keyword, Identificator name, IValue value, Position pos) {
+
+		public VariableDefinition(Keyword keyword, Identificator name, Expression expr, Position pos) {
 			Keyword = keyword;
 			Name = name;
-			Value = value;
+			Expression = expr;
 			Position = pos;
 		}
+
 
 		#region IToken Members
 
@@ -29,5 +32,4 @@ namespace Malsys.Ast {
 
 		#endregion
 	}
-
 }

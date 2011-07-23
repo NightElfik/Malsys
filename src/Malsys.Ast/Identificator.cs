@@ -1,12 +1,17 @@
 ﻿
 namespace Malsys.Ast {
+	/// <summary>
+	/// Immutable.
+	/// </summary>
 	public class Identificator : IToken, IAstVisitable, IExpressionMember {
+
 		public readonly string Name;
 
 		public Identificator(string name, Position pos) {
 			Name = name;
 			Position = pos;
 		}
+
 
 		#region IToken Members
 

@@ -1,7 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Malsys.Ast {
+	/// <summary>
+	/// Immutable.
+	/// </summary>
 	public class Symbol : IToken, IAstVisitable {
 		public readonly string Syntax;
 
@@ -25,21 +28,35 @@ namespace Malsys.Ast {
 		#endregion
 	}
 
+	/// <summary>
+	/// Immutable.
+	/// </summary>
 	public class SymbolPattern : IToken, IAstVisitable {
+
+		public Identificator this[int i] { get { return parametersNames[i]; } }
+
 		public readonly Symbol Symbol;
-		public readonly ReadOnlyCollection<Identificator> ParametersNames;
+		public readonly int ParametersCount;
+
+		private Identificator[] parametersNames;
+
 
 		public SymbolPattern(Symbol symbol, Position pos) {
 			Symbol = symbol;
-			ParametersNames = new ReadOnlyCollection<Identificator>(new Identificator[0]);
+			parametersNames = new Identificator[0];
 			Position = pos;
+
+			ParametersCount = parametersNames.Length;
 		}
 
-		public SymbolPattern(Symbol symbol, IList<Identificator> paramsNames, Position pos) {
+		public SymbolPattern(Symbol symbol, IEnumerable<Identificator> paramsNames, Position pos) {
 			Symbol = symbol;
-			ParametersNames = new ReadOnlyCollection<Identificator>(paramsNames);
+			parametersNames = paramsNames.ToArray();
 			Position = pos;
+
+			ParametersCount = parametersNames.Length;
 		}
+
 
 		#region IToken Members
 
@@ -56,21 +73,35 @@ namespace Malsys.Ast {
 		#endregion
 	}
 
-	public class SymbolWithParams : IToken, IAstVisitable {
+	/// <summary>
+	/// Immutable.
+	/// </summary>
+	public class SymbolWithArgs : IToken, IAstVisitable {
+
+		public Expression this[int i] { get { return arguments[i]; } }
+
 		public readonly Symbol Symbol;
-		public readonly ReadOnlyCollection<IValue> Parameters;
+		public readonly int ArgumentsCount;
 
-		public SymbolWithParams(Symbol symbol, Position pos) {
+		private Expression[] arguments;
+
+
+		public SymbolWithArgs(Symbol symbol, Position pos) {
 			Symbol = symbol;
-			Parameters = new ReadOnlyCollection<IValue>(new IValue[0]);
+			arguments = new Expression[0];
 			Position = pos;
+
+			ArgumentsCount = arguments.Length;
 		}
 
-		public SymbolWithParams(Symbol symbol, IList<IValue> parameters, Position pos) {
+		public SymbolWithArgs(Symbol symbol, IList<Expression> args, Position pos) {
 			Symbol = symbol;
-			Parameters = new ReadOnlyCollection<IValue>(parameters);
+			arguments = args.ToArray();
 			Position = pos;
+
+			ArgumentsCount = arguments.Length;
 		}
+
 
 		#region IToken Members
 
