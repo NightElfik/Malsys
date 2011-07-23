@@ -31,7 +31,7 @@ namespace Malsys.Expressions {
 
 			ArgsCount = argsCount;
 
-			for (int i = argsCount - 1; i >= 0; i++) {
+			for (int i = argsCount - 1; i >= 0; i--) {
 				args[i] = stack.Pop();
 			}
 		}

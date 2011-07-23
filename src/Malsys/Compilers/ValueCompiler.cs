@@ -11,14 +11,17 @@ namespace Malsys.Compilers {
 					result = expr;
 					return true;
 				}
-				else {
-					result = null;
-					return false;
-				}
 			}
 			else {
-				return TryCompile((Ast.ValuesArray)value, prms, out result);
+				ExpressionValuesArray rsltArr;
+				if (TryCompile((Ast.ValuesArray)value, prms, out rsltArr)) {
+					result = rsltArr;
+					return true;
+				}
 			}
+
+			result = null;
+			return false;
 		}
 
 		public static bool TryCompile(Ast.ValuesArray arr, ExpressionCompilerParameters prms, out ExpressionValuesArray result) {

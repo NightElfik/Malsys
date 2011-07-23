@@ -19,6 +19,11 @@ namespace Malsys.Compilers {
 			SourceName = source;
 			Position = position;
 		}
+
+		public string GetFullMessage() {
+			return "{0}: {1} In {2} from line {3} col {4} to line {5} col {6}".Fmt(
+				Type.ToString(), Message, SourceName, Position.BeginLine, Position.BeginColumn, Position.EndLine, Position.EndColumn);
+		}
 	}
 
 	public enum CompilerMessageType {

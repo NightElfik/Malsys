@@ -51,7 +51,7 @@ namespace Malsys.Expressions {
 		public static readonly OperatorCore IntDivide = new OperatorCore("\\", 5, 6,
 			new ExpressionValueType[] { ExpressionValueType.Constant, ExpressionValueType.Constant },
 			(a) => {
-				return ((double)((long)(((Constant)a[0]).Value) / (long)(((Constant)a[1]).Value))).ToConst();
+				return Math.Floor((Constant)a[0] / (Constant)a[1]).ToConst();
 			});
 		public static readonly OperatorCore Modulo = new OperatorCore("%", 5, 6,
 			new ExpressionValueType[] { ExpressionValueType.Constant, ExpressionValueType.Constant },
@@ -73,28 +73,28 @@ namespace Malsys.Expressions {
 		public static readonly OperatorCore LessThan = new OperatorCore("<", 9, 10,
 			new ExpressionValueType[] { ExpressionValueType.Any, ExpressionValueType.Any },
 			(a) => {
-				return (a[1].CompareTo(a[1]) < 0 ? 1.0 : 0.0).ToConst();
+				return (a[0].CompareTo(a[1]) < 0 ? 1.0 : 0.0).ToConst();
 			});
 		public static readonly OperatorCore GreaterThan = new OperatorCore(">", 9, 10,
 			new ExpressionValueType[] { ExpressionValueType.Any, ExpressionValueType.Any },
 			(a) => {
-				return (a[1].CompareTo(a[1]) > 0 ? 1.0 : 0.0).ToConst();
+				return (a[0].CompareTo(a[1]) > 0 ? 1.0 : 0.0).ToConst();
 			});
 		public static readonly OperatorCore LessThanOrEqual = new OperatorCore("<=", 9, 10,
 			new ExpressionValueType[] { ExpressionValueType.Any, ExpressionValueType.Any },
 			(a) => {
-				return (a[1].CompareTo(a[1]) <= 0 ? 1.0 : 0.0).ToConst();
+				return (a[0].CompareTo(a[1]) <= 0 ? 1.0 : 0.0).ToConst();
 			});
 		public static readonly OperatorCore GreaterThanOrEqual = new OperatorCore(">=", 9, 10,
 			new ExpressionValueType[] { ExpressionValueType.Any, ExpressionValueType.Any },
 			(a) => {
-				return (a[1].CompareTo(a[1]) >= 0 ? 1.0 : 0.0).ToConst();
+				return (a[0].CompareTo(a[1]) >= 0 ? 1.0 : 0.0).ToConst();
 			});
 
 		public static readonly OperatorCore Equal = new OperatorCore("==", 11, 12,
 			new ExpressionValueType[] { ExpressionValueType.Any, ExpressionValueType.Any },
 			(a) => {
-				return (a[1].CompareTo(a[1]) == 0 ? 1.0 : 0.0).ToConst();
+				return (a[0].CompareTo(a[1]) == 0 ? 1.0 : 0.0).ToConst();
 			});
 
 		public static readonly OperatorCore And = new OperatorCore("&&", 13, 14,

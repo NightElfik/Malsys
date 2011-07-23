@@ -77,7 +77,7 @@
     <Compile Include="Expressions\DataTypes\BinaryOperator.cs" />
     <Compile Include="Expressions\FloatArithmeticHelper.cs" />
     <Compile Include="Expressions\FunctionCore.cs" />
-    <Compile Include="Expressions\DataTypes\KnownConstant.cs" />
+    <Compile Include="Expressions\KnownConstant.cs" />
     <Compile Include="Expressions\DataTypes\Variable.cs" />
     <Compile Include="Expressions\ExpressionEvaluator.cs" />
     <Compile Include="Expressions\VariableDefinitionEvaluator.cs" />

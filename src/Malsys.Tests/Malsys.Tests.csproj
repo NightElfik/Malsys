@@ -54,6 +54,7 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Expressions\GeneralExpressionsTests.cs" />
     <Compile Include="Parsing\DebugTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -61,6 +62,10 @@
     <ProjectReference Include="..\Malsys.Ast\Malsys.Ast.csproj">
       <Project>{4DE67417-39CA-4AEC-AC75-9584112268F0}</Project>
       <Name>Malsys.Ast</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Malsys.Common\Malsys.Common.csproj">
+      <Project>{433E2485-4265-4656-A197-D0EB315618E1}</Project>
+      <Name>Malsys.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\Malsys.Gui\Malsys.Gui.csproj">
       <Project>{D04C5DFA-7E90-46A8-90E0-295F25AA81BE}</Project>

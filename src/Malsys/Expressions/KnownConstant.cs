@@ -10,7 +10,7 @@ namespace Malsys.Expressions {
 		#region Known constants definitions
 
 		public static readonly KnownConstant True = new KnownConstant("true", 1.0);
-		public static readonly KnownConstant False = new KnownConstant("false", 1.0);
+		public static readonly KnownConstant False = new KnownConstant("false", 0.0);
 
 		public static readonly KnownConstant Nan = new KnownConstant("nan", double.NaN);
 		public static readonly KnownConstant Infty = new KnownConstant("infty", double.PositiveInfinity);

@@ -33,7 +33,7 @@ namespace Malsys.Expressions {
 				throw new EvalException("Failed to evaluate expression. Not all values were processed.");
 			}
 
-			return valuesStack.Pop();  // Peek (not Pop) to be able to call for result more than once.
+			return valuesStack.Pop();
 		}
 
 
@@ -129,7 +129,7 @@ namespace Malsys.Expressions {
 					function.ArgumentsCount, valuesStack.Count));
 
 			argsStorage.PopArgs(function.ArgumentsCount, valuesStack);
-			function.Evaluate(argsStorage);
+			valuesStack.Push(function.Evaluate(argsStorage));
 		}
 
 		public void Visit(UserFunction userFunction) {
@@ -162,7 +162,7 @@ namespace Malsys.Expressions {
 
 			argsStorage.PopArgs(userFunction.ArgumentsCount, valuesStack);
 
-			UserFunctionEvaluator.Evaluate(fun, argsStorage, variables, functions);
+			valuesStack.Push(UserFunctionEvaluator.Evaluate(fun, argsStorage, variables, functions));
 		}
 
 		#endregion

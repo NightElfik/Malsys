@@ -102,7 +102,7 @@ rule tokenize = parse
     | ':' { COLON }
     | '=' { EQUALS }
     | "->" { RARROW }
-    | operator
+    | "==" | operator
       { OPERATOR (lexeme lexbuf) }
     | eof
       { EOF }

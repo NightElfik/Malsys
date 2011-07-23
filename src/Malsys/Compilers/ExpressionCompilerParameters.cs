@@ -6,8 +6,8 @@ namespace Malsys.Compilers {
 
 		public MessagesCollection Messages { get; private set; }
 
-		public ExpressionCompilerParameters(MessagesCollection msgs) {
-			Messages = msgs;
+		public ExpressionCompilerParameters() {
+			Messages = new MessagesCollection();
 		}
 	}
 }

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Text;
 
 namespace Malsys.Expressions {
 	/// <summary>
@@ -27,6 +27,22 @@ namespace Malsys.Expressions {
 		/// </summary>
 		internal ValuesArray(IValue[] immutableValues) {
 			values = immutableValues;
+		}
+
+		public override string ToString() {
+			StringBuilder sb = new StringBuilder();
+			sb.Append("{");
+
+			for (int i = 0; i < values.Length; i++) {
+				if (i != 0) {
+					sb.Append(", ");
+				}
+
+				sb.Append(values[i].ToString());
+			}
+
+			sb.Append("}");
+			return sb.ToString();
 		}
 
 

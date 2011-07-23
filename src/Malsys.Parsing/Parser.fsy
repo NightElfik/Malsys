@@ -26,12 +26,20 @@ let toAstPos range =
 %start parseLsystemStatements
 %type <IInputFileStatement[]> parseLsystemStatements
 
+%start parseExpression
+%type <Expression> parseExpression
+
 %%
 
 
 parseLsystemStatements:
     | LsystemStatementsList
       { ($1 :> ResizeArray<IInputFileStatement>).ToArray() }
+
+parseExpression:
+    | Expression EOF
+      { $1 }
+
 
 LsystemStatementsList:
     |

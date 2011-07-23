@@ -36,20 +36,14 @@ namespace Malsys.Ast {
 
 		#region IExpressionMember Members
 
-		public bool IsConstant { get { return false; } }
-		public bool IsVariable { get { return false; } }
-		public bool IsArray { get { return true; } }
-		public bool IsOperator { get { return false; } }
-		public bool IsFunction { get { return false; } }
-		public bool IsIndexer { get { return false; } }
-		public bool IsBracketedExpression { get { return false; } }
+		public ExpressionMemberType MemberType { get { return ExpressionMemberType.Array; } }
 
 		#endregion
 
 		#region IValue Members
 
 		public bool IsExpression { get { return false; } }
-		//public bool IsArray { get { return true; } }
+		public bool IsArray { get { return true; } }
 
 		#endregion
 	}

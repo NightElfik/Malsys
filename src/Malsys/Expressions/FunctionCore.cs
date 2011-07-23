@@ -43,11 +43,13 @@ namespace Malsys.Expressions {
 				return Math.Floor((Constant)a[0]).ToConst();
 			});
 
-		public static readonly FunctionCore Ceiling = new FunctionCore("ceil", 1,
+		public static readonly FunctionCore Ceiling = new FunctionCore("ceiling", 1,
 			new ExpressionValueType[] { ExpressionValueType.Constant },
 			(a) => {
 				return Math.Ceiling((Constant)a[0]).ToConst();
 			});
+
+		public static readonly FunctionCore Ceil = Ceiling.ChangeName("ceil");
 
 		public static readonly FunctionCore Min = new FunctionCore("min", AnyParamsCount,
 			new ExpressionValueType[] { ExpressionValueType.Any },
@@ -59,13 +61,24 @@ namespace Malsys.Expressions {
 
 		#endregion
 
-		#region Sqrt, log, log10, sum, product, average
+		#region Sqrt, factorial, log, log10, sum, product, average
 
 		public static readonly FunctionCore Sqrt = new FunctionCore("sqrt", 1,
 			new ExpressionValueType[] { ExpressionValueType.Constant },
 			(a) => {
 				return Math.Sqrt((Constant)a[0]).ToConst();
 			});
+
+		public static readonly FunctionCore Factorial = new FunctionCore("factorial", 1,
+			new ExpressionValueType[] { ExpressionValueType.Constant },
+			(a) => {
+				double result = 1.0;
+				double max = (Constant)a[0];
+				for (int i = 2; i <= max; i++) { result *= i; }
+				return result.ToConst();
+			});
+
+		public static readonly FunctionCore Fact = Factorial.ChangeName("fact");
 
 		public static readonly FunctionCore Log = new FunctionCore("log", 1,
 			new ExpressionValueType[] { ExpressionValueType.Constant },
@@ -91,21 +104,37 @@ namespace Malsys.Expressions {
 				return a.Aggregate(0.0, (acc, val) => acc + (Constant)val).ToConst();
 			});
 
-		public static readonly FunctionCore Product = new FunctionCore("prod", AnyParamsCount,
+		public static readonly FunctionCore Product = new FunctionCore("product", AnyParamsCount,
 			new ExpressionValueType[] { ExpressionValueType.Constant },
 			(a) => {
 				return a.Aggregate(1.0, (acc, val) => acc * (Constant)val).ToConst();
 			});
 
-		public static readonly FunctionCore Average = new FunctionCore("avg", AnyParamsCount,
+		public static readonly FunctionCore Prod = Product.ChangeName("prod");
+
+		public static readonly FunctionCore Average = new FunctionCore("average", AnyParamsCount,
 			new ExpressionValueType[] { ExpressionValueType.Constant },
 			(a) => {
 				return (a.Aggregate(0.0, (acc, val) => acc + (Constant)val) / a.ArgsCount).ToConst();
 			});
 
+		public static readonly FunctionCore Avg = Average.ChangeName("avg");
+
 		#endregion
 
-		#region Sin, cos, tan, asin, acos, atan, atan2
+		#region Deg2rad, rad2deg, sin, cos, tan, asin, acos, atan, atan2
+
+		public static readonly FunctionCore Deg2Rad = new FunctionCore("deg2rad", 1,
+			new ExpressionValueType[] { ExpressionValueType.Constant },
+			(a) => {
+				return ((Constant)a[0] * (Math.PI / 180)).ToConst();
+			});
+
+		public static readonly FunctionCore Rad2Deg = new FunctionCore("rad2deg", 1,
+			new ExpressionValueType[] { ExpressionValueType.Constant },
+			(a) => {
+				return ((Constant)a[0] * (180 / Math.PI)).ToConst();
+			});
 
 		public static readonly FunctionCore Sin = new FunctionCore("sin", 1,
 			new ExpressionValueType[] { ExpressionValueType.Constant },
@@ -151,7 +180,7 @@ namespace Malsys.Expressions {
 
 		#endregion
 
-		#region If, length
+		#region If, length, isNan, isInfinity
 
 		public static readonly FunctionCore If = new FunctionCore("if", 3,
 			new ExpressionValueType[] { ExpressionValueType.Constant, ExpressionValueType.Any, ExpressionValueType.Any },
@@ -174,6 +203,22 @@ namespace Malsys.Expressions {
 					return ((ValuesArray)a[0]).Length.ToConst();
 				}
 			});
+
+		public static readonly FunctionCore Len = Length.ChangeName("len");
+
+		public static readonly FunctionCore IsNan = new FunctionCore("isNan", 1,
+			new ExpressionValueType[] { ExpressionValueType.Constant },
+			(a) => {
+				return (double.IsNaN((Constant)a[0]) ? 1.0 : 0.0).ToConst();
+			});
+
+		public static readonly FunctionCore IsInfinity = new FunctionCore("isInfinity", 1,
+			new ExpressionValueType[] { ExpressionValueType.Constant },
+			(a) => {
+				return (double.IsInfinity((Constant)a[0]) ? 1.0 : 0.0).ToConst();
+			});
+
+		public static readonly FunctionCore IsInfty = IsInfinity.ChangeName("isInfty");
 
 		#endregion
 
@@ -242,11 +287,15 @@ namespace Malsys.Expressions {
 		public readonly EvalDelegate EvalFunction;
 
 
-		private FunctionCore(string name, int arity, ExpressionValueType[] paramsTypes, EvalDelegate evalFunc) {
+		private FunctionCore(string name, int paramsCount, ExpressionValueType[] paramsTypes, EvalDelegate evalFunc) {
 			Name = name;
-			ParametersCount = arity;
+			ParametersCount = paramsCount;
 			ParamsTypes = paramsTypes;
 			EvalFunction = evalFunc;
+		}
+
+		internal FunctionCore ChangeName(string newName) {
+			return new FunctionCore(newName, ParametersCount, ParamsTypes, EvalFunction);
 		}
 	}
 }
