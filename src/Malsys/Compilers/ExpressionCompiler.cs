@@ -8,8 +8,9 @@ namespace Malsys.Compilers {
 
 		/// <summary>
 		/// Tries to compile expression from AST.
+		/// Thread safe.
 		/// </summary>
-		public static bool TryCompile(Expression expr, ExpressionCompilerParameters prms, out IExpression result) {
+		public static bool TryCompile(Expression expr, CompilerParameters prms, out IExpression result) {
 
 			Stack<OperatorCore> optorsStack = new Stack<OperatorCore>();
 			Stack<IExpression> operandsStack = new Stack<IExpression>();
@@ -67,7 +68,7 @@ namespace Malsys.Compilers {
 			return true;
 		}
 
-		private static State handleAsOperand(IExpressionMember member, Stack<OperatorCore> optorsStack, Stack<IExpression> operandsStack, ExpressionCompilerParameters prms) {
+		private static State handleAsOperand(IExpressionMember member, Stack<OperatorCore> optorsStack, Stack<IExpression> operandsStack, CompilerParameters prms) {
 
 			switch (member.MemberType) {
 				case ExpressionMemberType.Constant:
@@ -166,7 +167,7 @@ namespace Malsys.Compilers {
 			}
 		}
 
-		private static State handleAsOperator(IExpressionMember member, Stack<OperatorCore> optorsStack, Stack<IExpression> operandsStack, ExpressionCompilerParameters prms) {
+		private static State handleAsOperator(IExpressionMember member, Stack<OperatorCore> optorsStack, Stack<IExpression> operandsStack, CompilerParameters prms) {
 
 			switch (member.MemberType) {
 				case ExpressionMemberType.Constant:
@@ -308,7 +309,7 @@ namespace Malsys.Compilers {
 		}
 
 
-		private static bool tryCompileFunctionCall(ExpressionFunction funCall, ExpressionCompilerParameters prms, out IExpression result) {
+		private static bool tryCompileFunctionCall(ExpressionFunction funCall, CompilerParameters prms, out IExpression result) {
 
 			FunctionCore fun;
 			string name = prms.CaseSensitiveFunsNames ? funCall.NameId.Name : funCall.NameId.Name.ToLower();

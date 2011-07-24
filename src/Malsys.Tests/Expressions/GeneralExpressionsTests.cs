@@ -269,17 +269,17 @@ namespace Malsys.Tests.Expressions {
 
 
 			// compile
-			var ecp = new ExpressionCompilerParameters();
-			ecp.CaseSensitiveVarsNames = false;
-			ecp.CaseSensitiveFunsNames = false;
+			var cp = new CompilerParameters();
+			cp.CaseSensitiveVarsNames = false;
+			cp.CaseSensitiveFunsNames = false;
 
 			IExpression compiledExpr;
 
-			if (ExpressionCompiler.TryCompile(parsedVal, ecp, out compiledExpr)) {
+			if (ExpressionCompiler.TryCompile(parsedVal, cp, out compiledExpr)) {
 				// write something
 			}
 			else {
-				foreach (var err in ecp.Messages) {
+				foreach (var err in cp.Messages) {
 					Console.WriteLine(err.GetFullMessage());
 				}
 				Assert.Fail("Failed to compile expression `{0}`", exprStr);

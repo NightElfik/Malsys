@@ -6,7 +6,7 @@ namespace Malsys.Ast {
 	/// <summary>
 	/// Immutable.
 	/// </summary>
-	public class Expression : IToken, IAstVisitable, IEnumerable<IExpressionMember> {
+	public class Expression : IToken, IAstVisitable, IEnumerable<IExpressionMember>, IExprInteractiveStatement {
 
 		public IExpressionMember this[int i] { get { return members[i]; } }
 

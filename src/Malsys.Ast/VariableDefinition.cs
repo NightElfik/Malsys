@@ -3,16 +3,16 @@ namespace Malsys.Ast {
 	/// <summary>
 	/// Immutable.
 	/// </summary>
-	public class VariableDefinition : IToken, IInputFileStatement, ILsystemStatement {
+	public class VariableDefinition : IToken, IInputFileStatement, ILsystemStatement, IExprInteractiveStatement {
 
 		public readonly Keyword Keyword;
-		public readonly Identificator Name;
+		public readonly Identificator NameId;
 		public readonly Expression Expression;
 
 
 		public VariableDefinition(Keyword keyword, Identificator name, Expression expr, Position pos) {
 			Keyword = keyword;
-			Name = name;
+			NameId = name;
 			Expression = expr;
 			Position = pos;
 		}

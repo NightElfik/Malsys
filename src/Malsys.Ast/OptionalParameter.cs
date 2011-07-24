@@ -5,18 +5,18 @@ namespace Malsys.Ast {
 	/// </summary>
 	public class OptionalParameter : IToken, IAstVisitable {
 
-		public readonly Identificator Name;
+		public readonly Identificator NameId;
 		public readonly Expression OptionalValue;
 
 
 		public OptionalParameter(Identificator name, Position pos) {
-			Name = name;
+			NameId = name;
 			OptionalValue = null;
 			Position = pos;
 		}
 
 		public OptionalParameter(Identificator name, Expression optionalValue, Position pos) {
-			Name = name;
+			NameId = name;
 			OptionalValue = optionalValue;
 			Position = pos;
 		}

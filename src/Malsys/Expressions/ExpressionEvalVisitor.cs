@@ -19,6 +19,7 @@ namespace Malsys.Expressions {
 
 		public IValue Evaluate(IExpression expr, VarMap vars, FunMap funs) {
 
+			valuesStack.Clear();
 			variables = vars;
 			functions = funs;
 
@@ -111,7 +112,19 @@ namespace Malsys.Expressions {
 
 			Constant index = (Constant)valuesStack.Pop();
 
-			valuesStack.Push(arr[(int)Math.Round(index)]);
+			int intIndex = (int)Math.Round(index);
+
+			if (intIndex < 0) {
+				throw new EvalException("Failed to evaluate indexer, index out of range. Index is zero-based but negative value `{0}` was given.".Fmt(
+					intIndex));
+			}
+
+			if (intIndex >= arr.Length) {
+				throw new EvalException("Failed to evaluate indexer, index out of range. Can not index array of length {0} with zero-based index {1}.".Fmt(
+					arr.Length, intIndex));
+			}
+
+			valuesStack.Push(arr[intIndex]);
 		}
 
 		public void Visit(Function function) {

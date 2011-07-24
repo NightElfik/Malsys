@@ -32,7 +32,7 @@ namespace Malsys {
 			MandatoryParamsCount = ParametersCount - OptionalParamsCount;
 			LocalVariableDefsCount = variableDefs.Length;
 
-			Debug.Assert(MandatoryParamsCount < 0, "Function can not have more default params than parameters count.");
+			Debug.Assert(MandatoryParamsCount >= 0, "Function can not have more default params than parameters count.");
 		}
 
 

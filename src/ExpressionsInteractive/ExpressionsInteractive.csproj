@@ -2,19 +2,20 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{4DE67417-39CA-4AEC-AC75-9584112268F0}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{C253FC1A-72B5-409D-920F-764C19C40FDC}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Malsys.Ast</RootNamespace>
-    <AssemblyName>Malsys.Ast</AssemblyName>
+    <RootNamespace>ExpressionsInteractive</RootNamespace>
+    <AssemblyName>ExpressionsInteractive</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -23,7 +24,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -39,40 +41,32 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Expressions\Expression.cs" />
-    <Compile Include="Expressions\ExpressionBracketed.cs" />
-    <Compile Include="Expressions\ExpressionFunction.cs" />
-    <Compile Include="Expressions\ExpressionIndexer.cs" />
-    <Compile Include="Expressions\FloatConstant.cs" />
-    <Compile Include="FunctionDefinition.cs" />
-    <Compile Include="IAstVisitable.cs" />
-    <Compile Include="IAstVisitor.cs" />
-    <Compile Include="Identificator.cs" />
-    <Compile Include="Expressions\IExpressionMember.cs" />
-    <Compile Include="IExprInteractiveStatement.cs" />
-    <Compile Include="Lsystem\IInputFileStatement.cs" />
-    <Compile Include="Keyword.cs" />
-    <Compile Include="ImmutableList.cs" />
-    <Compile Include="Lsystem\Lsystem.cs" />
-    <Compile Include="Expressions\Operator.cs" />
-    <Compile Include="Lsystem\SymbolPatternsList.cs" />
-    <Compile Include="OptionalParameter.cs" />
-    <Compile Include="Lsystem\RewriteRule.cs" />
-    <Compile Include="RichExpression.cs" />
-    <Compile Include="Symbol.cs" />
-    <Compile Include="IToken.cs" />
+    <Compile Include="Evaluator.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Expressions\ValuesArray.cs" />
-    <Compile Include="VariableDefinition.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Malsys.Ast\Malsys.Ast.csproj">
+      <Project>{4DE67417-39CA-4AEC-AC75-9584112268F0}</Project>
+      <Name>Malsys.Ast</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Malsys.Common\Malsys.Common.csproj">
       <Project>{433E2485-4265-4656-A197-D0EB315618E1}</Project>
       <Name>Malsys.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Malsys.Parsing\Malsys.Parsing.fsproj">
+      <Project>{8CAA0257-FE49-4CD8-97C1-86185F44E08C}</Project>
+      <Name>Malsys.Parsing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Malsys\Malsys.csproj">
+      <Project>{E80C526F-83F8-4899-B5DE-1F584E2C3D77}</Project>
+      <Name>Malsys</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

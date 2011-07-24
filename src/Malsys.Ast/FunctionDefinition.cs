@@ -5,10 +5,10 @@ namespace Malsys.Ast {
 	/// <summary>
 	/// Immutable.
 	/// </summary>
-	public class FunctionDefinition : RichExpression, IInputFileStatement {
+	public class FunctionDefinition : RichExpression, IInputFileStatement, IExprInteractiveStatement {
 
 		public readonly Keyword Keyword;
-		public readonly Identificator Name;
+		public readonly Identificator NameId;
 		public readonly int ParametersCount;
 
 		private OptionalParameter[] parameters;
@@ -18,8 +18,10 @@ namespace Malsys.Ast {
 				IEnumerable<VariableDefinition> varDefs, Expression expr, Position pos) : base(varDefs, expr, pos) {
 
 			Keyword = keyword;
-			Name = name;
+			NameId = name;
 			parameters = prms.ToArray();
+
+			ParametersCount = parameters.Length;
 		}
 
 		public OptionalParameter GetOptionalParameter(int i) {
@@ -29,7 +31,7 @@ namespace Malsys.Ast {
 
 		#region IAstVisitable Members
 
-		public void Accept(IAstVisitor visitor) {
+		public new void Accept(IAstVisitor visitor) {
 			visitor.Visit(this);
 		}
 

@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Malsys", "Malsys\Malsys.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Malsys.Common", "Malsys.Common\Malsys.Common.csproj", "{433E2485-4265-4656-A197-D0EB315618E1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpressionsInteractive", "ExpressionsInteractive\ExpressionsInteractive.csproj", "{C253FC1A-72B5-409D-920F-764C19C40FDC}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = Malsys.vsmdi
@@ -92,6 +94,16 @@ Global
 		{433E2485-4265-4656-A197-D0EB315618E1}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{433E2485-4265-4656-A197-D0EB315618E1}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{433E2485-4265-4656-A197-D0EB315618E1}.Release|x86.ActiveCfg = Release|Any CPU
+		{C253FC1A-72B5-409D-920F-764C19C40FDC}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{C253FC1A-72B5-409D-920F-764C19C40FDC}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{C253FC1A-72B5-409D-920F-764C19C40FDC}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{C253FC1A-72B5-409D-920F-764C19C40FDC}.Debug|x86.ActiveCfg = Debug|x86
+		{C253FC1A-72B5-409D-920F-764C19C40FDC}.Debug|x86.Build.0 = Debug|x86
+		{C253FC1A-72B5-409D-920F-764C19C40FDC}.Release|Any CPU.ActiveCfg = Release|x86
+		{C253FC1A-72B5-409D-920F-764C19C40FDC}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{C253FC1A-72B5-409D-920F-764C19C40FDC}.Release|Mixed Platforms.Build.0 = Release|x86
+		{C253FC1A-72B5-409D-920F-764C19C40FDC}.Release|x86.ActiveCfg = Release|x86
+		{C253FC1A-72B5-409D-920F-764C19C40FDC}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

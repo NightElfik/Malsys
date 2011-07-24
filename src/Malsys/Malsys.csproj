@@ -47,9 +47,11 @@
   <ItemGroup>
     <Compile Include="Compilers\CompilerMessage.cs" />
     <Compile Include="Compilers\ExpressionCompiler.cs" />
-    <Compile Include="Compilers\ExpressionCompilerParameters.cs" />
+    <Compile Include="Compilers\CompilerParameters.cs" />
+    <Compile Include="Compilers\FunctionDefinitionCompiler.cs" />
     <Compile Include="Compilers\LsystemCompiler.cs" />
     <Compile Include="Compilers\MessagesCollection.cs" />
+    <Compile Include="Compilers\VariableDefinitionCompiler.cs" />
     <Compile Include="DataTypes\OptionalParameter.cs" />
     <Compile Include="DataTypes\Symbol.cs" />
     <Compile Include="DataTypes\FunctionDefinition.cs" />

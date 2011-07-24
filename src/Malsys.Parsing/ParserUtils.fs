@@ -15,3 +15,6 @@ let parseLsystemStatements (lexbuf : LexBuffer<_>) sourceName =
 
 let parseExpression (lexbuf : LexBuffer<_>) sourceName =
     Parser.parseExpression Lexer.tokenize (setInitialBuffPos lexbuf sourceName)
+
+let parseExprInteractiveStatements (lexbuf : LexBuffer<_>) sourceName =
+    Parser.parseExprInteractiveStatements Lexer.tokenize (setInitialBuffPos lexbuf sourceName)

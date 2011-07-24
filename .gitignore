@@ -3,6 +3,9 @@
 *.suo
 *.vsmdi
 
+/src/ExpressionsInteractive/bin
+/src/ExpressionsInteractive/obj
+
 /src/Malsys/bin
 /src/Malsys/obj
 

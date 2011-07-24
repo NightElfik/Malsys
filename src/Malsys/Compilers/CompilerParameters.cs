@@ -1,13 +1,19 @@
 ﻿
 namespace Malsys.Compilers {
-	public class ExpressionCompilerParameters {
+	public class CompilerParameters {
+
 		public bool CaseSensitiveVarsNames { get; set; }
 		public bool CaseSensitiveFunsNames { get; set; }
 
 		public MessagesCollection Messages { get; private set; }
 
-		public ExpressionCompilerParameters() {
+
+		public CompilerParameters() {
 			Messages = new MessagesCollection();
+		}
+
+		internal CompilerParameters(MessagesCollection msgs) {
+			Messages = msgs;
 		}
 	}
 }

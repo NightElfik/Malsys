@@ -29,16 +29,23 @@ let toAstPos range =
 %start parseExpression
 %type <Expression> parseExpression
 
+%start parseExprInteractiveStatements
+%type <IExprInteractiveStatement[]> parseExprInteractiveStatements
+
 %%
 
 
 parseLsystemStatements:
-    | LsystemStatementsList
+    | LsystemStatementsList EOF
       { ($1 :> ResizeArray<IInputFileStatement>).ToArray() }
 
 parseExpression:
     | Expression EOF
       { $1 }
+
+parseExprInteractiveStatements:
+    | ExprInteractiveStatementList EOF
+      { ($1 :> ResizeArray<IExprInteractiveStatement>).ToArray() }
 
 
 LsystemStatementsList:
@@ -54,6 +61,23 @@ LsystemStatement:
       { $1 :> IInputFileStatement }
     | Lsystem
       { $1 :> IInputFileStatement }
+
+
+ExprInteractiveStatementList:
+    |
+      { new ResizeArray<IExprInteractiveStatement>() }
+    | ExprInteractiveStatementList ExprInteractiveStatement
+      { $1.Add($2); $1 }
+    | ExprInteractiveStatementList SEMI
+      { $1 }
+
+ExprInteractiveStatement:
+    | Expression SEMI
+      { $1 :> IExprInteractiveStatement }
+    | VarDef SEMI
+      { $1 :> IExprInteractiveStatement }
+    | FuncDef
+      { $1 :> IExprInteractiveStatement }
 
 
 // Empty list OR variable definitions list divided by semicolon (but no semicolon on the end)
