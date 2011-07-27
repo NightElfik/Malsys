@@ -3,10 +3,10 @@ namespace Malsys.Expressions {
 	/// <summary>
 	/// Immutable.
 	/// </summary>
-	public class Variable : IExpression, IExpressionVisitable {
+	public class ExprVariable : IExpression, IExpressionVisitable {
 		public readonly string Name;
 
-		public Variable(string name) {
+		public ExprVariable(string name) {
 			Name = name;
 		}
 

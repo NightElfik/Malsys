@@ -1,45 +1,36 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace Malsys.Expressions {
 	/// <summary>
 	/// Immutable.
 	/// </summary>
-	public class ValuesArray : IValue {
+	public class ValuesArray : ImmutableList<IValue>, IValue {
 
-		public static ValuesArray Empty = new ValuesArray(new IValue[0]);
-
-
-		public IValue this[int i] { get { return values[i]; } }
-		public int Length { get { return values.Length; } }
-
-		private IValue[] values;
+		new public static readonly ValuesArray Empty = new ValuesArray();
 
 
-		public ValuesArray(IEnumerable<IValue> vals) {
-			values = vals.ToArray();
-		}
+		public ValuesArray()
+			: base(ImmutableList<IValue>.Empty) { }
 
-		/// <summary>
-		/// Faster version of constructing ValuesArray.
-		/// Use only if no other reference will exist on given array.
-		/// Do not copy elements from given array, just takes its reference.
-		/// </summary>
-		internal ValuesArray(IValue[] immutableVals) {
-			values = immutableVals;
-		}
+		public ValuesArray(IEnumerable<IValue> vals)
+			: base(vals) { }
+
+
+		public ValuesArray(ImmutableList<IValue> vals)
+			: base(vals) { }
+
 
 		public override string ToString() {
 			StringBuilder sb = new StringBuilder();
 			sb.Append("{");
 
-			for (int i = 0; i < values.Length; i++) {
+			for (int i = 0; i < Length; i++) {
 				if (i != 0) {
 					sb.Append(", ");
 				}
 
-				sb.Append(values[i].ToString());
+				sb.Append(this[i].ToString());
 			}
 
 			sb.Append("}");
@@ -63,12 +54,12 @@ namespace Malsys.Expressions {
 			}
 			else {
 				ValuesArray o = (ValuesArray)other;
-				int cmp = values.Length.CompareTo(o.values.Length);
+				int cmp = Length.CompareTo(o.Length);
 
 				if (cmp == 0) {
 					// arrays have same length
-					for (int i = 0; i < values.Length; i++) {
-						cmp = values[i].CompareTo(o.values[i]);
+					for (int i = 0; i < Length; i++) {
+						cmp = this[i].CompareTo(o[i]);
 						if (cmp != 0) {
 							return cmp;  // values at index i are first different
 						}

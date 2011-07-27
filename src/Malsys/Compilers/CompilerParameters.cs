@@ -4,6 +4,7 @@ namespace Malsys.Compilers {
 
 		public bool CaseSensitiveVarsNames { get; set; }
 		public bool CaseSensitiveFunsNames { get; set; }
+		public bool CaseSensitiveLsystemNames { get; set; }
 
 		public MessagesCollection Messages { get; private set; }
 

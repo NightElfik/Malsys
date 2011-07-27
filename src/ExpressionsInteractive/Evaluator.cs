@@ -79,7 +79,7 @@ namespace ExpressionsInteractive {
 
 		private string evaluateVarDef(VariableDefinition varDef) {
 			try {
-				variables = VariableDefinitionEvaluator.Evaluate(varDef, variables, functions);
+				variables = VariableDefinitionEvaluator.EvaluateAndAdd(varDef, variables, functions);
 				return "{0} = {1}".Fmt(varDef.Name, MapModule.Find(varDef.Name, variables).ToString());
 			}
 			catch (EvalException ex) {
@@ -88,7 +88,7 @@ namespace ExpressionsInteractive {
 		}
 
 		private string evaluateFunDef(FunctionDefinition funDef) {
-			functions = MapModule.Add(funDef.Name, funDef, functions);
+			//functions = MapModule.Add(funDef.Name, funDef, functions);
 			return "{0} defined".Fmt(funDef.Name);
 		}
 	}

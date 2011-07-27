@@ -4,28 +4,17 @@ namespace Malsys.Expressions {
 	/// <summary>
 	/// Immutable.
 	/// </summary>
-	public class ExpressionValuesArray : IExpression, IExpressionVisitable {
+	public class ExpressionValuesArray : ImmutableList<IExpression>, IExpression, IExpressionVisitable {
 
-		public IExpression this[int i] { get { return values[i]; } }
-		public int Length { get { return values.Length; } }
+		public ExpressionValuesArray()
+			: base(ImmutableList<IExpression>.Empty) { }
 
-		private IExpression[] values;
+		public ExpressionValuesArray(IEnumerable<IExpression> values)
+			: base(values) { }
 
+		public ExpressionValuesArray(ImmutableList<IExpression> values)
+			: base(values) { }
 
-		public ExpressionValuesArray(IList<IExpression> values) {
-			this.values = new IExpression[values.Count];
-			for (int i = 0; i < values.Count; i++) {
-				this.values[i] = values[i];
-			}
-		}
-
-		/// <summary>
-		/// Faster version of constructing ExpressionValuesArray.
-		/// Use only if no other reference will exist on given array.
-		/// </summary>
-		internal ExpressionValuesArray(IExpression[] immutableValues) {
-			values = immutableValues;
-		}
 
 		#region IExpressionVisitable Members
 

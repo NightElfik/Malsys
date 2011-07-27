@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace Malsys.Ast {
 	/// <summary>
@@ -7,20 +6,14 @@ namespace Malsys.Ast {
 	/// </summary>
 	public class ExpressionFunction : IToken, IAstVisitable, IExpressionMember {
 
-		public Expression this[int i] { get { return arguments[i]; } }
-
 		public readonly Identificator NameId;
-		public readonly int ArgumentsCount;
-
-		private Expression[] arguments;
+		public readonly ImmutableList<Expression> Arguments;
 
 
-		public ExpressionFunction(Identificator name, IList<Expression> args, Position pos) {
+		public ExpressionFunction(Identificator name, IEnumerable<Expression> args, Position pos) {
 			NameId = name;
-			arguments = args.ToArray();
+			Arguments = new ImmutableList<Expression>(args);
 			Position = pos;
-
-			ArgumentsCount = arguments.Length;
 		}
 
 

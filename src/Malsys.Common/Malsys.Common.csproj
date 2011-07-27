@@ -44,8 +44,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataTypes\ImmutableList.cs" />
     <Compile Include="Exceptions\ParserException.cs" />
     <Compile Include="Exceptions\LexerException.cs" />
+    <Compile Include="Extensions\LinqExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Helpers\CharHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

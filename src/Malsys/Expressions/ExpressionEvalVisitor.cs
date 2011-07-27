@@ -44,7 +44,7 @@ namespace Malsys.Expressions {
 			valuesStack.Push(constant);
 		}
 
-		public void Visit(Variable variable) {
+		public void Visit(ExprVariable variable) {
 			var maybeValue = MapModule.TryFind(variable.Name, variables);
 
 			if (OptionModule.IsSome(maybeValue)) {
@@ -63,7 +63,8 @@ namespace Malsys.Expressions {
 				arr[i] = valuesStack.Pop();
 			}
 
-			valuesStack.Push(new ValuesArray(arr));
+			var rsltImm = new ImmutableList<IValue>(arr, true);
+			valuesStack.Push(new ValuesArray(rsltImm));
 		}
 
 		public void Visit(UnaryOperator unaryOperator) {
@@ -127,25 +128,25 @@ namespace Malsys.Expressions {
 			valuesStack.Push(arr[intIndex]);
 		}
 
-		public void Visit(Function function) {
+		public void Visit(FunctionCall functionCall) {
 			// evaluate arguments
-			for (int i = 0; i < function.ArgumentsCount; i++) {
-				function[i].Accept(this);
-				if ((int)(valuesStack.Peek().Type & function.GetValueType(i)) == 0) {
+			for (int i = 0; i < functionCall.Arguments.Length; i++) {
+				functionCall.Arguments[i].Accept(this);
+				if ((int)(valuesStack.Peek().Type & functionCall.GetValueType(i)) == 0) {
 					throw new EvalException("Failed to evaluate function `{0}`. As {1}. argument excpected {1}, but {2} was given.".Fmt(
-						function.Name, i, function.GetValueType(i).ToTypeString(), valuesStack.Peek().Type.ToTypeString()));
+						functionCall.Name, i, functionCall.GetValueType(i).ToTypeString(), valuesStack.Peek().Type.ToTypeString()));
 				}
 			}
 
-			Debug.Assert(valuesStack.Count >= function.ArgumentsCount,
+			Debug.Assert(valuesStack.Count >= functionCall.Arguments.Length,
 				"Excpected at least {0} values in stack, but it has only {1}.".Fmt(
-					function.ArgumentsCount, valuesStack.Count));
+					functionCall.Arguments.Length, valuesStack.Count));
 
-			argsStorage.PopArgs(function.ArgumentsCount, valuesStack);
-			valuesStack.Push(function.Evaluate(argsStorage));
+			argsStorage.PopArgs(functionCall.Arguments.Length, valuesStack);
+			valuesStack.Push(functionCall.Evaluate(argsStorage));
 		}
 
-		public void Visit(UserFunction userFunction) {
+		public void Visit(UserFunctionCall userFunction) {
 			var maybeFun = MapModule.TryFind(userFunction.Name, functions);
 
 			if (!OptionModule.IsSome(maybeFun)) {
@@ -154,26 +155,26 @@ namespace Malsys.Expressions {
 
 			var fun = maybeFun.Value;
 
-			if (userFunction.ArgumentsCount > fun.ParametersCount) {
+			if (userFunction.Arguments.Length > fun.ParametersCount) {
 				throw new EvalException("Failed to evaluate function `{0}`. It takes only {1} parameters but {2} arguments were given.".Fmt(
-					userFunction.Name, fun.ParametersCount, userFunction.ArgumentsCount));
+					userFunction.Name, fun.ParametersCount, userFunction.Arguments.Length));
 			}
 
-			if (userFunction.ArgumentsCount + fun.OptionalParamsCount < fun.ParametersCount) {
+			if (userFunction.Arguments.Length + fun.OptionalParamsCount < fun.ParametersCount) {
 				throw new EvalException("Failed to evaluate function `{0}`. It takes {1} parameters, it have last {2} parameters optional but only {3} arguments were given.".Fmt(
-					userFunction.Name, fun.ParametersCount, fun.OptionalParamsCount, userFunction.ArgumentsCount));
+					userFunction.Name, fun.ParametersCount, fun.OptionalParamsCount, userFunction.Arguments.Length));
 			}
 
 			// evaluate arguments
-			for (int i = 0; i < userFunction.ArgumentsCount; i++) {
-				userFunction[i].Accept(this);
+			for (int i = 0; i < userFunction.Arguments.Length; i++) {
+				userFunction.Arguments[i].Accept(this);
 			}
 
-			Debug.Assert(valuesStack.Count >= userFunction.ArgumentsCount,
+			Debug.Assert(valuesStack.Count >= userFunction.Arguments.Length,
 				 "Excpected at least {0} values in stack, but it has only {1}.".Fmt(
-					 userFunction.ArgumentsCount, valuesStack.Count));
+					 userFunction.Arguments.Length, valuesStack.Count));
 
-			argsStorage.PopArgs(userFunction.ArgumentsCount, valuesStack);
+			argsStorage.PopArgs(userFunction.Arguments.Length, valuesStack);
 
 			valuesStack.Push(UserFunctionEvaluator.Evaluate(fun, argsStorage, variables, functions));
 		}

@@ -8,10 +8,16 @@ namespace Malsys.Expressions {
 		/// <summary>
 		/// Evaluates given variable definition and adds it to returned variables map.
 		/// </summary>
-		public static VarMap Evaluate(VariableDefinition varDef, VarMap vars, FunMap funs) {
+		public static VarMap EvaluateAndAdd(VariableDefinition varDef, VarMap vars, FunMap funs) {
+
+			var var = Evaluate(varDef, vars, funs);
+			return MapModule.Add(var.Name, var.Value, vars);
+		}
+
+		public static Variable Evaluate(VariableDefinition varDef, VarMap vars, FunMap funs) {
 
 			var value = ExpressionEvaluator.Evaluate(varDef.Value, vars, funs);
-			return MapModule.Add(varDef.Name, value, vars);
+			return new Variable(varDef.Name, value);
 		}
 	}
 }

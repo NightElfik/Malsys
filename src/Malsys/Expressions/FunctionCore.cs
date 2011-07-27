@@ -282,12 +282,19 @@ namespace Malsys.Expressions {
 		/// Length of the array do not have to be same length as function's arity.
 		/// If function have more params than length of this array, modulo is used to cycle in it.
 		/// </summary>
-		public readonly ExpressionValueType[] ParamsTypes;
+		public readonly ImmutableList<ExpressionValueType> ParamsTypes;
 
 		public readonly EvalDelegate EvalFunction;
 
 
 		private FunctionCore(string name, int paramsCount, ExpressionValueType[] paramsTypes, EvalDelegate evalFunc) {
+			Name = name;
+			ParametersCount = paramsCount;
+			ParamsTypes = new ImmutableList<ExpressionValueType>(paramsTypes, true);
+			EvalFunction = evalFunc;
+		}
+
+		private FunctionCore(string name, int paramsCount, ImmutableList<ExpressionValueType> paramsTypes, EvalDelegate evalFunc) {
 			Name = name;
 			ParametersCount = paramsCount;
 			ParamsTypes = paramsTypes;

@@ -150,37 +150,37 @@ LsysStatement:
 
 RewriteRule:
     | MaybeLCtxt SymbolPattern MaybeRCtxt MaybeCondition MaybeProbab RARROW MaybeVarDefs SymbolsWithParamsList
-      { new RewriteRule($1, $2, $3, $4, $5, $7, $8, toAstPos parseState.ResultRange) }
+      { new RewriteRule($2, $1, $3, $4, $5, $7, $8, toAstPos parseState.ResultRange) }
 
 MaybeLCtxt:
     |
-      { null }
+      { new ImmutableListPos<SymbolPattern>(toAstPos parseState.ResultRange) }
     | LBRACE SymbolsPatternsList RBRACE
-      { new SymbolPatternsList($2, toAstPos parseState.ResultRange) }
+      { new ImmutableListPos<SymbolPattern>($2, toAstPos parseState.ResultRange) }
 
 MaybeRCtxt:
     |
-      { null }
+      { new ImmutableListPos<SymbolPattern>(toAstPos parseState.ResultRange) }
     | LBRACE SymbolsPatternsList RBRACE
-      { new SymbolPatternsList($2, toAstPos parseState.ResultRange) }
+      { new ImmutableListPos<SymbolPattern>($2, toAstPos parseState.ResultRange) }
 
 MaybeCondition:
     |
-      { null }
+      { new RichExpression(toAstPos parseState.ResultRange) }
     | QMARK LBRACE VarDefsListSemi Expression RBRACE
       { new RichExpression($3, $4, toAstPos parseState.ResultRange) }
 
 MaybeProbab:
     |
-      { null }
+      { new RichExpression(toAstPos parseState.ResultRange) }
     | COLON LBRACE VarDefsListSemi Expression RBRACE
       { new RichExpression($3, $4, toAstPos parseState.ResultRange) }
 
 MaybeVarDefs:
     |
-      { null }
+      { new ImmutableListPos<VariableDefinition>(toAstPos parseState.ResultRange) }
     | LBRACE VarDefsList RBRACE
-      { $2 }
+      { new ImmutableListPos<VariableDefinition>($2, toAstPos parseState.ResultRange) }
 
 
 SymbolsPatternsList:
@@ -197,15 +197,15 @@ SymbolPattern:
 
 SymbolsWithParamsList:
     |
-      { new ResizeArray<SymbolWithArgs>() }
+      { new ResizeArray<SymbolExprArgs>() }
     | SymbolsWithParamsList SymbolWithArgs
       { $1.Add($2); $1 }
 
 SymbolWithArgs:
     | Symbol
-      { new SymbolWithArgs($1, toAstPos parseState.ResultRange) }
+      { new SymbolExprArgs($1, toAstPos parseState.ResultRange) }
     | Symbol LPAREN ExpressionsList RPAREN
-      { new SymbolWithArgs($1, $3, toAstPos parseState.ResultRange) }
+      { new SymbolExprArgs($1, $3, toAstPos parseState.ResultRange) }
 
 Symbol:
     | ID

@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace Malsys.Ast {
 	/// <summary>
 	/// Immutable.
 	/// </summary>
 	public class Symbol : IToken, IAstVisitable {
-		public readonly string Syntax;
 
-		public Symbol(string syntax, Position pos) {
-			Syntax = syntax;
+		public readonly string Name;
+
+		public Symbol(string name, Position pos) {
+			Name = name;
 			Position = pos;
 		}
 
@@ -31,42 +31,27 @@ namespace Malsys.Ast {
 	/// <summary>
 	/// Immutable.
 	/// </summary>
-	public class SymbolPattern : IToken, IAstVisitable {
+	public class SymbolPattern : Symbol, IAstVisitable {
 
-		public Identificator this[int i] { get { return parametersNames[i]; } }
-
-		public readonly Symbol Symbol;
-		public readonly int ParametersCount;
-
-		private Identificator[] parametersNames;
+		public readonly ImmutableList<Identificator> ParametersNames;
 
 
-		public SymbolPattern(Symbol symbol, Position pos) {
-			Symbol = symbol;
-			parametersNames = new Identificator[0];
-			Position = pos;
+		public SymbolPattern(Symbol symbol, Position pos)
+			: base(symbol.Name, pos) {
 
-			ParametersCount = parametersNames.Length;
+			ParametersNames = ImmutableList<Identificator>.Empty;
 		}
 
-		public SymbolPattern(Symbol symbol, IEnumerable<Identificator> paramsNames, Position pos) {
-			Symbol = symbol;
-			parametersNames = paramsNames.ToArray();
-			Position = pos;
+		public SymbolPattern(Symbol symbol, IEnumerable<Identificator> paramsNames, Position pos)
+			: base(symbol.Name, pos) {
 
-			ParametersCount = parametersNames.Length;
+			ParametersNames = new ImmutableList<Identificator>(paramsNames);
 		}
 
-
-		#region IToken Members
-
-		public Position Position { get; private set; }
-
-		#endregion
 
 		#region IAstVisitable Members
 
-		public void Accept(IAstVisitor visitor) {
+		public new void Accept(IAstVisitor visitor) {
 			visitor.Visit(this);
 		}
 
@@ -76,42 +61,27 @@ namespace Malsys.Ast {
 	/// <summary>
 	/// Immutable.
 	/// </summary>
-	public class SymbolWithArgs : IToken, IAstVisitable {
+	public class SymbolExprArgs : Symbol, IAstVisitable {
 
-		public Expression this[int i] { get { return arguments[i]; } }
-
-		public readonly Symbol Symbol;
-		public readonly int ArgumentsCount;
-
-		private Expression[] arguments;
+		public readonly ImmutableList<Expression> Arguments;
 
 
-		public SymbolWithArgs(Symbol symbol, Position pos) {
-			Symbol = symbol;
-			arguments = new Expression[0];
-			Position = pos;
+		public SymbolExprArgs(Symbol symbol, Position pos)
+			: base(symbol.Name, pos) {
 
-			ArgumentsCount = arguments.Length;
+			Arguments = ImmutableList<Expression>.Empty;
 		}
 
-		public SymbolWithArgs(Symbol symbol, IList<Expression> args, Position pos) {
-			Symbol = symbol;
-			arguments = args.ToArray();
-			Position = pos;
+		public SymbolExprArgs(Symbol symbol, IEnumerable<Expression> args, Position pos)
+			: base(symbol.Name, pos) {
 
-			ArgumentsCount = arguments.Length;
+			Arguments = new ImmutableList<Expression>(args);
 		}
 
-
-		#region IToken Members
-
-		public Position Position { get; private set; }
-
-		#endregion
 
 		#region IAstVisitable Members
 
-		public void Accept(IAstVisitor visitor) {
+		public new void Accept(IAstVisitor visitor) {
 			visitor.Visit(this);
 		}
 

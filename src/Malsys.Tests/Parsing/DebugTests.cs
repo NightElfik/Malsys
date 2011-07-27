@@ -1,8 +1,7 @@
 ﻿using System;
+using Malsys.Parsing;
 using Microsoft.FSharp.Text.Lexing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-using Malsys.Parsing;
 
 namespace Malsys.Tests.Parsing {
 	/// <summary>

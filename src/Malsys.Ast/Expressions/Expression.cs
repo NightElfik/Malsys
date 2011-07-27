@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Malsys.Ast {
 	/// <summary>
@@ -8,18 +7,23 @@ namespace Malsys.Ast {
 	/// </summary>
 	public class Expression : IToken, IAstVisitable, IEnumerable<IExpressionMember>, IExprInteractiveStatement {
 
-		public IExpressionMember this[int i] { get { return members[i]; } }
+		public IExpressionMember this[int i] { get { return Members[i]; } }
 
+		public readonly ImmutableList<IExpressionMember> Members;
 		public readonly int MembersCount;
 
-		private IExpressionMember[] members;
 
+		public Expression(Position pos) {
+			Members = ImmutableList<IExpressionMember>.Empty;
+			MembersCount = 0;
+			Position = pos;
+		}
 
 		public Expression(IEnumerable<IExpressionMember> mmbrs, Position pos) {
-			members = mmbrs.ToArray();
+			Members = new ImmutableList<IExpressionMember>(mmbrs);
 			Position = pos;
 
-			MembersCount = members.Length;
+			MembersCount = Members.Length;
 		}
 
 
@@ -40,7 +44,7 @@ namespace Malsys.Ast {
 		#region IEnumerable Members
 
 		IEnumerator IEnumerable.GetEnumerator() {
-			return members.GetEnumerator();
+			return Members.GetEnumerator();
 		}
 
 		#endregion
@@ -48,7 +52,7 @@ namespace Malsys.Ast {
 		#region IEnumerable<IExpressionMember> Members
 
 		public IEnumerator<IExpressionMember> GetEnumerator() {
-			return ((IEnumerable<IExpressionMember>)members).GetEnumerator();
+			return ((IEnumerable<IExpressionMember>)Members).GetEnumerator();
 		}
 
 		#endregion

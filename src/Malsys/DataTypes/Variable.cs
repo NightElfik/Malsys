@@ -4,12 +4,12 @@ namespace Malsys {
 	/// <summary>
 	/// Immutable.
 	/// </summary>
-	public class VariableDefinition {
+	public class Variable {
 
 		public readonly string Name;
-		public readonly IExpression Value;
+		public readonly IValue Value;
 
-		public VariableDefinition(string name, IExpression val) {
+		public Variable(string name, IValue val) {
 			Name = name;
 			Value = val;
 		}

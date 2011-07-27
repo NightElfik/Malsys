@@ -54,12 +54,11 @@
     <Compile Include="Identificator.cs" />
     <Compile Include="Expressions\IExpressionMember.cs" />
     <Compile Include="IExprInteractiveStatement.cs" />
+    <Compile Include="ImmutableListPos.cs" />
     <Compile Include="Lsystem\IInputFileStatement.cs" />
     <Compile Include="Keyword.cs" />
-    <Compile Include="ImmutableList.cs" />
     <Compile Include="Lsystem\Lsystem.cs" />
     <Compile Include="Expressions\Operator.cs" />
-    <Compile Include="Lsystem\SymbolPatternsList.cs" />
     <Compile Include="OptionalParameter.cs" />
     <Compile Include="Lsystem\RewriteRule.cs" />
     <Compile Include="RichExpression.cs" />

@@ -15,10 +15,9 @@ namespace Malsys.Ast {
 		void Visit(OptionalParameter optionalParameter);
 		void Visit(RewriteRule rewriteRule);
 		void Visit(RichExpression richExpression);
-		void Visit(SymbolPatternsList symbolPatternsList);
 		void Visit(Symbol symbol);
 		void Visit(SymbolPattern symbolPattern);
-		void Visit(SymbolWithArgs symbolWithParams);
+		void Visit(SymbolExprArgs symbolWithParams);
 		void Visit(ExpressionsArray valuesArray);
 		void Visit(VariableDefinition variableDefinition);
 	}

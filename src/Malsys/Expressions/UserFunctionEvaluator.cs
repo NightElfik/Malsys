@@ -13,21 +13,11 @@ namespace Malsys.Expressions {
 
 			// eval parameters
 			for (int i = 0; i < fun.ParametersCount; i++) {
-				if (i < args.ArgsCount) {
-					vars = MapModule.Add(fun.GetParamName(i), args[i], vars);
-				}
-				else {
-					var optParamVal = ExpressionEvaluator.Evaluate(fun.GetOptionalParamValue(i), vars, funs);
-					vars = MapModule.Add(fun.GetParamName(i), optParamVal, vars);
-				}
+				IValue value = i < args.ArgsCount ? args[i] : fun.GetOptionalParamValue(i);
+				vars = MapModule.Add(fun.ParametersNames[i], value, vars);
 			}
 
-			// eval local variables
-			for (int i = 0; i < fun.LocalVariableDefsCount; i++) {
-				vars = VariableDefinitionEvaluator.Evaluate(fun.GetVariableDefinition(i), vars, funs);
-			}
-
-			return ExpressionEvaluator.Evaluate(fun.Expression, vars, funs);
+			return RichExpressionEvaluator.Evaluate(fun, vars, funs);
 		}
 	}
 }

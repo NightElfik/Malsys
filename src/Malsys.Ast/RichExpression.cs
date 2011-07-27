@@ -5,17 +5,30 @@ namespace Malsys.Ast {
 	/// Expression with local variable defnitions.
 	/// Immutable.
 	/// </summary>
-	public class RichExpression : ImmutableList<VariableDefinition>, IAstVisitable {
+	public class RichExpression : IToken, IAstVisitable {
 
 		public readonly Expression Expression;
-		public readonly int LocalVariableDefsCount;
+		public readonly ImmutableList<VariableDefinition> VariableDefinitions;
 
-		private readonly new int Length;
 
-		public RichExpression(IEnumerable<VariableDefinition> varDefs, Expression expr, Position pos) : base(varDefs, pos) {
-			Expression = expr;
-			Length = LocalVariableDefsCount = base.Length;
+		public RichExpression(Position pos) {
+			Expression = new Expression(pos);
+			VariableDefinitions = ImmutableList<VariableDefinition>.Empty;
 		}
+
+		public RichExpression(IEnumerable<VariableDefinition> varDefs, Expression expr, Position pos) {
+
+			Expression = expr;
+			VariableDefinitions = new ImmutableList<VariableDefinition>(varDefs);
+			Position = pos;
+		}
+
+
+		#region IToken Members
+
+		public Position Position { get; private set; }
+
+		#endregion
 
 		#region IAstVisitable Members
 

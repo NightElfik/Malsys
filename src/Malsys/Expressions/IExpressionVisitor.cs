@@ -2,12 +2,12 @@
 namespace Malsys.Expressions {
 	public interface IExpressionVisitor {
 		void Visit(Constant constant);
-		void Visit(Variable variable);
+		void Visit(ExprVariable variable);
 		void Visit(ExpressionValuesArray expressionValuesArray);
 		void Visit(UnaryOperator unaryOperator);
 		void Visit(BinaryOperator binaryOperator);
 		void Visit(Indexer indexer);
-		void Visit(Function function);
-		void Visit(UserFunction userFunction);
+		void Visit(FunctionCall functionCall);
+		void Visit(UserFunctionCall userFunction);
 	}
 }

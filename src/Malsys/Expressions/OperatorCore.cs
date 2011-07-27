@@ -175,20 +175,18 @@ namespace Malsys.Expressions {
 		/// Types of parameters of operator.
 		/// Length of the array is equal to operator's arity.
 		/// </summary>
-		public readonly ExpressionValueType[] ParamsTypes;
+		public readonly ImmutableList<ExpressionValueType> ParamsTypes;
 
 		public readonly EvalDelegate EvalFunction;
 
 
-		private OperatorCore(string syntax, byte prec, byte activePrec,
-				ExpressionValueType[] paramsTypes, EvalDelegate evalFunc) {
-
+		private OperatorCore(string syntax, byte prec, byte activePrec, ExpressionValueType[] paramsTypes, EvalDelegate evalFunc) {
 			Syntax = syntax;
 			Arity = paramsTypes.Length;
 			Debug.Assert(Arity == 1 || Arity == 2, "Only unary and binary operators are supported.");
 			EvalFunction = evalFunc;
 			Precedence = prec;
-			ParamsTypes = paramsTypes;
+			ParamsTypes = new ImmutableList<ExpressionValueType>(paramsTypes, true);
 			ActivePrecedence = activePrec;
 		}
 	}

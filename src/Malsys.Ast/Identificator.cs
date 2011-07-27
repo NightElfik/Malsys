@@ -7,6 +7,7 @@ namespace Malsys.Ast {
 
 		public readonly string Name;
 
+
 		public Identificator(string name, Position pos) {
 			Name = name;
 			Position = pos;

@@ -11,6 +11,56 @@ namespace Malsys.Compilers {
 		/// Thread safe.
 		/// </summary>
 		public static bool TryCompile(Expression expr, CompilerParameters prms, out IExpression result) {
+			if (!tryCompile(expr, prms, out result)) {
+				prms.Messages.AddMessage("Failed to compile expression.", CompilerMessageType.Error, expr.Position);
+				result = null;
+				return false;
+			}
+
+			return true;
+		}
+
+		/// <summary>
+		/// Tries to compile list of expressions from AST.
+		/// Thread safe.
+		/// </summary>
+		public static bool TryCompile(ImmutableList<Expression> exprs, CompilerParameters prms, out ImmutableList<IExpression> result) {
+
+			var compiledExprs = new IExpression[exprs.Length];
+
+			for (int i = 0; i < exprs.Length; i++) {
+				if (!tryCompile(exprs[i], prms, out compiledExprs[i])) {
+					prms.Messages.AddMessage("Failed to compile {0}. expression.".Fmt(i), CompilerMessageType.Error, exprs[i].Position);
+					result = null;
+					return false;
+				}
+			}
+
+			result = new ImmutableList<IExpression>(compiledExprs, true);
+			return true;
+		}
+
+		public static bool TryCompileRich(Ast.RichExpression rExprAst, CompilerParameters prms, out RichExpression result) {
+
+			ImmutableList<VariableDefinition> varDefs;
+			if (!VariableDefinitionCompiler.TryCompile(rExprAst.VariableDefinitions, prms, out varDefs)) {
+				result = null;
+				return false;
+			}
+
+			IExpression expr;
+			if (!TryCompile(rExprAst.Expression, prms, out expr)) {
+				result = null;
+				return false;
+			}
+
+			result = new RichExpression(varDefs, expr);
+			return true;
+		}
+
+
+
+		private static bool tryCompile(Expression expr, CompilerParameters prms, out IExpression result) {
 
 			Stack<OperatorCore> optorsStack = new Stack<OperatorCore>();
 			Stack<IExpression> operandsStack = new Stack<IExpression>();
@@ -68,6 +118,7 @@ namespace Malsys.Compilers {
 			return true;
 		}
 
+
 		private static State handleAsOperand(IExpressionMember member, Stack<OperatorCore> optorsStack, Stack<IExpression> operandsStack, CompilerParameters prms) {
 
 			switch (member.MemberType) {
@@ -95,7 +146,7 @@ namespace Malsys.Compilers {
 				case ExpressionMemberType.Array:
 
 					var arr = (ExpressionsArray)member;
-					IExpression[] resArr = new IExpression[arr.MembersCount];
+					IExpression[] resArr = new IExpression[arr.Length];
 
 					for (int i = 0; i < resArr.Length; i++) {
 						IExpression val;
@@ -107,7 +158,8 @@ namespace Malsys.Compilers {
 						}
 					}
 
-					operandsStack.Push(new ExpressionValuesArray(resArr));
+					var resImm = new ImmutableList<IExpression>(resArr, true);
+					operandsStack.Push(new ExpressionValuesArray(resImm));
 					return State.ExcpectingOperator;
 
 				case ExpressionMemberType.Operator:
@@ -314,13 +366,11 @@ namespace Malsys.Compilers {
 			FunctionCore fun;
 			string name = prms.CaseSensitiveFunsNames ? funCall.NameId.Name : funCall.NameId.Name.ToLower();
 
-			IExpression[] args = new IExpression[funCall.ArgumentsCount];
+			ImmutableList<IExpression> argsImm;
 
-			for (int i = 0; i < funCall.ArgumentsCount; i++) {
-				if (!TryCompile(funCall[i], prms, out args[i])) {
-					prms.Messages.AddMessage("Failed to compile {0}. argument of function `{1}`.".Fmt(i, funCall.NameId.Name),
-						CompilerMessageType.Error, funCall[i].Position);
-				}
+			if (!TryCompile(funCall.Arguments, prms, out argsImm)) {
+				prms.Messages.AddMessage("Failed to compile arguments of function `{0}`.".Fmt(funCall.NameId.Name),
+					CompilerMessageType.Error, funCall.Position);
 			}
 
 			if (prms.Messages.ErrorOcured) {
@@ -328,13 +378,13 @@ namespace Malsys.Compilers {
 				return false;
 			}
 
-			if (FunctionCore.TryGet(name, funCall.ArgumentsCount, out fun)) {
-				Debug.Assert(fun.ParametersCount == funCall.ArgumentsCount, "Excpected function with {0} params, but it has {1}.".Fmt(funCall.ArgumentsCount, fun.ParametersCount));
+			if (FunctionCore.TryGet(name, funCall.Arguments.Length, out fun)) {
+				Debug.Assert(fun.ParametersCount == funCall.Arguments.Length, "Excpected function with {0} params, but it has {1}.".Fmt(funCall.Arguments.Length, fun.ParametersCount));
 
-				result = new Function(name, fun.EvalFunction, args, fun.ParamsTypes);
+				result = new FunctionCall(name, fun.EvalFunction, argsImm, fun.ParamsTypes);
 			}
 			else {
-				result = new UserFunction(name, args);
+				result = new UserFunctionCall(name, argsImm);
 			}
 
 			return true;

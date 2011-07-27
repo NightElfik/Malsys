@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace Malsys.Ast {
 	/// <summary>
@@ -9,42 +8,28 @@ namespace Malsys.Ast {
 
 		public readonly SymbolPattern Pattern;
 
-		public readonly SymbolPatternsList LeftContext;
-		public readonly SymbolPatternsList RightContext;
+		public readonly ImmutableListPos<SymbolPattern> LeftContext;
+		public readonly ImmutableListPos<SymbolPattern> RightContext;
 
 		public readonly RichExpression Condition;
 
 		public readonly RichExpression Probability;
 
-		public readonly int LocalVariableDefsCount;
-		public readonly int ReplacementSymbolsCount;
-
-		private VariableDefinition[] variableDefs;
-		private SymbolWithArgs[] replacement;
+		public readonly ImmutableListPos<VariableDefinition> VariableDefs;
+		public readonly ImmutableList<SymbolExprArgs> Replacement;
 
 
-		public RewriteRule(SymbolPatternsList lctxt, SymbolPattern pattern, SymbolPatternsList rctxt, RichExpression cond, RichExpression probab,
-				IEnumerable<VariableDefinition> varDefs, IEnumerable<SymbolWithArgs> replac, Position pos) {
+		public RewriteRule(SymbolPattern pattern, ImmutableListPos<SymbolPattern> lctxt, ImmutableListPos<SymbolPattern> rctxt, RichExpression cond, RichExpression probab,
+				ImmutableListPos<VariableDefinition> varDefs, IEnumerable<SymbolExprArgs> replac, Position pos) {
 
 			LeftContext = lctxt;
 			Pattern = pattern;
 			RightContext = rctxt;
 			Condition = cond;
 			Probability = probab;
-			variableDefs = varDefs.ToArray();
-			replacement = replac.ToArray();
+			VariableDefs = varDefs;
+			Replacement = new ImmutableList<SymbolExprArgs>(replac);
 			Position = pos;
-
-			LocalVariableDefsCount = variableDefs.Length;
-			ReplacementSymbolsCount = replacement.Length;
-		}
-
-		public VariableDefinition GetVariableDefinition(int i) {
-			return variableDefs[i];
-		}
-
-		public SymbolWithArgs GetReplacSumbol(int i) {
-			return replacement[i];
 		}
 
 

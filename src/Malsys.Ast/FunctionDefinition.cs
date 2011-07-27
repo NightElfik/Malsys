@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace Malsys.Ast {
 	/// <summary>
@@ -11,21 +10,18 @@ namespace Malsys.Ast {
 		public readonly Identificator NameId;
 		public readonly int ParametersCount;
 
-		private OptionalParameter[] parameters;
+		public readonly ImmutableList<OptionalParameter> Parameters;
 
 
 		public FunctionDefinition(Keyword keyword, Identificator name, IEnumerable<OptionalParameter> prms,
-				IEnumerable<VariableDefinition> varDefs, Expression expr, Position pos) : base(varDefs, expr, pos) {
+				IEnumerable<VariableDefinition> varDefs, Expression expr, Position pos)
+			: base(varDefs, expr, pos) {
 
 			Keyword = keyword;
 			NameId = name;
-			parameters = prms.ToArray();
+			Parameters = new ImmutableList<OptionalParameter>(prms);
 
-			ParametersCount = parameters.Length;
-		}
-
-		public OptionalParameter GetOptionalParameter(int i) {
-			return parameters[i];
+			ParametersCount = Parameters.Length;
 		}
 
 

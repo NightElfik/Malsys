@@ -1,20 +1,34 @@
 ﻿using Malsys.Expressions;
 
 namespace Malsys {
+	/// <summary>
+	/// Immutable.
+	/// </summary>
 	public class RewriteRule {
-		public SymbolPattern SymbolPattern { get; set; }
+		public readonly Symbol<string> SymbolPattern;
 
-		public SymbolPattern[] LeftContext { get; set; }
-		public SymbolPattern[] RightContext { get; set; }
+		public readonly SymbolsList<string> LeftContext;
+		public readonly SymbolsList<string> RightContext;
 
-		public VariableDefinition[] PreConditionVars { get; set; }
-		public IExpression Condition { get; set; }
+		public readonly RichExpression Condition;
 
-		public VariableDefinition[] PreProbabilityVars { get; set; }
-		public IExpression ProbabilityWeight { get; set; }
+		public readonly RichExpression ProbabilityWeight;
 
-		public VariableDefinition[] ReplacementVars { get; set; }
-		public Symbol[] Replacement { get; set; }
+		public readonly ImmutableList<VariableDefinition> ReplacementVars;
+		public readonly SymbolsList<IExpression> Replacement;
+
+
+		public RewriteRule(Symbol<string> symbolPtrn, SymbolsList<string> lCtxt, SymbolsList<string> rCtxt, RichExpression cond,
+			   RichExpression probab, ImmutableList<VariableDefinition> replacVars, SymbolsList<IExpression> replac) {
+
+			SymbolPattern = symbolPtrn;
+			LeftContext = lCtxt;
+			RightContext = rCtxt;
+			Condition = cond;
+			ProbabilityWeight = probab;
+			ReplacementVars = replacVars;
+			Replacement = replac;
+		}
 	}
 
 }

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace Malsys.Ast {
 	public interface ILsystemStatement : IAstVisitable { }
@@ -9,41 +8,27 @@ namespace Malsys.Ast {
 	/// </summary>
 	public class Lsystem : IToken, IInputFileStatement {
 
-		public ILsystemStatement this[int i] { get { return statements[i]; } }
-
 		public readonly Keyword Keyword;
-		public readonly Identificator Name;
-		public readonly int ParametersCount;
-		public readonly int StatementsCount;
+		public readonly Identificator NameId;
 
-		private OptionalParameter[] parameters;
-		private ILsystemStatement[] statements;
+		public readonly ImmutableList<OptionalParameter> Parameters;
+		public readonly ImmutableList<ILsystemStatement> Statements;
 
 
 		public Lsystem(Keyword keyword, Identificator name, IEnumerable<ILsystemStatement> satetmnts, Position pos) {
 			Keyword = keyword;
-			Name = name;
-			parameters = null;
-			statements = satetmnts.ToArray();
+			NameId = name;
+			Parameters = ImmutableList<OptionalParameter>.Empty;
+			Statements = new ImmutableList<ILsystemStatement>(satetmnts);
 			Position = pos;
-
-			ParametersCount = 0;
-			StatementsCount = statements.Length;
 		}
 
 		public Lsystem(Keyword keyword, Identificator name, IEnumerable<OptionalParameter> prms, IEnumerable<ILsystemStatement> satetmnts, Position pos) {
 			Keyword = keyword;
-			Name = name;
-			parameters = prms.ToArray();
-			statements = satetmnts.ToArray();
+			NameId = name;
+			Parameters = new ImmutableList<OptionalParameter>(prms);
+			Statements = new ImmutableList<ILsystemStatement>(satetmnts);
 			Position = pos;
-
-			ParametersCount = parameters.Length;
-			StatementsCount = statements.Length;
-		}
-
-		public OptionalParameter GetOptionalParameter(int i) {
-			return parameters[i];
 		}
 
 

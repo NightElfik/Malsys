@@ -1,5 +1,4 @@
-﻿using System;
-
+﻿
 namespace Malsys.Expressions {
 	/// <summary>
 	/// Immutable.

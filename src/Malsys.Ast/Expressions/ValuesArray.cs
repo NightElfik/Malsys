@@ -1,30 +1,21 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace Malsys.Ast {
 	/// <summary>
 	/// Immutable.
 	/// </summary>
-	public class ExpressionsArray : IExpressionMember {
+	public class ExpressionsArray : ImmutableList<Expression>, IExpressionMember {
 
-		public Expression this[int i] { get { return values[i]; } }
-		public readonly int MembersCount;
+		public ExpressionsArray(Position pos)
+			: base(ImmutableList<Expression>.Empty) {
 
-		private Expression[] values;
-
-
-		public ExpressionsArray(Position pos) {
-			values = new Expression[0];
 			Position = pos;
-
-			MembersCount = values.Length;
 		}
 
-		public ExpressionsArray(IEnumerable<Expression> vals, Position pos) {
-			values = vals.ToArray();
-			Position = pos;
+		public ExpressionsArray(IEnumerable<Expression> vals, Position pos)
+			: base(vals) {
 
-			MembersCount = values.Length;
+			Position = pos;
 		}
 
 

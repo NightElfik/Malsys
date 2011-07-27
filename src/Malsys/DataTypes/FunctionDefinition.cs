@@ -3,54 +3,44 @@ using System.Diagnostics;
 using Malsys.Expressions;
 
 namespace Malsys {
-	public class FunctionDefinition {
+	/// <summary>
+	/// Immutable.
+	/// </summary>
+	public class FunctionDefinition : RichExpression {
 
 		public readonly string Name;
 		public readonly int ParametersCount;
 		public readonly int MandatoryParamsCount;
 		public readonly int OptionalParamsCount;
-		public readonly int LocalVariableDefsCount;
-		public readonly IExpression Expression;
 
-		private string[] paramsNames;
+		public readonly ImmutableList<string> ParametersNames;
 		/// <summary>
-		/// Aligned to the end, last item from this array is last parameter.
+		/// Aligned to the end of all parameters, last item from this array is last parameter's optional value expression.
 		/// </summary>
-		private IExpression[] optionalParamsValues;
-		private VariableDefinition[] variableDefs;
+		public readonly ImmutableList<IValue> OptionalParamsValues;
 
 
-		public FunctionDefinition(string name, string[] parNames, IExpression[] optParamsVals, VariableDefinition[] varDefs, IExpression expr) {
+		public FunctionDefinition(string name, ImmutableList<string> parNames, ImmutableList<IValue> optParamsVals, ImmutableList<VariableDefinition> varDefs, IExpression expr)
+			: base(varDefs, expr) {
+
 			Name = name;
-			paramsNames = parNames;
-			optionalParamsValues = optParamsVals;
-			variableDefs = varDefs;
-			Expression = expr;
+			ParametersNames = parNames;
+			OptionalParamsValues = optParamsVals;
 
-			ParametersCount = paramsNames.Length;
-			OptionalParamsCount = optionalParamsValues.Length;
+			ParametersCount = ParametersNames.Length;
+			OptionalParamsCount = OptionalParamsValues.Length;
 			MandatoryParamsCount = ParametersCount - OptionalParamsCount;
-			LocalVariableDefsCount = variableDefs.Length;
 
 			Debug.Assert(MandatoryParamsCount >= 0, "Function can not have more default params than parameters count.");
 		}
 
-
-		public string GetParamName(int i) {
-			return paramsNames[i];
-		}
-
-		public IExpression GetOptionalParamValue(int i) {
+		public IValue GetOptionalParamValue(int i) {
 			int actualI = i - MandatoryParamsCount;
 			if (actualI < 0 || i >= ParametersCount) {
 				throw new ArgumentException("Invalid optional parameter index {0} in user function `{1}`.".Fmt(i, Name));
 			}
 
-			return optionalParamsValues[actualI];
-		}
-
-		public VariableDefinition GetVariableDefinition(int i) {
-			return variableDefs[i];
+			return OptionalParamsValues[actualI];
 		}
 	}
 }

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.FSharp.Collections;
 using FunMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.FunctionDefinition>;
 using VarMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.Expressions.IValue>;
@@ -16,6 +18,10 @@ namespace Malsys.Expressions {
 		/// </summary>
 		public static IValue Evaluate(IExpression expr) {
 			return Evaluate(expr, MapModule.Empty<string, IValue>(), MapModule.Empty<string, FunctionDefinition>());
+		}
+
+		public static IEnumerable<IValue> Evaluate(IEnumerable<IExpression> exprs) {
+			return exprs.Select(expr => Evaluate(expr));
 		}
 
 		/// <summary>

@@ -15,21 +15,24 @@ namespace Malsys.Compilers {
 				return true;
 			}
 			else {
+				prms.Messages.AddMessage("Failed to compile definition of variable `{0}`.".Fmt(varDef.NameId.Name),
+					CompilerMessageType.Error, varDef.Position);
 				result = null;
 				return false;
 			}
 		}
 
-		public static bool TryCompile(Ast.ImmutableList<Ast.VariableDefinition> varDefs, CompilerParameters prms, out VariableDefinition[] result) {
-			result = new VariableDefinition[varDefs.Length];
+		public static bool TryCompile(ImmutableList<Ast.VariableDefinition> varDefs, CompilerParameters prms, out ImmutableList<VariableDefinition> result) {
+			var rsltList = new VariableDefinition[varDefs.Length];
 
 			for (int i = 0; i < varDefs.Length; i++) {
-				if (!TryCompile(varDefs[i], prms, out result[i])) {
+				if (!TryCompile(varDefs[i], prms, out rsltList[i])) {
 					result = null;
 					return false;
 				}
 			}
 
+			result = new ImmutableList<VariableDefinition>(rsltList, true);
 			return true;
 		}
 	}
