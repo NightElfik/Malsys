@@ -24,7 +24,7 @@ let toAstPos range =
 
 
 %start parseLsystemStatements
-%type <IInputFileStatement[]> parseLsystemStatements
+%type <IInputStatement[]> parseLsystemStatements
 
 %start parseExpression
 %type <Expression> parseExpression
@@ -37,7 +37,7 @@ let toAstPos range =
 
 parseLsystemStatements:
     | LsystemStatementsList EOF
-      { ($1 :> ResizeArray<IInputFileStatement>).ToArray() }
+      { ($1 :> ResizeArray<IInputStatement>).ToArray() }
 
 parseExpression:
     | Expression EOF
@@ -50,17 +50,17 @@ parseExprInteractiveStatements:
 
 LsystemStatementsList:
     |
-      { new ResizeArray<IInputFileStatement>() }
+      { new ResizeArray<IInputStatement>() }
     | LsystemStatementsList LsystemStatement
       { $1.Add($2); $1 }
 
 LsystemStatement:
     | VarDef SEMI
-      { $1 :> IInputFileStatement }
+      { $1 :> IInputStatement }
     | FuncDef
-      { $1 :> IInputFileStatement }
+      { $1 :> IInputStatement }
     | Lsystem
-      { $1 :> IInputFileStatement }
+      { $1 :> IInputStatement }
 
 
 ExprInteractiveStatementList:

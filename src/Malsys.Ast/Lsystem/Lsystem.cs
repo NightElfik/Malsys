@@ -6,7 +6,7 @@ namespace Malsys.Ast {
 	/// <summary>
 	/// Immutable.
 	/// </summary>
-	public class Lsystem : IToken, IInputFileStatement {
+	public class Lsystem : IToken, IInputStatement {
 
 		public readonly Keyword Keyword;
 		public readonly Identificator NameId;

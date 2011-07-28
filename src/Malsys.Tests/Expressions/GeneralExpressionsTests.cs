@@ -269,9 +269,7 @@ namespace Malsys.Tests.Expressions {
 
 
 			// compile
-			var cp = new CompilerParameters();
-			cp.CaseSensitiveVarsNames = false;
-			cp.CaseSensitiveFunsNames = false;
+			var cp = new CompilerParametersInternal(new CompilerParameters());
 
 			IExpression compiledExpr;
 

@@ -34,7 +34,7 @@ namespace ExpressionsInteractive {
 			StringBuilder sb = new StringBuilder();
 
 			foreach (var stmnt in parsedStmnts) {
-				var cp = new CompilerParameters();
+				var cp = new CompilerParametersInternal(new CompilerParameters());
 
 				if (stmnt is Malsys.Ast.Expression) {
 					IExpression expr;

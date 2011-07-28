@@ -10,7 +10,8 @@ namespace Malsys.Compilers {
 
 		private List<CompilerMessage> messages = new List<CompilerMessage>();
 
-		internal MessagesCollection() {
+
+		public MessagesCollection() {
 			ErrorOcured = false;
 		}
 
@@ -29,6 +30,7 @@ namespace Malsys.Compilers {
 
 			messages.Add(new CompilerMessage(message, type, DefaultSourceName, pos));
 		}
+
 
 		#region IEnumerable Members
 

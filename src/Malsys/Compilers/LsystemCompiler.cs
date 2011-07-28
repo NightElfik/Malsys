@@ -3,12 +3,11 @@ using System.Diagnostics;
 using Malsys.Expressions;
 
 namespace Malsys.Compilers {
-
 	public static class LsystemCompiler {
 		/// <summary>
 		/// Thread safe.
 		/// </summary>
-		public static bool TryCompile(Ast.Lsystem lsysAst, CompilerParameters prms, out LsystemDefinition result) {
+		public static bool TryCompile(Ast.Lsystem lsysAst, CompilerParametersInternal prms, out LsystemDefinition result) {
 
 			if (tryCompile(lsysAst, prms, out result)) {
 				prms.Messages.AddMessage("Failed to compile L-system definition `{0}`.".Fmt(lsysAst.NameId.Name),
@@ -21,13 +20,14 @@ namespace Malsys.Compilers {
 		}
 
 
-		private static bool tryCompile(Ast.Lsystem lsysAst, CompilerParameters prms, out LsystemDefinition result) {
+		private static bool tryCompile(Ast.Lsystem lsysAst, CompilerParametersInternal prms, out LsystemDefinition result) {
+
+			bool wasError = false;
 
 			ImmutableList<string> paramsNames;
 			ImmutableList<IValue> optParamsValues;
 			if (!FunctionDefinitionCompiler.TryCompileParameters(lsysAst.Parameters, prms, out paramsNames, out optParamsValues)) {
-				result = null;
-				return false;
+				wasError = true;
 			}
 
 			List<RewriteRule> rRules = new List<RewriteRule>();
@@ -38,50 +38,56 @@ namespace Malsys.Compilers {
 
 				if (stmt is Ast.RewriteRule) {
 					RewriteRule rr;
-					if (!RewriteRuleCompiler.TryCompile((Ast.RewriteRule)stmt, prms, out rr)) {
-						result = null;
-						return false;
+					if (RewriteRuleCompiler.TryCompile((Ast.RewriteRule)stmt, prms, out rr)) {
+						rRules.Add(rr);
 					}
-					rRules.Add(rr);
+					else {
+						wasError = true;
+					}
 				}
 
 				else if (stmt is Ast.VariableDefinition) {
 					VariableDefinition vd;
-					if (!VariableDefinitionCompiler.TryCompile((Ast.VariableDefinition)stmt, prms, out vd)) {
-						result = null;
-						return false;
+					if (VariableDefinitionCompiler.TryCompile((Ast.VariableDefinition)stmt, prms, out vd)) {
+						varDefs.Add(vd);
 					}
-					varDefs.Add(vd);
+					else {
+						wasError = true;
+					}
 				}
 
 				else if (stmt is Ast.FunctionDefinition) {
 					FunctionDefinition fd;
-					if (!FunctionDefinitionCompiler.TryCompile((Ast.FunctionDefinition)stmt, prms, out fd)) {
-						result = null;
-						return false;
+					if (FunctionDefinitionCompiler.TryCompile((Ast.FunctionDefinition)stmt, prms, out fd)) {
+						funDefs.Add(fd);
 					}
-					funDefs.Add(fd);
+					else {
+						wasError = true;
+					}
 				}
-				else {
-					Debug.Fail("Unhandled type `{0}` of {1} while compiling L-system `{0}`".Fmt(
-						stmt.GetType().Name, typeof(Ast.ILsystemStatement).Name), lsysAst.NameId.Name);
 
-					prms.Messages.AddMessage("Internal compiler error.".Fmt(lsysAst.NameId.Name),
-						CompilerMessageType.Error, stmt.Position);
-					result = null;
-					return false;
+				else {
+					Debug.Fail("Unhandled type `{0}` of {1} while compiling L-system `{2}`".Fmt(
+						stmt.GetType().Name, typeof(Ast.ILsystemStatement).Name, lsysAst.NameId.Name));
+
+					prms.Messages.AddMessage("Internal compiler error.", CompilerMessageType.Error, stmt.Position);
+					wasError = true;
 				}
+
 			}
 
 
-			string name = prms.CaseSensitiveLsystemNames ? lsysAst.NameId.Name : lsysAst.NameId.Name.ToLowerInvariant();
+			if (wasError) {
+				result = null;
+				return false;
+			}
+
 			var rRulesImm = new ImmutableList<RewriteRule>(rRules);
 			var varDefsImm = new ImmutableList<VariableDefinition>(varDefs);
 			var funDefsImm = new ImmutableList<FunctionDefinition>(funDefs);
 
-			result = new LsystemDefinition(name, paramsNames, optParamsValues, funDefsImm, varDefsImm, rRulesImm);
+			result = new LsystemDefinition(lsysAst.NameId.Name, paramsNames, optParamsValues, funDefsImm, varDefsImm, rRulesImm);
 			return true;
 		}
-
 	}
 }

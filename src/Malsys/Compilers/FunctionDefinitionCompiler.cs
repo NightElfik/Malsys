@@ -8,7 +8,7 @@ namespace Malsys.Compilers {
 		/// <summary>
 		/// Thread safe.
 		/// </summary>
-		public static bool TryCompile(Ast.FunctionDefinition funDef, CompilerParameters prms, out FunctionDefinition result) {
+		public static bool TryCompile(Ast.FunctionDefinition funDef, CompilerParametersInternal prms, out FunctionDefinition result) {
 
 			if (tryCompile(funDef, prms, out result)) {
 				prms.Messages.AddMessage("Failed to compile function definition `{0}`.".Fmt(funDef.NameId.Name),
@@ -23,7 +23,7 @@ namespace Malsys.Compilers {
 		/// <summary>
 		/// Thread safe.
 		/// </summary>
-		public static bool TryCompileParameters(ImmutableList<Ast.OptionalParameter> parameters, CompilerParameters prms,
+		public static bool TryCompileParameters(ImmutableList<Ast.OptionalParameter> parameters, CompilerParametersInternal prms,
 				out ImmutableList<string> paramsNames, out ImmutableList<IValue> optParamsValues) {
 
 			int parametersCount = parameters.Count;
@@ -33,7 +33,7 @@ namespace Malsys.Compilers {
 
 			for (int i = 0; i < parametersCount; i++) {
 				var oParam = parameters[i];
-				names[i] = prms.CaseSensitiveVarsNames ? oParam.NameId.Name : oParam.NameId.Name.ToLowerInvariant();
+				names[i] = oParam.NameId.Name;
 
 				if (oParam.OptionalValue == null) {
 					if (wasOptional) {
@@ -106,7 +106,7 @@ namespace Malsys.Compilers {
 		}
 
 
-		private static bool tryCompile(Ast.FunctionDefinition funDef, CompilerParameters prms, out FunctionDefinition result) {
+		private static bool tryCompile(Ast.FunctionDefinition funDef, CompilerParametersInternal prms, out FunctionDefinition result) {
 
 			ImmutableList<string> paramsNames;
 			ImmutableList<IValue> optParamsValues;
@@ -121,9 +121,7 @@ namespace Malsys.Compilers {
 				return false;
 			}
 
-			string name = prms.CaseSensitiveFunsNames ? funDef.NameId.Name : funDef.NameId.Name.ToLowerInvariant();
-
-			result = new FunctionDefinition(name, paramsNames, optParamsValues, richExpr.VariableDefinitions, richExpr.Expression);
+			result = new FunctionDefinition(funDef.NameId.Name, paramsNames, optParamsValues, richExpr.VariableDefinitions, richExpr.Expression);
 			return true;
 		}
 

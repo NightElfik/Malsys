@@ -55,7 +55,7 @@
     <Compile Include="Expressions\IExpressionMember.cs" />
     <Compile Include="IExprInteractiveStatement.cs" />
     <Compile Include="ImmutableListPos.cs" />
-    <Compile Include="Lsystem\IInputFileStatement.cs" />
+    <Compile Include="Lsystem\IInputStatement.cs" />
     <Compile Include="Keyword.cs" />
     <Compile Include="Lsystem\Lsystem.cs" />
     <Compile Include="Expressions\Operator.cs" />

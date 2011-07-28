@@ -6,12 +6,11 @@ namespace Malsys.Compilers {
 	/// </summary>
 	public static class VariableDefinitionCompiler {
 
-		public static bool TryCompile(Ast.VariableDefinition varDef, CompilerParameters prms, out VariableDefinition result) {
+		public static bool TryCompile(Ast.VariableDefinition varDef, CompilerParametersInternal prms, out VariableDefinition result) {
 
 			IExpression expr;
 			if (ExpressionCompiler.TryCompile(varDef.Expression, prms, out expr)) {
-				var name = prms.CaseSensitiveVarsNames ? varDef.NameId.Name : varDef.NameId.Name.ToLowerInvariant();
-				result = new VariableDefinition(name, expr);
+				result = new VariableDefinition(varDef.NameId.Name, expr);
 				return true;
 			}
 			else {
@@ -22,7 +21,7 @@ namespace Malsys.Compilers {
 			}
 		}
 
-		public static bool TryCompile(ImmutableList<Ast.VariableDefinition> varDefs, CompilerParameters prms, out ImmutableList<VariableDefinition> result) {
+		public static bool TryCompile(ImmutableList<Ast.VariableDefinition> varDefs, CompilerParametersInternal prms, out ImmutableList<VariableDefinition> result) {
 			var rsltList = new VariableDefinition[varDefs.Length];
 
 			for (int i = 0; i < varDefs.Length; i++) {

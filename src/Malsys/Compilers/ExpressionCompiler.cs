@@ -10,7 +10,7 @@ namespace Malsys.Compilers {
 		/// Tries to compile expression from AST.
 		/// Thread safe.
 		/// </summary>
-		public static bool TryCompile(Expression expr, CompilerParameters prms, out IExpression result) {
+		public static bool TryCompile(Expression expr, CompilerParametersInternal prms, out IExpression result) {
 			if (!tryCompile(expr, prms, out result)) {
 				prms.Messages.AddMessage("Failed to compile expression.", CompilerMessageType.Error, expr.Position);
 				result = null;
@@ -24,7 +24,7 @@ namespace Malsys.Compilers {
 		/// Tries to compile list of expressions from AST.
 		/// Thread safe.
 		/// </summary>
-		public static bool TryCompile(ImmutableList<Expression> exprs, CompilerParameters prms, out ImmutableList<IExpression> result) {
+		public static bool TryCompile(ImmutableList<Expression> exprs, CompilerParametersInternal prms, out ImmutableList<IExpression> result) {
 
 			var compiledExprs = new IExpression[exprs.Length];
 
@@ -40,7 +40,7 @@ namespace Malsys.Compilers {
 			return true;
 		}
 
-		public static bool TryCompileRich(Ast.RichExpression rExprAst, CompilerParameters prms, out RichExpression result) {
+		public static bool TryCompileRich(Ast.RichExpression rExprAst, CompilerParametersInternal prms, out RichExpression result) {
 
 			ImmutableList<VariableDefinition> varDefs;
 			if (!VariableDefinitionCompiler.TryCompile(rExprAst.VariableDefinitions, prms, out varDefs)) {
@@ -60,7 +60,7 @@ namespace Malsys.Compilers {
 
 
 
-		private static bool tryCompile(Expression expr, CompilerParameters prms, out IExpression result) {
+		private static bool tryCompile(Expression expr, CompilerParametersInternal prms, out IExpression result) {
 
 			Stack<OperatorCore> optorsStack = new Stack<OperatorCore>();
 			Stack<IExpression> operandsStack = new Stack<IExpression>();
@@ -119,7 +119,7 @@ namespace Malsys.Compilers {
 		}
 
 
-		private static State handleAsOperand(IExpressionMember member, Stack<OperatorCore> optorsStack, Stack<IExpression> operandsStack, CompilerParameters prms) {
+		private static State handleAsOperand(IExpressionMember member, Stack<OperatorCore> optorsStack, Stack<IExpression> operandsStack, CompilerParametersInternal prms) {
 
 			switch (member.MemberType) {
 				case ExpressionMemberType.Constant:
@@ -130,15 +130,13 @@ namespace Malsys.Compilers {
 					Identificator id = (Identificator)member;
 					KnownConstant cnst;
 
-					string name = prms.CaseSensitiveVarsNames ? id.Name : id.Name.ToLower();
-
-					if (KnownConstant.TryParse(name, out cnst)) {
+					if (KnownConstant.TryParse(id.Name, out cnst)) {
 						// known constant
 						operandsStack.Push(cnst.Value.ToConst());
 					}
 					else {
 						// variable
-						operandsStack.Push(name.ToVar());
+						operandsStack.Push(id.Name.ToVar());
 					}
 
 					return State.ExcpectingOperator;
@@ -219,7 +217,7 @@ namespace Malsys.Compilers {
 			}
 		}
 
-		private static State handleAsOperator(IExpressionMember member, Stack<OperatorCore> optorsStack, Stack<IExpression> operandsStack, CompilerParameters prms) {
+		private static State handleAsOperator(IExpressionMember member, Stack<OperatorCore> optorsStack, Stack<IExpression> operandsStack, CompilerParametersInternal prms) {
 
 			switch (member.MemberType) {
 				case ExpressionMemberType.Constant:
@@ -361,10 +359,7 @@ namespace Malsys.Compilers {
 		}
 
 
-		private static bool tryCompileFunctionCall(ExpressionFunction funCall, CompilerParameters prms, out IExpression result) {
-
-			FunctionCore fun;
-			string name = prms.CaseSensitiveFunsNames ? funCall.NameId.Name : funCall.NameId.Name.ToLower();
+		private static bool tryCompileFunctionCall(ExpressionFunction funCall, CompilerParametersInternal prms, out IExpression result) {
 
 			ImmutableList<IExpression> argsImm;
 
@@ -378,13 +373,14 @@ namespace Malsys.Compilers {
 				return false;
 			}
 
-			if (FunctionCore.TryGet(name, funCall.Arguments.Length, out fun)) {
+			FunctionCore fun;
+			if (FunctionCore.TryGet(funCall.NameId.Name, funCall.Arguments.Length, out fun)) {
 				Debug.Assert(fun.ParametersCount == funCall.Arguments.Length, "Excpected function with {0} params, but it has {1}.".Fmt(funCall.Arguments.Length, fun.ParametersCount));
 
-				result = new FunctionCall(name, fun.EvalFunction, argsImm, fun.ParamsTypes);
+				result = new FunctionCall(funCall.NameId.Name, fun.EvalFunction, argsImm, fun.ParamsTypes);
 			}
 			else {
-				result = new UserFunctionCall(name, argsImm);
+				result = new UserFunctionCall(funCall.NameId.Name, argsImm);
 			}
 
 			return true;

@@ -4,7 +4,7 @@ namespace Malsys.Ast {
 	/// <summary>
 	/// Immutable.
 	/// </summary>
-	public class FunctionDefinition : RichExpression, IInputFileStatement, IExprInteractiveStatement {
+	public class FunctionDefinition : RichExpression, IInputStatement, IExprInteractiveStatement {
 
 		public readonly Keyword Keyword;
 		public readonly Identificator NameId;

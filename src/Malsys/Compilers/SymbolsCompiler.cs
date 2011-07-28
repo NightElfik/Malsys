@@ -4,16 +4,16 @@ using Malsys.Expressions;
 namespace Malsys.Compilers {
 	public static class SymbolsCompiler {
 
-		public static bool TryCompile(Ast.SymbolPattern ptrnAst, Dictionary<string, Ast.Position> usedNames, CompilerParameters prms, out Symbol<string> result) {
+		public static bool TryCompile(Ast.SymbolPattern ptrnAst, Dictionary<string, Ast.Position> usedNames, CompilerParametersInternal prms, out Symbol<string> result) {
 
 			var names = new string[ptrnAst.ParametersNames.Length];
 			for (int i = 0; i < ptrnAst.ParametersNames.Length; i++) {
-				string name = prms.CaseSensitiveVarsNames ? ptrnAst.ParametersNames[i].Name : ptrnAst.ParametersNames[i].Name.ToLowerInvariant();
+				string name = ptrnAst.ParametersNames[i].Name;
 
 				if (usedNames.ContainsKey(name)) {
 					var otherPos = usedNames[name];
 					prms.Messages.AddMessage("Parameter name `{0}` in pattern `{1}` is not unique. Another occurance is at line {2} col {3}.".Fmt(
-							ptrnAst.ParametersNames[i].Name, ptrnAst.Name, otherPos.BeginLine, otherPos.BeginColumn),
+							name, ptrnAst.Name, otherPos.BeginLine, otherPos.BeginColumn),
 						CompilerMessageType.Error, ptrnAst.ParametersNames[i].Position);
 
 					// last error should be whole compiled object
@@ -32,7 +32,7 @@ namespace Malsys.Compilers {
 			return true;
 		}
 
-		public static bool TryCompile(ImmutableList<Ast.SymbolPattern> ptrnsAst, Dictionary<string, Ast.Position> usedNames, CompilerParameters prms, out SymbolsList<string> result) {
+		public static bool TryCompile(ImmutableList<Ast.SymbolPattern> ptrnsAst, Dictionary<string, Ast.Position> usedNames, CompilerParametersInternal prms, out SymbolsList<string> result) {
 
 			var compiledSymbols = new Symbol<string>[ptrnsAst.Length];
 
@@ -50,7 +50,7 @@ namespace Malsys.Compilers {
 		}
 
 
-		public static bool TryCompile(Ast.SymbolExprArgs symbolAst, CompilerParameters prms, out Symbol<IExpression> result) {
+		public static bool TryCompile(Ast.SymbolExprArgs symbolAst, CompilerParametersInternal prms, out Symbol<IExpression> result) {
 
 			ImmutableList<IExpression> compiledExprsImm;
 
@@ -65,7 +65,7 @@ namespace Malsys.Compilers {
 			return true;
 		}
 
-		public static bool TryCompile(ImmutableList<Ast.SymbolExprArgs> symbolsAst, CompilerParameters prms, out SymbolsList<IExpression> result) {
+		public static bool TryCompile(ImmutableList<Ast.SymbolExprArgs> symbolsAst, CompilerParametersInternal prms, out SymbolsList<IExpression> result) {
 
 			var compiledSymbols = new Symbol<IExpression>[symbolsAst.Length];
 

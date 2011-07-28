@@ -6,7 +6,7 @@ namespace Malsys.Compilers {
 		/// <summary>
 		/// Thread safe.
 		/// </summary>
-		public static bool TryCompile(Ast.RewriteRule rRuleAst, CompilerParameters prms, out RewriteRule result) {
+		public static bool TryCompile(Ast.RewriteRule rRuleAst, CompilerParametersInternal prms, out RewriteRule result) {
 
 			if (!tryCompile(rRuleAst, prms, out result)) {
 				prms.Messages.AddMessage("Failed to compile rewrite rule.", CompilerMessageType.Error, rRuleAst.Position);
@@ -18,7 +18,7 @@ namespace Malsys.Compilers {
 		}
 
 
-		private static bool tryCompile(Ast.RewriteRule rRuleAst, CompilerParameters prms, out RewriteRule result) {
+		private static bool tryCompile(Ast.RewriteRule rRuleAst, CompilerParametersInternal prms, out RewriteRule result) {
 
 			var usedNames = new Dictionary<string, Ast.Position>();
 
