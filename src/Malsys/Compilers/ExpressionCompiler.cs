@@ -6,61 +6,14 @@ using Malsys.Expressions;
 namespace Malsys.Compilers {
 	public static class ExpressionCompiler {
 
-		/// <summary>
-		/// Tries to compile expression from AST.
-		/// Thread safe.
-		/// </summary>
-		public static bool TryCompile(Expression expr, CompilerParametersInternal prms, out IExpression result) {
-			if (!tryCompile(expr, prms, out result)) {
-				prms.Messages.AddMessage("Failed to compile expression.", CompilerMessageType.Error, expr.Position);
-				result = null;
-				return false;
-			}
+		public static readonly IExpression ErrorResult = Constant.NaN;
 
-			return true;
-		}
 
 		/// <summary>
-		/// Tries to compile list of expressions from AST.
+		/// Compiles expression from AST. If compilation failes, ErrorResult expression is returned.
 		/// Thread safe.
 		/// </summary>
-		public static bool TryCompile(ImmutableList<Expression> exprs, CompilerParametersInternal prms, out ImmutableList<IExpression> result) {
-
-			var compiledExprs = new IExpression[exprs.Length];
-
-			for (int i = 0; i < exprs.Length; i++) {
-				if (!tryCompile(exprs[i], prms, out compiledExprs[i])) {
-					prms.Messages.AddMessage("Failed to compile {0}. expression.".Fmt(i), CompilerMessageType.Error, exprs[i].Position);
-					result = null;
-					return false;
-				}
-			}
-
-			result = new ImmutableList<IExpression>(compiledExprs, true);
-			return true;
-		}
-
-		public static bool TryCompileRich(Ast.RichExpression rExprAst, CompilerParametersInternal prms, out RichExpression result) {
-
-			ImmutableList<VariableDefinition> varDefs;
-			if (!VariableDefinitionCompiler.TryCompile(rExprAst.VariableDefinitions, prms, out varDefs)) {
-				result = null;
-				return false;
-			}
-
-			IExpression expr;
-			if (!TryCompile(rExprAst.Expression, prms, out expr)) {
-				result = null;
-				return false;
-			}
-
-			result = new RichExpression(varDefs, expr);
-			return true;
-		}
-
-
-
-		private static bool tryCompile(Expression expr, CompilerParametersInternal prms, out IExpression result) {
+		public static IExpression CompileFailSafe(Expression expr, MessagesCollection msgs) {
 
 			Stack<OperatorCore> optorsStack = new Stack<OperatorCore>();
 			Stack<IExpression> operandsStack = new Stack<IExpression>();
@@ -70,56 +23,75 @@ namespace Malsys.Compilers {
 			foreach (var member in expr) {
 				switch (state) {
 					case State.ExcpectingOperand:
-						state = handleAsOperand(member, optorsStack, operandsStack, prms);
+						state = handleAsOperand(member, optorsStack, operandsStack, msgs);
 						break;
 
 					case State.ExcpectingOperator:
-						state = handleAsOperator(member, optorsStack, operandsStack, prms);
+						state = handleAsOperator(member, optorsStack, operandsStack, msgs);
 						break;
 
 					case State.Error:
-						result = null;
-						return false;
+						return ErrorResult;
 
 					default:
-						Debug.Fail("Unknown expression compiler state `{0}`".Fmt(state));
-						prms.Messages.AddMessage("Compiler internal error.", CompilerMessageType.Error, member.Position);
-						result = null;
-						return false;
+						Debug.Fail("Unknown expression compiler state `{0}`.".Fmt(state));
+						msgs.AddError("Expression compiler internal error.", member.Position);
+						return ErrorResult;
 				}
 			}
 
+			// last member could end in error state
 			if (state == State.Error) {
-				result = null;
-				return false;
+				return ErrorResult;
 			}
 
 			if (state != State.ExcpectingOperator) {
-				prms.Messages.AddMessage("Unexcpected end of expression", CompilerMessageType.Error, expr.Position);
-				result = null;
-				return false;
+				msgs.AddError("Unexcpected end of expression.", expr.Position);
+				return ErrorResult;
 			}
 
+			// pop all remaining operators
 			while (optorsStack.Count > 0) {
 				if (!tryPopOperator(operandsStack, optorsStack)) {
-					prms.Messages.AddMessage("Too few operands.", CompilerMessageType.Error, expr.Position);
-					result = null;
-					return false;
+					msgs.AddError("Too few operands in expression.", expr.Position);
+					return ErrorResult;
 				}
 			}
 
 			if (operandsStack.Count != 1) {
-				prms.Messages.AddMessage("Too many operands.", CompilerMessageType.Error, expr.Position);
-				result = null;
-				return false;
+				msgs.AddError("Too many operands in expression.", expr.Position);
+				return ErrorResult;
 			}
 
-			result = operandsStack.Pop();
-			return true;
+			return operandsStack.Pop();
+		}
+
+		/// <summary>
+		/// Compiles list of expressions from AST using fail-safe compilation on each member.
+		/// Thread safe.
+		/// </summary>
+		public static ImmutableList<IExpression> CompileFailSafe(ImmutableList<Expression> exprs, MessagesCollection msgs) {
+
+			var compiledExprs = new IExpression[exprs.Length];
+
+			for (int i = 0; i < exprs.Length; i++) {
+				compiledExprs[i] = CompileFailSafe(exprs[i], msgs);
+			}
+
+			return new ImmutableList<IExpression>(compiledExprs, true);
+		}
+
+		public static RichExpression CompileRichFailSafe(Ast.RichExpression rExprAst, MessagesCollection msgs) {
+
+			var varDefs = VariableDefinitionCompiler.CompileFailSafe(rExprAst.VariableDefinitions, msgs);
+			var expr = CompileFailSafe(rExprAst.Expression, msgs);
+
+			return new RichExpression(varDefs, expr);
 		}
 
 
-		private static State handleAsOperand(IExpressionMember member, Stack<OperatorCore> optorsStack, Stack<IExpression> operandsStack, CompilerParametersInternal prms) {
+
+		private static State handleAsOperand(IExpressionMember member, Stack<OperatorCore> optorsStack, Stack<IExpression> operandsStack, MessagesCollection msgs) {
 
 			switch (member.MemberType) {
 				case ExpressionMemberType.Constant:
@@ -143,21 +115,9 @@ namespace Malsys.Compilers {
 
 				case ExpressionMemberType.Array:
 
-					var arr = (ExpressionsArray)member;
-					IExpression[] resArr = new IExpression[arr.Length];
+					var exprArr = CompileFailSafe((ExpressionsArray)member, msgs);
+					operandsStack.Push(new ExpressionValuesArray(exprArr));
 
-					for (int i = 0; i < resArr.Length; i++) {
-						IExpression val;
-						if (TryCompile(arr[i], prms, out val)) {
-							resArr[i] = val;
-						}
-						else {
-							return State.Error;
-						}
-					}
-
-					var resImm = new ImmutableList<IExpression>(resArr, true);
-					operandsStack.Push(new ExpressionValuesArray(resImm));
 					return State.ExcpectingOperator;
 
 				case ExpressionMemberType.Operator:
@@ -166,71 +126,55 @@ namespace Malsys.Compilers {
 
 					if (OperatorCore.TryGet(((Operator)member).Syntax, 1, out op)) {
 						if (!tryPushOperator(op, operandsStack, optorsStack)) {
-							prms.Messages.AddMessage("Too few operands.", CompilerMessageType.Error, member.Position);
+							msgs.AddError("Too few operands.", member.Position);
 							return State.Error;
 						}
 					}
 					else {
-						prms.Messages.AddMessage("Unknown unary operator `{1}`.".Fmt(((Operator)member).Syntax),
-							CompilerMessageType.Error, member.Position);
+						msgs.AddError("Unknown unary operator `{1}`.".Fmt(((Operator)member).Syntax), member.Position);
 						return State.Error;
 					}
 
 					return State.ExcpectingOperand;
 
 				case ExpressionMemberType.Indexer:
-					prms.Messages.AddMessage("Unexcpected indexer, excpecting operand.", CompilerMessageType.Error, member.Position);
+					msgs.AddError("Unexcpected indexer, excpecting operand.", member.Position);
 					return State.Error;
 
 				case ExpressionMemberType.Function:
 
-					var funCall = (ExpressionFunction)member;
-
-					IExpression resultFun;
-
-					if (tryCompileFunctionCall(funCall, prms, out resultFun)) {
-						operandsStack.Push(resultFun);
-					}
-					else {
-						return State.Error;
-					}
+					var funCall = compileFunctionCallFailSafe((ExpressionFunction)member, msgs);
+					operandsStack.Push(funCall);
 
 					return State.ExcpectingOperator;
 
 				case ExpressionMemberType.BracketedExpression:
 
-					IExpression exprResult;
-
-					if (TryCompile(((ExpressionBracketed)member).Expression, prms, out exprResult)) {
-						operandsStack.Push(exprResult);
-					}
-					else {
-						return State.Error;
-					}
+					var expr = CompileFailSafe(((ExpressionBracketed)member).Expression, msgs);
+					operandsStack.Push(expr);
 
 					return State.ExcpectingOperator;
 
 				default:
-					Debug.Fail("Unhandled type `{0}` in Ast.Expression.".Fmt(member.GetType().ToString()));
-					prms.Messages.AddMessage("Compiler internal error.", CompilerMessageType.Error, member.Position);
+					Debug.Fail("Unhandled type {0} in {1}.".Fmt(member.GetType().Name, typeof(Ast.Expression).Name));
+					msgs.AddError("Expression compiler internal error.", member.Position);
 					return State.Error;
 			}
 		}
 
-		private static State handleAsOperator(IExpressionMember member, Stack<OperatorCore> optorsStack, Stack<IExpression> operandsStack, CompilerParametersInternal prms) {
+		private static State handleAsOperator(IExpressionMember member, Stack<OperatorCore> optorsStack, Stack<IExpression> operandsStack, MessagesCollection msgs) {
 
 			switch (member.MemberType) {
 				case ExpressionMemberType.Constant:
-					prms.Messages.AddMessage("Unexcpected constatnt, excpecting operator.", CompilerMessageType.Error, member.Position);
+					msgs.AddError("Unexcpected constatnt `{0}`, excpecting operator.".Fmt(((FloatConstant)member).Value), member.Position);
 					return State.Error;
 
 				case ExpressionMemberType.Variable:
-					prms.Messages.AddMessage("Unexcpected variable `{0}`, excpecting operator.".Fmt(((Identificator)member).Name),
-						CompilerMessageType.Error, member.Position);
+					msgs.AddError("Unexcpected variable `{0}`, excpecting operator.".Fmt(((Identificator)member).Name), member.Position);
 					return State.Error;
 
 				case ExpressionMemberType.Array:
-					prms.Messages.AddMessage("Unexcpected array, excpecting operator.", CompilerMessageType.Error, member.Position);
+					msgs.AddError("Unexcpected array, excpecting operator.", member.Position);
 					return State.Error;
 
 				case ExpressionMemberType.Operator:
@@ -239,13 +183,12 @@ namespace Malsys.Compilers {
 
 					if (OperatorCore.TryGet(((Operator)member).Syntax, 2, out op)) {
 						if (!tryPushOperator(op, operandsStack, optorsStack)) {
-							prms.Messages.AddMessage("Too few operands.", CompilerMessageType.Error, member.Position);
+							msgs.AddError("Too few operands in expression.", member.Position);
 							return State.Error;
 						}
 					}
 					else {
-						prms.Messages.AddMessage("Unknown binary operator `{1}`.".Fmt(((Operator)member).Syntax),
-							CompilerMessageType.Error, member.Position);
+						msgs.AddError("Unknown binary operator `{0}`.".Fmt(((Operator)member).Syntax), member.Position);
 						return State.Error;
 					}
 
@@ -253,36 +196,22 @@ namespace Malsys.Compilers {
 
 				case ExpressionMemberType.Indexer:
 					// apply indexer on previous operand
-					var indexer = (ExpressionIndexer)member;
-
-					IExpression indexExpr;
-					if (!TryCompile(indexer.Index, prms, out indexExpr)) {
-						prms.Messages.AddMessage("Failed to compile indexer's value.", CompilerMessageType.Error, member.Position);
-						return State.Error;
-					}
+					var indexExpr = CompileFailSafe(((ExpressionIndexer)member).Index, msgs);
 
 					if (operandsStack.Count < 1) {
-						prms.Messages.AddMessage("Failed to compile indexer. No operand to apply on.", CompilerMessageType.Error, member.Position);
+						msgs.AddError("Failed to compile indexer. No operand to apply on.", member.Position);
 						return State.Error;
 					}
 
-					operandsStack.Push(new Indexer(operandsStack.Pop(), indexExpr));
+					operandsStack.Push(new Indexer(operandsStack.Pop(), (IExpression)indexExpr));
 					return State.ExcpectingOperator;
 
 				case ExpressionMemberType.Function:
 					// Function while excpecting binary operator?
 					// So directly before function is operand.
 					// Lets add implicit multiplication between them.
-					var funCall = (ExpressionFunction)member;
-
-					IExpression resultFun;
-
-					if (tryCompileFunctionCall(funCall, prms, out resultFun)) {
-						operandsStack.Push(resultFun);
-					}
-					else {
-						return State.Error;
-					}
+					var funCall = compileFunctionCallFailSafe((ExpressionFunction)member, msgs);
+					operandsStack.Push(funCall);
 
 					// implicit multiplication
 					optorsStack.Push(OperatorCore.Multiply);
@@ -293,15 +222,8 @@ namespace Malsys.Compilers {
 					// Expression (probably in parenthesis) while excpecting binary operator?
 					// So directly before it is operand.
 					// Lets add implicit multiplication between them.
-
-					IExpression exprResult;
-
-					if (TryCompile(((ExpressionBracketed)member).Expression, prms, out exprResult)) {
-						operandsStack.Push(exprResult);
-					}
-					else {
-						return State.Error;
-					}
+					var expr = CompileFailSafe(((ExpressionBracketed)member).Expression, msgs);
+					operandsStack.Push(expr);
 
 					// implicit multiplication
 					optorsStack.Push(OperatorCore.Multiply);
@@ -309,8 +231,8 @@ namespace Malsys.Compilers {
 					return State.ExcpectingOperator;
 
 				default:
-					Debug.Fail("Unhandled type `{0}` in Ast.Expression.".Fmt(member.GetType().ToString()));
-					prms.Messages.AddMessage("Compiler internal error.", CompilerMessageType.Error, member.Position);
+					Debug.Fail("Unhandled type {0} in {1}.".Fmt(member.GetType().Name, typeof(Ast.Expression).Name));
+					msgs.AddError("Expression compiler internal error.", member.Position);
 					return State.Error;
 			}
 		}
@@ -345,7 +267,7 @@ namespace Malsys.Compilers {
 					opTop.EvalFunction, operandsStack.Pop(), opTop.ParamsTypes[0]));
 			}
 			else {
-				Debug.Assert(opTop.Arity == 2, "Excpected binary operator.");
+				Debug.Assert(opTop.Arity == 2, "Excpected binary operator, but given have ariy {0}.".Fmt(opTop.Arity));
 
 				var right = operandsStack.Pop();
 				var left = operandsStack.Pop();
@@ -359,31 +281,19 @@ namespace Malsys.Compilers {
 		}
 
 
-		private static bool tryCompileFunctionCall(ExpressionFunction funCall, CompilerParametersInternal prms, out IExpression result) {
+		private static IExpression compileFunctionCallFailSafe(ExpressionFunction funCall, MessagesCollection msgs) {
 
-			ImmutableList<IExpression> argsImm;
-
-			if (!TryCompile(funCall.Arguments, prms, out argsImm)) {
-				prms.Messages.AddMessage("Failed to compile arguments of function `{0}`.".Fmt(funCall.NameId.Name),
-					CompilerMessageType.Error, funCall.Position);
-			}
-
-			if (prms.Messages.ErrorOcured) {
-				result = null;
-				return false;
-			}
+			var rsltArgs = CompileFailSafe(funCall.Arguments, msgs);
 
 			FunctionCore fun;
 			if (FunctionCore.TryGet(funCall.NameId.Name, funCall.Arguments.Length, out fun)) {
 				Debug.Assert(fun.ParametersCount == funCall.Arguments.Length, "Excpected function with {0} params, but it has {1}.".Fmt(funCall.Arguments.Length, fun.ParametersCount));
 
-				result = new FunctionCall(funCall.NameId.Name, fun.EvalFunction, argsImm, fun.ParamsTypes);
+				return new FunctionCall(funCall.NameId.Name, fun.EvalFunction, rsltArgs, fun.ParamsTypes);
 			}
 			else {
-				result = new UserFunctionCall(funCall.NameId.Name, argsImm);
+				return new UserFunctionCall(funCall.NameId.Name, rsltArgs);
 			}
-
-			return true;
 		}
 
 

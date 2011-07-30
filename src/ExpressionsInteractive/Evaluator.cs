@@ -16,52 +16,61 @@ namespace ExpressionsInteractive {
 		private FunMap functions = MapModule.Empty<string, FunctionDefinition>();
 
 
-		public string EvaluateStr(string input) {
+		public string EvaluateStr(string input, string sourceName) {
 
+			var sb = new StringBuilder();
 			Malsys.Ast.IExprInteractiveStatement[] parsedStmnts;
 
-			var msgs = new MessagesCollection();
-			var lexBuff = LexBuffer<char>.FromString(input);
-			parsedStmnts = ParserUtils.parseExprInteractiveStatements(lexBuff, msgs, "input");
+			{
+				var msgs = new MessagesCollection();
+				var lexBuff = LexBuffer<char>.FromString(input);
+				parsedStmnts = ParserUtils.parseExprInteractiveStatements(lexBuff, msgs, sourceName);
 
-			StringBuilder sb = new StringBuilder();
 
-			if (msgs.ErrorOcured) {
-				foreach (var msg in msgs) {
-					sb.AppendLine(msg.GetFullMessage());
+				if (msgs.ErrorOcured) {
+					foreach (var msg in msgs) {
+						sb.AppendLine(msg.GetFullMessage());
+					}
+
+					return sb.ToString();
 				}
-
-				return sb.ToString();
 			}
 
 
-			foreach (var stmnt in parsedStmnts) {
-				var cp = new CompilerParametersInternal(new CompilerParameters());
+			foreach (var statement in parsedStmnts) {
+				var msgs = new MessagesCollection();
+				msgs.DefaultSourceName = sourceName;
 
-				if (stmnt is Malsys.Ast.Expression) {
-					IExpression expr;
-					if (ExpressionCompiler.TryCompile((Malsys.Ast.Expression)stmnt, cp, out expr)) {
-						sb.AppendLine(evaluateExpression(expr));
-					}
+				if (statement is Malsys.Ast.Expression) {
+					var expr = ExpressionCompiler.CompileFailSafe((Malsys.Ast.Expression)statement, msgs);
+					sb.AppendLine(evaluateExpression(expr));
 				}
-				else if (stmnt is Malsys.Ast.VariableDefinition) {
-					VariableDefinition varDef;
-					if (VariableDefinitionCompiler.TryCompile((Malsys.Ast.VariableDefinition)stmnt, cp, out varDef)) {
+
+				else if (statement is Malsys.Ast.VariableDefinition) {
+					var varDef = VariableDefinitionCompiler.CompileFailSafe((Malsys.Ast.VariableDefinition)statement, msgs);
+					if (!msgs.ErrorOcured) {
 						sb.AppendLine(evaluateVarDef(varDef));
 					}
 				}
-				else if (stmnt is Malsys.Ast.FunctionDefinition) {
-					FunctionDefinition funDef;
-					if (FunctionDefinitionCompiler.TryCompile((Malsys.Ast.FunctionDefinition)stmnt, cp, out funDef)) {
+
+				else if (statement is Malsys.Ast.FunctionDefinition) {
+					var funDef = FunctionDefinitionCompiler.CompileFailSafe((Malsys.Ast.FunctionDefinition)statement, msgs);
+					if (!msgs.ErrorOcured) {
 						sb.AppendLine(evaluateFunDef(funDef));
 					}
 				}
+
+
+				else if (statement is Malsys.Ast.EmptyStatement) {
+					continue;
+				}
+
 				else {
 					Debug.Fail("Unhandled parsed type `{0}`".Fmt(parsedStmnts.GetType().ToString()));
 					return "Internal error.";
 				}
 
-				foreach (var msg in cp.Messages) {
+				foreach (var msg in msgs) {
 					sb.AppendLine(msg.GetFullMessage());
 				}
 

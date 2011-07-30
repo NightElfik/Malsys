@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Comment.cs" />
+    <Compile Include="EmptyStatement.cs" />
     <Compile Include="Expressions\Expression.cs" />
     <Compile Include="Expressions\ExpressionBracketed.cs" />
     <Compile Include="Expressions\ExpressionFunction.cs" />
@@ -52,7 +53,6 @@
     <Compile Include="FunctionDefinition.cs" />
     <Compile Include="IAstVisitable.cs" />
     <Compile Include="IAstVisitor.cs" />
-    <Compile Include="IComment.cs" />
     <Compile Include="Identificator.cs" />
     <Compile Include="Expressions\IExpressionMember.cs" />
     <Compile Include="IExprInteractiveStatement.cs" />
@@ -67,7 +67,7 @@
     <Compile Include="Symbol.cs" />
     <Compile Include="IToken.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Expressions\ValuesArray.cs" />
+    <Compile Include="Expressions\ExpressionsArray.cs" />
     <Compile Include="VariableDefinition.cs" />
   </ItemGroup>
   <ItemGroup>

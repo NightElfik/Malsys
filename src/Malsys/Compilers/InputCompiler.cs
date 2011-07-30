@@ -7,21 +7,21 @@ using Microsoft.FSharp.Core;
 
 namespace Malsys.Compilers {
 	public static class InputCompiler {
-		public static CompilerResult CompileFromString(string strInput, string sourceName, CompilerParameters prms) {
+
+		public static CompilerResult<InputBlock> CompileFromString(string strInput, string sourceName, MessagesCollection msgs) {
 			var lexBuff = LexBuffer<char>.FromString(strInput);
-			return compile(lexBuff, sourceName, prms);
+			return compile(lexBuff, sourceName, msgs);
 		}
 
-		private static CompilerResult compile(LexBuffer<char> lexBuff, string sourceName, CompilerParameters prms) {
+		private static CompilerResult<InputBlock> compile(LexBuffer<char> lexBuff, string sourceName, MessagesCollection msgs) {
 
 			bool wasError = false;
-			var cp = new CompilerParametersInternal(prms);
-			cp.Messages.DefaultSourceName = sourceName;
+			msgs.DefaultSourceName = sourceName;
 
 			Ast.IInputStatement[] parsedStmnts = new Ast.IInputStatement[0];
 
-			parsedStmnts = ParserUtils.parseLsystemStatements(lexBuff, cp.Messages, sourceName);
-			if (cp.Messages.ErrorOcured) {
+			parsedStmnts = ParserUtils.parseLsystemStatements(lexBuff, msgs, sourceName);
+			if (msgs.ErrorOcured) {
 				wasError = true;
 			}
 
@@ -32,59 +32,49 @@ namespace Malsys.Compilers {
 			foreach (var statement in parsedStmnts) {
 
 				if (statement is Malsys.Ast.Lsystem) {
-					LsystemDefinition lsys;
-					if (LsystemCompiler.TryCompile((Ast.Lsystem)statement, cp, out lsys)) {
-						lsysDefs.Add(lsys);
-					}
-					else {
-						wasError = true;
+					var lsysResult = LsystemCompiler.Compile((Ast.Lsystem)statement, msgs);
+					if (lsysResult) {
+						lsysDefs.Add(lsysResult);
 					}
 				}
 
-				else if (statement is Malsys.Ast.VariableDefinition) {
-					VariableDefinition varDef;
-					if (VariableDefinitionCompiler.TryCompile((Ast.VariableDefinition)statement, cp, out varDef)) {
-						varDefs.Add(varDef);
-					}
-					else {
-						wasError = true;
-					}
+				else if (statement is Ast.VariableDefinition) {
+					var vd = VariableDefinitionCompiler.CompileFailSafe((Ast.VariableDefinition)statement, msgs);
+					varDefs.Add(vd);
 				}
 
-				else if (statement is Malsys.Ast.FunctionDefinition) {
-					FunctionDefinition funDef;
-					if (FunctionDefinitionCompiler.TryCompile((Ast.FunctionDefinition)statement, cp, out funDef)) {
-						funDefs.Add(funDef);
-					}
-					else {
-						wasError = true;
-					}
+				else if (statement is Ast.FunctionDefinition) {
+					var fd = FunctionDefinitionCompiler.CompileFailSafe((Ast.FunctionDefinition)statement, msgs);
+					funDefs.Add(fd);
+				}
+
+				else if (statement is Ast.EmptyStatement) {
+					msgs.AddMessage("Empty statement found.", CompilerMessageType.Notice, statement.Position);
 				}
 
 				else {
 					Debug.Fail("Unhandled type `{0}` of {1} while compiling input block `{2}`.".Fmt(
 						statement.GetType().Name, typeof(Ast.IInputStatement).Name, sourceName));
 
-					cp.Messages.AddMessage("Internal compiler error.", CompilerMessageType.Error, statement.Position);
+					msgs.AddError("Internal L-system input compiler error.", statement.Position);
 					wasError = true;
 				}
 			}
 
 
 			if (wasError) {
-				cp.Messages.AddMessage("Some error ocured during compilation of `{0}`".Fmt(sourceName), CompilerMessageType.Error, Position.Unknown);
-				Debug.Assert(cp.Messages.ErrorOcured, "Compiler's result error state is false, but error ocured.");
-				return new CompilerResult(cp.Messages, null);
+				msgs.AddError("Some error ocured during compilation of `{0}`".Fmt(sourceName), Position.Unknown);
+				Debug.Assert(msgs.ErrorOcured, "Compiler's result error state is false, but error ocured.");
+				return CompilerResult<InputBlock>.Error;
 			}
 
 			var lsysImm = new ImmutableList<LsystemDefinition>(lsysDefs);
 			var varsImm = new ImmutableList<VariableDefinition>(varDefs);
 			var funsImm = new ImmutableList<FunctionDefinition>(funDefs);
-			var inputBlock = new InputBlock(lsysImm, varsImm, funsImm);
 
-			Debug.Assert(cp.Messages.ErrorOcured, "Compiler's result error state is true, but no error ocured.");
+			Debug.Assert(msgs.ErrorOcured, "Compiler's result error state is true, but no error ocured.");
 
-			return new CompilerResult(cp.Messages, inputBlock);
+			return new InputBlock(lsysImm, varsImm, funsImm);
 		}
 	}
 }

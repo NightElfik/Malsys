@@ -11,35 +11,42 @@ open Malsys.Ast
 open Malsys.Compilers
 open Malsys.Parsing.Parser
 
-
+/// Returns actual string.
 let lexeme lexbuf = LexBuffer<_>.LexemeString lexbuf
 
+// for float (double) parsing
 let invariantCulture = CultureInfo.InvariantCulture
 let floatStyle = NumberStyles.AllowDecimalPoint ||| NumberStyles.AllowExponent
 
-let keywords =
-    [
-        ("let", LET);
-        ("lsystem", LSYSTEM);
-    ] |> Map.ofList
-
-
+/// Sets new line information into lexbuf.
 let newline (lexbuf : LexBuffer<_>) = lexbuf.EndPos <- lexbuf.EndPos.NextLine
 
 
 let msgErr = CompilerMessageType.Error
+let msgWarn = CompilerMessageType.Warning
+let msgNtc = CompilerMessageType.Notice
 
+/// Writes given message unto given args with range readed from given lexbuf.
 let writeMessage (msgColl : MessagesCollection, _) (lexbuf : LexBuffer<_>) (msgType : CompilerMessageType) (msg : string) =
     msgColl.AddMessage(msg, msgType, new Position(lexbuf.StartPos, lexbuf.EndPos));
     ()
 
-
+/// Adds given string as comment into comments list in args.
 let addComment (_, cmtList : ResizeArray<Comment>) sb bPos ePos =
     cmtList.Add(new Comment(sb.ToString(), new Position(bPos, ePos)));
     ()
 
+/// Appends current string from given lexbuf to given stringbuilder.
 let appendToSb lexbuf (sb : StringBuilder) =
     sb.Append(LexBuffer<_>.LexemeString lexbuf) |> ignore
+
+/// Map of keywords.
+let keywords =
+    [
+        ("let", LET);
+        ("fun", FUN);
+        ("lsystem", LSYSTEM);
+    ] |> Map.ofList
 
 }
 
@@ -47,12 +54,12 @@ let appendToSb lexbuf (sb : StringBuilder) =
 let letter = '\Lu' | '\Ll' | '\Lt' | '\Lm' | '\Lo' | '\Nl'
 let digit = '\Nd'
 
-let firstOpChar = '!'|'$'|'%'|'&'|'*'|'+'|'-'|'.'|'\\'|'<'|'>'|'@'|'^'|'|'|'~'
-let opChar = firstOpChar | '='|'?'|':'|'/'
+let firstOpChar = '!'|'$'|'%'|'&'|'*'|'+'|'.'|'\\'|'<'|'>'|'@'|'^'|'|'|'~'
+let opChar = firstOpChar | '='|'?'|':'|'/'|'-'
 let operator = firstOpChar opChar*
 
 let whitespace = [' ' '\t']
-let newline = ('\n' | '\r' '\n')
+let newline = ('\r' '\n' | '\n' | '\r' )  // Win | Unix | Mac
 
 let floatp = digit+ '.' digit*
 let floate = digit+ ('.' digit*)? ['e' 'E'] ['+' '-']? digit+
@@ -64,7 +71,7 @@ let int =
     | '0' ('b'| 'B') (['0'-'1'])+
     | '0' ('o'| 'O') (['0'-'7'])+
     | '0' ('x'| 'X') hex+ )
-let hexInt = '#' hex+
+let hexInt = '#' hex+  // hex value like colors in HTML
 
 let connectingChar = '\Pc'
 let combiningChar = '\Mn' | '\Mc'
@@ -130,7 +137,7 @@ rule tokenize args = parse
     | '=' { EQUALS }
     | "->" { RARROW }
 
-    | operator | "==" | '/'
+    | operator | "==" | '/' | '-'
       { OPERATOR (lexeme lexbuf) }
 
     | eof
@@ -140,7 +147,7 @@ rule tokenize args = parse
       { writeMessage args lexbuf msgErr <| sprintf  "Unrecognized input `%s`." (lexeme lexbuf);
         tokenize args lexbuf }
 
-
+// nested mult-line comment
 and multiLineComment args bPos sb nest = parse
     | "/*"
       { appendToSb lexbuf sb;
@@ -161,6 +168,7 @@ and multiLineComment args bPos sb nest = parse
 
     | eof
       { addComment args sb bPos lexbuf.StartPos;
+        if nest > 1 then writeMessage args lexbuf msgWarn "Unterminated multiline comment." else ();
         EOF }
 
     | _

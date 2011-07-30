@@ -17,3 +17,6 @@ type internal ThreadStatic() =
 
 let logMessage msgType (parseState : IParseState) msg =
     ThreadStatic.ErrorLogger.AddMessage(msg, msgType, new Position(parseState.ResultRange))
+
+let logMessagePos msgType (pos : Malsys.Position) msg =
+    ThreadStatic.ErrorLogger.AddMessage(msg, msgType, pos)

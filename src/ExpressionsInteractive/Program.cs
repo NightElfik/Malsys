@@ -24,7 +24,7 @@ namespace ExpressionsInteractive {
 #if !DEBUG
 					try {
 #endif
-					Console.WriteLine(eTor.EvaluateStr(inputSb.ToString()));
+					Console.WriteLine(eTor.EvaluateStr(inputSb.ToString(), "Interactive input"));
 #if !DEBUG
 					}
 					catch (Exception ex) {

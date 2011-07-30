@@ -34,5 +34,10 @@ namespace Malsys {
 			EndLine = range.Item2.Line;
 			EndColumn = range.Item2.Column;
 		}
+
+
+		public Position EndPosition() {
+			return new Position(EndLine, EndColumn, EndLine, EndColumn);
+		}
 	}
 }

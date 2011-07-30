@@ -6,75 +6,32 @@ namespace Malsys.Compilers {
 		/// <summary>
 		/// Thread safe.
 		/// </summary>
-		public static bool TryCompile(Ast.RewriteRule rRuleAst, CompilerParametersInternal prms, out RewriteRule result) {
-
-			if (!tryCompile(rRuleAst, prms, out result)) {
-				prms.Messages.AddMessage("Failed to compile rewrite rule.", CompilerMessageType.Error, rRuleAst.Position);
-				result = null;
-				return false;
-			}
-
-			return true;
-		}
-
-
-		private static bool tryCompile(Ast.RewriteRule rRuleAst, CompilerParametersInternal prms, out RewriteRule result) {
+		public static CompilerResult<RewriteRule> Compile(Ast.RewriteRule rRuleAst, MessagesCollection msgs) {
 
 			var usedNames = new Dictionary<string, Position>();
 
-			Symbol<string> ptrn;
-			if (!SymbolsCompiler.TryCompile(rRuleAst.Pattern, usedNames, prms, out ptrn)) {
-				prms.Messages.AddMessage("Failed to compile pattern.", CompilerMessageType.Error, rRuleAst.Pattern.Position);
-				result = null;
-				return false;
+			var ptrn = SymbolsCompiler.Compile(rRuleAst.Pattern, usedNames, msgs);
+			if (!ptrn) {
+				return CompilerResult<RewriteRule>.Error;
 			}
 
-			SymbolsList<string> lCtxt;
-			if(!SymbolsCompiler.TryCompile(rRuleAst.LeftContext, usedNames, prms, out lCtxt)){
-				prms.Messages.AddMessage("Failed to compile left context.", CompilerMessageType.Error, rRuleAst.LeftContext.Position);
-				result = null;
-				return false;
-			}
+			var lCtxt = SymbolsCompiler.CompileListFailSafe(rRuleAst.LeftContext, usedNames, msgs);
 
-			SymbolsList<string> rCtxt;
-			if(!SymbolsCompiler.TryCompile(rRuleAst.RightContext, usedNames, prms, out rCtxt)){
-				prms.Messages.AddMessage("Failed to compile right context.", CompilerMessageType.Error, rRuleAst.RightContext.Position);
-				result = null;
-				return false;
-			}
+			var rCtxt = SymbolsCompiler.CompileListFailSafe(rRuleAst.RightContext, usedNames, msgs);
 
 			usedNames = null;
 
 
-			RichExpression cond;
-			if (!ExpressionCompiler.TryCompileRich(rRuleAst.Condition, prms, out cond)) {
-				prms.Messages.AddMessage("Failed to compile condition.", CompilerMessageType.Error, rRuleAst.Condition.Position);
-				result = null;
-				return false;
-			}
+			var cond = ExpressionCompiler.CompileRichFailSafe(rRuleAst.Condition, msgs);
 
-			RichExpression probab;
-			if (!ExpressionCompiler.TryCompileRich(rRuleAst.Probability, prms, out probab)) {
-				prms.Messages.AddMessage("Failed to compile probability.", CompilerMessageType.Error, rRuleAst.Probability.Position);
-				result = null;
-				return false;
-			}
+			var probab = ExpressionCompiler.CompileRichFailSafe(rRuleAst.Probability, msgs);
 
-			ImmutableList<VariableDefinition> vars;
-			if(!VariableDefinitionCompiler.TryCompile(rRuleAst.VariableDefs, prms, out vars)){
-				result = null;
-				return false;
-			}
+			var vars = VariableDefinitionCompiler.CompileFailSafe(rRuleAst.VariableDefs, msgs);
 
-			SymbolsList<IExpression> replac;
-			if(!SymbolsCompiler.TryCompile(rRuleAst.Replacement, prms, out replac)){
-				result = null;
-				return false;
-			}
+			var replac = SymbolsCompiler.CompileListFailSafe(rRuleAst.Replacement, msgs);
 
 
-			result = new RewriteRule(ptrn, lCtxt, rCtxt, cond, probab, vars, replac);
-			return true;
+			return new RewriteRule(ptrn, lCtxt, rCtxt, cond, probab, vars, replac);
 		}
 
 	}

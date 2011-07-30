@@ -23,6 +23,12 @@ namespace Malsys.Ast {
 			Position = pos;
 		}
 
+		public RichExpression(RichExpression rExpr, Position pos) {
+			Expression = rExpr.Expression;
+			VariableDefinitions = rExpr.VariableDefinitions;
+			Position = pos;
+		}
+
 
 		#region IToken Members
 

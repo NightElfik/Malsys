@@ -8,23 +8,19 @@ namespace Malsys.Compilers {
 		/// <summary>
 		/// Thread safe.
 		/// </summary>
-		public static bool TryCompile(Ast.FunctionDefinition funDef, CompilerParametersInternal prms, out FunctionDefinition result) {
+		public static FunctionDefinition CompileFailSafe(Ast.FunctionDefinition funDef, MessagesCollection msgs) {
 
-			if (tryCompile(funDef, prms, out result)) {
-				prms.Messages.AddMessage("Failed to compile function definition `{0}`.".Fmt(funDef.NameId.Name),
-					CompilerMessageType.Error, funDef.Position);
-				result = null;
-				return false;
-			}
+			var paramsTuple = CompileParametersFailSafe(funDef.Parameters, msgs);
 
-			return true;
+			var body = ExpressionCompiler.CompileRichFailSafe(funDef, msgs);
+
+			return new FunctionDefinition(funDef.NameId.Name, paramsTuple.Item1, paramsTuple.Item2, body.VariableDefinitions, body.Expression);
 		}
 
 		/// <summary>
 		/// Thread safe.
 		/// </summary>
-		public static bool TryCompileParameters(ImmutableList<Ast.OptionalParameter> parameters, CompilerParametersInternal prms,
-				out ImmutableList<string> paramsNames, out ImmutableList<IValue> optParamsValues) {
+		public static Tuple<ImmutableList<string>, ImmutableList<IValue>> CompileParametersFailSafe(ImmutableList<Ast.OptionalParameter> parameters, MessagesCollection msgs) {
 
 			int parametersCount = parameters.Count;
 			bool wasOptional = false;
@@ -37,10 +33,11 @@ namespace Malsys.Compilers {
 
 				if (oParam.OptionalValue == null) {
 					if (wasOptional) {
-						prms.Messages.AddMessage("Mandatory parameters have to be before all optional parameters, but parameter `{0}` is after optional.".Fmt(oParam.NameId.Name),
-							CompilerMessageType.Error, oParam.Position);
-						paramsNames = null; optParamsValues = null;
-						return false;
+						msgs.AddError("Mandatory parameters have to be before all optional parameters, but mandatory parameter `{0}` is after optional.".Fmt(oParam.NameId.Name),
+							oParam.Position);
+
+						int optIndex = i - (parametersCount - optParamsExprs.Length);
+						optParamsExprs[optIndex] = ExpressionCompiler.ErrorResult;
 					}
 				}
 				else {
@@ -50,12 +47,7 @@ namespace Malsys.Compilers {
 					}
 
 					int optIndex = i - (parametersCount - optParamsExprs.Length);
-					if (!ExpressionCompiler.TryCompile(oParam.OptionalValue, prms, out optParamsExprs[optIndex])) {
-						prms.Messages.AddMessage("Failed to compile default value of {0}. parameter `{1}`".Fmt(i + 1, oParam.NameId.Name),
-							CompilerMessageType.Error, oParam.Position);
-						paramsNames = null; optParamsValues = null;
-						return false;
-					}
+					optParamsExprs[optIndex] = ExpressionCompiler.CompileFailSafe(oParam.OptionalValue, msgs);
 				}
 			}
 
@@ -66,10 +58,8 @@ namespace Malsys.Compilers {
 			// check wether parameters names are unique
 			int nonUniq1, nonUniq2;
 			if (optParamsExprs.TryGetEqualValuesIndices(out nonUniq1, out nonUniq2)) {
-				prms.Messages.AddMessage("{0}. and {1}. parameter have same name `{2}`.".Fmt(nonUniq1 + 1, nonUniq2 + 1, optParamsExprs[nonUniq1]),
-					CompilerMessageType.Error, parameters[nonUniq2].Position);
-				paramsNames = null; optParamsValues = null;
-				return false;
+				msgs.AddError("{0}. and {1}. parameter have same name `{2}`.".Fmt(nonUniq1 + 1, nonUniq2 + 1, optParamsExprs[nonUniq1]),
+					parameters[nonUniq2].Position);
 			}
 
 			// evaluating optional's paramters default values
@@ -83,47 +73,15 @@ namespace Malsys.Compilers {
 			}
 			catch (EvalException ex) {
 				int absIndex = index + (parametersCount - optParamsExprs.Length);
-				prms.Messages.AddMessage("Faled to evaluate default value of {0}. parameter. {1}".Fmt(absIndex + 1, ex.GetWholeMessage()),
-					CompilerMessageType.Error, parameters[absIndex].Position);
-				paramsNames = null; optParamsValues = null;
-				return false;
-			}
-			catch (Exception ex) {
-				int absIndex = index + (parametersCount - optParamsExprs.Length);
-
-				Debug.Fail("{0} exception while evaluating default value of {1}. param.".Fmt(
-					ex.GetType().ToString(), absIndex + 1));
-
-				prms.Messages.AddMessage("Failed to evaluate default value of {0}. parameter.".Fmt(absIndex + 1),
-					CompilerMessageType.Error, parameters[absIndex].Position);
-				paramsNames = null; optParamsValues = null;
-				return false;
+				msgs.AddError("Faled to evaluate default value of {0}. parameter. {1}".Fmt(absIndex + 1, ex.GetWholeMessage()),
+					parameters[absIndex].Position);
+				optParamsEval[index] = double.NaN.ToConst();
 			}
 
-			paramsNames = new ImmutableList<string>(names, true);
-			optParamsValues = new ImmutableList<IValue>(optParamsEval, true);
-			return true;
+			return new Tuple<ImmutableList<string>, ImmutableList<IValue>>(new ImmutableList<string>(names, true), new ImmutableList<IValue>(optParamsEval, true));
 		}
 
 
-		private static bool tryCompile(Ast.FunctionDefinition funDef, CompilerParametersInternal prms, out FunctionDefinition result) {
-
-			ImmutableList<string> paramsNames;
-			ImmutableList<IValue> optParamsValues;
-			if (!TryCompileParameters(funDef.Parameters, prms, out paramsNames, out optParamsValues)) {
-				result = null;
-				return false;
-			}
-
-			RichExpression richExpr;
-			if (!ExpressionCompiler.TryCompileRich(funDef, prms, out richExpr)) {
-				result = null;
-				return false;
-			}
-
-			result = new FunctionDefinition(funDef.NameId.Name, paramsNames, optParamsValues, richExpr.VariableDefinitions, richExpr.Expression);
-			return true;
-		}
 
 	}
 }

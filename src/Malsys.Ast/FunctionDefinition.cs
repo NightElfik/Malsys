@@ -4,22 +4,22 @@ namespace Malsys.Ast {
 	/// <summary>
 	/// Immutable.
 	/// </summary>
-	public class FunctionDefinition : RichExpression, IInputStatement, IExprInteractiveStatement {
+	public class FunctionDefinition : RichExpression, IInputStatement, ILsystemStatement, IExprInteractiveStatement {
 
 		public readonly Keyword Keyword;
 		public readonly Identificator NameId;
 		public readonly int ParametersCount;
 
-		public readonly ImmutableList<OptionalParameter> Parameters;
+		public readonly ImmutableListPos<OptionalParameter> Parameters;
 
 
-		public FunctionDefinition(Keyword keyword, Identificator name, IEnumerable<OptionalParameter> prms,
+		public FunctionDefinition(Keyword keyword, Identificator name, ImmutableListPos<OptionalParameter> prms,
 				RichExpression expr, Position pos)
 			: base(expr.VariableDefinitions, expr.Expression, pos) {
 
 			Keyword = keyword;
 			NameId = name;
-			Parameters = new ImmutableList<OptionalParameter>(prms);
+			Parameters = prms;
 
 			ParametersCount = Parameters.Length;
 		}

@@ -4,7 +4,7 @@ using Malsys.Expressions;
 namespace Malsys.Compilers {
 	public static class SymbolsCompiler {
 
-		public static bool TryCompile(Ast.SymbolPattern ptrnAst, Dictionary<string, Position> usedNames, CompilerParametersInternal prms, out Symbol<string> result) {
+		public static CompilerResult<Symbol<string>> Compile(Ast.SymbolPattern ptrnAst, Dictionary<string, Position> usedNames, MessagesCollection msgs) {
 
 			var names = new string[ptrnAst.ParametersNames.Length];
 			for (int i = 0; i < ptrnAst.ParametersNames.Length; i++) {
@@ -12,15 +12,9 @@ namespace Malsys.Compilers {
 
 				if (usedNames.ContainsKey(name)) {
 					var otherPos = usedNames[name];
-					prms.Messages.AddMessage("Parameter name `{0}` in pattern `{1}` is not unique. Another occurance is at line {2} col {3}.".Fmt(
-							name, ptrnAst.Name, otherPos.BeginLine, otherPos.BeginColumn),
-						CompilerMessageType.Error, ptrnAst.ParametersNames[i].Position);
-
-					// last error should be whole compiled object
-					prms.Messages.AddMessage("Failed to compile symbol pattern `{0}`.".Fmt(ptrnAst.Name),
-						CompilerMessageType.Error, ptrnAst.Position);
-					result = null;
-					return false;
+					msgs.AddError("Parameter name `{0}` in pattern `{1}` is not unique (in its context).".Fmt(name, ptrnAst.Name),
+						ptrnAst.ParametersNames[i].Position, otherPos);
+					return CompilerResult<Symbol<string>>.Error;
 				}
 
 				usedNames.Add(name, ptrnAst.ParametersNames[i].Position);
@@ -28,58 +22,47 @@ namespace Malsys.Compilers {
 			}
 
 			var namesImm = new ImmutableList<string>(names, true);
-			result = new Symbol<string>(ptrnAst.Name, namesImm);
-			return true;
+			var result = new Symbol<string>(ptrnAst.Name, namesImm);
+
+			return new CompilerResult<Symbol<string>>(result);
 		}
 
-		public static bool TryCompile(ImmutableList<Ast.SymbolPattern> ptrnsAst, Dictionary<string, Position> usedNames, CompilerParametersInternal prms, out SymbolsList<string> result) {
+		public static SymbolsList<string> CompileListFailSafe(ImmutableList<Ast.SymbolPattern> ptrnsAst, Dictionary<string, Position> usedNames, MessagesCollection msgs) {
 
 			var compiledSymbols = new Symbol<string>[ptrnsAst.Length];
 
 			for (int i = 0; i < ptrnsAst.Length; i++) {
-				if (!TryCompile(ptrnsAst[i], usedNames, prms, out compiledSymbols[i])) {
-					result = null;
-					return false;
+				var symRslt = Compile(ptrnsAst[i], usedNames, msgs);
+				if (symRslt) {
+					compiledSymbols[i] = symRslt;
+				}
+				else {
+					return new CompilerResult<SymbolsList<string>>(SymbolsList<string>.Empty);
 				}
 			}
 
 			var compiledSymImm = new ImmutableList<Symbol<string>>(compiledSymbols, true);
+			var result = new SymbolsList<string>(compiledSymImm);
 
-			result = new SymbolsList<string>(compiledSymImm);
-			return true;
+			return new CompilerResult<SymbolsList<string>>(result);
 		}
 
 
-		public static bool TryCompile(Ast.SymbolExprArgs symbolAst, CompilerParametersInternal prms, out Symbol<IExpression> result) {
+		public static Symbol<IExpression> CompileFailSafe(Ast.SymbolExprArgs symbolAst, MessagesCollection msgs) {
 
-			ImmutableList<IExpression> compiledExprsImm;
-
-			if (!ExpressionCompiler.TryCompile(symbolAst.Arguments, prms, out compiledExprsImm)) {
-				prms.Messages.AddMessage("Failed to compile arguments of symbol `{0}`.".Fmt(symbolAst.Name),
-					CompilerMessageType.Error, symbolAst.Position);
-				result = null;
-				return false;
-			}
-
-			result = new Symbol<IExpression>(symbolAst.Name, compiledExprsImm);
-			return true;
+			var args = ExpressionCompiler.CompileFailSafe(symbolAst.Arguments, msgs);
+			return new Symbol<IExpression>(symbolAst.Name, args);
 		}
 
-		public static bool TryCompile(ImmutableList<Ast.SymbolExprArgs> symbolsAst, CompilerParametersInternal prms, out SymbolsList<IExpression> result) {
+		public static SymbolsList<IExpression> CompileListFailSafe(ImmutableList<Ast.SymbolExprArgs> symbolsAst, MessagesCollection msgs) {
 
 			var compiledSymbols = new Symbol<IExpression>[symbolsAst.Length];
 
 			for (int i = 0; i < symbolsAst.Length; i++) {
-				if (!TryCompile(symbolsAst[i], prms, out compiledSymbols[i])) {
-					result = null;
-					return false;
-				}
+				compiledSymbols[i] = CompileFailSafe(symbolsAst[i], msgs);
 			}
 
-			var compiledSymImm = new ImmutableList<Symbol<IExpression>>(compiledSymbols, true);
-
-			result = new SymbolsList<IExpression>(compiledSymImm);
-			return true;
+			return new SymbolsList<IExpression>(new ImmutableList<Symbol<IExpression>>(compiledSymbols, true));
 		}
 
 	}

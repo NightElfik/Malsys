@@ -1,9 +1,14 @@
-﻿
+﻿using System.Globalization;
+
 namespace Malsys.Expressions {
 	/// <summary>
 	/// Immutable.
 	/// </summary>
 	public class Constant : IExpression, IExpressionVisitable, IValue {
+
+		public static readonly Constant NaN = new Constant(double.NaN);
+
+
 		public readonly double Value;
 
 		public Constant(double value) {
@@ -15,7 +20,7 @@ namespace Malsys.Expressions {
 		}
 
 		public override string ToString() {
-			return Value.ToString();
+			return Value.ToString(CultureInfo.InvariantCulture.NumberFormat);
 		}
 
 

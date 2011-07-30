@@ -271,23 +271,19 @@ namespace Malsys.Tests.Expressions {
 
 
 			// compile
-			var cp = new CompilerParametersInternal(msgs, new CompilerParameters());
 
-			IExpression compiledExpr;
-
-			if (ExpressionCompiler.TryCompile(parsedVal, cp, out compiledExpr)) {
-				// write something
-			}
-			else {
-				foreach (var err in cp.Messages) {
-					Console.WriteLine(err.GetFullMessage());
-				}
-				Assert.Fail("Failed to compile expression `{0}`", exprStr);
-			}
+			var compiledExpr = ExpressionCompiler.CompileFailSafe(parsedVal, msgs);
 
 
 			// evaluate
 			var result = ExpressionEvaluator.Evaluate(compiledExpr);
+
+			foreach (var err in msgs) {
+				Console.WriteLine(err.GetFullMessage());
+			}
+
+
+			Assert.IsFalse(msgs.ErrorOcured, "Failed to compile or evaluate expression `{0}`.", exprStr);
 
 			return result;
 		}

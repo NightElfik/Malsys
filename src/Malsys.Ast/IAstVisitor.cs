@@ -2,6 +2,7 @@
 namespace Malsys.Ast {
 	public interface IAstVisitor {
 		// alphabetically sorted
+		void Visit(EmptyStatement emptyStatement);
 		void Visit(Expression expression);
 		void Visit(ExpressionBracketed expressionBracketed);
 		void Visit(ExpressionFunction expressionFunction);
