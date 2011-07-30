@@ -45,7 +45,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Compilers\CompilerMessage.cs" />
     <Compile Include="Compilers\CompilerParameters.cs" />
     <Compile Include="Compilers\CompilerResult.cs" />
     <Compile Include="Compilers\ExpressionCompiler.cs" />
@@ -53,8 +52,6 @@
     <Compile Include="Compilers\FunctionDefinitionCompiler.cs" />
     <Compile Include="Compilers\InputCompiler.cs" />
     <Compile Include="Compilers\LsystemCompiler.cs" />
-    <Compile Include="Compilers\LsystemInputCompiler.cs" />
-    <Compile Include="Compilers\MessagesCollection.cs" />
     <Compile Include="Compilers\RewriteRuleCompiler.cs" />
     <Compile Include="Compilers\SymbolsCompiler.cs" />
     <Compile Include="Compilers\VariableDefinitionCompiler.cs" />

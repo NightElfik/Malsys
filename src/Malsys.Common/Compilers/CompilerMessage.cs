@@ -1,5 +1,4 @@
 ﻿using System;
-using Malsys.Ast;
 
 namespace Malsys.Compilers {
 	public class CompilerMessage {

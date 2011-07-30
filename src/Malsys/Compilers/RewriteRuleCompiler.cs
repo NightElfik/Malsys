@@ -20,7 +20,7 @@ namespace Malsys.Compilers {
 
 		private static bool tryCompile(Ast.RewriteRule rRuleAst, CompilerParametersInternal prms, out RewriteRule result) {
 
-			var usedNames = new Dictionary<string, Ast.Position>();
+			var usedNames = new Dictionary<string, Position>();
 
 			Symbol<string> ptrn;
 			if (!SymbolsCompiler.TryCompile(rRuleAst.Pattern, usedNames, prms, out ptrn)) {

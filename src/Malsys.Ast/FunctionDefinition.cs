@@ -14,8 +14,8 @@ namespace Malsys.Ast {
 
 
 		public FunctionDefinition(Keyword keyword, Identificator name, IEnumerable<OptionalParameter> prms,
-				IEnumerable<VariableDefinition> varDefs, Expression expr, Position pos)
-			: base(varDefs, expr, pos) {
+				RichExpression expr, Position pos)
+			: base(expr.VariableDefinitions, expr.Expression, pos) {
 
 			Keyword = keyword;
 			NameId = name;

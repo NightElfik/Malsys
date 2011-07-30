@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using Malsys.Compilers;
 using Malsys.Expressions;
@@ -265,11 +266,12 @@ namespace Malsys.Tests.Expressions {
 
 			// parsing
 			var lexBuff = LexBuffer<char>.FromString(exprStr);
-			var parsedVal = ParserUtils.parseExpression(lexBuff, testName);
+			var msgs = new MessagesCollection();
+			Ast.Expression parsedVal = ParserUtils.parseExpression(lexBuff, msgs, testName);
 
 
 			// compile
-			var cp = new CompilerParametersInternal(new CompilerParameters());
+			var cp = new CompilerParametersInternal(msgs, new CompilerParameters());
 
 			IExpression compiledExpr;
 
@@ -294,11 +296,13 @@ namespace Malsys.Tests.Expressions {
 
 			var lexbuff = LexBuffer<char>.FromString(str);
 			StringBuilder sb = new StringBuilder();
+			var comments = new List<Ast.Comment>();
+			var msgs = new MessagesCollection();
 
 
 			Parser.token tok;
 			do {
-				tok = Lexer.tokenize(lexbuff);
+				tok = Lexer.tokenize(msgs, comments, lexbuff);
 				sb.Append(Parser.token_to_string(tok));
 				sb.Append(" ");
 			} while (tok != Parser.token.EOF);

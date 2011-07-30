@@ -4,7 +4,7 @@ using Malsys.Expressions;
 namespace Malsys.Compilers {
 	public static class SymbolsCompiler {
 
-		public static bool TryCompile(Ast.SymbolPattern ptrnAst, Dictionary<string, Ast.Position> usedNames, CompilerParametersInternal prms, out Symbol<string> result) {
+		public static bool TryCompile(Ast.SymbolPattern ptrnAst, Dictionary<string, Position> usedNames, CompilerParametersInternal prms, out Symbol<string> result) {
 
 			var names = new string[ptrnAst.ParametersNames.Length];
 			for (int i = 0; i < ptrnAst.ParametersNames.Length; i++) {
@@ -32,7 +32,7 @@ namespace Malsys.Compilers {
 			return true;
 		}
 
-		public static bool TryCompile(ImmutableList<Ast.SymbolPattern> ptrnsAst, Dictionary<string, Ast.Position> usedNames, CompilerParametersInternal prms, out SymbolsList<string> result) {
+		public static bool TryCompile(ImmutableList<Ast.SymbolPattern> ptrnsAst, Dictionary<string, Position> usedNames, CompilerParametersInternal prms, out SymbolsList<string> result) {
 
 			var compiledSymbols = new Symbol<string>[ptrnsAst.Length];
 

@@ -20,18 +20,20 @@ namespace ExpressionsInteractive {
 
 			Malsys.Ast.IExprInteractiveStatement[] parsedStmnts;
 
-			try {
-				var lexBuff = LexBuffer<char>.FromString(input);
-				parsedStmnts = ParserUtils.parseExprInteractiveStatements(lexBuff, "input");
-			}
-			catch (LexerException ex) {
-				return "Failed to lex input. {0}".Fmt(ex.Message);
-			}
-			catch (ParserException<char> ex) {
-				return "Failed to parse input. {0}".Fmt(ex.Message);
-			}
+			var msgs = new MessagesCollection();
+			var lexBuff = LexBuffer<char>.FromString(input);
+			parsedStmnts = ParserUtils.parseExprInteractiveStatements(lexBuff, msgs, "input");
 
 			StringBuilder sb = new StringBuilder();
+
+			if (msgs.ErrorOcured) {
+				foreach (var msg in msgs) {
+					sb.AppendLine(msg.GetFullMessage());
+				}
+
+				return sb.ToString();
+			}
+
 
 			foreach (var stmnt in parsedStmnts) {
 				var cp = new CompilerParametersInternal(new CompilerParameters());

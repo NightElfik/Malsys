@@ -2,14 +2,17 @@
 module Malsys.Parsing.Lexer
 
 open System
+open System.Text
 open System.Globalization
 open Microsoft.FSharp.Text.Lexing
 
 open Malsys
+open Malsys.Ast
+open Malsys.Compilers
 open Malsys.Parsing.Parser
 
 
-let lexeme lexbuf = LexBuffer<char>.LexemeString lexbuf
+let lexeme lexbuf = LexBuffer<_>.LexemeString lexbuf
 
 let invariantCulture = CultureInfo.InvariantCulture
 let floatStyle = NumberStyles.AllowDecimalPoint ||| NumberStyles.AllowExponent
@@ -20,14 +23,32 @@ let keywords =
         ("lsystem", LSYSTEM);
     ] |> Map.ofList
 
+
+let newline (lexbuf : LexBuffer<_>) = lexbuf.EndPos <- lexbuf.EndPos.NextLine
+
+
+let msgErr = CompilerMessageType.Error
+
+let writeMessage (msgColl : MessagesCollection, _) (lexbuf : LexBuffer<_>) (msgType : CompilerMessageType) (msg : string) =
+    msgColl.AddMessage(msg, msgType, new Position(lexbuf.StartPos, lexbuf.EndPos));
+    ()
+
+
+let addComment (_, cmtList : ResizeArray<Comment>) sb bPos ePos =
+    cmtList.Add(new Comment(sb.ToString(), new Position(bPos, ePos)));
+    ()
+
+let appendToSb lexbuf (sb : StringBuilder) =
+    sb.Append(LexBuffer<_>.LexemeString lexbuf) |> ignore
+
 }
 
 
 let letter = '\Lu' | '\Ll' | '\Lt' | '\Lm' | '\Lo' | '\Nl'
 let digit = '\Nd'
 
-let firstOpChar = '!'|'$'|'%'|'&'|'*'|'+'|'-'|'.'|'/'|'\\'|'<'|'>'|'@'|'^'|'|'|'~'
-let opChar = firstOpChar | '='|'?'|':'
+let firstOpChar = '!'|'$'|'%'|'&'|'*'|'+'|'-'|'.'|'\\'|'<'|'>'|'@'|'^'|'|'|'~'
+let opChar = firstOpChar | '='|'?'|':'|'/'
 let operator = firstOpChar opChar*
 
 let whitespace = [' ' '\t']
@@ -54,42 +75,48 @@ let idChar = letter | connectingChar | combiningChar | formattingChar | digit | 
 
 let id = idFirstChar idChar*
 
-let slc = "//"
-let mlcBegin = "/*"
-let mlcEnd = "*/"
 
-
-rule tokenize = parse
+// args = (MessagesCollection, ResizeArray<CommentRange>)
+rule tokenize args = parse
     | whitespace
-      { tokenize lexbuf }
+      { tokenize args lexbuf }
+
     | newline
-      { lexbuf.EndPos <- lexbuf.EndPos.NextLine  // set new line into leser state
-        tokenize lexbuf }
+      { newline lexbuf
+        tokenize args lexbuf }
+
     | id
       { match keywords.TryFind(lexeme lexbuf) with
-        | Some(token) -> token  // keyword
+        | Some(token) -> token
         | None -> ID(lexeme lexbuf) }
+
     | int
-      { let s = lexeme lexbuf
-        let n = try int64 s with _ -> raise <| LexerException(sprintf "Failed to parse `%s` as integer." s, lexbuf.StartPos, lexbuf.EndPos)
-        FLOAT <| double n }
+      { let s = lexeme lexbuf in
+        let n = try int64 s |> double with _ -> writeMessage args lexbuf msgErr <| sprintf "Failed to parse `%s` as integer." s; Double.NaN in
+        FLOAT n }
+
+    // #123 number -> 0x123 -> parse as hex
     | hexInt
-      { let s = "0x" + (lexeme lexbuf).Substring(1)
-        let n = try int64 s with _ -> raise <| LexerException(sprintf "Failed to parse `%s` as hexagonal integer." s, lexbuf.StartPos, lexbuf.EndPos)
-        FLOAT <| double n }
+      { let s = "0x" + (lexeme lexbuf).Substring(1) in
+        let n = try int64 s |> double with _ ->  writeMessage args lexbuf msgErr <| sprintf "Failed to parse `%s` as hexagonal integer." s; Double.NaN in
+        FLOAT n }
+
     | float
-      { let mutable d = 0.0
+      { let mutable d = 0.0 in
         if Double.TryParse(lexeme lexbuf, floatStyle, invariantCulture, &d) then
             FLOAT d
         else
-            raise <| LexerException(sprintf "Failed to parse `%s` as folat." (lexeme lexbuf), lexbuf.StartPos, lexbuf.EndPos)}
-    | mlcBegin
-      { multiLineComment lexbuf.StartPos lexbuf
-        tokenize lexbuf }
-    | slc
-      { match singleLineComment lexbuf with
-        | Some () -> tokenize lexbuf  // did not reached end of file
-        | None -> EOF }
+            writeMessage args lexbuf msgErr <| sprintf "Failed to parse `%s` as folating point number." (lexeme lexbuf)
+            FLOAT Double.NaN }
+
+    | "/*"
+      { let sb = (new StringBuilder(128)).Append(lexeme lexbuf) in
+        multiLineComment args (lexbuf.StartPos) sb 1 lexbuf }
+
+    | "//"
+      { let sb = (new StringBuilder(64)).Append(lexeme lexbuf) in
+        singleLineComment args (lexbuf.StartPos) sb lexbuf }
+
     | ';' { SEMI }
     | ',' { COMMA }
     | '(' { LPAREN }
@@ -102,32 +129,69 @@ rule tokenize = parse
     | ':' { COLON }
     | '=' { EQUALS }
     | "->" { RARROW }
-    | "==" | operator
+
+    | operator | "==" | '/'
       { OPERATOR (lexeme lexbuf) }
+
     | eof
       { EOF }
-    | _
-      { raise <| LexerException(sprintf "Unrecognized input `%s`." (lexeme lexbuf), lexbuf.StartPos, lexbuf.EndPos) }
 
-and multiLineComment pos = parse
-    | mlcBegin
-      { multiLineComment lexbuf.StartPos lexbuf  // nested comment
-        multiLineComment pos lexbuf }
-    | mlcEnd
-      { () }
-    | newline
-      { lexbuf.EndPos <- lexbuf.EndPos.NextLine
-        multiLineComment pos lexbuf }
-    | eof
-      { raise <| LexerException("Unterminated comment.", pos, lexbuf.EndPos) }
     | _
-      { multiLineComment pos lexbuf }
+      { writeMessage args lexbuf msgErr <| sprintf  "Unrecognized input `%s`." (lexeme lexbuf);
+        tokenize args lexbuf }
 
-and singleLineComment = parse
+
+and multiLineComment args bPos sb nest = parse
+    | "/*"
+      { appendToSb lexbuf sb;
+        multiLineComment args bPos sb (nest + 1) lexbuf }
+
+    | "*/"
+      { appendToSb lexbuf sb;
+        if nest > 1 then
+            multiLineComment args bPos sb (nest - 1) lexbuf
+        else
+            addComment args sb bPos lexbuf.EndPos;
+            tokenize args lexbuf }
+
     | newline
-      { lexbuf.EndPos <- lexbuf.EndPos.NextLine
-        Some () }
+      { appendToSb lexbuf sb;
+        newline lexbuf;
+        multiLineComment args bPos sb nest lexbuf }
+
     | eof
-      { None }
+      { addComment args sb bPos lexbuf.StartPos;
+        EOF }
+
     | _
-      { singleLineComment lexbuf }
+      { appendToSb lexbuf sb;
+        multiLineComment args bPos sb nest lexbuf }
+
+
+and singleLineComment args bPos sb = parse
+    | newline
+      { addComment args sb bPos lexbuf.StartPos;
+        tokenize args lexbuf }
+
+    | eof
+      { addComment args sb bPos lexbuf.StartPos;
+        EOF }
+
+    | _
+      { appendToSb lexbuf sb;
+        singleLineComment args bPos sb lexbuf }
+
+
+{
+(* Just test, it works! :)
+let createLexer (comments : ResizeArray<CommentRange>)  =
+    let nextRule = ref (tokenize comments)
+    fun lexbuf ->
+        let tok = !nextRule lexbuf
+        match tok with
+        | DOC_BEGIN -> nextRule := docComment
+        | DOC_END -> nextRule := tokenize comments
+        | _ -> ()
+        tok
+*)
+}

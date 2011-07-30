@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
-using Malsys.Ast;
 
 namespace Malsys.Compilers {
 	public class MessagesCollection : IEnumerable<CompilerMessage> {
 
 		public bool ErrorOcured { get; private set; }
 
-		internal string DefaultSourceName { get; set; }
+		public string DefaultSourceName { get; set; }
 
 		private List<CompilerMessage> messages = new List<CompilerMessage>();
 
@@ -15,7 +14,7 @@ namespace Malsys.Compilers {
 			ErrorOcured = false;
 		}
 
-		internal void AddMessage(CompilerMessage msg) {
+		public void AddMessage(CompilerMessage msg) {
 			if (msg.Type == CompilerMessageType.Error) {
 				ErrorOcured = true;
 			}
@@ -23,7 +22,7 @@ namespace Malsys.Compilers {
 			messages.Add(msg);
 		}
 
-		internal void AddMessage(string message, CompilerMessageType type, Position pos) {
+		public void AddMessage(string message, CompilerMessageType type, Position pos) {
 			if (type == CompilerMessageType.Error) {
 				ErrorOcured = true;
 			}
