@@ -13,20 +13,23 @@ namespace Malsys.Expressions {
 		public static readonly KnownConstant False = new KnownConstant("false", 0.0);
 
 		public static readonly KnownConstant Nan = new KnownConstant("nan", double.NaN);
-		public static readonly KnownConstant Infty = new KnownConstant("infty", double.PositiveInfinity);
-		public static readonly KnownConstant Infinity = new KnownConstant(CharHelper.Infinity.ToString(), double.PositiveInfinity);
-		public static readonly KnownConstant InfinityStr = new KnownConstant("infinity", double.PositiveInfinity);
 
-		public static readonly KnownConstant Pi = new KnownConstant(CharHelper.Pi.ToString(), Math.PI);
-		public static readonly KnownConstant PiStr = new KnownConstant("pi", Math.PI);
+		public static readonly KnownConstant Infinity = new KnownConstant("infinity", double.PositiveInfinity);
+		public static readonly KnownConstant Infty = Infinity.changeName("infty");
+		public static readonly KnownConstant InfinityUnicode = Infinity.changeName(CharHelper.Infinity.ToString());
 
-		public static readonly KnownConstant Tau = new KnownConstant(CharHelper.Tau.ToString(), 2 * Math.PI);
-		public static readonly KnownConstant TauStr = new KnownConstant("tau", 2 * Math.PI);
+		public static readonly KnownConstant Pi = new KnownConstant("pi", Math.PI);
+		public static readonly KnownConstant PiUnicode = Pi.changeName(CharHelper.Pi.ToString());
+
+		public static readonly KnownConstant Tau = new KnownConstant("tau", 2 * Math.PI);
+		public static readonly KnownConstant TauUnicode = Tau.changeName(CharHelper.Tau.ToString());
 
 		public static readonly KnownConstant E = new KnownConstant("e", Math.E);
 
-		public static readonly KnownConstant Phi = new KnownConstant(CharHelper.Phi.ToString(), (1 + Math.Sqrt(5)) / 2);
-		public static readonly KnownConstant GoldenRatio = new KnownConstant("goldenRatio", (1 + Math.Sqrt(5)) / 2);
+		public static readonly KnownConstant GoldenRatio = new KnownConstant("golden_ratio", (1 + Math.Sqrt(5)) / 2);
+		public static readonly KnownConstant GoldenRatioCamel = GoldenRatio.changeName("goldenRatio");
+		public static readonly KnownConstant GoldenRatioPhi = GoldenRatio.changeName(CharHelper.Phi.ToString());
+		public static readonly KnownConstant GoldenRatioVarPhi = GoldenRatio.changeName(CharHelper.VarPhi.ToString());
 
 		#endregion
 
@@ -44,7 +47,6 @@ namespace Malsys.Expressions {
 					continue;
 				}
 
-
 				KnownConstant cnst = (KnownConstant)fi.GetValue(null);
 				string key = cnst.Name.ToLowerInvariant();
 
@@ -55,10 +57,10 @@ namespace Malsys.Expressions {
 		}
 
 		/// <summary>
-		/// Tries to parse given string as known constant.
+		/// Tries to get constant with name equal to given string.
 		/// </summary>
-		public static bool TryParse(string name, out KnownConstant result) {
-			return constCache.TryGetValue(name, out result);
+		public static bool TryGet(string name, out KnownConstant result) {
+			return constCache.TryGetValue(name.ToLowerInvariant(), out result);
 		}
 
 		#endregion
@@ -66,9 +68,15 @@ namespace Malsys.Expressions {
 		public readonly string Name;
 		public readonly double Value;
 
+
 		private KnownConstant(string name, double value) {
 			Name = name;
 			Value = value;
+		}
+
+
+		private KnownConstant changeName(string newName) {
+			return new KnownConstant(newName, Value);
 		}
 	}
 }

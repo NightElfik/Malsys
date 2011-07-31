@@ -6,7 +6,7 @@ namespace Malsys {
 	/// </summary>
 	public class SymbolsList<T> : ImmutableList<Symbol<T>> {
 
-		public static readonly SymbolsList<T> Empty = new SymbolsList<T>(ImmutableList<Symbol<T>>.Empty);
+		new public static readonly SymbolsList<T> Empty = new SymbolsList<T>(ImmutableList<Symbol<T>>.Empty);
 
 
 		public SymbolsList(IEnumerable<Symbol<T>> symbols)

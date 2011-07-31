@@ -9,14 +9,14 @@ namespace Malsys {
 					if (source[i].Equals(source[j])) {
 						nonUniqueIndex1 = i;
 						nonUniqueIndex2 = j;
-						return false;
+						return true;
 					}
 				}
 			}
 
 			nonUniqueIndex1 = -1;
 			nonUniqueIndex2 = -1;
-			return true;
+			return false;
 		}
 
 	}

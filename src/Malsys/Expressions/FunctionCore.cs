@@ -28,6 +28,7 @@ namespace Malsys.Expressions {
 		public static readonly FunctionCore Sign = new FunctionCore("sign", 1,
 			new ExpressionValueType[] { ExpressionValueType.Constant },
 			(a) => {
+				if (a[0].IsNaN) { return Constant.NaN; }
 				return Math.Sign((Constant)a[0]).ToConst();
 			});
 
@@ -49,7 +50,7 @@ namespace Malsys.Expressions {
 				return Math.Ceiling((Constant)a[0]).ToConst();
 			});
 
-		public static readonly FunctionCore Ceil = Ceiling.ChangeName("ceil");
+		public static readonly FunctionCore Ceil = Ceiling.changeName("ceil");
 
 		public static readonly FunctionCore Min = new FunctionCore("min", AnyParamsCount,
 			new ExpressionValueType[] { ExpressionValueType.Any },
@@ -72,13 +73,16 @@ namespace Malsys.Expressions {
 		public static readonly FunctionCore Factorial = new FunctionCore("factorial", 1,
 			new ExpressionValueType[] { ExpressionValueType.Constant },
 			(a) => {
+				if (a[0].IsNaN) { return Constant.NaN; }
 				double result = 1.0;
 				double max = (Constant)a[0];
-				for (int i = 2; i <= max; i++) { result *= i; }
+				for (int i = 2; i <= max; i++) {
+					result *= i;
+				}
 				return result.ToConst();
 			});
 
-		public static readonly FunctionCore Fact = Factorial.ChangeName("fact");
+		public static readonly FunctionCore Fact = Factorial.changeName("fact");
 
 		public static readonly FunctionCore Log = new FunctionCore("log", 1,
 			new ExpressionValueType[] { ExpressionValueType.Constant },
@@ -110,7 +114,7 @@ namespace Malsys.Expressions {
 				return a.Aggregate(1.0, (acc, val) => acc * (Constant)val).ToConst();
 			});
 
-		public static readonly FunctionCore Prod = Product.ChangeName("prod");
+		public static readonly FunctionCore Prod = Product.changeName("prod");
 
 		public static readonly FunctionCore Average = new FunctionCore("average", AnyParamsCount,
 			new ExpressionValueType[] { ExpressionValueType.Constant },
@@ -118,7 +122,7 @@ namespace Malsys.Expressions {
 				return (a.Aggregate(0.0, (acc, val) => acc + (Constant)val) / a.ArgsCount).ToConst();
 			});
 
-		public static readonly FunctionCore Avg = Average.ChangeName("avg");
+		public static readonly FunctionCore Avg = Average.changeName("avg");
 
 		#endregion
 
@@ -180,45 +184,55 @@ namespace Malsys.Expressions {
 
 		#endregion
 
-		#region If, length, isNan, isInfinity
-
-		public static readonly FunctionCore If = new FunctionCore("if", 3,
-			new ExpressionValueType[] { ExpressionValueType.Constant, ExpressionValueType.Any, ExpressionValueType.Any },
-			(a) => {
-				if (FloatArithmeticHelper.IsZero((Constant)a[0])) {
-					return a[2];  // 0 (false)
-				}
-				else {
-					return a[1]; // non-0 (true)
-				}
-			});
+		#region Length, isNan, isInfinity
 
 		public static readonly FunctionCore Length = new FunctionCore("length", 1,
 			new ExpressionValueType[] { ExpressionValueType.Any },
 			(a) => {
 				if (a[0].IsConstant) {
-					return 0.0.ToConst();
+					return Constant.Zero;
 				}
 				else {
 					return ((ValuesArray)a[0]).Length.ToConst();
 				}
 			});
 
-		public static readonly FunctionCore Len = Length.ChangeName("len");
+		public static readonly FunctionCore Len = Length.changeName("len");
 
 		public static readonly FunctionCore IsNan = new FunctionCore("isNan", 1,
-			new ExpressionValueType[] { ExpressionValueType.Constant },
+			new ExpressionValueType[] { ExpressionValueType.Any },
 			(a) => {
-				return (double.IsNaN((Constant)a[0]) ? 1.0 : 0.0).ToConst();
+				return a[0].IsNaN ? Constant.True : Constant.False;
 			});
 
 		public static readonly FunctionCore IsInfinity = new FunctionCore("isInfinity", 1,
-			new ExpressionValueType[] { ExpressionValueType.Constant },
+			new ExpressionValueType[] { ExpressionValueType.Any },
 			(a) => {
-				return (double.IsInfinity((Constant)a[0]) ? 1.0 : 0.0).ToConst();
+				if (a[0].IsConstant) {
+					return ((Constant)a[0]).IsInfinity ? Constant.True : Constant.False;
+				}
+				else {
+					return Constant.False;
+				}
 			});
 
-		public static readonly FunctionCore IsInfty = IsInfinity.ChangeName("isInfty");
+		public static readonly FunctionCore IsInfty = IsInfinity.changeName("isInfty");
+
+		#endregion
+
+		#region If
+
+		/// <summary>
+		/// This is dummy function for IF with no body. Implementation have to be in expression evaluator.
+		/// </summary>
+		/// <remarks>
+		/// Function IF can not be directly written like others functions, because its 2nd and 3rd arguments can not be
+		/// evaluated till decision fom 1st is made. Recursion is the problem. If recursive call is in 2nd or 3rd
+		/// argument and it is tried to evaluate, stack overflow excetion will obviously occur.
+		/// </remarks>
+		public static readonly FunctionCore If = new FunctionCore("if", 3,
+			new ExpressionValueType[] { ExpressionValueType.Constant, ExpressionValueType.Any, ExpressionValueType.Any },
+			null);
 
 		#endregion
 
@@ -254,6 +268,8 @@ namespace Malsys.Expressions {
 		/// </summary>
 		public static bool TryGet(string syntax, int paramsCount, out FunctionCore result) {
 			Debug.Assert(paramsCount != AnyParamsCount, "Querry for function have to be with concrete params count (not any params count).");
+
+			syntax = syntax.ToLowerInvariant();
 
 			if (funCache.TryGetValue(new Key(syntax, paramsCount), out result)) {
 				return true;
@@ -301,7 +317,8 @@ namespace Malsys.Expressions {
 			EvalFunction = evalFunc;
 		}
 
-		internal FunctionCore ChangeName(string newName) {
+
+		private FunctionCore changeName(string newName) {
 			return new FunctionCore(newName, ParametersCount, ParamsTypes, EvalFunction);
 		}
 	}

@@ -5,8 +5,8 @@ namespace Malsys.Expressions {
 	public static class RichExpressionEvaluator {
 
 		public static IValue Evaluate(RichExpression richExpr, VarMap vars, FunMap funs) {
-			for (int i = 0; i < richExpr.VariableDefinitions.Length; i++) {
-				vars = VariableDefinitionEvaluator.EvaluateAndAdd(richExpr.VariableDefinitions[i], vars, funs);
+			foreach (var varDef in richExpr.VariableDefinitions) {
+				vars = VariableDefinitionEvaluator.EvaluateAndAdd(varDef, vars, funs);
 			}
 
 			return ExpressionEvaluator.Evaluate(richExpr.Expression, vars, funs);

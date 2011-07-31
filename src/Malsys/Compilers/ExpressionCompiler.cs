@@ -102,7 +102,7 @@ namespace Malsys.Compilers {
 					Identificator id = (Identificator)member;
 					KnownConstant cnst;
 
-					if (KnownConstant.TryParse(id.Name, out cnst)) {
+					if (KnownConstant.TryGet(id.Name, out cnst)) {
 						// known constant
 						operandsStack.Push(cnst.Value.ToConst());
 					}

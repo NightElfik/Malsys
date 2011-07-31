@@ -42,6 +42,7 @@ namespace Malsys.Expressions {
 
 		public bool IsConstant { get { return false; } }
 		public bool IsArray { get { return true; } }
+		public bool IsNaN { get { return false; } }
 		public ExpressionValueType Type { get { return ExpressionValueType.Array; } }
 
 		#endregion

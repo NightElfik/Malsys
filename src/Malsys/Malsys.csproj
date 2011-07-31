@@ -77,7 +77,6 @@
     <Compile Include="Expressions\DataTypes\Indexer.cs" />
     <Compile Include="Expressions\OperatorCore.cs" />
     <Compile Include="Expressions\RichExpressionEvaluator.cs" />
-    <Compile Include="Expressions\UserFunctionEvaluator.cs" />
     <Compile Include="Expressions\DataTypes\ValuesArray.cs" />
     <Compile Include="Expressions\DataTypes\Constant.cs" />
     <Compile Include="Expressions\EvalException.cs" />

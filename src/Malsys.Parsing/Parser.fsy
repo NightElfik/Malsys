@@ -78,8 +78,10 @@ LsystemStatement:
       { match $1 with
         | Some(varDef) -> varDef :> IInputStatement
         | None -> new EmptyStatement(toPos parseState) :> IInputStatement }
-    | FunDef
-      { $1 :> IInputStatement }
+    | MaybeFunDef
+      { match $1 with
+        | Some(funDef) -> funDef :> IInputStatement
+        | None -> new EmptyStatement(toPos parseState) :> IInputStatement }
 
 
 //------------------------------------------------------------------------------
@@ -101,8 +103,10 @@ ExprInteractiveStatement:
       { match $1 with
         | Some(varDef) -> varDef :> IExprInteractiveStatement
         | None -> new EmptyStatement(toPos parseState) :> IExprInteractiveStatement }
-    | FunDef
-      { $1 :> IExprInteractiveStatement }
+    | MaybeFunDef
+      { match $1 with
+        | Some(funDef) -> funDef :> IExprInteractiveStatement
+        | None -> new EmptyStatement(toPos parseState) :> IExprInteractiveStatement }
 
 
 //------------------------------------------------------------------------------
@@ -113,10 +117,10 @@ MaybeVarDef:
     | LetKw Id EQUALS Expression
       { Some (new VariableDefinition($1, $2, $4, toPos parseState)) }
     | LetKw EQUALS Expression
-      { logErrorPos ($1.Position.EndPosition()) "Identifier excpected.";
+      { logErrorPos ($1.Position.EndPosition()) "Variable name excpected.";
         None }
     | LetKw error EQUALS Expression
-      { logErrorPos ($1.Position.EndPosition()) "Identifier excpected.";
+      { logErrorPos ($1.Position.EndPosition()) "Variable name excpected.";
         None }
 
 // Empty OR variable definitions divided by semicolon (but no semicolon on the end)
@@ -149,9 +153,22 @@ VarDefsListNonEmpty:
 // Function definition
 //------------------------------------------------------------------------------
 
-FunDef:
+MaybeFunDef:
     | FunKw Id FunDefParams LBRACE RichExpression RBRACE
-      { new FunctionDefinition($1, $2, $3, $5, toPos parseState) }
+      { Some (new FunctionDefinition($1, $2, $3, $5, toPos parseState)) }
+    | FunKw LBRACE RichExpression RBRACE
+      { logErrorPos ($1.Position.EndPosition()) "Function identifier excpected.";
+        None }
+    | FunKw error LBRACE RichExpression RBRACE
+      { logErrorPos ($1.Position.EndPosition()) "Function identifier excpected.";
+        None }
+
+
+MaybeFunDefParams:
+    |
+      { new ImmutableListPos<OptionalParameter>(toPos parseState) }
+    | FunDefParams
+      { $1 }
 
 FunDefParams:
     | LPAREN OptParamsList RPAREN
@@ -195,12 +212,6 @@ Lsystem:
     | LsysKw Id MaybeFunDefParams LBRACE LsysStatementsList RBRACE
       { new Lsystem($1, $2, $3, $5, toPos parseState) }
 
-MaybeFunDefParams:
-    |
-      { new ImmutableListPos<OptionalParameter>(toPos parseState) }
-    | FunDefParams
-      { $1 }
-
 LsysStatementsList:
     |
       { new ResizeArray<ILsystemStatement>() }
@@ -214,8 +225,10 @@ LsysStatement:
       { match $1 with
         | Some(varDef) -> varDef :> ILsystemStatement
         | None -> new EmptyStatement(toPos parseState) :> ILsystemStatement }
-    | FunDef
-      { $1 :> ILsystemStatement }
+    | MaybeFunDef
+      { match $1 with
+        | Some(funDef) -> funDef :> ILsystemStatement
+        | None -> new EmptyStatement(toPos parseState) :> ILsystemStatement }
 
 
 //------------------------------------------------------------------------------

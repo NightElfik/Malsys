@@ -7,9 +7,16 @@ namespace Malsys.Expressions {
 	public class Constant : IExpression, IExpressionVisitable, IValue {
 
 		public static readonly Constant NaN = new Constant(double.NaN);
+		public static readonly Constant Zero = new Constant(0);
 
+		public static readonly Constant True = new Constant(1);
+		public static readonly Constant False = Zero;
+
+
+		public bool IsInfinity { get { return double.IsInfinity(Value); } }
 
 		public readonly double Value;
+
 
 		public Constant(double value) {
 			Value = value;
@@ -44,6 +51,7 @@ namespace Malsys.Expressions {
 
 		public bool IsConstant { get { return true; } }
 		public bool IsArray { get { return false; } }
+		public bool IsNaN { get { return double.IsNaN(Value); } }
 		public ExpressionValueType Type { get { return ExpressionValueType.Constant; } }
 
 		#endregion

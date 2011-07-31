@@ -15,10 +15,16 @@ namespace Malsys.Expressions {
 
 		private ArgsStorage argsStorage = new ArgsStorage();
 
+#if DEBUG
+		private bool evaluating = false;
+#endif
 
 
 		public IValue Evaluate(IExpression expr, VarMap vars, FunMap funs) {
-
+#if DEBUG
+			Debug.Assert(!evaluating, "{0} called itself from outside while evaluating – disaster.".Fmt(typeof(ExpressionEvalVisitor).Name));
+			evaluating = true;
+#endif
 			valuesStack.Clear();
 			variables = vars;
 			functions = funs;
@@ -30,11 +36,90 @@ namespace Malsys.Expressions {
 			argsStorage.Clear();
 
 			if (valuesStack.Count != 1) {
-				valuesStack.Clear();
 				throw new EvalException("Failed to evaluate expression. Not all values were processed.");
 			}
-
+#if DEBUG
+			evaluating = false;
+#endif
 			return valuesStack.Pop();
+		}
+
+#if DEBUG
+		/// <summary>
+		/// Checks wether after Accept on given expression is exactly one more value on stack.
+		/// </summary>
+		private void checkedAccept(IExpression expr) {
+			int oldStackCount = valuesStack.Count;
+
+			expr.Accept(this);
+
+			Debug.Assert(valuesStack.Count - oldStackCount == 1,
+				"After Accept on expression excpected one more value on stack, but diff is {0}.".Fmt(
+					valuesStack.Count - oldStackCount));
+		}
+#endif
+
+		/// <summary>
+		/// Evaluates given function call with given arguments. Result is left on velues stack.
+		/// </summary>
+		private void evalUserFuncCall(FunctionDefinition fun, ArgsStorage args) {
+			// save variables
+			var oldVars = variables;
+
+			// add arguments as new vars
+			for (int i = 0; i < fun.ParametersCount; i++) {
+				IValue value = i < args.ArgsCount ? args[i] : fun.GetOptionalParamValue(i);
+				variables = MapModule.Add(fun.ParametersNames[i], value, variables);
+			}
+
+			// evaluate variable definitions
+			foreach (var varDef in fun.VariableDefinitions) {
+#if DEBUG
+				checkedAccept(varDef.Value);
+#else
+				varDef.Value.Accept(this);
+#endif
+				variables = MapModule.Add(varDef.Name, valuesStack.Pop(), variables);
+			}
+
+#if DEBUG
+			checkedAccept(fun.Expression);
+#else
+			fun.Expression.Accept(this);
+#endif
+			// restore variables to state before fun call
+			variables = oldVars;
+		}
+
+		private void evalIf(FunctionCall fun) {
+#if DEBUG
+			checkedAccept(fun.Arguments[0]);
+#else
+			fun.Arguments[0].Accept(this);
+#endif
+
+			var cond = valuesStack.Pop();
+			if (!cond.IsConstant) {
+				throw new EvalException("Failed to evaluate function `{0}`. As first argument excpected {1}, but {2} was given.".Fmt(
+					fun.Name, (ExpressionValueType.Constant).ToTypeString(), cond.Type.ToTypeString()));
+			}
+
+			IExpression arg;
+
+			if (!FloatArithmeticHelper.IsZero((Constant)cond)) {
+				// not zero -- true
+				arg = fun.Arguments[1];
+			}
+			else {
+				// zero -- false
+				arg = fun.Arguments[2];
+			}
+
+#if DEBUG
+			checkedAccept(arg);
+#else
+			arg.Accept(this);
+#endif
 		}
 
 
@@ -59,7 +144,11 @@ namespace Malsys.Expressions {
 			IValue[] arr = new IValue[expressionValuesArray.Length];
 
 			for (int i = 0; i < arr.Length; i++) {
+#if DEBUG
+				checkedAccept(expressionValuesArray[i]);
+#else
 				expressionValuesArray[i].Accept(this);
+#endif
 				arr[i] = valuesStack.Pop();
 			}
 
@@ -68,7 +157,11 @@ namespace Malsys.Expressions {
 		}
 
 		public void Visit(UnaryOperator unaryOperator) {
+#if DEBUG
+			checkedAccept(unaryOperator.Operand);
+#else
 			unaryOperator.Operand.Accept(this);
+#endif
 			if ((int)(valuesStack.Peek().Type & unaryOperator.OperandType) == 0) {
 				throw new EvalException("Failed to evaluate unary operator `{0}`. As operand excpected {1}, but {2} was given.".Fmt(
 					unaryOperator.Syntax, unaryOperator.OperandType.ToTypeString(), valuesStack.Peek().Type.ToTypeString()));
@@ -80,13 +173,21 @@ namespace Malsys.Expressions {
 		}
 
 		public void Visit(BinaryOperator binaryOperator) {
-			binaryOperator.LeftOperand.Accept(this);
+#if DEBUG
+			checkedAccept(binaryOperator.LeftOperand);
+#else
+			binaryOperator.LeftOperand.Accept(this); ;
+#endif
 			if ((int)(valuesStack.Peek().Type & binaryOperator.LeftOperandType) == 0) {
 				throw new EvalException("Failed to evaluate binary operator `{0}`. As left operand excpected {1}, but {2} was given.".Fmt(
 					binaryOperator.Syntax, binaryOperator.LeftOperandType.ToTypeString(), valuesStack.Peek().Type.ToTypeString()));
 			}
 
+#if DEBUG
+			checkedAccept(binaryOperator.RightOperand);
+#else
 			binaryOperator.RightOperand.Accept(this);
+#endif
 			if ((int)(valuesStack.Peek().Type & binaryOperator.LeftOperandType) == 0) {
 				throw new EvalException("Failed to evaluate binary operator `{0}`. As right operand excpected {1}, but {2} was given.".Fmt(
 					binaryOperator.Syntax, binaryOperator.LeftOperandType.ToTypeString(), valuesStack.Peek().Type.ToTypeString()));
@@ -98,14 +199,22 @@ namespace Malsys.Expressions {
 		}
 
 		public void Visit(Indexer indexer) {
+#if DEBUG
+			checkedAccept(indexer.Array);
+#else
 			indexer.Array.Accept(this);
+#endif
 			if (valuesStack.Peek().Type != ExpressionValueType.Array) {
 				throw new EvalException("Failed to evaluate indexer. As operand excpected {0}, but {1} was given.".Fmt(
 					ExpressionValueType.Array.ToTypeString(), valuesStack.Peek().Type.ToTypeString()));
 			}
 			ValuesArray arr = (ValuesArray)valuesStack.Pop();
 
+#if DEBUG
+			checkedAccept(indexer.Index);
+#else
 			indexer.Index.Accept(this);
+#endif
 			if (valuesStack.Peek().Type != ExpressionValueType.Constant) {
 				throw new EvalException("Failed to evaluate indexer. As index excpected {0}, but {1} was given.".Fmt(
 					ExpressionValueType.Constant.ToTypeString(), valuesStack.Peek().Type.ToTypeString()));
@@ -129,18 +238,24 @@ namespace Malsys.Expressions {
 		}
 
 		public void Visit(FunctionCall functionCall) {
+
+			if (functionCall.Evaluate == null && functionCall.Name.Equals("if", StringComparison.CurrentCultureIgnoreCase)) {
+				evalIf(functionCall);
+				return;
+			}
+
 			// evaluate arguments
 			for (int i = 0; i < functionCall.Arguments.Length; i++) {
+#if DEBUG
+				checkedAccept(functionCall.Arguments[i]);
+#else
 				functionCall.Arguments[i].Accept(this);
+#endif
 				if ((int)(valuesStack.Peek().Type & functionCall.GetValueType(i)) == 0) {
-					throw new EvalException("Failed to evaluate function `{0}`. As {1}. argument excpected {1}, but {2} was given.".Fmt(
+					throw new EvalException("Failed to evaluate function `{0}`. As {1}. argument excpected {2}, but {3} was given.".Fmt(
 						functionCall.Name, i, functionCall.GetValueType(i).ToTypeString(), valuesStack.Peek().Type.ToTypeString()));
 				}
 			}
-
-			Debug.Assert(valuesStack.Count >= functionCall.Arguments.Length,
-				"Excpected at least {0} values in stack, but it has only {1}.".Fmt(
-					functionCall.Arguments.Length, valuesStack.Count));
 
 			argsStorage.PopArgs(functionCall.Arguments.Length, valuesStack);
 			valuesStack.Push(functionCall.Evaluate(argsStorage));
@@ -167,16 +282,16 @@ namespace Malsys.Expressions {
 
 			// evaluate arguments
 			for (int i = 0; i < userFunction.Arguments.Length; i++) {
+#if DEBUG
+				checkedAccept(userFunction.Arguments[i]);
+#else
 				userFunction.Arguments[i].Accept(this);
+#endif
 			}
-
-			Debug.Assert(valuesStack.Count >= userFunction.Arguments.Length,
-				 "Excpected at least {0} values in stack, but it has only {1}.".Fmt(
-					 userFunction.Arguments.Length, valuesStack.Count));
 
 			argsStorage.PopArgs(userFunction.Arguments.Length, valuesStack);
 
-			valuesStack.Push(UserFunctionEvaluator.Evaluate(fun, argsStorage, variables, functions));
+			evalUserFuncCall(fun, argsStorage);
 		}
 
 		#endregion

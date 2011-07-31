@@ -21,9 +21,14 @@ namespace Malsys {
 		public const char Tau = '\u03C4';
 
 		/// <summary>
+		/// φ
+		/// </summary>
+		public const char Phi = '\u03C6';
+
+		/// <summary>
 		/// ϕ
 		/// </summary>
-		public const char Phi = '\u03D5';
+		public const char VarPhi = '\u03D5';
 
 		/// <summary>
 		/// ∞​
