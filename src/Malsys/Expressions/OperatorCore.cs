@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using Key = System.Tuple<string, int>;
 
 namespace Malsys.Expressions {
-	class OperatorCore {
+	public class OperatorCore {
 		#region Static members
 
 		#region Operator definitions
@@ -155,6 +156,10 @@ namespace Malsys.Expressions {
 		/// </summary>
 		public static bool TryGet(string syntax, byte arity, out OperatorCore result) {
 			return opCache.TryGetValue(new Key(syntax, arity), out result);
+		}
+
+		public static OperatorCore[] GetAllDefinedFunctions() {
+			return opCache.Values.ToArray();
 		}
 
 		#endregion

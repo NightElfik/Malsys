@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 
 namespace Malsys.Expressions {
@@ -61,6 +62,10 @@ namespace Malsys.Expressions {
 		/// </summary>
 		public static bool TryGet(string name, out KnownConstant result) {
 			return constCache.TryGetValue(name.ToLowerInvariant(), out result);
+		}
+
+		public static KnownConstant[] GetAllDefinedConstants() {
+			return constCache.Values.ToArray();
 		}
 
 		#endregion

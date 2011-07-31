@@ -12,6 +12,9 @@ using VarMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.Expressions
 namespace ExpressionsInteractive {
 	public class Evaluator {
 
+		public VarMap DefinedVariables { get { return variables; } }
+		public FunMap DefinedFunctions { get { return functions; } }
+
 		private VarMap variables = MapModule.Empty<string, IValue>();
 		private FunMap functions = MapModule.Empty<string, FunctionDefinition>();
 

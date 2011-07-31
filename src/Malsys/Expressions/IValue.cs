@@ -24,5 +24,14 @@ namespace Malsys.Expressions {
 				default: return "unknown";
 			}
 		}
+
+		public static string ToTypeStringOneWord(this ExpressionValueType type) {
+			switch (type) {
+				case ExpressionValueType.Constant: return "value";
+				case ExpressionValueType.Array: return "array";
+				case ExpressionValueType.Any: return "valueOrArray";
+				default: return "unknown";
+			}
+		}
 	}
 }

@@ -15,16 +15,8 @@ namespace Malsys.Expressions {
 
 		private ArgsStorage argsStorage = new ArgsStorage();
 
-#if DEBUG
-		private bool evaluating = false;
-#endif
-
 
 		public IValue Evaluate(IExpression expr, VarMap vars, FunMap funs) {
-#if DEBUG
-			Debug.Assert(!evaluating, "{0} called itself from outside while evaluating – disaster.".Fmt(typeof(ExpressionEvalVisitor).Name));
-			evaluating = true;
-#endif
 			valuesStack.Clear();
 			variables = vars;
 			functions = funs;
@@ -38,9 +30,7 @@ namespace Malsys.Expressions {
 			if (valuesStack.Count != 1) {
 				throw new EvalException("Failed to evaluate expression. Not all values were processed.");
 			}
-#if DEBUG
-			evaluating = false;
-#endif
+
 			return valuesStack.Pop();
 		}
 

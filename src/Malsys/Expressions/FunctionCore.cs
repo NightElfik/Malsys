@@ -284,6 +284,10 @@ namespace Malsys.Expressions {
 			}
 		}
 
+		public static FunctionCore[] GetAllDefinedFunctions() {
+			return funCache.Values.ToArray();
+		}
+
 		#endregion
 
 

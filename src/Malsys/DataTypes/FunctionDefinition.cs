@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using Malsys.Expressions;
+using System.Text;
 
 namespace Malsys {
 	/// <summary>
