@@ -8,11 +8,10 @@ namespace Malsys.Compilers {
 		/// <summary>
 		/// Thread safe.
 		/// </summary>
-		public static FunctionDefinition CompileFailSafe(Ast.FunctionDefinition funDef, MessagesCollection msgs) {
+		public static FunctionDefinition CompileFailSafe(this Ast.FunctionDefinition funDef, MessagesCollection msgs) {
 
-			var paramsTuple = CompileParametersFailSafe(funDef.Parameters, msgs);
-
-			var body = ExpressionCompiler.CompileRichFailSafe(funDef, msgs);
+			var paramsTuple = funDef.Parameters.CompileParametersFailSafe(msgs);
+			var body = funDef.CompileRichFailSafe(msgs);
 
 			return new FunctionDefinition(funDef.NameId.Name, paramsTuple.Item1, paramsTuple.Item2, body.VariableDefinitions, body.Expression);
 		}
@@ -20,7 +19,7 @@ namespace Malsys.Compilers {
 		/// <summary>
 		/// Thread safe.
 		/// </summary>
-		public static Tuple<ImmutableList<string>, ImmutableList<IValue>> CompileParametersFailSafe(ImmutableList<Ast.OptionalParameter> parameters, MessagesCollection msgs) {
+		public static Tuple<ImmutableList<string>, ImmutableList<IValue>> CompileParametersFailSafe(this ImmutableList<Ast.OptionalParameter> parameters, MessagesCollection msgs) {
 
 			int parametersCount = parameters.Count;
 			bool wasOptional = false;
@@ -47,7 +46,7 @@ namespace Malsys.Compilers {
 					}
 
 					int optIndex = i - (parametersCount - optParamsExprs.Length);
-					optParamsExprs[optIndex] = ExpressionCompiler.CompileFailSafe(oParam.OptionalValue, msgs);
+					optParamsExprs[optIndex] = oParam.OptionalValue.CompileFailSafe(msgs);
 				}
 			}
 

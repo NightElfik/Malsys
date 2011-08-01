@@ -13,7 +13,11 @@ namespace Malsys.Compilers {
 		/// Compiles expression from AST. If compilation failes, ErrorResult expression is returned.
 		/// Thread safe.
 		/// </summary>
-		public static IExpression CompileFailSafe(Expression expr, MessagesCollection msgs) {
+		public static IExpression CompileFailSafe(this Expression expr, MessagesCollection msgs) {
+
+			if (expr.IsEmpty) {
+				return ErrorResult;
+			}
 
 			Stack<OperatorCore> optorsStack = new Stack<OperatorCore>();
 			Stack<IExpression> operandsStack = new Stack<IExpression>();
@@ -70,21 +74,21 @@ namespace Malsys.Compilers {
 		/// Compiles list of expressions from AST using fail-safe compilation on each member.
 		/// Thread safe.
 		/// </summary>
-		public static ImmutableList<IExpression> CompileFailSafe(ImmutableList<Expression> exprs, MessagesCollection msgs) {
+		public static ImmutableList<IExpression> CompileFailSafe(this ImmutableList<Expression> exprs, MessagesCollection msgs) {
 
 			var compiledExprs = new IExpression[exprs.Length];
 
 			for (int i = 0; i < exprs.Length; i++) {
-				compiledExprs[i] = CompileFailSafe(exprs[i], msgs);
+				compiledExprs[i] = exprs[i].CompileFailSafe(msgs);
 			}
 
 			return new ImmutableList<IExpression>(compiledExprs, true);
 		}
 
-		public static RichExpression CompileRichFailSafe(Ast.RichExpression rExprAst, MessagesCollection msgs) {
+		public static RichExpression CompileRichFailSafe(this Ast.RichExpression rExprAst, MessagesCollection msgs) {
 
-			var varDefs = VariableDefinitionCompiler.CompileFailSafe(rExprAst.VariableDefinitions, msgs);
-			var expr = CompileFailSafe(rExprAst.Expression, msgs);
+			var varDefs = rExprAst.VariableDefinitions.CompileFailSafe(msgs);
+			var expr = rExprAst.Expression.CompileFailSafe(msgs);
 
 			return new RichExpression(varDefs, expr);
 		}
@@ -115,7 +119,7 @@ namespace Malsys.Compilers {
 
 				case ExpressionMemberType.Array:
 
-					var exprArr = CompileFailSafe((ExpressionsArray)member, msgs);
+					var exprArr = ((ExpressionsArray)member).CompileFailSafe(msgs);
 					operandsStack.Push(new ExpressionValuesArray(exprArr));
 
 					return State.ExcpectingOperator;
@@ -150,7 +154,7 @@ namespace Malsys.Compilers {
 
 				case ExpressionMemberType.BracketedExpression:
 
-					var expr = CompileFailSafe(((ExpressionBracketed)member).Expression, msgs);
+					var expr = ((ExpressionBracketed)member).Expression.CompileFailSafe(msgs);
 					operandsStack.Push(expr);
 
 					return State.ExcpectingOperator;
@@ -196,7 +200,7 @@ namespace Malsys.Compilers {
 
 				case ExpressionMemberType.Indexer:
 					// apply indexer on previous operand
-					var indexExpr = CompileFailSafe(((ExpressionIndexer)member).Index, msgs);
+					var indexExpr = ((ExpressionIndexer)member).Index.CompileFailSafe(msgs);
 
 					if (operandsStack.Count < 1) {
 						msgs.AddError("Failed to compile indexer. No operand to apply on.", member.Position);
@@ -222,7 +226,7 @@ namespace Malsys.Compilers {
 					// Expression (probably in parenthesis) while excpecting binary operator?
 					// So directly before it is operand.
 					// Lets add implicit multiplication between them.
-					var expr = CompileFailSafe(((ExpressionBracketed)member).Expression, msgs);
+					var expr = ((ExpressionBracketed)member).Expression.CompileFailSafe(msgs);
 					operandsStack.Push(expr);
 
 					// implicit multiplication

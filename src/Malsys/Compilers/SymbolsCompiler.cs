@@ -4,7 +4,7 @@ using Malsys.Expressions;
 namespace Malsys.Compilers {
 	public static class SymbolsCompiler {
 
-		public static CompilerResult<Symbol<string>> Compile(Ast.SymbolPattern ptrnAst, Dictionary<string, Position> usedNames, MessagesCollection msgs) {
+		public static CompilerResult<Symbol<string>> Compile(this Ast.SymbolPattern ptrnAst, Dictionary<string, Position> usedNames, MessagesCollection msgs) {
 
 			var names = new string[ptrnAst.ParametersNames.Length];
 			for (int i = 0; i < ptrnAst.ParametersNames.Length; i++) {
@@ -27,12 +27,12 @@ namespace Malsys.Compilers {
 			return new CompilerResult<Symbol<string>>(result);
 		}
 
-		public static SymbolsList<string> CompileListFailSafe(ImmutableList<Ast.SymbolPattern> ptrnsAst, Dictionary<string, Position> usedNames, MessagesCollection msgs) {
+		public static SymbolsList<string> CompileListFailSafe(this ImmutableList<Ast.SymbolPattern> ptrnsAst, Dictionary<string, Position> usedNames, MessagesCollection msgs) {
 
 			var compiledSymbols = new Symbol<string>[ptrnsAst.Length];
 
 			for (int i = 0; i < ptrnsAst.Length; i++) {
-				var symRslt = Compile(ptrnsAst[i], usedNames, msgs);
+				var symRslt = ptrnsAst[i].Compile(usedNames, msgs);
 				if (symRslt) {
 					compiledSymbols[i] = symRslt;
 				}
@@ -48,18 +48,18 @@ namespace Malsys.Compilers {
 		}
 
 
-		public static Symbol<IExpression> CompileFailSafe(Ast.SymbolExprArgs symbolAst, MessagesCollection msgs) {
+		public static Symbol<IExpression> CompileFailSafe(this Ast.SymbolExprArgs symbolAst, MessagesCollection msgs) {
 
-			var args = ExpressionCompiler.CompileFailSafe(symbolAst.Arguments, msgs);
-			return new Symbol<IExpression>(symbolAst.Name, args);
+			return new Symbol<IExpression>(symbolAst.Name, symbolAst.Arguments.CompileFailSafe(msgs));
+
 		}
 
-		public static SymbolsList<IExpression> CompileListFailSafe(ImmutableList<Ast.SymbolExprArgs> symbolsAst, MessagesCollection msgs) {
+		public static SymbolsList<IExpression> CompileListFailSafe(this ImmutableList<Ast.SymbolExprArgs> symbolsAst, MessagesCollection msgs) {
 
 			var compiledSymbols = new Symbol<IExpression>[symbolsAst.Length];
 
 			for (int i = 0; i < symbolsAst.Length; i++) {
-				compiledSymbols[i] = CompileFailSafe(symbolsAst[i], msgs);
+				compiledSymbols[i] = symbolsAst[i].CompileFailSafe(msgs);
 			}
 
 			return new SymbolsList<IExpression>(new ImmutableList<Symbol<IExpression>>(compiledSymbols, true));

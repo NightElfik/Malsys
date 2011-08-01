@@ -6,29 +6,33 @@ namespace Malsys.Compilers {
 		/// <summary>
 		/// Thread safe.
 		/// </summary>
-		public static CompilerResult<RewriteRule> Compile(Ast.RewriteRule rRuleAst, MessagesCollection msgs) {
+		public static CompilerResult<RewriteRule> Compile(this Ast.RewriteRule rRuleAst, MessagesCollection msgs) {
 
 			var usedNames = new Dictionary<string, Position>();
 
-			var ptrn = SymbolsCompiler.Compile(rRuleAst.Pattern, usedNames, msgs);
+			var ptrn = rRuleAst.Pattern.Compile(usedNames, msgs);
 			if (!ptrn) {
 				return CompilerResult<RewriteRule>.Error;
 			}
 
-			var lCtxt = SymbolsCompiler.CompileListFailSafe(rRuleAst.LeftContext, usedNames, msgs);
+			var lCtxt = rRuleAst.LeftContext.CompileListFailSafe(usedNames, msgs);
 
-			var rCtxt = SymbolsCompiler.CompileListFailSafe(rRuleAst.RightContext, usedNames, msgs);
+			var rCtxt = rRuleAst.RightContext.CompileListFailSafe(usedNames, msgs);
 
 			usedNames = null;
 
 
-			var cond = ExpressionCompiler.CompileRichFailSafe(rRuleAst.Condition, msgs);
+			var cond = rRuleAst.Condition.IsEmpty
+				? RichExpression.True
+				: rRuleAst.Condition.CompileRichFailSafe(msgs);
 
-			var probab = ExpressionCompiler.CompileRichFailSafe(rRuleAst.Probability, msgs);
+			var probab = rRuleAst.Probability.IsEmpty
+				? RichExpression.One
+				: rRuleAst.Probability.CompileRichFailSafe(msgs);
 
-			var vars = VariableDefinitionCompiler.CompileFailSafe(rRuleAst.VariableDefs, msgs);
+			var vars = rRuleAst.VariableDefs.CompileFailSafe(msgs);
 
-			var replac = SymbolsCompiler.CompileListFailSafe(rRuleAst.Replacement, msgs);
+			var replac = rRuleAst.Replacement.CompileListFailSafe(msgs);
 
 
 			return new RewriteRule(ptrn, lCtxt, rCtxt, cond, probab, vars, replac);

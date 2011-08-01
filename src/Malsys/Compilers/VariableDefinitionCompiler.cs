@@ -5,21 +5,19 @@ namespace Malsys.Compilers {
 		/// <summary>
 		/// Thread safe.
 		/// </summary>
-		public static VariableDefinition CompileFailSafe(Ast.VariableDefinition varDef, MessagesCollection msgs) {
-
-			var expr = ExpressionCompiler.CompileFailSafe(varDef.Expression, msgs);
-			return new VariableDefinition(varDef.NameId.Name, expr);
+		public static VariableDefinition CompileFailSafe(this Ast.VariableDefinition varDef, MessagesCollection msgs) {
+			return new VariableDefinition(varDef.NameId.Name, varDef.Expression.CompileFailSafe(msgs));
 		}
 
 		/// <summary>
 		/// Thread safe.
 		/// </summary>
-		public static ImmutableList<VariableDefinition> CompileFailSafe(ImmutableList<Ast.VariableDefinition> varDefs, MessagesCollection msgs) {
+		public static ImmutableList<VariableDefinition> CompileFailSafe(this ImmutableList<Ast.VariableDefinition> varDefs, MessagesCollection msgs) {
 
 			var rsltList = new VariableDefinition[varDefs.Length];
 
 			for (int i = 0; i < varDefs.Length; i++) {
-				rsltList[i] = CompileFailSafe(varDefs[i], msgs);
+				rsltList[i] = varDefs[i].CompileFailSafe(msgs);
 			}
 
 			return new ImmutableList<VariableDefinition>(rsltList, true);

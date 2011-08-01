@@ -32,19 +32,19 @@ namespace Malsys.Compilers {
 			foreach (var statement in parsedStmnts) {
 
 				if (statement is Malsys.Ast.Lsystem) {
-					var lsysResult = LsystemCompiler.Compile((Ast.Lsystem)statement, msgs);
+					var lsysResult = ((Ast.Lsystem)statement).Compile(msgs);
 					if (lsysResult) {
 						lsysDefs.Add(lsysResult);
 					}
 				}
 
 				else if (statement is Ast.VariableDefinition) {
-					var vd = VariableDefinitionCompiler.CompileFailSafe((Ast.VariableDefinition)statement, msgs);
+					var vd = ((Ast.VariableDefinition)statement).CompileFailSafe(msgs);
 					varDefs.Add(vd);
 				}
 
 				else if (statement is Ast.FunctionDefinition) {
-					var fd = FunctionDefinitionCompiler.CompileFailSafe((Ast.FunctionDefinition)statement, msgs);
+					var fd = ((Ast.FunctionDefinition)statement).CompileFailSafe(msgs);
 					funDefs.Add(fd);
 				}
 

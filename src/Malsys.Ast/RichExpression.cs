@@ -14,10 +14,10 @@ namespace Malsys.Ast {
 		public RichExpression(Position pos) {
 			Expression = new Expression(pos);
 			VariableDefinitions = ImmutableList<VariableDefinition>.Empty;
+			Position = pos;
 		}
 
 		public RichExpression(IEnumerable<VariableDefinition> varDefs, Expression expr, Position pos) {
-
 			Expression = expr;
 			VariableDefinitions = new ImmutableList<VariableDefinition>(varDefs);
 			Position = pos;
@@ -28,6 +28,9 @@ namespace Malsys.Ast {
 			VariableDefinitions = rExpr.VariableDefinitions;
 			Position = pos;
 		}
+
+
+		public bool IsEmpty { get { return Expression.IsEmpty && VariableDefinitions.IsEmpty; } }
 
 
 		#region IToken Members

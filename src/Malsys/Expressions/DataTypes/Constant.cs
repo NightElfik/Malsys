@@ -7,9 +7,11 @@ namespace Malsys.Expressions {
 	public class Constant : IExpression, IExpressionVisitable, IValue {
 
 		public static readonly Constant NaN = new Constant(double.NaN);
+
+		public static readonly Constant One = new Constant(1);
 		public static readonly Constant Zero = new Constant(0);
 
-		public static readonly Constant True = new Constant(1);
+		public static readonly Constant True = One;
 		public static readonly Constant False = Zero;
 
 

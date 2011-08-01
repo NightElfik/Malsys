@@ -21,6 +21,8 @@ namespace ExpressionsInteractive {
 		public const string showAllVarsCmd = "allvars";
 		public const string showAllFunsCmd = "allfuns";
 
+		private static bool verbose = false;
+
 		static void Main(string[] args) {
 			if (args.Length == 1) {
 				ushort port;
@@ -38,10 +40,16 @@ namespace ExpressionsInteractive {
 		public static void Listen(int port) {
 			TcpListener tcpListener = new TcpListener(IPAddress.Any, port);
 			tcpListener.Start();
+			if (verbose) {
+				Console.WriteLine("Listening started at port `{0}`.", port);
+			}
 
 			while (true) {
 				//blocks until a client has connected to the server
 				TcpClient client = tcpListener.AcceptTcpClient();
+				if (verbose) {
+					Console.WriteLine("Client accepted from {0}.", client.Client.RemoteEndPoint.ToString());
+				}
 
 				Thread clientThread = new Thread(new ParameterizedThreadStart(handleTcpClient));
 				clientThread.Start(client);
@@ -60,7 +68,9 @@ namespace ExpressionsInteractive {
 				Start(new StreamReader(tcpClient.GetStream()), new StreamWriter(tcpClient.GetStream()));
 			}
 			catch (Exception ex) {
-
+				if (verbose) {
+					Console.WriteLine("Exception aborted client's session: {0}.", ex.ToString());
+				}
 			}
 		}
 
@@ -127,6 +137,15 @@ namespace ExpressionsInteractive {
 
 
 		private static void showHelp(TextWriter writer) {
+			writer.WriteLine();
+			writer.WriteLine();
+			writer.WriteLine("Expressions interactive by Marek Fišer 2011");
+			writer.WriteLine();
+			writer.WriteLine();
+			writer.WriteLine("Basic usage -- expressions");
+			writer.WriteLine();
+			writer.WriteLine("try enter:");
+			writer.WriteLine("2 * (5 - pi)" + commitSuffix);
 			writer.WriteLine();
 			writer.WriteLine();
 			writer.WriteLine("Special commands");

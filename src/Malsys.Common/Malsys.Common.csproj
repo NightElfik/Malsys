@@ -47,6 +47,7 @@
     <Compile Include="Compilers\CompilerMessage.cs" />
     <Compile Include="Compilers\MessagesCollection.cs" />
     <Compile Include="DataTypes\ImmutableList.cs" />
+    <Compile Include="DataTypes\IndexableQueue.cs" />
     <Compile Include="DataTypes\Position.cs" />
     <Compile Include="Extensions\DoubleExtensions.cs" />
     <Compile Include="Extensions\LinqExtensions.cs" />

@@ -7,7 +7,7 @@ namespace Malsys.Compilers {
 		/// <summary>
 		/// Thread safe.
 		/// </summary>
-		public static CompilerResult<LsystemDefinition> Compile(Ast.Lsystem lsysAst, MessagesCollection msgs) {
+		public static CompilerResult<LsystemDefinition> Compile(this Ast.Lsystem lsysAst, MessagesCollection msgs) {
 
 			var paramsTuple = FunctionDefinitionCompiler.CompileParametersFailSafe(lsysAst.Parameters, msgs);
 
@@ -18,19 +18,19 @@ namespace Malsys.Compilers {
 			foreach (var statement in lsysAst.Statements) {
 
 				if (statement is Ast.RewriteRule) {
-					var rrResult = RewriteRuleCompiler.Compile((Ast.RewriteRule)statement, msgs);
+					var rrResult = ((Ast.RewriteRule)statement).Compile(msgs);
 					if (rrResult) {
 						rRules.Add(rrResult);
 					}
 				}
 
 				else if (statement is Ast.VariableDefinition) {
-					var vd = VariableDefinitionCompiler.CompileFailSafe((Ast.VariableDefinition)statement, msgs);
+					var vd = ((Ast.VariableDefinition)statement).CompileFailSafe(msgs);
 					varDefs.Add(vd);
 				}
 
 				else if (statement is Ast.FunctionDefinition) {
-					var fd = FunctionDefinitionCompiler.CompileFailSafe((Ast.FunctionDefinition)statement, msgs);
+					var fd = ((Ast.FunctionDefinition)statement).CompileFailSafe(msgs);
 					funDefs.Add(fd);
 				}
 

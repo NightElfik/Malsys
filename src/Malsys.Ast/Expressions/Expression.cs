@@ -7,8 +7,6 @@ namespace Malsys.Ast {
 	/// </summary>
 	public class Expression : IToken, IAstVisitable, IEnumerable<IExpressionMember>, IExprInteractiveStatement {
 
-		public IExpressionMember this[int i] { get { return Members[i]; } }
-
 		public readonly ImmutableList<IExpressionMember> Members;
 		public readonly int MembersCount;
 
@@ -25,6 +23,11 @@ namespace Malsys.Ast {
 
 			MembersCount = Members.Length;
 		}
+
+
+		public IExpressionMember this[int i] { get { return Members[i]; } }
+
+		public bool IsEmpty { get { return MembersCount == 0; } }
 
 
 		#region IToken Members

@@ -7,11 +7,15 @@ namespace Malsys {
 	/// </summary>
 	public class RichExpression {
 
+		public static readonly RichExpression True = new RichExpression(Constant.True);
+		public static readonly RichExpression One = new RichExpression(Constant.One);
+
+
 		public readonly IExpression Expression;
 		public readonly ImmutableList<VariableDefinition> VariableDefinitions;
 
 
-		public RichExpression(IEnumerable<VariableDefinition> varDefs, IExpression expr) {
+		public RichExpression(IExpression expr) {
 			VariableDefinitions = ImmutableList<VariableDefinition>.Empty;
 			Expression = expr;
 		}

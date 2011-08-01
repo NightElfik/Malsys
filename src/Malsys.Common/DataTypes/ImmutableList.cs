@@ -66,6 +66,9 @@ namespace Malsys {
 		}
 
 
+		public bool IsEmpty { get { return Length == 0; } }
+
+
 		#region IList<T> Members
 
 		public int IndexOf(T item) {
