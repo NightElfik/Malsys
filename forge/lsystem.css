@@ -1,0 +1,45 @@
+
+.lsrc {
+	font: normal normal 1em/1.2em monospace;
+	font-family: Consolas, monospace;
+	color: #000000;
+}
+
+.lsrc .Keyword { color: #7F0055; font-weight: bold; }
+
+.lsrc .SingleLineComment,
+	.lsrc .MultiLineComment { color: #3F7F5F; }
+	
+.lsrc .DocComment { color: #3F5FBF; }
+
+.lsrc .LsystemName { font-weight: bold; }
+
+.lsrc .RewriteRule { font-weight: bold; }
+
+.lsrc .RewriteRule .RrPattern,
+	.lsrc .RewriteRule .Symbol,
+	.lsrc .RewriteRule .VariableDefinition,
+	.lsrc .RewriteRule .Expression { font-weight: normal; }
+
+
+.lsrc .RrLeftCtxt,
+	.lsrc .RrRightCtxt { color: #3F3F3F; }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -25,14 +25,6 @@ namespace Malsys.Ast {
 
 		#endregion
 
-		#region IAstVisitable Members
-
-		public void Accept(IAstVisitor visitor) {
-			throw new System.NotImplementedException();
-		}
-
-		#endregion
-
 		#region IExpressionMember Members
 
 		public ExpressionMemberType MemberType { get { return ExpressionMemberType.Array; } }

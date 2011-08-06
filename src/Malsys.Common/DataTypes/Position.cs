@@ -36,6 +36,13 @@ namespace Malsys {
 		}
 
 
+		public bool IsUnknown {
+			get {
+				return BeginLine == -1 && BeginColumn == -1 && EndLine == -1 && EndColumn == -1;
+			}
+		}
+
+
 		public Position EndPosition() {
 			return new Position(EndLine, EndColumn, EndLine, EndColumn);
 		}

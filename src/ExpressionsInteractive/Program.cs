@@ -33,6 +33,11 @@ namespace ExpressionsInteractive {
 					Console.WriteLine("Failed to parse `{0}` as port number.", args[0]);
 				}
 			}
+			else if (args.Length == 2) {
+				// just for Milan :)
+				highlightFileToHtml(args[0], args[1]);
+				return;
+			}
 
 			Start(Console.In, Console.Out);
 		}
@@ -306,6 +311,32 @@ namespace ExpressionsInteractive {
 			}
 
 			writer.WriteLine();
+		}
+
+
+		private static void highlightFileToHtml(string filePath, string outPath) {
+
+			using (Stream outStream = File.Open(outPath, FileMode.Create, FileAccess.Write)) {
+				using (StreamWriter writer = new StreamWriter(outStream)) {
+					writer.WriteLine("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
+					writer.WriteLine("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
+					writer.WriteLine();
+					writer.WriteLine("<head>");
+					writer.WriteLine("<title>Highlighted L-system from `{0}`</title>".Fmt(filePath));
+					writer.WriteLine("<link rel=\"stylesheet\" type=\"text/css\" href=\"lsystem.css\" />");
+					writer.WriteLine("</head>");
+					writer.WriteLine();
+					writer.WriteLine("<pre class=\"lsrc\">");
+
+					var result = Malsys.SourceCode.Highlighters.HtmlHighlighter.HighlightFromString(File.ReadAllText(filePath), filePath);
+					writer.WriteLine(result);
+
+					writer.WriteLine("</pre>");
+					writer.WriteLine();
+					writer.WriteLine("</body>");
+					writer.WriteLine("</html>");
+				}
+			}
 		}
 	}
 }

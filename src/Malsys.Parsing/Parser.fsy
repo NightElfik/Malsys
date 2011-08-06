@@ -22,6 +22,10 @@ let parse_error_rich = Some (fun (ctxt: ParseErrorContext<_>) ->
 let toPos (parserState : IParseState) =
     new Position(parserState.ResultRange)
 
+let toStartPos (parserState : IParseState) =
+    let startPos = fst parserState.ResultRange
+    new Position(startPos, startPos)
+
 %}
 
 %token <string> ID
@@ -34,7 +38,7 @@ let toPos (parserState : IParseState) =
 
 
 %start parseLsystemStatements
-%type <IInputStatement[]> parseLsystemStatements
+%type <InputBlock> parseLsystemStatements
 
 %start parseExpression
 %type <Expression> parseExpression
@@ -50,7 +54,7 @@ let toPos (parserState : IParseState) =
 
 parseLsystemStatements:
     | LsystemStatementsList EOF
-      { ($1 :> ResizeArray<IInputStatement>).ToArray() }
+      { new InputBlock($1 :> ResizeArray<IInputStatement>) }
 
 parseExpression:
     | Expression EOF
@@ -241,31 +245,31 @@ RewriteRule:
 
 MaybeLCtxt:
     |
-      { new ImmutableListPos<SymbolPattern>(toPos parseState) }
+      { new ImmutableListPos<SymbolPattern>(toStartPos parseState) }
     | LBRACE SymbolPatternsList RBRACE
       { new ImmutableListPos<SymbolPattern>($2, toPos parseState) }
 
 MaybeRCtxt:
     |
-      { new ImmutableListPos<SymbolPattern>(toPos parseState) }
+      { new ImmutableListPos<SymbolPattern>(toStartPos parseState) }
     | LBRACE SymbolPatternsList RBRACE
       { new ImmutableListPos<SymbolPattern>($2, toPos parseState) }
 
 MaybeCondition:
     |
-      { new RichExpression(toPos parseState) }
+      { new RichExpression(toStartPos parseState) }
     | QMARK LBRACE RichExpression RBRACE
       { new RichExpression($3, toPos parseState) }
 
 MaybeProbab:
     |
-      { new RichExpression(toPos parseState) }
+      { new RichExpression(toStartPos parseState) }
     | COLON LBRACE RichExpression RBRACE
       { new RichExpression($3, toPos parseState) }
 
 MaybeVarDefs:
     |
-      { new ImmutableListPos<VariableDefinition>(toPos parseState) }
+      { new ImmutableListPos<VariableDefinition>(toStartPos parseState) }
     | LBRACE VarDefsList RBRACE
       { new ImmutableListPos<VariableDefinition>($2, toPos parseState) }
     | LBRACE error RBRACE

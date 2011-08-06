@@ -1,25 +1,17 @@
 ﻿using System;
 
-namespace Malsys {
-	public class IndexableQueue<T> {
+namespace Malsys.Common.DataTypes {
+
+	public class IndexableStack<T> {
 
 		private const int defaultCapacity = 32;
 		private const float defaultGrowFactor = 2.0f;
 		private const int minimumGrow = 8;
 
-
 		/// <summary>
 		/// Storage for items.
 		/// </summary>
 		private T[] data;
-		/// <summary>
-		/// Index of first valid element in the queue.
-		/// </summary>
-		private int head;
-		/// <summary>
-		/// Index after last valid element in the queue.
-		/// </summary>
-		private int tail;
 		/// <summary>
 		/// Number of elements.
 		/// </summary>
@@ -32,15 +24,15 @@ namespace Malsys {
 
 		#region Constructors
 
-		public IndexableQueue()
+		public IndexableStack()
 			: this(defaultCapacity, defaultGrowFactor) {
 		}
 
-		public IndexableQueue(int initialCapacity)
+		public IndexableStack(int initialCapacity)
 			: this(initialCapacity, defaultGrowFactor) {
 		}
 
-		public IndexableQueue(int initialCapacity, float growFactor) {
+		public IndexableStack(int initialCapacity, float growFactor) {
 			if (initialCapacity < 0) {
 				throw new ArgumentOutOfRangeException("initialCapacity", "Capacity should be greater than zero.");
 			}
@@ -50,8 +42,6 @@ namespace Malsys {
 
 			data = new T[initialCapacity];
 			this.growFactor = (int)(growFactor * 100);
-			head = 0;
-			tail = 0;
 			size = 0;
 		}
 
@@ -63,9 +53,9 @@ namespace Malsys {
 		public T this[int i] {
 			get {
 				if (i < 0 || i >= size) {
-					throw new ArgumentOutOfRangeException("i", "Zero based index ({0}) should be lower than queue size ({1}).".Fmt(i, size));
+					throw new ArgumentOutOfRangeException("i", "Zero based index ({0}) should be lower than stack size ({1}).".Fmt(i, size));
 				}
-				return data[(head + i) % data.Length];
+				return data[i];
 			}
 		}
 
@@ -80,13 +70,23 @@ namespace Malsys {
 
 		public T Peek() {
 			if (size == 0) {
-				throw new InvalidOperationException("Peek on empty queue.");
+				throw new InvalidOperationException("Peek on empty stack.");
 			}
 
-			return data[head];
+			return data[size - 1];
 		}
 
-		public void Enqueue(T item) {
+		public T Pop() {
+			if (size == 0) {
+				throw new InvalidOperationException("Pop from empty stack.");
+			}
+
+			T item = data[--size];
+			data[size] = default(T);  // free memory quicker
+			return item;
+		}
+
+		public void Push(T item) {
 			if (size == data.Length) {
 				int newCapacity = (int)((long)data.Length * (long)growFactor / 100);
 
@@ -97,23 +97,7 @@ namespace Malsys {
 				setCapacity(newCapacity);
 			}
 
-			data[tail] = item;
-			tail = (tail + 1) % data.Length;
-			size++;
-		}
-
-		public T Dequeue() {
-			if (size == 0) {
-				throw new InvalidOperationException("Dequeue from empty queue.");
-			}
-
-			T item = data[head];
-
-			data[head] = default(T);
-			head = (head + 1) % data.Length;
-			size--;
-
-			return item;
+			data[size++] = item;
 		}
 
 		#endregion
@@ -123,19 +107,8 @@ namespace Malsys {
 
 		private void setCapacity(int capacity) {
 			T[] newData = new T[capacity];
-			if (size > 0) {
-				if (head < tail) {
-					Array.Copy(data, head, newData, 0, size);
-				}
-				else {
-					Array.Copy(data, head, newData, 0, data.Length - head);
-					Array.Copy(data, 0, newData, data.Length - head, tail);
-				}
-			}
-
+			Array.Copy(data, 0, newData, 0, size);
 			data = newData;
-			head = 0;
-			tail = (size == capacity) ? 0 : size;
 		}
 
 		#endregion

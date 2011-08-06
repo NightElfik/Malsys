@@ -23,14 +23,5 @@ namespace Malsys.Ast {
 
 			ParametersCount = Parameters.Length;
 		}
-
-
-		#region IAstVisitable Members
-
-		public new void Accept(IAstVisitor visitor) {
-			visitor.Visit(this);
-		}
-
-		#endregion
 	}
 }

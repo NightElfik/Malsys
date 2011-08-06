@@ -1,4 +1,4 @@
 ﻿
 namespace Malsys.Ast {
-	public interface IInputStatement : IToken, IAstVisitable { }
+	public interface IInputStatement : IToken { }
 }

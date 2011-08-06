@@ -4,7 +4,7 @@ namespace Malsys.Ast {
 	/// <summary>
 	/// Immutable.
 	/// </summary>
-	public class Symbol : IToken, IAstVisitable {
+	public class Symbol : IToken {
 
 		public readonly string Name;
 
@@ -18,42 +18,34 @@ namespace Malsys.Ast {
 		public Position Position { get; private set; }
 
 		#endregion
-
-		#region IAstVisitable Members
-
-		public void Accept(IAstVisitor visitor) {
-			visitor.Visit(this);
-		}
-
-		#endregion
 	}
 
 	/// <summary>
 	/// Immutable.
 	/// </summary>
-	public class SymbolPattern : Symbol, IAstVisitable {
+	public class SymbolPattern : IToken {
+
+		public readonly Symbol Symbol;
 
 		public readonly ImmutableList<Identificator> ParametersNames;
 
 
-		public SymbolPattern(Symbol symbol, Position pos)
-			: base(symbol.Name, pos) {
-
+		public SymbolPattern(Symbol symbol, Position pos) {
+			Symbol = symbol;
 			ParametersNames = ImmutableList<Identificator>.Empty;
+			Position = pos;
 		}
 
-		public SymbolPattern(Symbol symbol, IEnumerable<Identificator> paramsNames, Position pos)
-			: base(symbol.Name, pos) {
-
+		public SymbolPattern(Symbol symbol, IEnumerable<Identificator> paramsNames, Position pos) {
+			Symbol = symbol;
 			ParametersNames = new ImmutableList<Identificator>(paramsNames);
+			Position = pos;
 		}
 
 
-		#region IAstVisitable Members
+		#region IToken Members
 
-		public new void Accept(IAstVisitor visitor) {
-			visitor.Visit(this);
-		}
+		public Position Position { get; private set; }
 
 		#endregion
 	}
@@ -61,29 +53,29 @@ namespace Malsys.Ast {
 	/// <summary>
 	/// Immutable.
 	/// </summary>
-	public class SymbolExprArgs : Symbol, IAstVisitable {
+	public class SymbolExprArgs {
+
+		public readonly Symbol Symbol;
 
 		public readonly ImmutableList<Expression> Arguments;
 
 
-		public SymbolExprArgs(Symbol symbol, Position pos)
-			: base(symbol.Name, pos) {
-
+		public SymbolExprArgs(Symbol symbol, Position pos) {
+			Symbol = symbol;
 			Arguments = ImmutableList<Expression>.Empty;
+			Position = pos;
 		}
 
-		public SymbolExprArgs(Symbol symbol, IEnumerable<Expression> args, Position pos)
-			: base(symbol.Name, pos) {
-
+		public SymbolExprArgs(Symbol symbol, IEnumerable<Expression> args, Position pos) {
+			Symbol = symbol;
 			Arguments = new ImmutableList<Expression>(args);
+			Position = pos;
 		}
 
 
-		#region IAstVisitable Members
+		#region IToken Members
 
-		public new void Accept(IAstVisitor visitor) {
-			visitor.Visit(this);
-		}
+		public Position Position { get; private set; }
 
 		#endregion
 	}

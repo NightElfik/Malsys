@@ -21,7 +21,7 @@ namespace Malsys.Rewriters {
 		private IEnumerator<Symbol> source;
 		private IndexableQueue<Symbol> inputBuffer;
 		/// <summary>
-		/// Cyclic history array. Length should not be 0.
+		/// Cyclic history array, primitive queue. Length should not be 0.
 		/// </summary>
 		private Symbol[] outputHistory;
 		/// <summary>
@@ -65,16 +65,18 @@ namespace Malsys.Rewriters {
 			returnedSymbolsCount++;
 		}
 
-		private bool tryRewrite(Symbol symbol, out RewriteRule rruleResult, out VarMap vars) {
+		private bool tryFindRewriteRule(Symbol symbol, out RewriteRule rruleResult, out VarMap varsResult) {
 
-			vars = variables;
 			RewriteRule[] rrules;
 
 			if (rewriteRules.TryGetValue(symbol.Name, out rrules)) {
 
 				var possibleRrules = new List<Tuple<float, RewriteRule, VarMap>>();
 
+
 				foreach (var rr in rrules) {
+
+					var vars = variables;
 
 					if (rr.SymbolPattern.Name != symbol.Name) {
 						continue;
@@ -89,19 +91,19 @@ namespace Malsys.Rewriters {
 					// matching values on patterns
 
 					// pattern
-					vars = matchPattern(rr.SymbolPattern, symbol, vars);
+					vars = assignVarsByPattern(rr.SymbolPattern, symbol, vars);
 
 					// left context
 					int lCctxtLen = rr.LeftContext.Length;
 					for (int i = 0; i < lCctxtLen; i++) {
 						int historyIndex = (outputHistoryIndex - lCctxtLen + i + outputHistoryLength) % outputHistoryLength;
-						vars = matchPattern(rr.LeftContext[i], outputHistory[historyIndex], vars);
+						vars = assignVarsByPattern(rr.LeftContext[i], outputHistory[historyIndex], vars);
 					}
 
 					// right context
 					int rCtxtLen = rr.RightContext.Length;
 					for (int i = 0; i < rCtxtLen; i++) {
-						vars = matchPattern(rr.RightContext[i], inputBuffer[i], vars);
+						vars = assignVarsByPattern(rr.RightContext[i], inputBuffer[i], vars);
 					}
 
 					// condition
@@ -138,6 +140,7 @@ namespace Malsys.Rewriters {
 					possibleRrules.Add(new Tuple<float, RewriteRule, VarMap>((float)probabConst.Value, rr, vars));
 				}
 
+
 				if (possibleRrules.Count > 0) {
 
 					float sumWeights = possibleRrules.Sum(tuple => tuple.Item1);
@@ -148,7 +151,7 @@ namespace Malsys.Rewriters {
 						acc += tuple.Item1;
 						if (rand < acc) {
 							rruleResult = tuple.Item2;
-							vars = tuple.Item3;
+							varsResult = tuple.Item3;
 							return true;
 						}
 					}
@@ -159,13 +162,14 @@ namespace Malsys.Rewriters {
 
 					// return last item as result
 					rruleResult = possibleRrules[possibleRrules.Count - 1].Item2;
-					vars = possibleRrules[possibleRrules.Count - 1].Item3;
+					varsResult = possibleRrules[possibleRrules.Count - 1].Item3;
 					return true;
 				}
 
 			}
 
 			rruleResult = null;
+			varsResult = null;
 			return false;
 		}
 
@@ -204,7 +208,7 @@ namespace Malsys.Rewriters {
 			return true;
 		}
 
-		private VarMap matchPattern(SymbolPatern p, Symbol s, VarMap vars) {
+		private VarMap assignVarsByPattern(SymbolPatern p, Symbol s, VarMap vars) {
 			int argsLen = s.Arguments.Length;
 			int patternLen = p.Arguments.Length;
 
@@ -252,7 +256,7 @@ namespace Malsys.Rewriters {
 				VarMap vars;
 				RewriteRule rrule;
 
-				if (tryRewrite(symbol, out rrule, out vars)) {
+				if (tryFindRewriteRule(symbol, out rrule, out vars)) {
 					// define replacement variables
 					foreach (var varDef in rrule.ReplacementVars) {
 						vars = varDef.EvaluateAndAdd(vars, functions);

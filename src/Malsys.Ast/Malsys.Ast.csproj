@@ -51,12 +51,11 @@
     <Compile Include="Expressions\ExpressionIndexer.cs" />
     <Compile Include="Expressions\FloatConstant.cs" />
     <Compile Include="FunctionDefinition.cs" />
-    <Compile Include="IAstVisitable.cs" />
-    <Compile Include="IAstVisitor.cs" />
     <Compile Include="Identificator.cs" />
     <Compile Include="Expressions\IExpressionMember.cs" />
     <Compile Include="IExprInteractiveStatement.cs" />
     <Compile Include="ImmutableListPos.cs" />
+    <Compile Include="InputBlock.cs" />
     <Compile Include="Lsystem\IInputStatement.cs" />
     <Compile Include="Keyword.cs" />
     <Compile Include="Lsystem\Lsystem.cs" />

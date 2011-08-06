@@ -179,6 +179,7 @@ and multiLineComment args bPos sb nest = parse
 and singleLineComment args bPos sb = parse
     | newline
       { addComment args sb bPos lexbuf.StartPos;
+        newline lexbuf;
         tokenize args lexbuf }
 
     | eof

@@ -24,7 +24,8 @@ lsystem LsysName(a=3,,) {
 }";
 			var lexBuff = LexBuffer<char>.FromString(testInput);
 			var msgs = new MessagesCollection();
-			var lsys = ParserUtils.parseLsystemStatements(lexBuff, msgs, "testInput");
+			var comments = new List<Ast.Comment>();
+			var lsys = ParserUtils.parseLsystemStatements(lexBuff, comments, msgs, "testInput");
 
 			foreach (var m in msgs) {
 				Console.WriteLine(m.GetFullMessage());

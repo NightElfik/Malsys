@@ -17,11 +17,11 @@ namespace Malsys.Compilers {
 
 			bool wasError = false;
 			msgs.DefaultSourceName = sourceName;
+			var comments = new List<Ast.Comment>();
 
-			Ast.IInputStatement[] parsedStmnts = new Ast.IInputStatement[0];
-
-			parsedStmnts = ParserUtils.parseLsystemStatements(lexBuff, msgs, sourceName);
+			var parsedInput = ParserUtils.parseLsystemStatements(lexBuff, comments, msgs, sourceName);
 			if (msgs.ErrorOcured) {
+				parsedInput = new Ast.InputBlock();
 				wasError = true;
 			}
 
@@ -29,7 +29,7 @@ namespace Malsys.Compilers {
 			List<VariableDefinition> varDefs = new List<VariableDefinition>();
 			List<FunctionDefinition> funDefs = new List<FunctionDefinition>();
 
-			foreach (var statement in parsedStmnts) {
+			foreach (var statement in parsedInput) {
 
 				if (statement is Malsys.Ast.Lsystem) {
 					var lsysResult = ((Ast.Lsystem)statement).Compile(msgs);

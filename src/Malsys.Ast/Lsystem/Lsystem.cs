@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 
 namespace Malsys.Ast {
-	public interface ILsystemStatement : IAstVisitable { }
+	public interface ILsystemStatement : IToken { }
 
 	/// <summary>
 	/// Immutable.
@@ -27,14 +27,6 @@ namespace Malsys.Ast {
 		#region IToken Members
 
 		public Position Position { get; private set; }
-
-		#endregion
-
-		#region IAstVisitable Members
-
-		public void Accept(IAstVisitor visitor) {
-			visitor.Visit(this);
-		}
 
 		#endregion
 	}

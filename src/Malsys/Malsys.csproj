@@ -96,6 +96,11 @@
     <Compile Include="Rewriters\IRewriter.cs" />
     <Compile Include="Rewriters\LazyRewriter.cs" />
     <Compile Include="Rewriters\RewriterUtils.cs" />
+    <Compile Include="SourceCode\Highlighters\HtmlHighlighter.cs" />
+    <Compile Include="SourceCode\Highlighters\MarksCollector.cs" />
+    <Compile Include="SourceCode\Highlighters\MarkType.cs" />
+    <Compile Include="SourceCode\Highlighters\PositionMark.cs" />
+    <Compile Include="SourceCode\Highlighters\StringHighlighter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Malsys.Ast\Malsys.Ast.csproj">

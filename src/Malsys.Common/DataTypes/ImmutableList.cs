@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Diagnostics;
 
 namespace Malsys {
 	/// <summary>
@@ -22,6 +23,10 @@ namespace Malsys {
 		}
 
 		public ImmutableList(IEnumerable<T> vals) {
+
+			Debug.Assert(!(vals is ImmutableList<T>), "Bad constructor of {0} used, probably somwhere missing ctor with {0} and it was downcasted to {1}.".Fmt(
+				typeof(ImmutableList<T>).Name, typeof(IEnumerable<T>).Name));
+
 			values = vals.ToArray();
 			Length = values.Length;
 		}

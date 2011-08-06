@@ -12,8 +12,7 @@ let setInitialBuffPos (lexbuf : LexBuffer<_>) sourceName =
         pos_lnum = 1 }
     lexbuf
 
-let parseLsystemStatements (lexbuf : LexBuffer<_>) (msgs : MessagesCollection) sourceName =
-    let mutable comments = new ResizeArray<Comment>() in
+let parseLsystemStatements (lexbuf : LexBuffer<_>) (comments : ResizeArray<Comment>) (msgs : MessagesCollection) sourceName =
     msgs.DefaultSourceName <- sourceName;
     MessagesLogger.ThreadStatic.ErrorLogger <- msgs;
     Parser.parseLsystemStatements (Lexer.tokenize (msgs, comments)) (setInitialBuffPos lexbuf sourceName)

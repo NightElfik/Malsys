@@ -5,7 +5,7 @@ namespace Malsys.Ast {
 	/// <summary>
 	/// Immutable.
 	/// </summary>
-	public class Expression : IToken, IAstVisitable, IEnumerable<IExpressionMember>, IExprInteractiveStatement {
+	public class Expression : IToken, IEnumerable<IExpressionMember>, IExprInteractiveStatement {
 
 		public readonly ImmutableList<IExpressionMember> Members;
 		public readonly int MembersCount;
@@ -33,14 +33,6 @@ namespace Malsys.Ast {
 		#region IToken Members
 
 		public Position Position { get; private set; }
-
-		#endregion
-
-		#region IAstVisitable Members
-
-		public void Accept(IAstVisitor visitor) {
-			visitor.Visit(this);
-		}
 
 		#endregion
 

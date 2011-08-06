@@ -12,7 +12,7 @@ namespace Malsys.Compilers {
 
 				if (usedNames.ContainsKey(name)) {
 					var otherPos = usedNames[name];
-					msgs.AddError("Parameter name `{0}` in pattern `{1}` is not unique (in its context).".Fmt(name, ptrnAst.Name),
+					msgs.AddError("Parameter name `{0}` in pattern `{1}` is not unique (in its context).".Fmt(name, ptrnAst.Symbol.Name),
 						ptrnAst.ParametersNames[i].Position, otherPos);
 					return CompilerResult<Symbol<string>>.Error;
 				}
@@ -22,7 +22,7 @@ namespace Malsys.Compilers {
 			}
 
 			var namesImm = new ImmutableList<string>(names, true);
-			var result = new Symbol<string>(ptrnAst.Name, namesImm);
+			var result = new Symbol<string>(ptrnAst.Symbol.Name, namesImm);
 
 			return new CompilerResult<Symbol<string>>(result);
 		}
@@ -50,7 +50,7 @@ namespace Malsys.Compilers {
 
 		public static Symbol<IExpression> CompileFailSafe(this Ast.SymbolExprArgs symbolAst, MessagesCollection msgs) {
 
-			return new Symbol<IExpression>(symbolAst.Name, symbolAst.Arguments.CompileFailSafe(msgs));
+			return new Symbol<IExpression>(symbolAst.Symbol.Name, symbolAst.Arguments.CompileFailSafe(msgs));
 
 		}
 
