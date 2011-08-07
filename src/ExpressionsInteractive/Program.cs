@@ -326,12 +326,13 @@ namespace ExpressionsInteractive {
 					writer.WriteLine("<link rel=\"stylesheet\" type=\"text/css\" href=\"lsystem.css\" />");
 					writer.WriteLine("</head>");
 					writer.WriteLine();
-					writer.WriteLine("<pre class=\"lsrc\">");
+					writer.WriteLine("<body>");
+					writer.WriteLine("<ol class=\"lsrc\">");
 
 					var result = Malsys.SourceCode.Highlighters.HtmlHighlighter.HighlightFromString(File.ReadAllText(filePath), filePath);
 					writer.WriteLine(result);
 
-					writer.WriteLine("</pre>");
+					writer.WriteLine("</ol>");
 					writer.WriteLine();
 					writer.WriteLine("</body>");
 					writer.WriteLine("</html>");

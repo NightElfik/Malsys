@@ -42,9 +42,27 @@ namespace Malsys {
 			}
 		}
 
+		public bool IsZeroLength {
+			get {
+				return BeginLine == EndLine && BeginColumn == EndColumn;
+			}
+		}
 
-		public Position EndPosition() {
-			return new Position(EndLine, EndColumn, EndLine, EndColumn);
+
+		public Position To(Position end) {
+			return new Position(EndLine, EndColumn, end.BeginLine, end.BeginColumn);
+		}
+
+		public Position To(Tuple<LexPos, LexPos> range) {
+			return new Position(EndLine, EndColumn, range.Item1.Line, range.Item1.Column);
+		}
+
+		public Position ToNonZeroLength() {
+			if (IsUnknown || !IsZeroLength) {
+				return this;
+			}
+
+			return new Position(BeginLine, BeginColumn, EndLine, EndColumn + 1);
 		}
 	}
 }

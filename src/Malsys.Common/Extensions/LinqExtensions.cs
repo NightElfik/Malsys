@@ -7,8 +7,8 @@ namespace Malsys {
 			for (int i = 0; i < source.Count; i++) {
 				for (int j = 0; j < i; j++) {
 					if (source[i].Equals(source[j])) {
-						nonUniqueIndex1 = i;
-						nonUniqueIndex2 = j;
+						nonUniqueIndex1 = j;
+						nonUniqueIndex2 = i;
 						return true;
 					}
 				}

@@ -11,7 +11,7 @@ namespace Malsys.Compilers {
 		public static FunctionDefinition CompileFailSafe(this Ast.FunctionDefinition funDef, MessagesCollection msgs) {
 
 			var paramsTuple = funDef.Parameters.CompileParametersFailSafe(msgs);
-			var body = funDef.CompileRichFailSafe(msgs);
+			var body = funDef.Body.CompileRichFailSafe(msgs);
 
 			return new FunctionDefinition(funDef.NameId.Name, paramsTuple.Item1, paramsTuple.Item2, body.VariableDefinitions, body.Expression);
 		}
@@ -56,9 +56,9 @@ namespace Malsys.Compilers {
 
 			// check wether parameters names are unique
 			int nonUniq1, nonUniq2;
-			if (optParamsExprs.TryGetEqualValuesIndices(out nonUniq1, out nonUniq2)) {
-				msgs.AddError("{0}. and {1}. parameter have same name `{2}`.".Fmt(nonUniq1 + 1, nonUniq2 + 1, optParamsExprs[nonUniq1]),
-					parameters[nonUniq2].Position);
+			if (names.TryGetEqualValuesIndices(out nonUniq1, out nonUniq2)) {
+				msgs.AddError("{0}. and {1}. parameter have same name `{2}`.".Fmt(nonUniq1 + 1, nonUniq2 + 1, names[nonUniq1]),
+					parameters[nonUniq2].Position, parameters[nonUniq1].Position);
 			}
 
 			// evaluating optional's paramters default values

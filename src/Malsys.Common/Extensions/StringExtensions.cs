@@ -14,8 +14,41 @@ namespace Malsys {
 			return string.Format(format, args);
 		}
 
+		/// <summary>
+		/// Returns a copy of a specified substring of this instance.
+		/// </summary>
+		/// <param name="beginIndex">Zero-based inclusive starting character index of a substring.</param>
+		/// <param name="endIndex">Zero-based exclusive ending character index of a substring.</param>
 		public static string SubstringPos(this string str, int beginIndex, int endIndex) {
 			return str.Substring(beginIndex, endIndex - beginIndex);
+		}
+
+		/// <summary>
+		/// Returns a copy of a specified substring of this instance. If this string do not have enough
+		/// characters in given range, spaces are used to fill it.
+		/// </summary>
+		/// <param name="beginIndex">Zero-based inclusive starting character index of a substring.</param>
+		/// <param name="endIndex">Zero-based exclusive ending character index of a substring.</param>
+		public static string SubstringSpaceFill(this string str, int beginIndex, int endIndex) {
+			int len = endIndex - beginIndex;
+
+			if (endIndex < str.Length) {
+				return str.Substring(beginIndex, len);
+			}
+			else {
+				if (beginIndex < str.Length) {
+					StringBuilder sb = new StringBuilder(len);
+					int fromStrLen = str.Length - beginIndex;
+
+					sb.Append(str, beginIndex, fromStrLen);
+					sb.Append(' ', len - fromStrLen);
+
+					return sb.ToString();
+				}
+				else {
+					return new string(' ', len);
+				}
+			}
 		}
 
 		/// <summary>
@@ -54,7 +87,7 @@ namespace Malsys {
 		/// Appends a copy of a specified substring to the end of this instance.
 		/// </summary>
 		/// <param name="beginIndex">Zero-based inclusive starting character index of a substring.</param>
-		/// <param name="endIndex">Zero-based exclusive end character index of a substring.</param>
+		/// <param name="endIndex">Zero-based exclusive ending character index of a substring.</param>
 		public static void AppendPos(this StringBuilder sb, string str, int beginIndex, int endIndex) {
 			sb.Append(str, beginIndex, endIndex - beginIndex);
 		}
@@ -64,7 +97,7 @@ namespace Malsys {
 		/// characters in given range, spaces are used to fill it.
 		/// </summary>
 		/// <param name="beginIndex">Zero-based inclusive starting character index of a substring.</param>
-		/// <param name="endIndex">Zero-based exclusive end character index of a substring.</param>
+		/// <param name="endIndex">Zero-based exclusive ending character index of a substring.</param>
 		public static void AppendSpaceFill(this StringBuilder sb, string str, int beginIndex, int endIndex) {
 			int len = endIndex - beginIndex;
 

@@ -43,7 +43,13 @@ namespace Malsys.SourceCode.Highlighters {
 						mt = MarkType.Unknown; break;
 				}
 
-				addMarks(mt, msg.Position, marks);
+				var data = new object[] { msg.Message };
+
+				addMarks(mt, msg.Position.ToNonZeroLength(), marks, data);
+
+				foreach (var pos in msg.OtherPositions) {
+					addMarks(mt, pos, marks, data);
+				}
 			}
 		}
 
@@ -71,6 +77,10 @@ namespace Malsys.SourceCode.Highlighters {
 
 			Collect(lsd.Keyword, marks);
 			addMarks(MarkType.LsystemName, lsd.NameId.Position, marks);
+
+			foreach (var p in lsd.Parameters) {
+				Collect(p, marks);
+			}
 
 			foreach (var statement in lsd.Statements) {
 				if (statement is Ast.RewriteRule) {
@@ -119,14 +129,12 @@ namespace Malsys.SourceCode.Highlighters {
 				Collect(p, marks);
 			}
 
-			foreach (var vd in fd.VariableDefinitions) {
-				Collect(vd, marks);
-			}
-
-			addMarks(MarkType.Expression, fd.Expression.Position, marks);
+			addMarks(MarkType.FunctionBody, fd.Body.Position, marks);
+			Collect(fd.Body, marks);
 		}
 
 		public static void Collect(Ast.OptionalParameter p, List<PositionMark> marks) {
+			addMarks(MarkType.Parameter, p.Position, marks);
 			addMarks(MarkType.ParameterName, p.NameId.Position, marks);
 
 			if (p.OptionalValue != null) {
@@ -175,15 +183,17 @@ namespace Malsys.SourceCode.Highlighters {
 		}
 
 		public static void Collect(Ast.SymbolPattern ptrn, List<PositionMark> marks) {
-			addMarks(MarkType.Symbol, ptrn.Position, marks);
+			addMarks(MarkType.SymbolPattern, ptrn.Position, marks);
+			addMarks(MarkType.Symbol, ptrn.Symbol.Position, marks);
 
 			foreach (var name in ptrn.ParametersNames) {
-				addMarks(MarkType.VariableName, name.Position, marks);
+				addMarks(MarkType.PatternVarName, name.Position, marks);
 			}
 		}
 
 		public static void Collect(Ast.SymbolExprArgs symExpr, List<PositionMark> marks) {
-			addMarks(MarkType.Symbol, symExpr.Position, marks);
+			addMarks(MarkType.SymbolExpr, symExpr.Position, marks);
+			addMarks(MarkType.Symbol, symExpr.Symbol.Position, marks);
 
 			foreach (var expr in symExpr.Arguments) {
 				Collect(expr, marks);
@@ -200,16 +210,52 @@ namespace Malsys.SourceCode.Highlighters {
 			}
 
 			addMarks(MarkType.Expression, expr.Position, marks);
+
+			foreach (var member in expr.Members) {
+				switch (member.MemberType) {
+					case Ast.ExpressionMemberType.Constant:
+						addMarks(MarkType.ExprConstant, member.Position, marks);
+						break;
+					case Ast.ExpressionMemberType.Variable:
+						addMarks(MarkType.ExprVariable, member.Position, marks);
+						break;
+					case Ast.ExpressionMemberType.Array:
+						break;
+					case Ast.ExpressionMemberType.Operator:
+						break;
+					case Ast.ExpressionMemberType.Indexer:
+						break;
+					case Ast.ExpressionMemberType.Function:
+						addMarks(MarkType.ExprFunName, ((Ast.ExpressionFunction)member).NameId.Position, marks);
+						break;
+					case Ast.ExpressionMemberType.BracketedExpression:
+						break;
+					default:
+						break;
+				}
+			}
 		}
 
 
 		private static void addMarks(MarkType type, Position pos, List<PositionMark> marks) {
-			if (pos.IsUnknown) {
+			if (pos.IsZeroLength) {
 				return;
 			}
 
-			marks.Add(new PositionMark(type, pos.BeginLine, pos.BeginColumn, true));
-			marks.Add(new PositionMark(type, pos.EndLine, pos.EndColumn, false));
+			var begin = new PositionMark(type, pos.BeginLine, pos.BeginColumn, true);
+			marks.Add(begin);
+			marks.Add(new PositionMark(type, pos.EndLine, pos.EndColumn, false, begin.Generation));
+		}
+
+		private static void addMarks(MarkType type, Position pos, List<PositionMark> marks, object[] data) {
+			if (pos.IsZeroLength) {
+				return;
+			}
+
+			var begin = new PositionMark(type, pos.BeginLine, pos.BeginColumn, true);
+			begin.Data = data;
+			marks.Add(begin);
+			marks.Add(new PositionMark(type, pos.EndLine, pos.EndColumn, false, begin.Generation));
 		}
 	}
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Malsys.Common.DataTypes {
+namespace Malsys {
 
 	public class IndexableStack<T> {
 

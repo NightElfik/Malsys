@@ -9,21 +9,19 @@ namespace Malsys.Compilers {
 	public static class InputCompiler {
 
 		public static CompilerResult<InputBlock> CompileFromString(string strInput, string sourceName, MessagesCollection msgs) {
+
 			var lexBuff = LexBuffer<char>.FromString(strInput);
-			return compile(lexBuff, sourceName, msgs);
-		}
-
-		private static CompilerResult<InputBlock> compile(LexBuffer<char> lexBuff, string sourceName, MessagesCollection msgs) {
-
-			bool wasError = false;
 			msgs.DefaultSourceName = sourceName;
 			var comments = new List<Ast.Comment>();
 
 			var parsedInput = ParserUtils.parseLsystemStatements(lexBuff, comments, msgs, sourceName);
-			if (msgs.ErrorOcured) {
-				parsedInput = new Ast.InputBlock();
-				wasError = true;
-			}
+
+			return CompileFromAst(parsedInput, msgs);
+		}
+
+		public static CompilerResult<InputBlock> CompileFromAst(Ast.InputBlock parsedInput, MessagesCollection msgs) {
+
+			bool wasError = msgs.ErrorOcured;
 
 			List<LsystemDefinition> lsysDefs = new List<LsystemDefinition>();
 			List<VariableDefinition> varDefs = new List<VariableDefinition>();
@@ -54,7 +52,7 @@ namespace Malsys.Compilers {
 
 				else {
 					Debug.Fail("Unhandled type `{0}` of {1} while compiling input block `{2}`.".Fmt(
-						statement.GetType().Name, typeof(Ast.IInputStatement).Name, sourceName));
+						statement.GetType().Name, typeof(Ast.IInputStatement).Name, msgs.DefaultSourceName));
 
 					msgs.AddError("Internal L-system input compiler error.", statement.Position);
 					wasError = true;
@@ -63,7 +61,7 @@ namespace Malsys.Compilers {
 
 
 			if (wasError) {
-				msgs.AddError("Some error ocured during compilation of `{0}`".Fmt(sourceName), Position.Unknown);
+				msgs.AddError("Some error ocured during compilation of `{0}`.".Fmt(msgs.DefaultSourceName), Position.Unknown);
 				Debug.Assert(msgs.ErrorOcured, "Compiler's result error state is false, but error ocured.");
 				return CompilerResult<InputBlock>.Error;
 			}

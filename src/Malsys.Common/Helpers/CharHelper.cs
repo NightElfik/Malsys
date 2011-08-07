@@ -11,6 +11,11 @@ namespace Malsys {
 		public const char Sqrt = '\u221a';
 
 		/// <summary>
+		/// Non-breaking space ` `.
+		/// </summary>
+		public const char Nbsp = '\u00A0';
+
+		/// <summary>
 		/// π
 		/// </summary>
 		public const char Pi = '\u03C0';

@@ -35,7 +35,9 @@ namespace Malsys.Compilers {
 				}
 
 				else if (statement is Ast.EmptyStatement) {
-					msgs.AddMessage("Empty statement found.", CompilerMessageType.Notice, statement.Position);
+					if (!((Ast.EmptyStatement)statement).Hidden) {
+						msgs.AddMessage("Empty statement found.", CompilerMessageType.Notice, statement.Position);
+					}
 				}
 
 				else {

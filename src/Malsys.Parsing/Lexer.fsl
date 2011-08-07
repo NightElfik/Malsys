@@ -31,6 +31,10 @@ let writeMessage (msgColl : MessagesCollection, _) (lexbuf : LexBuffer<_>) (msgT
     msgColl.AddMessage(msg, msgType, new Position(lexbuf.StartPos, lexbuf.EndPos));
     ()
 
+let writeMessagePos (msgColl : MessagesCollection, _) (pos : Position) (msgType : CompilerMessageType) (msg : string) =
+    msgColl.AddMessage(msg, msgType, pos);
+    ()
+
 /// Adds given string as comment into comments list in args.
 let addComment (_, cmtList : ResizeArray<Comment>) sb bPos ePos =
     cmtList.Add(new Comment(sb.ToString(), new Position(bPos, ePos)));
@@ -168,7 +172,7 @@ and multiLineComment args bPos sb nest = parse
 
     | eof
       { addComment args sb bPos lexbuf.StartPos;
-        if nest > 1 then writeMessage args lexbuf msgWarn "Unterminated multiline comment." else ();
+        writeMessagePos args (new Position(bPos, lexbuf.StartPos)) msgWarn "Unterminated multiline comment.";
         EOF }
 
     | _
