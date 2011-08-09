@@ -23,14 +23,14 @@ namespace Malsys.Compilers {
 
 
 			var cond = rRuleAst.Condition.IsEmpty
-				? RichExpression.True
-				: rRuleAst.Condition.CompileRichFailSafe(msgs);
+				? Constant.True
+				: rRuleAst.Condition.CompileFailSafe(msgs);
 
-			var probab = rRuleAst.Probability.IsEmpty
-				? RichExpression.One
-				: rRuleAst.Probability.CompileRichFailSafe(msgs);
+			var probab = rRuleAst.Weight.IsEmpty
+				? Constant.One
+				: rRuleAst.Weight.CompileFailSafe(msgs);
 
-			var vars = rRuleAst.VariableDefs.CompileFailSafe(msgs);
+			var vars = rRuleAst.LocalVariables.CompileFailSafe(msgs);
 
 			var replac = rRuleAst.Replacement.CompileListFailSafe(msgs);
 

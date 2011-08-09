@@ -82,13 +82,20 @@ namespace Malsys.SourceCode.Highlighters {
 				Collect(p, marks);
 			}
 
-			foreach (var statement in lsd.Statements) {
+			addMarks(MarkType.LsystemBody, lsd.Body.Position, marks);
+			addMarks(MarkType.Separator, lsd.Body.BeginSeparator, marks);
+
+			foreach (var statement in lsd.Body) {
 				if (statement is Ast.RewriteRule) {
 					Collect((Ast.RewriteRule)statement, marks);
 				}
 
 				else if (statement is Ast.VariableDefinition) {
 					Collect((Ast.VariableDefinition)statement, marks);
+				}
+
+				else if (statement is Ast.SymbolsDefinition) {
+					Collect((Ast.SymbolsDefinition)statement, marks);
 				}
 
 				else if (statement is Ast.FunctionDefinition) {
@@ -106,6 +113,7 @@ namespace Malsys.SourceCode.Highlighters {
 				}
 			}
 
+			addMarks(MarkType.Separator, lsd.Body.EndSeparator, marks);
 		}
 
 		public static void Collect(Ast.VariableDefinition vd, List<PositionMark> marks) {
@@ -116,6 +124,18 @@ namespace Malsys.SourceCode.Highlighters {
 			addMarks(MarkType.VariableName, vd.NameId.Position, marks);
 
 			Collect(vd.Expression, marks);
+		}
+
+		public static void Collect(Ast.SymbolsDefinition sd, List<PositionMark> marks) {
+
+			addMarks(MarkType.VariableDefinition, sd.Position, marks);
+
+			addMarks(MarkType.Keyword, sd.Keyword.Position, marks);
+			addMarks(MarkType.VariableName, sd.NameId.Position, marks);
+
+			foreach (var s in sd.Symbols) {
+				Collect(s, marks);
+			}
 		}
 
 		public static void Collect(Ast.FunctionDefinition fd, List<PositionMark> marks) {
@@ -146,40 +166,54 @@ namespace Malsys.SourceCode.Highlighters {
 
 			addMarks(MarkType.RewriteRule, rr.Position, marks);
 
-			addMarks(MarkType.RrPattern, rr.Pattern.Position, marks);
-			Collect(rr.Pattern, marks);
-
 			addMarks(MarkType.RrLeftCtxt, rr.LeftContext.Position, marks);
+			addMarks(MarkType.Separator, rr.LeftContext.BeginSeparator, marks);
 			foreach (var pat in rr.LeftContext) {
 				Collect(pat, marks);
 			}
+			addMarks(MarkType.Separator, rr.LeftContext.EndSeparator, marks);
+
+			addMarks(MarkType.RrPattern, rr.Pattern.Position, marks);
+			Collect(rr.Pattern, marks);
 
 			addMarks(MarkType.RrRightCtxt, rr.RightContext.Position, marks);
+			addMarks(MarkType.Separator, rr.RightContext.BeginSeparator, marks);
 			foreach (var pat in rr.RightContext) {
 				Collect(pat, marks);
+			}
+			addMarks(MarkType.Separator, rr.RightContext.EndSeparator, marks);
+
+			addMarks(MarkType.RrVariables, rr.LocalVariables.Position, marks);
+			foreach (var v in rr.LocalVariables) {
+				Collect(v, marks);
 			}
 
 			addMarks(MarkType.RrCondition, rr.Condition.Position, marks);
 			Collect(rr.Condition, marks);
 
-			addMarks(MarkType.RrProbability, rr.Probability.Position, marks);
-			Collect(rr.Probability, marks);
-
-			foreach (var vd in rr.VariableDefs) {
-				Collect(vd, marks);
-			}
-
 			foreach (var sym in rr.Replacement) {
 				Collect(sym, marks);
+			}
+
+			addMarks(MarkType.RrProbability, rr.Weight.Position, marks);
+			Collect(rr.Weight, marks);
+
+			foreach (var kw in rr.Keywords) {
+				Collect(kw, marks);
 			}
 		}
 
 		public static void Collect(Ast.RichExpression re, List<PositionMark> marks) {
+
+			addMarks(MarkType.Separator, re.BeginSeparator, marks);
+
 			foreach (var vd in re.VariableDefinitions) {
 				Collect(vd, marks);
 			}
 
 			Collect(re.Expression, marks);
+
+			addMarks(MarkType.Separator, re.EndSeparator, marks);
 		}
 
 		public static void Collect(Ast.SymbolPattern ptrn, List<PositionMark> marks) {
@@ -220,15 +254,23 @@ namespace Malsys.SourceCode.Highlighters {
 						addMarks(MarkType.ExprVariable, member.Position, marks);
 						break;
 					case Ast.ExpressionMemberType.Array:
+						foreach (var e in ((Ast.ExpressionsArray)member)) {
+							Collect(e, marks);
+						}
 						break;
 					case Ast.ExpressionMemberType.Operator:
 						break;
 					case Ast.ExpressionMemberType.Indexer:
+						Collect(((Ast.ExpressionIndexer)member).Index, marks);
 						break;
 					case Ast.ExpressionMemberType.Function:
 						addMarks(MarkType.ExprFunName, ((Ast.ExpressionFunction)member).NameId.Position, marks);
+						foreach (var e in ((Ast.ExpressionFunction)member).Arguments) {
+							Collect(e, marks);
+						}
 						break;
 					case Ast.ExpressionMemberType.BracketedExpression:
+						Collect(((Ast.ExpressionBracketed)member).Expression, marks);
 						break;
 					default:
 						break;

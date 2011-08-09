@@ -12,14 +12,14 @@ namespace Malsys.Ast {
 		public readonly Identificator NameId;
 
 		public readonly ImmutableListPos<OptionalParameter> Parameters;
-		public readonly ImmutableList<ILsystemStatement> Statements;
+		public readonly ImmutableListPos<ILsystemStatement> Body;
 
 
-		public Lsystem(Keyword keyword, Identificator name, ImmutableListPos<OptionalParameter> prms, IEnumerable<ILsystemStatement> satetmnts, Position pos) {
+		public Lsystem(Keyword keyword, Identificator name, ImmutableListPos<OptionalParameter> prms, ImmutableListPos<ILsystemStatement> body, Position pos) {
 			Keyword = keyword;
 			NameId = name;
 			Parameters = prms;
-			Statements = new ImmutableList<ILsystemStatement>(satetmnts);
+			Body = body;
 			Position = pos;
 		}
 

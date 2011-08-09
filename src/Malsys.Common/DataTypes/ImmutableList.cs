@@ -40,11 +40,14 @@ namespace Malsys {
 			}
 			else {
 				values = new T[Length];
-
 				for (int i = 0; i < Length; i++) {
 					values[i] = vals[i];
 				}
 			}
+		}
+
+		public ImmutableList(params T[] vals)
+			: this((IList<T>)vals) {
 		}
 
 		public ImmutableList(ImmutableList<T> vals) {
@@ -58,7 +61,9 @@ namespace Malsys {
 		/// Do not use if you don't understand it!
 		/// </summary>
 		public ImmutableList(T[] vals, bool noOtherReferenceExistsOnGivenValuesArray) {
+
 			Length = vals.Length;
+
 			if (noOtherReferenceExistsOnGivenValuesArray) {
 				values = vals;
 			}

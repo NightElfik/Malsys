@@ -9,23 +9,33 @@ namespace Malsys.Ast {
 
 		public readonly Expression Expression;
 		public readonly ImmutableList<VariableDefinition> VariableDefinitions;
+		public readonly Position BeginSeparator;
+		public readonly Position EndSeparator;
 
 
-		public RichExpression(Position pos) {
-			Expression = new Expression(pos);
-			VariableDefinitions = ImmutableList<VariableDefinition>.Empty;
-			Position = pos;
+		#region Constructors
+
+		public RichExpression(Position pos)
+			: this(Position.Unknown, Position.Unknown, pos) {
 		}
 
-		public RichExpression(IEnumerable<VariableDefinition> varDefs, Expression expr, Position pos) {
-			Expression = expr;
-			VariableDefinitions = new ImmutableList<VariableDefinition>(varDefs);
-			Position = pos;
+		public RichExpression(Position beginSep, Position endSep, Position pos)
+			: this(ImmutableList<VariableDefinition>.Empty, new Expression(pos), beginSep, endSep, pos) {
 		}
 
-		public RichExpression(ImmutableList<VariableDefinition> varDefs, Expression expr, Position pos) {
+		public RichExpression(IEnumerable<VariableDefinition> varDefs, Expression expr, Position pos)
+			: this(varDefs, expr, Position.Unknown, Position.Unknown, pos) {
+		}
+
+		public RichExpression(IEnumerable<VariableDefinition> varDefs, Expression expr, Position beginSep, Position endSep, Position pos)
+			: this(varDefs.ToImmutableList(),expr, beginSep, endSep, pos) {
+		}
+
+		public RichExpression(ImmutableList<VariableDefinition> varDefs, Expression expr, Position beginSep, Position endSep, Position pos) {
 			Expression = expr;
 			VariableDefinitions = varDefs;
+			BeginSeparator = beginSep;
+			EndSeparator = endSep;
 			Position = pos;
 		}
 
@@ -34,6 +44,8 @@ namespace Malsys.Ast {
 			VariableDefinitions = rExpr.VariableDefinitions;
 			Position = pos;
 		}
+
+		#endregion
 
 
 		public bool IsEmpty { get { return Expression.IsEmpty && VariableDefinitions.IsEmpty; } }

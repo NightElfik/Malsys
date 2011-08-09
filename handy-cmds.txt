@@ -1,0 +1,6 @@
+
+wc -l `find -type f | egrep "\.cs$"`
+find -type f -name "*.cs" -exec wc -l {} \; | awk '{total += $1} END{print total}'
+
+git push fiserma@u-pl16.ms.mff.cuni.cz:WWW/Malsys.git master
+git clone http://www.ms.mff.cuni.cz/~fiserma/Malsys.git

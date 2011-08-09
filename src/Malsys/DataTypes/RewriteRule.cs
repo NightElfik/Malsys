@@ -5,28 +5,29 @@ namespace Malsys {
 	/// Immutable.
 	/// </summary>
 	public class RewriteRule {
+
 		public readonly Symbol<string> SymbolPattern;
 
 		public readonly SymbolsList<string> LeftContext;
 		public readonly SymbolsList<string> RightContext;
 
-		public readonly RichExpression Condition;
+		public readonly IExpression Condition;
 
-		public readonly RichExpression ProbabilityWeight;
+		public readonly IExpression Weight;
 
-		public readonly ImmutableList<VariableDefinition> ReplacementVars;
+		public readonly ImmutableList<VariableDefinition<IExpression>> LocalVariables;
 		public readonly SymbolsList<IExpression> Replacement;
 
 
-		public RewriteRule(Symbol<string> symbolPtrn, SymbolsList<string> lCtxt, SymbolsList<string> rCtxt, RichExpression cond,
-			   RichExpression probab, ImmutableList<VariableDefinition> replacVars, SymbolsList<IExpression> replac) {
+		public RewriteRule(Symbol<string> symbolPtrn, SymbolsList<string> lCtxt, SymbolsList<string> rCtxt, IExpression cond,
+			   IExpression wei, ImmutableList<VariableDefinition<IExpression>> locVars, SymbolsList<IExpression> replac) {
 
 			SymbolPattern = symbolPtrn;
 			LeftContext = lCtxt;
 			RightContext = rCtxt;
 			Condition = cond;
-			ProbabilityWeight = probab;
-			ReplacementVars = replacVars;
+			Weight = wei;
+			LocalVariables = locVars;
 			Replacement = replac;
 		}
 	}

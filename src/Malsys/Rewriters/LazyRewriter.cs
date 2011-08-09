@@ -100,6 +100,10 @@ namespace Malsys.Rewriters {
 						vars = assignVarsByPattern(rr.LeftContext[i], outputHistory[historyIndex], vars);
 					}
 
+					foreach (var varDef in rr.LocalVariables) {
+						vars = VariableDefinitionEvaluator.EvaluateAndAdd(varDef, vars, functions);
+					}
+
 					// right context
 					int rCtxtLen = rr.RightContext.Length;
 					for (int i = 0; i < rCtxtLen; i++) {
@@ -107,11 +111,7 @@ namespace Malsys.Rewriters {
 					}
 
 					// condition
-					foreach (var varDef in rr.Condition.VariableDefinitions) {
-						vars = VariableDefinitionEvaluator.EvaluateAndAdd(varDef, vars, functions);
-					}
-
-					var condValue = ExpressionEvaluator.Evaluate(rr.Condition.Expression, vars, functions);
+					var condValue = ExpressionEvaluator.Evaluate(rr.Condition, vars, functions);
 					if (!condValue.IsConstant) {
 						continue;
 					}
@@ -122,12 +122,7 @@ namespace Malsys.Rewriters {
 					}
 
 					// probability weight
-
-					foreach (var varDef in rr.ProbabilityWeight.VariableDefinitions) {
-						vars = VariableDefinitionEvaluator.EvaluateAndAdd(varDef, vars, functions);
-					}
-
-					var probabValue = ExpressionEvaluator.Evaluate(rr.Condition.Expression, vars, functions);
+					var probabValue = ExpressionEvaluator.Evaluate(rr.Condition, vars, functions);
 					if (!probabValue.IsConstant) {
 						continue;
 					}
@@ -257,11 +252,6 @@ namespace Malsys.Rewriters {
 				RewriteRule rrule;
 
 				if (tryFindRewriteRule(symbol, out rrule, out vars)) {
-					// define replacement variables
-					foreach (var varDef in rrule.ReplacementVars) {
-						vars = varDef.EvaluateAndAdd(vars, functions);
-					}
-
 					// return evaluated replacement
 					foreach (var replacSymbol in rrule.Replacement) {
 						var result = replacSymbol.Evaluate(vars, functions);

@@ -63,7 +63,7 @@ namespace Malsys.SourceCode.Highlighters {
 			PositionMark mark = markAviable ? marksEnumerator.Current : null;
 
 			int lineNumber = 0;
-			IndexableStack<PositionMark> opendMarks = new IndexableStack<PositionMark>();
+			List<PositionMark> opendMarks = new List<PositionMark>();
 			StringBuilder sb = new StringBuilder();
 
 
@@ -91,13 +91,14 @@ namespace Malsys.SourceCode.Highlighters {
 					if (mark.Column == col) {
 						// mark is at current position, append it and move to next mark
 						if (mark.Begin) {
-							opendMarks.Push(mark);
+							opendMarks.Add(mark);
 							sb.Append(tagFun(mark.Type, true, mark.Data));
 						}
 						else {
-							var m = opendMarks.Pop();
-							Debug.Assert(m.PairId == mark.PairId, "Marks `{0}` and `{1}` are crossing each other".Fmt(mark.Type, m.Type));
-							sb.Append(tagFun(mark.Type, false, mark.Data));
+							//Debug.Assert(m.PairId == mark.PairId, "Marks `{0}` at [{1}, {2}] and `{3}` at [{4}, {5}] are crossing each other".Fmt(
+							//    mark.Type, mark.Line, mark.Column, m.Type, m.Line, m.Column));
+							//sb.Append(tagFun(mark.Type, false, mark.Data));
+							closeMark(mark, sb, tagFun, opendMarks);
 						}
 						markAviable = tryGetNextMark(marksEnumerator, out mark);
 					}
@@ -144,6 +145,30 @@ namespace Malsys.SourceCode.Highlighters {
 				return false;
 			}
 
+		}
+
+		private static void closeMark(PositionMark mark, StringBuilder sb, TagFun tagFun, List<PositionMark> opendMarks) {
+
+			int index = opendMarks.Count - 1;
+			for (; index >= 0; index--) {
+				if (opendMarks[index].Type == mark.Type) {
+					break;
+				}
+				sb.Append(tagFun(opendMarks[index].Type, false, null));
+			}
+
+			sb.Append(tagFun(mark.Type, false, mark.Data));
+
+			if (index >= 0) {
+				opendMarks.RemoveAt(index);
+			}
+			else {
+				Debug.Fail("Matching mark not found.");
+			}
+
+			for (; index < opendMarks.Count; index++) {
+				sb.Append(tagFun(opendMarks[index].Type, true, opendMarks[index].Data));
+			}
 		}
 	}
 }

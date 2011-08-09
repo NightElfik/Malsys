@@ -1,4 +1,7 @@
 
+# rubbish
+/backup
+
 # .NET rubbish
 *.suo
 *.vsmdi

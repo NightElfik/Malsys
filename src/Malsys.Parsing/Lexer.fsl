@@ -47,9 +47,16 @@ let appendToSb lexbuf (sb : StringBuilder) =
 /// Map of keywords.
 let keywords =
     [
-        ("let", LET);
-        ("fun", FUN);
         ("lsystem", LSYSTEM);
+        ("rewrite", REWRITE);
+        ("with", WITH);
+        ("where", WHERE);
+        ("to", TO);
+        ("weight", WEIGHT);
+        ("nothing", NOTHING);
+        ("let", LET);
+        ("set", SET);
+        ("fun", FUN);
     ] |> Map.ofList
 
 }
@@ -61,6 +68,7 @@ let digit = '\Nd'
 let firstOpChar = '!'|'$'|'%'|'&'|'*'|'+'|'.'|'\\'|'<'|'>'|'@'|'^'|'|'|'~'
 let opChar = firstOpChar | '='|'?'|':'|'/'|'-'
 let operator = firstOpChar opChar*
+let extraOperators = "==" | '/' | '-'
 
 let whitespace = [' ' '\t']
 let newline = ('\r' '\n' | '\n' | '\r' )  // Win | Unix | Mac
@@ -141,7 +149,7 @@ rule tokenize args = parse
     | '=' { EQUALS }
     | "->" { RARROW }
 
-    | operator | "==" | '/' | '-'
+    | operator | extraOperators
       { OPERATOR (lexeme lexbuf) }
 
     | eof

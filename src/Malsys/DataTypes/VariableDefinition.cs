@@ -4,12 +4,13 @@ namespace Malsys {
 	/// <summary>
 	/// Immutable.
 	/// </summary>
-	public class VariableDefinition {
+	/// <typeparam name="TValue">Should be immutable.</typeparam>
+	public class VariableDefinition<TValue> {
 
 		public readonly string Name;
-		public readonly IExpression Value;
+		public readonly TValue Value;
 
-		public VariableDefinition(string name, IExpression val) {
+		public VariableDefinition(string name, TValue val) {
 			Name = name;
 			Value = val;
 		}

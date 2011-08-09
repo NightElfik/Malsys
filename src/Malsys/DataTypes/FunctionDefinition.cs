@@ -21,7 +21,8 @@ namespace Malsys {
 		public readonly ImmutableList<IValue> OptionalParamsValues;
 
 
-		public FunctionDefinition(string name, ImmutableList<string> parNames, ImmutableList<IValue> optParamsVals, ImmutableList<VariableDefinition> varDefs, IExpression expr)
+		public FunctionDefinition(string name, ImmutableList<string> parNames, ImmutableList<IValue> optParamsVals,
+				ImmutableList<VariableDefinition<IExpression>> varDefs, IExpression expr)
 			: base(varDefs, expr) {
 
 			Name = name;

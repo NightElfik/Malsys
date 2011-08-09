@@ -322,6 +322,7 @@ namespace ExpressionsInteractive {
 					writer.WriteLine("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
 					writer.WriteLine();
 					writer.WriteLine("<head>");
+					writer.WriteLine("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />".Fmt(filePath));
 					writer.WriteLine("<title>Highlighted L-system from `{0}`</title>".Fmt(filePath));
 					writer.WriteLine("<link rel=\"stylesheet\" type=\"text/css\" href=\"lsystem.css\" />");
 					writer.WriteLine("</head>");

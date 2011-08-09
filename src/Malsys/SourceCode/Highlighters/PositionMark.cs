@@ -46,6 +46,10 @@ namespace Malsys.SourceCode.Highlighters {
 
 		#region IComparable<PositionMark> Members
 
+		/// <summary>
+		/// Comparison is not perfect. Biggest problem is when mark begins and ends on same line and column.
+		/// Better way to order marks will be to order them in time of creation (inserting them to serted linked list).
+		/// </summary>
 		public int CompareTo(PositionMark other) {
 			if (Line != other.Line) {
 				return Line.CompareTo(other.Line);
@@ -56,6 +60,7 @@ namespace Malsys.SourceCode.Highlighters {
 			}
 
 			if (Begin ^ other.Begin) {
+				return Begin ? 1 : -1;
 				return Generation.CompareTo(other.Generation);
 			}
 			else {

@@ -6,29 +6,33 @@ namespace Malsys.Ast {
 	/// </summary>
 	public class RewriteRule : IToken, ILsystemStatement {
 
-		public readonly SymbolPattern Pattern;
+		public readonly ImmutableList<Keyword> Keywords;
 
+		public readonly SymbolPattern Pattern;
 		public readonly ImmutableListPos<SymbolPattern> LeftContext;
 		public readonly ImmutableListPos<SymbolPattern> RightContext;
 
-		public readonly RichExpression Condition;
+		public readonly ImmutableListPos<VariableDefinition> LocalVariables;
 
-		public readonly RichExpression Probability;
+		public readonly Expression Condition;
 
-		public readonly ImmutableListPos<VariableDefinition> VariableDefs;
-		public readonly ImmutableList<SymbolExprArgs> Replacement;
+		public readonly ImmutableListPos<SymbolExprArgs> Replacement;
+
+		public readonly Expression Weight;
 
 
-		public RewriteRule(SymbolPattern pattern, ImmutableListPos<SymbolPattern> lctxt, ImmutableListPos<SymbolPattern> rctxt, RichExpression cond, RichExpression probab,
-				ImmutableListPos<VariableDefinition> varDefs, IEnumerable<SymbolExprArgs> replac, Position pos) {
+		public RewriteRule(SymbolPattern pattern, ImmutableListPos<SymbolPattern> lctxt, ImmutableListPos<SymbolPattern> rctxt,
+				ImmutableListPos<VariableDefinition> locVars, Expression cond, ImmutableListPos<SymbolExprArgs> replac, Expression wei,
+				ImmutableList<Keyword> keywords, Position pos) {
 
 			LeftContext = lctxt;
 			Pattern = pattern;
 			RightContext = rctxt;
 			Condition = cond;
-			Probability = probab;
-			VariableDefs = varDefs;
-			Replacement = new ImmutableList<SymbolExprArgs>(replac);
+			Weight = wei;
+			LocalVariables = locVars;
+			Replacement = replac;
+			Keywords = keywords;
 			Position = pos;
 		}
 

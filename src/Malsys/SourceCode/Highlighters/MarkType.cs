@@ -12,8 +12,11 @@ namespace Malsys.SourceCode.Highlighters {
 		MultiLineComment,
 		DocComment,
 
+		Separator,
+
 		Lsystem,
 		LsystemName,
+		LsystemBody,
 
 		VariableDefinition,
 		VariableName,
@@ -30,7 +33,9 @@ namespace Malsys.SourceCode.Highlighters {
 		RrPattern,
 		RrLeftCtxt,
 		RrRightCtxt,
+		RrVariables,
 		RrCondition,
+		RrReplacement,
 		RrProbability,
 
 		Expression,

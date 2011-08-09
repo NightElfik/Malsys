@@ -4,6 +4,7 @@ using System.Diagnostics;
 using Malsys.Parsing;
 using Microsoft.FSharp.Text.Lexing;
 using Microsoft.FSharp.Core;
+using Malsys.Expressions;
 
 namespace Malsys.Compilers {
 	public static class InputCompiler {
@@ -21,11 +22,9 @@ namespace Malsys.Compilers {
 
 		public static CompilerResult<InputBlock> CompileFromAst(Ast.InputBlock parsedInput, MessagesCollection msgs) {
 
-			bool wasError = msgs.ErrorOcured;
-
-			List<LsystemDefinition> lsysDefs = new List<LsystemDefinition>();
-			List<VariableDefinition> varDefs = new List<VariableDefinition>();
-			List<FunctionDefinition> funDefs = new List<FunctionDefinition>();
+			var lsysDefs = new List<LsystemDefinition>();
+			var varDefs = new List<VariableDefinition<IExpression>>();
+			var funDefs = new List<FunctionDefinition>();
 
 			foreach (var statement in parsedInput) {
 
@@ -55,22 +54,19 @@ namespace Malsys.Compilers {
 						statement.GetType().Name, typeof(Ast.IInputStatement).Name, msgs.DefaultSourceName));
 
 					msgs.AddError("Internal L-system input compiler error.", statement.Position);
-					wasError = true;
 				}
 			}
 
 
-			if (wasError) {
+			if (msgs.ErrorOcured) {
 				msgs.AddError("Some error ocured during compilation of `{0}`.".Fmt(msgs.DefaultSourceName), Position.Unknown);
 				Debug.Assert(msgs.ErrorOcured, "Compiler's result error state is false, but error ocured.");
 				return CompilerResult<InputBlock>.Error;
 			}
 
 			var lsysImm = new ImmutableList<LsystemDefinition>(lsysDefs);
-			var varsImm = new ImmutableList<VariableDefinition>(varDefs);
+			var varsImm = new ImmutableList<VariableDefinition<IExpression>>(varDefs);
 			var funsImm = new ImmutableList<FunctionDefinition>(funDefs);
-
-			Debug.Assert(msgs.ErrorOcured, "Compiler's result error state is true, but no error ocured.");
 
 			return new InputBlock(lsysImm, varsImm, funsImm);
 		}

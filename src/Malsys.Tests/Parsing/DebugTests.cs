@@ -36,12 +36,8 @@ lsystem LsysName(a=3,,) {
 		[TestMethod]
 		public void LexerDebugTest() {
 			string testInput = @"
-/*-
- * Doc comment
- */
-lsystem Unikód {
-	let pi = 3.14159;
-	//{ lctx(t) } A(_,n,a,m,e) { r(c)t(x,t) } ?{let a = 10; a*a^b-c} :{let b = x; n} -> r(a*b,c*d+4)e(f)PLAc;
+lsystem Test {
+	rewrite A with x=3 to AB;
 }";
 			Console.WriteLine(testInput);
 			Console.WriteLine();

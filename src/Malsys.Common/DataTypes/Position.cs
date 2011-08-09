@@ -38,7 +38,7 @@ namespace Malsys {
 
 		public bool IsUnknown {
 			get {
-				return BeginLine == -1 && BeginColumn == -1 && EndLine == -1 && EndColumn == -1;
+				return BeginLine < 0 || BeginColumn < 0 || EndLine < 0 || EndColumn < 0;
 			}
 		}
 
@@ -48,14 +48,6 @@ namespace Malsys {
 			}
 		}
 
-
-		public Position To(Position end) {
-			return new Position(EndLine, EndColumn, end.BeginLine, end.BeginColumn);
-		}
-
-		public Position To(Tuple<LexPos, LexPos> range) {
-			return new Position(EndLine, EndColumn, range.Item1.Line, range.Item1.Column);
-		}
 
 		public Position ToNonZeroLength() {
 			if (IsUnknown || !IsZeroLength) {

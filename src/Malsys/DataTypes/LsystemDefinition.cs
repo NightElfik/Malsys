@@ -20,19 +20,22 @@ namespace Malsys {
 		public readonly ImmutableList<IValue> OptionalParamsValues;
 
 		public readonly ImmutableList<FunctionDefinition> Functions;
-		public readonly ImmutableList<VariableDefinition> Variables;
+		public readonly ImmutableList<VariableDefinition<IExpression>> Variables;
+		public readonly ImmutableList<VariableDefinition<SymbolsList<IExpression>>> Symbols;
 
 		public readonly ImmutableList<RewriteRule> RewriteRules;
 
 
-		public LsystemDefinition(string name, ImmutableList<string> parNames, ImmutableList<IValue> optParamsVals,
-				ImmutableList<FunctionDefinition> funs, ImmutableList<VariableDefinition> vars, ImmutableList<RewriteRule> rRules) {
+		public LsystemDefinition(string name, ImmutableList<string> parNames, ImmutableList<IValue> optParamsVals, ImmutableList<RewriteRule> rRules,
+				ImmutableList<VariableDefinition<IExpression>> vars, ImmutableList<VariableDefinition<SymbolsList<IExpression>>> syms,
+				ImmutableList<FunctionDefinition> funs) {
 
 			Name = name;
 			ParametersNames = parNames;
 			OptionalParamsValues = optParamsVals;
 			Functions = funs;
 			Variables = vars;
+			Symbols = syms;
 			RewriteRules = rRules;
 
 			ParametersCount = ParametersNames.Length;

@@ -91,7 +91,7 @@ namespace ExpressionsInteractive {
 			}
 		}
 
-		private string evaluateVarDef(VariableDefinition varDef) {
+		private string evaluateVarDef(VariableDefinition<IExpression> varDef) {
 			try {
 				variables = VariableDefinitionEvaluator.EvaluateAndAdd(varDef, variables, functions);
 				return "Variable `{0}` defined to {1}.".Fmt(varDef.Name, MapModule.Find(varDef.Name, variables).ToString());
