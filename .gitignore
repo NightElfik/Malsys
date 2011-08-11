@@ -9,6 +9,9 @@
 /src/ExpressionsInteractive/bin
 /src/ExpressionsInteractive/obj
 
+/src/LsystemSyntaxHighlighter/bin
+/src/LsystemSyntaxHighlighter/obj
+
 /src/Malsys/bin
 /src/Malsys/obj
 

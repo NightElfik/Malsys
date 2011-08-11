@@ -37,7 +37,7 @@ let writeMessagePos (msgColl : MessagesCollection, _) (pos : Position) (msgType 
 
 /// Adds given string as comment into comments list in args.
 let addComment (_, cmtList : ResizeArray<Comment>) sb bPos ePos =
-    cmtList.Add(new Comment(sb.ToString(), new Position(bPos, ePos)));
+    cmtList.Add(new Comment(sb, new Position(bPos, ePos)));
     ()
 
 /// Appends current string from given lexbuf to given stringbuilder.
@@ -54,6 +54,7 @@ let keywords =
         ("to", TO);
         ("weight", WEIGHT);
         ("nothing", NOTHING);
+        ("consider", CONSIDER);
         ("let", LET);
         ("set", SET);
         ("fun", FUN);
@@ -132,6 +133,10 @@ rule tokenize args = parse
       { let sb = (new StringBuilder(128)).Append(lexeme lexbuf) in
         multiLineComment args (lexbuf.StartPos) sb 1 lexbuf }
 
+    | "/*/"
+      { addComment args (lexeme lexbuf) lexbuf.StartPos lexbuf.EndPos;
+        tokenize args lexbuf  }
+
     | "//"
       { let sb = (new StringBuilder(64)).Append(lexeme lexbuf) in
         singleLineComment args (lexbuf.StartPos) sb lexbuf }
@@ -170,7 +175,7 @@ and multiLineComment args bPos sb nest = parse
         if nest > 1 then
             multiLineComment args bPos sb (nest - 1) lexbuf
         else
-            addComment args sb bPos lexbuf.EndPos;
+            addComment args (sb.ToString()) bPos lexbuf.EndPos;
             tokenize args lexbuf }
 
     | newline
@@ -179,7 +184,7 @@ and multiLineComment args bPos sb nest = parse
         multiLineComment args bPos sb nest lexbuf }
 
     | eof
-      { addComment args sb bPos lexbuf.StartPos;
+      { addComment args (sb.ToString()) bPos lexbuf.StartPos;
         writeMessagePos args (new Position(bPos, lexbuf.StartPos)) msgWarn "Unterminated multiline comment.";
         EOF }
 
@@ -190,12 +195,12 @@ and multiLineComment args bPos sb nest = parse
 
 and singleLineComment args bPos sb = parse
     | newline
-      { addComment args sb bPos lexbuf.StartPos;
+      { addComment args (sb.ToString()) bPos lexbuf.StartPos;
         newline lexbuf;
         tokenize args lexbuf }
 
     | eof
-      { addComment args sb bPos lexbuf.StartPos;
+      { addComment args (sb.ToString()) bPos lexbuf.StartPos;
         EOF }
 
     | _

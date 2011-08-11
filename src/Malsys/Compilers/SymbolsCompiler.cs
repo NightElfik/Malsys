@@ -9,6 +9,11 @@ namespace Malsys.Compilers {
 			var names = new string[ptrnAst.ParametersNames.Length];
 			for (int i = 0; i < ptrnAst.ParametersNames.Length; i++) {
 				string name = ptrnAst.ParametersNames[i].Name;
+				names[i] = name;
+
+				if (name == Constants.PatternPlaceholder) {
+					continue;
+				}
 
 				if (usedNames.ContainsKey(name)) {
 					var otherPos = usedNames[name];
@@ -18,7 +23,6 @@ namespace Malsys.Compilers {
 				}
 
 				usedNames.Add(name, ptrnAst.ParametersNames[i].Position);
-				names[i] = name;
 			}
 
 			var namesImm = new ImmutableList<string>(names, true);

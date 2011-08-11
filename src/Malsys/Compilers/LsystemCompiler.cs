@@ -9,7 +9,7 @@ namespace Malsys.Compilers {
 		/// </summary>
 		public static CompilerResult<LsystemDefinition> Compile(this Ast.Lsystem lsysAst, MessagesCollection msgs) {
 
-			var paramsTuple = FunctionDefinitionCompiler.CompileParametersFailSafe(lsysAst.Parameters, msgs);
+			var prms = FunctionDefinitionCompiler.CompileParametersFailSafe(lsysAst.Parameters, msgs);
 
 			var rRules = new List<RewriteRule>();
 			var varDefs = new List<VariableDefinition<IExpression>>();
@@ -60,7 +60,7 @@ namespace Malsys.Compilers {
 			var varDefsImm = new ImmutableList<VariableDefinition<IExpression>>(varDefs);
 			var symDefsImm = new ImmutableList<VariableDefinition<SymbolsList<IExpression>>>(symDefs);
 			var funDefsImm = new ImmutableList<FunctionDefinition>(funDefs);
-			return new LsystemDefinition(lsysAst.NameId.Name, paramsTuple.Item1, paramsTuple.Item2, rRulesImm, varDefsImm, symDefsImm, funDefsImm);
+			return new LsystemDefinition(lsysAst.NameId.Name, prms, rRulesImm, varDefsImm, symDefsImm, funDefsImm);
 		}
 	}
 }

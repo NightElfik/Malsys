@@ -4,20 +4,15 @@ using System;
 namespace Malsys {
 	public static class LinqExtensions {
 
-		public static bool TryGetEqualValuesIndices<T>(this IList<T> source, out int nonUniqueIndex1, out int nonUniqueIndex2) where T : IEquatable<T> {
+		public static IEnumerable<Tuple<int, int>> GetEqualValuesIndices<T>(this IList<T> source, Func<T, T, bool> eqFunc) {
+
 			for (int i = 0; i < source.Count; i++) {
 				for (int j = 0; j < i; j++) {
-					if (source[i].Equals(source[j])) {
-						nonUniqueIndex1 = j;
-						nonUniqueIndex2 = i;
-						return true;
+					if (eqFunc(source[i], source[j])) {
+						yield return new Tuple<int, int>(j, i);
 					}
 				}
 			}
-
-			nonUniqueIndex1 = -1;
-			nonUniqueIndex2 = -1;
-			return false;
 		}
 
 

@@ -32,10 +32,6 @@ namespace ExpressionsInteractive {
 				else {
 					Console.WriteLine("Failed to parse `{0}` as port number.", args[0]);
 				}
-			}
-			else if (args.Length == 2) {
-				// just for Milan :)
-				highlightFileToHtml(args[0], args[1]);
 				return;
 			}
 
@@ -59,7 +55,6 @@ namespace ExpressionsInteractive {
 				Thread clientThread = new Thread(new ParameterizedThreadStart(handleTcpClient));
 				clientThread.Start(client);
 			}
-
 		}
 
 		private static void handleTcpClient(object client) {
@@ -225,21 +220,19 @@ namespace ExpressionsInteractive {
 				writer.Write(fun.Name);
 				writer.Write("(");
 
-				int param;
-				for (param = 0; param < fun.MandatoryParamsCount; param++) {
-					if (param > 0) {
+				for (int i = 0; i < fun.Parameters.Count; i++) {
+					if (i > 0) {
 						writer.Write(", ");
 					}
-					writer.Write(fun.ParametersNames[param]);
-				}
 
-				for (; param < fun.ParametersCount; param++) {
-					if (param > 0) {
-						writer.Write(", ");
+					if (fun.Parameters[i].IsOptional) {
+						writer.Write(fun.Parameters[i].Name);
+						writer.Write(" = ");
+						writer.Write(fun.Parameters[i].DefaultValue);
 					}
-					writer.Write(fun.ParametersNames[param]);
-					writer.Write(" = ");
-					writer.Write(fun.GetOptionalParamValue(param));
+					else {
+						writer.Write(fun.Parameters[i].Name);
+					}
 				}
 
 				writer.WriteLine(")");
@@ -311,34 +304,6 @@ namespace ExpressionsInteractive {
 			}
 
 			writer.WriteLine();
-		}
-
-
-		private static void highlightFileToHtml(string filePath, string outPath) {
-
-			using (Stream outStream = File.Open(outPath, FileMode.Create, FileAccess.Write)) {
-				using (StreamWriter writer = new StreamWriter(outStream)) {
-					writer.WriteLine("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
-					writer.WriteLine("<html xmlns=\"http://www.w3.org/1999/xhtml\">");
-					writer.WriteLine();
-					writer.WriteLine("<head>");
-					writer.WriteLine("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />".Fmt(filePath));
-					writer.WriteLine("<title>Highlighted L-system from `{0}`</title>".Fmt(filePath));
-					writer.WriteLine("<link rel=\"stylesheet\" type=\"text/css\" href=\"lsystem.css\" />");
-					writer.WriteLine("</head>");
-					writer.WriteLine();
-					writer.WriteLine("<body>");
-					writer.WriteLine("<ol class=\"lsrc\">");
-
-					var result = Malsys.SourceCode.Highlighters.HtmlHighlighter.HighlightFromString(File.ReadAllText(filePath), filePath);
-					writer.WriteLine(result);
-
-					writer.WriteLine("</ol>");
-					writer.WriteLine();
-					writer.WriteLine("</body>");
-					writer.WriteLine("</html>");
-				}
-			}
 		}
 	}
 }

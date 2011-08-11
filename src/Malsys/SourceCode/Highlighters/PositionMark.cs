@@ -61,7 +61,6 @@ namespace Malsys.SourceCode.Highlighters {
 
 			if (Begin ^ other.Begin) {
 				return Begin ? 1 : -1;
-				return Generation.CompareTo(other.Generation);
 			}
 			else {
 				if (Begin) {

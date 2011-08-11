@@ -57,6 +57,7 @@
     <Compile Include="Compilers\RewriteRuleCompiler.cs" />
     <Compile Include="Compilers\SymbolsCompiler.cs" />
     <Compile Include="Compilers\VariableDefinitionCompiler.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="DataTypes\InputBlock.cs" />
     <Compile Include="DataTypes\OptionalParameter.cs" />
     <Compile Include="DataTypes\RichExpression.cs" />
@@ -98,7 +99,6 @@
     <Compile Include="Rewriters\IRewriter.cs" />
     <Compile Include="Rewriters\LazyRewriter.cs" />
     <Compile Include="Rewriters\RewriterUtils.cs" />
-    <Compile Include="SourceCode\Highlighters\HtmlHighlighter.cs" />
     <Compile Include="SourceCode\Highlighters\MarksCollector.cs" />
     <Compile Include="SourceCode\Highlighters\MarkType.cs" />
     <Compile Include="SourceCode\Highlighters\PositionMark.cs" />
@@ -118,7 +118,9 @@
       <Name>Malsys.Parsing</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="SourceCode\Formatters\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.

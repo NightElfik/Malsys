@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Malsys.Common", "Malsys.Com
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExpressionsInteractive", "ExpressionsInteractive\ExpressionsInteractive.csproj", "{C253FC1A-72B5-409D-920F-764C19C40FDC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LsystemSyntaxHighlighter", "LsystemSyntaxHighlighter\LsystemSyntaxHighlighter.csproj", "{95506E31-E6C5-47F4-802B-EB04D5EC5B18}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = Malsys.vsmdi
@@ -104,6 +106,16 @@ Global
 		{C253FC1A-72B5-409D-920F-764C19C40FDC}.Release|Mixed Platforms.Build.0 = Release|x86
 		{C253FC1A-72B5-409D-920F-764C19C40FDC}.Release|x86.ActiveCfg = Release|x86
 		{C253FC1A-72B5-409D-920F-764C19C40FDC}.Release|x86.Build.0 = Release|x86
+		{95506E31-E6C5-47F4-802B-EB04D5EC5B18}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{95506E31-E6C5-47F4-802B-EB04D5EC5B18}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{95506E31-E6C5-47F4-802B-EB04D5EC5B18}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{95506E31-E6C5-47F4-802B-EB04D5EC5B18}.Debug|x86.ActiveCfg = Debug|x86
+		{95506E31-E6C5-47F4-802B-EB04D5EC5B18}.Debug|x86.Build.0 = Debug|x86
+		{95506E31-E6C5-47F4-802B-EB04D5EC5B18}.Release|Any CPU.ActiveCfg = Release|x86
+		{95506E31-E6C5-47F4-802B-EB04D5EC5B18}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{95506E31-E6C5-47F4-802B-EB04D5EC5B18}.Release|Mixed Platforms.Build.0 = Release|x86
+		{95506E31-E6C5-47F4-802B-EB04D5EC5B18}.Release|x86.ActiveCfg = Release|x86
+		{95506E31-E6C5-47F4-802B-EB04D5EC5B18}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

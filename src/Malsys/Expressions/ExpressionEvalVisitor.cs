@@ -57,9 +57,22 @@ namespace Malsys.Expressions {
 			var oldVars = variables;
 
 			// add arguments as new vars
-			for (int i = 0; i < fun.ParametersCount; i++) {
-				IValue value = i < args.ArgsCount ? args[i] : fun.GetOptionalParamValue(i);
-				variables = MapModule.Add(fun.ParametersNames[i], value, variables);
+			for (int i = 0; i < fun.Parameters.Length; i++) {
+				IValue value;
+				if (fun.Parameters[i].IsOptional) {
+					value = i < args.ArgsCount ? value = args[i] : fun.Parameters[i].DefaultValue;
+				}
+				else {
+					if (i < args.ArgsCount) {
+						value = args[i];
+					}
+					else {
+						throw new EvalException("Failed to evaluate function `{0}`. {1}. parameter is not optional and only {2} values given in function call.".Fmt(
+							fun.Name, i + 1, args.ArgsCount));
+					}
+				}
+
+				variables = MapModule.Add(fun.Parameters[i].Name, value, variables);
 			}
 
 			// evaluate variable definitions
@@ -260,14 +273,9 @@ namespace Malsys.Expressions {
 
 			var fun = maybeFun.Value;
 
-			if (userFunction.Arguments.Length > fun.ParametersCount) {
+			if (userFunction.Arguments.Length > fun.Parameters.Length) {
 				throw new EvalException("Failed to evaluate function `{0}`. It takes only {1} parameters but {2} arguments were given.".Fmt(
-					userFunction.Name, fun.ParametersCount, userFunction.Arguments.Length));
-			}
-
-			if (userFunction.Arguments.Length + fun.OptionalParamsCount < fun.ParametersCount) {
-				throw new EvalException("Failed to evaluate function `{0}`. It takes {1} parameters, it have last {2} parameters optional but only {3} arguments were given.".Fmt(
-					userFunction.Name, fun.ParametersCount, fun.OptionalParamsCount, userFunction.Arguments.Length));
+					userFunction.Name, fun.Parameters.Length, userFunction.Arguments.Length));
 			}
 
 			// evaluate arguments

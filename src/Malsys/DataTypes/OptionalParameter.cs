@@ -1,13 +1,13 @@
 ﻿using Malsys.Expressions;
 
 namespace Malsys {
+	/// <summary>
+	/// Immutable.
+	/// </summary>
 	public class OptionalParameter {
-		public string Name { get; set; }
-		public IExpression DefaultValue { get; set; }
 
-		public bool IsOptional {
-			get { return DefaultValue != null; }
-		}
+		public readonly string Name;
+		public readonly IValue DefaultValue;
 
 
 		public OptionalParameter() {
@@ -20,9 +20,13 @@ namespace Malsys {
 			DefaultValue = null;
 		}
 
-		public OptionalParameter(string name, IExpression defaultValue) {
+		public OptionalParameter(string name, IValue defaultValue) {
 			Name = name;
 			DefaultValue = defaultValue;
 		}
+
+
+		public bool IsOptional { get { return DefaultValue != null; } }
+
 	}
 }

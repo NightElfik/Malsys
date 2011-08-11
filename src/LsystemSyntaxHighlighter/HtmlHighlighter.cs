@@ -1,7 +1,8 @@
-﻿using System.Text;
-using System.Web;
+﻿using System.Web;
+using Malsys;
+using Malsys.SourceCode.Highlighters;
 
-namespace Malsys.SourceCode.Highlighters {
+namespace LsystemSyntaxHighlighter {
 	public static class HtmlHighlighter {
 
 		public static string HighlightFromString(string inputStr, string sourceName) {

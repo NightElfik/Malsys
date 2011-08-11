@@ -1,4 +1,6 @@
-﻿
+﻿using System.Linq;
+using System.Collections.Generic;
+
 namespace Malsys.Ast {
 	/// <summary>
 	/// Immutable.
@@ -21,5 +23,11 @@ namespace Malsys.Ast {
 		public Position Position { get; private set; }
 
 		#endregion
+	}
+
+	public static class KeywordExtensions {
+		public static ImmutableList<Keyword> WithoutEmpty(this IEnumerable<Keyword> keywords) {
+			return new ImmutableList<Keyword>(keywords.Where(k => !k.IsEmpty));
+		}
 	}
 }

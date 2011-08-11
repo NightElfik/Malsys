@@ -81,10 +81,10 @@ namespace Malsys.Rewriters {
 					if (rr.SymbolPattern.Name != symbol.Name) {
 						continue;
 					}
-					if (rr.LeftContext.Length > 0 && !checkLeftContext(rr.LeftContext)) {
+					if (rr.LeftContext.Length > 0 && !checkLeftContext(rr.LeftContext, ref vars)) {
 						continue;
 					}
-					if (rr.RightContext.Length > 0 && !checkRightContext(rr.RightContext)) {
+					if (rr.RightContext.Length > 0 && !checkRightContext(rr.RightContext, ref vars)) {
 						continue;
 					}
 
@@ -168,7 +168,7 @@ namespace Malsys.Rewriters {
 			return false;
 		}
 
-		private bool checkLeftContext(SymbolPaternsList ctxt) {
+		private bool checkLeftContext(SymbolPaternsList ctxt, ref VarMap vars) {
 			// left context check relies on sufficient size of symbols history
 			int ctxtLen = ctxt.Length;
 
@@ -186,7 +186,7 @@ namespace Malsys.Rewriters {
 			return true;
 		}
 
-		private bool checkRightContext(SymbolPaternsList ctxt) {
+		private bool checkRightContext(SymbolPaternsList ctxt, ref VarMap vars) {
 
 			int ctxtLen = ctxt.Length;
 

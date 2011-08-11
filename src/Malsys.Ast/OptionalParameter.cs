@@ -22,6 +22,9 @@ namespace Malsys.Ast {
 		}
 
 
+		public bool IsOptional { get { return OptionalValue != null; } }
+
+
 		#region IToken Members
 
 		public Position Position { get; private set; }

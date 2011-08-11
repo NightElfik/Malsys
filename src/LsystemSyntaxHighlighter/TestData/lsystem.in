@@ -1,3 +1,4 @@
+
 let globalVar = e ^ pi;
 
 fun flobalFun(some, params) {
@@ -7,40 +8,44 @@ fun flobalFun(some, params) {
 
 /**
  * Doc comment
- * 
+ *
  * This is Test
  */
 lsystem TestLsystem(lsys, params = {0,1,2}) {
-	
+
 	fun badGuy(a, a) { a }
-	
+	fun badGuy'(a = 5, b) { NaN }
+
 	// function definition
 	fun f(x, y, z = log(e)) {
 		let xz = x * z;
 		let yz = y * z;
 		sqrt(x + 2 * xz + yz * xy)  // return value
 	}
-	
+
 	// this is variable
 	let a = 10 * f(1.5);
-	
+
+	//* Set keyword allows to define symols
 	set axiom = abcd(e)f;
-	
+
 	// rewrite rules
 	rewrite { lct(x)t } a(pa,ra,_,ms) { r(c)txt }
 		with a = x+c, b = a*a*a
 		where a * a > a + a
 		to r(e + 1)p lac
 		weight pi * e;
-		
+
 	rewrite{x(a)}y(a){z(a)}to;
-	
-	rewrite {x(_)} y(a) {z(_)} to nothing;
+
+	rewrite {x(_, _, x1)} y(a) {z(_, z2)} to nothing;
 }
+
+/*/
 
 lsystem AnabaenaCatenula {
 	rewrite A to AB;
-	rewrite B to A;	
+	rewrite B to A;
 }
 
 lsystem OneLiner { } lsystem AnotherOneLiner { }
