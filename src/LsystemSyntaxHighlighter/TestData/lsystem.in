@@ -39,6 +39,11 @@ lsystem TestLsystem(lsys, params = {0,1,2}) {
 	rewrite{x(a)}y(a){z(a)}to;
 
 	rewrite {x(_, _, x1)} y(a) {z(_, z2)} to nothing;
+
+	rewrite i(ntru,der)
+		with error
+		where (1+2
+		to nothing;
 }
 
 /*/

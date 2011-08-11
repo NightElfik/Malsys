@@ -211,7 +211,7 @@ MaybeFunDef:
         None }
 
 
-MaybeFunDefParams:
+OptFunDefParams:
     |
       { new ImmutableListPos<OptionalParameter>(getStartPos parseState) }
     | FunDefParams
@@ -258,7 +258,7 @@ OptParam:
 //------------------------------------------------------------------------------
 
 Lsystem:
-    | LSYSTEM ID MaybeFunDefParams LsystemBody
+    | LSYSTEM ID OptFunDefParams LsystemBody
       { let kw = new Keyword(getPosI parseState 1) in
         let id = new Identificator($2, getPosI parseState 2) in
         new Lsystem(kw, id, $3, $4, getPos parseState) }
@@ -360,7 +360,7 @@ OptRrVarDefs:
     |
       { let vds = new ImmutableListPos<VariableDefinition>(getStartPos parseState) in
         (Keyword.Empty, vds) }
-    | WITH RrVarDefsList
+    | WITH RrVarDefsListNonEmpty
       { let kw = new Keyword(getPosI parseState 1) in
         let vds = new ImmutableListPos<VariableDefinition>($2, getPosI parseState 1, getPosI parseState 3, getPos parseState) in
         (kw, vds) }
@@ -369,18 +369,28 @@ OptRrVarDefs:
         let kw = new Keyword(getPosI parseState 1) in
         let vds = ImmutableListPos<VariableDefinition>(getStartPos parseState) in
         (kw, vds) }
+    | WITH error
+      { logErrorPos (getPos parseState) "Excpected variable definitions separated by colon.";
+        let kw = new Keyword(getPosI parseState 1) in
+        let vds = ImmutableListPos<VariableDefinition>(getStartPos parseState) in
+        (kw, vds) }
 
 OptRrCondition:
     |
       { let expr = new Expression(getStartPos parseState) in
         (Keyword.Empty, expr) }
-    | WHERE Expression
+    | WHERE ExpressionNonEmpty
       { let kw = new Keyword(getPosI parseState 1) in
-        (kw, $2) }
+        let expr = new Expression($2, getPosI parseState 2)
+        (kw, expr) }
     | WHERE
       { logNoticePos (getPosI parseState 1) "Empty condition found.";
         let kw = new Keyword(getPosI parseState 1) in
-        (kw, new Expression(getStartPos parseState)) }
+        (kw, new Expression(getEndPos parseState)) }
+    | WHERE error
+      { logErrorPos (getPos parseState) "Excpected condition expression.";
+        let kw = new Keyword(getPosI parseState 1) in
+        (kw, new Expression(getEndPos parseState)) }
 
 RrReplac:
     | NOTHING
@@ -395,9 +405,18 @@ OptRrWeight:
     |
       { let expr = new Expression(getStartPos parseState) in
         (Keyword.Empty, expr) }
-    | WEIGHT Expression
+    | WEIGHT ExpressionNonEmpty
       { let kw = new Keyword(getPosI parseState 1) in
-        (kw, $2) }
+        let expr = new Expression($2, getPosI parseState 2)
+        (kw, expr) }
+    | WEIGHT
+      { logNoticePos (getPosI parseState 1) "Empty probability weight found.";
+        let kw = new Keyword(getPosI parseState 1) in
+        (kw, new Expression(getEndPos parseState)) }
+    | WEIGHT error
+      { logErrorPos (getPos parseState) "Excpected probability weight (expression).";
+        let kw = new Keyword(getPosI parseState 1) in
+        (kw, new Expression(getEndPos parseState)) }
 
 
 OptRrCtxt:
@@ -413,12 +432,6 @@ RrVarDef:
     | ID EQUALS Expression
       { let id = new Identificator($1, getPosI parseState 1) in
         new VariableDefinition(Keyword.Empty, id, $3, getPos parseState) }
-
-RrVarDefsList:
-    |
-      { new ResizeArray<VariableDefinition>() }
-    | RrVarDefsListNonEmpty
-      { $1 }
 
 RrVarDefsListNonEmpty:
     | RrVarDef

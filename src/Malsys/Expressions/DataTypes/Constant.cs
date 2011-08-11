@@ -62,17 +62,7 @@ namespace Malsys.Expressions {
 
 		public int CompareTo(IValue other) {
 			if (other.IsConstant) {
-				Constant otherC = (Constant)other;
-
-				if (FloatArithmeticHelper.IsZero(Value - otherC.Value)) {
-					return 0;
-				}
-				else if (Value < otherC.Value) {
-					return -1;
-				}
-				else {
-					return 1;
-				}
+				return Value.EpsilonCompareTo(((Constant)other).Value);
 			}
 			else {
 				return -1; // constant is less than array

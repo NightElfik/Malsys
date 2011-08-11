@@ -66,10 +66,10 @@ let keywords =
 let letter = '\Lu' | '\Ll' | '\Lt' | '\Lm' | '\Lo' | '\Nl'
 let digit = '\Nd'
 
-let firstOpChar = '!'|'$'|'%'|'&'|'*'|'+'|'.'|'\\'|'<'|'>'|'@'|'^'|'|'|'~'
-let opChar = firstOpChar | '='|'?'|':'|'/'|'-'
+let firstOpChar = '!'|'$'|'%'|'&'|'*'|'+'|'.'|'\\'|'<'|'>'|'@'|'^'|'|'|'~'|'?'|':'|'-'
+let opChar = firstOpChar | '='|'/'
 let operator = firstOpChar opChar*
-let extraOperators = "==" | '/' | '-'
+let extraOperators = "==" | '/'
 
 let whitespace = [' ' '\t']
 let newline = ('\r' '\n' | '\n' | '\r' )  // Win | Unix | Mac
@@ -149,10 +149,7 @@ rule tokenize args = parse
     | '}' { RBRACE }
     | '[' { LBRACK }
     | ']' { RBRACK }
-    | '?' { QMARK }
-    | ':' { COLON }
     | '=' { EQUALS }
-    | "->" { RARROW }
 
     | operator | extraOperators
       { OPERATOR (lexeme lexbuf) }
@@ -209,7 +206,7 @@ and singleLineComment args bPos sb = parse
 
 
 {
-(* Just test, it works! :)
+(* Just test, it worked! :)
 let createLexer (comments : ResizeArray<CommentRange>)  =
     let nextRule = ref (tokenize comments)
     fun lexbuf ->

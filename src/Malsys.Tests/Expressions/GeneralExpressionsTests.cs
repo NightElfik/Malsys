@@ -35,6 +35,7 @@ namespace Malsys.Tests.Expressions {
 			evalAndCompare(tn, "{}", ValuesArray.Empty);
 			evalAndCompare(tn, "{{},{{}}}", new ValuesArray(new IValue[] { ValuesArray.Empty, new ValuesArray(new IValue[] { ValuesArray.Empty }) }));
 
+			evalAndCompareD(tn, "nan", double.NaN);
 			evalAndCompareD(tn, "true", 1.0);
 			evalAndCompareD(tn, "false", 0.0);
 
@@ -96,8 +97,8 @@ namespace Malsys.Tests.Expressions {
 			evalAndCompareD(tn, "7.001 == 7", 0.0);
 			evalAndCompareD(tn, "{} == {}", 1.0);
 			evalAndCompareD(tn, "{} == {{}}", 0.0);
-			evalAndCompareD(tn, "nan == nan", 0.0);
-			evalAndCompareD(tn, "infty == infty", 0.0);
+			evalAndCompareD(tn, "nan == nan", double.NaN);
+			evalAndCompareD(tn, "infty == infty", 1.0);
 
 			evalAndCompareD(tn, "0 && 0", 0.0);
 			evalAndCompareD(tn, "1 && 0", 0.0);
@@ -253,7 +254,8 @@ namespace Malsys.Tests.Expressions {
 			Console.WriteLine("Actual: {0}", result);
 			Console.WriteLine();
 
-			Assert.IsTrue(result.CompareTo(exceptedValue) == 0, "Expression `{0}` evaluated to `{1}`, but excpected value was `{2}`.",
+			Assert.IsTrue((result.CompareTo(exceptedValue) == 0) || (result.IsNaN && exceptedValue.IsNaN),
+				"Expression `{0}` evaluated to `{1}`, but excpected value was `{2}`.",
 				exprStr, result, exceptedValue);
 		}
 
