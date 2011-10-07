@@ -1,4 +1,9 @@
-﻿{
+﻿
+//------------------------------------------------------------------------------
+// Header of lexer file.
+//------------------------------------------------------------------------------
+
+{
 module Malsys.Parsing.Lexer
 
 open System
@@ -11,7 +16,7 @@ open Malsys.Ast
 open Malsys.Compilers
 open Malsys.Parsing.Parser
 
-/// Returns actual string.
+/// Returns actual string from lexbuffer.
 let lexeme lexbuf = LexBuffer<_>.LexemeString lexbuf
 
 // for float (double) parsing
@@ -62,8 +67,20 @@ let keywords =
 
 }
 
+//------------------------------------------------------------------------------
+// Helper lexer definitions.
+// More about unicode characters properies at http://en.wikipedia.org/wiki/Unicode_character_property
+//------------------------------------------------------------------------------
 
+// Lu - Letter, uppercase
+// Ll - Letter, lowercase
+// Lt - Letter, titlecase
+// Lm - Letter, modifier
+// Lo - Letter, other
+// Nl - Number, letter
 let letter = '\Lu' | '\Ll' | '\Lt' | '\Lm' | '\Lo' | '\Nl'
+
+// Nd - Number, decimal digit
 let digit = '\Nd'
 
 let firstOpChar = '!'|'$'|'%'|'&'|'*'|'+'|'.'|'\\'|'<'|'>'|'@'|'^'|'|'|'~'|'?'|':'|'-'
@@ -86,8 +103,14 @@ let int =
     | '0' ('x'| 'X') hex+ )
 let hexInt = '#' hex+  // hex value like colors in HTML
 
+// Pc - Punctuation, connector
 let connectingChar = '\Pc'
+
+// Mn - Mark, nonspacing
+// Mc - Mark, spacing combining
 let combiningChar = '\Mn' | '\Mc'
+
+// Cf - Other, format
 let formattingChar = '\Cf'
 
 let idFirstChar = letter | '_'
@@ -95,8 +118,11 @@ let idChar = letter | connectingChar | combiningChar | formattingChar | digit | 
 
 let id = idFirstChar idChar*
 
+//------------------------------------------------------------------------------
+// Lexer rules.
+//------------------------------------------------------------------------------
 
-// args = (MessagesCollection, ResizeArray<CommentRange>)
+// args : (MessagesCollection, ResizeArray<CommentRange>)
 rule tokenize args = parse
     | whitespace
       { tokenize args lexbuf }
@@ -205,16 +231,10 @@ and singleLineComment args bPos sb = parse
         singleLineComment args bPos sb lexbuf }
 
 
+//------------------------------------------------------------------------------
+// Footer of lexer file.
+//------------------------------------------------------------------------------
+
 {
-(* Just test, it worked! :)
-let createLexer (comments : ResizeArray<CommentRange>)  =
-    let nextRule = ref (tokenize comments)
-    fun lexbuf ->
-        let tok = !nextRule lexbuf
-        match tok with
-        | DOC_BEGIN -> nextRule := docComment
-        | DOC_END -> nextRule := tokenize comments
-        | _ -> ()
-        tok
-*)
+
 }

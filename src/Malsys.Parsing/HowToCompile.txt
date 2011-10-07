@@ -1,0 +1,25 @@
+
+This is just example of core steps how VS build parser.
+It can be outdated. Just for illustration.
+
+
+fslex -o obj\x86\Debug\Lexer.fs --unicode Lexer.fsl
+
+fsyacc -o obj\x86\Debug\Parser.fs --module Malsys.Parsing.Parser Parser.fsy
+
+For producing listing file with detailed info use "-v", file will be called "Parser.fsyacc.output":
+fsyacc -v -o obj\x86\Debug\Parser.fs --module Malsys.Parsing.Parser Parser.fsy
+
+fsc -o:obj\x86\Debug\Malsys.Parsing.dll -g --debug:full --noframework --define:DEBUG --define:TRACE
+	--doc:bin\Debug\Language.XML --optimize- --tailcalls- --platform:anycpu
+	-r:"C:\Program Files (x86)\Reference Assemblies\Microsoft\FSharp\2.0\Runtime\v4.0\FSharp.Core.dll"
+	-r:"C:\Program Files (x86)\FSharpPowerPack-2.0.0.0\bin\FSharp.PowerPack.dll"
+	-r:E:\Malsys\src\Malsys.Ast\bin\Debug\Malsys.Ast.dll
+	-r:E:\Malsys\src\Malsys.Common\bin\Debug\Malsys.Common.dll
+	-r:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\Profile\Client\mscorlib.dll"
+	-r:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\Profile\Client\System.Core.dll" 
+	-r:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\Profile\Client\System.dll"
+	-r:"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\Profile\Client\System.Numerics.dll"
+	--target:library --warn:3 --warnaserror:76 --vserrors --LCID:1033 --utf8output --fullpaths
+	--flaterrors "C:\Users\Marek\AppData\Local\Temp\.NETFramework,Version=v4.0,Profile=Client.AssemblyAttributes.fs"
+	MessagesLogger.fs obj\x86\Debug\Parser.fs obj\x86\Debug\Lexer.fs ParserUtils.fs 

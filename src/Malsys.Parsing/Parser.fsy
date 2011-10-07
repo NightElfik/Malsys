@@ -1,4 +1,9 @@
-﻿%{
+﻿
+//------------------------------------------------------------------------------
+// Header of parser file.
+//------------------------------------------------------------------------------
+
+%{
 
 open System
 open Microsoft.FSharp.Text.Parsing
@@ -7,6 +12,17 @@ open MessagesLogger
 open Malsys
 open Malsys.Ast
 open Malsys.Compilers
+
+
+
+// This function is called by the generated parser code. Returning initiates error recovery.
+// Saves last error position to thread-static messages logger.
+let parse_error_rich = Some (fun (ctxt: ParseErrorContext<_>) ->
+   MessagesLogger.setErrPos (new Position(ctxt.ParseState.ResultRange))  )
+
+
+let getLastErrorPos =
+    MessagesLogger.getLastErrPos
 
 
 let logError parserState msg =
@@ -18,17 +34,6 @@ let logNoticePos pos msg =
 let logErrorPos pos msg =
     MessagesLogger.logMessagePos CompilerMessageType.Error pos msg
 
-let logErrorLastPos msg =
-    MessagesLogger.logMessageLastPos CompilerMessageType.Error msg
-
-let getLastErrorPos =
-    MessagesLogger.getLastErrPos
-
-
-// This function is called by the generated parser code. Returning initiates error recovery.
-// Saves last error position to thread-static messages logger
-let parse_error_rich = Some (fun (ctxt: ParseErrorContext<_>) ->
-   MessagesLogger.setErrPos (new Position(ctxt.ParseState.ResultRange))  )
 
 let getPos (parserState : IParseState) =
     new Position(parserState.ResultRange)
@@ -49,14 +54,21 @@ let getStartPos (parserState : IParseState) =
 let getEndPos (parserState : IParseState) =
     let endPos = snd parserState.ResultRange
     new Position(endPos, endPos)
+    
 
-//let getLexbuf (parseState : IParseState) =
-//    parseState.ParserLocalStore["LexBuffer"] :?> LexBuffer<_>
+let optionToStatement parseState (option : Option<#ILsystemStatement>) =
+    match option with
+        | Some(value) -> value
+        | None -> new EmptyStatement(getPos parseState, true) :> ILsystemStatement
 
 %}
 
+
+//------------------------------------------------------------------------------
+// Tokens lists.
+//------------------------------------------------------------------------------
+
 %token <string> ID
-// keywords
 %token LSYSTEM REWRITE WITH WHERE TO WEIGHT NOTHING CONSIDER LET SET FUN
 %token EQUALS SEMI COMMA QMARK COLON RARROW
 %token LPAREN RPAREN LBRACE RBRACE LBRACK RBRACK
@@ -64,6 +76,10 @@ let getEndPos (parserState : IParseState) =
 %token <string> OPERATOR
 %token EOF
 
+
+//------------------------------------------------------------------------------
+// Start (enter) rules and types.
+//------------------------------------------------------------------------------
 
 %start parseLsystemStatements
 %type <InputBlock> parseLsystemStatements
@@ -76,34 +92,32 @@ let getEndPos (parserState : IParseState) =
 
 %%
 
+
 //------------------------------------------------------------------------------
-// Start rules
+// Start rules.
 //------------------------------------------------------------------------------
 
 parseLsystemStatements:
     | LsystemStatementsList EOF
       { new InputBlock($1 :> ResizeArray<IInputStatement>) }
-    | error EOF
-      { logErrorLastPos "Syntax error.";
-        new InputBlock() }
 
 parseExpression:
     | Expression EOF
       { $1 }
     | error EOF
-      { logErrorLastPos "Syntax error.";
+      { logErrorPos getLastErrorPos "Syntax error.";
         new Expression(getStartPos parseState) }
 
 parseExprInteractiveStatements:
     | ExprInteractiveStatementList EOF
       { ($1 :> ResizeArray<IExprInteractiveStatement>).ToArray() }
     | error EOF
-      { logErrorLastPos "Syntax error.";
+      { logErrorPos getLastErrorPos "Syntax error.";
         Array.empty<IExprInteractiveStatement> }
 
 
 //------------------------------------------------------------------------------
-// Lsystem input
+// Lsystem input.
 //------------------------------------------------------------------------------
 
 LsystemStatementsList:
@@ -126,12 +140,12 @@ LsystemStatement:
     | SEMI
       { new EmptyStatement(getPos parseState) :> IInputStatement }
     | error
-      { logErrorLastPos "Excpected input statement (L-Sysytem, variable or function definition).";
+      { logErrorPos getLastErrorPos "Excpected input statement (L-Sysytem, variable or function definition).";
         new EmptyStatement(ThreadStatic.LasErrorPos, true) :> IInputStatement }
 
 
 //------------------------------------------------------------------------------
-// Expression interactive input
+// Expression interactive input.
 //------------------------------------------------------------------------------
 
 ExprInteractiveStatementList:
@@ -143,7 +157,7 @@ ExprInteractiveStatementList:
       { $1 }
 
 ExprInteractiveStatement:
-    | Expression SEMI
+    | ExpressionNonEmpty SEMI
       { $1 :> IExprInteractiveStatement }
     | MaybeVarDef
       { match $1 with
@@ -156,17 +170,12 @@ ExprInteractiveStatement:
 
 
 //------------------------------------------------------------------------------
-// Variable definition
+// Variable definition.
 //------------------------------------------------------------------------------
 
 MaybeVarDef:
     | LET ID EQUALS Expression SEMI
       { let kw = new Keyword(getPosI parseState 1) in
-        let id = new Identificator($2, getPosI parseState 2) in
-        Some (new VariableDefinition(kw, id, $4, getPos parseState)) }
-    | LET ID EQUALS Expression
-      { logErrorPos (getEndPos parseState) "Did you forget `;`?";
-        let kw = new Keyword(getPosI parseState 1) in
         let id = new Identificator($2, getPosI parseState 2) in
         Some (new VariableDefinition(kw, id, $4, getPos parseState)) }
     | LET EQUALS Expression SEMI
@@ -198,7 +207,7 @@ VarDefsListNonEmpty:
 
 
 //------------------------------------------------------------------------------
-// Function definition
+// Function definition.
 //------------------------------------------------------------------------------
 
 MaybeFunDef:
@@ -254,7 +263,7 @@ OptParam:
 
 
 //------------------------------------------------------------------------------
-// L-system definition
+// L-system definition.
 //------------------------------------------------------------------------------
 
 Lsystem:
@@ -266,9 +275,6 @@ Lsystem:
 LsystemBody:
     | LBRACE LsysStatementsList RBRACE
       { new ImmutableListPos<ILsystemStatement>($2, getPosI parseState 1, getPosI parseState 3, getPos parseState)  }
-    | LBRACE error RBRACE
-      { logErrorPos (getBetweenPos parseState 1 3) "Lsystem statements excpected.";
-        new ImmutableListPos<ILsystemStatement>(getPosI parseState 1, getPosI parseState 3, getPos parseState)  }
 
 LsysStatementsList:
     |
@@ -296,17 +302,12 @@ LsysStatement:
     | SEMI
       { new EmptyStatement(getPos parseState) :> ILsystemStatement }
     | error
-      { logErrorLastPos "Excpected L-System statement.";
+      { logErrorPos getLastErrorPos "Excpected L-System statement.";
         new EmptyStatement(ThreadStatic.LasErrorPos, true) :> ILsystemStatement }
 
 MaybeSymbolsDef:
     | SET ID EQUALS SymbolWithArgsList SEMI
       { let kw = new Keyword(getPosI parseState 1) in
-        let id = new Identificator($2, getPosI parseState 2) in
-        Some (new SymbolsDefinition(kw, id, $4, getPos parseState)) }
-    | SET ID EQUALS SymbolWithArgsList
-      { logErrorPos (getEndPos parseState) "Did you forget `;`?";
-        let kw = new Keyword(getPosI parseState 1) in
         let id = new Identificator($2, getPosI parseState 2) in
         Some (new SymbolsDefinition(kw, id, $4, getPos parseState)) }
     | SET EQUALS SymbolWithArgsList SEMI
@@ -321,24 +322,12 @@ MaybeSymbolsDef:
 
 
 //------------------------------------------------------------------------------
-// L-system's rewrite rule
+// L-system's rewrite rule.
 //------------------------------------------------------------------------------
 
 MaybeRewriteRule:
     | REWRITE RrPattern OptRrVarDefs OptRrCondition TO RrReplac OptRrWeight SEMI
       { let rwKw = new Keyword(getPosI parseState 1) in
-        let (lCtxt, patt, rCtxt) = $2 in
-        let (vdKw, vds) = $3 in
-        let (cKw, cond) = $4 in
-        let toKw = new Keyword(getPosI parseState 5) in
-        let (rKw, replac) = $6 in
-        let (wKw, weight) = $7 in
-        let semi = new Keyword(getPosI parseState 8) in
-        let keywords = new ImmutableList<Keyword>(rwKw, vdKw, cKw, toKw, rKw, wKw) in
-        Some (new RewriteRule(patt, lCtxt, rCtxt, vds, cond, replac, weight, keywords, getPos parseState)) }
-    | REWRITE RrPattern OptRrVarDefs OptRrCondition TO RrReplac OptRrWeight
-      { logErrorPos (getEndPos parseState) "Did you forget `;`?";
-        let rwKw = new Keyword(getPosI parseState 1) in
         let (lCtxt, patt, rCtxt) = $2 in
         let (vdKw, vds) = $3 in
         let (cKw, cond) = $4 in
@@ -370,7 +359,7 @@ OptRrVarDefs:
         let vds = ImmutableListPos<VariableDefinition>(getStartPos parseState) in
         (kw, vds) }
     | WITH error
-      { logErrorPos (getPos parseState) "Excpected variable definitions separated by colon.";
+      { logError parseState "Excpected variable definitions separated by colon.";
         let kw = new Keyword(getPosI parseState 1) in
         let vds = ImmutableListPos<VariableDefinition>(getStartPos parseState) in
         (kw, vds) }
@@ -381,14 +370,13 @@ OptRrCondition:
         (Keyword.Empty, expr) }
     | WHERE ExpressionNonEmpty
       { let kw = new Keyword(getPosI parseState 1) in
-        let expr = new Expression($2, getPosI parseState 2)
-        (kw, expr) }
+        (kw, $2) }
     | WHERE
       { logNoticePos (getPosI parseState 1) "Empty condition found.";
         let kw = new Keyword(getPosI parseState 1) in
         (kw, new Expression(getEndPos parseState)) }
     | WHERE error
-      { logErrorPos (getPos parseState) "Excpected condition expression.";
+      { logError parseState "Excpected condition expression.";
         let kw = new Keyword(getPosI parseState 1) in
         (kw, new Expression(getEndPos parseState)) }
 
@@ -407,14 +395,13 @@ OptRrWeight:
         (Keyword.Empty, expr) }
     | WEIGHT ExpressionNonEmpty
       { let kw = new Keyword(getPosI parseState 1) in
-        let expr = new Expression($2, getPosI parseState 2)
-        (kw, expr) }
+        (kw, $2) }
     | WEIGHT
       { logNoticePos (getPosI parseState 1) "Empty probability weight found.";
         let kw = new Keyword(getPosI parseState 1) in
         (kw, new Expression(getEndPos parseState)) }
     | WEIGHT error
-      { logErrorPos (getPos parseState) "Excpected probability weight (expression).";
+      { logError parseState "Excpected probability weight (expression).";
         let kw = new Keyword(getPosI parseState 1) in
         (kw, new Expression(getEndPos parseState)) }
 
@@ -439,8 +426,9 @@ RrVarDefsListNonEmpty:
     | RrVarDefsListNonEmpty COMMA RrVarDef
       { $1.Add($3); $1 }
 
+
 //------------------------------------------------------------------------------
-// L-system's symbols (modules)
+// L-system's symbols (modules).
 //------------------------------------------------------------------------------
 
 SymbolPattern:
@@ -481,20 +469,24 @@ Symbol:
 
 
 //------------------------------------------------------------------------------
-// Expressions
+// Expressions.
 //------------------------------------------------------------------------------
 
 Expression:
     |
       { logError parseState "Excpected non-empty expression.";
         new Expression(getStartPos parseState) }
-    | ExpressionNonEmpty
+    | ExpressionMembersNonEmpty
       { new Expression($1, getPos parseState) }
 
 ExpressionNonEmpty:
+    | ExpressionMembersNonEmpty
+      { new Expression($1, getPos parseState) }
+
+ExpressionMembersNonEmpty:
     | ExprMember
       { let mutable x = new ResizeArray<IExpressionMember>() in x.Add($1); x }
-    | ExpressionNonEmpty ExprMember
+    | ExpressionMembersNonEmpty ExprMember
       { $1.Add($2); $1 }
 
 ExprMember:
@@ -508,7 +500,7 @@ ExprMember:
       { new Operator($1, getPos parseState) :> IExpressionMember }
     | ExprIndexer
       { $1 :> IExpressionMember }
-    | ExprFunc
+    | ExprFun
       { $1 :> IExpressionMember }
     | ExprParen
       { $1 :> IExpressionMember }
@@ -530,8 +522,7 @@ ExpressionsList:
 ExpressionsListNonEmpty:
     | ExpressionNonEmpty
       { let mutable x = new ResizeArray<Expression>() in
-        let expr = new Expression($1, getPos parseState) in
-        x.Add(expr);
+        x.Add($1);
         x }
     | ExpressionsListNonEmpty COMMA Expression
       { $1.Add($3); $1 }
@@ -540,7 +531,7 @@ ExprIndexer:
     | LBRACK Expression RBRACK
       { new ExpressionIndexer($2, getPos parseState) }
 
-ExprFunc:
+ExprFun:
     | ID LPAREN ExpressionsList RPAREN
       { let id = new Identificator($1, getPosI parseState 1) in
         new ExpressionFunction(id, $3, getPos parseState) }
@@ -551,7 +542,7 @@ ExprParen:
 
 
 //------------------------------------------------------------------------------
-// Other
+// Other.
 //------------------------------------------------------------------------------
 
 IdsCommaList:

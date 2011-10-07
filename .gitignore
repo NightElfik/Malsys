@@ -6,29 +6,9 @@
 *.suo
 *.vsmdi
 
-/src/ExpressionsInteractive/bin
-/src/ExpressionsInteractive/obj
+bin/
+obj/
 
-/src/LsystemSyntaxHighlighter/bin
-/src/LsystemSyntaxHighlighter/obj
-
-/src/Malsys/bin
-/src/Malsys/obj
-
-/src/Malsys.Ast/bin
-/src/Malsys.Ast/obj
-
-/src/Malsys.Common/bin
-/src/Malsys.Common/obj
-
-/src/Malsys.Gui/bin
-/src/Malsys.Gui/obj
-
-/src/Malsys.Parsing/bin
-/src/Malsys.Parsing/obj
-
-/src/Malsys.Tests/bin
-/src/Malsys.Tests/obj
 /src/TestResults
 
 # LaTeX rubbish
