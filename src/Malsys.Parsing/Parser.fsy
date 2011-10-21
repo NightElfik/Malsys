@@ -54,7 +54,7 @@ let getStartPos (parserState : IParseState) =
 let getEndPos (parserState : IParseState) =
     let endPos = snd parserState.ResultRange
     new Position(endPos, endPos)
-    
+
 
 let optionToStatement parseState (option : Option<#ILsystemStatement>) =
     match option with
@@ -69,7 +69,7 @@ let optionToStatement parseState (option : Option<#ILsystemStatement>) =
 //------------------------------------------------------------------------------
 
 %token <string> ID
-%token LSYSTEM REWRITE WITH WHERE TO OR WEIGHT NOTHING CONSIDER LET SET FUN
+%token LSYSTEM REWRITE WITH WHERE TO OR WEIGHT NOTHING CONSIDER LET SET FUN RETURN
 %token EQUALS SEMI COMMA QMARK COLON RARROW
 %token LPAREN RPAREN LBRACE RBRACE LBRACK RBRACK
 %token <float> FLOAT
@@ -93,14 +93,17 @@ let optionToStatement parseState (option : Option<#ILsystemStatement>) =
 %start ParseLsystemStatements
 %type <InputBlock> ParseLsystemStatements
 
-%start ParseExpression
-%type <Expression> ParseExpression
+%start ParseExprInteractiveStatements
+%type <IExprInteractiveStatement[]> ParseExprInteractiveStatements
 
 %start ParseVarDef
 %type <VariableDefinition> ParseVarDef
 
-%start ParseExprInteractiveStatements
-%type <IExprInteractiveStatement[]> ParseExprInteractiveStatements
+%start ParseFunDef
+%type <FunctionDefinition> ParseFunDef
+
+%start ParseExpression
+%type <Expression> ParseExpression
 
 %%
 
@@ -113,13 +116,13 @@ ParseLsystemStatements:
     | LsystemStatementsList EOF
       { new InputBlock($1 :> ResizeArray<IInputStatement>) }
 
-      
-ParseExpression:
-    | Expression EOF
-      { $1 }
+ParseExprInteractiveStatements:
+    | ExprInteractiveStatementList EOF
+      { ($1 :> ResizeArray<IExprInteractiveStatement>).ToArray() }
     | error EOF
       { logErrorPos getLastErrorPos "Syntax error.";
-        new Expression(getStartPos parseState) }
+        Array.empty<IExprInteractiveStatement> }
+
 
 ParseVarDef:
     | MaybeVarDef EOF
@@ -130,13 +133,21 @@ ParseVarDef:
       { logErrorPos getLastErrorPos "Syntax error.";
         null }
 
-
-ParseExprInteractiveStatements:
-    | ExprInteractiveStatementList EOF
-      { ($1 :> ResizeArray<IExprInteractiveStatement>).ToArray() }
+ParseFunDef:
+    | MaybeFunDef EOF
+      { match $1 with
+        | Some(funDef) -> funDef
+        | None -> null }
     | error EOF
       { logErrorPos getLastErrorPos "Syntax error.";
-        Array.empty<IExprInteractiveStatement> }
+        null }
+
+ParseExpression:
+    | Expression EOF
+      { $1 }
+    | error EOF
+      { logErrorPos getLastErrorPos "Syntax error.";
+        new Expression(getStartPos parseState) }
 
 
 //------------------------------------------------------------------------------
@@ -213,9 +224,9 @@ MaybeVarDef:
 
 VarDefsList:
     |
-      { new ResizeArray<VariableDefinition>() }
+      { new ImmutableListPos<VariableDefinition>(getStartPos parseState) }
     | VarDefsListNonEmpty
-      { $1 }
+      { new ImmutableListPos<VariableDefinition>($1, getPos parseState) }
 
 VarDefsListNonEmpty:
     | MaybeVarDef
@@ -234,35 +245,37 @@ VarDefsListNonEmpty:
 //------------------------------------------------------------------------------
 
 MaybeFunDef:
-    | FUN ID FunDefParams RichExpressionBraces
+    | FUN ID FunDefParams FunBody
       { let kw = new Keyword(getPosI parseState 1) in
         let id = new Identificator($2, getPosI parseState 2) in
-        Some (new FunctionDefinition(kw, id, $3, $4, getPos parseState)) }
-    | FUN error RichExpressionBraces
-      { logErrorPos (getBetweenPos parseState 1 3) "Function identifier with parameters excpected.";
+        let (retKw, vars, expr) = $4 in
+        let keywords = new ImmutableList<Keyword>(kw, retKw) in
+        Some (new FunctionDefinition(id, $3, vars, expr, keywords, getPos parseState)) }
+    | FUN ID error FunBody
+      { logErrorPos (getBetweenPos parseState 2 4) "Function parameters excpected.";
         None }
-
-
-OptFunDefParams:
-    |
-      { new ImmutableListPos<OptionalParameter>(getStartPos parseState) }
-    | FunDefParams
-      { $1 }
 
 FunDefParams:
     | LPAREN OptParamsList RPAREN
-      { new ImmutableListPos<OptionalParameter>($2, getPos parseState) }
+      { new ImmutableListPos<OptionalParameter>($2, getPosI parseState 1, getPosI parseState 3, getPos parseState) }
     | LPAREN error RPAREN
       { logErrorPos (getBetweenPos parseState 1 3) "Excpected parameters with optional default value separated by comma.";
         new ImmutableListPos<OptionalParameter>(getPos parseState) }
 
-RichExpressionBraces:
-    | LBRACE VarDefsList Expression RBRACE
-      { new RichExpression($2, $3, getPosI parseState 1, getPosI parseState 4, getPos parseState) }
+FunBody:
+    | LBRACE VarDefsList OptionalReturn Expression SEMI RBRACE
+      { let vars = $2.AddSeparators(getPosI parseState 1, getPosI parseState 6, getPos parseState) in
+        ($3, vars, $4) }
     | LBRACE error RBRACE
-      { logErrorPos (getBetweenPos parseState 1 3) "Excpected expression with optional local variable definitions before it divided by semicolon.";
-        new RichExpression(getPosI parseState 1, getPosI parseState 3, getPos parseState) }
+      { logErrorPos (getBetweenPos parseState 1 3) "Excpected function body.";
+        let vars = new ImmutableListPos<VariableDefinition>(getPosI parseState 1, getPosI parseState 3, getPos parseState) in
+        (Keyword.Empty, vars, Expression.Empty) }
 
+OptionalReturn:
+    | RETURN
+      { new Keyword(getPos parseState) }
+    |
+      { Keyword.Empty }
 
 OptParamsList:
     |
@@ -294,6 +307,12 @@ Lsystem:
       { let kw = new Keyword(getPosI parseState 1) in
         let id = new Identificator($2, getPosI parseState 2) in
         new Lsystem(kw, id, $3, $4, getPos parseState) }
+
+OptFunDefParams:
+    |
+      { new ImmutableListPos<OptionalParameter>(getStartPos parseState) }
+    | FunDefParams
+      { $1 }
 
 LsystemBody:
     | LBRACE LsysStatementsList RBRACE
@@ -377,7 +396,7 @@ OptRrVarDefs:
         (kw, vds) }
     | WITH RrVarDefsListNonEmpty
       { let kw = new Keyword(getPosI parseState 1) in
-        let vds = new ImmutableListPos<VariableDefinition>($2, getPosI parseState 1, getPosI parseState 3, getPos parseState) in
+        let vds = new ImmutableListPos<VariableDefinition>($2, getPos parseState) in
         (kw, vds) }
     | WITH error
       { logError parseState "Excpected variable definitions separated by colon.";
@@ -406,7 +425,7 @@ RrReplacListNonEmpty:
       { let mutable x = new ResizeArray<RewriteRuleReplacement>() in x.Add($1); x }
     | RrReplacListNonEmpty RrReplacOrTo
       { $1.Add($2); $1 }
-      
+
 RrReplac:
     | RrReplacSymbols OptRrWeight
       { let (rKw, replac) = $1 in

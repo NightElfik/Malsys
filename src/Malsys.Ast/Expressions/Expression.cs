@@ -7,6 +7,9 @@ namespace Malsys.Ast {
 	/// </summary>
 	public class Expression : IToken, IEnumerable<IExpressionMember>, IExprInteractiveStatement {
 
+		public static readonly Expression Empty = new Expression(Position.Unknown);
+
+
 		public readonly ImmutableList<IExpressionMember> Members;
 		public readonly int MembersCount;
 

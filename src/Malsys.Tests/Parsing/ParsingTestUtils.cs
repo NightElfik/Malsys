@@ -8,7 +8,7 @@ using System;
 
 namespace Malsys.Tests.Parsing {
 	class ParsingTestUtils {
-		public static string ParseAndCanonicPrintAst(string input) {
+		public static string ParseLsystemAndCanonicPrintAst(string input) {
 
 			var lexBuff = LexBuffer<char>.FromString(input);
 			var msgs = new MessagesCollection();

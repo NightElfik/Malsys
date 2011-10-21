@@ -23,7 +23,6 @@ namespace Malsys.SourceCode.Highlighters {
 
 		FunctionDefinition,
 		FunctionName,
-		FunctionBody,
 
 		Parameter,
 		ParameterName,

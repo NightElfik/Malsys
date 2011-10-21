@@ -11,9 +11,10 @@ namespace Malsys.Compilers {
 		public static FunctionDefinition CompileFailSafe(this Ast.FunctionDefinition funDef, MessagesCollection msgs) {
 
 			var prms = funDef.Parameters.CompileParametersFailSafe(msgs);
-			var body = funDef.Body.CompileRichFailSafe(msgs);
+			var varDefs = funDef.LocalVarDefs.CompileFailSafe(msgs);
+			var retExpr = funDef.ReturnExpression.CompileFailSafe(msgs);
 
-			return new FunctionDefinition(funDef.NameId.Name, prms, body.VariableDefinitions, body.Expression);
+			return new FunctionDefinition(funDef.NameId.Name, prms, varDefs, retExpr);
 		}
 
 		/// <summary>

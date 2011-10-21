@@ -41,7 +41,12 @@ namespace Malsys.SourceCode.Printers {
 				tok.Accept(this);
 			}
 		}
-		
+
+		public void Visit<T>(ImmutableList<T> tokList) where T : IToken {
+			foreach (var tok in tokList) {
+				tok.Accept(this);
+			}
+		}
 
 		#region IAstVisitor Members
 
@@ -98,7 +103,10 @@ namespace Malsys.SourceCode.Printers {
 			writer.Write(" {");
 			writer.NewLine();
 			writer.Indent();
-			Visit(funDef.Body);
+
+			Visit(funDef.LocalVarDefs);
+			Visit(funDef.ReturnExpression);
+
 			writer.Unindent();
 			writer.NewLine();
 			writer.Write("}");
@@ -151,7 +159,7 @@ namespace Malsys.SourceCode.Printers {
 			}
 
 			Visit(rewriteRule.Pattern);
-			
+
 			if (!rewriteRule.RightContext.IsEmpty) {
 				writer.Write(" {");
 				Visit(rewriteRule.RightContext);
@@ -208,11 +216,6 @@ namespace Malsys.SourceCode.Printers {
 		}
 
 		public void Visit(Ast.RichExpression richExpr) {
-			foreach (var varDef in richExpr.VariableDefinitions) {
-				Visit(varDef);
-				writer.NewLine();
-			}
-			Visit(richExpr.Expression);
 		}
 
 		public void Visit<T>(Ast.Symbol<T> symbol) where T : IToken {

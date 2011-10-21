@@ -83,7 +83,9 @@
     <Compile Include="Expressions\GeneralExpressionsTests.cs" />
     <Compile Include="Parsing\BasicLsystemTests.cs" />
     <Compile Include="Parsing\DebugTests.cs" />
+    <Compile Include="Parsing\FunctionDefinitionTests.cs" />
     <Compile Include="Parsing\ParsingTestUtils.cs" />
+    <Compile Include="Parsing\VariableDefinitionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Common\StringExtensionsTest.cs" />
   </ItemGroup>

@@ -30,15 +30,20 @@ let parseHelper (parseFun : (LexBuffer<_> -> Parser.token) -> LexBuffer<_> -> 'b
 
 let ParseLsystemStatements comments lexbuf msgs sourceName =
     parseHelper Parser.ParseLsystemStatements comments lexbuf msgs sourceName
-    
-let ParseExpression lexbuf msgs sourceName =
+
+let ParseExprInteractiveStatements lexbuf msgs sourceName =
     let mutable comments = new ResizeArray<Comment>() in
-    parseHelper Parser.ParseExpression comments lexbuf msgs sourceName
+    parseHelper Parser.ParseExprInteractiveStatements comments lexbuf msgs sourceName
+
 
 let ParseVarDef lexbuf msgs sourceName =
     let mutable comments = new ResizeArray<Comment>() in
     parseHelper Parser.ParseVarDef comments lexbuf msgs sourceName
 
-let ParseExprInteractiveStatements lexbuf msgs sourceName =
+let ParseFunDef lexbuf msgs sourceName =
     let mutable comments = new ResizeArray<Comment>() in
-    parseHelper Parser.ParseExprInteractiveStatements comments lexbuf msgs sourceName
+    parseHelper Parser.ParseFunDef comments lexbuf msgs sourceName
+
+let ParseExpression lexbuf msgs sourceName =
+    let mutable comments = new ResizeArray<Comment>() in
+    parseHelper Parser.ParseExpression comments lexbuf msgs sourceName

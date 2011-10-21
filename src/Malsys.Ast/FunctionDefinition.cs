@@ -6,19 +6,22 @@ namespace Malsys.Ast {
 	/// </summary>
 	public class FunctionDefinition : IInputStatement, ILsystemStatement, IExprInteractiveStatement {
 
-		public readonly Keyword Keyword;
 		public readonly Identificator NameId;
 		public readonly int ParametersCount;
 		public readonly ImmutableListPos<OptionalParameter> Parameters;
-		public readonly RichExpression Body;
+		public readonly ImmutableListPos<VariableDefinition> LocalVarDefs;
+		public readonly Expression ReturnExpression;
+		public readonly ImmutableList<Keyword> keywords;
 
 
-		public FunctionDefinition(Keyword keyword, Identificator name, ImmutableListPos<OptionalParameter> prms, RichExpression body, Position pos) {
+		public FunctionDefinition(Identificator name, ImmutableListPos<OptionalParameter> prms, ImmutableListPos<VariableDefinition> varDefs,
+				Expression retExpr, ImmutableList<Keyword> kws, Position pos) {
 
-			Keyword = keyword;
 			NameId = name;
 			Parameters = prms;
-			Body = body;
+			LocalVarDefs = varDefs;
+			ReturnExpression = retExpr;
+			keywords = kws;
 
 			ParametersCount = Parameters.Length;
 			Position = pos;

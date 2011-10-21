@@ -24,7 +24,7 @@ namespace Malsys {
 
 		public ImmutableList(IEnumerable<T> vals) {
 
-			Debug.Assert(!(vals is ImmutableList<T>), "Bad constructor of {0} used, probably somwhere missing ctor with {0} and it was downcasted to {1}.".Fmt(
+			Debug.Assert(!(vals is ImmutableList<T>), "Bad constructor of {0} used, probably somewhere missing ctor with {0} and it was downcasted to {1}.".Fmt(
 				typeof(ImmutableList<T>).Name, typeof(IEnumerable<T>).Name));
 
 			values = vals.ToArray();
@@ -32,6 +32,9 @@ namespace Malsys {
 		}
 
 		public ImmutableList(IList<T> vals) {
+
+			Debug.Assert(!(vals is ImmutableList<T>), "Bad constructor of {0} used, probably somewhere missing ctor with {0} and it was downcasted to {1}.".Fmt(
+				typeof(ImmutableList<T>).Name, typeof(IList<T>).Name));
 
 			Length = vals.Count;
 

@@ -64,6 +64,7 @@ let keywords =
         ("let", LET);
         ("set", SET);
         ("fun", FUN);
+        ("return", RETURN);
     ] |> Map.ofList
 
 }

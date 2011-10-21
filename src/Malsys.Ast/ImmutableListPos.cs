@@ -7,16 +7,21 @@ namespace Malsys.Ast {
 		public readonly Position EndSeparator;
 
 
+		private ImmutableListPos(ImmutableList<T> immutableValues, Position beginSep, Position endSep, Position pos)
+			: base(immutableValues) {
+
+			BeginSeparator = beginSep;
+			EndSeparator = endSep;
+			Position = pos;
+		}
+
+
 		public ImmutableListPos(Position pos)
 			: this(Position.Unknown, Position.Unknown, pos) {
 		}
 
 		public ImmutableListPos(Position beginSep, Position endSep, Position pos)
-			: base(ImmutableList<T>.Empty) {
-
-			BeginSeparator = beginSep;
-			EndSeparator = endSep;
-			Position = pos;
+			: this(ImmutableList<T>.Empty, beginSep, endSep, pos) {
 		}
 
 		public ImmutableListPos(IEnumerable<T> vals, Position pos)
@@ -29,6 +34,11 @@ namespace Malsys.Ast {
 			BeginSeparator = beginSep;
 			EndSeparator = endSep;
 			Position = pos;
+		}
+
+
+		public ImmutableListPos<T> AddSeparators(Position beginSep, Position endSep, Position pos) {
+			return new ImmutableListPos<T>(this, beginSep, endSep, pos);
 		}
 
 

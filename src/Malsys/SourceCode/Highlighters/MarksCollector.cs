@@ -142,15 +142,24 @@ namespace Malsys.SourceCode.Highlighters {
 
 			addMarks(MarkType.FunctionDefinition, fd.Position, marks);
 
-			addMarks(MarkType.Keyword, fd.Keyword.Position, marks);
 			addMarks(MarkType.FunctionName, fd.NameId.Position, marks);
-
 			foreach (var p in fd.Parameters) {
 				Collect(p, marks);
 			}
 
-			addMarks(MarkType.FunctionBody, fd.Body.Position, marks);
-			Collect(fd.Body, marks);
+
+			addMarks(MarkType.Separator, fd.LocalVarDefs.BeginSeparator, marks);
+
+			foreach (var vd in fd.LocalVarDefs) {
+				Collect(vd, marks);
+			}
+			Collect(fd.ReturnExpression, marks);
+
+			addMarks(MarkType.Separator, fd.LocalVarDefs.EndSeparator, marks);
+
+			foreach (var kw in fd.keywords) {
+				Collect(kw, marks);
+			}
 		}
 
 		public static void Collect(Ast.OptionalParameter p, List<PositionMark> marks) {
@@ -205,15 +214,6 @@ namespace Malsys.SourceCode.Highlighters {
 
 		public static void Collect(Ast.RichExpression re, List<PositionMark> marks) {
 
-			addMarks(MarkType.Separator, re.BeginSeparator, marks);
-
-			foreach (var vd in re.VariableDefinitions) {
-				Collect(vd, marks);
-			}
-
-			Collect(re.Expression, marks);
-
-			addMarks(MarkType.Separator, re.EndSeparator, marks);
 		}
 
 		public static void Collect(Ast.Symbol<Ast.Identificator> ptrn, List<PositionMark> marks) {
