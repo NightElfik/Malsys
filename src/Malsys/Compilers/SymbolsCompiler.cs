@@ -4,11 +4,11 @@ using Malsys.Expressions;
 namespace Malsys.Compilers {
 	public static class SymbolsCompiler {
 
-		public static CompilerResult<Symbol<string>> Compile(this Ast.SymbolPattern ptrnAst, Dictionary<string, Position> usedNames, MessagesCollection msgs) {
+		public static CompilerResult<Symbol<string>> Compile(this Ast.Symbol<Ast.Identificator> ptrnAst, Dictionary<string, Position> usedNames, MessagesCollection msgs) {
 
-			var names = new string[ptrnAst.ParametersNames.Length];
-			for (int i = 0; i < ptrnAst.ParametersNames.Length; i++) {
-				string name = ptrnAst.ParametersNames[i].Name;
+			var names = new string[ptrnAst.Arguments.Length];
+			for (int i = 0; i < ptrnAst.Arguments.Length; i++) {
+				string name = ptrnAst.Arguments[i].Name;
 				names[i] = name;
 
 				if (name == Constants.PatternPlaceholder) {
@@ -17,21 +17,21 @@ namespace Malsys.Compilers {
 
 				if (usedNames.ContainsKey(name)) {
 					var otherPos = usedNames[name];
-					msgs.AddError("Parameter name `{0}` in pattern `{1}` is not unique (in its context).".Fmt(name, ptrnAst.Symbol.Name),
-						ptrnAst.ParametersNames[i].Position, otherPos);
+					msgs.AddError("Parameter name `{0}` in pattern `{1}` is not unique (in its context).".Fmt(name, ptrnAst.Name),
+						ptrnAst.Arguments[i].Position, otherPos);
 					return CompilerResult<Symbol<string>>.Error;
 				}
 
-				usedNames.Add(name, ptrnAst.ParametersNames[i].Position);
+				usedNames.Add(name, ptrnAst.Arguments[i].Position);
 			}
 
 			var namesImm = new ImmutableList<string>(names, true);
-			var result = new Symbol<string>(ptrnAst.Symbol.Name, namesImm);
+			var result = new Symbol<string>(ptrnAst.Name, namesImm);
 
 			return new CompilerResult<Symbol<string>>(result);
 		}
 
-		public static SymbolsList<string> CompileListFailSafe(this ImmutableList<Ast.SymbolPattern> ptrnsAst, Dictionary<string, Position> usedNames, MessagesCollection msgs) {
+		public static CompilerResult<SymbolsList<string>> CompileListFailSafe(this Ast.SymbolsListPos<Ast.Identificator> ptrnsAst, Dictionary<string, Position> usedNames, MessagesCollection msgs) {
 
 			var compiledSymbols = new Symbol<string>[ptrnsAst.Length];
 
@@ -52,13 +52,13 @@ namespace Malsys.Compilers {
 		}
 
 
-		public static Symbol<IExpression> CompileFailSafe(this Ast.SymbolExprArgs symbolAst, MessagesCollection msgs) {
+		public static Symbol<IExpression> CompileFailSafe(this Ast.Symbol<Ast.Expression> symbolAst, MessagesCollection msgs) {
 
-			return new Symbol<IExpression>(symbolAst.Symbol.Name, symbolAst.Arguments.CompileFailSafe(msgs));
+			return new Symbol<IExpression>(symbolAst.Name, symbolAst.Arguments.CompileFailSafe(msgs));
 
 		}
 
-		public static SymbolsList<IExpression> CompileListFailSafe(this ImmutableList<Ast.SymbolExprArgs> symbolsAst, MessagesCollection msgs) {
+		public static SymbolsList<IExpression> CompileListFailSafe(this Ast.SymbolsListPos<Ast.Expression> symbolsAst, MessagesCollection msgs) {
 
 			var compiledSymbols = new Symbol<IExpression>[symbolsAst.Length];
 

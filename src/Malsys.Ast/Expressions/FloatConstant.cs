@@ -25,5 +25,13 @@ namespace Malsys.Ast {
 		public ExpressionMemberType MemberType { get { return ExpressionMemberType.Constant; } }
 
 		#endregion
+
+		#region IAstVisitable Members
+
+		public void Accept(IAstVisitor visitor) {
+			visitor.Visit(this);
+		}
+
+		#endregion
 	}
 }

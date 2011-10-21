@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 
 namespace Malsys.Compilers {
 	public class MessagesCollection : IEnumerable<CompilerMessage> {
@@ -41,6 +42,15 @@ namespace Malsys.Compilers {
 			ErrorOcured = true;
 
 			messages.Add(new CompilerMessage(message, CompilerMessageType.Error, DefaultSourceName, pos, otherPos));
+		}
+
+
+		public override string ToString() {
+			var sb = new StringBuilder();
+			foreach (var msg in messages) {
+				sb.AppendLine(msg.GetFullMessage());
+			}
+			return sb.ToString();
 		}
 
 

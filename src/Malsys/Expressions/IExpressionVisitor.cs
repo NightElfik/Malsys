@@ -1,6 +1,7 @@
 ﻿
 namespace Malsys.Expressions {
 	public interface IExpressionVisitor {
+
 		void Visit(Constant constant);
 		void Visit(ExprVariable variable);
 		void Visit(ExpressionValuesArray expressionValuesArray);
@@ -9,5 +10,6 @@ namespace Malsys.Expressions {
 		void Visit(Indexer indexer);
 		void Visit(FunctionCall functionCall);
 		void Visit(UserFunctionCall userFunction);
+
 	}
 }

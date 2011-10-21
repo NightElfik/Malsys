@@ -269,7 +269,7 @@ namespace Malsys.Tests.Expressions {
 			// parsing
 			var lexBuff = LexBuffer<char>.FromString(exprStr);
 			var msgs = new MessagesCollection();
-			Ast.Expression parsedVal = ParserUtils.parseExpression(lexBuff, msgs, testName);
+			Ast.Expression parsedVal = ParserUtils.ParseExpression(lexBuff, msgs, testName);
 
 
 			// compile

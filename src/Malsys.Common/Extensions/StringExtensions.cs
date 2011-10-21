@@ -1,5 +1,7 @@
 ﻿using System.Text;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using System;
 
 namespace Malsys {
 	public static class StringExtensions {
@@ -52,10 +54,12 @@ namespace Malsys {
 		}
 
 		/// <summary>
-		/// Splits this string to lines with respect to Windows, Unix and MAC line endings.
+		/// Splits this string to lines with respect to Windows, Unix or MAC line endings.
 		/// </summary>
 		public static IEnumerable<string> SplitToLines(this string str) {
 
+			Contract.Requires<ArgumentNullException>(str != null);
+			
 			int beginIndex = 0;
 
 			for (int i = 0; i < str.Length; i++) {
@@ -80,6 +84,9 @@ namespace Malsys {
 
 			if (beginIndex != str.Length) {
 				yield return str.Substring(beginIndex);
+			}
+			else {
+				yield return "";
 			}
 		}
 
@@ -117,5 +124,11 @@ namespace Malsys {
 			}
 		}
 
+		/// <summary>
+		/// Repeats this string count-times.
+		/// </summary>
+		public static string Repeat(this string pattern, int count) {
+			return new StringBuilder().Insert(0, pattern, count).ToString();
+		}
 	}
 }

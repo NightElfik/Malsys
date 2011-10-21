@@ -12,19 +12,33 @@ let setInitialBuffPos (lexbuf : LexBuffer<_>) sourceName =
         pos_lnum = 1 }
     lexbuf
 
-let parseLsystemStatements (lexbuf : LexBuffer<_>) (comments : ResizeArray<Comment>) (msgs : MessagesCollection) sourceName =
+let parseHelper (parseFun : (LexBuffer<_> -> Parser.token) -> LexBuffer<_> -> 'b) (comments : ResizeArray<Comment>) (lexbuf : LexBuffer<_>) (msgs : MessagesCollection) sourceName =
     msgs.DefaultSourceName <- sourceName;
     MessagesLogger.ThreadStatic.ErrorLogger <- msgs;
-    Parser.parseLsystemStatements (Lexer.tokenize (msgs, comments)) (setInitialBuffPos lexbuf sourceName)
+    parseFun (Lexer.tokenize (msgs, comments)) (setInitialBuffPos lexbuf sourceName)
 
-let parseExpression (lexbuf : LexBuffer<_>) (msgs : MessagesCollection) sourceName =
-    let mutable comments = new ResizeArray<Comment>() in
-    msgs.DefaultSourceName <- sourceName;
-    MessagesLogger.ThreadStatic.ErrorLogger <- msgs;
-    Parser.parseExpression (Lexer.tokenize (msgs, comments)) (setInitialBuffPos lexbuf sourceName)
+// Can not write:
+//
+// let parseLsystemStatements =
+//     parseHelper Parser.ParseLsystemStatements
+//
+// because of error:
+// Value restriction. The value 'parseLsystemStatements' has been inferred to have generic type
+// val parseLsystemStatements : ('_a -> LexBuffer<char> -> '_b -> string -> InputBlock) when '_a :> ResizeArray<Comment> and '_b :> MessagesCollection
+// Either make the arguments to 'parseLsystemStatements' explicit or, if you do not intend for it to be generic, add a type annotation.
 
-let parseExprInteractiveStatements (lexbuf : LexBuffer<_>) (msgs : MessagesCollection) sourceName =
+
+let ParseLsystemStatements comments lexbuf msgs sourceName =
+    parseHelper Parser.ParseLsystemStatements comments lexbuf msgs sourceName
+    
+let ParseExpression lexbuf msgs sourceName =
     let mutable comments = new ResizeArray<Comment>() in
-    msgs.DefaultSourceName <- sourceName;
-    MessagesLogger.ThreadStatic.ErrorLogger <- msgs;
-    Parser.parseExprInteractiveStatements (Lexer.tokenize (msgs, comments)) (setInitialBuffPos lexbuf sourceName)
+    parseHelper Parser.ParseExpression comments lexbuf msgs sourceName
+
+let ParseVarDef lexbuf msgs sourceName =
+    let mutable comments = new ResizeArray<Comment>() in
+    parseHelper Parser.ParseVarDef comments lexbuf msgs sourceName
+
+let ParseExprInteractiveStatements lexbuf msgs sourceName =
+    let mutable comments = new ResizeArray<Comment>() in
+    parseHelper Parser.ParseExprInteractiveStatements comments lexbuf msgs sourceName

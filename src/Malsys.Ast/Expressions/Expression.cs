@@ -51,5 +51,13 @@ namespace Malsys.Ast {
 		}
 
 		#endregion
+
+		#region IAstVisitable Members
+
+		public void Accept(IAstVisitor visitor) {
+			visitor.Visit(this);
+		}
+
+		#endregion
 	}
 }

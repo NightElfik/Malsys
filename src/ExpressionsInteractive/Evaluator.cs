@@ -27,7 +27,7 @@ namespace ExpressionsInteractive {
 			{
 				var msgs = new MessagesCollection();
 				var lexBuff = LexBuffer<char>.FromString(input);
-				parsedStmnts = ParserUtils.parseExprInteractiveStatements(lexBuff, msgs, sourceName);
+				parsedStmnts = ParserUtils.ParseExprInteractiveStatements(lexBuff, msgs, sourceName);
 
 
 				if (msgs.ErrorOcured) {

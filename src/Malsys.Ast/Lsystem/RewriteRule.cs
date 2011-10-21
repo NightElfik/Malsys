@@ -8,31 +8,29 @@ namespace Malsys.Ast {
 
 		public readonly ImmutableList<Keyword> Keywords;
 
-		public readonly SymbolPattern Pattern;
-		public readonly ImmutableListPos<SymbolPattern> LeftContext;
-		public readonly ImmutableListPos<SymbolPattern> RightContext;
+		public readonly Symbol<Identificator> Pattern;
+		public readonly SymbolsListPos<Identificator> LeftContext;
+		public readonly SymbolsListPos<Identificator> RightContext;
 
 		public readonly ImmutableListPos<VariableDefinition> LocalVariables;
 
 		public readonly Expression Condition;
 
-		public readonly ImmutableListPos<SymbolExprArgs> Replacement;
-
-		public readonly Expression Weight;
+		public readonly ImmutableListPos<RewriteRuleReplacement> Replacements;
 
 
-		public RewriteRule(SymbolPattern pattern, ImmutableListPos<SymbolPattern> lctxt, ImmutableListPos<SymbolPattern> rctxt,
-				ImmutableListPos<VariableDefinition> locVars, Expression cond, ImmutableListPos<SymbolExprArgs> replac, Expression wei,
+		public RewriteRule(Symbol<Identificator> pattern, SymbolsListPos<Identificator> lctxt, SymbolsListPos<Identificator> rctxt,
+				ImmutableListPos<VariableDefinition> locVars, Expression cond, ImmutableListPos<RewriteRuleReplacement> replacs,
 				ImmutableList<Keyword> keywords, Position pos) {
 
 			LeftContext = lctxt;
 			Pattern = pattern;
 			RightContext = rctxt;
 			Condition = cond;
-			Weight = wei;
 			LocalVariables = locVars;
-			Replacement = replac;
-			Keywords = keywords;
+			Replacements = replacs;
+			Keywords = keywords.WithoutEmpty();
+
 			Position = pos;
 		}
 
@@ -40,6 +38,14 @@ namespace Malsys.Ast {
 		#region IToken Members
 
 		public Position Position { get; private set; }
+
+		#endregion
+
+		#region IAstVisitable Members
+
+		public void Accept(IAstVisitor visitor) {
+			visitor.Visit(this);
+		}
 
 		#endregion
 	}

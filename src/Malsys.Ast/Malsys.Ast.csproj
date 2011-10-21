@@ -45,6 +45,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Comment.cs" />
+    <Compile Include="Lsystem\RewriteRuleReplacement.cs" />
+    <Compile Include="Lsystem\SymbolsListPos.cs" />
+    <Compile Include="Visitors\IAstVisitable.cs" />
+    <Compile Include="Visitors\IAstVisitor.cs" />
     <Compile Include="VariableDefinition.cs" />
     <Compile Include="EmptyStatement.cs" />
     <Compile Include="Expressions\Expression.cs" />
@@ -64,8 +68,8 @@
     <Compile Include="Expressions\Operator.cs" />
     <Compile Include="OptionalParameter.cs" />
     <Compile Include="Lsystem\RewriteRule.cs" />
-    <Compile Include="RichExpression.cs" />
-    <Compile Include="Symbol.cs" />
+    <Compile Include="Expressions\RichExpression.cs" />
+    <Compile Include="Lsystem\Symbol.cs" />
     <Compile Include="IToken.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Expressions\ExpressionsArray.cs" />

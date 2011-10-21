@@ -16,7 +16,7 @@ namespace Malsys.SourceCode.Highlighters {
 			var msgs = new MessagesCollection();
 			var comments = new List<Ast.Comment>();
 
-			var parsedInput = ParserUtils.parseLsystemStatements(lexBuff, comments, msgs, sourceName);
+			var parsedInput = ParserUtils.ParseLsystemStatements(comments, lexBuff, msgs, sourceName);
 
 			// just to get errors
 			InputCompiler.CompileFromAst(parsedInput, msgs);

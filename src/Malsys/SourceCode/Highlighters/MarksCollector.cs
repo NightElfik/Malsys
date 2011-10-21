@@ -191,12 +191,12 @@ namespace Malsys.SourceCode.Highlighters {
 			addMarks(MarkType.RrCondition, rr.Condition.Position, marks);
 			Collect(rr.Condition, marks);
 
-			foreach (var sym in rr.Replacement) {
+			/*foreach (var sym in rr.Replacement) {
 				Collect(sym, marks);
 			}
 
 			addMarks(MarkType.RrProbability, rr.Weight.Position, marks);
-			Collect(rr.Weight, marks);
+			Collect(rr.Weight, marks);*/
 
 			foreach (var kw in rr.Keywords) {
 				Collect(kw, marks);
@@ -216,18 +216,18 @@ namespace Malsys.SourceCode.Highlighters {
 			addMarks(MarkType.Separator, re.EndSeparator, marks);
 		}
 
-		public static void Collect(Ast.SymbolPattern ptrn, List<PositionMark> marks) {
+		public static void Collect(Ast.Symbol<Ast.Identificator> ptrn, List<PositionMark> marks) {
 			addMarks(MarkType.SymbolPattern, ptrn.Position, marks);
-			addMarks(MarkType.Symbol, ptrn.Symbol.Position, marks);
+			addMarks(MarkType.Symbol, ptrn.Position, marks);
 
-			foreach (var name in ptrn.ParametersNames) {
+			foreach (var name in ptrn.Arguments) {
 				addMarks(MarkType.PatternVarName, name.Position, marks);
 			}
 		}
 
-		public static void Collect(Ast.SymbolExprArgs symExpr, List<PositionMark> marks) {
+		public static void Collect(Ast.Symbol<Ast.Expression> symExpr, List<PositionMark> marks) {
 			addMarks(MarkType.SymbolExpr, symExpr.Position, marks);
-			addMarks(MarkType.Symbol, symExpr.Symbol.Position, marks);
+			addMarks(MarkType.Symbol, symExpr.Position, marks);
 
 			foreach (var expr in symExpr.Arguments) {
 				Collect(expr, marks);

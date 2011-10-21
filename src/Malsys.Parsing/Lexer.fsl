@@ -57,6 +57,7 @@ let keywords =
         ("with", WITH);
         ("where", WHERE);
         ("to", TO);
+        ("or", OR);
         ("weight", WEIGHT);
         ("nothing", NOTHING);
         ("consider", CONSIDER);

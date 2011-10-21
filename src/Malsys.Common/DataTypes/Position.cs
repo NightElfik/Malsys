@@ -48,13 +48,21 @@ namespace Malsys {
 			}
 		}
 
-
 		public Position ToNonZeroLength() {
 			if (IsUnknown || !IsZeroLength) {
 				return this;
 			}
 
 			return new Position(BeginLine, BeginColumn, EndLine, EndColumn + 1);
+		}
+
+
+		public Position GetBeginPos() {
+			return new Position(BeginLine, BeginColumn, BeginLine, BeginColumn);
+		}
+
+		public Position GetEndPos() {
+			return new Position(EndLine, EndColumn, EndLine, EndColumn);
 		}
 	}
 }

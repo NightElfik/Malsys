@@ -9,6 +9,10 @@ namespace Malsys.Ast {
 
 		public static readonly Keyword Empty = new Keyword(Position.Unknown);
 
+		public static ImmutableList<Keyword> CreateNonEmptyList(params Keyword[] keywords) {
+			return new ImmutableList<Keyword>(keywords.Where(k => !k.IsEmpty));
+		}
+
 
 		public Keyword(Position pos) {
 			Position = pos;
@@ -21,6 +25,14 @@ namespace Malsys.Ast {
 		#region IToken Members
 
 		public Position Position { get; private set; }
+
+		#endregion
+
+		#region IAstVisitable Members
+
+		public void Accept(IAstVisitor visitor) {
+			visitor.Visit(this);
+		}
 
 		#endregion
 	}

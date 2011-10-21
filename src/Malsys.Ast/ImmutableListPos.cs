@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 
 namespace Malsys.Ast {
-	public class ImmutableListPos<T> : ImmutableList<T>, IToken {
+	public class ImmutableListPos<T> : ImmutableList<T>, IToken where T : IToken {
 
 		public readonly Position BeginSeparator;
 		public readonly Position EndSeparator;
@@ -35,6 +35,14 @@ namespace Malsys.Ast {
 		#region IToken Members
 
 		public Position Position { get; private set; }
+
+		#endregion
+
+		#region IAstVisitable Members
+
+		public void Accept(IAstVisitor visitor) {
+			visitor.Visit(this);
+		}
 
 		#endregion
 	}

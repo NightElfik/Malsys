@@ -15,7 +15,7 @@ namespace Malsys.Compilers {
 			msgs.DefaultSourceName = sourceName;
 			var comments = new List<Ast.Comment>();
 
-			var parsedInput = ParserUtils.parseLsystemStatements(lexBuff, comments, msgs, sourceName);
+			var parsedInput = ParserUtils.ParseLsystemStatements(comments, lexBuff, msgs, sourceName);
 
 			return CompileFromAst(parsedInput, msgs);
 		}

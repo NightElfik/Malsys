@@ -69,7 +69,7 @@ let optionToStatement parseState (option : Option<#ILsystemStatement>) =
 //------------------------------------------------------------------------------
 
 %token <string> ID
-%token LSYSTEM REWRITE WITH WHERE TO WEIGHT NOTHING CONSIDER LET SET FUN
+%token LSYSTEM REWRITE WITH WHERE TO OR WEIGHT NOTHING CONSIDER LET SET FUN
 %token EQUALS SEMI COMMA QMARK COLON RARROW
 %token LPAREN RPAREN LBRACE RBRACE LBRACK RBRACK
 %token <float> FLOAT
@@ -78,17 +78,29 @@ let optionToStatement parseState (option : Option<#ILsystemStatement>) =
 
 
 //------------------------------------------------------------------------------
+// Priorities of tokens
+//------------------------------------------------------------------------------
+
+// ID . LPAREN -> ExprFunc (not ExprMember ExprParen)
+%nonassoc ID
+%nonassoc LPAREN
+
+
+//------------------------------------------------------------------------------
 // Start (enter) rules and types.
 //------------------------------------------------------------------------------
 
-%start parseLsystemStatements
-%type <InputBlock> parseLsystemStatements
+%start ParseLsystemStatements
+%type <InputBlock> ParseLsystemStatements
 
-%start parseExpression
-%type <Expression> parseExpression
+%start ParseExpression
+%type <Expression> ParseExpression
 
-%start parseExprInteractiveStatements
-%type <IExprInteractiveStatement[]> parseExprInteractiveStatements
+%start ParseVarDef
+%type <VariableDefinition> ParseVarDef
+
+%start ParseExprInteractiveStatements
+%type <IExprInteractiveStatement[]> ParseExprInteractiveStatements
 
 %%
 
@@ -97,18 +109,29 @@ let optionToStatement parseState (option : Option<#ILsystemStatement>) =
 // Start rules.
 //------------------------------------------------------------------------------
 
-parseLsystemStatements:
+ParseLsystemStatements:
     | LsystemStatementsList EOF
       { new InputBlock($1 :> ResizeArray<IInputStatement>) }
 
-parseExpression:
+      
+ParseExpression:
     | Expression EOF
       { $1 }
     | error EOF
       { logErrorPos getLastErrorPos "Syntax error.";
         new Expression(getStartPos parseState) }
 
-parseExprInteractiveStatements:
+ParseVarDef:
+    | MaybeVarDef EOF
+      { match $1 with
+        | Some(varDef) -> varDef
+        | None -> null }
+    | error EOF
+      { logErrorPos getLastErrorPos "Syntax error.";
+        null }
+
+
+ParseExprInteractiveStatements:
     | ExprInteractiveStatementList EOF
       { ($1 :> ResizeArray<IExprInteractiveStatement>).ToArray() }
     | error EOF
@@ -326,17 +349,15 @@ MaybeSymbolsDef:
 //------------------------------------------------------------------------------
 
 MaybeRewriteRule:
-    | REWRITE RrPattern OptRrVarDefs OptRrCondition TO RrReplac OptRrWeight SEMI
+    | REWRITE RrPattern OptRrVarDefs OptRrCondition TO RrReplacListNonEmpty SEMI
       { let rwKw = new Keyword(getPosI parseState 1) in
         let (lCtxt, patt, rCtxt) = $2 in
         let (vdKw, vds) = $3 in
         let (cKw, cond) = $4 in
         let toKw = new Keyword(getPosI parseState 5) in
-        let (rKw, replac) = $6 in
-        let (wKw, weight) = $7 in
-        let semi = new Keyword(getPosI parseState 8) in
-        let keywords = new ImmutableList<Keyword>(rwKw, vdKw, cKw, toKw, rKw, wKw) in
-        Some (new RewriteRule(patt, lCtxt, rCtxt, vds, cond, replac, weight, keywords, getPos parseState)) }
+        let replac = new ImmutableListPos<RewriteRuleReplacement>($6, getPosI parseState 6) in
+        let keywords = new ImmutableList<Keyword>(rwKw, vdKw, cKw, toKw) in
+        Some (new RewriteRule(patt, lCtxt, rCtxt, vds, cond, replac, keywords, getPos parseState)) }
     | REWRITE error SEMI
       { logErrorPos (getBetweenPos parseState 1 3) "Excpected rewrite rule.";
         None }
@@ -349,14 +370,14 @@ OptRrVarDefs:
     |
       { let vds = new ImmutableListPos<VariableDefinition>(getStartPos parseState) in
         (Keyword.Empty, vds) }
-    | WITH RrVarDefsListNonEmpty
-      { let kw = new Keyword(getPosI parseState 1) in
-        let vds = new ImmutableListPos<VariableDefinition>($2, getPosI parseState 1, getPosI parseState 3, getPos parseState) in
-        (kw, vds) }
     | WITH
       { logNoticePos (getPosI parseState 1) "Empty variable definition block found.";
         let kw = new Keyword(getPosI parseState 1) in
         let vds = ImmutableListPos<VariableDefinition>(getStartPos parseState) in
+        (kw, vds) }
+    | WITH RrVarDefsListNonEmpty
+      { let kw = new Keyword(getPosI parseState 1) in
+        let vds = new ImmutableListPos<VariableDefinition>($2, getPosI parseState 1, getPosI parseState 3, getPos parseState) in
         (kw, vds) }
     | WITH error
       { logError parseState "Excpected variable definitions separated by colon.";
@@ -368,22 +389,44 @@ OptRrCondition:
     |
       { let expr = new Expression(getStartPos parseState) in
         (Keyword.Empty, expr) }
-    | WHERE ExpressionNonEmpty
-      { let kw = new Keyword(getPosI parseState 1) in
-        (kw, $2) }
     | WHERE
       { logNoticePos (getPosI parseState 1) "Empty condition found.";
         let kw = new Keyword(getPosI parseState 1) in
         (kw, new Expression(getEndPos parseState)) }
+    | WHERE ExpressionNonEmpty
+      { let kw = new Keyword(getPosI parseState 1) in
+        (kw, $2) }
     | WHERE error
       { logError parseState "Excpected condition expression.";
         let kw = new Keyword(getPosI parseState 1) in
         (kw, new Expression(getEndPos parseState)) }
 
+RrReplacListNonEmpty:
+    | RrReplac
+      { let mutable x = new ResizeArray<RewriteRuleReplacement>() in x.Add($1); x }
+    | RrReplacListNonEmpty RrReplacOrTo
+      { $1.Add($2); $1 }
+      
 RrReplac:
+    | RrReplacSymbols OptRrWeight
+      { let (rKw, replac) = $1 in
+        let (wKw, weight) = $2 in
+        let keywords = Keyword.CreateNonEmptyList(rKw, wKw) in
+        new RewriteRuleReplacement(replac, weight, keywords, getPos parseState) }
+
+RrReplacOrTo:
+    | OR TO RrReplacSymbols OptRrWeight
+      { let orKw = new Keyword(getPosI parseState 1) in
+        let toKw = new Keyword(getPosI parseState 2) in
+        let (rKw, replac) = $3 in
+        let (wKw, weight) = $4 in
+        let keywords = Keyword.CreateNonEmptyList(orKw, toKw, rKw, wKw) in
+        new RewriteRuleReplacement(replac, weight, keywords, getPos parseState) }
+
+RrReplacSymbols:
     | NOTHING
       { let kw = new Keyword(getPosI parseState 1) in
-        let list = new ImmutableListPos<SymbolExprArgs>(getPos parseState) in
+        let list = new SymbolsListPos<Expression>(getPos parseState) in
         (kw, list)}
     | SymbolWithArgsList
       { if $1.Length = 0 then logNoticePos (getStartPos parseState) "Empty replacement block found, you can use keyword `nothing` to improve source code readability." else ();
@@ -393,13 +436,13 @@ OptRrWeight:
     |
       { let expr = new Expression(getStartPos parseState) in
         (Keyword.Empty, expr) }
-    | WEIGHT ExpressionNonEmpty
-      { let kw = new Keyword(getPosI parseState 1) in
-        (kw, $2) }
     | WEIGHT
       { logNoticePos (getPosI parseState 1) "Empty probability weight found.";
         let kw = new Keyword(getPosI parseState 1) in
         (kw, new Expression(getEndPos parseState)) }
+    | WEIGHT ExpressionNonEmpty
+      { let kw = new Keyword(getPosI parseState 1) in
+        (kw, $2) }
     | WEIGHT error
       { logError parseState "Excpected probability weight (expression).";
         let kw = new Keyword(getPosI parseState 1) in
@@ -408,12 +451,12 @@ OptRrWeight:
 
 OptRrCtxt:
     |
-      { new ImmutableListPos<SymbolPattern>(getStartPos parseState) }
+      { new SymbolsListPos<Identificator>(getStartPos parseState) }
     | LBRACE SymbolPatternsList RBRACE
-      { new ImmutableListPos<SymbolPattern>($2, getPosI parseState 1, getPosI parseState 3, getPos parseState) }
+      { new SymbolsListPos<Identificator>($2, getPosI parseState 1, getPosI parseState 3, getPos parseState) }
     | LBRACE error RBRACE
       { logErrorPos (getBetweenPos parseState 1 3) "Excpected symbol patterns as context.";
-        new ImmutableListPos<SymbolPattern>(getPosI parseState 1, getPosI parseState 3, getPos parseState) }
+        new SymbolsListPos<Identificator>(getPosI parseState 1, getPosI parseState 3, getPos parseState) }
 
 RrVarDef:
     | ID EQUALS Expression
@@ -433,39 +476,41 @@ RrVarDefsListNonEmpty:
 
 SymbolPattern:
     | Symbol
-      { new SymbolPattern($1, getPos parseState) }
+      { new Symbol<Identificator>($1, getPos parseState) }
     | Symbol LPAREN IdsCommaList RPAREN
-      { new SymbolPattern($1, $3, getPos parseState) }
+      { let args = new ImmutableListPos<Identificator>($3, getRangePos parseState 2 4)
+        new Symbol<Identificator>($1, args, getPos parseState) }
 
 SymbolPatternsList:
     |
-      { new ResizeArray<SymbolPattern>() }
+      { new ResizeArray<Symbol<Identificator>>() }
     | SymbolPatternsList SymbolPattern
       { $1.Add($2); $1 }
 
 SymbolWithArgs:
     | Symbol
-      { new SymbolExprArgs($1, getPos parseState) }
+      { new Symbol<Expression>($1, getPos parseState) }
     | Symbol LPAREN ExpressionsList RPAREN
-      { new SymbolExprArgs($1, $3, getPos parseState) }
+      { let args = new ImmutableListPos<Expression>($3, getRangePos parseState 2 4)
+        new Symbol<Expression>($1, args, getPos parseState) }
 
 SymbolWithArgsList:
     |
-      { new ImmutableListPos<SymbolExprArgs>(getStartPos parseState) }
+      { new SymbolsListPos<Expression>(getStartPos parseState) }
     | SymbolWithArgsListNonEmpty
-      { new ImmutableListPos<SymbolExprArgs>($1, getPos parseState) }
+      { new SymbolsListPos<Expression>($1 :> System.Collections.Generic.IEnumerable<Symbol<Expression>>, getPos parseState) }
 
 SymbolWithArgsListNonEmpty:
     | SymbolWithArgs
-      { let mutable x = new ResizeArray<SymbolExprArgs>() in x.Add($1); x }
+      { let mutable x = new ResizeArray<Symbol<Expression>>() in x.Add($1); x }
     | SymbolWithArgsListNonEmpty SymbolWithArgs
       { $1.Add($2); $1 }
 
 Symbol:
     | ID
-      { new Symbol($1, getPos parseState) }
+      { $1 }
     | OPERATOR
-      { new Symbol($1, getPos parseState) }
+      { $1 }
 
 
 //------------------------------------------------------------------------------
@@ -521,9 +566,7 @@ ExpressionsList:
 
 ExpressionsListNonEmpty:
     | ExpressionNonEmpty
-      { let mutable x = new ResizeArray<Expression>() in
-        x.Add($1);
-        x }
+      { let mutable x = new ResizeArray<Expression>() in x.Add($1); x }
     | ExpressionsListNonEmpty COMMA Expression
       { $1.Add($3); $1 }
 
@@ -534,7 +577,8 @@ ExprIndexer:
 ExprFun:
     | ID LPAREN ExpressionsList RPAREN
       { let id = new Identificator($1, getPosI parseState 1) in
-        new ExpressionFunction(id, $3, getPos parseState) }
+        let args = new ImmutableListPos<Expression>($3, getRangePos parseState 2 4)
+        new ExpressionFunction(id, args, getPos parseState) }
 
 ExprParen:
     | LPAREN Expression RPAREN

@@ -7,12 +7,12 @@ namespace Malsys.Ast {
 	public class ExpressionFunction : IToken, IExpressionMember {
 
 		public readonly Identificator NameId;
-		public readonly ImmutableList<Expression> Arguments;
+		public readonly ImmutableListPos<Expression> Arguments;
 
 
-		public ExpressionFunction(Identificator name, IEnumerable<Expression> args, Position pos) {
+		public ExpressionFunction(Identificator name, ImmutableListPos<Expression> args, Position pos) {
 			NameId = name;
-			Arguments = new ImmutableList<Expression>(args);
+			Arguments = args;
 			Position = pos;
 		}
 
@@ -26,6 +26,14 @@ namespace Malsys.Ast {
 		#region IExpressionMember Members
 
 		public ExpressionMemberType MemberType { get { return ExpressionMemberType.Function; } }
+
+		#endregion
+
+		#region IAstVisitable Members
+
+		public void Accept(IAstVisitor visitor) {
+			visitor.Visit(this);
+		}
 
 		#endregion
 	}

@@ -21,22 +21,20 @@ namespace Malsys.Compilers {
 
 			usedNames = null;
 
+			var vars = rRuleAst.LocalVariables.CompileFailSafe(msgs);
 
 			var cond = rRuleAst.Condition.IsEmpty
 				? Constant.True
 				: rRuleAst.Condition.CompileFailSafe(msgs);
 
-			var probab = rRuleAst.Weight.IsEmpty
+			/*var probab = rRuleAst.Weight.IsEmpty
 				? Constant.One
 				: rRuleAst.Weight.CompileFailSafe(msgs);
 
-			var vars = rRuleAst.LocalVariables.CompileFailSafe(msgs);
-
-			var replac = rRuleAst.Replacement.CompileListFailSafe(msgs);
+			var replac = rRuleAst.Replacement.CompileListFailSafe(msgs);*/
 
 
-			return new RewriteRule(ptrn, lCtxt, rCtxt, cond, probab, vars, replac);
+			return new RewriteRule(ptrn, lCtxt, rCtxt, cond, null, vars, null);
 		}
-
 	}
 }

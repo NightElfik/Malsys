@@ -28,9 +28,6 @@ let logMessage msgType (parseState : IParseState) msg =
 let logMessagePos msgType (pos : Malsys.Position) msg =
     ThreadStatic.ErrorLogger.AddMessage(msg, msgType, pos)
 
-let logMessageLastPos msgType msg =
-    ThreadStatic.ErrorLogger.AddMessage(msg, msgType, ThreadStatic.LasErrorPos)
-
 let setErrPos (pos : Malsys.Position) =
     ThreadStatic.LasErrorPos <- pos
 
