@@ -90,7 +90,33 @@ namespace Malsys.SourceCode.Printers {
 		}
 
 		public void Visit(FloatConstant floatConstant) {
-			writer.Write(floatConstant.Value.ToStringInvariant());
+			double val = floatConstant.Value;
+
+			switch (floatConstant.Format) {
+				case ConstantFormat.Binary:
+					long valBin = (long)Math.Round(val);
+					writer.Write("0b");
+					writer.Write(Convert.ToString(valBin, 2));
+					break;
+				case ConstantFormat.Octal:
+					long valOct = (long)Math.Round(val);
+					writer.Write("0o");
+					writer.Write(Convert.ToString(valOct, 8));
+					break;
+				case ConstantFormat.Hexadecimal:
+					long valHex = (long)Math.Round(val);
+					writer.Write("0x");
+					writer.Write(Convert.ToString(valHex, 16).ToUpper());
+					break;
+				case ConstantFormat.HashHexadecimal:
+					long valHash = (long)Math.Round(val);
+					writer.Write("#");
+					writer.Write(Convert.ToString(valHash, 16).ToUpper());
+					break;
+				default:
+					writer.Write(val.ToStringInvariant());
+					break;
+			}
 		}
 
 		public void Visit(Ast.FunctionDefinition funDef) {
@@ -105,14 +131,17 @@ namespace Malsys.SourceCode.Printers {
 			writer.Indent();
 
 			Visit(funDef.LocalVarDefs);
+			writer.Write("return ");
 			Visit(funDef.ReturnExpression);
+			writer.Write(";");
 
 			writer.Unindent();
 			writer.NewLine();
 			writer.Write("}");
+			writer.NewLine();
 		}
 
-		public void Visit(Keyword keyword) {
+		public void Visit(KeywordPos keyword) {
 			throw new NotImplementedException();
 		}
 
@@ -120,14 +149,21 @@ namespace Malsys.SourceCode.Printers {
 			writer.NewLine();
 			writer.Write("lsystem ");
 			writer.Write(lsystem.NameId.Name);
-			writer.Write("(");
-			VisitSeparated(lsystem.Parameters);
-			writer.Write(")");
+			if (!lsystem.Parameters.IsEmpty) {
+				writer.Write("(");
+				VisitSeparated(lsystem.Parameters);
+				writer.Write(")");
+			}
+			writer.Write(" {");
+			writer.Indent();
 
 			foreach (var statement in lsystem.Body) {
+				writer.NewLine();
 				statement.Accept(this);
 			}
 
+			writer.Unindent();
+			writer.Write("}");
 			writer.NewLine();
 		}
 
@@ -224,7 +260,7 @@ namespace Malsys.SourceCode.Printers {
 			if (!symbol.Arguments.IsEmpty) {
 				writer.Write("(");
 				VisitSeparated(symbol.Arguments);
-				writer.Write(") ");
+				writer.Write(")");
 			}
 		}
 
@@ -233,15 +269,26 @@ namespace Malsys.SourceCode.Printers {
 		}
 
 		public void Visit(Operator op) {
+			writer.Write(" ");
 			writer.Write(op.Syntax);
+			writer.Write(" ");
 		}
 
 		public void Visit(VariableDefinition variableDef) {
-			writer.Write("let ");
+			if (!variableDef.Keyword.IsEmpty) {
+				writer.Write("let ");
+			}
 			writer.Write(variableDef.NameId.Name);
 			writer.Write(" = ");
 			Visit(variableDef.Expression);
-			writer.WriteLine(";");
+
+			if (!variableDef.Keyword.IsEmpty) {
+				writer.WriteLine(";");
+			}
+		}
+
+		public void Visit(InvalidExpression invExpr) {
+
 		}
 
 		#endregion

@@ -5,12 +5,12 @@ namespace Malsys.Ast {
 	/// </summary>
 	public class SymbolsDefinition : IToken, ILsystemStatement {
 
-		public readonly Keyword Keyword;
+		public readonly KeywordPos Keyword;
 		public readonly Identificator NameId;
 		public readonly SymbolsListPos<Expression> Symbols;
 
 
-		public SymbolsDefinition(Keyword keyword, Identificator name, SymbolsListPos<Expression> symbols, Position pos) {
+		public SymbolsDefinition(KeywordPos keyword, Identificator name, SymbolsListPos<Expression> symbols, Position pos) {
 			Keyword = keyword;
 			NameId = name;
 			Symbols = symbols;

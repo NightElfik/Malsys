@@ -11,11 +11,11 @@ namespace Malsys.Ast {
 		public readonly ImmutableListPos<OptionalParameter> Parameters;
 		public readonly ImmutableListPos<VariableDefinition> LocalVarDefs;
 		public readonly Expression ReturnExpression;
-		public readonly ImmutableList<Keyword> keywords;
+		public readonly ImmutableList<KeywordPos> keywords;
 
 
 		public FunctionDefinition(Identificator name, ImmutableListPos<OptionalParameter> prms, ImmutableListPos<VariableDefinition> varDefs,
-				Expression retExpr, ImmutableList<Keyword> kws, Position pos) {
+				Expression retExpr, ImmutableList<KeywordPos> kws, Position pos) {
 
 			NameId = name;
 			Parameters = prms;

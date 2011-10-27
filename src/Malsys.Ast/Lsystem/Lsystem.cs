@@ -8,14 +8,14 @@ namespace Malsys.Ast {
 	/// </summary>
 	public class Lsystem : IToken, IInputStatement {
 
-		public readonly Keyword Keyword;
+		public readonly KeywordPos Keyword;
 		public readonly Identificator NameId;
 
 		public readonly ImmutableListPos<OptionalParameter> Parameters;
 		public readonly ImmutableListPos<ILsystemStatement> Body;
 
 
-		public Lsystem(Keyword keyword, Identificator name, ImmutableListPos<OptionalParameter> prms, ImmutableListPos<ILsystemStatement> body, Position pos) {
+		public Lsystem(KeywordPos keyword, Identificator name, ImmutableListPos<OptionalParameter> prms, ImmutableListPos<ILsystemStatement> body, Position pos) {
 			Keyword = keyword;
 			NameId = name;
 			Parameters = prms;

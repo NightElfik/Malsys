@@ -234,7 +234,7 @@ namespace Malsys.SourceCode.Highlighters {
 			}
 		}
 
-		public static void Collect(Ast.Keyword kw, List<PositionMark> marks) {
+		public static void Collect(Ast.KeywordPos kw, List<PositionMark> marks) {
 			addMarks(MarkType.Keyword, kw.Position, marks);
 		}
 

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Malsys.Ast {
 	public interface IAstVisitor {
-		
+
 		// Visit methods sorted by type name.
 
 		void Visit(Comment comment);
@@ -18,17 +18,18 @@ namespace Malsys.Ast {
 		void Visit(ExpressionsArray arrExpr);
 		void Visit(FloatConstant floatConstant);
 		void Visit(FunctionDefinition funDef);
-		void Visit(Keyword keyword);
-		void Visit(Lsystem lsystem);
-		void Visit(OptionalParameter optParam);
 		void Visit(Identificator id);
 		void Visit<T>(ImmutableListPos<T> tokList) where T : IToken;
+		void Visit(InvalidExpression invExpr);
+		void Visit(KeywordPos keyword);
+		void Visit(Lsystem lsystem);
+		void Visit(Operator op);
+		void Visit(OptionalParameter optParam);
 		void Visit(RewriteRule rewriteRule);
 		void Visit(RewriteRuleReplacement rrReplacment);
 		void Visit(RichExpression richExpr);
 		void Visit<T>(Symbol<T> symbol) where T : IToken;
 		void Visit(SymbolsDefinition symbolDef);
-		void Visit(Operator op);
 		void Visit(VariableDefinition variableDef);
 
 	}

@@ -2,13 +2,13 @@
 namespace Malsys.Ast {
 	public class RewriteRuleReplacement : IToken {
 
-		public readonly ImmutableList<Keyword> Keywords;
+		public readonly ImmutableList<KeywordPos> Keywords;
 
 		public readonly SymbolsListPos<Expression> Replacement;
 		public readonly Expression Weight;
 
 
-		public RewriteRuleReplacement(SymbolsListPos<Expression> replac, Expression wei, ImmutableList<Keyword> keywords, Position pos) {
+		public RewriteRuleReplacement(SymbolsListPos<Expression> replac, Expression wei, ImmutableList<KeywordPos> keywords, Position pos) {
 
 			Replacement = replac;
 			Weight = wei;

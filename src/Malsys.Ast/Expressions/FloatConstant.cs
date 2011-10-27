@@ -6,10 +6,12 @@ namespace Malsys.Ast {
 	public class FloatConstant : IToken, IExpressionMember {
 
 		public readonly double Value;
+		public readonly ConstantFormat Format;
 
 
-		public FloatConstant(double value, Position pos) {
+		public FloatConstant(double value, ConstantFormat cf, Position pos) {
 			Value = value;
+			Format = cf;
 			Position = pos;
 		}
 

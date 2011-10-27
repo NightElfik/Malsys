@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.FSharp.Text.Lexing;
 using Malsys.Compilers;
-using Malsys.Parsing;
 using Malsys.IO;
+using Malsys.Parsing;
 using Malsys.SourceCode.Printers;
+using Microsoft.FSharp.Text.Lexing;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Malsys.Tests.Parsing {
 	[TestClass]
@@ -15,51 +12,66 @@ namespace Malsys.Tests.Parsing {
 
 		[TestMethod]
 		public void FunNameTests() {
-			doTest("fun f() {", "0", "}");
-			doTest("fun f'() {", "0", "}");
-			doTest("fun function() {", "0", "}");
-			doTest("fun _() {", "0", "}");
-			doTest("fun _f() {", "0", "}");
-			doTest("fun f_() {", "0", "}");
-			doTest("fun {0}() {{".Fmt(CharHelper.Pi), "0", "}");
+			doTestAutoident("fun f() {", "return 0;", "}");
+			doTestAutoident("fun f'() {", "return 0;", "}");
+			doTestAutoident("fun function() {", "return 0;", "}");
+			doTestAutoident("fun _() {", "return 0;", "}");
+			doTestAutoident("fun _f() {", "return 0;", "}");
+			doTestAutoident("fun f_() {", "return 0;", "}");
+			doTestAutoident("fun {0}() {{".Fmt(CharHelper.Pi), "return 0;", "}");
 		}
 
 		[TestMethod]
 		public void FunParamsTests() {
-			doTest("fun f(x) {", "0", "}");
-			doTest("fun f(x, y) {", "0", "}");
-			doTest("fun f(x, _, z) {", "0", "}");
-			doTest("fun f(x'') {", "0", "}");
-			doTest("fun f(x = 0) {", "0", "}");
-			doTest("fun f(x = 0, y = 0) {", "0", "}");
-			doTest("fun f(y = {}) {", "0", "}");
-			doTest("fun f(y = {-1, 1}) {", "0", "}");
-			doTest("fun f(a, b, c = d) {", "0", "}");
-			doTest("fun f(a, b = x, c) {", "0", "}");
+			doTestAutoident("fun f(x) {", "return 0;", "}");
+			doTestAutoident("fun f(x, y) {", "return 0;", "}");
+			doTestAutoident("fun f(x, _, z) {", "return 0;", "}");
+			doTestAutoident("fun f(x'') {", "return 0;", "}");
+			doTestAutoident("fun f(x = 0) {", "return 0;", "}");
+			doTestAutoident("fun f(x = 0, y = 0) {", "return 0;", "}");
+			doTestAutoident("fun f(y = {}) {", "return 0;", "}");
+			doTestAutoident("fun f(y = { - 1, 1}) {", "return 0;", "}");
+			doTestAutoident("fun f(a, b, c = d) {", "return 0;", "}");
 		}
 
 		[TestMethod]
 		public void FunReturnValueTests() {
-			doTest("fun f() {", "1+1", "}");
-			doTest("fun f() {", "{}", "}");
-			doTest("fun f() {", "{{{}}}", "}");
-			doTest("fun f() {", "{log(e), -1}[1]", "}");
+			doTestAutoident("fun f() {", "return 1 + 1;", "}");
+			doTestAutoident("fun f() {", "return {};", "}");
+			doTestAutoident("fun f() {", "return {{{}}};", "}");
+			doTestAutoident("fun f() {", "return {log(e),  - 1}[1];", "}");
 		}
 
 		[TestMethod]
 		public void FunLoalVariableTests() {
-			doTest("fun f() {", "let x = 0;", "0", "}");
-			doTest("fun f() {", "let x = 0;", "let y = 0;", "0", "}");
+			doTestAutoident("fun f() {", "let x = 0;", "return 0;", "}");
+			doTestAutoident("fun f() {", "let x = 0;", "let y = 0;", "return 0;", "}");
+		}
+
+		[TestMethod]
+		public void WhitespaceIndependencyTests() {
+			doTestAutoidentOutput("fun f(){return 0;}", "fun f() {", "return 0;", "}");
+			doTestAutoidentOutput("fun f(){let x=0;return 0;}", "fun f() {", "let x = 0;", "return 0;", "}");
+			doTestAutoidentOutput("\n\nfun\tf(){let\tx=0;\n\nreturn\t0\n\t\n;}", "fun f() {", "let x = 0;", "return 0;", "}");
 		}
 
 
-		private void doTest(params string[] inputLines) {
+		private void doTestAutoident(params string[] inputLines) {
 			for (int i = 1; i < inputLines.Length - 1; i++) {
 				inputLines[i] = "\t" + inputLines[i];
 			}
 
 			string input = string.Join(Environment.NewLine, inputLines);
 			doTest(input, input);
+		}
+
+		private void doTestAutoidentOutput(string input, params string[] outputLines) {
+			for (int i = 1; i < outputLines.Length - 1; i++) {
+				outputLines[i] = "\t" + outputLines[i];
+			}
+
+			string output = string.Join(Environment.NewLine, outputLines);
+			doTest(input, output);
 		}
 
 		private void doTest(string input, string excpected) {
@@ -69,7 +81,7 @@ namespace Malsys.Tests.Parsing {
 			var varDef = ParserUtils.ParseFunDef(lexBuff, msgs, "testInput");
 
 			if (msgs.ErrorOcured) {
-				throw new Exception(msgs.ToString());
+				Assert.Fail(msgs.ToString());
 			}
 
 			var writer = new IndentStringWriter();

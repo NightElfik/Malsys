@@ -19,10 +19,6 @@ open Malsys.Parsing.Parser
 /// Returns actual string from lexbuffer.
 let lexeme lexbuf = LexBuffer<_>.LexemeString lexbuf
 
-// for float (double) parsing
-let invariantCulture = CultureInfo.InvariantCulture
-let floatStyle = NumberStyles.AllowDecimalPoint ||| NumberStyles.AllowExponent
-
 /// Sets new line information into lexbuf.
 let newline (lexbuf : LexBuffer<_>) = lexbuf.EndPos <- lexbuf.EndPos.NextLine
 
@@ -49,23 +45,36 @@ let addComment (_, cmtList : ResizeArray<Comment>) sb bPos ePos =
 let appendToSb lexbuf (sb : StringBuilder) =
     sb.Append(LexBuffer<_>.LexemeString lexbuf) |> ignore
 
-/// Map of keywords.
-let keywords =
+let kw =
     [
-        ("lsystem", LSYSTEM);
-        ("rewrite", REWRITE);
-        ("with", WITH);
-        ("where", WHERE);
-        ("to", TO);
-        ("or", OR);
-        ("weight", WEIGHT);
-        ("nothing", NOTHING);
-        ("consider", CONSIDER);
-        ("let", LET);
-        ("set", SET);
-        ("fun", FUN);
-        ("return", RETURN);
-    ] |> Map.ofList
+        (Keyword.Consider, CONSIDER Keyword.Consider);
+        (Keyword.Fun, FUN Keyword.Fun);
+        (Keyword.Let, LET Keyword.Let);
+        (Keyword.Lsystem, LSYSTEM Keyword.Lsystem);
+        (Keyword.Nothing, NOTHING Keyword.Nothing);
+        (Keyword.Or, OR Keyword.Or);
+        (Keyword.Return, RETURN Keyword.Return);
+        (Keyword.Rewrite, REWRITE Keyword.Rewrite);
+        (Keyword.Set, SET Keyword.Set);
+        (Keyword.To, TO Keyword.To);
+        (Keyword.Weight, WEIGHT Keyword.Weight);
+        (Keyword.With, WITH Keyword.With);
+        (Keyword.Where, WHERE Keyword.Where);
+    ]
+
+let getKwStr (kwEnum, token) =
+    let str = EnumHelper.GetStringVal(kwEnum) in
+    (str, token)
+
+/// Map of keywords.
+let keywords = List.map getKwStr kw |> Map.ofList
+
+
+let parseInt args lexbuf format =
+    let s = if (format = ConstantFormat.HashHexadecimal) then ("0x" + (lexeme lexbuf).Substring(1)) else (lexeme lexbuf) in
+    let n = try int64 s |> double with _ -> writeMessage args lexbuf msgErr <| sprintf "Failed to parse `%s` as integer." s; Double.NaN in
+    FLOAT (n, format)
+
 
 }
 
@@ -98,12 +107,6 @@ let floate = digit+ ('.' digit*)? ['e' 'E'] ['+' '-']? digit+
 let float = floatp | floate
 
 let hex = ['0'-'9'] | ['A'-'F'] | ['a'-'f']
-let int =
-    ( digit+
-    | '0' ('b'| 'B') (['0'-'1'])+
-    | '0' ('o'| 'O') (['0'-'7'])+
-    | '0' ('x'| 'X') hex+ )
-let hexInt = '#' hex+  // hex value like colors in HTML
 
 // Pc - Punctuation, connector
 let connectingChar = '\Pc'
@@ -130,7 +133,7 @@ rule tokenize args = parse
       { tokenize args lexbuf }
 
     | newline
-      { newline lexbuf
+      { newline lexbuf;
         tokenize args lexbuf }
 
     | id
@@ -138,24 +141,29 @@ rule tokenize args = parse
         | Some(token) -> token
         | None -> ID(lexeme lexbuf) }
 
-    | int
-      { let s = lexeme lexbuf in
-        let n = try int64 s |> double with _ -> writeMessage args lexbuf msgErr <| sprintf "Failed to parse `%s` as integer." s; Double.NaN in
-        FLOAT n }
+    | '0' ('b'|'B') (['0'-'1'])+
+      { parseInt args lexbuf ConstantFormat.Binary }
 
-    // #123 number -> 0x123 -> parse as hex
-    | hexInt
-      { let s = "0x" + (lexeme lexbuf).Substring(1) in
-        let n = try int64 s |> double with _ ->  writeMessage args lexbuf msgErr <| sprintf "Failed to parse `%s` as hexagonal integer." s; Double.NaN in
-        FLOAT n }
+    | '0' ('o'|'O') (['0'-'7'])+
+      { parseInt args lexbuf ConstantFormat.Octal }
+
+    | digit+
+      { parseInt args lexbuf ConstantFormat.Float }
+
+    | '0' ('x'|'X') hex+
+      { parseInt args lexbuf ConstantFormat.Hexadecimal }
+
+    // #123 number -> 0x123 -> parse as hex int
+    | '#' hex+
+      { parseInt args lexbuf ConstantFormat.HashHexadecimal }
 
     | float
       { let mutable d = 0.0 in
-        if Double.TryParse(lexeme lexbuf, floatStyle, invariantCulture, &d) then
-            FLOAT d
+        if Double.TryParse(lexeme lexbuf, &d) then
+            FLOAT (d, ConstantFormat.Float)
         else
             writeMessage args lexbuf msgErr <| sprintf "Failed to parse `%s` as folating point number." (lexeme lexbuf)
-            FLOAT Double.NaN }
+            FLOAT (Double.NaN, ConstantFormat.Float) }
 
     | "/*"
       { let sb = (new StringBuilder(128)).Append(lexeme lexbuf) in
@@ -190,6 +198,7 @@ rule tokenize args = parse
         tokenize args lexbuf }
 
 // nested mult-line comment
+// args : (MessagesCollection, ResizeArray<CommentRange>)
 and multiLineComment args bPos sb nest = parse
     | "/*"
       { appendToSb lexbuf sb;

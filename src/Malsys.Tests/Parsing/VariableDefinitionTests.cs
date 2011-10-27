@@ -1,13 +1,9 @@
-﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.FSharp.Text.Lexing;
-using Malsys.Compilers;
-using Malsys.Parsing;
+﻿using Malsys.Compilers;
 using Malsys.IO;
+using Malsys.Parsing;
 using Malsys.SourceCode.Printers;
+using Microsoft.FSharp.Text.Lexing;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Malsys.Tests.Parsing {
 	[TestClass]
@@ -28,8 +24,8 @@ namespace Malsys.Tests.Parsing {
 		[TestMethod]
 		public void VarValueTests() {
 			doTest("let v = 1;");
-			doTest("let v = -1;");
-			doTest("let x = 1+2;");
+			doTest("let v =  - 1;");
+			doTest("let x = 1 + 2;");
 			doTest("let empty = {};");
 			doTest("let arr = {1, log(e)}[1];");
 			doTest("let v = f(x);");
@@ -47,7 +43,7 @@ namespace Malsys.Tests.Parsing {
 			var varDef = ParserUtils.ParseVarDef(lexBuff, msgs, "testInput");
 
 			if (msgs.ErrorOcured) {
-				throw new Exception(msgs.ToString());
+				Assert.Fail(msgs.ToString());
 			}
 
 			var writer = new IndentStringWriter();

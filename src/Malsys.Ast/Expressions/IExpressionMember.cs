@@ -9,6 +9,13 @@ namespace Malsys.Ast {
 	}
 
 	public enum ExpressionMemberType {
-		Constant, Variable, Array, Operator, Indexer, Function, BracketedExpression
+		Invalid,
+		Constant,
+		Variable,
+		Array,
+		Operator,
+		Indexer,
+		Function,
+		BracketedExpression,
 	}
 }

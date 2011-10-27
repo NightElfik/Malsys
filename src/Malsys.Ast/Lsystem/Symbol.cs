@@ -4,7 +4,7 @@ namespace Malsys.Ast {
 	/// <summary>
 	/// Immutable.
 	/// </summary>
-	public abstract class Symbol<T> : IToken where T : IToken {
+	public class Symbol<T> : IToken where T : IToken {
 
 		public readonly string Name;
 		public readonly ImmutableListPos<T> Arguments;
@@ -20,7 +20,7 @@ namespace Malsys.Ast {
 			Name = name;
 			Arguments = args;
 
-			Position = pos;	
+			Position = pos;
 		}
 
 		#region IToken Members

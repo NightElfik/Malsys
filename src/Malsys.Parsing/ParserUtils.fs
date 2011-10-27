@@ -36,6 +36,10 @@ let ParseExprInteractiveStatements lexbuf msgs sourceName =
     parseHelper Parser.ParseExprInteractiveStatements comments lexbuf msgs sourceName
 
 
+let ParseLsystem lexbuf msgs sourceName =
+    let mutable comments = new ResizeArray<Comment>() in
+    parseHelper Parser.ParseLsystem comments lexbuf msgs sourceName
+
 let ParseVarDef lexbuf msgs sourceName =
     let mutable comments = new ResizeArray<Comment>() in
     parseHelper Parser.ParseVarDef comments lexbuf msgs sourceName

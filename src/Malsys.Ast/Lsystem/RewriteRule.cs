@@ -6,7 +6,7 @@ namespace Malsys.Ast {
 	/// </summary>
 	public class RewriteRule : IToken, ILsystemStatement {
 
-		public readonly ImmutableList<Keyword> Keywords;
+		public readonly ImmutableList<KeywordPos> Keywords;
 
 		public readonly Symbol<Identificator> Pattern;
 		public readonly SymbolsListPos<Identificator> LeftContext;
@@ -21,7 +21,7 @@ namespace Malsys.Ast {
 
 		public RewriteRule(Symbol<Identificator> pattern, SymbolsListPos<Identificator> lctxt, SymbolsListPos<Identificator> rctxt,
 				ImmutableListPos<VariableDefinition> locVars, Expression cond, ImmutableListPos<RewriteRuleReplacement> replacs,
-				ImmutableList<Keyword> keywords, Position pos) {
+				ImmutableList<KeywordPos> keywords, Position pos) {
 
 			LeftContext = lctxt;
 			Pattern = pattern;

@@ -11,8 +11,8 @@ namespace Malsys.Ast {
 
 		}
 
-		public ExpressionsArray(IEnumerable<Expression> vals, Position pos)
-			: base(vals, pos) {
+		public ExpressionsArray(ImmutableListPos<Expression> vals, Position beginSep, Position endSep)
+			: base(vals, beginSep, endSep, vals.Position) {
 
 		}
 
@@ -25,7 +25,7 @@ namespace Malsys.Ast {
 
 		#region IAstVisitable Members
 
-		public void Accept(IAstVisitor visitor) {
+		new public void Accept(IAstVisitor visitor) {
 			visitor.Visit(this);
 		}
 
