@@ -1,4 +1,6 @@
-﻿using Malsys.Compilers;
+﻿using System.Globalization;
+using System.Threading;
+using Malsys.Compilers;
 using Malsys.IO;
 using Malsys.Parsing;
 using Malsys.SourceCode.Printers;
@@ -8,6 +10,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Malsys.Tests.Parsing {
 	[TestClass]
 	public class VariableDefinitionTests {
+
+		[TestInitialize]
+		public void InitTest() {
+			Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+		}
+
 
 		[TestMethod]
 		public void VarNameTests() {

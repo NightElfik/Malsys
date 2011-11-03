@@ -253,11 +253,11 @@ namespace Malsys.Rewriters {
 
 				if (tryFindRewriteRule(symbol, out rrule, out vars)) {
 					// return evaluated replacement
-					foreach (var replacSymbol in rrule.Replacement) {
-						var result = replacSymbol.Evaluate(vars, functions);
-						addSymbolToHistory(result);
-						yield return result;
-					}
+					//foreach (var replacSymbol in rrule.Replacement) {
+					//    var result = replacSymbol.Evaluate(vars, functions);
+					//    addSymbolToHistory(result);
+					//    yield return result;
+					//}
 				}
 				else {
 					// no rewrite rule found for symbol, identity (symbol rewrotes to itself)

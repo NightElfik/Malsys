@@ -23,6 +23,13 @@ namespace Malsys.SourceCode.Printers {
 			}
 		}
 
+		public void PrintKw(Keyword kw, bool includeSpace = true) {
+			writer.Write(EnumHelper.GetStringVal(kw));
+			if (includeSpace) {
+				writer.Write(" ");
+			}
+		}
+
 		/// <summary>
 		/// Prints separator between items.
 		/// </summary>
@@ -120,7 +127,7 @@ namespace Malsys.SourceCode.Printers {
 		}
 
 		public void Visit(Ast.FunctionDefinition funDef) {
-			writer.Write("fun ");
+			PrintKw(Keyword.Fun);
 			writer.Write(funDef.NameId.Name);
 			writer.Write("(");
 			VisitSeparated(funDef.Parameters);
@@ -131,7 +138,7 @@ namespace Malsys.SourceCode.Printers {
 			writer.Indent();
 
 			Visit(funDef.LocalVarDefs);
-			writer.Write("return ");
+			PrintKw(Keyword.Return);
 			Visit(funDef.ReturnExpression);
 			writer.Write(";");
 
@@ -142,12 +149,12 @@ namespace Malsys.SourceCode.Printers {
 		}
 
 		public void Visit(KeywordPos keyword) {
-			throw new NotImplementedException();
+			writer.Write(keyword.ToKeyword());
 		}
 
 		public void Visit(Lsystem lsystem) {
 			writer.NewLine();
-			writer.Write("lsystem ");
+			PrintKw(Keyword.Lsystem);
 			writer.Write(lsystem.NameId.Name);
 			if (!lsystem.Parameters.IsEmpty) {
 				writer.Write("(");
@@ -186,7 +193,7 @@ namespace Malsys.SourceCode.Printers {
 		}
 
 		public void Visit(Ast.RewriteRule rewriteRule) {
-			writer.Write("rewrite ");
+			PrintKw(Keyword.Rewrite);
 
 			if (!rewriteRule.LeftContext.IsEmpty) {
 				writer.Write("{");
@@ -206,13 +213,13 @@ namespace Malsys.SourceCode.Printers {
 
 			if (!rewriteRule.LocalVariables.IsEmpty) {
 				writer.NewLine();
-				writer.Write("with ");
+				PrintKw(Keyword.With);
 				VisitSeparated(rewriteRule.LocalVariables);
 			}
 
 			if (!rewriteRule.Condition.IsEmpty) {
 				writer.NewLine();
-				writer.Write("where ");
+				PrintKw(Keyword.Where);
 				Visit(rewriteRule.Condition);
 			}
 
@@ -224,8 +231,9 @@ namespace Malsys.SourceCode.Printers {
 					first = false;
 				}
 				else {
-					writer.Write("or ");
+					PrintKw(Keyword.Or);
 				}
+
 
 				Visit(replac);
 			}
@@ -234,24 +242,22 @@ namespace Malsys.SourceCode.Printers {
 			writer.Unindent();
 		}
 
-		public void Visit(RewriteRuleReplacement rrReplacment) {
+		public void Visit(Ast.RewriteRuleReplacement rrReplacment) {
 
-			writer.Write("to ");
+			PrintKw(Keyword.To);
 
 			if (rrReplacment.Replacement.IsEmpty) {
-				writer.Write("nothing");
+				PrintKw(Keyword.Nothing, false);
 			}
 			else {
 				Visit(rrReplacment.Replacement);
 			}
 
 			if (!rrReplacment.Weight.IsEmpty) {
-				writer.Write(" weight ");
+				writer.Write(" ");
+				PrintKw(Keyword.Weight);
 				Visit(rrReplacment.Weight);
 			}
-		}
-
-		public void Visit(Ast.RichExpression richExpr) {
 		}
 
 		public void Visit<T>(Ast.Symbol<T> symbol) where T : IToken {
@@ -265,7 +271,11 @@ namespace Malsys.SourceCode.Printers {
 		}
 
 		public void Visit(SymbolsDefinition symbolDef) {
-			throw new NotImplementedException();
+			PrintKw(Keyword.Set);
+			writer.Write(symbolDef.NameId.Name);
+			writer.Write(" = ");
+			Visit(symbolDef.Symbols);
+			writer.WriteLine(";");
 		}
 
 		public void Visit(Operator op) {
@@ -276,7 +286,7 @@ namespace Malsys.SourceCode.Printers {
 
 		public void Visit(VariableDefinition variableDef) {
 			if (!variableDef.Keyword.IsEmpty) {
-				writer.Write("let ");
+				PrintKw(Keyword.Let);
 			}
 			writer.Write(variableDef.NameId.Name);
 			writer.Write(" = ");

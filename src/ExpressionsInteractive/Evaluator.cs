@@ -40,24 +40,26 @@ namespace ExpressionsInteractive {
 			}
 
 
+
 			foreach (var statement in parsedStmnts) {
 				var msgs = new MessagesCollection();
 				msgs.DefaultSourceName = sourceName;
+				var compiler = new InputCompiler(msgs);
 
 				if (statement is Malsys.Ast.Expression) {
-					var expr = ExpressionCompiler.CompileFailSafe((Malsys.Ast.Expression)statement, msgs);
+					var expr = compiler.ExpressionCompiler.CompileExpression((Malsys.Ast.Expression)statement);
 					sb.AppendLine(evaluateExpression(expr));
 				}
 
 				else if (statement is Malsys.Ast.VariableDefinition) {
-					var varDef = VariableDefinitionCompiler.CompileFailSafe((Malsys.Ast.VariableDefinition)statement, msgs);
+					var varDef = compiler.CompileFailSafe((Malsys.Ast.VariableDefinition)statement);
 					if (!msgs.ErrorOcured) {
 						sb.AppendLine(evaluateVarDef(varDef));
 					}
 				}
 
 				else if (statement is Malsys.Ast.FunctionDefinition) {
-					var funDef = FunctionDefinitionCompiler.CompileFailSafe((Malsys.Ast.FunctionDefinition)statement, msgs);
+					var funDef = compiler.CompileFailSafe((Malsys.Ast.FunctionDefinition)statement);
 					if (!msgs.ErrorOcured) {
 						sb.AppendLine(evaluateFunDef(funDef));
 					}

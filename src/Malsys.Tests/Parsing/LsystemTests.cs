@@ -12,11 +12,6 @@ namespace Malsys.Tests.Parsing {
 	[TestClass]
 	public class LsystemTests {
 
-		[TestInitialize]
-		public void InitTest() {
-			Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-		}
-
 		[TestMethod]
 		public void ParamsTests() {
 			doTest("lsystem lsys {}");
@@ -38,6 +33,12 @@ namespace Malsys.Tests.Parsing {
 			doTestAutoident("lsystem l {", "let x = 0;", "}");
 			doTestAutoident("lsystem l {", "fun f() {", "\treturn 0;", "}", "}");
 			doTestAutoidentOutput("lsystem l{fun f(){let x=0;return x;}}", "lsystem l {", "fun f() {", "\tlet x = 0;", "\treturn x;", "}", "}");
+		}
+
+		[TestMethod]
+		public void SymbolsDefTests() {
+			doTestAutoident("lsystem l {", "set x = x;", "}");
+			doTestAutoident("lsystem l {", "set abcd' = +(a + 0)X( - 1)*(1 * 1);", "}");
 		}
 
 		[TestMethod]

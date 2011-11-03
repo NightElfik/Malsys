@@ -71,6 +71,7 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
@@ -80,8 +81,8 @@
     </CodeAnalysisDependentAssemblyPaths>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Compilers\ExpressionCompilerTest.cs" />
     <Compile Include="Expressions\GeneralExpressionsTests.cs" />
-    <Compile Include="ExpressionTests.cs" />
     <Compile Include="Parsing\ExpressionTests.cs" />
     <Compile Include="Parsing\LsystemTests.cs" />
     <Compile Include="Parsing\DebugTests.cs" />

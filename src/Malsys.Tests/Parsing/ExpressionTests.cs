@@ -11,10 +11,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Malsys.Tests.Parsing {
 	[TestClass]
 	public class ExpressionTests {
-		[TestInitialize]
-		public void InitTest() {
-			Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-		}
 
 		[TestMethod]
 		public void ConstantTests() {
@@ -34,6 +30,8 @@ namespace Malsys.Tests.Parsing {
 			doTest("0xabcdef", "0xABCDEF");
 			doTest("0XABCDEF", "0xABCDEF");
 			doTest("0x0A1B2c3d", "0xA1B2C3D");
+
+			doTest("#0A1B2c3d", "#A1B2C3D");
 		}
 
 		[TestMethod]

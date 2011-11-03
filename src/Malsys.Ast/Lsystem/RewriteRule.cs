@@ -29,7 +29,7 @@ namespace Malsys.Ast {
 			Condition = cond;
 			LocalVariables = locVars;
 			Replacements = replacs;
-			Keywords = keywords.WithoutEmpty();
+			Keywords = keywords;
 
 			Position = pos;
 		}

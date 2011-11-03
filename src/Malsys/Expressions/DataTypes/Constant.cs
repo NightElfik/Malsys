@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-
+﻿
 namespace Malsys.Expressions {
 	/// <summary>
 	/// Immutable.
@@ -19,9 +18,17 @@ namespace Malsys.Expressions {
 
 		public readonly double Value;
 
+		public readonly Ast.FloatConstant AstNode;
+
 
 		public Constant(double value) {
 			Value = value;
+			AstNode = null;
+		}
+
+		public Constant(double value, Ast.FloatConstant astNode) {
+			Value = value;
+			AstNode = astNode;
 		}
 
 		public static implicit operator double(Constant c) {
@@ -29,7 +36,7 @@ namespace Malsys.Expressions {
 		}
 
 		public override string ToString() {
-			return Value.ToString(CultureInfo.InvariantCulture.NumberFormat);
+			return Value.ToStringInvariant();
 		}
 
 

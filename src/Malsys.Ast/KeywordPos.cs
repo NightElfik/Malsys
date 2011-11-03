@@ -48,10 +48,4 @@ namespace Malsys.Ast {
 
 		#endregion
 	}
-
-	public static class KeywordExtensions {
-		public static ImmutableList<KeywordPos> WithoutEmpty(this IEnumerable<KeywordPos> keywords) {
-			return new ImmutableList<KeywordPos>(keywords.Where(k => !k.IsEmpty));
-		}
-	}
 }

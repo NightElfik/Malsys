@@ -212,10 +212,6 @@ namespace Malsys.SourceCode.Highlighters {
 			}
 		}
 
-		public static void Collect(Ast.RichExpression re, List<PositionMark> marks) {
-
-		}
-
 		public static void Collect(Ast.Symbol<Ast.Identificator> ptrn, List<PositionMark> marks) {
 			addMarks(MarkType.SymbolPattern, ptrn.Position, marks);
 			addMarks(MarkType.Symbol, ptrn.Position, marks);

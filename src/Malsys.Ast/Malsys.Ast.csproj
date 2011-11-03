@@ -100,7 +100,6 @@
     <Compile Include="Expressions\Operator.cs" />
     <Compile Include="OptionalParameter.cs" />
     <Compile Include="Lsystem\RewriteRule.cs" />
-    <Compile Include="Expressions\RichExpression.cs" />
     <Compile Include="Lsystem\Symbol.cs" />
     <Compile Include="IToken.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

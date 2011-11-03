@@ -4,16 +4,24 @@ using Malsys.Ast;
 using Malsys.Expressions;
 
 namespace Malsys.Compilers {
-	public static class ExpressionCompiler {
+	public class ExpressionCompiler {
 
 		public static readonly IExpression ErrorResult = Constant.NaN;
 
 
+		private MessagesCollection msgs;
+
+
+		public ExpressionCompiler(MessagesCollection msgsColl) {
+			msgs = msgsColl;
+		}
+
+
 		/// <summary>
-		/// Compiles expression from AST. If compilation failes, ErrorResult expression is returned.
-		/// Thread safe.
+		/// Compiles expression from AST. If compilation failes an error report is added to messages collection and
+		/// ErrorResult constant is returned.
 		/// </summary>
-		public static IExpression CompileFailSafe(this Expression expr, MessagesCollection msgs) {
+		public IExpression CompileExpression(Expression expr) {
 
 			if (expr.IsEmpty) {
 				return ErrorResult;
@@ -27,11 +35,11 @@ namespace Malsys.Compilers {
 			foreach (var member in expr) {
 				switch (state) {
 					case State.ExcpectingOperand:
-						state = handleAsOperand(member, optorsStack, operandsStack, msgs);
+						state = handleAsOperand(member, optorsStack, operandsStack);
 						break;
 
 					case State.ExcpectingOperator:
-						state = handleAsOperator(member, optorsStack, operandsStack, msgs);
+						state = handleAsOperator(member, optorsStack, operandsStack);
 						break;
 
 					case State.Error:
@@ -72,34 +80,25 @@ namespace Malsys.Compilers {
 
 		/// <summary>
 		/// Compiles list of expressions from AST using fail-safe compilation on each member.
-		/// Thread safe.
 		/// </summary>
-		public static ImmutableList<IExpression> CompileFailSafe(this ImmutableList<Expression> exprs, MessagesCollection msgs) {
+		public ImmutableList<IExpression> CompileFailSafe(ImmutableList<Expression> exprs) {
 
 			var compiledExprs = new IExpression[exprs.Length];
 
 			for (int i = 0; i < exprs.Length; i++) {
-				compiledExprs[i] = exprs[i].CompileFailSafe(msgs);
+				compiledExprs[i] = CompileExpression(exprs[i]);
 			}
 
 			return new ImmutableList<IExpression>(compiledExprs, true);
 		}
 
-		public static RichExpression CompileRichFailSafe(this Ast.RichExpression rExprAst, MessagesCollection msgs) {
 
-			var varDefs = rExprAst.VariableDefinitions.CompileFailSafe(msgs);
-			var expr = rExprAst.Expression.CompileFailSafe(msgs);
-
-			return new RichExpression(varDefs, expr);
-		}
-
-
-
-		private static State handleAsOperand(IExpressionMember member, Stack<OperatorCore> optorsStack, Stack<IExpression> operandsStack, MessagesCollection msgs) {
+		private State handleAsOperand(IExpressionMember member, Stack<OperatorCore> optorsStack, Stack<IExpression> operandsStack) {
 
 			switch (member.MemberType) {
 				case ExpressionMemberType.Constant:
-					operandsStack.Push(((FloatConstant)member).Value.ToConst());
+					var fc = (FloatConstant)member;
+					operandsStack.Push(fc.Value.ToConst(fc));
 					return State.ExcpectingOperator;
 
 				case ExpressionMemberType.Variable:
@@ -119,7 +118,7 @@ namespace Malsys.Compilers {
 
 				case ExpressionMemberType.Array:
 
-					var exprArr = ((ExpressionsArray)member).CompileFailSafe(msgs);
+					var exprArr = CompileFailSafe((ExpressionsArray)member);
 					operandsStack.Push(new ExpressionValuesArray(exprArr));
 
 					return State.ExcpectingOperator;
@@ -147,14 +146,14 @@ namespace Malsys.Compilers {
 
 				case ExpressionMemberType.Function:
 
-					var funCall = compileFunctionCallFailSafe((ExpressionFunction)member, msgs);
+					var funCall = compileFunctionCallFailSafe((ExpressionFunction)member);
 					operandsStack.Push(funCall);
 
 					return State.ExcpectingOperator;
 
 				case ExpressionMemberType.BracketedExpression:
 
-					var expr = ((ExpressionBracketed)member).Expression.CompileFailSafe(msgs);
+					var expr = CompileExpression(((ExpressionBracketed)member).Expression);
 					operandsStack.Push(expr);
 
 					return State.ExcpectingOperator;
@@ -166,7 +165,7 @@ namespace Malsys.Compilers {
 			}
 		}
 
-		private static State handleAsOperator(IExpressionMember member, Stack<OperatorCore> optorsStack, Stack<IExpression> operandsStack, MessagesCollection msgs) {
+		private State handleAsOperator(IExpressionMember member, Stack<OperatorCore> optorsStack, Stack<IExpression> operandsStack) {
 
 			switch (member.MemberType) {
 				case ExpressionMemberType.Constant:
@@ -200,7 +199,7 @@ namespace Malsys.Compilers {
 
 				case ExpressionMemberType.Indexer:
 					// apply indexer on previous operand
-					var indexExpr = ((ExpressionIndexer)member).Index.CompileFailSafe(msgs);
+					var indexExpr = CompileExpression(((ExpressionIndexer)member).Index);
 
 					if (operandsStack.Count < 1) {
 						msgs.AddError("Failed to compile indexer. No operand to apply on.", member.Position);
@@ -214,7 +213,7 @@ namespace Malsys.Compilers {
 					// Function while excpecting binary operator?
 					// So directly before function is operand.
 					// Lets add implicit multiplication between them.
-					var funCall = compileFunctionCallFailSafe((ExpressionFunction)member, msgs);
+					var funCall = compileFunctionCallFailSafe((ExpressionFunction)member);
 					operandsStack.Push(funCall);
 
 					// implicit multiplication
@@ -226,7 +225,7 @@ namespace Malsys.Compilers {
 					// Expression (probably in parenthesis) while excpecting binary operator?
 					// So directly before it is operand.
 					// Lets add implicit multiplication between them.
-					var expr = ((ExpressionBracketed)member).Expression.CompileFailSafe(msgs);
+					var expr = CompileExpression(((ExpressionBracketed)member).Expression);
 					operandsStack.Push(expr);
 
 					// implicit multiplication
@@ -242,7 +241,7 @@ namespace Malsys.Compilers {
 		}
 
 
-		private static bool tryPushOperator(OperatorCore op, Stack<IExpression> operandsStack, Stack<OperatorCore> optorStack) {
+		private bool tryPushOperator(OperatorCore op, Stack<IExpression> operandsStack, Stack<OperatorCore> optorStack) {
 
 			while (optorStack.Count > 0 && op.ActivePrecedence > optorStack.Peek().Precedence) {
 				if (!tryPopOperator(operandsStack, optorStack)) {
@@ -259,7 +258,7 @@ namespace Malsys.Compilers {
 		/// Result is saved on operands stack.
 		/// Do not check operators stack.
 		/// </summary>
-		private static bool tryPopOperator(Stack<IExpression> operandsStack, Stack<OperatorCore> optorStack) {
+		private bool tryPopOperator(Stack<IExpression> operandsStack, Stack<OperatorCore> optorStack) {
 
 			var opTop = optorStack.Pop();
 			if (opTop.Arity > operandsStack.Count) {
@@ -285,9 +284,9 @@ namespace Malsys.Compilers {
 		}
 
 
-		private static IExpression compileFunctionCallFailSafe(ExpressionFunction funCall, MessagesCollection msgs) {
+		private IExpression compileFunctionCallFailSafe(ExpressionFunction funCall) {
 
-			var rsltArgs = CompileFailSafe(funCall.Arguments, msgs);
+			var rsltArgs = CompileFailSafe(funCall.Arguments);
 
 			FunctionCore fun;
 			if (FunctionCore.TryGet(funCall.NameId.Name, funCall.Arguments.Length, out fun)) {

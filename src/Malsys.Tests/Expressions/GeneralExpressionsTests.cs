@@ -274,7 +274,7 @@ namespace Malsys.Tests.Expressions {
 
 			// compile
 
-			var compiledExpr = ExpressionCompiler.CompileFailSafe(parsedVal, msgs);
+			var compiledExpr = new ExpressionCompiler(msgs).CompileExpression(parsedVal);
 
 
 			// evaluate

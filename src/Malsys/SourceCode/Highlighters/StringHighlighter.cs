@@ -19,7 +19,7 @@ namespace Malsys.SourceCode.Highlighters {
 			var parsedInput = ParserUtils.ParseLsystemStatements(comments, lexBuff, msgs, sourceName);
 
 			// just to get errors
-			InputCompiler.CompileFromAst(parsedInput, msgs);
+			new InputCompiler(msgs).CompileFromAst(parsedInput);
 
 			var inputLines = inputStr.SplitToLines();
 

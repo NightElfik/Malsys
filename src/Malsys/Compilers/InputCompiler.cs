@@ -1,15 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
+using Malsys.Expressions;
 using Malsys.Parsing;
 using Microsoft.FSharp.Text.Lexing;
-using Microsoft.FSharp.Core;
-using Malsys.Expressions;
 
 namespace Malsys.Compilers {
-	public static class InputCompiler {
+	public class InputCompiler {
 
-		public static CompilerResult<InputBlock> CompileFromString(string strInput, string sourceName, MessagesCollection msgs) {
+		private MessagesCollection msgs;
+
+		private LsystemCompiler lsysCompiler;
+		private ExpressionCompiler exprCompiler;
+
+
+		public MessagesCollection Messages { get { return msgs; } }
+		public LsystemCompiler LsystemCompiler { get { return lsysCompiler; } }
+		public ExpressionCompiler ExpressionCompiler { get { return exprCompiler; } }
+
+
+		public InputCompiler(MessagesCollection msgsColl) {
+			msgs = msgsColl;
+
+			lsysCompiler = new LsystemCompiler(this);
+			exprCompiler = new ExpressionCompiler(msgs);
+		}
+
+
+
+
+		public CompilerResult<InputBlock> CompileFromString(string strInput, string sourceName) {
 
 			var lexBuff = LexBuffer<char>.FromString(strInput);
 			msgs.DefaultSourceName = sourceName;
@@ -17,10 +36,10 @@ namespace Malsys.Compilers {
 
 			var parsedInput = ParserUtils.ParseLsystemStatements(comments, lexBuff, msgs, sourceName);
 
-			return CompileFromAst(parsedInput, msgs);
+			return CompileFromAst(parsedInput);
 		}
 
-		public static CompilerResult<InputBlock> CompileFromAst(Ast.InputBlock parsedInput, MessagesCollection msgs) {
+		public CompilerResult<InputBlock> CompileFromAst(Ast.InputBlock parsedInput) {
 
 			var lsysDefs = new List<LsystemDefinition>();
 			var varDefs = new List<VariableDefinition<IExpression>>();
@@ -29,19 +48,19 @@ namespace Malsys.Compilers {
 			foreach (var statement in parsedInput) {
 
 				if (statement is Malsys.Ast.Lsystem) {
-					var lsysResult = ((Ast.Lsystem)statement).Compile(msgs);
+					var lsysResult = lsysCompiler.Compile((Ast.Lsystem)statement);
 					if (lsysResult) {
 						lsysDefs.Add(lsysResult);
 					}
 				}
 
 				else if (statement is Ast.VariableDefinition) {
-					var vd = ((Ast.VariableDefinition)statement).CompileFailSafe(msgs);
+					var vd = CompileFailSafe((Ast.VariableDefinition)statement);
 					varDefs.Add(vd);
 				}
 
 				else if (statement is Ast.FunctionDefinition) {
-					var fd = ((Ast.FunctionDefinition)statement).CompileFailSafe(msgs);
+					var fd = CompileFailSafe((Ast.FunctionDefinition)statement);
 					funDefs.Add(fd);
 				}
 
@@ -69,6 +88,96 @@ namespace Malsys.Compilers {
 			var funsImm = new ImmutableList<FunctionDefinition>(funDefs);
 
 			return new InputBlock(lsysImm, varsImm, funsImm);
+		}
+
+
+
+
+
+		public FunctionDefinition CompileFailSafe(Ast.FunctionDefinition funDef) {
+
+			var prms = CompileParametersFailSafe(funDef.Parameters);
+			var varDefs = CompileFailSafe(funDef.LocalVarDefs);
+			var retExpr = exprCompiler.CompileExpression(funDef.ReturnExpression);
+
+			return new FunctionDefinition(funDef.NameId.Name, prms, varDefs, retExpr);
+		}
+
+		public ImmutableList<OptionalParameter> CompileParametersFailSafe(ImmutableList<Ast.OptionalParameter> parameters) {
+
+			int parametersCount = parameters.Count;
+			bool wasOptional = false;
+			var result = new OptionalParameter[parametersCount];
+
+			for (int i = 0; i < parametersCount; i++) {
+
+				var prm = parameters[i];
+				var compiledParam = CompileParameterFailSafe(prm);
+				result[i] = compiledParam;
+
+				if (compiledParam.IsOptional) {
+					wasOptional = true;
+				}
+				else {
+					if (wasOptional) {
+						msgs.AddError("Mandatory parameters have to be before all optional parameters, but mandatory parameter `{0}` is after optional.".Fmt(prm.NameId.Name),
+							prm.Position);
+					}
+				}
+			}
+
+			// check wether parameters names are unique
+			foreach (var indices in result.GetEqualValuesIndices((l, r) => { return l.Name.Equals(r.Name); })) {
+				msgs.AddError("{0}. and {1}. parameter have same name `{2}`.".Fmt(indices.Item1 + 1, indices.Item2 + 1, result[indices.Item1].Name),
+					parameters[indices.Item1].Position, parameters[indices.Item2].Position);
+			}
+
+			return new ImmutableList<OptionalParameter>(result, true);
+		}
+
+		public OptionalParameter CompileParameterFailSafe(Ast.OptionalParameter parameter) {
+
+			if (parameter.IsOptional) {
+				var value = exprCompiler.CompileExpression(parameter.OptionalValue);
+				IValue evalValue;
+
+				try {
+					evalValue = ExpressionEvaluator.Evaluate(value);
+				}
+				catch (EvalException ex) {
+					msgs.AddError("Faled to evaluate default value of parameter `{0}`. {1}".Fmt(parameter.NameId.Name, ex.GetWholeMessage()),
+						parameter.OptionalValue.Position);
+					evalValue = Constant.NaN;
+				}
+
+				return new OptionalParameter(parameter.NameId.Name, evalValue);
+			}
+
+			else {
+				return new OptionalParameter(parameter.NameId.Name);
+			}
+		}
+
+
+
+
+		public VariableDefinition<IExpression> CompileFailSafe(Ast.VariableDefinition varDef) {
+			return new VariableDefinition<IExpression>(varDef.NameId.Name, exprCompiler.CompileExpression(varDef.Expression));
+		}
+
+		public VariableDefinition<SymbolsList<IExpression>> CompileFailSafe(Ast.SymbolsDefinition symDef) {
+			return new VariableDefinition<SymbolsList<IExpression>>(symDef.NameId.Name, lsysCompiler.CompileListFailSafe(symDef.Symbols));
+		}
+
+		public ImmutableList<VariableDefinition<IExpression>> CompileFailSafe(ImmutableList<Ast.VariableDefinition> varDefs) {
+
+			var rsltList = new VariableDefinition<IExpression>[varDefs.Length];
+
+			for (int i = 0; i < varDefs.Length; i++) {
+				rsltList[i] = CompileFailSafe(varDefs[i]);
+			}
+
+			return new ImmutableList<VariableDefinition<IExpression>>(rsltList, true);
 		}
 	}
 }

@@ -16,6 +16,10 @@ open Malsys.Ast
 open Malsys.Compilers
 open Malsys.Parsing.Parser
 
+// for float (double) parsing
+let invariantCulture = CultureInfo.InvariantCulture
+let floatStyle = NumberStyles.AllowDecimalPoint ||| NumberStyles.AllowExponent
+
 /// Returns actual string from lexbuffer.
 let lexeme lexbuf = LexBuffer<_>.LexemeString lexbuf
 
@@ -159,7 +163,7 @@ rule tokenize args = parse
 
     | float
       { let mutable d = 0.0 in
-        if Double.TryParse(lexeme lexbuf, &d) then
+        if Double.TryParse(lexeme lexbuf, floatStyle, invariantCulture, &d) then
             FLOAT (d, ConstantFormat.Float)
         else
             writeMessage args lexbuf msgErr <| sprintf "Failed to parse `%s` as folating point number." (lexeme lexbuf)

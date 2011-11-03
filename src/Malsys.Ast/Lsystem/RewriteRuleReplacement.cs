@@ -12,7 +12,7 @@ namespace Malsys.Ast {
 
 			Replacement = replac;
 			Weight = wei;
-			Keywords = keywords.WithoutEmpty();
+			Keywords = keywords;
 
 			Position = pos;
 		}

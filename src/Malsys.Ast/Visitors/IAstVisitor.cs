@@ -27,7 +27,6 @@ namespace Malsys.Ast {
 		void Visit(OptionalParameter optParam);
 		void Visit(RewriteRule rewriteRule);
 		void Visit(RewriteRuleReplacement rrReplacment);
-		void Visit(RichExpression richExpr);
 		void Visit<T>(Symbol<T> symbol) where T : IToken;
 		void Visit(SymbolsDefinition symbolDef);
 		void Visit(VariableDefinition variableDef);
