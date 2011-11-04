@@ -21,8 +21,8 @@ namespace Malsys.Compilers {
 		public InputCompiler(MessagesCollection msgsColl) {
 			msgs = msgsColl;
 
-			lsysCompiler = new LsystemCompiler(this);
 			exprCompiler = new ExpressionCompiler(msgs);
+			lsysCompiler = new LsystemCompiler(this);
 		}
 
 

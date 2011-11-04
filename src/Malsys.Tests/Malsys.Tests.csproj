@@ -90,6 +90,8 @@
     <Compile Include="Parsing\VariableDefinitionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Common\StringExtensionsTest.cs" />
+    <Compile Include="Rewriters\ArrayRewriterTests.cs" />
+    <Compile Include="Rewriters\GenericRewriterTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Malsys.Ast\Malsys.Ast.csproj">

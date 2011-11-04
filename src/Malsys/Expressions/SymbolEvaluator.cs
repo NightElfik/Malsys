@@ -18,5 +18,27 @@ namespace Malsys.Expressions {
 			return new Symbol<IValue>(symbol.Name, args);
 		}
 
+		public static SymbolsList<IValue> Evaluate(this SymbolsList<IExpression> symbols) {
+
+			var result = new Symbol<IValue>[symbols.Length];
+
+			for (int i = 0; i < symbols.Length; i++) {
+				result[i] = Evaluate(symbols[i]);
+			}
+
+			return new SymbolsList<IValue>(new ImmutableList<Symbol<IValue>>(result, true));
+		}
+
+		public static SymbolsList<IValue> Evaluate(this SymbolsList<IExpression> symbols, VarMap vars, FunMap funs) {
+
+			var result = new Symbol<IValue>[symbols.Length];
+
+			for (int i = 0; i < symbols.Length; i++) {
+				result[i] = Evaluate(symbols[i], vars, funs);
+			}
+
+			return new SymbolsList<IValue>(new ImmutableList<Symbol<IValue>>(result, true));
+		}
+
 	}
 }

@@ -23,14 +23,11 @@ namespace Malsys.SourceCode.Printers {
 			expr.Accept(this);
 		}
 
-		/// <summary>
-		/// Prints separator between items.
-		/// </summary>
-		public void PrintExprSeparated<T>(IEnumerable<T> tokens, string separator = ", ") where T : IExpression {
+		public void PrintExprSeparated<T>(IEnumerable<T> exprs, string separator = ", ") where T : IExpression {
 
 			bool first = true;
 
-			foreach (var tok in tokens) {
+			foreach (var expr in exprs) {
 				if (first) {
 					first = false;
 				}
@@ -38,8 +35,48 @@ namespace Malsys.SourceCode.Printers {
 					writer.Write(separator);
 				}
 
-				tok.Accept(this);
+				expr.Accept(this);
 			}
+		}
+
+		public void PrintValueSeparated<T>(IEnumerable<T> values, string separator = ", ") where T : IValue {
+
+			bool first = true;
+
+			foreach (var val in values) {
+				if (first) {
+					first = false;
+				}
+				else {
+					writer.Write(separator);
+				}
+
+				Print(val);
+			}
+		}
+
+		public void Print(Symbol<IValue> symbol) {
+			writer.Write(symbol.Name);
+			if (!symbol.Arguments.IsEmpty) {
+				writer.Write("(");
+				PrintValueSeparated(symbol.Arguments);
+				writer.Write(")");
+			}
+		}
+
+		public void Print(IValue value) {
+			if (value.IsConstant) {
+				Visit((Constant)value);
+			}
+			else {
+				Print((ValuesArray)value);
+			}
+		}
+
+		public void Print(ValuesArray arr) {
+			writer.Write("{");
+			PrintValueSeparated(arr);
+			writer.Write("}");
 		}
 
 

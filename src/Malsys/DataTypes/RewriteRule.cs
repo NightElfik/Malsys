@@ -20,8 +20,8 @@ namespace Malsys {
 
 
 		public RewriteRule(Symbol<string> symbolPtrn, SymbolsList<string> lCtxt, SymbolsList<string> rCtxt,
-			ImmutableList<VariableDefinition<IExpression>> locVars, IExpression cond,
-			   ImmutableList<RewriteRuleReplacement> replacs) {
+				ImmutableList<VariableDefinition<IExpression>> locVars, IExpression cond,
+				ImmutableList<RewriteRuleReplacement> replacs) {
 
 			SymbolPattern = symbolPtrn;
 			LeftContext = lCtxt;

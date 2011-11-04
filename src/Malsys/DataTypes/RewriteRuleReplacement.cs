@@ -10,11 +10,16 @@ namespace Malsys {
 	/// </summary>
 	public class RewriteRuleReplacement {
 
+		public static readonly RewriteRuleReplacement Empty
+			= new RewriteRuleReplacement(SymbolsList<IExpression>.Empty, Constant.One);
+
+
 		public readonly SymbolsList<IExpression> Replacement;
 		public readonly IExpression Weight;
 
-		public RewriteRuleReplacement(IExpression wei, SymbolsList<IExpression> replac) {
-
+		public RewriteRuleReplacement(SymbolsList<IExpression> replac, IExpression wei) {
+			Replacement = replac;
+			Weight = wei;
 		}
 	}
 }

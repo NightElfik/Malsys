@@ -118,11 +118,11 @@ namespace Malsys {
 		}
 
 		public bool Contains(T item) {
-			throw new NotImplementedException();
+			return values.Contains(item);
 		}
 
 		public void CopyTo(T[] array, int arrayIndex) {
-			throw new NotImplementedException();
+			Array.Copy(values, 0, array, arrayIndex, Length);
 		}
 
 		public int Count {

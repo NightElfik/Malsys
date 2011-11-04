@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using Malsys.Expressions;
-using RewriteRulesMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.RewriteRule>;
 
 namespace Malsys {
 	/// <summary>
@@ -17,10 +16,10 @@ namespace Malsys {
 		public readonly ImmutableList<VariableDefinition<IExpression>> Variables;
 		public readonly ImmutableList<VariableDefinition<SymbolsList<IExpression>>> Symbols;
 
-		public readonly RewriteRulesMap RewriteRules;
+		public readonly ImmutableList<RewriteRule> RewriteRules;
 
 
-		public LsystemDefinition(string name, ImmutableList<OptionalParameter> prms, RewriteRulesMap rRules,
+		public LsystemDefinition(string name, ImmutableList<OptionalParameter> prms, ImmutableList<RewriteRule> rRules,
 				ImmutableList<VariableDefinition<IExpression>> vars, ImmutableList<VariableDefinition<SymbolsList<IExpression>>> syms,
 				ImmutableList<FunctionDefinition> funs) {
 

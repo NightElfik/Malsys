@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using Malsys.Expressions;
-using RewriteRulesMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.RewriteRule>;
 using Microsoft.FSharp.Collections;
 
 
@@ -26,7 +25,7 @@ namespace Malsys.Compilers {
 
 			var prms = inputCompiler.CompileParametersFailSafe(lsysAst.Parameters);
 
-			var rRulesMap = MapModule.Empty<string, Malsys.RewriteRule>();
+			var rRules = new List<RewriteRule>();
 			var varDefs = new List<VariableDefinition<IExpression>>();
 			var symDefs = new List<VariableDefinition<SymbolsList<IExpression>>>();
 			var funDefs = new List<FunctionDefinition>();
@@ -36,8 +35,7 @@ namespace Malsys.Compilers {
 				if (statement is Ast.RewriteRule) {
 					var rrResult = Compile((Ast.RewriteRule)statement);
 					if (rrResult) {
-						RewriteRule rr = rrResult;
-						MapModule.Add(rr.SymbolPattern.Name, rr, rRulesMap);
+						rRules.Add(rrResult);
 					}
 				}
 
@@ -72,10 +70,11 @@ namespace Malsys.Compilers {
 			}
 
 
+			var rRulesImm = new ImmutableList<RewriteRule>(rRules);
 			var varDefsImm = new ImmutableList<VariableDefinition<IExpression>>(varDefs);
 			var symDefsImm = new ImmutableList<VariableDefinition<SymbolsList<IExpression>>>(symDefs);
 			var funDefsImm = new ImmutableList<FunctionDefinition>(funDefs);
-			return new LsystemDefinition(lsysAst.NameId.Name, prms, rRulesMap, varDefsImm, symDefsImm, funDefsImm);
+			return new LsystemDefinition(lsysAst.NameId.Name, prms, rRulesImm, varDefsImm, symDefsImm, funDefsImm);
 		}
 
 		public CompilerResult<RewriteRule> Compile(Ast.RewriteRule rRuleAst) {
@@ -103,7 +102,9 @@ namespace Malsys.Compilers {
 			var replac = new List<RewriteRuleReplacement>();
 
 			foreach (var r in rRuleAst.Replacements) {
-				replac.Add(CompileReplacFailSafe(r));
+				if (!r.Replacement.IsEmpty) {
+					replac.Add(CompileReplacFailSafe(r));
+				}
 			}
 
 			var replacImm = new ImmutableList<RewriteRuleReplacement>(replac);
@@ -119,7 +120,7 @@ namespace Malsys.Compilers {
 
 			var replac = CompileListFailSafe(replacAst.Replacement);
 
-			return new RewriteRuleReplacement(probab, replac);
+			return new RewriteRuleReplacement(replac, probab);
 		}
 
 		public CompilerResult<Symbol<string>> Compile(Ast.Symbol<Ast.Identificator> ptrnAst, Dictionary<string, Position> usedNames) {

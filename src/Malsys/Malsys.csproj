@@ -119,6 +119,7 @@
     <Compile Include="Extensions\IntExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Rewriters\ArrayRewriter.cs" />
     <Compile Include="Rewriters\IRewriter.cs" />
     <Compile Include="Rewriters\LazyRewriter.cs" />
     <Compile Include="Rewriters\RewriterUtils.cs" />
