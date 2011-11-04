@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <TestSettings name="Local" id="d5e79a23-767c-48ba-a0a2-49610e062114" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
   <Description>These are default test settings for a local test run.</Description>
-  <Deployment enabled="false" />
   <Execution>
     <TestTypeSpecific>
       <UnitTestRunConfig testTypeId="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b">
@@ -23,6 +22,15 @@
     <AgentRule name="LocalMachineDefaultRole">
       <DataCollectors>
         <DataCollector uri="datacollector://microsoft/CodeCoverage/1.0" assemblyQualifiedName="Microsoft.VisualStudio.TestTools.CodeCoverage.CoveragePlugIn, Microsoft.VisualStudio.QualityTools.Plugins.CodeCoverage, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" friendlyName="Code Coverage">
+          <Configuration>
+            <CodeCoverage xmlns="">
+              <Regular>
+                <CodeCoverageItem binaryFile="Malsys\bin\Debug\Malsys.dll" pdbFile="Malsys\bin\Debug\Malsys.pdb" instrumentInPlace="true" />
+                <CodeCoverageItem binaryFile="Malsys.Common\bin\Debug\Malsys.Common.dll" pdbFile="Malsys.Common\bin\Debug\Malsys.Common.pdb" instrumentInPlace="true" />
+                <CodeCoverageItem binaryFile="Malsys.Ast\bin\Debug\Malsys.Ast.dll" pdbFile="Malsys.Ast\bin\Debug\Malsys.Ast.pdb" instrumentInPlace="true" />
+              </Regular>
+            </CodeCoverage>
+          </Configuration>
         </DataCollector>
       </DataCollectors>
     </AgentRule>

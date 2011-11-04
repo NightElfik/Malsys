@@ -11,7 +11,7 @@ using SymbolPaternsList = Malsys.SymbolsList<string>;
 using VarMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.Expressions.IValue>;
 
 namespace Malsys.Rewriters {
-	public class LazyRewriter : IRewriter {
+	public class LazyRewriter/* : IRewriter*/ {
 
 		private Dictionary<string, RewriteRule[]> rewriteRules;
 		private VarMap variables;

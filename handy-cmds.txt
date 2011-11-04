@@ -1,4 +1,6 @@
 
+cd /cygdrive/i/Malsys
+
 wc -l `find -type f | egrep "\.cs$"`
 find -type f -name "*.cs" -exec wc -l {} \; | awk '{total += $1} END{print total}'
 

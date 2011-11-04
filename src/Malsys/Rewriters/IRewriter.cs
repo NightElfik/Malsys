@@ -7,7 +7,9 @@ using VarMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.Expressions
 namespace Malsys.Rewriters {
 	public interface IRewriter {
 
-		void Initialize(Dictionary<string, RewriteRule[]> rrules, VarMap vars, FunMap funs, Random rnd);
+		void Initialize(Dictionary<string, RewriteRule[]> rrules, VarMap vars, FunMap funs, int randomSeed);
+
+		void ReInitialize();
 
 		IEnumerable<Symbol> Rewrite(IEnumerable<Symbol> source);
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using Malsys.Expressions;
 using Microsoft.FSharp.Collections;
@@ -16,6 +17,7 @@ namespace Malsys.Rewriters {
 		private Dictionary<string, RewriteRule[]> rewriteRules;
 		private VarMap variables;
 		private FunMap functions;
+		private int seed;
 		private Random rndGenerator;
 		private List<Symbol> input;
 		private List<Symbol> output;
@@ -73,7 +75,7 @@ namespace Malsys.Rewriters {
 
 			int inputStartIndex = right ? inputIndex + 1 : inputIndex - ctxt.Length;
 
-			if (inputStartIndex < 0 || inputStartIndex + ctxt.Length >= input.Count) {
+			if (inputStartIndex < 0 || inputStartIndex + ctxt.Length > input.Count) {
 				return false;
 			}
 
@@ -134,11 +136,25 @@ namespace Malsys.Rewriters {
 
 		#region IRewriter Members
 
-		public void Initialize(Dictionary<string, RewriteRule[]> rrules, VarMap vars, FunMap funs, Random rnd) {
+		public void Initialize(Dictionary<string, RewriteRule[]> rrules, VarMap vars, FunMap funs, int randomSeed) {
+
+			Contract.Requires<ArgumentNullException>(rrules != null);
+			Contract.Requires<ArgumentNullException>(vars != null);
+			Contract.Requires<ArgumentNullException>(funs != null);
+
 			rewriteRules = rrules;
 			variables = vars;
 			functions = funs;
-			rndGenerator = rnd;
+			seed = randomSeed;
+
+			ReInitialize();
+		}
+
+		public void ReInitialize() {
+			//Contract.Requires<InvalidOperationException>(
+			//    rewriteRules != null && variables != null && functions != null, "Rewriter is not initialized.");
+
+			rndGenerator = new Random(seed);
 			output = new List<Symbol>();
 		}
 
@@ -159,7 +175,12 @@ namespace Malsys.Rewriters {
 				}
 			}
 
-			return output;
+			// cleanup
+
+			var o = output;
+			input = null;
+			output = null;
+			return o;
 		}
 
 		#endregion
