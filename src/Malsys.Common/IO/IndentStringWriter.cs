@@ -19,6 +19,16 @@ namespace Malsys.IO {
 			return strBuilder.ToString();
 		}
 
+		public void Clear() {
+			strBuilder.Clear();
+		}
+
+		public string GetResultAndClear() {
+			string result = strBuilder.ToString();
+			strBuilder.Clear();
+			return result;
+		}
+
 
 		protected override void write(string str) {
 			strBuilder.Append(str);

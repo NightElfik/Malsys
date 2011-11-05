@@ -9,6 +9,7 @@ using Malsys.SourceCode.Printers;
 using Microsoft.FSharp.Collections;
 using Microsoft.FSharp.Text.Lexing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Malsys.Interpreters;
 
 namespace Malsys.Tests.Rewriters {
 	public static class GenericRewriterTests {
@@ -219,9 +220,10 @@ namespace Malsys.Tests.Rewriters {
 				Assert.Fail("Excpected 1 symbol definition.");
 			}
 
+			var symBuff = new SymbolsBuffer();
 			var rrulesDict = RewriterUtils.CreateRrulesMap(lsystem.Result.RewriteRules);
 
-			rewriter.Initialize(rrulesDict,
+			rewriter.Initialize(symBuff, rrulesDict,
 				MapModule.Empty<string, Malsys.Expressions.IValue>(),
 				MapModule.Empty<string, Malsys.FunctionDefinition>(),
 				0);
@@ -230,7 +232,13 @@ namespace Malsys.Tests.Rewriters {
 			IEnumerable<Symbol<IValue>> axiom = lsystem.Result.Symbols[0].Value.Evaluate();
 
 			for (int i = 0; i < iterations; i++) {
-				var result = rewriter.Rewrite(axiom);
+
+				foreach (var sym in axiom) {
+					rewriter.ProcessSymbol(sym);
+				}
+				rewriter.EndProcessing();
+
+				var result = symBuff.GetAndClear();
 
 				var writer = new IndentStringWriter();
 				var printer = new CanonicPrinter(writer);
@@ -254,7 +262,6 @@ namespace Malsys.Tests.Rewriters {
 				Assert.AreEqual(excpectedIterations[i], actual);
 
 				axiom = result;
-				rewriter.ReInitialize();
 			}
 
 		}

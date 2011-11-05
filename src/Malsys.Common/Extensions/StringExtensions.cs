@@ -13,6 +13,11 @@ namespace Malsys {
 		/// Member 'string.Format(string, object)' cannot be accessed with an instance reference; qualify it with a type name instead.
 		/// </remarks>
 		public static string Fmt(this string format, params object[] args) {
+
+			Contract.Requires<ArgumentNullException>(format != null);
+			Contract.Requires<ArgumentNullException>(args != null);
+			Contract.Ensures(Contract.Result<string>() != null);
+
 			return string.Format(format, args);
 		}
 
@@ -22,6 +27,13 @@ namespace Malsys {
 		/// <param name="beginIndex">Zero-based inclusive starting character index of a substring.</param>
 		/// <param name="endIndex">Zero-based exclusive ending character index of a substring.</param>
 		public static string SubstringPos(this string str, int beginIndex, int endIndex) {
+
+			Contract.Requires<ArgumentNullException>(str != null);
+			Contract.Requires<ArgumentOutOfRangeException>(beginIndex >= 0 && beginIndex <= str.Length);
+			Contract.Requires<ArgumentOutOfRangeException>(endIndex >= 0 && endIndex <= str.Length);
+			Contract.Requires<ArgumentOutOfRangeException>(beginIndex <= endIndex);
+			Contract.Ensures(Contract.Result<string>() != null);
+
 			return str.Substring(beginIndex, endIndex - beginIndex);
 		}
 
@@ -59,7 +71,7 @@ namespace Malsys {
 		public static IEnumerable<string> SplitToLines(this string str) {
 
 			Contract.Requires<ArgumentNullException>(str != null);
-			
+
 			int beginIndex = 0;
 
 			for (int i = 0; i < str.Length; i++) {
@@ -96,6 +108,14 @@ namespace Malsys {
 		/// <param name="beginIndex">Zero-based inclusive starting character index of a substring.</param>
 		/// <param name="endIndex">Zero-based exclusive ending character index of a substring.</param>
 		public static void AppendPos(this StringBuilder sb, string str, int beginIndex, int endIndex) {
+
+			Contract.Requires<ArgumentNullException>(sb != null);
+			Contract.Requires<ArgumentNullException>(str != null);
+			Contract.Requires<ArgumentOutOfRangeException>(beginIndex >= 0 && beginIndex <= str.Length);
+			Contract.Requires<ArgumentOutOfRangeException>(endIndex >= 0 && endIndex <= str.Length);
+			Contract.Requires<ArgumentOutOfRangeException>(beginIndex <= endIndex);
+			Contract.Requires<ArgumentOutOfRangeException>(str.Length - endIndex >= 0);
+
 			sb.Append(str, beginIndex, endIndex - beginIndex);
 		}
 
@@ -128,6 +148,11 @@ namespace Malsys {
 		/// Repeats this string count-times.
 		/// </summary>
 		public static string Repeat(this string pattern, int count) {
+
+			Contract.Requires<ArgumentNullException>(pattern != null);
+			Contract.Requires<ArgumentOutOfRangeException>(count >= 0);
+			Contract.Ensures(Contract.Result<string>() != null);
+
 			return new StringBuilder().Insert(0, pattern, count).ToString();
 		}
 	}

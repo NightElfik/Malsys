@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using Malsys.Expressions;
 using Microsoft.FSharp.Collections;
@@ -12,17 +11,97 @@ using SymbolPaternsList = Malsys.SymbolsList<string>;
 using VarMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.Expressions.IValue>;
 
 namespace Malsys.Rewriters {
-	public class ArrayRewriter : IRewriter {
+	public class SymbolRewriter : IRewriter {
 
+		private ISymbolProcessor outputProcessor;
 		private Dictionary<string, RewriteRule[]> rewriteRules;
 		private VarMap variables;
 		private FunMap functions;
 		private int seed;
 		private Random rndGenerator;
-		private List<Symbol> input;
-		private List<Symbol> output;
+		private IndexableQueue<Symbol> leftContext;
+		private IndexableQueue<Symbol> rightContext;
+
+		private int leftCtxtMaxLen;
+		private int rightCtxtMaxLen;
 
 		private int inputIndex;
+
+
+		#region IRewriter Members
+
+		public void Initialize(ISymbolProcessor outProcessor, Dictionary<string, RewriteRule[]> rrules, VarMap vars, FunMap funs, int randomSeed) {
+
+			rewriteRules = rrules;
+			variables = vars;
+			functions = funs;
+			seed = randomSeed;
+			outputProcessor = outProcessor;
+
+			countMaxCentextsLength(rrules);
+			// optimal history length + 1 to be able add before delete and to NOT have history of length 0
+			leftContext = new IndexableQueue<Symbol>(leftCtxtMaxLen + 1);
+			rightContext = new IndexableQueue<Symbol>(rightCtxtMaxLen + 1);
+
+			init();
+		}
+
+		#endregion
+
+		#region ISymbolProcessor Members
+
+		public void ProcessSymbol(Symbol symbol) {
+			rightContext.Enqueue(symbol);
+
+			if (rightContext.Count < rightCtxtMaxLen + 1) {
+				return;  // too few symbols in right context
+			}
+
+			var currSym = rightContext.Dequeue();
+			rewrite(currSym);
+		}
+
+		public void EndProcessing() {
+			while (rightContext.Count > 0) {
+
+				var currSym = rightContext.Dequeue();
+				rewrite(currSym);
+			}
+
+			outputProcessor.EndProcessing();
+			init();
+		}
+
+		#endregion
+
+
+
+		private void init() {
+			rndGenerator = new Random(seed);
+
+			leftContext.Clear();
+			rightContext.Clear();
+		}
+
+		private void rewrite(Symbol symbol) {
+			VarMap vars;
+			RewriteRule rrule;
+			if (tryFindRewriteRule(symbol, out rrule, out vars)) {
+				var replac = chooseReplacement(rrule, vars, functions);
+				foreach (var s in replac.Replacement) {
+					outputProcessor.ProcessSymbol(s.Evaluate(vars, functions));
+				}
+			}
+			else {
+				outputProcessor.ProcessSymbol(symbol);
+			}
+
+			leftContext.Enqueue(symbol);
+			if (leftContext.Count > leftCtxtMaxLen) {
+				leftContext.Dequeue();  // throw away unnecessary symbols from left context
+			}
+		}
+
 
 		private bool tryFindRewriteRule(Symbol symbol, out RewriteRule rruleResult, out VarMap varsResult) {
 
@@ -73,15 +152,15 @@ namespace Malsys.Rewriters {
 
 		private bool checkContext(bool right, SymbolPaternsList ctxt, ref VarMap vars) {
 
-			int inputStartIndex = right ? inputIndex + 1 : inputIndex - ctxt.Length;
+			var context = right ? rightContext : leftContext;
 
-			if (inputStartIndex < 0 || inputStartIndex + ctxt.Length > input.Count) {
+			if (context.Count < ctxt.Length) {
 				return false;
 			}
 
 			for (int i = 0; i < ctxt.Length; i++) {
-				if (ctxt[i].Name == input[inputStartIndex + i].Name) {
-					vars = mapPatternVars(ctxt[i], input[inputStartIndex + i], vars);
+				if (ctxt[i].Name == context[i].Name) {
+					vars = mapPatternVars(ctxt[i], context[i], vars);
 				}
 				else {
 					return false;
@@ -134,55 +213,20 @@ namespace Malsys.Rewriters {
 			return rr.Replacements[rrrLen - 1];
 		}
 
-		#region IRewriter Members
 
-		public void Initialize(Dictionary<string, RewriteRule[]> rrules, VarMap vars, FunMap funs, int randomSeed) {
+		private void countMaxCentextsLength(Dictionary<string, RewriteRule[]> rrulesDict) {
 
-			Contract.Requires<ArgumentNullException>(rrules != null);
-			Contract.Requires<ArgumentNullException>(vars != null);
-			Contract.Requires<ArgumentNullException>(funs != null);
+			var rRules = rrulesDict.Select(d => d.Value);
 
-			rewriteRules = rrules;
-			variables = vars;
-			functions = funs;
-			seed = randomSeed;
+			leftCtxtMaxLen = rRules.Any()
+				? rRules.Max(arr => arr.Max(rr => rr.LeftContext.Length))
+				: 0;
 
-			ReInitialize();
+			rightCtxtMaxLen = rRules.Any()
+				? rRules.Max(arr => arr.Max(rr => rr.RightContext.Length))
+				: 0;
+
 		}
 
-		public void ReInitialize() {
-			//Contract.Requires<InvalidOperationException>(
-			//    rewriteRules != null && variables != null && functions != null, "Rewriter is not initialized.");
-
-			rndGenerator = new Random(seed);
-			output = new List<Symbol>();
-		}
-
-		public IEnumerable<Symbol> Rewrite(IEnumerable<Symbol> src) {
-			input = src.ToList();
-
-			for (inputIndex = 0; inputIndex < input.Count; inputIndex++) {
-				VarMap vars;
-				RewriteRule rrule;
-				if (tryFindRewriteRule(input[inputIndex], out rrule, out vars)) {
-					var replac = chooseReplacement(rrule, vars, functions);
-					foreach (var s in replac.Replacement) {
-						output.Add(s.Evaluate(vars, functions));
-					}
-				}
-				else {
-					output.Add(input[inputIndex]);
-				}
-			}
-
-			// cleanup
-
-			var o = output;
-			input = null;
-			output = null;
-			return o;
-		}
-
-		#endregion
 	}
 }

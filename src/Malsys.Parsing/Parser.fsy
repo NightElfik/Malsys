@@ -63,6 +63,8 @@ let optionToStatement parseState (option : Option<#ILsystemStatement>) =
         | Some(value) -> value
         | None -> new EmptyStatement(getPos parseState, true) :> ILsystemStatement
 
+type SymbolsListPos_Expression = SymbolsListPos<Expression>
+
 %}
 
 
@@ -107,6 +109,9 @@ let optionToStatement parseState (option : Option<#ILsystemStatement>) =
 
 %start ParseFunDef
 %type <FunctionDefinition> ParseFunDef
+
+%start ParseSymbols
+%type <SymbolsListPos_Expression> ParseSymbols
 
 %start ParseExpression
 %type <Expression> ParseExpression
@@ -156,6 +161,15 @@ ParseFunDef:
     | error EOF
       { logErrorPos getLastErrorPos "Syntax error.";
         null }
+
+
+ParseSymbols:
+    | SymbolWithArgsList EOF
+      { $1 }
+    | error EOF
+      { logErrorPos getLastErrorPos "Syntax error.";
+        new SymbolsListPos<Expression>(getStartPos parseState) }
+
 
 ParseExpression:
     | Expression EOF

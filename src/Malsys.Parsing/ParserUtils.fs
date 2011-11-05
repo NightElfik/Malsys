@@ -48,6 +48,10 @@ let ParseFunDef lexbuf msgs sourceName =
     let mutable comments = new ResizeArray<Comment>() in
     parseHelper Parser.ParseFunDef comments lexbuf msgs sourceName
 
+let ParseSymbols lexbuf msgs sourceName =
+    let mutable comments = new ResizeArray<Comment>() in
+    parseHelper Parser.ParseSymbols comments lexbuf msgs sourceName
+
 let ParseExpression lexbuf msgs sourceName =
     let mutable comments = new ResizeArray<Comment>() in
     parseHelper Parser.ParseExpression comments lexbuf msgs sourceName

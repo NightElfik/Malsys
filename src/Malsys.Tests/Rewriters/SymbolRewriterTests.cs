@@ -3,56 +3,56 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Malsys.Tests.Rewriters {
 	[TestClass]
-	public class ArrayRewriterTests {
+	public class SymbolRewriterTests {
 
 		[TestMethod]
 		public void EmptyInputTests() {
-			GenericRewriterTests.EmptyInputTests(new ArrayRewriter());
+			GenericRewriterTests.EmptyInputTests(new SymbolRewriter());
 		}
 
 		[TestMethod]
 		public void NoRewriteRulesTests() {
-			GenericRewriterTests.NoRewriteRulesTests(new ArrayRewriter());
+			GenericRewriterTests.NoRewriteRulesTests(new SymbolRewriter());
 		}
 
 		[TestMethod]
 		public void NothingOnRightSideTests() {
-			GenericRewriterTests.NothingOnRightSideTests(new ArrayRewriter());
+			GenericRewriterTests.NothingOnRightSideTests(new SymbolRewriter());
 		}
 
 		[TestMethod]
 		public void PatternVarsTests() {
-			GenericRewriterTests.PatternVarsTests(new ArrayRewriter());
+			GenericRewriterTests.PatternVarsTests(new SymbolRewriter());
 		}
 
 		[TestMethod]
 		public void LeftContextTests() {
-			GenericRewriterTests.LeftContextTests(new ArrayRewriter());
+			GenericRewriterTests.LeftContextTests(new SymbolRewriter());
 		}
 
 		[TestMethod]
 		public void RightContextTests() {
-			GenericRewriterTests.RightContextTests(new ArrayRewriter());
+			GenericRewriterTests.RightContextTests(new SymbolRewriter());
 		}
 
 		[TestMethod]
 		public void LocalVarsTests() {
-			GenericRewriterTests.LocalVarsTests(new ArrayRewriter());
+			GenericRewriterTests.LocalVarsTests(new SymbolRewriter());
 		}
 
 		[TestMethod]
 		public void ConditionTests() {
-			GenericRewriterTests.ConditionTests(new ArrayRewriter());
+			GenericRewriterTests.ConditionTests(new SymbolRewriter());
 		}
 
 		[TestMethod]
 		public void AnabaenaCatenulaTests() {
-			GenericRewriterTests.AnabaenaCatenulaTests(new ArrayRewriter());
+			GenericRewriterTests.AnabaenaCatenulaTests(new SymbolRewriter());
 		}
 
 		[TestMethod]
 		public void SignalPropagationTests() {
-			GenericRewriterTests.SignalPropagationTests(new ArrayRewriter());
+			GenericRewriterTests.SignalPropagationTests(new SymbolRewriter());
 		}
 	}
 }

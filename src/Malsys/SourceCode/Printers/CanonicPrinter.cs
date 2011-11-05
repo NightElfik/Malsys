@@ -23,7 +23,7 @@ namespace Malsys.SourceCode.Printers {
 			expr.Accept(this);
 		}
 
-		public void PrintExprSeparated<T>(IEnumerable<T> exprs, string separator = ", ") where T : IExpression {
+		public void PrintExprSeparated(IEnumerable<IExpression> exprs, string separator = ", ") {
 
 			bool first = true;
 
@@ -39,7 +39,7 @@ namespace Malsys.SourceCode.Printers {
 			}
 		}
 
-		public void PrintValueSeparated<T>(IEnumerable<T> values, string separator = ", ") where T : IValue {
+		public void PrintValueSeparated(IEnumerable<IValue> values, string separator = ", ") {
 
 			bool first = true;
 

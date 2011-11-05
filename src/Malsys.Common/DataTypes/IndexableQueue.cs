@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
+using System.Collections.Generic;
 
 namespace Malsys {
 	public class IndexableQueue<T> {
@@ -12,18 +14,23 @@ namespace Malsys {
 		/// Storage for items.
 		/// </summary>
 		private T[] data;
+
 		/// <summary>
 		/// Index of first valid element in the queue.
 		/// </summary>
 		private int head;
+
 		/// <summary>
 		/// Index after last valid element in the queue.
 		/// </summary>
 		private int tail;
+
 		/// <summary>
 		/// Number of elements.
 		/// </summary>
+		[ContractPublicPropertyName("Count")]
 		private int size;
+
 		/// <summary>
 		/// 100-times grow factor (200 = 2.0).
 		/// </summary>
@@ -41,12 +48,9 @@ namespace Malsys {
 		}
 
 		public IndexableQueue(int initialCapacity, float growFactor) {
-			if (initialCapacity < 0) {
-				throw new ArgumentOutOfRangeException("initialCapacity", "Capacity should be greater than zero.");
-			}
-			if (growFactor < 1.0f || growFactor > 8.0f) {
-				throw new ArgumentOutOfRangeException("growFactor", "Grow factor should be between 1.0 and 8.0.");
-			}
+
+			Contract.Requires<ArgumentOutOfRangeException>(initialCapacity >= 0);
+			Contract.Requires<ArgumentOutOfRangeException>(growFactor >= 1.0f && growFactor <= 8.0f);
 
 			data = new T[initialCapacity];
 			this.growFactor = (int)(growFactor * 100);
@@ -62,9 +66,7 @@ namespace Malsys {
 
 		public T this[int i] {
 			get {
-				if (i < 0 || i >= size) {
-					throw new ArgumentOutOfRangeException("i", "Zero based index ({0}) should be lower than queue size ({1}).".Fmt(i, size));
-				}
+				Contract.Requires<ArgumentOutOfRangeException>(i >= 0 && i < size);
 				return data[(head + i) % data.Length];
 			}
 		}
@@ -73,15 +75,18 @@ namespace Malsys {
 			get { return size; }
 		}
 
+		public int Capacity {
+			get { return data.Length; }
+		}
+
 		#endregion
 
 
 		#region Public methods
 
 		public T Peek() {
-			if (size == 0) {
-				throw new InvalidOperationException("Peek on empty queue.");
-			}
+
+			Contract.Requires<InvalidOperationException>(size > 0);
 
 			return data[head];
 		}
@@ -103,9 +108,8 @@ namespace Malsys {
 		}
 
 		public T Dequeue() {
-			if (size == 0) {
-				throw new InvalidOperationException("Dequeue from empty queue.");
-			}
+
+			Contract.Requires<InvalidOperationException>(size > 0);
 
 			T item = data[head];
 
@@ -114,6 +118,20 @@ namespace Malsys {
 			size--;
 
 			return item;
+		}
+
+		public void Clear() {
+			if (head < tail) {
+				Array.Clear(data, head, size);
+			}
+			else {
+				Array.Clear(data, head, data.Length - head);
+				Array.Clear(data, 0, tail);
+			}
+
+			head = 0;
+			tail = 0;
+			size = 0;
 		}
 
 		#endregion
