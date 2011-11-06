@@ -223,10 +223,11 @@ namespace Malsys.Tests.Rewriters {
 			var symBuff = new SymbolsBuffer();
 			var rrulesDict = RewriterUtils.CreateRrulesMap(lsystem.Result.RewriteRules);
 
-			rewriter.Initialize(symBuff, rrulesDict,
+			rewriter.Initialize(rrulesDict,
 				MapModule.Empty<string, Malsys.Expressions.IValue>(),
 				MapModule.Empty<string, Malsys.FunctionDefinition>(),
 				0);
+			rewriter.OutputProcessor = symBuff;
 
 			int iterations = excpectedIterations.Length;
 			IEnumerable<Symbol<IValue>> axiom = lsystem.Result.Symbols[0].Value.Evaluate();

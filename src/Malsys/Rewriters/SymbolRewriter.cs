@@ -30,13 +30,17 @@ namespace Malsys.Rewriters {
 
 		#region IRewriter Members
 
-		public void Initialize(ISymbolProcessor outProcessor, Dictionary<string, RewriteRule[]> rrules, VarMap vars, FunMap funs, int randomSeed) {
+		public ISymbolProcessor OutputProcessor {
+			get { return outputProcessor; }
+			set { outputProcessor = value; }
+		}
+
+		public void Initialize(Dictionary<string, RewriteRule[]> rrules, VarMap vars, FunMap funs, int randomSeed) {
 
 			rewriteRules = rrules;
 			variables = vars;
 			functions = funs;
 			seed = randomSeed;
-			outputProcessor = outProcessor;
 
 			countMaxCentextsLength(rrules);
 			// optimal history length + 1 to be able add before delete and to NOT have history of length 0
@@ -227,6 +231,5 @@ namespace Malsys.Rewriters {
 				: 0;
 
 		}
-
 	}
 }

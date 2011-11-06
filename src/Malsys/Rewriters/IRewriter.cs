@@ -5,7 +5,9 @@ using VarMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.Expressions
 namespace Malsys.Rewriters {
 	public interface IRewriter : ISymbolProcessor {
 
-		void Initialize(ISymbolProcessor outputProcessor, Dictionary<string, RewriteRule[]> rrules, VarMap vars, FunMap funs, int randomSeed);
+		ISymbolProcessor OutputProcessor { get; set; }
+
+		void Initialize(Dictionary<string, RewriteRule[]> rrules, VarMap vars, FunMap funs, int randomSeed);
 
 	}
 }

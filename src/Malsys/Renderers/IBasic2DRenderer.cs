@@ -5,7 +5,7 @@ using System.Text;
 using Malsys.Media;
 
 namespace Malsys.Renderers {
-	public interface IBasic2DRenderer {
+	public interface IBasic2DRenderer : IRenderer {
 
 		void DrawTo(PointF Point, float Width, ColorF Color);
 

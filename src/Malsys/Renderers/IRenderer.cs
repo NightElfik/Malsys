@@ -9,5 +9,9 @@ namespace Malsys.Renderers {
 
 		void Initialize();
 
+		void EndRendering();
+
+		string GetResultsFilePaths();
+
 	}
 }

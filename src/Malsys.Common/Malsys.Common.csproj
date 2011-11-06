@@ -77,6 +77,7 @@
     <Compile Include="DataTypes\IndexableStack.cs" />
     <Compile Include="DataTypes\Position.cs" />
     <Compile Include="Extensions\DoubleExtensions.cs" />
+    <Compile Include="Extensions\SwapExtension.cs" />
     <Compile Include="Helpers\EnumHelper.cs" />
     <Compile Include="Extensions\LinqExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />

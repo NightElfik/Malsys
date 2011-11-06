@@ -131,6 +131,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Renderers\IBasic2DRenderer.cs" />
     <Compile Include="Renderers\IRenderer.cs" />
+    <Compile Include="Renderers\Svg2DRenderer.cs" />
+    <Compile Include="Rewriters\Iterators\IRewriterIterator.cs" />
+    <Compile Include="Rewriters\Iterators\SingleRewriterIterator.cs" />
     <Compile Include="Rewriters\SymbolRewriter.cs" />
     <Compile Include="Rewriters\IRewriter.cs" />
     <Compile Include="Rewriters\ISymbolProcessor.cs" />
