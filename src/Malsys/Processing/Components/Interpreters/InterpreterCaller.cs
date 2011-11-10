@@ -5,7 +5,7 @@ using System.Reflection;
 using Malsys.Expressions;
 using InterpretAction = System.Action<Malsys.ImmutableList<Malsys.Expressions.IValue>>;
 
-namespace Malsys.Interpreters {
+namespace Malsys.Processing.Components.Interpreters {
 	public class InterpreterCaller : IInterpreterCaller {
 
 		private IInterpreter interpret;

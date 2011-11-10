@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using Malsys.Rewriters;
 using Symbol = Malsys.Symbol<Malsys.Expressions.IValue>;
 
-namespace Malsys.Interpreters {
+namespace Malsys.Processing.Components.Interpreters {
 	public class SymbolsBuffer : ISymbolProcessor {
 
 		List<Symbol> buffer;

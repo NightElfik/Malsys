@@ -121,35 +121,34 @@
     <Compile Include="Extensions\DoubleExtensions.cs" />
     <Compile Include="Extensions\IntExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
-    <Compile Include="Interpreters\Basic2DInterpreter.cs" />
-    <Compile Include="Interpreters\EmptyInterpret.cs" />
-    <Compile Include="Interpreters\IInterpreterCaller.cs" />
-    <Compile Include="Interpreters\InterpreterCaller.cs" />
-    <Compile Include="Interpreters\SymbolInterpretation.cs" />
-    <Compile Include="Interpreters\SymbolsBuffer.cs" />
+    <Compile Include="Processing\Components\Interpreters\Basic2DInterpreter.cs" />
+    <Compile Include="Processing\Components\Interpreters\EmptyInterpret.cs" />
+    <Compile Include="Processing\Components\Interpreters\IInterpreterCaller.cs" />
+    <Compile Include="Processing\Components\Interpreters\InterpreterCaller.cs" />
+    <Compile Include="Processing\Components\Interpreters\SymbolInterpretation.cs" />
+    <Compile Include="Processing\Components\Interpreters\SymbolsBuffer.cs" />
     <Compile Include="Media\ColorF.cs" />
-    <Compile Include="Interpreters\IInterpreter.cs" />
+    <Compile Include="Processing\Components\IInterpreter.cs" />
     <Compile Include="Media\PointF.cs" />
+    <Compile Include="Processing\Components\UserSettableAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Renderers\IBasic2DRenderer.cs" />
-    <Compile Include="Renderers\IRenderer.cs" />
-    <Compile Include="Renderers\Svg2DRenderer.cs" />
-    <Compile Include="Rewriters\EmptyRewriter.cs" />
-    <Compile Include="Rewriters\EmptySymbolProcessor.cs" />
-    <Compile Include="Rewriters\Iterators\IRewriterIterator.cs" />
-    <Compile Include="Rewriters\Iterators\SingleRewriterIterator.cs" />
-    <Compile Include="Rewriters\SymbolRewriter.cs" />
-    <Compile Include="Rewriters\IRewriter.cs" />
-    <Compile Include="Rewriters\ISymbolProcessor.cs" />
-    <Compile Include="Rewriters\LazyRewriter.cs" />
-    <Compile Include="Rewriters\RewriterUtils.cs" />
+    <Compile Include="Processing\Components\Renderers\IBasic2DRenderer.cs" />
+    <Compile Include="Processing\Components\IRenderer.cs" />
+    <Compile Include="Processing\Components\Renderers\Svg2DRenderer.cs" />
+    <Compile Include="Processing\Components\Rewriters\EmptyRewriter.cs" />
+    <Compile Include="Processing\Components\Rewriters\EmptySymbolProcessor.cs" />
+    <Compile Include="Processing\Components\IRewriterIterator.cs" />
+    <Compile Include="Processing\Components\RewriterIterators\SingleRewriterIterator.cs" />
+    <Compile Include="Processing\Components\Rewriters\SymbolRewriter.cs" />
+    <Compile Include="Processing\Components\IRewriter.cs" />
+    <Compile Include="Processing\Components\ISymbolProcessor.cs" />
+    <Compile Include="Processing\Components\Rewriters\RewriterUtils.cs" />
     <Compile Include="SourceCode\Printers\CanonicAstPrinter.cs" />
     <Compile Include="SourceCode\Highlighters\MarksCollector.cs" />
     <Compile Include="SourceCode\Highlighters\MarkType.cs" />
     <Compile Include="SourceCode\Highlighters\PositionMark.cs" />
     <Compile Include="SourceCode\Highlighters\StringHighlighter.cs" />
     <Compile Include="SourceCode\Printers\CanonicPrinter.cs" />
-    <Compile Include="UserSettableAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Malsys.Ast\Malsys.Ast.csproj">
@@ -166,7 +165,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Rendering\" />
     <Folder Include="SourceCode\Formatters\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

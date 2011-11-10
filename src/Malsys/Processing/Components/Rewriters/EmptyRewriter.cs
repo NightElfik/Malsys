@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Malsys.Expressions;
 using Microsoft.FSharp.Collections;
 
-namespace Malsys.Rewriters {
+namespace Malsys.Processing.Components.Rewriters {
 	class EmptyRewriter : IRewriter {
 
 		public static readonly EmptyRewriter Instance = new EmptyRewriter();

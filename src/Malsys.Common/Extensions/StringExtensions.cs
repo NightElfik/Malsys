@@ -1,7 +1,7 @@
-﻿using System.Text;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System;
+using System.Text;
 
 namespace Malsys {
 	public static class StringExtensions {

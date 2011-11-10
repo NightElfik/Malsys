@@ -4,12 +4,11 @@ using Malsys.Compilers;
 using Malsys.Expressions;
 using Malsys.IO;
 using Malsys.Parsing;
-using Malsys.Rewriters;
+using Malsys.Processing.Components;
+using Malsys.Processing.Components.Interpreters;
 using Malsys.SourceCode.Printers;
-using Microsoft.FSharp.Collections;
 using Microsoft.FSharp.Text.Lexing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Malsys.Interpreters;
 
 namespace Malsys.Tests.Rewriters {
 	public static class GenericRewriterTests {

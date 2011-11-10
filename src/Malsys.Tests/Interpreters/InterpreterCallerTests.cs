@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Malsys.Compilers;
 using Malsys.Expressions;
-using Malsys.Interpreters;
 using Malsys.IO;
 using Malsys.Parsing;
+using Malsys.Processing.Components;
+using Malsys.Processing.Components.Interpreters;
 using Malsys.SourceCode.Printers;
 using Microsoft.FSharp.Text.Lexing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Malsys.Renderers;
 
 namespace Malsys.Tests.Interpreters {
 	[TestClass]

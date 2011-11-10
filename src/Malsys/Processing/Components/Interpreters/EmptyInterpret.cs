@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Malsys.Interpreters {
+namespace Malsys.Processing.Components.Interpreters {
 	class EmptyInterpret : IInterpreter {
 
 		public static readonly EmptyInterpret Instance = new EmptyInterpret();
@@ -8,11 +8,11 @@ namespace Malsys.Interpreters {
 
 		#region IInterpreter Members
 
-		public Renderers.IRenderer Renderer {
+		public IRenderer Renderer {
 			set { throw new InvalidOperationException("Empty interpreter."); }
 		}
 
-		public bool IsRendererCompatible(Renderers.IRenderer renderer) {
+		public bool IsRendererCompatible(IRenderer renderer) {
 			throw new InvalidOperationException("Empty interpreter.");
 		}
 

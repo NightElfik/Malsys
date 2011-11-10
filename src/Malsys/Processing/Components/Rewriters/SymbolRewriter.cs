@@ -11,7 +11,7 @@ using SymbolPatern = Malsys.Symbol<string>;
 using SymbolPaternsList = Malsys.SymbolsList<string>;
 using VarMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.Expressions.IValue>;
 
-namespace Malsys.Rewriters {
+namespace Malsys.Processing.Components.Rewriters {
 	public class SymbolRewriter : IRewriter {
 
 		private ISymbolProcessor outputProcessor;

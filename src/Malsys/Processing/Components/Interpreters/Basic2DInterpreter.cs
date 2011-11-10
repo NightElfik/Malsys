@@ -1,8 +1,8 @@
 ﻿using System;
 using Malsys.Expressions;
-using Malsys.Renderers;
+using Malsys.Processing.Components.Renderers;
 
-namespace Malsys.Interpreters {
+namespace Malsys.Processing.Components.Interpreters {
 	public class Basic2DInterpreter : IInterpreter {
 
 		IBasic2DRenderer renderer;

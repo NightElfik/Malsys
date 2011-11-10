@@ -1,6 +1,6 @@
 ﻿using Malsys.Expressions;
 
-namespace Malsys.Rewriters {
+namespace Malsys.Processing.Components {
 	public interface ISymbolProcessor {
 
 		void BeginProcessing();

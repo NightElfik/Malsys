@@ -1,4 +1,4 @@
-﻿using Malsys.Rewriters;
+﻿using Malsys.Processing.Components.Rewriters;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Malsys.Tests.Rewriters {

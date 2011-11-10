@@ -4,14 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Diagnostics.Contracts;
 
-namespace Malsys.Renderers {
+namespace Malsys.Processing.Components {
 	public interface IRenderer {
 
-		void Initialize();
+		void BeginRendering();
 
 		void EndRendering();
-
-		string GetResultsFilePaths();
 
 	}
 }

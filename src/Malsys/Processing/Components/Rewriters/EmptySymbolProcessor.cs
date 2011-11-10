@@ -1,7 +1,7 @@
 ﻿using System;
 using Malsys.Expressions;
 
-namespace Malsys.Rewriters {
+namespace Malsys.Processing.Components.Rewriters {
 	class EmptySymbolProcessor : ISymbolProcessor {
 
 		public static readonly EmptySymbolProcessor Instance = new EmptySymbolProcessor();

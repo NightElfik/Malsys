@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Malsys.Expressions;
 
-namespace Malsys.Rewriters.Iterators {
+namespace Malsys.Processing.Components {
 	public interface IRewriterIterator : ISymbolProcessor {
 
 		IRewriter Rewriter { set; }

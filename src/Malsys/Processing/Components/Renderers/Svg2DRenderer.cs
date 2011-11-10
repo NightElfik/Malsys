@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using Malsys.Media;
 
-namespace Malsys.Renderers {
-	public class Svg2DRenderer : IBasic2DRenderer {
+namespace Malsys.Processing.Components.Renderers {
+	public class Svg2DRenderer/* : IBasic2DRenderer */{
 
 		[UserSettable]
 		public string FileHeader { get; set; }

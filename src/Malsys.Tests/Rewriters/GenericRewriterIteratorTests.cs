@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using Malsys.Compilers;
 using Malsys.Expressions;
-using Malsys.Interpreters;
 using Malsys.IO;
 using Malsys.Parsing;
-using Malsys.Rewriters;
-using Malsys.Rewriters.Iterators;
+using Malsys.Processing.Components;
+using Malsys.Processing.Components.Interpreters;
+using Malsys.Processing.Components.Rewriters;
 using Malsys.SourceCode.Printers;
-using Microsoft.FSharp.Collections;
 using Microsoft.FSharp.Text.Lexing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

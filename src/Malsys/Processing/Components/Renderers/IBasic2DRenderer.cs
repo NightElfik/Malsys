@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Malsys.Media;
 
-namespace Malsys.Renderers {
+namespace Malsys.Processing.Components.Renderers {
 	public interface IBasic2DRenderer : IRenderer {
 
 		void MoveTo(PointF Point, float Width, ColorF Color);

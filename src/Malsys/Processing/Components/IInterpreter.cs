@@ -1,6 +1,5 @@
-﻿using Malsys.Renderers;
-
-namespace Malsys.Interpreters {
+﻿
+namespace Malsys.Processing.Components {
 
 	public interface IInterpreter {
 
