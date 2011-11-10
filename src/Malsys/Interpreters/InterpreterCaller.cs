@@ -1,26 +1,63 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 using System.Reflection;
 using Malsys.Expressions;
-using Malsys.Rewriters;
 using InterpretAction = System.Action<Malsys.ImmutableList<Malsys.Expressions.IValue>>;
 
 namespace Malsys.Interpreters {
-	public class InterpreterCaller : ISymbolProcessor {
+	public class InterpreterCaller : IInterpreterCaller {
 
 		private IInterpreter interpret;
+
+		private Dictionary<string, string> symbolToInstr;
+
 		private Dictionary<string, InterpretAction> symbolToIntActionCache;
 
 
-		public InterpreterCaller(IInterpreter ipret, Dictionary<string, string> symbolToInstr) {
-			interpret = ipret;
-			symbolToIntActionCache = createIntActionsCahce(interpret, symbolToInstr);
+		public InterpreterCaller() {
+			interpret = EmptyInterpret.Instance;
+			symbolToInstr = new Dictionary<string, string>();
+
+			createIntActionsCahce();
+		}
+
+		[ContractInvariantMethod]
+		private void objectInvariant() {
+
+			Contract.Invariant(interpret != null);
+			Contract.Invariant(symbolToInstr != null);
+
+			Contract.Invariant(symbolToIntActionCache != null);
 		}
 
 
+		#region IInterpreterCaller Members
+
+		public IInterpreter Interpreter {
+			set {
+				interpret = value;
+				createIntActionsCahce();
+			}
+		}
+
+		public Dictionary<string, string> SymbolsInterpretation {
+			set {
+				symbolToInstr = value;
+				createIntActionsCahce();
+			}
+		}
+
+		#endregion
+
 		#region ISymbolProcessor Members
 
+		public void BeginProcessing() {
+			interpret.BeginInterpreting();
+		}
+
 		public void ProcessSymbol(Symbol<IValue> symbol) {
+
 			InterpretAction iAction;
 			if (symbolToIntActionCache.TryGetValue(symbol.Name, out iAction)) {
 				iAction.Invoke(symbol.Arguments);
@@ -31,15 +68,13 @@ namespace Malsys.Interpreters {
 		}
 
 		public void EndProcessing() {
-
+			interpret.EndInterpreting();
 		}
 
 		#endregion
 
 
-
-		private Dictionary<string, InterpretAction> createIntActionsCahce(
-				IInterpreter interpret, Dictionary<string, string> symbolToInstr) {
+		private void createIntActionsCahce() {
 
 			var instrToDel = new Dictionary<string, InterpretAction>();
 
@@ -71,7 +106,7 @@ namespace Malsys.Interpreters {
 
 			}
 
-			return symbolToInterpterCall;
+			symbolToIntActionCache = symbolToInterpterCall;
 		}
 
 		private InterpretAction createInterpretAction(MethodInfo mi) {
@@ -80,5 +115,7 @@ namespace Malsys.Interpreters {
 			var call = Expression.Call(instance, mi, argument);
 			return Expression.Lambda<InterpretAction>(call, argument).Compile();
 		}
+
+
 	}
 }

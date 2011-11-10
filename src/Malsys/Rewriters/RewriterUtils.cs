@@ -6,7 +6,7 @@ using System;
 namespace Malsys.Rewriters {
 	public static class RewriterUtils {
 
-		public static Dictionary<string, RewriteRule[]> CreateRrulesMap(ImmutableList<RewriteRule> rrules) {
+		public static Dictionary<string, RewriteRule[]> CreateRrulesMap(IEnumerable<RewriteRule> rrules) {
 
 			Contract.Requires<ArgumentNullException>(rrules != null);
 			Contract.Ensures(Contract.Result<Dictionary<string, RewriteRule[]>>() != null);

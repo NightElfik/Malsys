@@ -7,7 +7,7 @@ using Malsys.Media;
 namespace Malsys.Renderers {
 	public interface IBasic2DRenderer : IRenderer {
 
-		void DrawTo(PointF Point, float Width, ColorF Color);
+		void MoveTo(PointF Point, float Width, ColorF Color);
 
 		void LineTo(PointF Point, float Width, ColorF Color);
 

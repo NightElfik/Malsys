@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using Malsys.Expressions;
 using Microsoft.FSharp.Collections;
@@ -14,51 +15,103 @@ namespace Malsys.Rewriters {
 	public class SymbolRewriter : IRewriter {
 
 		private ISymbolProcessor outputProcessor;
+
 		private Dictionary<string, RewriteRule[]> rewriteRules;
+
 		private VarMap variables;
 		private FunMap functions;
-		private int seed;
+
 		private Random rndGenerator;
-		private IndexableQueue<Symbol> leftContext;
-		private IndexableQueue<Symbol> rightContext;
+
+		private int seed;
 
 		private int leftCtxtMaxLen;
-		private int rightCtxtMaxLen;
+		private IndexableQueue<Symbol> leftContext;
 
-		private int inputIndex;
+		private int rightCtxtMaxLen;
+		private IndexableQueue<Symbol> rightContext;
+
+
+
+
+		public SymbolRewriter() {
+
+			outputProcessor = EmptySymbolProcessor.Instance;
+
+			variables = MapModule.Empty<string, IValue>();
+			functions = MapModule.Empty<string, FunctionDefinition>();
+
+			rndGenerator = new Random();
+
+			rewriteRules = new Dictionary<string, RewriteRule[]>();
+			initContextCaches();
+		}
+
+		[ContractInvariantMethod]
+		private void objectInvariant() {
+
+			Contract.Invariant(outputProcessor != null);
+			Contract.Invariant(rewriteRules != null);
+
+			Contract.Invariant(variables != null);
+			Contract.Invariant(functions != null);
+
+			Contract.Invariant(rndGenerator != null);
+
+			Contract.Invariant(leftContext != null);
+			Contract.Invariant(rightContext != null);
+		}
 
 
 		#region IRewriter Members
 
+
 		public ISymbolProcessor OutputProcessor {
-			get { return outputProcessor; }
 			set { outputProcessor = value; }
 		}
 
-		public void Initialize(Dictionary<string, RewriteRule[]> rrules, VarMap vars, FunMap funs, int randomSeed) {
+		public IEnumerable<RewriteRule> RewriteRules {
+			set {
+				rewriteRules = RewriterUtils.CreateRrulesMap(value);
 
-			rewriteRules = rrules;
-			variables = vars;
-			functions = funs;
-			seed = randomSeed;
+				initContextCaches();
+			}
+		}
 
-			countMaxCentextsLength(rrules);
-			// optimal history length + 1 to be able add before delete and to NOT have history of length 0
-			leftContext = new IndexableQueue<Symbol>(leftCtxtMaxLen + 1);
-			rightContext = new IndexableQueue<Symbol>(rightCtxtMaxLen + 1);
+		public VarMap Variables {
+			set { variables = value; }
+		}
 
-			init();
+		public FunMap Functions {
+			set { functions = value; }
+		}
+
+		public IValue RandomSeed {
+			set {
+				if (value.IsConstant && !((Constant)value).IsNaN) {
+					seed = ((Constant)value).GetIntValueRounded();
+				}
+				else {
+					throw new ArgumentException("Random seed value is invalid.");
+				}
+			}
 		}
 
 		#endregion
 
 		#region ISymbolProcessor Members
 
+		public void BeginProcessing() {
+			rndGenerator = new Random(seed);
+
+			outputProcessor.BeginProcessing();
+		}
+
 		public void ProcessSymbol(Symbol symbol) {
 			rightContext.Enqueue(symbol);
 
 			if (rightContext.Count < rightCtxtMaxLen + 1) {
-				return;  // too few symbols in right context
+				return;  // too few symbols in right context, wait for more
 			}
 
 			var currSym = rightContext.Dequeue();
@@ -72,24 +125,21 @@ namespace Malsys.Rewriters {
 				rewrite(currSym);
 			}
 
+			leftContext.Clear();
+			rightContext.Clear();
+
 			outputProcessor.EndProcessing();
-			init();
 		}
 
 		#endregion
 
 
 
-		private void init() {
-			rndGenerator = new Random(seed);
-
-			leftContext.Clear();
-			rightContext.Clear();
-		}
-
 		private void rewrite(Symbol symbol) {
+
 			VarMap vars;
 			RewriteRule rrule;
+
 			if (tryFindRewriteRule(symbol, out rrule, out vars)) {
 				var replac = chooseReplacement(rrule, vars, functions);
 				foreach (var s in replac.Replacement) {
@@ -218,9 +268,9 @@ namespace Malsys.Rewriters {
 		}
 
 
-		private void countMaxCentextsLength(Dictionary<string, RewriteRule[]> rrulesDict) {
+		private void initContextCaches() {
 
-			var rRules = rrulesDict.Select(d => d.Value);
+			var rRules = rewriteRules.Select(d => d.Value);
 
 			leftCtxtMaxLen = rRules.Any()
 				? rRules.Max(arr => arr.Max(rr => rr.LeftContext.Length))
@@ -230,6 +280,9 @@ namespace Malsys.Rewriters {
 				? rRules.Max(arr => arr.Max(rr => rr.RightContext.Length))
 				: 0;
 
+			// optimal history length + 1 to be able add before delete and to NOT have history of length 0
+			leftContext = new IndexableQueue<Symbol>(leftCtxtMaxLen + 1);
+			rightContext = new IndexableQueue<Symbol>(rightCtxtMaxLen + 1);
 		}
 	}
 }

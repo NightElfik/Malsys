@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Symbol = Malsys.Symbol<Malsys.Expressions.IValue>;
-using System.Diagnostics.Contracts;
-using Malsys.Expressions;
+﻿using Malsys.Renderers;
 
 namespace Malsys.Interpreters {
 
 	public interface IInterpreter {
 
-		void Initialize();
+		IRenderer Renderer { set; }
+
+		bool IsRendererCompatible(IRenderer renderer);
+
+		void BeginInterpreting();
+
+		void EndInterpreting();
 
 	}
 }

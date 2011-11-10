@@ -1,13 +1,21 @@
 ﻿using System.Collections.Generic;
+using Malsys.Expressions;
 using FunMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.FunctionDefinition>;
 using VarMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.Expressions.IValue>;
 
 namespace Malsys.Rewriters {
 	public interface IRewriter : ISymbolProcessor {
 
-		ISymbolProcessor OutputProcessor { get; set; }
+		ISymbolProcessor OutputProcessor { set; }
 
-		void Initialize(Dictionary<string, RewriteRule[]> rrules, VarMap vars, FunMap funs, int randomSeed);
+		IEnumerable<RewriteRule> RewriteRules{ set; }
+
+		VarMap Variables { set; }
+
+		FunMap Functions { set; }
+
+		[UserSettable]
+		IValue RandomSeed { set; }
 
 	}
 }

@@ -9,6 +9,7 @@ using Malsys.Parsing;
 using Malsys.SourceCode.Printers;
 using Microsoft.FSharp.Text.Lexing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Malsys.Renderers;
 
 namespace Malsys.Tests.Interpreters {
 	[TestClass]
@@ -94,7 +95,10 @@ namespace Malsys.Tests.Interpreters {
 			var symbols = compiler.CompileListFailSafe(symbolsAst);
 
 			var dummy = new DummyInterpreter();
-			var caller = new InterpreterCaller(dummy, symbolToInstr);
+			var caller = new InterpreterCaller() {
+				Interpreter = dummy,
+				SymbolsInterpretation = symbolToInstr
+			};
 
 			foreach (var sym in symbols) {
 				caller.ProcessSymbol(sym.Evaluate());
@@ -127,8 +131,18 @@ namespace Malsys.Tests.Interpreters {
 
 			#region IInterpreter Members
 
-			public void Initialize() {
+			public IRenderer Renderer {
+				set { throw new NotImplementedException(); }
+			}
 
+			public bool IsRendererCompatible(IRenderer renderer) {
+				throw new NotImplementedException();
+			}
+
+			public void BeginInterpreting() {
+			}
+
+			public void EndInterpreting() {
 			}
 
 			#endregion

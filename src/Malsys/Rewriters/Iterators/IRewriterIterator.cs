@@ -5,9 +5,17 @@ using System.Text;
 using Malsys.Expressions;
 
 namespace Malsys.Rewriters.Iterators {
-	public interface IRewriterIterator {
+	public interface IRewriterIterator : ISymbolProcessor {
 
-		void Initialize(int iters, IRewriter rwter, ISymbolProcessor outProcessor, IEnumerable<Symbol<IValue>> symbols);
+		IRewriter Rewriter { set; }
+
+		ISymbolProcessor OutputProcessor { set; }
+
+		[UserSettable]
+		IEnumerable<Symbol<IValue>> Axiom { set; }
+
+		[UserSettable]
+		IValue Iterations { set; }
 
 
 		void Start();

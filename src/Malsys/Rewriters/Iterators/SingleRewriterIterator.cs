@@ -3,41 +3,75 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Malsys.Expressions;
+using System.Diagnostics.Contracts;
 
 namespace Malsys.Rewriters.Iterators {
-	public class SingleRewriterIterator : IRewriterIterator, ISymbolProcessor {
+	public class SingleRewriterIterator : IRewriterIterator {
 
-		private int iterations;
 		private IRewriter rewriter;
-		private ISymbolProcessor outputProcessor;
+
+		private ISymbolProcessor outProcessor;
 
 		private List<Symbol<IValue>> inBuffer;
 		private List<Symbol<IValue>> outBuffer;
+
+		private int iterations;
 
 
 
 		public SingleRewriterIterator() {
 
+			rewriter = EmptyRewriter.Instance;
+			outProcessor = EmptySymbolProcessor.Instance;
+
+			inBuffer = new List<Symbol<IValue>>();
+			outBuffer = new List<Symbol<IValue>>();
 		}
+
+		[ContractInvariantMethod]
+		private void objectInvariant() {
+
+			Contract.Invariant(rewriter != null);
+			Contract.Invariant(outProcessor != null);
+
+			Contract.Invariant(inBuffer != null);
+			Contract.Invariant(outBuffer != null);
+		}
+
 
 		#region IRewriterIterator Members
 
-		public void Initialize(int iters, IRewriter rwter, ISymbolProcessor outProcessor, IEnumerable<Symbol<IValue>> symbols) {
+		public IRewriter Rewriter {
+			set { rewriter = value; }
+		}
 
-			iterations = iters;
+		public ISymbolProcessor OutputProcessor {
+			set { outProcessor = value; }
+		}
 
-			rewriter = rwter;
-			rewriter.OutputProcessor = this;
+		public IEnumerable<Symbol<IValue>> Axiom {
+			set {
+				inBuffer.Clear();
+				inBuffer.AddRange(value);
+			}
+		}
 
-			outputProcessor = outProcessor;
-
-			inBuffer = symbols.ToList();
-			outBuffer = new List<Symbol<IValue>>(inBuffer.Count);
+		public IValue Iterations {
+			set {
+				if (value.IsConstant && !((Constant)value).IsNaN && ((Constant)value).Value >= 0) {
+					iterations = ((Constant)value).GetIntValueRounded();
+				}
+				else {
+					throw new ArgumentException("Iterations value is invalid.");
+				}
+			}
 		}
 
 		public void Start() {
+
 			for (int i = 0; i < iterations; i++) {
 
+				rewriter.BeginProcessing();
 				foreach (var s in inBuffer) {
 					rewriter.ProcessSymbol(s);
 				}
@@ -47,22 +81,25 @@ namespace Malsys.Rewriters.Iterators {
 				Swap.Them(ref inBuffer, ref outBuffer);
 			}
 
+			outProcessor.BeginProcessing();
 			foreach (var s in inBuffer) {
-				outputProcessor.ProcessSymbol(s);
-				outputProcessor.EndProcessing();
+				outProcessor.ProcessSymbol(s);
 			}
+			outProcessor.EndProcessing();
 		}
 
 		#endregion
 
 		#region ISymbolProcessor Members
 
+		public void BeginProcessing() {
+		}
+
 		public void ProcessSymbol(Symbol<IValue> symbol) {
 			outBuffer.Add(symbol);
 		}
 
 		public void EndProcessing() {
-
 		}
 
 		#endregion

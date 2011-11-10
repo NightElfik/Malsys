@@ -221,12 +221,7 @@ namespace Malsys.Tests.Rewriters {
 			}
 
 			var symBuff = new SymbolsBuffer();
-			var rrulesDict = RewriterUtils.CreateRrulesMap(lsystem.Result.RewriteRules);
-
-			rewriter.Initialize(rrulesDict,
-				MapModule.Empty<string, Malsys.Expressions.IValue>(),
-				MapModule.Empty<string, Malsys.FunctionDefinition>(),
-				0);
+			rewriter.RewriteRules = lsystem.Result.RewriteRules;
 			rewriter.OutputProcessor = symBuff;
 
 			int iterations = excpectedIterations.Length;
@@ -234,6 +229,7 @@ namespace Malsys.Tests.Rewriters {
 
 			for (int i = 0; i < iterations; i++) {
 
+				rewriter.BeginProcessing();
 				foreach (var sym in axiom) {
 					rewriter.ProcessSymbol(sym);
 				}

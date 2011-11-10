@@ -5,28 +5,30 @@ using Symbol = Malsys.Symbol<Malsys.Expressions.IValue>;
 namespace Malsys.Interpreters {
 	public class SymbolsBuffer : ISymbolProcessor {
 
-		List<Symbol> buffer = new List<Symbol>();
+		List<Symbol> buffer;
 
 
 		#region ISymbolProcessor Members
 
+		public void BeginProcessing() {
+			buffer = new List<Symbol>();
+		}
+
 		public void ProcessSymbol(Symbol symbol) {
-
-
 			buffer.Add(symbol);
 		}
 
 		public void EndProcessing() {
-
 		}
 
 		#endregion
 
 
 		public List<Symbol> GetAndClear() {
-			var buff = buffer;
-			buffer = new List<Symbol>();
+			var buff = buffer ?? new List<Symbol>();
+			buffer = null;
 			return buff;
 		}
+
 	}
 }

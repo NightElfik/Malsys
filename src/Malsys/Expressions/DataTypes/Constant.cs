@@ -1,4 +1,5 @@
-﻿
+﻿using System;
+
 namespace Malsys.Expressions {
 	/// <summary>
 	/// Immutable.
@@ -13,8 +14,6 @@ namespace Malsys.Expressions {
 		public static readonly Constant True = One;
 		public static readonly Constant False = Zero;
 
-
-		public bool IsInfinity { get { return double.IsInfinity(Value); } }
 
 		public readonly double Value;
 
@@ -31,9 +30,19 @@ namespace Malsys.Expressions {
 			AstNode = astNode;
 		}
 
+
+		public bool IsInfinity { get { return double.IsInfinity(Value); } }
+
+
+		public int GetIntValueRounded() {
+			return (int)Math.Round(Value);
+		}
+
+
 		public static implicit operator double(Constant c) {
 			return c.Value;
 		}
+
 
 		public override string ToString() {
 			return Value.ToStringInvariant();

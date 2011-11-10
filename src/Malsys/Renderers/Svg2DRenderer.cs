@@ -7,10 +7,13 @@ using Malsys.Media;
 namespace Malsys.Renderers {
 	public class Svg2DRenderer : IBasic2DRenderer {
 
+		[UserSettable]
 		public string FileHeader { get; set; }
 
+		[UserSettable]
 		public string SvgHeader { get; set; }
 
+		[UserSettable]
 		public string SvgFooter { get; set; }
 
 
@@ -39,7 +42,7 @@ namespace Malsys.Renderers {
 
 		#region IBasic2DRenderer Members
 
-		public void DrawTo(PointF Point, float Width, ColorF Color) {
+		public void MoveTo(PointF Point, float Width, ColorF Color) {
 			throw new NotImplementedException();
 		}
 

@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Malsys.Expressions;
+﻿using Malsys.Expressions;
 
 namespace Malsys.Rewriters {
 	public interface ISymbolProcessor {
+
+		void BeginProcessing();
 
 		void ProcessSymbol(Symbol<IValue> symbol);
 

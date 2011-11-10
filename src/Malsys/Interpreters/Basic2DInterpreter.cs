@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Symbol = Malsys.Symbol<Malsys.Expressions.IValue>;
-using SymbolPatern = Malsys.Symbol<string>;
 using Malsys.Expressions;
 using Malsys.Renderers;
 
@@ -18,33 +13,25 @@ namespace Malsys.Interpreters {
 		}
 
 
-		#region IInterpret Members
 
-		public void Initialize() {
+		#region IInterpreter Members
+
+		public IRenderer Renderer {
+			set { throw new NotImplementedException(); }
+		}
+
+		public bool IsRendererCompatible(IRenderer renderer) {
+			throw new NotImplementedException();
+		}
+
+		public void BeginInterpreting() {
+			throw new NotImplementedException();
+		}
+
+		public void EndInterpreting() {
 			throw new NotImplementedException();
 		}
 
 		#endregion
-
-
-		#region Symbols interpretation methods
-
-		[SymbolInterpretation]
-		public void Nothing(ImmutableList<IValue> prms) {
-
-		}
-
-		[SymbolInterpretation]
-		public void DrawLineForward(ImmutableList<IValue> prms) {
-
-		}
-
-		[SymbolInterpretation]
-		public void MoveForward(ImmutableList<IValue> prms) {
-
-		}
-
-		#endregion
-
 	}
 }

@@ -122,6 +122,8 @@
     <Compile Include="Extensions\IntExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Interpreters\Basic2DInterpreter.cs" />
+    <Compile Include="Interpreters\EmptyInterpret.cs" />
+    <Compile Include="Interpreters\IInterpreterCaller.cs" />
     <Compile Include="Interpreters\InterpreterCaller.cs" />
     <Compile Include="Interpreters\SymbolInterpretation.cs" />
     <Compile Include="Interpreters\SymbolsBuffer.cs" />
@@ -132,6 +134,8 @@
     <Compile Include="Renderers\IBasic2DRenderer.cs" />
     <Compile Include="Renderers\IRenderer.cs" />
     <Compile Include="Renderers\Svg2DRenderer.cs" />
+    <Compile Include="Rewriters\EmptyRewriter.cs" />
+    <Compile Include="Rewriters\EmptySymbolProcessor.cs" />
     <Compile Include="Rewriters\Iterators\IRewriterIterator.cs" />
     <Compile Include="Rewriters\Iterators\SingleRewriterIterator.cs" />
     <Compile Include="Rewriters\SymbolRewriter.cs" />
@@ -145,6 +149,7 @@
     <Compile Include="SourceCode\Highlighters\PositionMark.cs" />
     <Compile Include="SourceCode\Highlighters\StringHighlighter.cs" />
     <Compile Include="SourceCode\Printers\CanonicPrinter.cs" />
+    <Compile Include="UserSettableAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Malsys.Ast\Malsys.Ast.csproj">
@@ -161,6 +166,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Rendering\" />
     <Folder Include="SourceCode\Formatters\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
