@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 
-namespace Malsys.Processing.Components.Interpreters {
+namespace Malsys.Processing.Components {
 	public interface IInterpreterCaller : ISymbolProcessor {
 
 		IInterpreter Interpreter { set; }
 
-		Dictionary<string, string> SymbolsInterpretation { set; }
+		ProcessContext Context { set; }
 
 	}
 }

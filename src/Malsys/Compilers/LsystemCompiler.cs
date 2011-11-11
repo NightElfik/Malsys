@@ -2,6 +2,9 @@
 using System.Diagnostics;
 using Malsys.Expressions;
 using Microsoft.FSharp.Collections;
+using FunMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.FunctionDefinition>;
+using VarMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.Expressions.IExpression>;
+using SymbolVarMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SymbolsList<Malsys.Expressions.IExpression>>;
 
 
 namespace Malsys.Compilers {
@@ -26,9 +29,9 @@ namespace Malsys.Compilers {
 			var prms = inputCompiler.CompileParametersFailSafe(lsysAst.Parameters);
 
 			var rRules = new List<RewriteRule>();
-			var varDefs = new List<VariableDefinition<IExpression>>();
-			var symDefs = new List<VariableDefinition<SymbolsList<IExpression>>>();
-			var funDefs = new List<FunctionDefinition>();
+			var varDefs = MapModule.Empty<string, IExpression>();
+			var symDefs = MapModule.Empty<string, SymbolsList<IExpression>>();
+			var funDefs = MapModule.Empty<string, FunctionDefinition>();
 
 			foreach (var statement in lsysAst.Body) {
 
@@ -41,17 +44,29 @@ namespace Malsys.Compilers {
 
 				else if (statement is Ast.VariableDefinition) {
 					var vd = inputCompiler.CompileFailSafe((Ast.VariableDefinition)statement);
-					varDefs.Add(vd);
+					bool oldWasSet;
+					varDefs = varDefs.Add(vd.Name, vd.Value, out oldWasSet);
+					if (oldWasSet) {
+						// TODO: report
+					}
 				}
 
 				else if (statement is Ast.SymbolsDefinition) {
 					var sd = inputCompiler.CompileFailSafe((Ast.SymbolsDefinition)statement);
-					symDefs.Add(sd);
+					bool oldWasSet;
+					symDefs = symDefs.Add(sd.Name, sd.Value, out oldWasSet);
+					if (oldWasSet) {
+						// TODO: report
+					}
 				}
 
 				else if (statement is Ast.FunctionDefinition) {
 					var fd = inputCompiler.CompileFailSafe((Ast.FunctionDefinition)statement);
-					funDefs.Add(fd);
+					bool oldWasSet;
+					funDefs = funDefs.Add(fd.Name, fd, out oldWasSet);
+					if (oldWasSet) {
+						// TODO: report
+					}
 				}
 
 				else if (statement is Ast.EmptyStatement) {
@@ -71,10 +86,7 @@ namespace Malsys.Compilers {
 
 
 			var rRulesImm = new ImmutableList<RewriteRule>(rRules);
-			var varDefsImm = new ImmutableList<VariableDefinition<IExpression>>(varDefs);
-			var symDefsImm = new ImmutableList<VariableDefinition<SymbolsList<IExpression>>>(symDefs);
-			var funDefsImm = new ImmutableList<FunctionDefinition>(funDefs);
-			return new LsystemDefinition(lsysAst.NameId.Name, prms, rRulesImm, varDefsImm, symDefsImm, funDefsImm);
+			return new LsystemDefinition(lsysAst.NameId.Name, prms, rRulesImm, varDefs, symDefs, funDefs);
 		}
 
 		public CompilerResult<RewriteRule> Compile(Ast.RewriteRule rRuleAst) {

@@ -42,7 +42,7 @@ namespace Malsys.Compilers {
 		public CompilerResult<InputBlock> CompileFromAst(Ast.InputBlock parsedInput) {
 
 			var lsysDefs = new List<LsystemDefinition>();
-			var varDefs = new List<VariableDefinition<IExpression>>();
+			var varDefs = new List<VariableDefinition<IValue>>();
 			var funDefs = new List<FunctionDefinition>();
 
 			foreach (var statement in parsedInput) {
@@ -56,7 +56,7 @@ namespace Malsys.Compilers {
 
 				else if (statement is Ast.VariableDefinition) {
 					var vd = CompileFailSafe((Ast.VariableDefinition)statement);
-					varDefs.Add(vd);
+					varDefs.Add(vd.Evaluate());
 				}
 
 				else if (statement is Ast.FunctionDefinition) {
@@ -84,7 +84,7 @@ namespace Malsys.Compilers {
 			}
 
 			var lsysImm = new ImmutableList<LsystemDefinition>(lsysDefs);
-			var varsImm = new ImmutableList<VariableDefinition<IExpression>>(varDefs);
+			var varsImm = new ImmutableList<VariableDefinition<IValue>>(varDefs);
 			var funsImm = new ImmutableList<FunctionDefinition>(funDefs);
 
 			return new InputBlock(lsysImm, varsImm, funsImm);

@@ -3,6 +3,7 @@
 namespace Malsys.Compilers {
 	public class CompilerMessage {
 
+		public int MessageId { get; private set; }
 		public string Message { get; private set; }
 		public CompilerMessageType Type { get; private set; }
 		public string SourceName { get; private set; }

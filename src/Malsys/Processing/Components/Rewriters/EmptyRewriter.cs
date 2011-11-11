@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using Malsys.Expressions;
-using Microsoft.FSharp.Collections;
 
 namespace Malsys.Processing.Components.Rewriters {
 	class EmptyRewriter : IRewriter {
@@ -15,19 +13,11 @@ namespace Malsys.Processing.Components.Rewriters {
 			set { throw new InvalidOperationException("Empty rewriter."); }
 		}
 
-		public IEnumerable<RewriteRule> RewriteRules {
+		public ProcessContext Context {
 			set { throw new InvalidOperationException("Empty rewriter."); }
 		}
 
-		public FSharpMap<string, IValue> Variables {
-			set { throw new InvalidOperationException("Empty rewriter."); }
-		}
-
-		public FSharpMap<string, FunctionDefinition> Functions {
-			set { throw new InvalidOperationException("Empty rewriter."); }
-		}
-
-		public Expressions.IValue RandomSeed {
+		public IValue RandomSeed {
 			set { throw new InvalidOperationException("Empty rewriter."); }
 		}
 

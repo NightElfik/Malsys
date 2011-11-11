@@ -14,10 +14,16 @@ namespace Malsys.Expressions {
 			return MapModule.Add(var.Name, var.Value, vars);
 		}
 
-		public static Variable Evaluate(this VariableDefinition<IExpression> varDef, VarMap vars, FunMap funs) {
+		public static VariableDefinition<IValue> Evaluate(this VariableDefinition<IExpression> varDef) {
+
+			var value = ExpressionEvaluator.Evaluate(varDef.Value);
+			return new VariableDefinition<IValue>(varDef.Name, value);
+		}
+
+		public static VariableDefinition<IValue> Evaluate(this VariableDefinition<IExpression> varDef, VarMap vars, FunMap funs) {
 
 			var value = ExpressionEvaluator.Evaluate(varDef.Value, vars, funs);
-			return new Variable(varDef.Name, value);
+			return new VariableDefinition<IValue>(varDef.Name, value);
 		}
 	}
 }

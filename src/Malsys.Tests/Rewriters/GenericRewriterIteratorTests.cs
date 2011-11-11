@@ -10,6 +10,7 @@ using Malsys.Processing.Components.Rewriters;
 using Malsys.SourceCode.Printers;
 using Microsoft.FSharp.Text.Lexing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Malsys.Processing;
 
 namespace Malsys.Tests.Rewriters {
 	public static class GenericRewriterIteratorTests {
@@ -55,18 +56,22 @@ namespace Malsys.Tests.Rewriters {
 				Assert.Fail("Failed to compile L-system." + msgs.ToString());
 			}
 
-			if (lsystem.Result.Symbols.Length != 1) {
+			if (lsystem.Result.Symbols.Count != 1) {
 				Assert.Fail("Excpected 1 symbol definition.");
 			}
+
+			var data = new InputData();
+			data.Add(lsystem);
+			var context = new ProcessContext("l", null, data);
 
 			var symBuff = new SymbolsBuffer();
 
 			var rewriter = new SymbolRewriter() {
-				RewriteRules = lsystem.Result.RewriteRules,
-				OutputProcessor = rewIt
+				OutputProcessor = rewIt,
+				Context = context
 			};
 
-			IEnumerable<Symbol<IValue>> axiom = lsystem.Result.Symbols[0].Value.Evaluate();
+			IEnumerable<Symbol<IValue>> axiom = lsystem.Result.Symbols["axiom"].Evaluate();
 
 			rewIt.Rewriter = rewriter;
 			rewIt.OutputProcessor = symBuff;

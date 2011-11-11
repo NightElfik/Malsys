@@ -70,20 +70,14 @@ namespace Malsys.Processing.Components.Rewriters {
 			set { outputProcessor = value; }
 		}
 
-		public IEnumerable<RewriteRule> RewriteRules {
+		public ProcessContext Context {
 			set {
-				rewriteRules = RewriterUtils.CreateRrulesMap(value);
+				variables = value.Variables;
+				functions = value.Functions;
+				rewriteRules = RewriterUtils.CreateRrulesMap(value.MainLsystem.RewriteRules);
 
 				initContextCaches();
 			}
-		}
-
-		public VarMap Variables {
-			set { variables = value; }
-		}
-
-		public FunMap Functions {
-			set { functions = value; }
 		}
 
 		public IValue RandomSeed {
@@ -102,6 +96,7 @@ namespace Malsys.Processing.Components.Rewriters {
 		#region ISymbolProcessor Members
 
 		public void BeginProcessing() {
+
 			rndGenerator = new Random(seed);
 
 			outputProcessor.BeginProcessing();
@@ -230,7 +225,7 @@ namespace Malsys.Processing.Components.Rewriters {
 
 			for (int i = 0; i < patternLen; i++) {
 				var value = i < argsLen ? symbol.Arguments[i] : Constant.NaN;
-				vars = MapModule.Add(pattern.Arguments[i], value, vars);
+				vars = vars.Add(pattern.Arguments[i], value);
 			}
 
 			return vars;

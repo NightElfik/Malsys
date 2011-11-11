@@ -97,7 +97,7 @@ namespace Malsys.Tests.Interpreters {
 			var dummy = new DummyInterpreter();
 			var caller = new InterpreterCaller() {
 				Interpreter = dummy,
-				SymbolsInterpretation = symbolToInstr
+				//SymbolsInterpretation = symbolToInstr
 			};
 
 			foreach (var sym in symbols) {

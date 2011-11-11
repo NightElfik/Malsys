@@ -41,10 +41,10 @@ namespace Malsys.Processing.Components.Interpreters {
 			}
 		}
 
-		public Dictionary<string, string> SymbolsInterpretation {
+		public ProcessContext Context {
 			set {
-				symbolToInstr = value;
-				createIntActionsCahce();
+				//symbolToInstr = value;
+				//createIntActionsCahce();
 			}
 		}
 

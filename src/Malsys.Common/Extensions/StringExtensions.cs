@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Text;
+using System.Globalization;
 
 namespace Malsys {
 	public static class StringExtensions {
@@ -19,6 +20,18 @@ namespace Malsys {
 			Contract.Ensures(Contract.Result<string>() != null);
 
 			return string.Format(format, args);
+		}
+
+		/// <summary>
+		/// Formates this string by standard <c>string.Format</c> function using Invariant Culture.
+		/// </summary>
+		public static string FmtInvariant(this string format, params object[] args) {
+
+			Contract.Requires<ArgumentNullException>(format != null);
+			Contract.Requires<ArgumentNullException>(args != null);
+			Contract.Ensures(Contract.Result<string>() != null);
+
+			return string.Format(CultureInfo.InvariantCulture, format, args);
 		}
 
 		/// <summary>
