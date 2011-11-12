@@ -4,7 +4,7 @@ namespace Malsys.Ast {
 	/// <summary>
 	/// Immutable.
 	/// </summary>
-	public class ExpressionFunction : IToken, IExpressionMember {
+	public class ExpressionFunction : IExpressionMember {
 
 		public readonly Identificator NameId;
 		public readonly ImmutableListPos<Expression> Arguments;
@@ -23,15 +23,9 @@ namespace Malsys.Ast {
 
 		#endregion
 
-		#region IExpressionMember Members
+		#region IAstExpressionVisitable Members
 
-		public ExpressionMemberType MemberType { get { return ExpressionMemberType.Function; } }
-
-		#endregion
-
-		#region IAstVisitable Members
-
-		public void Accept(IAstVisitor visitor) {
+		public void Accept(IAstExpressionVisitor visitor) {
 			visitor.Visit(this);
 		}
 

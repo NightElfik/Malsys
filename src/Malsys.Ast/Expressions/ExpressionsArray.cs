@@ -17,15 +17,9 @@ namespace Malsys.Ast {
 		}
 
 
-		#region IExpressionMember Members
+		#region IAstExpressionVisitable Members
 
-		public ExpressionMemberType MemberType { get { return ExpressionMemberType.Array; } }
-
-		#endregion
-
-		#region IAstVisitable Members
-
-		new public void Accept(IAstVisitor visitor) {
+		public void Accept(IAstExpressionVisitor visitor) {
 			visitor.Visit(this);
 		}
 

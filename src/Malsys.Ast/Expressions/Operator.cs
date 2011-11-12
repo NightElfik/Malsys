@@ -3,7 +3,7 @@ namespace Malsys.Ast {
 	/// <summary>
 	/// Immutable.
 	/// </summary>
-	public class Operator : IToken, IExpressionMember {
+	public class Operator : IExpressionMember {
 
 		public readonly string Syntax;
 
@@ -20,15 +20,9 @@ namespace Malsys.Ast {
 
 		#endregion
 
-		#region IExpressionMember Members
+		#region IAstExpressionVisitable Members
 
-		public ExpressionMemberType MemberType { get { return ExpressionMemberType.Operator; } }
-
-		#endregion
-
-		#region IAstVisitable Members
-
-		public void Accept(IAstVisitor visitor) {
+		public void Accept(IAstExpressionVisitor visitor) {
 			visitor.Visit(this);
 		}
 

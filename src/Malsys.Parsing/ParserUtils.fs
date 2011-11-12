@@ -19,8 +19,7 @@ let parseHelper (parseFun : (LexBuffer<_> -> Parser.token) -> LexBuffer<_> -> 'b
 
 // Can not write:
 //
-// let parseLsystemStatements =
-//     parseHelper Parser.ParseLsystemStatements
+// let parseLsystemStatements = parseHelper Parser.ParseLsystemStatements
 //
 // because of error:
 // Value restriction. The value 'parseLsystemStatements' has been inferred to have generic type
@@ -29,29 +28,13 @@ let parseHelper (parseFun : (LexBuffer<_> -> Parser.token) -> LexBuffer<_> -> 'b
 
 
 let ParseLsystemStatements comments lexbuf msgs sourceName =
-    parseHelper Parser.ParseLsystemStatements comments lexbuf msgs sourceName
-
-let ParseExprInteractiveStatements lexbuf msgs sourceName =
-    let mutable comments = new ResizeArray<Comment>() in
-    parseHelper Parser.ParseExprInteractiveStatements comments lexbuf msgs sourceName
+    parseHelper Parser.ParseInput comments lexbuf msgs sourceName
 
 
 let ParseLsystem lexbuf msgs sourceName =
     let mutable comments = new ResizeArray<Comment>() in
     parseHelper Parser.ParseLsystem comments lexbuf msgs sourceName
 
-let ParseVarDef lexbuf msgs sourceName =
+let ParseBinding lexbuf msgs sourceName =
     let mutable comments = new ResizeArray<Comment>() in
-    parseHelper Parser.ParseVarDef comments lexbuf msgs sourceName
-
-let ParseFunDef lexbuf msgs sourceName =
-    let mutable comments = new ResizeArray<Comment>() in
-    parseHelper Parser.ParseFunDef comments lexbuf msgs sourceName
-
-let ParseSymbols lexbuf msgs sourceName =
-    let mutable comments = new ResizeArray<Comment>() in
-    parseHelper Parser.ParseSymbols comments lexbuf msgs sourceName
-
-let ParseExpression lexbuf msgs sourceName =
-    let mutable comments = new ResizeArray<Comment>() in
-    parseHelper Parser.ParseExpression comments lexbuf msgs sourceName
+    parseHelper Parser.ParseBinding comments lexbuf msgs sourceName

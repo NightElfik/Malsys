@@ -1,6 +1,6 @@
 ﻿
 namespace Malsys.Ast {
-	public interface IToken : IAstVisitable {
+	public interface IToken {
 		Position Position { get; }
 	}
 }

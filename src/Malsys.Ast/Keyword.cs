@@ -34,5 +34,9 @@ namespace Malsys.Ast {
 		With,
 		[StringValue("where")]
 		Where,
+		[StringValue("interpret")]
+		Interpret,
+		[StringValue("as")]
+		As,
 	}
 }

@@ -10,11 +10,11 @@ namespace Malsys.SourceCode.Highlighters {
 				if (statement is Ast.Lsystem) {
 					Collect((Ast.Lsystem)statement, marks);
 				}
-				else if (statement is Ast.VariableDefinition) {
-					Collect((Ast.VariableDefinition)statement, marks);
+				else if (statement is Ast.Binding) {
+					Collect((Ast.Binding)statement, marks);
 				}
-				else if (statement is Ast.FunctionDefinition) {
-					Collect((Ast.FunctionDefinition)statement, marks);
+				else if (statement is Ast.Function) {
+					Collect((Ast.Function)statement, marks);
 				}
 				else if (statement is Ast.EmptyStatement) {
 					continue;
@@ -90,16 +90,16 @@ namespace Malsys.SourceCode.Highlighters {
 					Collect((Ast.RewriteRule)statement, marks);
 				}
 
-				else if (statement is Ast.VariableDefinition) {
-					Collect((Ast.VariableDefinition)statement, marks);
+				else if (statement is Ast.Binding) {
+					Collect((Ast.Binding)statement, marks);
 				}
 
 				else if (statement is Ast.SymbolsDefinition) {
 					Collect((Ast.SymbolsDefinition)statement, marks);
 				}
 
-				else if (statement is Ast.FunctionDefinition) {
-					Collect((Ast.FunctionDefinition)statement, marks);
+				else if (statement is Ast.Function) {
+					Collect((Ast.Function)statement, marks);
 				}
 
 				else if (statement is Ast.EmptyStatement) {
@@ -116,7 +116,7 @@ namespace Malsys.SourceCode.Highlighters {
 			addMarks(MarkType.Separator, lsd.Body.EndSeparator, marks);
 		}
 
-		public static void Collect(Ast.VariableDefinition vd, List<PositionMark> marks) {
+		public static void Collect(Ast.Binding vd, List<PositionMark> marks) {
 
 			addMarks(MarkType.VariableDefinition, vd.Position, marks);
 
@@ -138,7 +138,7 @@ namespace Malsys.SourceCode.Highlighters {
 			}
 		}
 
-		public static void Collect(Ast.FunctionDefinition fd, List<PositionMark> marks) {
+		public static void Collect(Ast.Function fd, List<PositionMark> marks) {
 
 			addMarks(MarkType.FunctionDefinition, fd.Position, marks);
 
@@ -148,14 +148,14 @@ namespace Malsys.SourceCode.Highlighters {
 			}
 
 
-			addMarks(MarkType.Separator, fd.LocalVarDefs.BeginSeparator, marks);
+			addMarks(MarkType.Separator, fd.LocalBindings.BeginSeparator, marks);
 
-			foreach (var vd in fd.LocalVarDefs) {
+			foreach (var vd in fd.LocalBindings) {
 				Collect(vd, marks);
 			}
 			Collect(fd.ReturnExpression, marks);
 
-			addMarks(MarkType.Separator, fd.LocalVarDefs.EndSeparator, marks);
+			addMarks(MarkType.Separator, fd.LocalBindings.EndSeparator, marks);
 
 			foreach (var kw in fd.keywords) {
 				Collect(kw, marks);
@@ -212,7 +212,7 @@ namespace Malsys.SourceCode.Highlighters {
 			}
 		}
 
-		public static void Collect(Ast.Symbol<Ast.Identificator> ptrn, List<PositionMark> marks) {
+		public static void Collect(Ast.LsystemSymbol<Ast.Identificator> ptrn, List<PositionMark> marks) {
 			addMarks(MarkType.SymbolPattern, ptrn.Position, marks);
 			addMarks(MarkType.Symbol, ptrn.Position, marks);
 
@@ -221,7 +221,7 @@ namespace Malsys.SourceCode.Highlighters {
 			}
 		}
 
-		public static void Collect(Ast.Symbol<Ast.Expression> symExpr, List<PositionMark> marks) {
+		public static void Collect(Ast.LsystemSymbol<Ast.Expression> symExpr, List<PositionMark> marks) {
 			addMarks(MarkType.SymbolExpr, symExpr.Position, marks);
 			addMarks(MarkType.Symbol, symExpr.Position, marks);
 

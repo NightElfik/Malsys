@@ -1,22 +1,19 @@
 ﻿using System.Collections.Generic;
 
 namespace Malsys.Ast {
-	public interface ILsystemStatement : IToken { }
-
 	/// <summary>
 	/// Immutable.
 	/// </summary>
 	public class Lsystem : IToken, IInputStatement {
 
-		public readonly KeywordPos Keyword;
 		public readonly Identificator NameId;
 
 		public readonly ImmutableListPos<OptionalParameter> Parameters;
 		public readonly ImmutableListPos<ILsystemStatement> Body;
 
 
-		public Lsystem(KeywordPos keyword, Identificator name, ImmutableListPos<OptionalParameter> prms, ImmutableListPos<ILsystemStatement> body, Position pos) {
-			Keyword = keyword;
+		public Lsystem(Identificator name, ImmutableListPos<OptionalParameter> prms, ImmutableListPos<ILsystemStatement> body, Position pos) {
+
 			NameId = name;
 			Parameters = prms;
 			Body = body;
@@ -30,9 +27,9 @@ namespace Malsys.Ast {
 
 		#endregion
 
-		#region IAstVisitable Members
+		#region IAstInputVisitable Members
 
-		public void Accept(IAstVisitor visitor) {
+		public void Accept(IAstInputVisitor visitor) {
 			visitor.Visit(this);
 		}
 

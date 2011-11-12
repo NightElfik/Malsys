@@ -3,7 +3,7 @@ namespace Malsys.Ast {
 	/// <summary>
 	/// Immutable.
 	/// </summary>
-	public class ExpressionBracketed : IToken, IExpressionMember {
+	public class ExpressionBracketed : IExpressionMember {
 
 		public readonly Expression Expression;
 
@@ -19,15 +19,9 @@ namespace Malsys.Ast {
 
 		#endregion
 
-		#region IExpressionMember Members
+		#region IAstExpressionVisitable Members
 
-		public ExpressionMemberType MemberType { get { return ExpressionMemberType.BracketedExpression; } }
-
-		#endregion
-
-		#region IAstVisitable Members
-
-		public void Accept(IAstVisitor visitor) {
+		public void Accept(IAstExpressionVisitor visitor) {
 			visitor.Visit(this);
 		}
 

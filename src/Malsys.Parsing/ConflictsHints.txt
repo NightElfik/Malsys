@@ -1,0 +1,5 @@
+
+Use `-v` option with fsyacc, look in `Parser.fsyacc.output` for states.
+
+Reduce-reduce conflict hint: ensure, that reduction after `dot` (current position in rewrute rule, marked with `.`) has has no more than 1 way ro teduce to lambda (empty).
+

@@ -54,13 +54,13 @@ namespace Malsys.Compilers {
 					}
 				}
 
-				else if (statement is Ast.VariableDefinition) {
-					var vd = CompileFailSafe((Ast.VariableDefinition)statement);
+				else if (statement is Ast.Binding) {
+					var vd = CompileFailSafe((Ast.Binding)statement);
 					varDefs.Add(vd.Evaluate());
 				}
 
-				else if (statement is Ast.FunctionDefinition) {
-					var fd = CompileFailSafe((Ast.FunctionDefinition)statement);
+				else if (statement is Ast.Function) {
+					var fd = CompileFailSafe((Ast.Function)statement);
 					funDefs.Add(fd);
 				}
 
@@ -94,10 +94,10 @@ namespace Malsys.Compilers {
 
 
 
-		public FunctionDefinition CompileFailSafe(Ast.FunctionDefinition funDef) {
+		public FunctionDefinition CompileFailSafe(Ast.Function funDef) {
 
 			var prms = CompileParametersFailSafe(funDef.Parameters);
-			var varDefs = CompileFailSafe(funDef.LocalVarDefs);
+			var varDefs = CompileFailSafe(funDef.LocalBindings);
 			var retExpr = exprCompiler.CompileExpression(funDef.ReturnExpression);
 
 			return new FunctionDefinition(funDef.NameId.Name, prms, varDefs, retExpr);
@@ -161,7 +161,7 @@ namespace Malsys.Compilers {
 
 
 
-		public VariableDefinition<IExpression> CompileFailSafe(Ast.VariableDefinition varDef) {
+		public VariableDefinition<IExpression> CompileFailSafe(Ast.Binding varDef) {
 			return new VariableDefinition<IExpression>(varDef.NameId.Name, exprCompiler.CompileExpression(varDef.Expression));
 		}
 
@@ -169,7 +169,7 @@ namespace Malsys.Compilers {
 			return new VariableDefinition<SymbolsList<IExpression>>(symDef.NameId.Name, lsysCompiler.CompileListFailSafe(symDef.Symbols));
 		}
 
-		public ImmutableList<VariableDefinition<IExpression>> CompileFailSafe(ImmutableList<Ast.VariableDefinition> varDefs) {
+		public ImmutableList<VariableDefinition<IExpression>> CompileFailSafe(ImmutableList<Ast.Binding> varDefs) {
 
 			var rsltList = new VariableDefinition<IExpression>[varDefs.Length];
 

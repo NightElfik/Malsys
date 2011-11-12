@@ -4,24 +4,21 @@ namespace Malsys.Ast {
 	/// <summary>
 	/// Immutable.
 	/// </summary>
-	public class RewriteRule : IToken, ILsystemStatement {
+	public class RewriteRule : ILsystemStatement {
 
-		public readonly ImmutableList<KeywordPos> Keywords;
+		public readonly LsystemSymbol Pattern;
+		public readonly ImmutableListPos<LsystemSymbol> LeftContext;
+		public readonly ImmutableListPos<LsystemSymbol> RightContext;
 
-		public readonly Symbol<Identificator> Pattern;
-		public readonly SymbolsListPos<Identificator> LeftContext;
-		public readonly SymbolsListPos<Identificator> RightContext;
-
-		public readonly ImmutableListPos<VariableDefinition> LocalVariables;
+		public readonly ImmutableListPos<Binding> LocalVariables;
 
 		public readonly Expression Condition;
 
 		public readonly ImmutableListPos<RewriteRuleReplacement> Replacements;
 
 
-		public RewriteRule(Symbol<Identificator> pattern, SymbolsListPos<Identificator> lctxt, SymbolsListPos<Identificator> rctxt,
-				ImmutableListPos<VariableDefinition> locVars, Expression cond, ImmutableListPos<RewriteRuleReplacement> replacs,
-				ImmutableList<KeywordPos> keywords, Position pos) {
+		public RewriteRule(LsystemSymbol pattern, ImmutableListPos<LsystemSymbol> lctxt, ImmutableListPos<LsystemSymbol> rctxt,
+				ImmutableListPos<Binding> locVars, Expression cond, ImmutableListPos<RewriteRuleReplacement> replacs, Position pos) {
 
 			LeftContext = lctxt;
 			Pattern = pattern;
@@ -29,7 +26,6 @@ namespace Malsys.Ast {
 			Condition = cond;
 			LocalVariables = locVars;
 			Replacements = replacs;
-			Keywords = keywords;
 
 			Position = pos;
 		}
@@ -41,9 +37,9 @@ namespace Malsys.Ast {
 
 		#endregion
 
-		#region IAstVisitable Members
+		#region IAstLsystemVisitable Members
 
-		public void Accept(IAstVisitor visitor) {
+		public void Accept(IAstLsystemVisitor visitor) {
 			visitor.Visit(this);
 		}
 

@@ -64,6 +64,8 @@ let kw =
         (Keyword.Weight, WEIGHT Keyword.Weight);
         (Keyword.With, WITH Keyword.With);
         (Keyword.Where, WHERE Keyword.Where);
+        (Keyword.Interpret, INTERPRET Keyword.Interpret);
+        (Keyword.As, AS Keyword.As);
     ]
 
 let getKwStr (kwEnum, token) =
@@ -187,8 +189,8 @@ rule tokenize args = parse
     | ')' { RPAREN }
     | '{' { LBRACE }
     | '}' { RBRACE }
-    | '[' { LBRACK }
-    | ']' { RBRACK }
+    | '[' { LBRACK (lexeme lexbuf) }
+    | ']' { RBRACK (lexeme lexbuf) }
     | '=' { EQUALS }
 
     | operator | extraOperators

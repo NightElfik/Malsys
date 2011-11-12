@@ -4,18 +4,7 @@ namespace Malsys.Ast {
 	/// <summary>
 	/// All expression members should be immutable.
 	/// </summary>
-	public interface IExpressionMember : IToken {
-		ExpressionMemberType MemberType { get; }
+	public interface IExpressionMember : IToken, IAstExpressionVisitable {
 	}
 
-	public enum ExpressionMemberType {
-		Invalid,
-		Constant,
-		Variable,
-		Array,
-		Operator,
-		Indexer,
-		Function,
-		BracketedExpression,
-	}
 }

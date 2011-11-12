@@ -5,7 +5,7 @@ namespace Malsys.Ast {
 	/// <summary>
 	/// Immutable.
 	/// </summary>
-	public class Expression : IToken, IEnumerable<IExpressionMember>, IExprInteractiveStatement {
+	public class Expression : IBindable, IEnumerable<IExpressionMember> {
 
 		public static readonly Expression Empty = new Expression(Position.Unknown);
 
@@ -51,14 +51,6 @@ namespace Malsys.Ast {
 
 		public IEnumerator<IExpressionMember> GetEnumerator() {
 			return ((IEnumerable<IExpressionMember>)Members).GetEnumerator();
-		}
-
-		#endregion
-
-		#region IAstVisitable Members
-
-		public void Accept(IAstVisitor visitor) {
-			visitor.Visit(this);
 		}
 
 		#endregion

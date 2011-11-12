@@ -126,7 +126,7 @@ namespace Malsys.SourceCode.Printers {
 			}
 		}
 
-		public void Visit(Ast.FunctionDefinition funDef) {
+		public void Visit(Ast.Function funDef) {
 			PrintKw(Keyword.Fun);
 			writer.Write(funDef.NameId.Name);
 			writer.Write("(");
@@ -137,7 +137,7 @@ namespace Malsys.SourceCode.Printers {
 			writer.NewLine();
 			writer.Indent();
 
-			Visit(funDef.LocalVarDefs);
+			Visit(funDef.LocalBindings);
 			PrintKw(Keyword.Return);
 			Visit(funDef.ReturnExpression);
 			writer.Write(";");
@@ -260,7 +260,7 @@ namespace Malsys.SourceCode.Printers {
 			}
 		}
 
-		public void Visit<T>(Ast.Symbol<T> symbol) where T : IToken {
+		public void Visit<T>(Ast.LsystemSymbol<T> symbol) where T : IToken {
 			writer.Write(symbol.Name);
 
 			if (!symbol.Arguments.IsEmpty) {
@@ -284,7 +284,7 @@ namespace Malsys.SourceCode.Printers {
 			writer.Write(" ");
 		}
 
-		public void Visit(VariableDefinition variableDef) {
+		public void Visit(Binding variableDef) {
 			if (!variableDef.Keyword.IsEmpty) {
 				PrintKw(Keyword.Let);
 			}

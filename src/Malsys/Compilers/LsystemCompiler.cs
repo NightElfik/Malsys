@@ -42,8 +42,8 @@ namespace Malsys.Compilers {
 					}
 				}
 
-				else if (statement is Ast.VariableDefinition) {
-					var vd = inputCompiler.CompileFailSafe((Ast.VariableDefinition)statement);
+				else if (statement is Ast.Binding) {
+					var vd = inputCompiler.CompileFailSafe((Ast.Binding)statement);
 					bool oldWasSet;
 					varDefs = varDefs.Add(vd.Name, vd.Value, out oldWasSet);
 					if (oldWasSet) {
@@ -60,8 +60,8 @@ namespace Malsys.Compilers {
 					}
 				}
 
-				else if (statement is Ast.FunctionDefinition) {
-					var fd = inputCompiler.CompileFailSafe((Ast.FunctionDefinition)statement);
+				else if (statement is Ast.Function) {
+					var fd = inputCompiler.CompileFailSafe((Ast.Function)statement);
 					bool oldWasSet;
 					funDefs = funDefs.Add(fd.Name, fd, out oldWasSet);
 					if (oldWasSet) {
@@ -135,7 +135,7 @@ namespace Malsys.Compilers {
 			return new RewriteRuleReplacement(replac, probab);
 		}
 
-		public CompilerResult<Symbol<string>> Compile(Ast.Symbol<Ast.Identificator> ptrnAst, Dictionary<string, Position> usedNames) {
+		public CompilerResult<Symbol<string>> Compile(Ast.LsystemSymbol<Ast.Identificator> ptrnAst, Dictionary<string, Position> usedNames) {
 
 			var names = new string[ptrnAst.Arguments.Length];
 			for (int i = 0; i < ptrnAst.Arguments.Length; i++) {
@@ -183,7 +183,7 @@ namespace Malsys.Compilers {
 		}
 
 
-		public Symbol<IExpression> CompileFailSafe(Ast.Symbol<Ast.Expression> symbolAst) {
+		public Symbol<IExpression> CompileFailSafe(Ast.LsystemSymbol<Ast.Expression> symbolAst) {
 
 			return new Symbol<IExpression>(symbolAst.Name, exprCompiler.CompileFailSafe(symbolAst.Arguments));
 

@@ -2,17 +2,14 @@
 namespace Malsys.Ast {
 	public class RewriteRuleReplacement : IToken {
 
-		public readonly ImmutableList<KeywordPos> Keywords;
-
-		public readonly SymbolsListPos<Expression> Replacement;
+		public readonly ImmutableListPos<LsystemSymbol> Replacement;
 		public readonly Expression Weight;
 
 
-		public RewriteRuleReplacement(SymbolsListPos<Expression> replac, Expression wei, ImmutableList<KeywordPos> keywords, Position pos) {
+		public RewriteRuleReplacement(ImmutableListPos<LsystemSymbol> replac, Expression wei, Position pos) {
 
 			Replacement = replac;
 			Weight = wei;
-			Keywords = keywords;
 
 			Position = pos;
 		}
@@ -24,12 +21,5 @@ namespace Malsys.Ast {
 
 		#endregion
 
-		#region IAstVisitable Members
-
-		public void Accept(IAstVisitor visitor) {
-			visitor.Visit(this);
-		}
-
-		#endregion
 	}
 }
