@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-
+﻿
 namespace Malsys.Ast {
 	public class LsystemSymbolList : ImmutableListPos<LsystemSymbol>, IBindable {
 
@@ -8,5 +7,13 @@ namespace Malsys.Ast {
 			: base(symbols) {
 		}
 
+
+		#region IBindableVisitable Members
+
+		public void Accept(IBindableVisitor visitor) {
+			visitor.Visit(this);
+		}
+
+		#endregion
 	}
 }

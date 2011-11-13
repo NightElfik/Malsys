@@ -1,179 +1,169 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
-using Malsys.Expressions;
-using Microsoft.FSharp.Collections;
-using FunMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.FunctionDefinition>;
-using VarMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.Expressions.IExpression>;
-using SymbolVarMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SymbolsList<Malsys.Expressions.IExpression>>;
+using Malsys.SemanticModel;
+using Malsys.SemanticModel.Compiled;
 
 
 namespace Malsys.Compilers {
 
 	public class LsystemCompiler {
+		/// <summary>
+		/// Pattern that matches anything, but does not bind.
+		/// </summary>
+		public const string PatternPlaceholder = "_";
+
 
 		private MessagesCollection msgs;
 
 		private InputCompiler inputCompiler;
-		private ExpressionCompiler exprCompiler;
+		private LsystemCompilerVisitor lsysStatementCompiler;
 
 
 		public LsystemCompiler(InputCompiler iComp) {
 			inputCompiler = iComp;
-			exprCompiler = iComp.ExpressionCompiler;
 			msgs = inputCompiler.Messages;
+
+			lsysStatementCompiler = new LsystemCompilerVisitor(inputCompiler);
 		}
 
 
-		public CompilerResult<LsystemDefinition> Compile(Ast.Lsystem lsysAst) {
+		public CompilerResult<Lsystem> Compile(Ast.Lsystem lsysAst) {
 
 			var prms = inputCompiler.CompileParametersFailSafe(lsysAst.Parameters);
 
-			var rRules = new List<RewriteRule>();
-			var varDefs = MapModule.Empty<string, IExpression>();
-			var symDefs = MapModule.Empty<string, SymbolsList<IExpression>>();
-			var funDefs = MapModule.Empty<string, FunctionDefinition>();
+			var compStats = new List<ILsystemStatement>(lsysAst.Statements.Count);
 
-			foreach (var statement in lsysAst.Body) {
 
-				if (statement is Ast.RewriteRule) {
-					var rrResult = Compile((Ast.RewriteRule)statement);
-					if (rrResult) {
-						rRules.Add(rrResult);
-					}
-				}
+			foreach (var stat in lsysAst.Statements) {
 
-				else if (statement is Ast.Binding) {
-					var vd = inputCompiler.CompileFailSafe((Ast.Binding)statement);
-					bool oldWasSet;
-					varDefs = varDefs.Add(vd.Name, vd.Value, out oldWasSet);
-					if (oldWasSet) {
-						// TODO: report
-					}
-				}
-
-				else if (statement is Ast.SymbolsDefinition) {
-					var sd = inputCompiler.CompileFailSafe((Ast.SymbolsDefinition)statement);
-					bool oldWasSet;
-					symDefs = symDefs.Add(sd.Name, sd.Value, out oldWasSet);
-					if (oldWasSet) {
-						// TODO: report
-					}
-				}
-
-				else if (statement is Ast.Function) {
-					var fd = inputCompiler.CompileFailSafe((Ast.Function)statement);
-					bool oldWasSet;
-					funDefs = funDefs.Add(fd.Name, fd, out oldWasSet);
-					if (oldWasSet) {
-						// TODO: report
-					}
-				}
-
-				else if (statement is Ast.EmptyStatement) {
-					if (!((Ast.EmptyStatement)statement).Hidden) {
-						msgs.AddMessage("Empty statement found.", CompilerMessageType.Notice, statement.Position);
-					}
-				}
-
-				else {
-					Debug.Fail("Unhandled type `{0}` of {1} while compiling L-system `{2}`".Fmt(
-						statement.GetType().Name, typeof(Ast.ILsystemStatement).Name, lsysAst.NameId.Name));
-
-					msgs.AddError("Internal L-system compiler error.", statement.Position);
+				var compiledStat = lsysStatementCompiler.TryCompile(stat);
+				if (compiledStat) {
+					compStats.Add((ILsystemStatement)compiledStat);
 				}
 
 			}
 
+			var compStatsImm = new ImmutableList<ILsystemStatement>(compStats);
 
-			var rRulesImm = new ImmutableList<RewriteRule>(rRules);
-			return new LsystemDefinition(lsysAst.NameId.Name, prms, rRulesImm, varDefs, symDefs, funDefs);
+			return new Lsystem(lsysAst.NameId.Name, prms, compStatsImm);
 		}
 
-		public CompilerResult<RewriteRule> Compile(Ast.RewriteRule rRuleAst) {
+		public CompilerResult<RewriteRule> CompileRewriteRule(Ast.RewriteRule rRuleAst) {
+
+			var ptrn = CompileSymbolAsPattern(rRuleAst.Pattern, true);
+			var lCtxt = CompileSymbolsListAsPattern(rRuleAst.LeftContext, true);
+			var rCtxt = CompileSymbolsListAsPattern(rRuleAst.RightContext, true);
 
 			var usedNames = new Dictionary<string, Position>();
-
-			var ptrn = Compile(rRuleAst.Pattern, usedNames);
-			if (!ptrn) {
-				return CompilerResult<RewriteRule>.Error;
-			}
-
-			var lCtxt = CompileListFailSafe(rRuleAst.LeftContext, usedNames);
-
-			var rCtxt = CompileListFailSafe(rRuleAst.RightContext, usedNames);
-
+			CheckPatternParams(lCtxt, usedNames);
+			CheckPatternParams(ptrn, usedNames);
+			CheckPatternParams(rCtxt, usedNames);
 			usedNames = null;
 
-			var vars = inputCompiler.CompileFailSafe(rRuleAst.LocalVariables);
+			var vars = inputCompiler.CompileBindingsList(rRuleAst.LocalBindings, AllowedBindingTypes.ExpressionsAndFunctions);
 
 			var cond = rRuleAst.Condition.IsEmpty
 				? Constant.True
-				: exprCompiler.CompileExpression(rRuleAst.Condition);
+				: inputCompiler.ExpressionCompiler.CompileExpression(rRuleAst.Condition);
 
+			var replac = CompileReplacementsList(rRuleAst.Replacements);
 
-			var replac = new List<RewriteRuleReplacement>();
-
-			foreach (var r in rRuleAst.Replacements) {
-				if (!r.Replacement.IsEmpty) {
-					replac.Add(CompileReplacFailSafe(r));
-				}
-			}
-
-			var replacImm = new ImmutableList<RewriteRuleReplacement>(replac);
-
-
-			return new RewriteRule(ptrn, lCtxt, rCtxt, vars, cond, replacImm);
+			return new RewriteRule(ptrn, lCtxt, rCtxt, vars, cond, replac);
 		}
 
-		public RewriteRuleReplacement CompileReplacFailSafe(Ast.RewriteRuleReplacement replacAst) {
+
+		public RewriteRuleReplacement CompileReplacement(Ast.RewriteRuleReplacement replacAst) {
+
 			var probab = replacAst.Weight.IsEmpty
 				? Constant.One
-				: exprCompiler.CompileExpression(replacAst.Weight);
+				: inputCompiler.ExpressionCompiler.CompileExpression(replacAst.Weight);
 
-			var replac = CompileListFailSafe(replacAst.Replacement);
+			var replac = CompileSymbolsList(replacAst.Replacement);
 
 			return new RewriteRuleReplacement(replac, probab);
 		}
 
-		public CompilerResult<Symbol<string>> Compile(Ast.LsystemSymbol<Ast.Identificator> ptrnAst, Dictionary<string, Position> usedNames) {
+		public ImmutableList<RewriteRuleReplacement> CompileReplacementsList(ImmutableList<Ast.RewriteRuleReplacement> replacList) {
 
-			var names = new string[ptrnAst.Arguments.Length];
-			for (int i = 0; i < ptrnAst.Arguments.Length; i++) {
-				string name = ptrnAst.Arguments[i].Name;
-				names[i] = name;
+			var replac = new RewriteRuleReplacement[replacList.Length];
 
-				if (name == Constants.PatternPlaceholder) {
+			for (int i = 0; i < replacList.Length; i++) {
+				replac[i] = CompileReplacement(replacList[i]);
+			}
+
+			return new ImmutableList<RewriteRuleReplacement>(replac, true);
+		}
+
+
+		public bool CheckPatternParams(Symbol<string> symbol, Dictionary<string, Position> usedNames) {
+
+			bool allAreUnique = true;
+
+			for (int i = 0; i < symbol.Arguments.Length; i++) {
+				string name = symbol.Arguments[i];
+				if (name == PatternPlaceholder) {
 					continue;
 				}
 
 				if (usedNames.ContainsKey(name)) {
 					var otherPos = usedNames[name];
-					msgs.AddError("Parameter name `{0}` in pattern `{1}` is not unique (in its context).".Fmt(name, ptrnAst.Name),
-						ptrnAst.Arguments[i].Position, otherPos);
-					return CompilerResult<Symbol<string>>.Error;
+					msgs.AddError("Parameter name `{0}` in pattern `{1}` is not unique (in its context).".Fmt(name, symbol.Name),
+						symbol.AstSymbol.Arguments[i].Position, otherPos);
+					allAreUnique = false;
 				}
 
-				usedNames.Add(name, ptrnAst.Arguments[i].Position);
+				usedNames.Add(name, symbol.AstSymbol.Arguments[i].Position);
 			}
 
-			var namesImm = new ImmutableList<string>(names, true);
-			var result = new Symbol<string>(ptrnAst.Name, namesImm);
-
-			return new CompilerResult<Symbol<string>>(result);
+			return allAreUnique;
 		}
 
-		public SymbolsList<string> CompileListFailSafe(Ast.SymbolsListPos<Ast.Identificator> ptrnsAst, Dictionary<string, Position> usedNames) {
+		public bool CheckPatternParams(SymbolsList<string> symbolsList, Dictionary<string, Position> usedNames) {
 
-			var compiledSymbols = new Symbol<string>[ptrnsAst.Length];
+			bool allAreUnique = true;
 
-			for (int i = 0; i < ptrnsAst.Length; i++) {
-				var symRslt = Compile(ptrnsAst[i], usedNames);
-				if (symRslt) {
-					compiledSymbols[i] = symRslt;
+			foreach (var symbol in symbolsList) {
+				allAreUnique &= CheckPatternParams(symbol, usedNames);
+			}
+
+			return allAreUnique;
+		}
+
+
+		public Symbol<string> CompileSymbolAsPattern(Ast.LsystemSymbol symbol, bool allowArguments) {
+
+
+			string[] names = null;
+
+			if (allowArguments) {
+				names = new string[symbol.Arguments.Length];
+			}
+
+			for (int i = 0; i < symbol.Arguments.Length; i++) {
+				if (allowArguments) {
+					if (symbol.Arguments[i].Members.Length != 1 || !(symbol.Arguments[i].Members[0] is Ast.Identificator)) {
+						msgs.AddError("Argument of symbol `{0}` can be only one identificator in this context.".Fmt(symbol.Name), symbol.Arguments[i].Position);
+					}
+
+					names[i] = ((Ast.Identificator)symbol.Arguments[i].Members[0]).Name;
 				}
 				else {
-					return SymbolsList<string>.Empty;
+					if (symbol.Arguments[i].Members.Length != 0) {
+						msgs.AddError("Arguments of symbol `{0}` are not alowed in thos context.".Fmt(symbol.Name), symbol.Arguments[i].Position);
+					}
 				}
+			}
+
+			var namesImm = allowArguments ? new ImmutableList<string>(names, true) : ImmutableList<string>.Empty;
+			return new Symbol<string>(symbol.Name, namesImm, symbol);
+		}
+
+		public SymbolsList<string> CompileSymbolsListAsPattern(Ast.ImmutableListPos<Ast.LsystemSymbol> symbolsList, bool allowArguments) {
+
+			var compiledSymbols = new Symbol<string>[symbolsList.Length];
+
+			for (int i = 0; i < symbolsList.Length; i++) {
+				var symRslt = CompileSymbolAsPattern(symbolsList[i], allowArguments);
+				compiledSymbols[i] = symRslt;
 			}
 
 			var compiledSymImm = new ImmutableList<Symbol<string>>(compiledSymbols, true);
@@ -183,21 +173,20 @@ namespace Malsys.Compilers {
 		}
 
 
-		public Symbol<IExpression> CompileFailSafe(Ast.LsystemSymbol<Ast.Expression> symbolAst) {
+		public Symbol<IExpression> CompileSymbol(Ast.LsystemSymbol symbol) {
 
-			return new Symbol<IExpression>(symbolAst.Name, exprCompiler.CompileFailSafe(symbolAst.Arguments));
-
+			return new Symbol<IExpression>(symbol.Name, inputCompiler.ExpressionCompiler.CompileList(symbol.Arguments), symbol);
 		}
 
-		public SymbolsList<IExpression> CompileListFailSafe(Ast.SymbolsListPos<Ast.Expression> symbolsAst) {
+		public SymbolsListExpr CompileSymbolsList(Ast.ImmutableListPos<Ast.LsystemSymbol> symbolsList) {
 
-			var compiledSymbols = new Symbol<IExpression>[symbolsAst.Length];
+			var compiledSymbols = new Symbol<IExpression>[symbolsList.Length];
 
-			for (int i = 0; i < symbolsAst.Length; i++) {
-				compiledSymbols[i] = CompileFailSafe(symbolsAst[i]);
+			for (int i = 0; i < symbolsList.Length; i++) {
+				compiledSymbols[i] = CompileSymbol(symbolsList[i]);
 			}
 
-			return new SymbolsList<IExpression>(new ImmutableList<Symbol<IExpression>>(compiledSymbols, true));
+			return new SymbolsListExpr(new ImmutableList<Symbol<IExpression>>(compiledSymbols, true));
 		}
 	}
 }

@@ -1,5 +1,5 @@
 ﻿
 namespace Malsys.Ast {
-	public interface IBindable : IToken {
+	public interface IBindable : IToken, IBindableVisitable {
 	}
 }

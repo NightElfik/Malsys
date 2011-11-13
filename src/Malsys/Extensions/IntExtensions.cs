@@ -1,4 +1,5 @@
 ﻿using Malsys.Expressions;
+using Malsys.SemanticModel;
 
 namespace Malsys {
 	public static class IntExtensions {

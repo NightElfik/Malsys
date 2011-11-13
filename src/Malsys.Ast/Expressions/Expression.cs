@@ -11,26 +11,26 @@ namespace Malsys.Ast {
 
 
 		public readonly ImmutableList<IExpressionMember> Members;
-		public readonly int MembersCount;
 
 
 		public Expression(Position pos) {
+
 			Members = ImmutableList<IExpressionMember>.Empty;
-			MembersCount = 0;
 			Position = pos;
 		}
 
 		public Expression(IEnumerable<IExpressionMember> mmbrs, Position pos) {
+
 			Members = new ImmutableList<IExpressionMember>(mmbrs);
 			Position = pos;
-
-			MembersCount = Members.Length;
 		}
 
 
 		public IExpressionMember this[int i] { get { return Members[i]; } }
 
-		public bool IsEmpty { get { return MembersCount == 0; } }
+		public int MembersCount { get { return Members.Length; } }
+
+		public bool IsEmpty { get { return Members.Length == 0; } }
 
 
 		#region IToken Members
@@ -51,6 +51,14 @@ namespace Malsys.Ast {
 
 		public IEnumerator<IExpressionMember> GetEnumerator() {
 			return ((IEnumerable<IExpressionMember>)Members).GetEnumerator();
+		}
+
+		#endregion
+
+		#region IBindableVisitable Members
+
+		public void Accept(IBindableVisitor visitor) {
+			visitor.Visit(this);
 		}
 
 		#endregion

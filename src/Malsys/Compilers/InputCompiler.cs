@@ -3,6 +3,8 @@ using System.Diagnostics;
 using Malsys.Expressions;
 using Malsys.Parsing;
 using Microsoft.FSharp.Text.Lexing;
+using Malsys.SemanticModel.Compiled;
+using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Compilers {
 	public class InputCompiler {
@@ -11,7 +13,7 @@ namespace Malsys.Compilers {
 
 		private LsystemCompiler lsysCompiler;
 		private ExpressionCompiler exprCompiler;
-
+		private BindingCompilerVisitor bindCompiler;
 
 		public MessagesCollection Messages { get { return msgs; } }
 		public LsystemCompiler LsystemCompiler { get { return lsysCompiler; } }
@@ -23,6 +25,7 @@ namespace Malsys.Compilers {
 
 			exprCompiler = new ExpressionCompiler(msgs);
 			lsysCompiler = new LsystemCompiler(this);
+			bindCompiler = new BindingCompilerVisitor(this);
 		}
 
 
@@ -43,7 +46,7 @@ namespace Malsys.Compilers {
 
 			var lsysDefs = new List<LsystemDefinition>();
 			var varDefs = new List<VariableDefinition<IValue>>();
-			var funDefs = new List<FunctionDefinition>();
+			var funDefs = new List<Function>();
 
 			foreach (var statement in parsedInput) {
 
@@ -55,7 +58,7 @@ namespace Malsys.Compilers {
 				}
 
 				else if (statement is Ast.Binding) {
-					var vd = CompileFailSafe((Ast.Binding)statement);
+					var vd = TryCompileBinding((Ast.Binding)statement);
 					varDefs.Add(vd.Evaluate());
 				}
 
@@ -85,7 +88,7 @@ namespace Malsys.Compilers {
 
 			var lsysImm = new ImmutableList<LsystemDefinition>(lsysDefs);
 			var varsImm = new ImmutableList<VariableDefinition<IValue>>(varDefs);
-			var funsImm = new ImmutableList<FunctionDefinition>(funDefs);
+			var funsImm = new ImmutableList<Function>(funDefs);
 
 			return new InputBlock(lsysImm, varsImm, funsImm);
 		}
@@ -94,13 +97,13 @@ namespace Malsys.Compilers {
 
 
 
-		public FunctionDefinition CompileFailSafe(Ast.Function funDef) {
+		public Function CompileFailSafe(Ast.Function funDef) {
 
 			var prms = CompileParametersFailSafe(funDef.Parameters);
 			var varDefs = CompileFailSafe(funDef.LocalBindings);
 			var retExpr = exprCompiler.CompileExpression(funDef.ReturnExpression);
 
-			return new FunctionDefinition(funDef.NameId.Name, prms, varDefs, retExpr);
+			return new Function(funDef.NameId.Name, prms, varDefs, retExpr);
 		}
 
 		public ImmutableList<OptionalParameter> CompileParametersFailSafe(ImmutableList<Ast.OptionalParameter> parameters) {
@@ -159,25 +162,19 @@ namespace Malsys.Compilers {
 		}
 
 
+		public ImmutableList<Binding> CompileBindingsList(ImmutableList<Ast.Binding> bindingList, AllowedBindingTypes allowTypes) {
 
+			var compiledBinds = new List<Binding>(bindingList.Length);
 
-		public VariableDefinition<IExpression> CompileFailSafe(Ast.Binding varDef) {
-			return new VariableDefinition<IExpression>(varDef.NameId.Name, exprCompiler.CompileExpression(varDef.Expression));
-		}
-
-		public VariableDefinition<SymbolsList<IExpression>> CompileFailSafe(Ast.SymbolsDefinition symDef) {
-			return new VariableDefinition<SymbolsList<IExpression>>(symDef.NameId.Name, lsysCompiler.CompileListFailSafe(symDef.Symbols));
-		}
-
-		public ImmutableList<VariableDefinition<IExpression>> CompileFailSafe(ImmutableList<Ast.Binding> varDefs) {
-
-			var rsltList = new VariableDefinition<IExpression>[varDefs.Length];
-
-			for (int i = 0; i < varDefs.Length; i++) {
-				rsltList[i] = CompileFailSafe(varDefs[i]);
+			for (int i = 0; i < bindingList.Length; i++) {
+				var bind = bindCompiler.TryCompile(bindingList[i], allowTypes);
+				if (bind) {
+					compiledBinds.Add(bind);
+				}
 			}
 
-			return new ImmutableList<VariableDefinition<IExpression>>(rsltList, true);
+			return new ImmutableList<Binding>(compiledBinds);
 		}
+
 	}
 }

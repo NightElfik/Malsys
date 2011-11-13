@@ -10,7 +10,7 @@ namespace Malsys.Ast {
 		public readonly ImmutableListPos<LsystemSymbol> LeftContext;
 		public readonly ImmutableListPos<LsystemSymbol> RightContext;
 
-		public readonly ImmutableListPos<Binding> LocalVariables;
+		public readonly ImmutableListPos<Binding> LocalBindings;
 
 		public readonly Expression Condition;
 
@@ -18,13 +18,13 @@ namespace Malsys.Ast {
 
 
 		public RewriteRule(LsystemSymbol pattern, ImmutableListPos<LsystemSymbol> lctxt, ImmutableListPos<LsystemSymbol> rctxt,
-				ImmutableListPos<Binding> locVars, Expression cond, ImmutableListPos<RewriteRuleReplacement> replacs, Position pos) {
+				ImmutableListPos<Binding> locBinds, Expression cond, ImmutableListPos<RewriteRuleReplacement> replacs, Position pos) {
 
 			LeftContext = lctxt;
 			Pattern = pattern;
 			RightContext = rctxt;
 			Condition = cond;
-			LocalVariables = locVars;
+			LocalBindings = locBinds;
 			Replacements = replacs;
 
 			Position = pos;

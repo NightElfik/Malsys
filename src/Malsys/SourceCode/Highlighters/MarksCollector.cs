@@ -82,10 +82,10 @@ namespace Malsys.SourceCode.Highlighters {
 				Collect(p, marks);
 			}
 
-			addMarks(MarkType.LsystemBody, lsd.Body.Position, marks);
-			addMarks(MarkType.Separator, lsd.Body.BeginSeparator, marks);
+			addMarks(MarkType.LsystemBody, lsd.Statements.Position, marks);
+			addMarks(MarkType.Separator, lsd.Statements.BeginSeparator, marks);
 
-			foreach (var statement in lsd.Body) {
+			foreach (var statement in lsd.Statements) {
 				if (statement is Ast.RewriteRule) {
 					Collect((Ast.RewriteRule)statement, marks);
 				}
@@ -113,7 +113,7 @@ namespace Malsys.SourceCode.Highlighters {
 				}
 			}
 
-			addMarks(MarkType.Separator, lsd.Body.EndSeparator, marks);
+			addMarks(MarkType.Separator, lsd.Statements.EndSeparator, marks);
 		}
 
 		public static void Collect(Ast.Binding vd, List<PositionMark> marks) {
@@ -192,8 +192,8 @@ namespace Malsys.SourceCode.Highlighters {
 			}
 			addMarks(MarkType.Separator, rr.RightContext.EndSeparator, marks);
 
-			addMarks(MarkType.RrVariables, rr.LocalVariables.Position, marks);
-			foreach (var v in rr.LocalVariables) {
+			addMarks(MarkType.RrVariables, rr.LocalBindings.Position, marks);
+			foreach (var v in rr.LocalBindings) {
 				Collect(v, marks);
 			}
 

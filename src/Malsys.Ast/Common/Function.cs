@@ -29,5 +29,13 @@ namespace Malsys.Ast {
 		public Position Position { get; private set; }
 
 		#endregion
+
+		#region IBindableVisitable Members
+
+		public void Accept(IBindableVisitor visitor) {
+			visitor.Visit(this);
+		}
+
+		#endregion
 	}
 }

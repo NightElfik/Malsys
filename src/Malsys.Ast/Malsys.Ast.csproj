@@ -74,6 +74,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\Comment.cs" />
+    <Compile Include="Common\IBindableVisitable.cs" />
+    <Compile Include="Common\IBindableVisitor.cs" />
     <Compile Include="Expressions\ConstantFormat.cs" />
     <Compile Include="Expressions\IAstExpressionVisitable.cs" />
     <Compile Include="Expressions\IAstExpressionVisitor.cs" />

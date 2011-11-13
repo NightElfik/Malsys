@@ -9,14 +9,14 @@ namespace Malsys.Ast {
 		public readonly Identificator NameId;
 
 		public readonly ImmutableListPos<OptionalParameter> Parameters;
-		public readonly ImmutableListPos<ILsystemStatement> Body;
+		public readonly ImmutableListPos<ILsystemStatement> Statements;
 
 
-		public Lsystem(Identificator name, ImmutableListPos<OptionalParameter> prms, ImmutableListPos<ILsystemStatement> body, Position pos) {
+		public Lsystem(Identificator name, ImmutableListPos<OptionalParameter> prms, ImmutableListPos<ILsystemStatement> statements, Position pos) {
 
 			NameId = name;
 			Parameters = prms;
-			Body = body;
+			Statements = statements;
 			Position = pos;
 		}
 

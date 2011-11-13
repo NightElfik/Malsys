@@ -164,7 +164,7 @@ namespace Malsys.SourceCode.Printers {
 			writer.Write(" {");
 			writer.Indent();
 
-			foreach (var statement in lsystem.Body) {
+			foreach (var statement in lsystem.Statements) {
 				writer.NewLine();
 				statement.Accept(this);
 			}
@@ -211,10 +211,10 @@ namespace Malsys.SourceCode.Printers {
 
 			writer.Indent();
 
-			if (!rewriteRule.LocalVariables.IsEmpty) {
+			if (!rewriteRule.LocalBindings.IsEmpty) {
 				writer.NewLine();
 				PrintKw(Keyword.With);
-				VisitSeparated(rewriteRule.LocalVariables);
+				VisitSeparated(rewriteRule.LocalBindings);
 			}
 
 			if (!rewriteRule.Condition.IsEmpty) {
