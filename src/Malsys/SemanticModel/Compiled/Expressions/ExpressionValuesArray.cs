@@ -9,12 +9,16 @@ namespace Malsys.SemanticModel.Compiled.Expressions {
 		public ExpressionValuesArray()
 			: base(ImmutableList<IExpression>.Empty) { }
 
-		public ExpressionValuesArray(IEnumerable<IExpression> values)
-			: base(values) { }
-
 		public ExpressionValuesArray(ImmutableList<IExpression> values)
 			: base(values) { }
 
+
+
+		#region IExpression Members
+
+		public bool IsEmpty { get { return false; } }
+
+		#endregion
 
 		#region IExpressionVisitable Members
 

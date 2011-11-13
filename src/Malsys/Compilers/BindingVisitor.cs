@@ -7,10 +7,10 @@ namespace Malsys.Compilers {
 		private MessagesCollection msgs;
 
 		private InputCompiler inCompiler;
-		private ExpressionCompiler exprCompiler;
 
+		private Ast.Binding inBinding;
+		private BindingType allowedTypes;
 
-		private AllowedBindingTypes allowedTypes;
 		private IBindable result;
 		private BindingType resultType;
 
@@ -20,12 +20,12 @@ namespace Malsys.Compilers {
 			msgs = comp.Messages;
 
 			inCompiler = comp;
-			exprCompiler = comp.ExpressionCompiler;
 		}
 
-		public CompilerResult<Binding> TryCompile(Ast.Binding binding, AllowedBindingTypes allowTypes) {
+		public CompilerResult<Binding> TryCompile(Ast.Binding binding, BindingType allowTypes) {
 
 			allowedTypes = allowTypes;
+			inBinding = binding;
 			binding.Value.Accept(this);
 
 			if (result != null) {
@@ -41,8 +41,8 @@ namespace Malsys.Compilers {
 
 		public void Visit(Ast.Expression expr) {
 
-			if ((allowedTypes & AllowedBindingTypes.ExpressionsOnly) != 0) {
-				result = exprCompiler.CompileExpression(expr);
+			if ((allowedTypes & BindingType.Expression) != 0) {
+				result = inCompiler.ExpressionCompiler.CompileExpression(expr);
 				resultType = BindingType.Expression;
 			}
 			else {
@@ -53,12 +53,13 @@ namespace Malsys.Compilers {
 
 		public void Visit(Ast.Function fun) {
 
-			if ((allowedTypes & AllowedBindingTypes.FunctionsOnly) != 0) {
-				var prms = inCompiler.CompileParametersFailSafe(fun.Parameters);
-				var varDefs = inCompiler.CompileBindingsList(fun.LocalBindings, AllowedBindingTypes.ExpressionsAndFunctions);
-				var retExpr = exprCompiler.CompileExpression(fun.ReturnExpression);
+			if ((allowedTypes & BindingType.Function) != 0) {
+				var bind = inBinding; // save, recursion can destroy it
+				var prms = inCompiler.CompileParameters(fun.Parameters);
+				var localBinds = inCompiler.CompileBindingsList(fun.LocalBindings, BindingType.ExpressionsAndFunctions);
+				var retExpr = inCompiler.ExpressionCompiler.CompileExpression(fun.ReturnExpression);
 
-				result = new Function(prms, varDefs, retExpr);
+				result = new Function(prms, localBinds, retExpr, bind);
 				resultType = BindingType.Function;
 			}
 			else {
@@ -69,7 +70,7 @@ namespace Malsys.Compilers {
 
 		public void Visit(Ast.LsystemSymbolList symbolsList) {
 
-			if ((allowedTypes & AllowedBindingTypes.SymbolListsOnly) != 0) {
+			if ((allowedTypes & BindingType.SymbolList) != 0) {
 				result = inCompiler.LsystemCompiler.CompileSymbolsList(symbolsList);
 				resultType = BindingType.SymbolList;
 			}
@@ -79,16 +80,22 @@ namespace Malsys.Compilers {
 			}
 		}
 
+		public void Visit(Ast.Lsystem lsystem) {
+
+			if ((allowedTypes & BindingType.Lsystem) != 0) {
+				var bind = inBinding; // save, recursion can destroy it
+				var prms = inCompiler.CompileParameters(lsystem.Parameters);
+				var stats = inCompiler.LsystemCompiler.CompileLsystemStatements(lsystem.Statements);
+
+				result = new Lsystem(prms, stats, bind);
+				resultType = BindingType.Lsystem;
+			}
+			else {
+				msgs.AddError("Lsystem binding is not possible in this context.", lsystem.Position);
+				result = null;
+			}
+		}
+
 		#endregion
-	}
-
-	[Flags]
-	public enum AllowedBindingTypes {
-		ExpressionsOnly = 0x01,
-		FunctionsOnly = 0x02,
-		SymbolListsOnly = 0x04,
-
-		ExpressionsAndFunctions = ExpressionsOnly | FunctionsOnly,
-		All = ExpressionsOnly | FunctionsOnly | SymbolListsOnly
 	}
 }

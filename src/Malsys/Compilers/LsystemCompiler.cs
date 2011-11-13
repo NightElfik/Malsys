@@ -26,14 +26,11 @@ namespace Malsys.Compilers {
 		}
 
 
-		public CompilerResult<Lsystem> Compile(Ast.Lsystem lsysAst) {
+		public ImmutableList<ILsystemStatement> CompileLsystemStatements(ImmutableList<Ast.ILsystemStatement> statements) {
 
-			var prms = inputCompiler.CompileParametersFailSafe(lsysAst.Parameters);
+			var compStats = new List<ILsystemStatement>(statements.Count);
 
-			var compStats = new List<ILsystemStatement>(lsysAst.Statements.Count);
-
-
-			foreach (var stat in lsysAst.Statements) {
+			foreach (var stat in statements) {
 
 				var compiledStat = lsysStatementCompiler.TryCompile(stat);
 				if (compiledStat) {
@@ -42,9 +39,7 @@ namespace Malsys.Compilers {
 
 			}
 
-			var compStatsImm = new ImmutableList<ILsystemStatement>(compStats);
-
-			return new Lsystem(lsysAst.NameId.Name, prms, compStatsImm);
+			return new ImmutableList<ILsystemStatement>(compStats);
 		}
 
 		public CompilerResult<RewriteRule> CompileRewriteRule(Ast.RewriteRule rRuleAst) {

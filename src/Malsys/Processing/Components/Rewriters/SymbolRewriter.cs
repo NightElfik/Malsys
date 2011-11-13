@@ -3,18 +3,23 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using Malsys.Expressions;
+using Malsys.Evaluators;
+using Malsys.SemanticModel;
+using Malsys.SemanticModel.Compiled;
+using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Collections;
-using FunMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.FunctionDefinition>;
-using Symbol = Malsys.Symbol<Malsys.Expressions.IValue>;
-using SymbolPatern = Malsys.Symbol<string>;
-using SymbolPaternsList = Malsys.SymbolsList<string>;
-using VarMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.Expressions.IValue>;
+using FunMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.FunctionEvaledParams>;
+using Symbol = Malsys.SemanticModel.Symbol<Malsys.SemanticModel.Evaluated.IValue>;
+using SymbolPatern = Malsys.SemanticModel.Symbol<string>;
+using SymbolPaternsList = Malsys.SemanticModel.SymbolsList<string>;
+using VarMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.IValue>;
 
 namespace Malsys.Processing.Components.Rewriters {
 	public class SymbolRewriter : IRewriter {
 
 		private ISymbolProcessor outputProcessor;
+		private ExpressionEvaluator exprEvaluator;
+		private BindingsEvaluator bindEvaluator;
 
 		private Dictionary<string, RewriteRule[]> rewriteRules;
 
@@ -39,7 +44,7 @@ namespace Malsys.Processing.Components.Rewriters {
 			outputProcessor = EmptySymbolProcessor.Instance;
 
 			variables = MapModule.Empty<string, IValue>();
-			functions = MapModule.Empty<string, FunctionDefinition>();
+			functions = MapModule.Empty<string, FunctionEvaledParams>();
 
 			rndGenerator = new Random();
 
@@ -65,16 +70,15 @@ namespace Malsys.Processing.Components.Rewriters {
 
 		#region IRewriter Members
 
-
-		public ISymbolProcessor OutputProcessor {
-			set { outputProcessor = value; }
-		}
+		public ISymbolProcessor OutputProcessor { set { outputProcessor = value; } }
 
 		public ProcessContext Context {
 			set {
-				variables = value.Variables;
-				functions = value.Functions;
-				rewriteRules = RewriterUtils.CreateRrulesMap(value.MainLsystem.RewriteRules);
+				exprEvaluator = value.ExpressionEvaluator;
+				bindEvaluator = new BindingsEvaluator(exprEvaluator);
+				variables = value.Lsystem.Variables;
+				functions = value.Lsystem.Functions;
+				rewriteRules = createRrulesMap(value.Lsystem.RewriteRules);
 
 				initContextCaches();
 			}
@@ -83,7 +87,7 @@ namespace Malsys.Processing.Components.Rewriters {
 		public IValue RandomSeed {
 			set {
 				if (value.IsConstant && !((Constant)value).IsNaN) {
-					seed = ((Constant)value).GetIntValueRounded();
+					seed = ((Constant)value).RoundedIntValue;
 				}
 				else {
 					throw new ArgumentException("Random seed value is invalid.");
@@ -132,13 +136,13 @@ namespace Malsys.Processing.Components.Rewriters {
 
 		private void rewrite(Symbol symbol) {
 
-			VarMap vars;
+			BindingMaps data;
 			RewriteRule rrule;
 
-			if (tryFindRewriteRule(symbol, out rrule, out vars)) {
-				var replac = chooseReplacement(rrule, vars, functions);
+			if (tryFindRewriteRule(symbol, out rrule, out data)) {
+				var replac = chooseReplacement(rrule, data.Variables, data.Functions);
 				foreach (var s in replac.Replacement) {
-					outputProcessor.ProcessSymbol(s.Evaluate(vars, functions));
+					outputProcessor.ProcessSymbol(exprEvaluator.EvaluateSymbol(s, data.Variables, data.Functions));
 				}
 			}
 			else {
@@ -152,32 +156,33 @@ namespace Malsys.Processing.Components.Rewriters {
 		}
 
 
-		private bool tryFindRewriteRule(Symbol symbol, out RewriteRule rruleResult, out VarMap varsResult) {
+		private bool tryFindRewriteRule(Symbol symbol, out RewriteRule rruleResult, out BindingMaps mapsResult) {
 
 			RewriteRule[] rrules;
 			if (rewriteRules.TryGetValue(symbol.Name, out rrules)) {
 				foreach (var rr in rrules) {
 					// get work copy of variables
-					var vars = variables;
+					BindingMaps data = new BindingMaps() {
+						Variables = variables,
+						Functions = functions
+					};
 
 					Debug.Assert(rr.SymbolPattern.Name == symbol.Name, "Bad rewrite rule Dictionary.");
 
-					if (rr.LeftContext.Length > 0 && !checkContext(false, rr.LeftContext, ref vars)) {
+					if (rr.LeftContext.Length > 0 && !checkContext(false, rr.LeftContext, data)) {
 						continue;
 					}
-					if (rr.RightContext.Length > 0 && !checkContext(true, rr.RightContext, ref vars)) {
+					if (rr.RightContext.Length > 0 && !checkContext(true, rr.RightContext, data)) {
 						continue;
 					}
 
 					// map pattern
-					vars = mapPatternVars(rr.SymbolPattern, symbol, vars);
-					// map local variables
-					foreach (var varDef in rr.LocalVariables) {
-						vars = VariableDefinitionEvaluator.EvaluateAndAdd(varDef, vars, functions);
-					}
+					data.Variables = mapPatternVars(rr.SymbolPattern, symbol, data.Variables);
+					// map local bindings
+					bindEvaluator.EvaluateList(rr.LocalBindings, data);
 
 					// check condition
-					var condValue = ExpressionEvaluator.Evaluate(rr.Condition, vars, functions);
+					var condValue = exprEvaluator.Evaluate(rr.Condition, data.Variables, data.Functions);
 					if (!condValue.IsConstant) {
 						continue;
 					}
@@ -188,18 +193,20 @@ namespace Malsys.Processing.Components.Rewriters {
 					}
 
 					rruleResult = rr;
-					varsResult = vars;
+					mapsResult = data;
+
+
 					return true;
 				}
 
 			}
 
 			rruleResult = null;
-			varsResult = null;
+			mapsResult = null;
 			return false;
 		}
 
-		private bool checkContext(bool right, SymbolPaternsList ctxt, ref VarMap vars) {
+		private bool checkContext(bool right, SymbolPaternsList ctxt, BindingMaps maps) {
 
 			var context = right ? rightContext : leftContext;
 
@@ -209,7 +216,7 @@ namespace Malsys.Processing.Components.Rewriters {
 
 			for (int i = 0; i < ctxt.Length; i++) {
 				if (ctxt[i].Name == context[i].Name) {
-					vars = mapPatternVars(ctxt[i], context[i], vars);
+					maps.Variables = mapPatternVars(ctxt[i], context[i], maps.Variables);
 				}
 				else {
 					return false;
@@ -242,7 +249,7 @@ namespace Malsys.Processing.Components.Rewriters {
 				return rr.Replacements[0];
 			}
 
-			var weights = rr.Replacements.Select(replac => (double)ExpressionEvaluator.EvaluateAsConst(replac.Weight, vars, funs)).ToArray();
+			var weights = rr.Replacements.Select(replac => (double)exprEvaluator.EvaluateAsConst(replac.Weight, vars, funs)).ToArray();
 			double sumWeights = weights.Sum();
 			double rand = rndGenerator.NextDouble() * sumWeights;
 			double acc = 0d;
@@ -278,6 +285,16 @@ namespace Malsys.Processing.Components.Rewriters {
 			// optimal history length + 1 to be able add before delete and to NOT have history of length 0
 			leftContext = new IndexableQueue<Symbol>(leftCtxtMaxLen + 1);
 			rightContext = new IndexableQueue<Symbol>(rightCtxtMaxLen + 1);
+		}
+
+		private Dictionary<string, RewriteRule[]> createRrulesMap(IEnumerable<RewriteRule> rrules) {
+
+			Contract.Requires<ArgumentNullException>(rrules != null);
+			Contract.Ensures(Contract.Result<Dictionary<string, RewriteRule[]>>() != null);
+
+			return rrules
+				.GroupBy(rr => rr.SymbolPattern.Name)
+				.ToDictionary(g => g.Key, g => g.ToArray());
 		}
 	}
 }

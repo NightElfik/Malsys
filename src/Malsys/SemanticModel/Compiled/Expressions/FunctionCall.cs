@@ -10,6 +10,7 @@ namespace Malsys.SemanticModel.Compiled.Expressions {
 	public class FunctionCall : IExpression, IExpressionVisitable {
 
 		public readonly string Name;
+
 		public readonly ImmutableList<IExpression> Arguments;
 		/// <summary>
 		/// Describes cyclic pattern of types of arguments.
@@ -20,13 +21,6 @@ namespace Malsys.SemanticModel.Compiled.Expressions {
 
 		public readonly Func<ArgsStorage, IValue> Evaluate;
 
-
-		public FunctionCall(string name, Func<ArgsStorage, IValue> evalFunc, IEnumerable<IExpression> args, IEnumerable<ExpressionValueType> prmsTypes) {
-			Name = name;
-			Evaluate = evalFunc;
-			Arguments = new ImmutableList<IExpression>(args);
-			ParamsTypes = new ImmutableList<ExpressionValueType>(prmsTypes);
-		}
 
 		public FunctionCall(string name, Func<ArgsStorage, IValue> evalFunc, ImmutableList<IExpression> args, ImmutableList<ExpressionValueType> prmsTypes) {
 			Name = name;
@@ -39,6 +33,12 @@ namespace Malsys.SemanticModel.Compiled.Expressions {
 			return ParamsTypes[argIndex % ParamsTypes.Length];
 		}
 
+
+		#region IExpression Members
+
+		public bool IsEmpty { get { return false; } }
+
+		#endregion
 
 		#region IExpressionVisitable Members
 

@@ -20,6 +20,18 @@ namespace Malsys.Compilers {
 			ErrorOcured = err;
 		}
 
+		//internal CompilerResult<T> TransformTo<T>()
+		//    where T : class
+		//    where TData : T {
+
+		//    if (ErrorOcured) {
+		//        return CompilerResult<T>.Error;
+		//    }
+		//    else {
+		//        return new CompilerResult<T>((T)Result);
+		//    }
+		//}
+
 		/// <summary>
 		/// Returns true if no error ocured.
 		/// </summary>

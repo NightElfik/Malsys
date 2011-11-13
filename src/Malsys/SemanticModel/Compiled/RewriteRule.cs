@@ -4,7 +4,7 @@ namespace Malsys.SemanticModel.Compiled {
 	/// <summary>
 	/// Immutable.
 	/// </summary>
-	public class RewriteRule {
+	public class RewriteRule : ILsystemStatement {
 
 		public readonly Symbol<string> SymbolPattern;
 
@@ -30,6 +30,12 @@ namespace Malsys.SemanticModel.Compiled {
 			Condition = cond;
 			Replacements = replacs;
 		}
+
+		#region ILsystemStatement Members
+
+		public LsystemStatementType StatementType { get { return LsystemStatementType.RewriteRule; } }
+
+		#endregion
 	}
 
 }

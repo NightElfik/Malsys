@@ -14,7 +14,7 @@ namespace Malsys.Compilers.Expressions {
 	}
 
 	[ContractClassFor(typeof(IKnownFunctionsProvider))]
-	private abstract class IKnownFunctionsProviderContract : IKnownFunctionsProvider {
+	abstract class IKnownFunctionsProviderContract : IKnownFunctionsProvider {
 
 		#region IKnownFunctionsProvider Members
 

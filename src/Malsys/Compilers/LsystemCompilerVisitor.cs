@@ -7,7 +7,7 @@ namespace Malsys.Compilers {
 		private InputCompiler inCompiler;
 
 
-		private ILsystemStatement result;
+		private CompilerResult<ILsystemStatement> result;
 
 
 		public LsystemCompilerVisitor(InputCompiler inComp) {
@@ -17,24 +17,19 @@ namespace Malsys.Compilers {
 		public CompilerResult<ILsystemStatement> TryCompile(Ast.ILsystemStatement astStatement) {
 
 			astStatement.Accept(this);
-			if (result != null) {
-				return new CompilerResult<ILsystemStatement>(result);
-			}
-			else {
-				return CompilerResult<ILsystemStatement>.Error;
-			}
+			return result;
 		}
 
 
 		#region IAstLsystemVisitor Members
 
 		public void Visit(Ast.Binding binding) {
-			var bind = inCompiler.TryCompileBinding(binding, AllowedBindingTypes.All);
-			result = bind ? (ILsystemStatement)bind : null;
+			var bind = inCompiler.CompileBinding(binding, AllowedBindingTypes.All);
+			result = new CompilerResult<ILsystemStatement>(bind.Result, bind.ErrorOcured);
 		}
 
 		public void Visit(Ast.EmptyStatement emptyStat) {
-			result = null;
+			result = CompilerResult<ILsystemStatement>.Error;
 		}
 
 		public void Visit(Ast.InterpretationBinding interpretBinding) {
@@ -43,7 +38,7 @@ namespace Malsys.Compilers {
 
 		public void Visit(Ast.RewriteRule rewriteRule) {
 			var rr = inCompiler.LsystemCompiler.CompileRewriteRule(rewriteRule);
-			result = rr ? (ILsystemStatement)rr : null;
+			result = new CompilerResult<ILsystemStatement>(rr.Result, rr.ErrorOcured);
 		}
 
 		#endregion

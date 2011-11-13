@@ -1,5 +1,7 @@
 ﻿using System;
 using Malsys.Expressions;
+using Malsys.SemanticModel;
+using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Processing.Components.Rewriters {
 	class EmptySymbolProcessor : ISymbolProcessor {

@@ -34,6 +34,13 @@ namespace Malsys.SemanticModel.Compiled.Expressions {
 			RightOperandType = rightOperandType;
 		}
 
+
+		#region IExpression Members
+
+		public bool IsEmpty { get { return false; } }
+
+		#endregion
+
 		#region IExpressionVisitable Members
 
 		public void Accept(IExpressionVisitor visitor) {

@@ -34,8 +34,7 @@ namespace Malsys.Compilers {
 		public IExpression Compile(Expression expr) {
 
 			if (expr.IsEmpty) {
-				msgs.AddError("Expression is empty.", expr.Position);
-				return ErrorResult;
+				return EmptyExpression.Instance;
 			}
 
 			init();

@@ -4,17 +4,14 @@ namespace Malsys.Ast {
 	/// <summary>
 	/// Immutable.
 	/// </summary>
-	public class Lsystem : IToken, IInputStatement {
-
-		public readonly Identificator NameId;
+	public class Lsystem : IBindable, IInputStatement {
 
 		public readonly ImmutableListPos<OptionalParameter> Parameters;
 		public readonly ImmutableListPos<ILsystemStatement> Statements;
 
 
-		public Lsystem(Identificator name, ImmutableListPos<OptionalParameter> prms, ImmutableListPos<ILsystemStatement> statements, Position pos) {
+		public Lsystem(ImmutableListPos<OptionalParameter> prms, ImmutableListPos<ILsystemStatement> statements, Position pos) {
 
-			NameId = name;
 			Parameters = prms;
 			Statements = statements;
 			Position = pos;
@@ -24,6 +21,14 @@ namespace Malsys.Ast {
 		#region IToken Members
 
 		public Position Position { get; private set; }
+
+		#endregion
+
+		#region IBindableVisitable Members
+
+		public void Accept(IBindableVisitor visitor) {
+			visitor.Visit(this);
+		}
 
 		#endregion
 

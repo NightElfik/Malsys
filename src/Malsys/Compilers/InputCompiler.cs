@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
-using Malsys.Expressions;
+using Malsys.Evaluators;
 using Malsys.Parsing;
-using Microsoft.FSharp.Text.Lexing;
 using Malsys.SemanticModel.Compiled;
+using Microsoft.FSharp.Text.Lexing;
+using FunMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.FunctionEvaledParams>;
+using VarMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.IValue>;
 using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Compilers {
@@ -14,6 +15,8 @@ namespace Malsys.Compilers {
 		private LsystemCompiler lsysCompiler;
 		private ExpressionCompiler exprCompiler;
 		private BindingCompilerVisitor bindCompiler;
+		private ExpressionEvaluator exprEvaluator;
+		private InputCompilerVisitor inVisitor;
 
 		public MessagesCollection Messages { get { return msgs; } }
 		public LsystemCompiler LsystemCompiler { get { return lsysCompiler; } }
@@ -26,6 +29,8 @@ namespace Malsys.Compilers {
 			exprCompiler = new ExpressionCompiler(msgs);
 			lsysCompiler = new LsystemCompiler(this);
 			bindCompiler = new BindingCompilerVisitor(this);
+			exprEvaluator = new ExpressionEvaluator();
+			inVisitor = new InputCompilerVisitor(this);
 		}
 
 
@@ -44,69 +49,28 @@ namespace Malsys.Compilers {
 
 		public CompilerResult<InputBlock> CompileFromAst(Ast.InputBlock parsedInput) {
 
-			var lsysDefs = new List<LsystemDefinition>();
-			var varDefs = new List<VariableDefinition<IValue>>();
-			var funDefs = new List<Function>();
+			var compiledInput = new List<IInputStatement>(parsedInput.Length);
 
-			foreach (var statement in parsedInput) {
-
-				if (statement is Malsys.Ast.Lsystem) {
-					var lsysResult = lsysCompiler.Compile((Ast.Lsystem)statement);
-					if (lsysResult) {
-						lsysDefs.Add(lsysResult);
-					}
-				}
-
-				else if (statement is Ast.Binding) {
-					var vd = TryCompileBinding((Ast.Binding)statement);
-					varDefs.Add(vd.Evaluate());
-				}
-
-				else if (statement is Ast.Function) {
-					var fd = CompileFailSafe((Ast.Function)statement);
-					funDefs.Add(fd);
-				}
-
-				else if (statement is Ast.EmptyStatement) {
-					msgs.AddMessage("Empty statement found.", CompilerMessageType.Notice, statement.Position);
-				}
-
-				else {
-					Debug.Fail("Unhandled type `{0}` of {1} while compiling input block `{2}`.".Fmt(
-						statement.GetType().Name, typeof(Ast.IInputStatement).Name, msgs.DefaultSourceName));
-
-					msgs.AddError("Internal L-system input compiler error.", statement.Position);
+			for (int i = 0; i < parsedInput.Length; i++) {
+				var stat = inVisitor.TryCompile(parsedInput[i]);
+				if (stat) {
+					compiledInput.Add((IInputStatement)stat);
 				}
 			}
 
-
-			if (msgs.ErrorOcured) {
-				msgs.AddError("Some error ocured during compilation of `{0}`.".Fmt(msgs.DefaultSourceName), Position.Unknown);
-				Debug.Assert(msgs.ErrorOcured, "Compiler's result error state is false, but error ocured.");
+			var inEval = new InputEvaluator(new BindingsEvaluator(exprEvaluator));
+			try {
+				return inEval.Evaluate(compiledInput);
+			}
+			catch (EvalException ex) {
+				msgs.AddError("Failed to evaluate input. " + ex.GetWholeMessage(), Position.Unknown);
 				return CompilerResult<InputBlock>.Error;
 			}
-
-			var lsysImm = new ImmutableList<LsystemDefinition>(lsysDefs);
-			var varsImm = new ImmutableList<VariableDefinition<IValue>>(varDefs);
-			var funsImm = new ImmutableList<Function>(funDefs);
-
-			return new InputBlock(lsysImm, varsImm, funsImm);
 		}
 
 
 
-
-
-		public Function CompileFailSafe(Ast.Function funDef) {
-
-			var prms = CompileParametersFailSafe(funDef.Parameters);
-			var varDefs = CompileFailSafe(funDef.LocalBindings);
-			var retExpr = exprCompiler.CompileExpression(funDef.ReturnExpression);
-
-			return new Function(funDef.NameId.Name, prms, varDefs, retExpr);
-		}
-
-		public ImmutableList<OptionalParameter> CompileParametersFailSafe(ImmutableList<Ast.OptionalParameter> parameters) {
+		public ImmutableList<OptionalParameter> CompileParameters(ImmutableList<Ast.OptionalParameter> parameters) {
 
 			int parametersCount = parameters.Count;
 			bool wasOptional = false;
@@ -114,18 +78,15 @@ namespace Malsys.Compilers {
 
 			for (int i = 0; i < parametersCount; i++) {
 
-				var prm = parameters[i];
-				var compiledParam = CompileParameterFailSafe(prm);
-				result[i] = compiledParam;
+				result[i] = new OptionalParameter(parameters[i].NameId.Name, exprCompiler.CompileExpression(parameters[i].OptionalValue));
 
-				if (compiledParam.IsOptional) {
+				if (result[i].IsOptional) {
 					wasOptional = true;
 				}
-				else {
-					if (wasOptional) {
-						msgs.AddError("Mandatory parameters have to be before all optional parameters, but mandatory parameter `{0}` is after optional.".Fmt(prm.NameId.Name),
-							prm.Position);
-					}
+				else if (wasOptional) {
+					msgs.AddError("Mandatory parameters have to be before all optional parameters, but mandatory parameter `{0}` is after optional."
+							.Fmt(parameters[i].NameId.Name),
+						parameters[i].Position);
 				}
 			}
 
@@ -138,31 +99,12 @@ namespace Malsys.Compilers {
 			return new ImmutableList<OptionalParameter>(result, true);
 		}
 
-		public OptionalParameter CompileParameterFailSafe(Ast.OptionalParameter parameter) {
+		public CompilerResult<Binding> CompileBinding(Ast.Binding binding, BindingType allowTypes) {
 
-			if (parameter.IsOptional) {
-				var value = exprCompiler.CompileExpression(parameter.OptionalValue);
-				IValue evalValue;
-
-				try {
-					evalValue = ExpressionEvaluator.Evaluate(value);
-				}
-				catch (EvalException ex) {
-					msgs.AddError("Faled to evaluate default value of parameter `{0}`. {1}".Fmt(parameter.NameId.Name, ex.GetWholeMessage()),
-						parameter.OptionalValue.Position);
-					evalValue = Constant.NaN;
-				}
-
-				return new OptionalParameter(parameter.NameId.Name, evalValue);
-			}
-
-			else {
-				return new OptionalParameter(parameter.NameId.Name);
-			}
+			return bindCompiler.TryCompile(binding, allowTypes);
 		}
 
-
-		public ImmutableList<Binding> CompileBindingsList(ImmutableList<Ast.Binding> bindingList, AllowedBindingTypes allowTypes) {
+		public ImmutableList<Binding> CompileBindingsList(ImmutableList<Ast.Binding> bindingList, BindingType allowTypes) {
 
 			var compiledBinds = new List<Binding>(bindingList.Length);
 

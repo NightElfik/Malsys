@@ -2,6 +2,7 @@
 using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Compiled.Expressions;
 using Malsys.SemanticModel.Evaluated;
+using Malsys.Evaluators;
 
 namespace Malsys.SemanticModel {
 	/// <summary>
@@ -48,12 +49,9 @@ namespace Malsys.SemanticModel {
 			return Value.ToStringInvariant();
 		}
 
-
 		#region IExpression Members
 
-		public IValue Evaluate(ArgsStorage args) {
-			return this;  // Yay! Immutability rulezz!
-		}
+		public bool IsEmpty { get { return false; } }
 
 		#endregion
 

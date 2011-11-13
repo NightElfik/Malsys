@@ -11,7 +11,7 @@ namespace Malsys.Ast {
 
 		public OptionalParameter(Identificator name, Position pos) {
 			NameId = name;
-			OptionalValue = null;
+			OptionalValue = Expression.Empty;
 			Position = pos;
 		}
 
@@ -22,7 +22,7 @@ namespace Malsys.Ast {
 		}
 
 
-		public bool IsOptional { get { return OptionalValue != null; } }
+		public bool IsOptional { get { return OptionalValue.IsEmpty; } }
 
 
 		#region IToken Members

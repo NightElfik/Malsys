@@ -95,10 +95,7 @@ let optionToStatement parseState (option : Option<#ILsystemStatement>) =
 %start ParseInput
 %type <InputBlock> ParseInput
 
-// helper start rules, especially for unit testing
-
-%start ParseLsystem
-%type <Lsystem> ParseLsystem
+// helper start rule, especially for unit testing
 
 %start ParseBinding
 %type <Binding> ParseBinding
@@ -114,15 +111,6 @@ ParseInput:
     | InputStatementsList EOF
       { new InputBlock($1 :> ResizeArray<IInputStatement>) }
 
-
-ParseLsystem:
-    | MaybeLsystem EOF
-      { match $1 with
-        | Some(lsys) -> lsys
-        | None -> null }
-    | error EOF
-      { logErrorPos getLastErrorPos "Syntax error.";
-        null }
 
 ParseBinding:
     | MaybeBinding EOF
@@ -145,10 +133,6 @@ InputStatementsList:
       { $1.Add($2); $1 }
 
 InputStatement:
-    | MaybeLsystem
-      { match $1 with
-        | Some(lsys) -> lsys :> IInputStatement
-        | None -> new EmptyStatement(getPos parseState, true) :> IInputStatement }
     | MaybeBinding
       { match $1 with
         | Some(bind) -> bind :> IInputStatement
@@ -170,6 +154,8 @@ MaybeBinding:
     | MaybeFunBind
       { $1 }
     | MaybeSymbolListBind
+      { $1 }
+    | MaybeLsystemBind
       { $1 }
 
 BindingsList:
@@ -209,7 +195,7 @@ MaybeExprBind:
 MaybeFunBind:
     | FUN id ExprParams FunBody
       { let (binds, expr) = $4 in
-        let func = new Function($3, binds, expr, getPosRange parseState 2 4) in
+        let func = new Function($3, binds, expr, getPosRange parseState 3 4) in
         Some (new Binding($2, func, getPos parseState)) }
     | FUN id error FunBody
       { logErrorPos (getPosBetween parseState 2 4) "Function parameters excpected.";
@@ -254,9 +240,10 @@ OptParam:
 // L-system definition.
 //------------------------------------------------------------------------------
 
-MaybeLsystem:
+MaybeLsystemBind:
     | LSYSTEM id OptExprParams LsystemBody
-      { Some (new Lsystem($2, $3, $4, getPos parseState)) }
+      { let lsys = new Lsystem($3, $4, getPosRange parseState 3 4) in
+        Some (new Binding($2, lsys, getPos parseState)) }
     | LSYSTEM error LsystemBody
       { logErrorPos (getPosBetween parseState 1 3) "Lsystem name and params excpected.";
         None }

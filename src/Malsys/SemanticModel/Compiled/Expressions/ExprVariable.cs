@@ -4,7 +4,9 @@ namespace Malsys.SemanticModel.Compiled.Expressions {
 	/// Immutable.
 	/// </summary>
 	public class ExprVariable : IExpression, IExpressionVisitable {
+
 		public readonly string Name;
+
 
 		public ExprVariable(string name) {
 			Name = name;
@@ -14,6 +16,13 @@ namespace Malsys.SemanticModel.Compiled.Expressions {
 		public override string ToString() {
 			return Name;
 		}
+
+
+		#region IExpression Members
+
+		public bool IsEmpty { get { return false; } }
+
+		#endregion
 
 		#region IExpressionVisitable Members
 

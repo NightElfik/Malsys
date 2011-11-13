@@ -6,7 +6,7 @@ using Malsys.SemanticModel.Compiled.Expressions;
 using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Collections;
 using Microsoft.FSharp.Core;
-using FunMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.FunctionEvaled>;
+using FunMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.FunctionEvaledParams>;
 using VarMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.IValue>;
 
 namespace Malsys.Evaluators {
@@ -20,6 +20,7 @@ namespace Malsys.Evaluators {
 
 
 		public IValue Evaluate(IExpression expr, VarMap vars, FunMap funs) {
+
 			valuesStack.Clear();
 			variables = vars;
 			functions = funs;
@@ -37,66 +38,22 @@ namespace Malsys.Evaluators {
 			return valuesStack.Pop();
 		}
 
-		public FunctionEvaled EvaluateFunction(Function fun, VarMap vars, FunMap funs) {
+		public ImmutableList<OptionalParameterEvaled> EvaluateParameters(ImmutableList<OptionalParameter> prms, VarMap vars, FunMap funs) {
 
 			valuesStack.Clear();
 			variables = vars;
 			functions = funs;
 
-			var result = evaluateFunction(fun);
+			var result = evalParams(prms);
 
 			variables = null;
 			functions = null;
-			argsStorage.Clear();
 
 			return result;
 		}
 
 
 		#region IExpressionVisitor Members
-
-		public void Visit(Constant constant) {
-			valuesStack.Push(constant);
-		}
-
-		public void Visit(ExprVariable variable) {
-
-			var maybeValue = MapModule.TryFind(variable.Name, variables);
-
-			if (OptionModule.IsSome(maybeValue)) {
-				valuesStack.Push(maybeValue.Value);
-			}
-			else {
-				throw new EvalException("Unknown variable `{0}`.".Fmt(variable.Name));
-			}
-		}
-
-		public void Visit(ExpressionValuesArray expressionValuesArray) {
-
-			var arr = new IValue[expressionValuesArray.Length];
-
-			for (int i = 0; i < arr.Length; i++) {
-				expressionValuesArray[i].Accept(this);
-				arr[i] = valuesStack.Pop();
-			}
-
-			var rsltImm = new ImmutableList<IValue>(arr, true);
-			valuesStack.Push(new ValuesArray(rsltImm));
-		}
-
-		public void Visit(UnaryOperator unaryOperator) {
-
-			unaryOperator.Operand.Accept(this);
-
-			if ((int)(valuesStack.Peek().Type & unaryOperator.OperandType) == 0) {
-				throw new EvalException("Failed to evaluate unary operator `{0}`. As operand excpected {1}, but {2} was given.".Fmt(
-					unaryOperator.Syntax, unaryOperator.OperandType.ToTypeString(), valuesStack.Peek().Type.ToTypeString()));
-			}
-
-			argsStorage.PopArgs(1, valuesStack);
-
-			valuesStack.Push(unaryOperator.Evaluate(argsStorage));
-		}
 
 		public void Visit(BinaryOperator binaryOperator) {
 
@@ -117,6 +74,61 @@ namespace Malsys.Evaluators {
 			argsStorage.PopArgs(2, valuesStack);
 
 			valuesStack.Push(binaryOperator.Evaluate(argsStorage));
+		}
+
+		public void Visit(Constant constant) {
+			valuesStack.Push(constant);
+		}
+
+		public void Visit(EmptyExpression emptyExpression) {
+			valuesStack.Push(Constant.NaN);
+		}
+
+		public void Visit(ExpressionValuesArray expressionValuesArray) {
+
+			var arr = new IValue[expressionValuesArray.Length];
+
+			for (int i = 0; i < arr.Length; i++) {
+				expressionValuesArray[i].Accept(this);
+				arr[i] = valuesStack.Pop();
+			}
+
+			var rsltImm = new ImmutableList<IValue>(arr, true);
+			valuesStack.Push(new ValuesArray(rsltImm));
+		}
+
+		public void Visit(ExprVariable variable) {
+
+			var maybeValue = MapModule.TryFind(variable.Name, variables);
+
+			if (OptionModule.IsSome(maybeValue)) {
+				valuesStack.Push(maybeValue.Value);
+			}
+			else {
+				throw new EvalException("Unknown variable `{0}`.".Fmt(variable.Name));
+			}
+		}
+
+		public void Visit(FunctionCall functionCall) {
+
+			if (functionCall.Evaluate == null && functionCall.Name.Equals("if", StringComparison.CurrentCultureIgnoreCase)) {
+				evalIf(functionCall);
+				return;
+			}
+
+			// evaluate arguments
+			for (int i = 0; i < functionCall.Arguments.Length; i++) {
+
+				functionCall.Arguments[i].Accept(this);
+
+				if ((int)(valuesStack.Peek().Type & functionCall.GetValueType(i)) == 0) {
+					throw new EvalException("Failed to evaluate function `{0}`. As {1}. argument excpected {2}, but {3} was given.".Fmt(
+						functionCall.Name, i, functionCall.GetValueType(i).ToTypeString(), valuesStack.Peek().Type.ToTypeString()));
+				}
+			}
+
+			argsStorage.PopArgs(functionCall.Arguments.Length, valuesStack);
+			valuesStack.Push(functionCall.Evaluate(argsStorage));
 		}
 
 		public void Visit(Indexer indexer) {
@@ -154,26 +166,18 @@ namespace Malsys.Evaluators {
 			valuesStack.Push(arr[intIndex]);
 		}
 
-		public void Visit(FunctionCall functionCall) {
+		public void Visit(UnaryOperator unaryOperator) {
 
-			if (functionCall.Evaluate == null && functionCall.Name.Equals("if", StringComparison.CurrentCultureIgnoreCase)) {
-				evalIf(functionCall);
-				return;
+			unaryOperator.Operand.Accept(this);
+
+			if ((int)(valuesStack.Peek().Type & unaryOperator.OperandType) == 0) {
+				throw new EvalException("Failed to evaluate unary operator `{0}`. As operand excpected {1}, but {2} was given.".Fmt(
+					unaryOperator.Syntax, unaryOperator.OperandType.ToTypeString(), valuesStack.Peek().Type.ToTypeString()));
 			}
 
-			// evaluate arguments
-			for (int i = 0; i < functionCall.Arguments.Length; i++) {
+			argsStorage.PopArgs(1, valuesStack);
 
-				functionCall.Arguments[i].Accept(this);
-
-				if ((int)(valuesStack.Peek().Type & functionCall.GetValueType(i)) == 0) {
-					throw new EvalException("Failed to evaluate function `{0}`. As {1}. argument excpected {2}, but {3} was given.".Fmt(
-						functionCall.Name, i, functionCall.GetValueType(i).ToTypeString(), valuesStack.Peek().Type.ToTypeString()));
-				}
-			}
-
-			argsStorage.PopArgs(functionCall.Arguments.Length, valuesStack);
-			valuesStack.Push(functionCall.Evaluate(argsStorage));
+			valuesStack.Push(unaryOperator.Evaluate(argsStorage));
 		}
 
 		public void Visit(UserFunctionCall userFunction) {
@@ -214,7 +218,8 @@ namespace Malsys.Evaluators {
 						break;
 					case BindingType.Function:
 						var fun = ((Function)bind.Value);
-						funs = funs.Add(bind.Name, evaluateFunction(fun));
+						var evaledFun = new FunctionEvaledParams(evalParams(fun.Parameters), fun.Bindings, fun.ReturnExpression, fun.AstNode);
+						funs = funs.Add(bind.Name, evaledFun);
 						break;
 					case BindingType.SymbolList:
 						throw new EvalException("Unexcpected symbols binding");
@@ -225,12 +230,12 @@ namespace Malsys.Evaluators {
 
 		}
 
-		private FunctionEvaled evaluateFunction(Function fun) {
+		private ImmutableList<OptionalParameterEvaled> evalParams(ImmutableList<OptionalParameter> optPrms) {
 
-			var prms = new OptionalParameterEvaled[fun.Parameters.Length];
+			var prms = new OptionalParameterEvaled[optPrms.Length];
 
 			for (int i = 0; i < prms.Length; i++) {
-				var currParam = fun.Parameters[i];
+				var currParam = optPrms[i];
 
 				if (currParam.IsOptional) {
 					currParam.DefaultValue.Accept(this);
@@ -241,15 +246,14 @@ namespace Malsys.Evaluators {
 				}
 			}
 
-			var prmsImm = new ImmutableList<OptionalParameterEvaled>(prms, true);
-			return new FunctionEvaled(prmsImm, fun.Bindings, fun.ReturnExpression);
+			return new ImmutableList<OptionalParameterEvaled>(prms, true);
 		}
 
 
 		/// <summary>
 		/// Evaluates given function call with given arguments. Result is left on velues stack.
 		/// </summary>
-		private void evalUserFuncCall(FunctionEvaled fun, ArgsStorage args) {
+		private void evalUserFuncCall(FunctionEvaledParams fun, ArgsStorage args) {
 			// save variables & functions
 			var oldVars = variables;
 			var oldFuns = functions;
@@ -270,7 +274,7 @@ namespace Malsys.Evaluators {
 					}
 				}
 
-				variables = MapModule.Add(fun.Parameters[i].Name, value, variables);
+				variables = variables.Add(fun.Parameters[i].Name, value);
 			}
 
 			evaluateBindings(fun.Bindings, ref variables, ref functions);

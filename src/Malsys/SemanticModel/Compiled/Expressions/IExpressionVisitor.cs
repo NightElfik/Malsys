@@ -4,6 +4,7 @@ namespace Malsys.SemanticModel.Compiled.Expressions {
 
 		void Visit(BinaryOperator binaryOperator);
 		void Visit(Constant constant);
+		void Visit(EmptyExpression emptyExpression);
 		void Visit(ExpressionValuesArray expressionValuesArray);
 		void Visit(ExprVariable variable);
 		void Visit(FunctionCall functionCall);

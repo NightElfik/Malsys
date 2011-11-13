@@ -3,7 +3,9 @@ using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 using System.Reflection;
 using Malsys.Expressions;
-using InterpretAction = System.Action<Malsys.ImmutableList<Malsys.Expressions.IValue>>;
+using InterpretAction = System.Action<Malsys.ImmutableList<Malsys.SemanticModel.Evaluated.IValue>>;
+using Malsys.SemanticModel.Evaluated;
+using Malsys.SemanticModel;
 
 namespace Malsys.Processing.Components.Interpreters {
 	public class InterpreterCaller : IInterpreterCaller {

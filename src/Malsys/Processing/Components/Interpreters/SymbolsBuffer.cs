@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Symbol = Malsys.Symbol<Malsys.Expressions.IValue>;
+using Symbol = Malsys.SemanticModel.Symbol<Malsys.SemanticModel.Evaluated.IValue>;
 
 namespace Malsys.Processing.Components.Interpreters {
 	public class SymbolsBuffer : ISymbolProcessor {

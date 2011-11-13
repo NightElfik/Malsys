@@ -4,7 +4,6 @@ namespace Malsys.Ast {
 
 		void Visit(Binding binding);
 		void Visit(EmptyStatement emptyStat);
-		void Visit(Lsystem lsystem);
 
 	}
 }

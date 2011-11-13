@@ -1,4 +1,5 @@
 ﻿using Malsys.Expressions;
+using Malsys.SemanticModel.Compiled.Expressions;
 
 namespace Malsys.SemanticModel.Compiled {
 	/// <summary>
@@ -10,14 +11,9 @@ namespace Malsys.SemanticModel.Compiled {
 		public readonly IExpression DefaultValue;
 
 
-		public OptionalParameter() {
-			Name = null;
-			DefaultValue = null;
-		}
-
 		public OptionalParameter(string name) {
 			Name = name;
-			DefaultValue = null;
+			DefaultValue = EmptyExpression.Instance;
 		}
 
 		public OptionalParameter(string name, IExpression defaultValue) {
@@ -26,7 +22,7 @@ namespace Malsys.SemanticModel.Compiled {
 		}
 
 
-		public bool IsOptional { get { return DefaultValue != null; } }
+		public bool IsOptional { get { return DefaultValue.IsEmpty; } }
 
 	}
 }

@@ -2,14 +2,14 @@
 using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Collections;
-using FunMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.FunctionEvaled>;
+using FunMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.FunctionEvaledParams>;
 using VarMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.IValue>;
 
 namespace Malsys.Evaluators {
 	public class ExpressionEvaluator {
 
 		private static readonly VarMap emptyVarMap = MapModule.Empty<string, IValue>();
-		private static readonly FunMap emptyFunMap = MapModule.Empty<string, FunctionEvaled>();
+		private static readonly FunMap emptyFunMap = MapModule.Empty<string, FunctionEvaledParams>();
 
 
 		private ExpressionEvalVisitor evalVisitor = new ExpressionEvalVisitor();
@@ -44,13 +44,6 @@ namespace Malsys.Evaluators {
 		}
 
 		/// <summary>
-		/// Evaluates function's default params with given variables and functions.
-		/// </summary>
-		public FunctionEvaled EvaluateFunction(Function fun, VarMap vars, FunMap funs) {
-			return evalVisitor.EvaluateFunction(fun, vars, funs);
-		}
-
-		/// <summary>
 		/// Evaluates immutable list of expressions with given variables and functions.
 		/// </summary>
 		public ImmutableList<IValue> Evaluate(ImmutableList<IExpression> exprs, VarMap vars, FunMap funs) {
@@ -76,6 +69,18 @@ namespace Malsys.Evaluators {
 			else {
 				throw new EvalException("Excpected constant after evaluation.");
 			}
+		}
+
+		/// <summary>
+		/// Evaluates optional params list with given variables and functions.
+		/// </summary>
+		public ImmutableList<OptionalParameterEvaled> EvaluateOptParams(ImmutableList<OptionalParameter> prms, VarMap vars, FunMap funs) {
+			return evalVisitor.EvaluateParameters(prms, vars, funs);
+		}
+
+		public Symbol<IValue> EvaluateSymbol(Symbol<IExpression> symbol, VarMap vars, FunMap funs) {
+
+			return new Symbol<IValue>(symbol.Name, Evaluate(symbol.Arguments, vars, funs));
 		}
 
 		public SymbolsListVal EvaluateSymbols(SymbolsListExpr symbols, VarMap vars, FunMap funs) {
