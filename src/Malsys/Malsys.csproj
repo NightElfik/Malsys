@@ -161,6 +161,12 @@
     <Compile Include="Processing\Components\Rewriters\RewriterUtils.cs" />
     <Compile Include="SemanticModel\Compiled\ILsystemStatement.cs" />
     <Compile Include="SemanticModel\Compiled\Lsystem.cs" />
+    <Compile Include="SourceCode\Highlighters\MarksCollector.cs" />
+    <Compile Include="SourceCode\Highlighters\MarkType.cs" />
+    <Compile Include="SourceCode\Highlighters\PositionMark.cs" />
+    <Compile Include="SourceCode\Highlighters\StringHighlighter.cs" />
+    <Compile Include="SourceCode\Printers\CanonicAstPrinter.cs" />
+    <Compile Include="SourceCode\Printers\CanonicPrinter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Malsys.Ast\Malsys.Ast.csproj">
@@ -176,7 +182,9 @@
       <Name>Malsys.Parsing</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="SourceCode\Formatters\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
