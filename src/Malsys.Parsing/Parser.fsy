@@ -95,11 +95,6 @@ let optionToStatement parseState (option : Option<#ILsystemStatement>) =
 %start ParseInput
 %type <InputBlock> ParseInput
 
-// helper start rule, especially for unit testing
-
-%start ParseBinding
-%type <Binding> ParseBinding
-
 %%
 
 
@@ -110,16 +105,6 @@ let optionToStatement parseState (option : Option<#ILsystemStatement>) =
 ParseInput:
     | InputStatementsList EOF
       { new InputBlock($1 :> ResizeArray<IInputStatement>) }
-
-
-ParseBinding:
-    | MaybeBinding EOF
-      { match $1 with
-        | Some(bind) -> bind
-        | None -> null }
-    | error EOF
-      { logErrorPos getLastErrorPos "Syntax error.";
-        null }
 
 
 //------------------------------------------------------------------------------
@@ -133,128 +118,70 @@ InputStatementsList:
       { $1.Add($2); $1 }
 
 InputStatement:
-    | MaybeBinding
-      { match $1 with
-        | Some(bind) -> bind :> IInputStatement
-        | None -> new EmptyStatement(getPos parseState, true) :> IInputStatement }
+    | ConstDef
+      { ($1 :> IStatement) :?> IInputStatement }
+    | FunDef
+      { ($1 :> IStatement) :?> IInputStatement }
+    | LsystemDef
+      { $1 :> IInputStatement }
     | SEMI
       { new EmptyStatement(getPos parseState) :> IInputStatement }
-    | error
-      { logErrorPos getLastErrorPos "Excpected input statement (L-Sysytem, variable or function definition).";
-        new EmptyStatement(ThreadStatic.LasErrorPos, true) :> IInputStatement }
 
 
 //------------------------------------------------------------------------------
-// Bindings.
+// Constant definition.
 //------------------------------------------------------------------------------
 
-MaybeBinding:
-    | MaybeExprBind
-      { $1 }
-    | MaybeFunBind
-      { $1 }
-    | MaybeSymbolListBind
-      { $1 }
-    | MaybeLsystemBind
-      { $1 }
-
-BindingsList:
-    |
-      { ImmutableListPos<Binding>.Empty }
-    | BindingsListNonEmpty
-      { new ImmutableListPos<Binding>($1 :> ResizeArray<Binding>, getPos parseState) }
-
-BindingsListNonEmpty:
-    | MaybeBinding
-      { let mutable x = new ResizeArray<Binding>() in
-        match $1 with
-        | Some(bind) -> x.Add(bind); x
-        | None -> x }
-    | BindingsListNonEmpty MaybeBinding
-      { match $2 with
-        | Some(bind) -> $1.Add(bind); $1
-        | None -> $1 }
-
-
-//------------------------------------------------------------------------------
-// Expression binding.
-//------------------------------------------------------------------------------
-
-MaybeExprBind:
+ConstDef:
     | LET id EQUALS Expression SEMI
-      { Some (new Binding($2, $4, getPos parseState)) }
+      { new ConstantDefinition($2, $4, getPos parseState) :> IStatement }
     | LET error SEMI
-      { logErrorPos (getPosBetween parseState 1 3) "Expression binding excpected.";
-        None }
-
+      { logErrorPos (getPosBetween parseState 1 3) "Constant definition excpected.";
+        new EmptyStatement(getPos parseState) :> IStatement }
 
 //------------------------------------------------------------------------------
-// Function binding.
+// Function definition.
 //------------------------------------------------------------------------------
 
-MaybeFunBind:
-    | FUN id ExprParams FunBody
-      { let (binds, expr) = $4 in
-        let func = new Function($3, binds, expr, getPosRange parseState 3 4) in
-        Some (new Binding($2, func, getPos parseState)) }
+FunDef:
+    | FUN id OptParamsParens FunBody
+      { new FunctionDefinition($2, $3, $4, getPos parseState) :> IStatement }
     | FUN id error FunBody
       { logErrorPos (getPosBetween parseState 2 4) "Function parameters excpected.";
-        None }
-
-ExprParams:
-    | LPAREN OptParamsList RPAREN
-      { ($2 :> ImmutableListPos<OptionalParameter>).AddSeparators(getPosI parseState 1, getPosI parseState 3, getPos parseState) }
-    | LPAREN error RPAREN
-      { logErrorPos (getPosBetween parseState 1 3) "Excpected parameters with optional default value separated by comma.";
-        new ImmutableListPos<OptionalParameter>(getPosI parseState 1, getPosI parseState 3, getPos parseState) }
+        new EmptyStatement(getPos parseState) :> IStatement }
 
 FunBody:
-    | LBRACE BindingsList RETURN Expression SEMI RBRACE
-      { let binds = $2.AddSeparators(getPosI parseState 1, getPosI parseState 6) in
-        (binds, $4) }
+    | LBRACE FunStatementsList RBRACE
+      { new ImmutableListPos<IFunctionStatement>($2 :> ResizeArray<IFunctionStatement>, getPosI parseState 1, getPosI parseState 3, getPos parseState)  }
     | LBRACE error RBRACE
-      { logErrorPos (getPosBetween parseState 1 3) "Excpected function body.";
-        let vars = new ImmutableListPos<Binding>(getPosI parseState 1, getPosI parseState 3, getPos parseState) in
-        (vars, Expression.Empty) }
+      { logErrorPos (getPosBetween parseState 1 3) "Excpected function statements.";
+        new ImmutableListPos<IFunctionStatement>(getPosI parseState 1, getPosI parseState 3, getPos parseState) }
 
-OptParamsList:
+FunStatementsList:
     |
-      { ImmutableListPos<OptionalParameter>.Empty }
-    | OptParamsListNonEmpty
-      { new ImmutableListPos<OptionalParameter>($1 :> ResizeArray<OptionalParameter>, getPos parseState) }
+      { new ResizeArray<IFunctionStatement>() }
+    | FunStatementsList FunStatement
+      { $1.Add($2); $1 }
 
-OptParamsListNonEmpty:
-    | OptParam
-      { let mutable x = new ResizeArray<OptionalParameter>() in x.Add($1); x }
-    | OptParamsListNonEmpty COMMA OptParam
-      { $1.Add($3); $1 }
-
-OptParam:
-    | id
-      { new OptionalParameter($1, getPos parseState) }
-    | id EQUALS Expression
-      { new OptionalParameter($1, $3, getPos parseState) }
+FunStatement:
+    | ConstDef
+      { $1 :?> IFunctionStatement }
+    | RETURN Expression SEMI
+      { ($2) :> IFunctionStatement }
 
 
 //------------------------------------------------------------------------------
 // L-system definition.
 //------------------------------------------------------------------------------
 
-MaybeLsystemBind:
-    | LSYSTEM id OptExprParams LsystemBody
-      { let lsys = new Lsystem($3, $4, getPosRange parseState 3 4) in
-        Some (new Binding($2, lsys, getPos parseState)) }
-    | LSYSTEM error LsystemBody
+LsystemDef:
+    | LSYSTEM id OptParams LsysBody
+      { new LsystemDefinition($2, $3, $4, getPos parseState) :> IInputStatement }
+    | LSYSTEM error LsysBody
       { logErrorPos (getPosBetween parseState 1 3) "Lsystem name and params excpected.";
-        None }
+        new EmptyStatement(getPos parseState) :> IInputStatement }
 
-OptExprParams:
-    |
-      { ImmutableListPos<OptionalParameter>.Empty }
-    | ExprParams
-      { $1 }
-
-LsystemBody:
+LsysBody:
     | LBRACE LsysStatementsList RBRACE
       { new ImmutableListPos<ILsystemStatement>($2 :> ResizeArray<ILsystemStatement>, getPosI parseState 1, getPosI parseState 3, getPos parseState)  }
 
@@ -265,53 +192,47 @@ LsysStatementsList:
       { $1.Add($2); $1 }
 
 LsysStatement:
-    | MaybeRewriteRule
-      { match $1 with
-        | Some(rr) -> rr :> ILsystemStatement
-        | None -> new EmptyStatement(getPos parseState, true) :> ILsystemStatement }
-    | MaybeBinding
-      { match $1 with
-        | Some(bind) -> bind :> ILsystemStatement
-        | None -> new EmptyStatement(getPos parseState, true) :> ILsystemStatement }
-    | MaybeInterpretBind
-      { match $1 with
-        | Some(iBind) -> iBind :> ILsystemStatement
-        | None -> new EmptyStatement(getPos parseState, true) :> ILsystemStatement }
+    | ConstDef
+      { $1 :?> ILsystemStatement }
+    | FunDef
+      { ($1 :> IStatement) :?> ILsystemStatement }
+    | RewriteRule
+      { $1 :> ILsystemStatement }
+    | SymbolsConstDef
+      { $1 :> ILsystemStatement }
+    | SymbolsInterpretDef
+      { $1 :> ILsystemStatement }
     | SEMI
       { new EmptyStatement(getPos parseState) :> ILsystemStatement }
-    | error
-      { logErrorPos getLastErrorPos "Excpected L-System statement.";
-        new EmptyStatement(ThreadStatic.LasErrorPos, true) :> ILsystemStatement }
 
-MaybeSymbolListBind:
+SymbolsConstDef:
     | SET id EQUALS LsystemSymbolList SEMI
-      { let symList = new LsystemSymbolList($4) in
-        Some (new Binding($2, symList, getPos parseState)) }
+      { new SymbolsConstDefinition($2, $4, getPos parseState) :> ILsystemStatement }
     | SET error SEMI
-      { logErrorPos (getPosBetween parseState 1 3) "Symbols definition excpected.";
-        None }
+      { logErrorPos (getPosBetween parseState 1 3) "Symbols constant definition excpected.";
+        new EmptyStatement(getPos parseState) :> ILsystemStatement }
 
-MaybeInterpretBind:
+SymbolsInterpretDef:
     | INTERPRET LsystemSymbolList AS id OptExpressionsListParen SEMI
-      { Some (new InterpretationBinding($2, $4, $5, getPos parseState)) }
+      { new SymbolsInterpretDef($2, $4, $5, getPos parseState) :> ILsystemStatement }
     | INTERPRET error SEMI
-      { logErrorPos (getPosBetween parseState 1 3) "Symbols interpretation binding excpected.";
-        None }
+      { logErrorPos (getPosBetween parseState 1 3) "Symbols interpretation definition excpected.";
+        new EmptyStatement(getPos parseState) :> ILsystemStatement }
 
 
 //------------------------------------------------------------------------------
 // L-system's rewrite rule.
 //------------------------------------------------------------------------------
 
-MaybeRewriteRule:
-    | REWRITE OptRrCtxt LsystemSymbol OptRrCtxt OptRrExprBinds OptRrCondition TO RrReplacList SEMI
-      { Some (new RewriteRule($3, $2, $4, $5, $6, $8, getPos parseState)) }
-    | REWRITE OptRrCtxt LsystemSymbol OptRrCtxt OptRrExprBinds OptRrCondition TO error SEMI
+RewriteRule:
+    | REWRITE OptRrCtxt LsystemSymbol OptRrCtxt OptRrLocalConsts OptRrCondition TO RrReplacList SEMI
+      { new RewriteRule($3, $2, $4, $5, $6, $8, getPos parseState) :> ILsystemStatement }
+    | REWRITE OptRrCtxt LsystemSymbol OptRrCtxt OptRrLocalConsts OptRrCondition TO error SEMI
       { logErrorPos (getPosBetween parseState 7 9) "Excpected rewrite rule replacement."
-        Some (new RewriteRule($3, $2, $4, $5, $6, ImmutableListPos<RewriteRuleReplacement>.Empty, getPos parseState)) }
+        new RewriteRule($3, $2, $4, $5, $6, ImmutableListPos<RewriteRuleReplacement>.Empty, getPos parseState) :> ILsystemStatement }
     | REWRITE error SEMI
       { logErrorPos (getPosBetween parseState 1 3) "Excpected rewrite rule.";
-        None }
+        new EmptyStatement(getPos parseState) :> ILsystemStatement }
 
 OptRrCtxt:
     |
@@ -322,17 +243,17 @@ OptRrCtxt:
       { logErrorPos (getPosBetween parseState 1 3) "Excpected symbol patterns as context.";
         ImmutableListPos<LsystemSymbol>.Empty }
 
-OptRrExprBinds:
+OptRrLocalConsts:
     |
-      { ImmutableListPos<Binding>.Empty }
+      { ImmutableListPos<ConstantDefinition>.Empty }
     | WITH
-      { logNoticePos (getPosI parseState 1) "Empty variable definition block found.";
-        ImmutableListPos<Binding>(getStartPos parseState) }
-    | WITH RrExprBindsListNonEmpty
-      { new ImmutableListPos<Binding>($2 :> ResizeArray<Binding>, getPos parseState) }
+      { logNoticePos (getPosI parseState 1) "Empty constant definition block.";
+        ImmutableListPos<ConstantDefinition>(getStartPos parseState) }
+    | WITH RrLocalConstsListNonEmpty
+      { new ImmutableListPos<ConstantDefinition>($2 :> ResizeArray<ConstantDefinition>, getPos parseState) }
     | WITH error
       { logError parseState "Excpected variable definitions separated by colon.";
-        ImmutableListPos<Binding>(getStartPos parseState) }
+        ImmutableListPos<ConstantDefinition>(getStartPos parseState) }
 
 OptRrCondition:
     |
@@ -383,14 +304,14 @@ OptRrWeight:
 
 
 
-RrExprBind:
+RrExprConst:
     | id EQUALS Expression
-      { new Binding($1, $3, getPos parseState) }
+      { new ConstantDefinition($1, $3, getPos parseState) }
 
-RrExprBindsListNonEmpty:
-    | RrExprBind
-      { let mutable x = new ResizeArray<Binding>() in x.Add($1); x }
-    | RrExprBindsListNonEmpty COMMA RrExprBind
+RrLocalConstsListNonEmpty:
+    | RrExprConst
+      { let mutable x = new ResizeArray<ConstantDefinition>() in x.Add($1); x }
+    | RrLocalConstsListNonEmpty COMMA RrExprConst
       { $1.Add($3); $1 }
 
 
@@ -429,6 +350,42 @@ Symbol:
       { $1 }
     | RBRACK
       { $1 }
+
+
+//------------------------------------------------------------------------------
+// Parameters.
+//------------------------------------------------------------------------------
+
+OptParams:
+    |
+      { ImmutableListPos<OptionalParameter>.Empty }
+    | OptParamsParens
+      { $1 }
+
+OptParamsParens:
+    | LPAREN OptParamsList RPAREN
+      { ($2 :> ImmutableListPos<OptionalParameter>).AddSeparators(getPosI parseState 1, getPosI parseState 3, getPos parseState) }
+    | LPAREN error RPAREN
+      { logErrorPos (getPosBetween parseState 1 3) "Excpected parameters with optional default value separated by comma.";
+        new ImmutableListPos<OptionalParameter>(getPosI parseState 1, getPosI parseState 3, getPos parseState) }
+
+OptParamsList:
+    |
+      { ImmutableListPos<OptionalParameter>.Empty }
+    | OptParamsListNonEmpty
+      { new ImmutableListPos<OptionalParameter>($1 :> ResizeArray<OptionalParameter>, getPos parseState) }
+
+OptParamsListNonEmpty:
+    | OptParam
+      { let mutable x = new ResizeArray<OptionalParameter>() in x.Add($1); x }
+    | OptParamsListNonEmpty COMMA OptParam
+      { $1.Add($3); $1 }
+
+OptParam:
+    | id
+      { new OptionalParameter($1, Expression.Empty, getPos parseState) }
+    | id EQUALS Expression
+      { new OptionalParameter($1, $3, getPos parseState) }
 
 
 //------------------------------------------------------------------------------

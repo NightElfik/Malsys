@@ -10,5 +10,4 @@ git clone http://www.ms.mff.cuni.cz/~fiserma/Malsys.git
 
 cd I:\Malsys\src\Malsys.Parsing
 fslex -o obj\x86\Debug\Lexer.fs --unicode Lexer.fsl
-fsyacc -o obj\x86\Debug\Parser.fs --module Malsys.Parsing.Parser Parser.fsy
 fsyacc -o obj\x86\Debug\Parser.fs --module Malsys.Parsing.Parser Parser.fsy -v

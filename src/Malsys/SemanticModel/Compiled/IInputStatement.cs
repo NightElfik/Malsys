@@ -11,7 +11,8 @@ namespace Malsys.SemanticModel.Compiled {
 	}
 
 	public enum InputStatementType {
-		Binding,
-
+		Constant,
+		Function,
+		Lsystem,
 	}
 }

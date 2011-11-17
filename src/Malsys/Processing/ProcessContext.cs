@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Malsys.Expressions;
-using FunMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.FunctionEvaledParams>;
-using VarMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.IValue>;
+﻿using Malsys.Evaluators;
 using Malsys.SemanticModel.Evaluated;
-using Malsys.Evaluators;
 
 namespace Malsys.Processing {
 	public class ProcessContext {

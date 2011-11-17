@@ -2,14 +2,14 @@
 using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Collections;
-using FunMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.FunctionEvaledParams>;
-using VarMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.IValue>;
+using FunsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Compiled.FunctionEvaledParams>;
+using ConstsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.IValue>;
 
 namespace Malsys.Evaluators {
 	public class ExpressionEvaluator {
 
-		private static readonly VarMap emptyVarMap = MapModule.Empty<string, IValue>();
-		private static readonly FunMap emptyFunMap = MapModule.Empty<string, FunctionEvaledParams>();
+		private static readonly ConstsMap emptyConstsMap = MapModule.Empty<string, IValue>();
+		private static readonly FunsMap emptyFunsMap = MapModule.Empty<string, FunctionEvaledParams>();
 
 
 		private ExpressionEvalVisitor evalVisitor = new ExpressionEvalVisitor();
@@ -20,7 +20,7 @@ namespace Malsys.Evaluators {
 		/// Evaluates expression with no defined variables nor functions.
 		/// </summary>
 		public IValue Evaluate(IExpression expr) {
-			return Evaluate(expr, emptyVarMap, emptyFunMap);
+			return Evaluate(expr, emptyConstsMap, emptyFunsMap);
 		}
 
 		/// <summary>
@@ -39,18 +39,18 @@ namespace Malsys.Evaluators {
 		/// <summary>
 		/// Evaluates expression with given variables and functions.
 		/// </summary>
-		public IValue Evaluate(IExpression expr, VarMap vars, FunMap funs) {
-			return evalVisitor.Evaluate(expr, vars, funs);
+		public IValue Evaluate(IExpression expr, ConstsMap consts, FunsMap funs) {
+			return evalVisitor.Evaluate(expr, consts, funs);
 		}
 
 		/// <summary>
 		/// Evaluates immutable list of expressions with given variables and functions.
 		/// </summary>
-		public ImmutableList<IValue> Evaluate(ImmutableList<IExpression> exprs, VarMap vars, FunMap funs) {
+		public ImmutableList<IValue> Evaluate(ImmutableList<IExpression> exprs, ConstsMap consts, FunsMap funs) {
 			var result = new IValue[exprs.Length];
 
 			for (int i = 0; i < exprs.Length; i++) {
-				result[i] = Evaluate(exprs[i], vars, funs);
+				result[i] = Evaluate(exprs[i], consts, funs);
 			}
 
 			return new ImmutableList<IValue>(result, true);
@@ -60,9 +60,9 @@ namespace Malsys.Evaluators {
 		/// Evaluates expression with given variables and functions as Constant.
 		/// If result of given expression is not Constant, EvalException is thrown.
 		/// </summary>
-		public Constant EvaluateAsConst(IExpression expr, VarMap vars, FunMap funs) {
+		public Constant EvaluateAsConst(IExpression expr, ConstsMap consts, FunsMap funs) {
 
-			var e = Evaluate(expr, vars, funs);
+			var e = Evaluate(expr, consts, funs);
 			if (e.IsConstant) {
 				return (Constant)e;
 			}
@@ -74,25 +74,28 @@ namespace Malsys.Evaluators {
 		/// <summary>
 		/// Evaluates optional params list with given variables and functions.
 		/// </summary>
-		public ImmutableList<OptionalParameterEvaled> EvaluateOptParams(ImmutableList<OptionalParameter> prms, VarMap vars, FunMap funs) {
-			return evalVisitor.EvaluateParameters(prms, vars, funs);
+		public ImmutableList<OptionalParameterEvaled> EvaluateOptParams(ImmutableList<OptionalParameter> prms,
+				ConstsMap consts, FunsMap funs) {
+
+			return evalVisitor.EvaluateParameters(prms, consts, funs);
 		}
 
-		public Symbol<IValue> EvaluateSymbol(Symbol<IExpression> symbol, VarMap vars, FunMap funs) {
+		public Symbol<IValue> EvaluateSymbol(Symbol<IExpression> symbol, ConstsMap consts, FunsMap funs) {
 
-			return new Symbol<IValue>(symbol.Name, Evaluate(symbol.Arguments, vars, funs));
+			return new Symbol<IValue>(symbol.Name, Evaluate(symbol.Arguments, consts, funs));
 		}
 
-		public SymbolsListVal EvaluateSymbols(SymbolsListExpr symbols, VarMap vars, FunMap funs) {
+		public ImmutableList<Symbol<IValue>> EvaluateSymbols(ImmutableList<Symbol<IExpression>> symbols,
+				ConstsMap consts, FunsMap funs) {
 
 			var result = new Symbol<IValue>[symbols.Length];
 
 			for (int i = 0; i < symbols.Length; i++) {
-				var args = Evaluate(symbols[i].Arguments, vars, funs);
+				var args = Evaluate(symbols[i].Arguments, consts, funs);
 				result[i] = new Symbol<IValue>(symbols[i].Name, args);
 			}
 
-			return new SymbolsListVal(new ImmutableList<Symbol<IValue>>(result, true));
+			return new ImmutableList<Symbol<IValue>>(result, true);
 		}
 	}
 }

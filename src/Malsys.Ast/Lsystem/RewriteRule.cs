@@ -10,7 +10,7 @@ namespace Malsys.Ast {
 		public readonly ImmutableListPos<LsystemSymbol> LeftContext;
 		public readonly ImmutableListPos<LsystemSymbol> RightContext;
 
-		public readonly ImmutableListPos<Binding> LocalBindings;
+		public readonly ImmutableListPos<ConstantDefinition> LocalConstDefs;
 
 		public readonly Expression Condition;
 
@@ -18,13 +18,13 @@ namespace Malsys.Ast {
 
 
 		public RewriteRule(LsystemSymbol pattern, ImmutableListPos<LsystemSymbol> lctxt, ImmutableListPos<LsystemSymbol> rctxt,
-				ImmutableListPos<Binding> locBinds, Expression cond, ImmutableListPos<RewriteRuleReplacement> replacs, Position pos) {
+				ImmutableListPos<ConstantDefinition> localConsts, Expression cond, ImmutableListPos<RewriteRuleReplacement> replacs, Position pos) {
 
 			LeftContext = lctxt;
 			Pattern = pattern;
 			RightContext = rctxt;
 			Condition = cond;
-			LocalBindings = locBinds;
+			LocalConstDefs = localConsts;
 			Replacements = replacs;
 
 			Position = pos;
@@ -39,7 +39,7 @@ namespace Malsys.Ast {
 
 		#region IAstLsystemVisitable Members
 
-		public void Accept(IAstLsystemVisitor visitor) {
+		public void Accept(ILsystemVisitor visitor) {
 			visitor.Visit(this);
 		}
 

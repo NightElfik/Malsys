@@ -1,33 +1,53 @@
 ﻿using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Evaluated;
 using System.Collections.Generic;
+using FunsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Compiled.FunctionEvaledParams>;
+using LsysMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Compiled.LsystemEvaledParams>;
+using ConstsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.IValue>;
+using Microsoft.FSharp.Collections;
 
 namespace Malsys.Evaluators {
 	public class InputEvaluator {
 
-		private BindingsEvaluator bindEvaluator;
+		private ExpressionEvaluator exprEvaluator;
 
 
-		public InputEvaluator(BindingsEvaluator bindEval) {
-			bindEvaluator = bindEval;
+		public InputEvaluator(ExpressionEvaluator exprEval) {
+			exprEvaluator = exprEval;
 		}
 
 
 		public InputBlock Evaluate(IEnumerable<IInputStatement> inStatements) {
 
-			BindingMaps maps = new BindingMaps(BindingType.Expression | BindingType.Function | BindingType.Lsystem);
+			var consts = MapModule.Empty<string, IValue>();
+			var funs = MapModule.Empty<string, FunctionEvaledParams>();
+			var lsys = MapModule.Empty<string, LsystemEvaledParams>();
 
 			foreach (var stat in inStatements) {
 				switch (stat.StatementType) {
-					case InputStatementType.Binding:
-						bindEvaluator.Evaluate((Binding)stat, maps);
+					case InputStatementType.Constant:
+						var cst = (ConstantDefinition)stat;
+						consts = consts.Add(cst.Name, exprEvaluator.Evaluate(cst.Value));
 						break;
+
+					case InputStatementType.Function:
+						var fun = (Function)stat;
+						var funPrms = exprEvaluator.EvaluateOptParams(fun.Parameters, consts, funs);
+						funs = funs.Add(fun.Name, new FunctionEvaledParams(fun.Name, funPrms, fun.Statements, fun.AstNode));
+						break;
+
+					case InputStatementType.Lsystem:
+						var ls = (Lsystem)stat;
+						var lsPrms = exprEvaluator.EvaluateOptParams(ls.Parameters, consts, funs);
+						lsys = lsys.Add(ls.Name, new LsystemEvaledParams(ls.Name, lsPrms, ls.Statements, ls.AstNode));
+						break;
+
 					default:
-						throw new EvalException("Unknown Input statement type.");
+						throw new EvalException("Unknown input statement type `{0}`.".Fmt(stat.StatementType));
 				}
 			}
 
-			return new InputBlock(maps.Variables, maps.Functions, maps.Lsystems);
+			return new InputBlock(consts, funs, lsys);
 		}
 
 	}

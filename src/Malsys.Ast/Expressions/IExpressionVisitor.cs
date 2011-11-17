@@ -1,6 +1,6 @@
 ﻿
 namespace Malsys.Ast {
-	public interface IAstExpressionVisitor {
+	public interface IExpressionVisitor {
 
 		void Visit(ExpressionBracketed bracketedExpr);
 		void Visit(ExpressionFunction funExpr);

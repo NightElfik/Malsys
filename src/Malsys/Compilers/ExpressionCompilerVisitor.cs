@@ -8,13 +8,13 @@ using Malsys.SemanticModel.Compiled.Expressions;
 using Malsys.Compilers.Expressions;
 
 namespace Malsys.Compilers {
-	class ExpressionCompilerVisitor : IAstExpressionVisitor {
+	class ExpressionCompilerVisitor : Ast.IExpressionVisitor {
 
 		public static readonly IExpression ErrorResult = Constant.NaN;
 
 
 		private MessagesCollection msgs;
-		private ExpressionCompiler exprCompier;
+		private ExpressionCompiler exprCompiler;
 
 		private State state;
 		private Stack<OperatorCore> optorsStack;
@@ -23,7 +23,7 @@ namespace Malsys.Compilers {
 
 		public ExpressionCompilerVisitor(ExpressionCompiler exprComp, MessagesCollection msgsColl) {
 
-			exprCompier = exprComp;
+			exprCompiler = exprComp;
 			msgs = msgsColl;
 
 			optorsStack = new Stack<OperatorCore>();
@@ -68,13 +68,13 @@ namespace Malsys.Compilers {
 			return operandsStack.Pop();
 		}
 
-		#region IAstExpressionVisitor Members
+		#region IExpressionVisitor Members
 
 		public void Visit(ExpressionBracketed bracketedExpr) {
 
 			switch (state) {
 				case State.ExcpectingOperand:
-					operandsStack.Push(exprCompier.CompileExpression(bracketedExpr.Expression));
+					operandsStack.Push(exprCompiler.CompileExpression(bracketedExpr.Expression));
 					state = State.ExcpectingOperator;
 					break;
 
@@ -82,7 +82,7 @@ namespace Malsys.Compilers {
 					// Expression (probably in parenthesis) while excpecting binary operator?
 					// So directly before it is operand.
 					// Lets add implicit multiplication between them.
-					operandsStack.Push(exprCompier.CompileExpression(bracketedExpr.Expression));
+					operandsStack.Push(exprCompiler.CompileExpression(bracketedExpr.Expression));
 					// implicit multiplication
 					optorsStack.Push(OperatorCore.Multiply);
 					state = State.ExcpectingOperator;
@@ -134,7 +134,7 @@ namespace Malsys.Compilers {
 					}
 
 					// apply indexer on previous operand
-					var indexExpr = exprCompier.CompileExpression(indexerExpr.Index);
+					var indexExpr = exprCompiler.CompileExpression(indexerExpr.Index);
 					operandsStack.Push(new Indexer(operandsStack.Pop(), operandsStack.Pop()));
 					state = State.ExcpectingOperator;
 					break;
@@ -149,7 +149,7 @@ namespace Malsys.Compilers {
 
 			switch (state) {
 				case State.ExcpectingOperand:
-					var arr = exprCompier.CompileList(arrExpr);
+					var arr = exprCompiler.CompileList(arrExpr);
 					operandsStack.Push(new ExpressionValuesArray(arr));
 					state = State.ExcpectingOperator;
 					break;
@@ -189,7 +189,7 @@ namespace Malsys.Compilers {
 			switch (state) {
 				case State.ExcpectingOperand:
 					KnownConstant cnst;
-					if (exprCompier.KnownConstants.TryGet(variable.Name, out cnst)) {
+					if (exprCompiler.KnownConstants.TryGet(variable.Name, out cnst)) {
 						// known constant
 						operandsStack.Push(new Constant(cnst.Value));
 					}
@@ -218,7 +218,7 @@ namespace Malsys.Compilers {
 				case State.ExcpectingOperand:
 					// operator while excpecting operand? It must be unary!
 					OperatorCore opUnary;
-					if (exprCompier.KnownOperators.TryGet(optor.Syntax, 1, out opUnary)) {
+					if (exprCompiler.KnownOperators.TryGet(optor.Syntax, 1, out opUnary)) {
 						if (tryPushOperator(opUnary)) {
 							state = State.ExcpectingOperand;
 						}
@@ -236,7 +236,7 @@ namespace Malsys.Compilers {
 				case State.ExcpectingOperator:
 					// operator must be binary
 					OperatorCore opBinary;
-					if (exprCompier.KnownOperators.TryGet(optor.Syntax, 2, out opBinary)) {
+					if (exprCompiler.KnownOperators.TryGet(optor.Syntax, 2, out opBinary)) {
 						if (tryPushOperator(opBinary)) {
 							state = State.ExcpectingOperand;
 						}
@@ -275,10 +275,10 @@ namespace Malsys.Compilers {
 
 		private void compileFunctionCall(ExpressionFunction funCall) {
 
-			var rsltArgs = exprCompier.CompileList(funCall.Arguments);
+			var rsltArgs = exprCompiler.CompileList(funCall.Arguments);
 
 			FunctionCore knownFun;
-			if (exprCompier.KnownFunctions.TryGet(funCall.NameId.Name, funCall.Arguments.Length, out knownFun)) {
+			if (exprCompiler.KnownFunctions.TryGet(funCall.NameId.Name, funCall.Arguments.Length, out knownFun)) {
 				operandsStack.Push(new FunctionCall(funCall.NameId.Name, knownFun.EvalFunction, rsltArgs, knownFun.ParamsTypes));
 			}
 			else {

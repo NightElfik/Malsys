@@ -1,7 +1,7 @@
 ﻿using Malsys.SemanticModel.Compiled;
 
 namespace Malsys.Compilers {
-	class InputCompilerVisitor : Ast.IAstInputVisitor {
+	class InputCompilerVisitor : Ast.IInputVisitor {
 
 
 		private InputCompiler inCompiler;
@@ -22,18 +22,28 @@ namespace Malsys.Compilers {
 		}
 
 
-		#region IAstInputVisitor Members
 
-		public void Visit(Ast.Binding binding) {
-			var bind = inCompiler.CompileBinding(binding, BindingType.ExpressionsAndFunctions);
-			result = new CompilerResult<IInputStatement>(bind.Result, bind.ErrorOcured);
+		#region IInputVisitor Members
+
+		public void Visit(Ast.ConstantDefinition constDef) {
+			result = inCompiler.CompileConstDef(constDef);
 		}
 
 		public void Visit(Ast.EmptyStatement emptyStat) {
 			result = CompilerResult<IInputStatement>.Error;
 		}
 
-		#endregion
+		public void Visit(Ast.FunctionDefinition funDef) {
+			result = inCompiler.CompileFunctionDef(funDef);
+		}
 
+		public void Visit(Ast.LsystemDefinition lsysDef) {
+			var prms = inCompiler.CompileParameters(lsysDef.Parameters);
+			var stats = inCompiler.LsystemCompiler.CompileLsystemStatements(lsysDef.Statements);
+
+			result = new Lsystem(lsysDef.NameId.Name, prms, stats, lsysDef);
+		}
+
+		#endregion
 	}
 }

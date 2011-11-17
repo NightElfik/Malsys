@@ -6,47 +6,80 @@ using Malsys.SemanticModel.Compiled.Expressions;
 using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Collections;
 using Microsoft.FSharp.Core;
-using FunMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.FunctionEvaledParams>;
-using VarMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.IValue>;
+using FunsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Compiled.FunctionEvaledParams>;
+using ConstsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.IValue>;
+using System.Diagnostics;
 
 namespace Malsys.Evaluators {
 	public class ExpressionEvalVisitor : IExpressionVisitor {
 
+		private bool evaluating = false;
 		private Stack<IValue> valuesStack = new Stack<IValue>();
-		private VarMap variables;
-		private FunMap functions;
+		private ConstsMap constants;
+		private FunsMap functions;
 
 		private ArgsStorage argsStorage = new ArgsStorage();
 
+		/// <summary>
+		/// Evaluates given expression with respect to given constants and functions.
+		/// </summary>
+		/// <remarks>
+		/// To enhance performance, entire instance uses one 'global' stack to do evaluation.
+		/// Because of that it is not thread safe and moreover it is not 'recursion' safe.
+		/// Simply this class can not call this public method from any methods called by it (recursion).
+		/// If it happens, stack will contain some expressions and at the end there will be not enough oeprators to
+		/// compose them and exception will be thrown.
+		/// To avoid this 'dagner', simple assert is in place.
+		///
+		/// Another little problem is with consts/funs, but they can be saved/restored easily.
+		///
+		/// To enable recursion, stack should implement 'moving' of its bottom, at start of call, bottom will be
+		/// placed at current top, recurrent computation will see 'empty' stack for itself, and after returning,
+		/// bottom will be placed on previous position, just like calls of real methods with real stack.
+		/// Or use stack of stacks. It is probably easier to create another instance of this visitor.
+		///
+		/// But I think, that this feature si not necessary now.
+		/// </remarks>
+		public IValue Evaluate(IExpression expr, ConstsMap consts, FunsMap funs) {
 
-		public IValue Evaluate(IExpression expr, VarMap vars, FunMap funs) {
+			Debug.Assert(!evaluating, "Forbidden recursion call!");
 
-			valuesStack.Clear();
-			variables = vars;
-			functions = funs;
+			try {
+				evaluating = true;
 
-			expr.Accept(this);
+				constants = consts;
+				functions = funs;
 
-			variables = null;
-			functions = null;
-			argsStorage.Clear();
+				expr.Accept(this);
 
-			if (valuesStack.Count != 1) {
-				throw new EvalException("Failed to evaluate expression. Not all values were processed.");
+				constants = null;
+				functions = null;
+
+				if (valuesStack.Count != 1) {
+					throw new EvalException("Failed to evaluate expression. Not all values were processed.");
+				}
+
+				return valuesStack.Pop();
 			}
+			finally {
+				// cleanup
 
-			return valuesStack.Pop();
+				valuesStack.Clear();
+				argsStorage.Clear();
+				evaluating = false;
+			}
 		}
 
-		public ImmutableList<OptionalParameterEvaled> EvaluateParameters(ImmutableList<OptionalParameter> prms, VarMap vars, FunMap funs) {
+		public ImmutableList<OptionalParameterEvaled> EvaluateParameters(ImmutableList<OptionalParameter> prms,
+				ConstsMap consts, FunsMap funs) {
 
 			valuesStack.Clear();
-			variables = vars;
+			constants = consts;
 			functions = funs;
 
 			var result = evalParams(prms);
 
-			variables = null;
+			constants = null;
 			functions = null;
 
 			return result;
@@ -99,7 +132,7 @@ namespace Malsys.Evaluators {
 
 		public void Visit(ExprVariable variable) {
 
-			var maybeValue = MapModule.TryFind(variable.Name, variables);
+			var maybeValue = MapModule.TryFind(variable.Name, constants);
 
 			if (OptionModule.IsSome(maybeValue)) {
 				valuesStack.Push(maybeValue.Value);
@@ -208,28 +241,6 @@ namespace Malsys.Evaluators {
 		#endregion
 
 
-		private void evaluateBindings(ImmutableList<Binding> bindings, ref VarMap vars, ref FunMap funs) {
-
-			foreach (var bind in bindings) {
-				switch (bind.BindingType) {
-					case BindingType.Expression:
-						((IExpression)bind.Value).Accept(this);
-						vars = vars.Add(bind.Name, valuesStack.Pop());
-						break;
-					case BindingType.Function:
-						var fun = ((Function)bind.Value);
-						var evaledFun = new FunctionEvaledParams(evalParams(fun.Parameters), fun.Bindings, fun.ReturnExpression, fun.AstNode);
-						funs = funs.Add(bind.Name, evaledFun);
-						break;
-					case BindingType.SymbolList:
-						throw new EvalException("Unexcpected symbols binding");
-					default:
-						throw new EvalException("Unknown binding");
-				}
-			}
-
-		}
-
 		private ImmutableList<OptionalParameterEvaled> evalParams(ImmutableList<OptionalParameter> optPrms) {
 
 			var prms = new OptionalParameterEvaled[optPrms.Length];
@@ -255,10 +266,10 @@ namespace Malsys.Evaluators {
 		/// </summary>
 		private void evalUserFuncCall(FunctionEvaledParams fun, ArgsStorage args) {
 			// save variables & functions
-			var oldVars = variables;
+			var oldConsts = constants;
 			var oldFuns = functions;
 
-			// add arguments as new vars
+			// add arguments as new consts
 			for (int i = 0; i < fun.Parameters.Length; i++) {
 				IValue value;
 				if (fun.Parameters[i].IsOptional) {
@@ -269,20 +280,40 @@ namespace Malsys.Evaluators {
 						value = args[i];
 					}
 					else {
-						throw new EvalException("Failed to evaluate function `{0}`. {1}. parameter is not optional and only {2} values given in function call.".Fmt(
-							fun.BindedName, i + 1, args.ArgsCount));
+						throw new EvalException("Failed to evaluate function `{0}`. {1}. parameter is not optional and only {2} values given in function call."
+							.Fmt(fun.AstNode.NameId.Name, i + 1, args.ArgsCount));
 					}
 				}
 
-				variables = variables.Add(fun.Parameters[i].Name, value);
+				constants = constants.Add(fun.Parameters[i].Name, value);
 			}
 
-			evaluateBindings(fun.Bindings, ref variables, ref functions);
+			for (int i = 0; i < fun.Statements.Length; i++) {
 
-			fun.ReturnExpression.Accept(this);
+				var stat = fun.Statements[i];
+				switch (stat.StatementType) {
+					case FunctionStatementType.ConstantDefinition:
+						var cst = (ConstantDefinition)stat;
+						cst.Value.Accept(this);
+						constants = constants.Add(cst.Name, valuesStack.Pop());
+						break;
 
+					case FunctionStatementType.ReturnExpression:
+						// function's return value
+						var retVal = (FunctionReturnExpr)stat;
+						retVal.ReturnValue.Accept(this);
+						goto breakFor;
+
+					default:
+						throw new EvalException("Unknown function's statement type `{0}` in function `{1}`."
+							.Fmt(stat.StatementType, fun.AstNode.NameId.Name));
+
+				}
+			}
+
+		breakFor:
 			// restore variables & functions to state before fun call
-			variables = oldVars;
+			constants = oldConsts;
 			functions = oldFuns;
 		}
 

@@ -1,29 +1,41 @@
 ﻿using Malsys.SemanticModel.Compiled;
-using FunMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.FunctionEvaledParams>;
-using VarMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.IValue>;
+using ConstsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.IValue>;
+using FunsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Compiled.FunctionEvaledParams>;
+using SymListMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.ImmutableList<Malsys.SemanticModel.Symbol<Malsys.SemanticModel.Evaluated.IValue>>>;
+using SymIntMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Symbol<Malsys.SemanticModel.Evaluated.IValue>>;
 
 namespace Malsys.SemanticModel.Evaluated {
 	public class LsystemEvaled {
 
+		public readonly string Name;
+
 		/// <summary>
-		/// Contains global vars from evaluation + parameters + local vars.
+		/// Contains global consts from evaluation + parameters + local consts.
 		/// </summary>
-		public readonly VarMap Variables;
+		public readonly ConstsMap Constants;
 
 		/// <summary>
 		/// Contains global functions from evaluation + local functions.
 		/// </summary>
-		public readonly FunMap Functions;
+		public readonly FunsMap Functions;
+
+		public readonly SymListMap SymbolsConstants;
+
+		public readonly SymIntMap SymbolsInterpretation;
 
 		public readonly ImmutableList<RewriteRule> RewriteRules;
 
-		public readonly Ast.Binding AstNode;
+		public readonly Ast.LsystemDefinition AstNode;
 
 
-		public LsystemEvaled(VarMap vars, FunMap funs, ImmutableList<RewriteRule> rRules, Ast.Binding astNode) {
+		public LsystemEvaled(string name, ConstsMap consts, FunsMap funs, SymListMap symbolsConsts, SymIntMap symsInt,
+				ImmutableList<RewriteRule> rRules, Ast.LsystemDefinition astNode) {
 
-			Variables = vars;
+			Name = name;
+			Constants = consts;
 			Functions = funs;
+			SymbolsConstants = symbolsConsts;
+			SymbolsInterpretation = symsInt;
 			RewriteRules = rRules;
 			AstNode = astNode;
 		}

@@ -11,7 +11,7 @@ namespace Malsys.SemanticModel.Compiled {
 		public readonly SymbolsList<string> LeftContext;
 		public readonly SymbolsList<string> RightContext;
 
-		public readonly ImmutableList<Binding> LocalBindings;
+		public readonly ImmutableList<ConstantDefinition> LocalConstantDefs;
 
 		public readonly IExpression Condition;
 
@@ -20,13 +20,13 @@ namespace Malsys.SemanticModel.Compiled {
 
 
 		public RewriteRule(Symbol<string> symbolPtrn, SymbolsList<string> lCtxt, SymbolsList<string> rCtxt,
-				ImmutableList<Binding> localBinds, IExpression cond,
+				ImmutableList<ConstantDefinition> locConsts, IExpression cond,
 				ImmutableList<RewriteRuleReplacement> replacs) {
 
 			SymbolPattern = symbolPtrn;
 			LeftContext = lCtxt;
 			RightContext = rCtxt;
-			LocalBindings = localBinds;
+			LocalConstantDefs = locConsts;
 			Condition = cond;
 			Replacements = replacs;
 		}

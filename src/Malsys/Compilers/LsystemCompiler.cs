@@ -2,7 +2,6 @@
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Compiled;
 
-
 namespace Malsys.Compilers {
 
 	public class LsystemCompiler {
@@ -14,15 +13,15 @@ namespace Malsys.Compilers {
 
 		private MessagesCollection msgs;
 
-		private InputCompiler inputCompiler;
+		private InputCompiler inCompiler;
 		private LsystemCompilerVisitor lsysStatementCompiler;
 
 
-		public LsystemCompiler(InputCompiler iComp) {
-			inputCompiler = iComp;
-			msgs = inputCompiler.Messages;
+		public LsystemCompiler(InputCompiler inComp) {
+			inCompiler = inComp;
+			msgs = inCompiler.Messages;
 
-			lsysStatementCompiler = new LsystemCompilerVisitor(inputCompiler);
+			lsysStatementCompiler = new LsystemCompilerVisitor(inCompiler);
 		}
 
 
@@ -42,7 +41,7 @@ namespace Malsys.Compilers {
 			return new ImmutableList<ILsystemStatement>(compStats);
 		}
 
-		public CompilerResult<RewriteRule> CompileRewriteRule(Ast.RewriteRule rRuleAst) {
+		public RewriteRule CompileRewriteRule(Ast.RewriteRule rRuleAst) {
 
 			var ptrn = CompileSymbolAsPattern(rRuleAst.Pattern, true);
 			var lCtxt = CompileSymbolsListAsPattern(rRuleAst.LeftContext, true);
@@ -54,15 +53,19 @@ namespace Malsys.Compilers {
 			CheckPatternParams(rCtxt, usedNames);
 			usedNames = null;
 
-			var vars = inputCompiler.CompileBindingsList(rRuleAst.LocalBindings, BindingType.ExpressionsAndFunctions);
+			var locConsts = new ConstantDefinition[rRuleAst.LocalConstDefs.Length];
+			for (int i = 0; i < rRuleAst.LocalConstDefs.Length; i++) {
+				locConsts[i] = inCompiler.CompileConstDef(rRuleAst.LocalConstDefs[i]);
+			}
+			var locConstDefs =  new ImmutableList<ConstantDefinition>(locConsts, true);
 
 			var cond = rRuleAst.Condition.IsEmpty
 				? Constant.True
-				: inputCompiler.ExpressionCompiler.CompileExpression(rRuleAst.Condition);
+				: inCompiler.ExpressionCompiler.CompileExpression(rRuleAst.Condition);
 
-			var replac = CompileReplacementsList(rRuleAst.Replacements);
+			var replacs = CompileReplacementsList(rRuleAst.Replacements);
 
-			return new RewriteRule(ptrn, lCtxt, rCtxt, vars, cond, replac);
+			return new RewriteRule(ptrn, lCtxt, rCtxt, locConstDefs, cond, replacs);
 		}
 
 
@@ -70,7 +73,7 @@ namespace Malsys.Compilers {
 
 			var probab = replacAst.Weight.IsEmpty
 				? Constant.One
-				: inputCompiler.ExpressionCompiler.CompileExpression(replacAst.Weight);
+				: inCompiler.ExpressionCompiler.CompileExpression(replacAst.Weight);
 
 			var replac = CompileSymbolsList(replacAst.Replacement);
 
@@ -170,10 +173,10 @@ namespace Malsys.Compilers {
 
 		public Symbol<IExpression> CompileSymbol(Ast.LsystemSymbol symbol) {
 
-			return new Symbol<IExpression>(symbol.Name, inputCompiler.ExpressionCompiler.CompileList(symbol.Arguments), symbol);
+			return new Symbol<IExpression>(symbol.Name, inCompiler.ExpressionCompiler.CompileList(symbol.Arguments), symbol);
 		}
 
-		public SymbolsListExpr CompileSymbolsList(Ast.ImmutableListPos<Ast.LsystemSymbol> symbolsList) {
+		public ImmutableList<Symbol<IExpression>> CompileSymbolsList(Ast.ImmutableListPos<Ast.LsystemSymbol> symbolsList) {
 
 			var compiledSymbols = new Symbol<IExpression>[symbolsList.Length];
 
@@ -181,7 +184,20 @@ namespace Malsys.Compilers {
 				compiledSymbols[i] = CompileSymbol(symbolsList[i]);
 			}
 
-			return new SymbolsListExpr(new ImmutableList<Symbol<IExpression>>(compiledSymbols, true));
+			return new ImmutableList<Symbol<IExpression>>(compiledSymbols, true);
+		}
+
+		public SymbolsConstDefinition CompileSymbolConstant(Ast.SymbolsConstDefinition symbolConstAst) {
+
+			var symbols = CompileSymbolsList(symbolConstAst.SymbolsList);
+			return new SymbolsConstDefinition(symbolConstAst.NameId.Name, symbols);
+		}
+
+		public SymbolsInterpretation CompileSymbolsInterpretation(Ast.SymbolsInterpretDef symbolsInterpretAst) {
+
+			var symbols = CompileSymbolsListAsPattern(symbolsInterpretAst.Symbols, false);
+			var defVals = inCompiler.ExpressionCompiler.CompileList(symbolsInterpretAst.DefaultParameters);
+			return new SymbolsInterpretation(symbolsInterpretAst.Instruction.Name, defVals, symbols);
 		}
 	}
 }

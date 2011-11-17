@@ -2,7 +2,7 @@
 using Malsys.SemanticModel.Compiled;
 
 namespace Malsys.Compilers {
-	class LsystemCompilerVisitor : Ast.IAstLsystemVisitor {
+	class LsystemCompilerVisitor : Ast.ILsystemVisitor {
 
 		private InputCompiler inCompiler;
 
@@ -14,31 +14,37 @@ namespace Malsys.Compilers {
 			inCompiler = inComp;
 		}
 
-		public CompilerResult<ILsystemStatement> TryCompile(Ast.ILsystemStatement astStatement) {
 
+		public CompilerResult<ILsystemStatement> TryCompile(Ast.ILsystemStatement astStatement) {
 			astStatement.Accept(this);
 			return result;
 		}
 
 
-		#region IAstLsystemVisitor Members
+		#region ILsystemVisitor Members
 
-		public void Visit(Ast.Binding binding) {
-			var bind = inCompiler.CompileBinding(binding, BindingType.Expression | BindingType.Function | BindingType.SymbolList);
-			result = new CompilerResult<ILsystemStatement>(bind.Result, bind.ErrorOcured);
+		public void Visit(Ast.ConstantDefinition constDef) {
+			result = inCompiler.CompileConstDef(constDef);
 		}
 
 		public void Visit(Ast.EmptyStatement emptyStat) {
 			result = CompilerResult<ILsystemStatement>.Error;
 		}
 
-		public void Visit(Ast.InterpretationBinding interpretBinding) {
-			throw new NotImplementedException();
+		public void Visit(Ast.FunctionDefinition funDef) {
+			result = inCompiler.CompileFunctionDef(funDef);
 		}
 
 		public void Visit(Ast.RewriteRule rewriteRule) {
-			var rr = inCompiler.LsystemCompiler.CompileRewriteRule(rewriteRule);
-			result = new CompilerResult<ILsystemStatement>(rr.Result, rr.ErrorOcured);
+			result = inCompiler.LsystemCompiler.CompileRewriteRule(rewriteRule);
+		}
+
+		public void Visit(Ast.SymbolsInterpretDef symbolInterpretDef) {
+			result = inCompiler.LsystemCompiler.CompileSymbolsInterpretation(symbolInterpretDef);
+		}
+
+		public void Visit(Ast.SymbolsConstDefinition symbolsDef) {
+			result = inCompiler.LsystemCompiler.CompileSymbolConstant(symbolsDef);
 		}
 
 		#endregion

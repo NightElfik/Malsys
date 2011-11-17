@@ -1,6 +1,6 @@
 ﻿
 namespace Malsys.Ast {
-	public interface ILsystemStatement : IToken, IAstLsystemVisitable {
+	public interface ILsystemStatement : IStatement, ILsystemVisitable {
 
 	}
 }

@@ -1,14 +1,14 @@
 ﻿using System;
 
 namespace Malsys.Ast {
-	public class InterpretationBinding : IToken, ILsystemStatement {
+	public class SymbolsInterpretDef : ILsystemStatement {
 
 		public readonly ImmutableListPos<LsystemSymbol> Symbols;
 		public readonly Identificator Instruction;
 		public readonly ImmutableListPos<Expression> DefaultParameters;
 
 
-		public InterpretationBinding(ImmutableListPos<LsystemSymbol> symbols, Identificator instr, ImmutableListPos<Expression> defParams , Position pos) {
+		public SymbolsInterpretDef(ImmutableListPos<LsystemSymbol> symbols, Identificator instr, ImmutableListPos<Expression> defParams , Position pos) {
 
 			Symbols = symbols;
 			Instruction = instr;
@@ -23,7 +23,7 @@ namespace Malsys.Ast {
 
 		#region IAstLsystemVisitable Members
 
-		public void Accept(IAstLsystemVisitor visitor) {
+		public void Accept(ILsystemVisitor visitor) {
 			visitor.Visit(this);
 		}
 

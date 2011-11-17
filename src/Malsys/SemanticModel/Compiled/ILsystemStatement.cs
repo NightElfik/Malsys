@@ -1,5 +1,6 @@
 ﻿
 namespace Malsys.SemanticModel.Compiled {
+
 	public interface ILsystemStatement {
 
 		LsystemStatementType StatementType { get; }
@@ -7,7 +8,10 @@ namespace Malsys.SemanticModel.Compiled {
 	}
 
 	public enum LsystemStatementType {
-		Binding,
+		Constant,
+		Function,
+		SymbolsConstant,
 		RewriteRule,
+		SymbolsInterpretation,
 	}
 }

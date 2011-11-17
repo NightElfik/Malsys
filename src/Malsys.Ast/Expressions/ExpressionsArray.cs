@@ -19,7 +19,7 @@ namespace Malsys.Ast {
 
 		#region IAstExpressionVisitable Members
 
-		public void Accept(IAstExpressionVisitor visitor) {
+		public void Accept(IExpressionVisitor visitor) {
 			visitor.Visit(this);
 		}
 

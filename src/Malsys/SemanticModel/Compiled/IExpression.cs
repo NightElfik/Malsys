@@ -2,9 +2,9 @@
 
 namespace Malsys.SemanticModel.Compiled {
 
-	public interface IExpression : IExpressionVisitable, IBindable {
+	public interface IExpression : IExpressionVisitable {
 
-		bool IsEmpty { get; }
+		bool IsEmptyExpression { get; }
 
 	}
 }

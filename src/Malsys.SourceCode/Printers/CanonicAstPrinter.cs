@@ -5,17 +5,17 @@ using System.Text;
 using Malsys.Ast;
 using System.Diagnostics;
 using Malsys.IO;
-/*
+
 namespace Malsys.SourceCode.Printers {
-	public class CanonicAstPrinter : IAstVisitor {
+	public class CanonicAstPrinter : IInputVisitor, ILsystemVisitor, IExpressionVisitor, IBindableParamVisitor {
 
 		private IndentTextWriter writer;
+
 
 
 		public CanonicAstPrinter(IndentTextWriter writer) {
 			this.writer = writer;
 		}
-
 
 		public void Visit(Ast.InputBlock input) {
 			foreach (var statement in input) {
@@ -31,13 +31,13 @@ namespace Malsys.SourceCode.Printers {
 		}
 
 		/// <summary>
-		/// Prints separator between items.
+		/// Prints separator between expressions.
 		/// </summary>
-		public void VisitSeparated<T>(IEnumerable<T> tokens, string separator = ", ") where T : IToken {
+		public void VisitSeparated(IEnumerable<Expression> expressions, string separator = ", ") {
 
 			bool first = true;
 
-			foreach (var tok in tokens) {
+			foreach (var expr in expressions) {
 				if (first) {
 					first = false;
 				}
@@ -45,11 +45,19 @@ namespace Malsys.SourceCode.Printers {
 					writer.Write(separator);
 				}
 
-				tok.Accept(this);
+				Visit(expr);
 			}
 		}
 
-		public void Visit<T>(ImmutableList<T> tokList) where T : IToken {
+		public void Visit(Expression expr) {
+			foreach (var member in expr) {
+				member.Accept(this);
+			}
+		}
+
+
+
+		/*public void Visit<T>(ImmutableList<T> tokList) where T : IToken {
 			foreach (var tok in tokList) {
 				tok.Accept(this);
 			}
@@ -66,15 +74,9 @@ namespace Malsys.SourceCode.Printers {
 		}
 
 		public void Visit(Expression expr) {
-			foreach (var member in expr) {
-				member.Accept(this);
-			}
 		}
 
 		public void Visit(ExpressionBracketed bracketedExpr) {
-			writer.Write("(");
-			Visit(bracketedExpr.Expression);
-			writer.Write(")");
 		}
 
 		public void Visit(ExpressionFunction funExpr) {
@@ -91,39 +93,9 @@ namespace Malsys.SourceCode.Printers {
 		}
 
 		public void Visit(ExpressionsArray arrExpr) {
-			writer.Write("{");
-			VisitSeparated(arrExpr);
-			writer.Write("}");
 		}
 
 		public void Visit(FloatConstant floatConstant) {
-			double val = floatConstant.Value;
-
-			switch (floatConstant.Format) {
-				case ConstantFormat.Binary:
-					long valBin = (long)Math.Round(val);
-					writer.Write("0b");
-					writer.Write(Convert.ToString(valBin, 2));
-					break;
-				case ConstantFormat.Octal:
-					long valOct = (long)Math.Round(val);
-					writer.Write("0o");
-					writer.Write(Convert.ToString(valOct, 8));
-					break;
-				case ConstantFormat.Hexadecimal:
-					long valHex = (long)Math.Round(val);
-					writer.Write("0x");
-					writer.Write(Convert.ToString(valHex, 16).ToUpper());
-					break;
-				case ConstantFormat.HashHexadecimal:
-					long valHash = (long)Math.Round(val);
-					writer.Write("#");
-					writer.Write(Convert.ToString(valHash, 16).ToUpper());
-					break;
-				default:
-					writer.Write(val.ToStringInvariant());
-					break;
-			}
 		}
 
 		public void Visit(Ast.Function funDef) {
@@ -183,7 +155,6 @@ namespace Malsys.SourceCode.Printers {
 		}
 
 		public void Visit(Identificator id) {
-			writer.Write(id.Name);
 		}
 
 		public void Visit<T>(ImmutableListPos<T> tokList) where T : IToken {
@@ -301,7 +272,118 @@ namespace Malsys.SourceCode.Printers {
 
 		}
 
+		#endregion*/
+
+		#region IAstInputVisitor Members
+
+		public void Visit(Binding binding) {
+
+		}
+
+		public void Visit(EmptyStatement emptyStat) {
+			writer.WriteLine(";");
+		}
+
+		#endregion
+
+		#region IAstLsystemVisitor Members
+
+
+		public void Visit(SymbolInterpretDef interpretBinding) {
+			throw new NotImplementedException();
+		}
+
+		public void Visit(RewriteRule rewriteRule) {
+			throw new NotImplementedException();
+		}
+
+		#endregion
+
+		#region IAstExpressionVisitor Members
+
+		public void Visit(ExpressionBracketed bracketedExpr) {
+			writer.Write("(");
+			Visit(bracketedExpr.Expression);
+			writer.Write(")");
+		}
+
+		public void Visit(ExpressionFunction funExpr) {
+			throw new NotImplementedException();
+		}
+
+		public void Visit(ExpressionIndexer indexerExpr) {
+			throw new NotImplementedException();
+		}
+
+		public void Visit(ExpressionsArray arrExpr) {
+			writer.Write("{");
+			VisitSeparated(arrExpr);
+			writer.Write("}");
+		}
+
+		public void Visit(FloatConstant floatConstant) {
+
+			double val = floatConstant.Value;
+
+			switch (floatConstant.Format) {
+				case ConstantFormat.Binary:
+					long valBin = (long)Math.Round(val);
+					writer.Write("0b");
+					writer.Write(Convert.ToString(valBin, 2));
+					break;
+
+				case ConstantFormat.Octal:
+					long valOct = (long)Math.Round(val);
+					writer.Write("0o");
+					writer.Write(Convert.ToString(valOct, 8));
+					break;
+
+				case ConstantFormat.Hexadecimal:
+					long valHex = (long)Math.Round(val);
+					writer.Write("0x");
+					writer.Write(Convert.ToString(valHex, 16).ToUpper());
+					break;
+
+				case ConstantFormat.HashHexadecimal:
+					long valHash = (long)Math.Round(val);
+					writer.Write("#");
+					writer.Write(Convert.ToString(valHash, 16).ToUpper());
+					break;
+
+				default:
+					writer.Write(val.ToStringInvariant());
+					break;
+			}
+		}
+
+		public void Visit(Identificator variable) {
+			writer.Write(variable.Name);
+		}
+
+		public void Visit(Operator optor) {
+			throw new NotImplementedException();
+		}
+
+		#endregion
+
+		#region IBindableParamVisitor Members
+
+		public void Visit(Expression expr, Binding bind) {
+			throw new NotImplementedException();
+		}
+
+		public void Visit(FunctionDefinition fun, Binding bind) {
+			throw new NotImplementedException();
+		}
+
+		public void Visit(LsystemDefinition lsystem, Binding bind) {
+			throw new NotImplementedException();
+		}
+
+		public void Visit(LsystemSymbolList symbolsList, Binding bind) {
+			throw new NotImplementedException();
+		}
+
 		#endregion
 	}
 }
-*/

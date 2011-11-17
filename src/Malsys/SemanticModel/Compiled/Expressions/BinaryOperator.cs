@@ -37,7 +37,7 @@ namespace Malsys.SemanticModel.Compiled.Expressions {
 
 		#region IExpression Members
 
-		public bool IsEmpty { get { return false; } }
+		public bool IsEmptyExpression { get { return false; } }
 
 		#endregion
 

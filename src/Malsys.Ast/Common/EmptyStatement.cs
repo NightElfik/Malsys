@@ -3,7 +3,8 @@ namespace Malsys.Ast {
 	/// <summary>
 	/// Immutable.
 	/// </summary>
-	public class EmptyStatement : IInputStatement, ILsystemStatement {
+	public class EmptyStatement : IStatement, IInputStatement, ILsystemStatement {
+
 
 		public readonly bool Hidden;
 
@@ -27,7 +28,7 @@ namespace Malsys.Ast {
 
 		#region IAstInputVisitable Members
 
-		public void Accept(IAstInputVisitor visitor) {
+		public void Accept(IInputVisitor visitor) {
 			visitor.Visit(this);
 		}
 
@@ -35,7 +36,7 @@ namespace Malsys.Ast {
 
 		#region IAstLsystemVisitable Members
 
-		public void Accept(IAstLsystemVisitor visitor) {
+		public void Accept(ILsystemVisitor visitor) {
 			visitor.Visit(this);
 		}
 

@@ -3,20 +3,32 @@ namespace Malsys.SemanticModel.Compiled {
 	/// <summary>
 	/// Immutable.
 	/// </summary>
-	public class Lsystem : IBindable {
+	public class Lsystem : IInputStatement {
 
+
+		public readonly string Name;
 		public readonly ImmutableList<OptionalParameter> Parameters;
-
 		public readonly ImmutableList<ILsystemStatement> Statements;
 
-		public readonly Ast.Binding AstNode;
+		public readonly Ast.LsystemDefinition AstNode;
 
 
-		public Lsystem(ImmutableList<OptionalParameter> prms, ImmutableList<ILsystemStatement> statements, Ast.Binding astNode) {
+		public Lsystem(string name, ImmutableList<OptionalParameter> prms, ImmutableList<ILsystemStatement> statements,
+				Ast.LsystemDefinition astNode) {
 
+			Name = name;
 			Parameters = prms;
 			Statements = statements;
 			AstNode = astNode;
 		}
+
+
+		#region IInputStatement Members
+
+		public InputStatementType StatementType {
+			get { return InputStatementType.Lsystem; }
+		}
+
+		#endregion
 	}
 }

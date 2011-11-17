@@ -3,8 +3,8 @@ using Malsys.Evaluators;
 using Malsys.Parsing;
 using Malsys.SemanticModel.Compiled;
 using Microsoft.FSharp.Text.Lexing;
-using FunMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.FunctionEvaledParams>;
-using VarMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.IValue>;
+using FunsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Compiled.FunctionEvaledParams>;
+using ConstsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.IValue>;
 using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Compilers {
@@ -14,7 +14,7 @@ namespace Malsys.Compilers {
 
 		private LsystemCompiler lsysCompiler;
 		private ExpressionCompiler exprCompiler;
-		private BindingCompilerVisitor bindCompiler;
+		private FunctionCompilerVisitor funCompiler;
 		private ExpressionEvaluator exprEvaluator;
 		private InputCompilerVisitor inVisitor;
 
@@ -28,7 +28,7 @@ namespace Malsys.Compilers {
 
 			exprCompiler = new ExpressionCompiler(msgs);
 			lsysCompiler = new LsystemCompiler(this);
-			bindCompiler = new BindingCompilerVisitor(this);
+			funCompiler = new FunctionCompilerVisitor(this);
 			exprEvaluator = new ExpressionEvaluator();
 			inVisitor = new InputCompilerVisitor(this);
 		}
@@ -58,7 +58,7 @@ namespace Malsys.Compilers {
 				}
 			}
 
-			var inEval = new InputEvaluator(new BindingsEvaluator(exprEvaluator));
+			var inEval = new InputEvaluator(exprEvaluator);
 			try {
 				return inEval.Evaluate(compiledInput);
 			}
@@ -78,7 +78,7 @@ namespace Malsys.Compilers {
 
 			for (int i = 0; i < parametersCount; i++) {
 
-				result[i] = new OptionalParameter(parameters[i].NameId.Name, exprCompiler.CompileExpression(parameters[i].OptionalValue));
+				result[i] = new OptionalParameter(parameters[i].NameId.Name, exprCompiler.CompileExpression(parameters[i].DefaultValue));
 
 				if (result[i].IsOptional) {
 					wasOptional = true;
@@ -99,23 +99,21 @@ namespace Malsys.Compilers {
 			return new ImmutableList<OptionalParameter>(result, true);
 		}
 
-		public CompilerResult<Binding> CompileBinding(Ast.Binding binding, BindingType allowTypes) {
-
-			return bindCompiler.TryCompile(binding, allowTypes);
+		public ConstantDefinition CompileConstDef(Ast.ConstantDefinition constDefAst) {
+			return new ConstantDefinition(constDefAst.NameId.Name, exprCompiler.CompileExpression(constDefAst.ValueExpr), constDefAst);
 		}
 
-		public ImmutableList<Binding> CompileBindingsList(ImmutableList<Ast.Binding> bindingList, BindingType allowTypes) {
+		public Function CompileFunctionDef(Ast.FunctionDefinition funDefAst) {
 
-			var compiledBinds = new List<Binding>(bindingList.Length);
+			var compiledStats = new IFunctionStatement[funDefAst.Statements.Length];
 
-			for (int i = 0; i < bindingList.Length; i++) {
-				var bind = bindCompiler.TryCompile(bindingList[i], allowTypes);
-				if (bind) {
-					compiledBinds.Add(bind);
-				}
+			for (int i = 0; i < funDefAst.Statements.Length; i++) {
+				compiledStats[i] = funCompiler.Compile(funDefAst.Statements[i]);
 			}
 
-			return new ImmutableList<Binding>(compiledBinds);
+			var prms = CompileParameters(funDefAst.Parameters);
+			var stats = new ImmutableList<IFunctionStatement>(compiledStats, true);
+			return new Function(funDefAst.NameId.Name, prms, stats, funDefAst);
 		}
 
 	}

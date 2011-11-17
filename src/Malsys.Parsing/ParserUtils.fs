@@ -29,8 +29,3 @@ let parseHelper (parseFun : (LexBuffer<_> -> Parser.token) -> LexBuffer<_> -> 'b
 
 let ParseLsystemStatements comments lexbuf msgs sourceName =
     parseHelper Parser.ParseInput comments lexbuf msgs sourceName
-
-
-let ParseBinding lexbuf msgs sourceName =
-    let mutable comments = new ResizeArray<Comment>() in
-    parseHelper Parser.ParseBinding comments lexbuf msgs sourceName
