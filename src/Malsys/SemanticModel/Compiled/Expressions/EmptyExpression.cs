@@ -19,5 +19,13 @@ namespace Malsys.SemanticModel.Compiled.Expressions {
 		public bool IsEmpty { get { return true; } }
 
 		#endregion
+
+		#region IExpressionVisitable Members
+
+		public void Accept(IExpressionVisitor visitor) {
+			visitor.Visit(this);
+		}
+
+		#endregion
 	}
 }

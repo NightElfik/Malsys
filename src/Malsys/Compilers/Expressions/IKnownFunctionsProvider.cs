@@ -22,7 +22,17 @@ namespace Malsys.Compilers.Expressions {
 			Contract.Requires<ArgumentNullException>(syntax != null);
 			Contract.Requires<ArgumentOutOfRangeException>(paramsCount >= 0 && paramsCount != FunctionCore.AnyParamsCount);
 			Contract.Ensures(paramsCount == Contract.ValueAtReturn(out result).ParametersCount);
-			throw new Exception();
+			throw new NotImplementedException();
+		}
+
+		#endregion
+
+		#region IKnownFunctionsProvider Members
+
+
+		public IEnumerable<FunctionCore> GetAllFunctions() {
+			Contract.Ensures(Contract.Result<IEnumerable<FunctionCore>>() != null);
+			throw new NotImplementedException();
 		}
 
 		#endregion

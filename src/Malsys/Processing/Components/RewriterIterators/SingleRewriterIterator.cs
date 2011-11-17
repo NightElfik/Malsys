@@ -5,6 +5,8 @@ using System.Text;
 using Malsys.Expressions;
 using System.Diagnostics.Contracts;
 using Malsys.Processing.Components.Rewriters;
+using Malsys.SemanticModel.Evaluated;
+using Malsys.SemanticModel;
 
 namespace Malsys.Processing.Components.RewriterIterators {
 	public class SingleRewriterIterator : IRewriterIterator {
@@ -60,7 +62,7 @@ namespace Malsys.Processing.Components.RewriterIterators {
 		public IValue Iterations {
 			set {
 				if (value.IsConstant && !((Constant)value).IsNaN && ((Constant)value).Value >= 0) {
-					iterations = ((Constant)value).GetIntValueRounded();
+					iterations = ((Constant)value).RoundedIntValue;
 				}
 				else {
 					throw new ArgumentException("Iterations value is invalid.");

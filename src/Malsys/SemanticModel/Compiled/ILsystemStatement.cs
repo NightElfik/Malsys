@@ -2,7 +2,7 @@
 namespace Malsys.SemanticModel.Compiled {
 	public interface ILsystemStatement {
 
-		public LsystemStatementType StatementType { get; }
+		LsystemStatementType StatementType { get; }
 
 	}
 

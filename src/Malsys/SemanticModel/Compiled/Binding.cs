@@ -22,13 +22,13 @@ namespace Malsys.SemanticModel.Compiled {
 
 		#region IInputStatement Members
 
-		public InputStatementType StatementType { get { return InputStatementType.Binding; } }
+		InputStatementType IInputStatement.StatementType { get { return InputStatementType.Binding; } }
 
 		#endregion
 
 		#region ILsystemStatement Members
 
-		public LsystemStatementType StatementType { get { return LsystemStatementType.Binding; } }
+		LsystemStatementType ILsystemStatement.StatementType { get { return LsystemStatementType.Binding; } }
 
 		#endregion
 	}
@@ -40,7 +40,6 @@ namespace Malsys.SemanticModel.Compiled {
 		SymbolList = 0x04,
 		Lsystem = 0x08,
 
-		ExpressionsAndFunctions = Expression | Function,
-		All = Expression | Function | SymbolList | Lsystem
+		ExpressionsAndFunctions = Expression | Function
 	}
 }

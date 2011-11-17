@@ -24,7 +24,7 @@ namespace Malsys.Compilers {
 		#region IAstLsystemVisitor Members
 
 		public void Visit(Ast.Binding binding) {
-			var bind = inCompiler.CompileBinding(binding, AllowedBindingTypes.All);
+			var bind = inCompiler.CompileBinding(binding, BindingType.Expression | BindingType.Function | BindingType.SymbolList);
 			result = new CompilerResult<ILsystemStatement>(bind.Result, bind.ErrorOcured);
 		}
 

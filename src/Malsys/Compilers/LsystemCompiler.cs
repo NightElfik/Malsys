@@ -54,7 +54,7 @@ namespace Malsys.Compilers {
 			CheckPatternParams(rCtxt, usedNames);
 			usedNames = null;
 
-			var vars = inputCompiler.CompileBindingsList(rRuleAst.LocalBindings, AllowedBindingTypes.ExpressionsAndFunctions);
+			var vars = inputCompiler.CompileBindingsList(rRuleAst.LocalBindings, BindingType.ExpressionsAndFunctions);
 
 			var cond = rRuleAst.Condition.IsEmpty
 				? Constant.True

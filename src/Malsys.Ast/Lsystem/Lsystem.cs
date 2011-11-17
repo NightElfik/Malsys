@@ -4,7 +4,7 @@ namespace Malsys.Ast {
 	/// <summary>
 	/// Immutable.
 	/// </summary>
-	public class Lsystem : IBindable, IInputStatement {
+	public class Lsystem : IBindable {
 
 		public readonly ImmutableListPos<OptionalParameter> Parameters;
 		public readonly ImmutableListPos<ILsystemStatement> Statements;
@@ -27,14 +27,6 @@ namespace Malsys.Ast {
 		#region IBindableVisitable Members
 
 		public void Accept(IBindableVisitor visitor) {
-			visitor.Visit(this);
-		}
-
-		#endregion
-
-		#region IAstInputVisitable Members
-
-		public void Accept(IAstInputVisitor visitor) {
 			visitor.Visit(this);
 		}
 

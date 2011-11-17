@@ -5,7 +5,7 @@ using System.Text;
 using Malsys.Ast;
 using System.Diagnostics;
 using Malsys.IO;
-
+/*
 namespace Malsys.SourceCode.Printers {
 	public class CanonicAstPrinter : IAstVisitor {
 
@@ -304,3 +304,4 @@ namespace Malsys.SourceCode.Printers {
 		#endregion
 	}
 }
+*/

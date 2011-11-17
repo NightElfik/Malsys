@@ -5,7 +5,7 @@ using System.Text;
 using Malsys.Expressions;
 using Malsys.IO;
 using Malsys.Ast;
-
+/*
 namespace Malsys.SourceCode.Printers {
 	public class CanonicPrinter : IExpressionVisitor {
 
@@ -166,3 +166,4 @@ namespace Malsys.SourceCode.Printers {
 		#endregion
 	}
 }
+*/

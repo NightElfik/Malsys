@@ -32,4 +32,11 @@ namespace Malsys.SemanticModel.Compiled.Expressions {
 
 		#endregion
 	}
+
+
+	public static class ExprVariableExtensions {
+		public static ExprVariable ToVar(this string name) {
+			return new ExprVariable(name);
+		}
+	}
 }
