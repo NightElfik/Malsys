@@ -70,7 +70,7 @@ namespace Malsys.Processing.Components.Interpreters {
 				var instr = maybeInstr.Value;
 
 				InterpretAction iAction;
-				if (instrToDel.TryGetValue(instr.Name, out iAction)) {
+				if (instrToDel.TryGetValue(instr.Name.ToLowerInvariant(), out iAction)) {
 					args.AddArgs(symbol.Arguments, instr.Arguments);
 					iAction.Invoke(args);
 				}

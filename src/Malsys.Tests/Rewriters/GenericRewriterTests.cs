@@ -206,20 +206,11 @@ namespace Malsys.Tests.Rewriters {
 
 			string input = "lsystem l {{ set axiom = {0}; {1} }}".Fmt(inputSymbols, rewriteRules);
 
-			var lexBuff = LexBuffer<char>.FromString(input);
-			var msgs = new MessagesCollection();
-			var inAst = ParserUtils.ParseInputNoComents(lexBuff, msgs, "testInput");
+			var compiler = new InputCompiler(new MessagesCollection());
+			var inCompiled = compiler.CompileFromString(input, "testInput");
 
-			if (msgs.ErrorOcured) {
-				Console.WriteLine("lsys: " + input);
-				Assert.Fail("Failed to parse L-system. " + msgs.ToString());
-			}
-
-			var compiler = new InputCompiler(msgs);
-			var inCompiled = compiler.CompileFromAst(inAst);
-
-			if (msgs.ErrorOcured) {
-				Assert.Fail("Failed to compile L-system." + msgs.ToString());
+			if (compiler.Messages.ErrorOcured) {
+				Assert.Fail("Failed to parse/compile L-system." + compiler.Messages.ToString());
 			}
 
 			var exprEvaluator = new ExpressionEvaluator();
