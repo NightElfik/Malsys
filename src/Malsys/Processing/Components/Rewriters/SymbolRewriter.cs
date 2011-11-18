@@ -45,8 +45,6 @@ namespace Malsys.Processing.Components.Rewriters {
 			constants = MapModule.Empty<string, IValue>();
 			functions = MapModule.Empty<string, FunctionEvaledParams>();
 
-			rndGenerator = new Random();
-
 			rewriteRules = new Dictionary<string, RewriteRule[]>();
 			initContextCaches();
 		}
@@ -55,14 +53,11 @@ namespace Malsys.Processing.Components.Rewriters {
 		private void objectInvariant() {
 
 			Contract.Invariant(outputProcessor != null);
-			Contract.Invariant(exprEvaluator != null);
 
 			Contract.Invariant(rewriteRules != null);
 
 			Contract.Invariant(constants != null);
 			Contract.Invariant(functions != null);
-
-			Contract.Invariant(rndGenerator != null);
 
 			Contract.Invariant(leftContext != null);
 			Contract.Invariant(rightContext != null);

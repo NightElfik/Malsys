@@ -144,7 +144,7 @@ namespace Malsys.Evaluators {
 
 		public void Visit(FunctionCall functionCall) {
 
-			if (functionCall.Evaluate == null && functionCall.Name.Equals("if", StringComparison.CurrentCultureIgnoreCase)) {
+			if (functionCall.Name.Equals("if", StringComparison.CurrentCultureIgnoreCase)) {
 				evalIf(functionCall);
 				return;
 			}

@@ -63,6 +63,8 @@ let optionToStatement parseState (option : Option<#ILsystemStatement>) =
         | Some(value) -> value
         | None -> new EmptyStatement(getPos parseState, true) :> ILsystemStatement
 
+type ImmutableListPos_LsystemSymbol = ImmutableListPos<LsystemSymbol>
+
 %}
 
 
@@ -95,6 +97,14 @@ let optionToStatement parseState (option : Option<#ILsystemStatement>) =
 %start ParseInput
 %type <InputBlock> ParseInput
 
+// helper start rules especially for unit testing of parser
+
+%start ParseExpression
+%type <Expression> ParseExpression
+
+%start ParseSymbols
+%type <ImmutableListPos_LsystemSymbol> ParseSymbols
+
 %%
 
 
@@ -105,6 +115,15 @@ let optionToStatement parseState (option : Option<#ILsystemStatement>) =
 ParseInput:
     | InputStatementsList EOF
       { new InputBlock($1 :> ResizeArray<IInputStatement>) }
+
+
+ParseExpression:
+    | ExpressionNonEmpty EOF
+      { $1 }
+
+ParseSymbols:
+    | LsystemSymbolList EOF
+      { $1 }
 
 
 //------------------------------------------------------------------------------
@@ -195,7 +214,7 @@ LsysStatement:
     | ConstDef
       { $1 :?> ILsystemStatement }
     | FunDef
-      { ($1 :> IStatement) :?> ILsystemStatement }
+      { $1 :?> ILsystemStatement }
     | RewriteRule
       { $1 :> ILsystemStatement }
     | SymbolsConstDef

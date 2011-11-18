@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using Malsys.Compilers;
-using Malsys.Expressions;
+using Malsys.Evaluators;
 using Malsys.IO;
 using Malsys.Parsing;
+using Malsys.Processing;
 using Malsys.Processing.Components;
 using Malsys.Processing.Components.Interpreters;
+using Malsys.SemanticModel;
+using Malsys.SemanticModel.Evaluated;
 using Malsys.SourceCode.Printers;
+using Microsoft.FSharp.Collections;
 using Microsoft.FSharp.Text.Lexing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -17,17 +21,17 @@ namespace Malsys.Tests.Interpreters {
 
 		[TestMethod]
 		public void EmptyInputTests() {
-			var sym2Instr = new Dictionary<string, string>();
+			var sym2Instr = new Dictionary<string, Symbol<IValue>>();
 
 			doTest(sym2Instr, "", new string[0]);
 		}
 
 		[TestMethod]
 		public void ExistingActionsTests() {
-			var sym2Instr = new Dictionary<string, string>(){
-				{"A", "ActionA"},
-				{"B", "ActionB"},
-				{"C", "ActionC"}
+			var sym2Instr = new Dictionary<string, Symbol<IValue>>(){
+				{"A", new Symbol<IValue>("ActionA", ImmutableList<IValue>.Empty) },
+				{"B", new Symbol<IValue>("ActionB", ImmutableList<IValue>.Empty) },
+				{"C", new Symbol<IValue>("ActionC", ImmutableList<IValue>.Empty) }
 			};
 
 			doTest(sym2Instr,
@@ -41,8 +45,8 @@ namespace Malsys.Tests.Interpreters {
 
 		[TestMethod]
 		public void UnknownSymbolsTests() {
-			var sym2Instr = new Dictionary<string, string>(){
-				{"A", "ActionA"}
+			var sym2Instr = new Dictionary<string, Symbol<IValue>>(){
+				{"A", new Symbol<IValue>("ActionA", ImmutableList<IValue>.Empty) }
 			};
 
 			doTest(sym2Instr,
@@ -52,9 +56,9 @@ namespace Malsys.Tests.Interpreters {
 
 		[TestMethod]
 		public void UnknownActionsTests() {
-			var sym2Instr = new Dictionary<string, string>(){
-				{"A", "ActionA"},
-				{"C", "??"}
+			var sym2Instr = new Dictionary<string, Symbol<IValue>>(){
+				{"A", new Symbol<IValue>("ActionA", ImmutableList<IValue>.Empty) },
+				{"C", new Symbol<IValue>("??", ImmutableList<IValue>.Empty) }
 			};
 
 			doTest(sym2Instr,
@@ -64,10 +68,10 @@ namespace Malsys.Tests.Interpreters {
 
 		[TestMethod]
 		public void ParametersTests() {
-			var sym2Instr = new Dictionary<string, string>(){
-				{"A", "ActionA"},
-				{"B", "ActionB"},
-				{"C", "ActionC"}
+			var sym2Instr = new Dictionary<string, Symbol<IValue>>(){
+				{"A", new Symbol<IValue>("ActionA", ImmutableList<IValue>.Empty) },
+				{"B", new Symbol<IValue>("ActionB", ImmutableList<IValue>.Empty) },
+				{"C", new Symbol<IValue>("ActionC", ImmutableList<IValue>.Empty) }
 			};
 
 			doTest(sym2Instr,
@@ -80,7 +84,7 @@ namespace Malsys.Tests.Interpreters {
 		}
 
 
-		private void doTest(Dictionary<string, string> symbolToInstr, string inputSymbols, string[] excpected) {
+		private void doTest(Dictionary<string, Symbol<IValue>> symbolToInstr, string inputSymbols, string[] excpected) {
 
 			var lexBuff = LexBuffer<char>.FromString(inputSymbols);
 			var msgs = new MessagesCollection();
@@ -92,16 +96,29 @@ namespace Malsys.Tests.Interpreters {
 			}
 
 			var compiler = new LsystemCompiler(new InputCompiler(msgs));
-			var symbols = compiler.CompileListFailSafe(symbolsAst);
+			var symbols = compiler.CompileSymbolsList(symbolsAst);
+
+			if (msgs.ErrorOcured) {
+				Console.WriteLine("in: " + inputSymbols);
+				Assert.Fail("Failed to compile symbols. " + msgs.ToString());
+			}
+
+			var exprEvaluator = new ExpressionEvaluator();
+			var symToInstr = MapModule.Empty<string, Symbol<IValue>>();
+			foreach (var item in symbolToInstr) {
+				symToInstr = symToInstr.Add(item.Key, item.Value);
+			}
+			var lsystem = new LsystemEvaled("", null, null, null, symToInstr, null, null);
+			var context = new ProcessContext(lsystem, null, null, exprEvaluator);
 
 			var dummy = new DummyInterpreter();
 			var caller = new InterpreterCaller() {
 				Interpreter = dummy,
-				//SymbolsInterpretation = symbolToInstr
+				Context = context
 			};
 
 			foreach (var sym in symbols) {
-				caller.ProcessSymbol(sym.Evaluate());
+				caller.ProcessSymbol(exprEvaluator.EvaluateSymbol(sym, null, null));
 			}
 
 			var actual = dummy.Actions.ToArray();
@@ -149,27 +166,27 @@ namespace Malsys.Tests.Interpreters {
 
 
 			[SymbolInterpretation]
-			public void ActionA(ImmutableList<IValue> prms) {
-				Actions.Add("ActionA" + printParams(prms));
+			public void ActionA(ArgsStorage args) {
+				Actions.Add("ActionA" + printParams(args));
 			}
 
 			[SymbolInterpretation]
-			public void ActionB(ImmutableList<IValue> prms) {
-				Actions.Add("ActionB" + printParams(prms));
+			public void ActionB(ArgsStorage args) {
+				Actions.Add("ActionB" + printParams(args));
 			}
 
 			[SymbolInterpretation]
-			public void ActionC(ImmutableList<IValue> prms) {
-				Actions.Add("ActionC" + printParams(prms));
+			public void ActionC(ArgsStorage args) {
+				Actions.Add("ActionC" + printParams(args));
 			}
 
-			private string printParams(ImmutableList<IValue> prms) {
-				if (prms.IsEmpty) {
+			private string printParams(ArgsStorage args) {
+				if (args.IsEmpty) {
 					return "";
 				}
 
 				writer.Write("(");
-				printer.PrintValueSeparated(prms);
+				printer.PrintValueSeparated(args);
 				writer.Write(")");
 				string result = writer.GetResultAndClear();
 

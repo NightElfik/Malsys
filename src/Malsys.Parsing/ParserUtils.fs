@@ -27,5 +27,19 @@ let parseHelper (parseFun : (LexBuffer<_> -> Parser.token) -> LexBuffer<_> -> 'b
 // Either make the arguments to 'parseLsystemStatements' explicit or, if you do not intend for it to be generic, add a type annotation.
 
 
-let ParseLsystemStatements comments lexbuf msgs sourceName =
+let ParseInput comments lexbuf msgs sourceName =
     parseHelper Parser.ParseInput comments lexbuf msgs sourceName
+
+let ParseInputNoComents lexbuf msgs sourceName =
+    let mutable comments = new ResizeArray<Comment>() in
+    parseHelper Parser.ParseInput comments lexbuf msgs sourceName
+
+
+
+let ParseExpression lexbuf msgs sourceName =
+    let mutable comments = new ResizeArray<Comment>() in
+    parseHelper Parser.ParseExpression comments lexbuf msgs sourceName
+
+let ParseSymbols lexbuf msgs sourceName =
+    let mutable comments = new ResizeArray<Comment>() in
+    parseHelper Parser.ParseSymbols comments lexbuf msgs sourceName

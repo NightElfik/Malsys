@@ -80,17 +80,19 @@ namespace Malsys.Tests.Parsing {
 
 			var lexBuff = LexBuffer<char>.FromString(input);
 			var msgs = new MessagesCollection();
-			var varDef = ParserUtils.ParseFunDef(lexBuff, msgs, "testInput");
-
-			if (msgs.ErrorOcured) {
-				Assert.Fail(msgs.ToString());
-			}
+			var inBlock = ParserUtils.ParseInputNoComents(lexBuff, msgs, "testInput");
 
 			var writer = new IndentStringWriter();
-			var printer = new CanonicAstPrinter(writer);
-			printer.Visit(varDef);
+			new CanonicAstPrinter(writer).Print(inBlock);
 
 			string actual = writer.GetResult().TrimEnd();
+
+			if (msgs.ErrorOcured) {
+				Console.WriteLine("in: " + input);
+				Console.WriteLine("exc: " + excpected);
+				Console.WriteLine("act: " + actual);
+				Assert.Fail(msgs.ToString());
+			}
 
 			Assert.AreEqual(excpected, actual);
 		}

@@ -4,8 +4,11 @@ using System.Linq;
 using System.Text;
 using Malsys.Expressions;
 using Malsys.IO;
-using Malsys.Ast;
-/*
+using Malsys.SemanticModel.Compiled;
+using Malsys.SemanticModel.Evaluated;
+using Malsys.SemanticModel;
+using Malsys.SemanticModel.Compiled.Expressions;
+
 namespace Malsys.SourceCode.Printers {
 	public class CanonicPrinter : IExpressionVisitor {
 
@@ -83,28 +86,29 @@ namespace Malsys.SourceCode.Printers {
 		#region IExpressionVisitor Members
 
 		public void Visit(Constant constant) {
-			ConstantFormat fmt = ConstantFormat.Float;
+
+			Ast.ConstantFormat fmt = Ast.ConstantFormat.Float;
 			if (constant.AstNode != null) {
 				fmt = constant.AstNode.Format;
 			}
 
 			switch (fmt) {
-				case ConstantFormat.Binary:
+				case Ast.ConstantFormat.Binary:
 					long valBin = (long)Math.Round(constant.Value);
 					writer.Write("0b");
 					writer.Write(Convert.ToString(valBin, 2));
 					break;
-				case ConstantFormat.Octal:
+				case Ast.ConstantFormat.Octal:
 					long valOct = (long)Math.Round(constant.Value);
 					writer.Write("0o");
 					writer.Write(Convert.ToString(valOct, 8));
 					break;
-				case ConstantFormat.Hexadecimal:
+				case Ast.ConstantFormat.Hexadecimal:
 					long valHex = (long)Math.Round(constant.Value);
 					writer.Write("0x");
 					writer.Write(Convert.ToString(valHex, 16).ToUpper());
 					break;
-				case ConstantFormat.HashHexadecimal:
+				case Ast.ConstantFormat.HashHexadecimal:
 					long valHash = (long)Math.Round(constant.Value);
 					writer.Write("#");
 					writer.Write(Convert.ToString(valHash, 16).ToUpper());
@@ -163,7 +167,10 @@ namespace Malsys.SourceCode.Printers {
 			writer.Write(")");
 		}
 
+		public void Visit(EmptyExpression emptyExpression) {
+			writer.WriteLine(";");
+		}
+
 		#endregion
 	}
 }
-*/

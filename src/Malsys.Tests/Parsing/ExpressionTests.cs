@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Globalization;
-using System.Threading;
 using Malsys.Compilers;
 using Malsys.IO;
 using Malsys.Parsing;
@@ -113,8 +111,7 @@ namespace Malsys.Tests.Parsing {
 			var expr = ParserUtils.ParseExpression(lexBuff, msgs, "testInput");
 
 			var writer = new IndentStringWriter();
-			var printer = new CanonicAstPrinter(writer);
-			printer.Visit(expr);
+			new CanonicAstPrinter(writer).Print(expr);
 
 			string actual = writer.GetResult().TrimEnd();
 
@@ -124,7 +121,6 @@ namespace Malsys.Tests.Parsing {
 				Console.WriteLine("act: " + actual);
 				Assert.Fail(msgs.ToString());
 			}
-
 
 			Assert.AreEqual(excpected, actual);
 		}

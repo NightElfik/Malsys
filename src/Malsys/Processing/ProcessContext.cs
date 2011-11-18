@@ -13,12 +13,13 @@ namespace Malsys.Processing {
 		public ExpressionEvaluator ExpressionEvaluator { get; private set; }
 
 
-		public ProcessContext(LsystemEvaled lsystem, FilesManager filesManager, InputBlock data, ExpressionEvaluator exprEal) {
+		public ProcessContext(LsystemEvaled lsystem, FilesManager filesManager,
+				InputBlock data, ExpressionEvaluator exprEval) {
 
 			Lsystem = lsystem;
 			FilesManager = filesManager;
 			InputData = data;
-			ExpressionEvaluator = exprEal;
+			ExpressionEvaluator = exprEval;
 		}
 	}
 }

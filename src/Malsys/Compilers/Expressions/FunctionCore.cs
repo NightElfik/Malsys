@@ -231,7 +231,7 @@ namespace Malsys.Compilers.Expressions {
 		/// </remarks>
 		public static readonly FunctionCore If = new FunctionCore("if", 3,
 			new ExpressionValueType[] { ExpressionValueType.Constant, ExpressionValueType.Any, ExpressionValueType.Any },
-			null);
+			(a) => { throw new InvalidOperationException(); });
 
 		#endregion
 
@@ -255,11 +255,13 @@ namespace Malsys.Compilers.Expressions {
 		public readonly Func<ArgsStorage, IValue> EvalFunction;
 
 
-		private FunctionCore(string name, int paramsCount, ExpressionValueType[] paramsTypes, Func<ArgsStorage, IValue> evalFunc)
+		private FunctionCore(string name, int paramsCount, ExpressionValueType[] paramsTypes,
+				Func<ArgsStorage, IValue> evalFunc)
 			: this(name, paramsCount, new ImmutableList<ExpressionValueType>(paramsTypes, true), evalFunc) {
 		}
 
-		public FunctionCore(string name, int paramsCount, ImmutableList<ExpressionValueType> paramsTypes, Func<ArgsStorage, IValue> evalFunc) {
+		public FunctionCore(string name, int paramsCount, ImmutableList<ExpressionValueType> paramsTypes,
+				Func<ArgsStorage, IValue> evalFunc) {
 
 			Contract.Requires<ArgumentNullException>(name != null);
 			Contract.Requires<ArgumentOutOfRangeException>(paramsCount >= 0);

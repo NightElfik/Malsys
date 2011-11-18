@@ -10,6 +10,11 @@ using Malsys.SourceCode.Printers;
 using Microsoft.FSharp.Text.Lexing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Malsys.Processing;
+using Malsys.Evaluators;
+using Microsoft.FSharp.Collections;
+using Malsys.SemanticModel.Evaluated;
+using Malsys.SemanticModel.Compiled;
+using Malsys.SemanticModel;
 
 namespace Malsys.Tests.Rewriters {
 	public static class GenericRewriterTests {
@@ -198,38 +203,45 @@ namespace Malsys.Tests.Rewriters {
 
 
 		private static void doTest(IRewriter rewriter, string rewriteRules, string inputSymbols, params string[] excpectedIterations) {
+
 			string input = "lsystem l {{ set axiom = {0}; {1} }}".Fmt(inputSymbols, rewriteRules);
 
 			var lexBuff = LexBuffer<char>.FromString(input);
 			var msgs = new MessagesCollection();
-			var lsystemAst = ParserUtils.ParseLsystem(lexBuff, msgs, "testInput");
+			var inAst = ParserUtils.ParseInputNoComents(lexBuff, msgs, "testInput");
 
 			if (msgs.ErrorOcured) {
 				Console.WriteLine("lsys: " + input);
 				Assert.Fail("Failed to parse L-system. " + msgs.ToString());
 			}
 
-			var compiler = new LsystemCompiler(new InputCompiler(msgs));
-			var lsystem = compiler.Compile(lsystemAst);
+			var compiler = new InputCompiler(msgs);
+			var inCompiled = compiler.CompileFromAst(inAst);
 
-			if (!lsystem) {
+			if (msgs.ErrorOcured) {
 				Assert.Fail("Failed to compile L-system." + msgs.ToString());
 			}
 
-			if (lsystem.Result.Symbols.Count != 1) {
-				Assert.Fail("Excpected 1 symbol definition.");
+			var exprEvaluator = new ExpressionEvaluator();
+			var evaluator = new InputEvaluator(exprEvaluator);
+			var inBlockEvaled = evaluator.Evaluate(inCompiled);
+
+			if (inBlockEvaled.Lsystems.Count != 1) {
+				Assert.Fail("L-system not defined.");
 			}
 
-			var data = new InputData();
-			data.Add(lsystem);
-			var context = new ProcessContext("l", null, data);
+			var lsysEvaluator = new LsystemEvaluator(exprEvaluator);
+			var lsystem = lsysEvaluator.Evaluate(inBlockEvaled.Lsystems["l"], ImmutableList<IValue>.Empty,
+				MapModule.Empty<string, IValue>(), MapModule.Empty<string, FunctionEvaledParams>());
+
+			var context = new ProcessContext(lsystem, null, inBlockEvaled, exprEvaluator);
 
 			var symBuff = new SymbolsBuffer();
 			rewriter.OutputProcessor = symBuff;
 			rewriter.Context = context;
 
 			int iterations = excpectedIterations.Length;
-			IEnumerable<Symbol<IValue>> axiom = lsystem.Result.Symbols["axiom"].Evaluate();
+			IEnumerable<Symbol<IValue>> axiom = lsystem.SymbolsConstants["axiom"];
 
 			for (int i = 0; i < iterations; i++) {
 

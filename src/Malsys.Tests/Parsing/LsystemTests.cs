@@ -14,18 +14,18 @@ namespace Malsys.Tests.Parsing {
 
 		[TestMethod]
 		public void ParamsTests() {
-			doTest("lsystem lsys {}");
-			doTest("lsystem lsys() {}", "lsystem lsys {}");
-			doTest("lsystem l' ( \n ) {  \n}", "lsystem l' {}");
-			doTest("lsystem l(x) {}");
-			doTest("lsystem l(x, y) {}");
-			doTest("lsystem l(x, _, z) {}");
-			doTest("lsystem l(x'') {}");
-			doTest("lsystem l(x = 0) {}");
-			doTest("lsystem l(x = 0, y = 0) {}");
-			doTest("lsystem l(y = {}) {}");
-			doTest("lsystem l(y = { - 1, 1}) {}");
-			doTest("lsystem l(a, b, c = d) {}");
+			doTestAutoident("lsystem lsys {", "}");
+			doTestAutoidentOutput("lsystem lsys() {}", "lsystem lsys {", "}");
+			doTestAutoidentOutput("lsystem l' ( \n ) {  \n}", "lsystem l' {", "}");
+			doTestAutoident("lsystem l(x) {", "}");
+			doTestAutoident("lsystem l(x, y) {", "}");
+			doTestAutoident("lsystem l(x, _, z) {", "}");
+			doTestAutoident("lsystem l(x'') {", "}");
+			doTestAutoident("lsystem l(x = 0) {", "}");
+			doTestAutoident("lsystem l(x = 0, y = 0) {", "}");
+			doTestAutoident("lsystem l(y = {}) {", "}");
+			doTestAutoident("lsystem l(y = { - 1, 1}) {", "}");
+			doTestAutoident("lsystem l(a, b, c = d) {", "}");
 		}
 
 		[TestMethod]
@@ -38,7 +38,7 @@ namespace Malsys.Tests.Parsing {
 		[TestMethod]
 		public void SymbolsDefTests() {
 			doTestAutoident("lsystem l {", "set x = x;", "}");
-			doTestAutoident("lsystem l {", "set abcd' = +(a + 0)X( - 1)*(1 * 1);", "}");
+			doTestAutoident("lsystem l {", "set abcd' = +(a + 0) X( - 1) *(1 * 1);", "}");
 		}
 
 		[TestMethod]
@@ -52,18 +52,18 @@ namespace Malsys.Tests.Parsing {
 			doTestAutoident("lsystem l {", "rewrite X",
 				"\twith x = 0, y = x + 1, z = {x, z}",
 				"\twhere x > 0 && z[0] == x",
-				"\tto XYZ weight 0",
+				"\tto X Y Z weight 0",
 				"\tor to nothing weight 0",
-				"\tor to +-* weight 0;", "}");
+				"\tor to + - * weight 0;", "}");
 		}
 
 		[TestMethod]
 		public void RewriteRuleContextTests() {
 			doTestAutoidentOutput("lsystem l {rewrite {} X to nothing;}", "lsystem l {", "rewrite X", "\tto nothing;", "}");
-			doTestAutoident("lsystem l {", "rewrite {L(x)cTx(_, x)T} X", "\tto nothing;", "}");
+			doTestAutoident("lsystem l {", "rewrite {L(x) c T x(_, x) T} X", "\tto nothing;", "}");
 
 			doTestAutoidentOutput("lsystem l {rewrite X {} to nothing;}", "lsystem l {", "rewrite X", "\tto nothing;", "}");
-			doTestAutoident("lsystem l {", "rewrite X {R(x)cTx(_, x)T}", "\tto nothing;", "}");
+			doTestAutoident("lsystem l {", "rewrite X {R(x) c T x(_, x) T}", "\tto nothing;", "}");
 
 			doTestAutoident("lsystem l {", "rewrite {L} X {R}", "\tto nothing;", "}");
 			doTestAutoident("lsystem l {", "rewrite {L(_)} X(_, _) {R(_)}", "\tto nothing;", "}");
@@ -82,8 +82,8 @@ namespace Malsys.Tests.Parsing {
 
 		[TestMethod]
 		public void RewriteRuleReplacementTests() {
-			doTestAutoident("lsystem l {", "rewrite X", "\tto +-A*C;", "}");
-			doTestAutoident("lsystem l {", "rewrite X", "\tto +(a)-(b + c)A( - d)*(1 * 2)C(C);", "}");
+			doTestAutoident("lsystem l {", "rewrite X", "\tto + - A * C;", "}");
+			doTestAutoident("lsystem l {", "rewrite X", "\tto +(a) -(b + c) A( - d) *(1 * 2) C(C);", "}");
 			doTestAutoident("lsystem l {", "rewrite X", "\tto &(func(a));", "}");
 			doTestAutoident("lsystem l {", "rewrite X", "\tto &({1 & 2});", "}");
 		}
@@ -115,13 +115,10 @@ namespace Malsys.Tests.Parsing {
 
 			var lexBuff = LexBuffer<char>.FromString(input);
 			var msgs = new MessagesCollection();
-			var lsystem = ParserUtils.ParseLsystem(lexBuff, msgs, "testInput");
+			var inBlock = ParserUtils.ParseInputNoComents(lexBuff, msgs, "testInput");
 
 			var writer = new IndentStringWriter();
-			var printer = new CanonicAstPrinter(writer);
-			if (lsystem != null) {
-				printer.Visit(lsystem);
-			}
+			new CanonicAstPrinter(writer).Print(inBlock);
 
 			string actual = writer.GetResult().Trim();
 

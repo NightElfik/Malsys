@@ -24,6 +24,13 @@ namespace Malsys.Compilers {
 			lsysStatementCompiler = new LsystemCompilerVisitor(inCompiler);
 		}
 
+		public Lsystem CompileLsystem(Ast.LsystemDefinition lsysDef) {
+
+			var prms = inCompiler.CompileParameters(lsysDef.Parameters);
+			var stats = inCompiler.LsystemCompiler.CompileLsystemStatements(lsysDef.Statements);
+
+			return new Lsystem(lsysDef.NameId.Name, prms, stats, lsysDef);
+		}
 
 		public ImmutableList<ILsystemStatement> CompileLsystemStatements(ImmutableList<Ast.ILsystemStatement> statements) {
 
@@ -33,7 +40,7 @@ namespace Malsys.Compilers {
 
 				var compiledStat = lsysStatementCompiler.TryCompile(stat);
 				if (compiledStat) {
-					compStats.Add((ILsystemStatement)compiledStat);
+					compStats.Add(compiledStat.Result);
 				}
 
 			}

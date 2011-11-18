@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Malsys.SemanticModel.Evaluated;
+using System;
 
 namespace Malsys.Evaluators {
 	/// <summary>
@@ -19,21 +20,42 @@ namespace Malsys.Evaluators {
 			Clear();
 		}
 
+
+		public bool IsEmpty { get { return ArgsCount == 0; } }
+
+
 		/// <summary>
-		/// Drops all previously stored arguments and takes (pops) given number of new arguments from given stack.
+		/// Cleares all previously stored arguments and takes (pops) given number of new arguments from given stack.
 		/// Top of stack is last agrument.
 		/// Do not check weather is enough items in stack.
 		/// </summary>
 		public void PopArgs(int argsCount, Stack<IValue> stack) {
-			// ensure internal capacity
-			if (args.Length < argsCount) {
-				args = new IValue[argsCount + 2];
-			}
 
 			ArgsCount = argsCount;
+			ensureCapacity(ArgsCount);
 
 			for (int i = argsCount - 1; i >= 0; i--) {
 				args[i] = stack.Pop();
+			}
+		}
+
+		/// <summary>
+		/// Cleares all previously stored arguments and copies all args from first list and if second is longer,
+		/// rest from second.
+		/// </summary>
+		public void AddArgs(ImmutableList<IValue> arguments, ImmutableList<IValue> defaultValues) {
+
+			ArgsCount = Math.Max(arguments.Length, defaultValues.Length);
+			ensureCapacity(ArgsCount);
+
+			int i = 0;
+
+			for (; i < arguments.Length; i++) {
+				args[i] = arguments[i];
+			}
+
+			for (; i < defaultValues.Length; i++) {
+				args[i] = defaultValues[i];
 			}
 		}
 
@@ -57,6 +79,13 @@ namespace Malsys.Evaluators {
 		}
 
 		#endregion
+
+
+		private void ensureCapacity(int capacity) {
+			if (args.Length < capacity) {
+				args = new IValue[capacity + 4];
+			}
+		}
 
 
 		private class Enumerator : IEnumerator<IValue> {

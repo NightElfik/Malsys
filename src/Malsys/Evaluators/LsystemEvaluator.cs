@@ -74,7 +74,7 @@ namespace Malsys.Evaluators {
 
 					case LsystemStatementType.SymbolsConstant:
 						var symDef = (SymbolsConstDefinition)stat;
-						symDefs.Add(symDef.Name, exprEvaluator.EvaluateSymbols(symDef.Symbols, consts, funs));
+						symDefs = symDefs.Add(symDef.Name, exprEvaluator.EvaluateSymbols(symDef.Symbols, consts, funs));
 						break;
 
 					case LsystemStatementType.RewriteRule:

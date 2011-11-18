@@ -2,26 +2,32 @@
 using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 using System.Reflection;
-using Malsys.Expressions;
-using InterpretAction = System.Action<Malsys.ImmutableList<Malsys.SemanticModel.Evaluated.IValue>>;
-using Malsys.SemanticModel.Evaluated;
+using Malsys.Evaluators;
 using Malsys.SemanticModel;
+using Malsys.SemanticModel.Evaluated;
+using Microsoft.FSharp.Collections;
+using Microsoft.FSharp.Core;
+using InterpretAction = System.Action<Malsys.Evaluators.ArgsStorage>;
+using SymIntMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Symbol<Malsys.SemanticModel.Evaluated.IValue>>;
+
 
 namespace Malsys.Processing.Components.Interpreters {
 	public class InterpreterCaller : IInterpreterCaller {
 
 		private IInterpreter interpret;
 
-		private Dictionary<string, string> symbolToInstr;
+		private SymIntMap symbolToInstr;
 
-		private Dictionary<string, InterpretAction> symbolToIntActionCache;
+		private Dictionary<string, InterpretAction> instrToDel;
+
+		private ArgsStorage args = new ArgsStorage();
 
 
 		public InterpreterCaller() {
 			interpret = EmptyInterpret.Instance;
-			symbolToInstr = new Dictionary<string, string>();
+			symbolToInstr = MapModule.Empty<string, Symbol<IValue>>();
 
-			createIntActionsCahce();
+			createInstrToDelCahce();
 		}
 
 		[ContractInvariantMethod]
@@ -29,8 +35,8 @@ namespace Malsys.Processing.Components.Interpreters {
 
 			Contract.Invariant(interpret != null);
 			Contract.Invariant(symbolToInstr != null);
-
-			Contract.Invariant(symbolToIntActionCache != null);
+			Contract.Invariant(instrToDel != null);
+			Contract.Invariant(args != null);
 		}
 
 
@@ -39,14 +45,13 @@ namespace Malsys.Processing.Components.Interpreters {
 		public IInterpreter Interpreter {
 			set {
 				interpret = value;
-				createIntActionsCahce();
+				createInstrToDelCahce();
 			}
 		}
 
 		public ProcessContext Context {
 			set {
-				//symbolToInstr = value;
-				//createIntActionsCahce();
+				symbolToInstr = value.Lsystem.SymbolsInterpretation;
 			}
 		}
 
@@ -60,12 +65,21 @@ namespace Malsys.Processing.Components.Interpreters {
 
 		public void ProcessSymbol(Symbol<IValue> symbol) {
 
-			InterpretAction iAction;
-			if (symbolToIntActionCache.TryGetValue(symbol.Name, out iAction)) {
-				iAction.Invoke(symbol.Arguments);
+			var maybeInstr = symbolToInstr.TryFind(symbol.Name);
+			if (OptionModule.IsSome(maybeInstr)) {
+				var instr = maybeInstr.Value;
+
+				InterpretAction iAction;
+				if (instrToDel.TryGetValue(instr.Name, out iAction)) {
+					args.AddArgs(symbol.Arguments, instr.Arguments);
+					iAction.Invoke(args);
+				}
+				else {
+					// TODO: handle symbol with unknown action
+				}
 			}
 			else {
-				// TODO: handle symbol with unknown action
+				// TODO: resolve missing interpret method for symbol
 			}
 		}
 
@@ -76,9 +90,9 @@ namespace Malsys.Processing.Components.Interpreters {
 		#endregion
 
 
-		private void createIntActionsCahce() {
+		private void createInstrToDelCahce() {
 
-			var instrToDel = new Dictionary<string, InterpretAction>();
+			instrToDel = new Dictionary<string, InterpretAction>();
 
 			foreach (var methodInfo in interpret.GetType().GetMethods()) {
 				var attrs = methodInfo.GetCustomAttributes(typeof(SymbolInterpretationAttribute), false);
@@ -87,33 +101,18 @@ namespace Malsys.Processing.Components.Interpreters {
 				}
 
 				var prms = methodInfo.GetParameters();
-				if (prms.Length != 1 && !prms[0].ParameterType.Equals(typeof(ImmutableList<IValue>))) {
+				if (prms.Length != 1 && !prms[0].ParameterType.Equals(typeof(ArgsStorage))) {
 					continue;
 				}
 
 				var del = createInterpretAction(methodInfo);
 				instrToDel.Add(methodInfo.Name.ToLowerInvariant(), del);
 			}
-
-			var symbolToInterpterCall = new Dictionary<string, InterpretAction>();
-
-			foreach (var sym2instr in symbolToInstr) {
-				InterpretAction action;
-				if (instrToDel.TryGetValue(sym2instr.Value.ToLowerInvariant(), out action)) {
-					symbolToInterpterCall.Add(sym2instr.Key, action);
-				}
-				else {
-					// TODO: resolve missing interpret method for symbol
-				}
-
-			}
-
-			symbolToIntActionCache = symbolToInterpterCall;
 		}
 
 		private InterpretAction createInterpretAction(MethodInfo mi) {
 			var instance = Expression.Constant(interpret, interpret.GetType());
-			var argument = Expression.Parameter(typeof(ImmutableList<IValue>), "prms");
+			var argument = Expression.Parameter(typeof(ArgsStorage), "args");
 			var call = Expression.Call(instance, mi, argument);
 			return Expression.Lambda<InterpretAction>(call, argument).Compile();
 		}

@@ -38,10 +38,7 @@ namespace Malsys.Compilers {
 		}
 
 		public void Visit(Ast.LsystemDefinition lsysDef) {
-			var prms = inCompiler.CompileParameters(lsysDef.Parameters);
-			var stats = inCompiler.LsystemCompiler.CompileLsystemStatements(lsysDef.Statements);
-
-			result = new Lsystem(lsysDef.NameId.Name, prms, stats, lsysDef);
+			result = inCompiler.LsystemCompiler.CompileLsystem(lsysDef);
 		}
 
 		#endregion

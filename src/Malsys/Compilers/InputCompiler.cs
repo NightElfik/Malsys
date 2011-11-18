@@ -36,36 +36,29 @@ namespace Malsys.Compilers {
 
 
 
-		public CompilerResult<InputBlock> CompileFromString(string strInput, string sourceName) {
+		public ImmutableList<IInputStatement> CompileFromString(string strInput, string sourceName) {
 
 			var lexBuff = LexBuffer<char>.FromString(strInput);
 			msgs.DefaultSourceName = sourceName;
 			var comments = new List<Ast.Comment>();
 
-			var parsedInput = ParserUtils.ParseLsystemStatements(comments, lexBuff, msgs, sourceName);
+			var parsedInput = ParserUtils.ParseInput(comments, lexBuff, msgs, sourceName);
 
 			return CompileFromAst(parsedInput);
 		}
 
-		public CompilerResult<InputBlock> CompileFromAst(Ast.InputBlock parsedInput) {
+		public ImmutableList<IInputStatement> CompileFromAst(Ast.InputBlock parsedInput) {
 
-			var compiledInput = new List<IInputStatement>(parsedInput.Length);
+			var statements = new List<IInputStatement>(parsedInput.Length);
 
 			for (int i = 0; i < parsedInput.Length; i++) {
 				var stat = inVisitor.TryCompile(parsedInput[i]);
 				if (stat) {
-					compiledInput.Add((IInputStatement)stat);
+					statements.Add(stat.Result);
 				}
 			}
 
-			var inEval = new InputEvaluator(exprEvaluator);
-			try {
-				return inEval.Evaluate(compiledInput);
-			}
-			catch (EvalException ex) {
-				msgs.AddError("Failed to evaluate input. " + ex.GetWholeMessage(), Position.Unknown);
-				return CompilerResult<InputBlock>.Error;
-			}
+			return new ImmutableList<IInputStatement>(statements);
 		}
 
 

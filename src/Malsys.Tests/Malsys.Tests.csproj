@@ -86,7 +86,6 @@
     <Compile Include="Interpreters\InterpreterCallerTests.cs" />
     <Compile Include="Parsing\ExpressionTests.cs" />
     <Compile Include="Parsing\LsystemTests.cs" />
-    <Compile Include="Parsing\DebugTests.cs" />
     <Compile Include="Parsing\FunctionDefinitionTests.cs" />
     <Compile Include="Parsing\VariableDefinitionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -113,7 +113,7 @@ namespace Malsys.SourceCode.Printers {
 		}
 
 		public void Visit(EmptyStatement emptyStat) {
-			writer.WriteLine(";");
+			writer.Write(";");
 		}
 
 		public void Visit(FunctionDefinition funDef) {
@@ -130,7 +130,8 @@ namespace Malsys.SourceCode.Printers {
 			}
 
 			writer.Unindent();
-			writer.WriteLine("}");
+			writer.NewLine();
+			writer.Write("}");
 		}
 
 		public void Visit(LsystemDefinition lsysDef) {
@@ -148,6 +149,7 @@ namespace Malsys.SourceCode.Printers {
 			}
 
 			writer.Unindent();
+			writer.NewLine();
 			writer.WriteLine("}");
 		}
 
@@ -206,7 +208,7 @@ namespace Malsys.SourceCode.Printers {
 				Print(replac);
 			}
 
-			writer.WriteLine(";");
+			writer.Write(";");
 			writer.Unindent();
 		}
 
@@ -226,7 +228,7 @@ namespace Malsys.SourceCode.Printers {
 				writer.Write(")");
 			}
 
-			writer.WriteLine(";");
+			writer.Write(";");
 		}
 
 		public void Visit(SymbolsConstDefinition symbolsDef) {
@@ -234,7 +236,7 @@ namespace Malsys.SourceCode.Printers {
 			writer.Write(symbolsDef.NameId.Name);
 			writer.Write(" = ");
 			PrintSeparated(symbolsDef.SymbolsList, s => Print(s), " ");
-			writer.WriteLine(";");
+			writer.Write(";");
 		}
 
 		#endregion

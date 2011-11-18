@@ -6,6 +6,8 @@ using Malsys.Expressions;
 using Malsys.Parsing;
 using Microsoft.FSharp.Text.Lexing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Malsys.SemanticModel.Evaluated;
+using Malsys.Evaluators;
 
 namespace Malsys.Tests.Expressions {
 	/// <summary>
@@ -269,16 +271,16 @@ namespace Malsys.Tests.Expressions {
 			// parsing
 			var lexBuff = LexBuffer<char>.FromString(exprStr);
 			var msgs = new MessagesCollection();
-			Ast.Expression parsedVal = ParserUtils.ParseExpression(lexBuff, msgs, testName);
+			var parsedExpr = ParserUtils.ParseExpression(lexBuff, msgs, testName);
 
 
 			// compile
 
-			var compiledExpr = new ExpressionCompiler(msgs).CompileExpression(parsedVal);
+			var compiledExpr = new ExpressionCompiler(msgs).CompileExpression(parsedExpr);
 
 
 			// evaluate
-			var result = ExpressionEvaluator.Evaluate(compiledExpr);
+			var result = new ExpressionEvaluator().Evaluate(compiledExpr);
 
 			foreach (var err in msgs) {
 				Console.WriteLine(err.GetFullMessage());
