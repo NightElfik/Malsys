@@ -13,10 +13,10 @@ namespace Malsys.SourceCode.Printers {
 	public class CanonicPrinter : IExpressionVisitor {
 
 
-		private IndentTextWriter writer;
+		private IndentWriter writer;
 
 
-		public CanonicPrinter(IndentTextWriter writer) {
+		public CanonicPrinter(IndentWriter writer) {
 			this.writer = writer;
 		}
 

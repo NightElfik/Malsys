@@ -76,7 +76,7 @@ namespace Malsys.Processing {
 
 		private string getNewFilePath(string suffix) {
 
-			string timeStamp = DateTime.Now.ToString("s", CultureInfo.InvariantCulture.DateTimeFormat);  // s: 2008-06-15T21:15:07
+			string timeStamp = DateTime.Now.ToString("yyyy-MM-ddTHH-mm-ss", CultureInfo.InvariantCulture.DateTimeFormat);  // s: 2008-06-15T21:15:07
 			int randInt = rndGenerator.Next(0, maxRandInt);
 
 			string filePath;

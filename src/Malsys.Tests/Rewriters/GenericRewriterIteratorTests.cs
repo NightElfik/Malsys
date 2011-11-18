@@ -16,6 +16,7 @@ using Microsoft.FSharp.Collections;
 using Malsys.SemanticModel.Evaluated;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Compiled;
+using Malsys.Processing.Components.Common;
 
 namespace Malsys.Tests.Rewriters {
 	public static class GenericRewriterIteratorTests {
@@ -46,20 +47,11 @@ namespace Malsys.Tests.Rewriters {
 
 			string input = "lsystem l {{ set axiom = {0}; {1} }}".Fmt(inputSymbols, rewriteRules);
 
-			var lexBuff = LexBuffer<char>.FromString(input);
-			var msgs = new MessagesCollection();
-			var inAst = ParserUtils.ParseInputNoComents(lexBuff, msgs, "testInput");
+			var compiler = new InputCompiler(new MessagesCollection());
+			var inCompiled = compiler.CompileFromString(input, "testInput");
 
-			if (msgs.ErrorOcured) {
-				Console.WriteLine("lsys: " + input);
-				Assert.Fail("Failed to parse L-system. " + msgs.ToString());
-			}
-
-			var compiler = new InputCompiler(msgs);
-			var inCompiled = compiler.CompileFromAst(inAst);
-
-			if (msgs.ErrorOcured) {
-				Assert.Fail("Failed to compile L-system." + msgs.ToString());
+			if (compiler.Messages.ErrorOcured) {
+				Assert.Fail("Failed to compile L-system." + compiler.Messages.ToString());
 			}
 
 			var exprEvaluator = new ExpressionEvaluator();
@@ -76,14 +68,14 @@ namespace Malsys.Tests.Rewriters {
 
 			var context = new ProcessContext(lsystem, null, inBlockEvaled, exprEvaluator);
 
-			var symBuff = new SymbolsBuffer();
+			var symBuff = new SymbolsMemoryBuffer();
 
 			var rewriter = new SymbolRewriter() {
 				OutputProcessor = rewIt,
 				Context = context
 			};
 
-			IEnumerable<Symbol<IValue>> axiom = lsystem.SymbolsConstants["axiom"];
+			var axiom = lsystem.SymbolsConstants["axiom"];
 
 			rewIt.Rewriter = rewriter;
 			rewIt.OutputProcessor = symBuff;

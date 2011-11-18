@@ -1,8 +1,8 @@
 ﻿module Malsys.Parsing.ParserUtils
 
 open Lexer
+open Malsys
 open Malsys.Ast
-open Malsys.Compilers
 open Microsoft.FSharp.Text.Lexing
 
 let setInitialBuffPos (lexbuf : LexBuffer<_>) sourceName =

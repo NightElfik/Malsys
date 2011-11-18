@@ -88,6 +88,11 @@
     <Compile Include="Compilers\LsystemCompilerVisitor.cs" />
     <Compile Include="Evaluators\InputEvaluator.cs" />
     <Compile Include="Evaluators\LsystemEvaluator.cs" />
+    <Compile Include="Processing\Components\Common\SymbolsSaver.cs" />
+    <Compile Include="Processing\Components\UserReadableAttribute.cs" />
+    <Compile Include="Processing\Components\Interfaces%27\IComponent.cs" />
+    <Compile Include="Processing\Components\Interfaces%27\IProcessStarter.cs" />
+    <Compile Include="Processing\RenderManager.cs" />
     <Compile Include="SemanticModel\Compiled\ConstantDefinition.cs" />
     <Compile Include="SemanticModel\Compiled\Expressions\EmptyExpression.cs" />
     <Compile Include="SemanticModel\Compiled\FunctionReturnExpr.cs" />
@@ -131,8 +136,6 @@
     <Compile Include="Compilers\Expressions\KnownConstant.cs" />
     <Compile Include="SemanticModel\Compiled\Expressions\ExprVariable.cs" />
     <Compile Include="Evaluators\ExpressionEvaluator.cs" />
-    <Compile Include="Extensions\DoubleExtensions.cs" />
-    <Compile Include="Extensions\IntExtensions.cs" />
     <Compile Include="Processing\Components\Interpreters\TwoD\State2D.cs" />
     <Compile Include="Processing\FilesManager.cs" />
     <Compile Include="Processing\Components\Interpreters\TwoD\Interpreter2D.cs" />
@@ -140,7 +143,7 @@
     <Compile Include="Processing\Components\Interfaces%27\IInterpreterCaller.cs" />
     <Compile Include="Processing\Components\Interpreters\InterpreterCaller.cs" />
     <Compile Include="Processing\Components\Interpreters\SymbolInterpretation.cs" />
-    <Compile Include="Processing\Components\Interpreters\SymbolsBuffer.cs" />
+    <Compile Include="Processing\Components\Common\SymbolsMemoryBuffer.cs" />
     <Compile Include="Media\ColorF.cs" />
     <Compile Include="Processing\Components\Interfaces%27\IInterpreter.cs" />
     <Compile Include="Media\PointF.cs" />
@@ -152,13 +155,12 @@
     <Compile Include="Processing\Components\Interfaces%27\IRenderer.cs" />
     <Compile Include="Processing\Components\Renderers\TwoD\SvgRenderer2D.cs" />
     <Compile Include="Processing\Components\Rewriters\EmptyRewriter.cs" />
-    <Compile Include="Processing\Components\Rewriters\EmptySymbolProcessor.cs" />
+    <Compile Include="Processing\Components\Common\EmptySymbolProcessor.cs" />
     <Compile Include="Processing\Components\Interfaces%27\IRewriterIterator.cs" />
     <Compile Include="Processing\Components\RewriterIterators\SingleRewriterIterator.cs" />
     <Compile Include="Processing\Components\Rewriters\SymbolRewriter.cs" />
     <Compile Include="Processing\Components\Interfaces%27\IRewriter.cs" />
     <Compile Include="Processing\Components\Interfaces%27\ISymbolProcessor.cs" />
-    <Compile Include="Processing\Components\Rewriters\RewriterUtils.cs" />
     <Compile Include="SemanticModel\Compiled\ILsystemStatement.cs" />
     <Compile Include="SemanticModel\Compiled\Lsystem.cs" />
     <Compile Include="SourceCode\Highlighters\MarksCollector.cs" />
@@ -183,6 +185,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Extensions\" />
     <Folder Include="SourceCode\Formatters\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

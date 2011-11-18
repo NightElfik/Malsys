@@ -5,7 +5,5 @@ namespace Malsys.Processing.Components {
 
 		IInterpreter Interpreter { set; }
 
-		ProcessContext Context { set; }
-
 	}
 }

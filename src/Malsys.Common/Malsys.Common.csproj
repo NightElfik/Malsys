@@ -70,8 +70,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Compilers\CompilerMessage.cs" />
-    <Compile Include="Compilers\MessagesCollection.cs" />
+    <Compile Include="IO\IndentTextWriter.cs" />
+    <Compile Include="Message.cs" />
+    <Compile Include="MessagesCollection.cs" />
     <Compile Include="DataTypes\ImmutableList.cs" />
     <Compile Include="DataTypes\IndexableQueue.cs" />
     <Compile Include="DataTypes\IndexableStack.cs" />
@@ -86,7 +87,7 @@
     <Compile Include="Helpers\CharHelper.cs" />
     <Compile Include="Helpers\MathHelper.cs" />
     <Compile Include="IO\IndentStringWriter.cs" />
-    <Compile Include="IO\IndentTextWriter.cs" />
+    <Compile Include="IO\IndentWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StringValueAttribute.cs" />
   </ItemGroup>

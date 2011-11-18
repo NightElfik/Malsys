@@ -7,10 +7,7 @@ namespace Malsys.Processing.Components {
 
 		ISymbolProcessor OutputProcessor { set; }
 
-		ProcessContext Context { set; }
-
 		[UserSettable]
 		IValue RandomSeed { set; }
-
 	}
 }

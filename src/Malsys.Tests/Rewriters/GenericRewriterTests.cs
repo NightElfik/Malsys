@@ -15,6 +15,7 @@ using Microsoft.FSharp.Collections;
 using Malsys.SemanticModel.Evaluated;
 using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel;
+using Malsys.Processing.Components.Common;
 
 namespace Malsys.Tests.Rewriters {
 	public static class GenericRewriterTests {
@@ -227,7 +228,7 @@ namespace Malsys.Tests.Rewriters {
 
 			var context = new ProcessContext(lsystem, null, inBlockEvaled, exprEvaluator);
 
-			var symBuff = new SymbolsBuffer();
+			var symBuff = new SymbolsMemoryBuffer();
 			rewriter.OutputProcessor = symBuff;
 			rewriter.Context = context;
 
@@ -236,7 +237,7 @@ namespace Malsys.Tests.Rewriters {
 
 			for (int i = 0; i < iterations; i++) {
 
-				rewriter.BeginProcessing();
+				rewriter.BeginProcessing(false);
 				foreach (var sym in axiom) {
 					rewriter.ProcessSymbol(sym);
 				}

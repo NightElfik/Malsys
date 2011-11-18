@@ -1,7 +1,6 @@
 ﻿module Malsys.Parsing.MessagesLogger
 
 open Malsys
-open Malsys.Compilers
 open Microsoft.FSharp.Text.Parsing
 
 

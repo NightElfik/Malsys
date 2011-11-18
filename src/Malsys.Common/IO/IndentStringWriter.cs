@@ -1,7 +1,7 @@
 ﻿using System.Text;
 
 namespace Malsys.IO {
-	public class IndentStringWriter : IndentTextWriter {
+	public class IndentStringWriter : IndentWriter {
 
 		private StringBuilder strBuilder;
 

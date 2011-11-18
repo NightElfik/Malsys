@@ -10,6 +10,8 @@ bin/
 obj/
 
 /src/TestResults
+/src/Malsys.Web/WorkDir
+/src/packages
 
 # LaTeX rubbish
 *.aux

@@ -2,7 +2,7 @@
 namespace Malsys.Compilers {
 	public class CompilerResult<TData> where TData : class {
 
-		public static readonly CompilerResult<TData> Error = new CompilerResult<TData>(null, false);
+		public static readonly CompilerResult<TData> Error = new CompilerResult<TData>(null, true);
 
 
 		public bool ErrorOcured { get; private set; }

@@ -5,6 +5,7 @@ using Malsys.Processing.Components.Renderers;
 using Malsys.Media;
 using Malsys.SemanticModel.Evaluated;
 using Malsys.SemanticModel;
+using Malsys.Evaluators;
 
 namespace Malsys.Processing.Components.Interpreters.TwoD {
 	public class Interpreter2D : IInterpreter {
@@ -12,7 +13,6 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 		private IRenderer2D renderer;
 
 		private State2D currState;
-
 
 
 		#region IInterpreter Members
@@ -25,28 +25,34 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 			return renderer.GetType().GetInterfaces().Contains(typeof(IRenderer2D));
 		}
 
-		public void BeginInterpreting() {
-			renderer.BeginRendering();
+		#endregion
+
+		#region IComponent Members
+
+		public ProcessContext Context { get; set; }
+
+		public void BeginProcessing(bool measuring) {
+			currState = new State2D();
+			renderer.BeginProcessing(measuring);
 		}
 
-		public void EndInterpreting() {
-			renderer.EndRendering();
+		public void EndProcessing() {
+			renderer.EndProcessing();
 		}
 
 		#endregion
 
 		#region Symbols interpretation methods
 
-
 		[SymbolInterpretation]
-		public void Nothing(ImmutableList<IValue> prms) {
+		public void Nothing(ArgsStorage args) {
 
 		}
 
 		[SymbolInterpretation]
-		public void MoveForward(ImmutableList<IValue> prms) {
+		public void MoveForward(ArgsStorage args) {
 
-			double param = getParamAsDouble(prms, 0);
+			double param = getParamAsDouble(args, 0);
 
 			currState.X += param * Math.Cos(currState.CurrentAngle * MathHelper.PiOver180);
 			currState.Y += param * Math.Sin(currState.CurrentAngle * MathHelper.PiOver180);
@@ -55,9 +61,9 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 		}
 
 		[SymbolInterpretation]
-		public void DrawLine(ImmutableList<IValue> prms) {
+		public void DrawLine(ArgsStorage args) {
 
-			double param = getParamAsDouble(prms, 0);
+			double param = getParamAsDouble(args, 0);
 
 			currState.X += param * Math.Cos(currState.CurrentAngle * MathHelper.PiOver180);
 			currState.Y += param * Math.Sin(currState.CurrentAngle * MathHelper.PiOver180);
@@ -66,33 +72,33 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 		}
 
 		[SymbolInterpretation]
-		public void TurnLeft(ImmutableList<IValue> prms) {
+		public void TurnLeft(ArgsStorage args) {
 
-			double param = getParamAsDouble(prms, 0);
+			double param = getParamAsDouble(args, 0);
 
 			currState.CurrentAngle += param;
 		}
 
 		[SymbolInterpretation]
-		public void TurnRight(ImmutableList<IValue> prms) {
+		public void TurnRight(ArgsStorage args) {
 
-			double param = getParamAsDouble(prms, 0);
+			double param = getParamAsDouble(args, 0);
 
 			currState.CurrentAngle -= param;
 		}
 
-
-
 		#endregion
 
-		private double getParamAsDouble(ImmutableList<IValue> prms, int i) {
-			if (prms.Length < i && prms[i].IsConstant) {
-				return ((Constant)prms[i]).Value;
+
+		private double getParamAsDouble(ArgsStorage args, int i) {
+			if (args.ArgsCount < i && args[i].IsConstant) {
+				return ((Constant)args[i]).Value;
 			}
 			else {
 				return 0.0;
 			}
 		}
+
 
 	}
 }

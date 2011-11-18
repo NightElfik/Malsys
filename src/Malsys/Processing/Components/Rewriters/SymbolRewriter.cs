@@ -4,15 +4,16 @@ using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using Malsys.Evaluators;
+using Malsys.Processing.Components.Common;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Collections;
+using ConstsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.IValue>;
 using FunsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Compiled.FunctionEvaledParams>;
 using Symbol = Malsys.SemanticModel.Symbol<Malsys.SemanticModel.Evaluated.IValue>;
 using SymbolPatern = Malsys.SemanticModel.Symbol<string>;
 using SymbolPaternsList = Malsys.SemanticModel.SymbolsList<string>;
-using ConstsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.IValue>;
 
 namespace Malsys.Processing.Components.Rewriters {
 	public class SymbolRewriter : IRewriter {
@@ -34,6 +35,10 @@ namespace Malsys.Processing.Components.Rewriters {
 
 		private int rightCtxtMaxLen;
 		private IndexableQueue<Symbol> rightContext;
+
+
+		private bool rewriteRuleApplied;
+		private long rewrittenSymbols;
 
 
 
@@ -64,21 +69,14 @@ namespace Malsys.Processing.Components.Rewriters {
 		}
 
 
+
 		#region IRewriter Members
 
-		public ISymbolProcessor OutputProcessor { set { outputProcessor = value; } }
-
-		public ProcessContext Context {
-			set {
-				exprEvaluator = value.ExpressionEvaluator;
-				constants = value.Lsystem.Constants;
-				functions = value.Lsystem.Functions;
-				rewriteRules = createRrulesMap(value.Lsystem.RewriteRules);
-
-				initContextCaches();
-			}
+		public ISymbolProcessor OutputProcessor {
+			set { outputProcessor = value; }
 		}
 
+		[UserSettable]
 		public IValue RandomSeed {
 			set {
 				if (value.IsConstant && !((Constant)value).IsNaN) {
@@ -94,14 +92,8 @@ namespace Malsys.Processing.Components.Rewriters {
 
 		#region ISymbolProcessor Members
 
-		public void BeginProcessing() {
-
-			rndGenerator = new Random(seed);
-
-			outputProcessor.BeginProcessing();
-		}
-
 		public void ProcessSymbol(Symbol symbol) {
+
 			rightContext.Enqueue(symbol);
 
 			if (rightContext.Count < rightCtxtMaxLen + 1) {
@@ -112,7 +104,34 @@ namespace Malsys.Processing.Components.Rewriters {
 			rewrite(currSym);
 		}
 
+		#endregion
+
+		#region IComponent Members
+
+		public ProcessContext Context {
+			set {
+				exprEvaluator = value.ExpressionEvaluator;
+				constants = value.Lsystem.Constants;
+				functions = value.Lsystem.Functions;
+				rewriteRules = createRrulesMap(value.Lsystem.RewriteRules);
+
+				initContextCaches();
+			}
+		}
+
+		public void BeginProcessing(bool measuring) {
+
+			rndGenerator = new Random(seed);
+			leftContext.Clear();
+			rightContext.Clear();
+			rewriteRuleApplied = false;
+			rewrittenSymbols = 0;
+
+			outputProcessor.BeginProcessing(measuring);
+		}
+
 		public void EndProcessing() {
+
 			while (rightContext.Count > 0) {
 
 				var currSym = rightContext.Dequeue();
@@ -127,6 +146,12 @@ namespace Malsys.Processing.Components.Rewriters {
 
 		#endregion
 
+		#region User readable properties
+
+		public IValue RewrittenSymbols { get { return rewrittenSymbols.ToConst(); } }
+
+		#endregion
+
 
 
 		private void rewrite(Symbol symbol) {
@@ -135,6 +160,7 @@ namespace Malsys.Processing.Components.Rewriters {
 			RewriteRule rrule;
 
 			if (tryFindRewriteRule(symbol, out rrule, out consts)) {
+				rewriteRuleApplied = true;
 				var replac = chooseReplacement(rrule, consts, functions);
 				foreach (var s in replac.Replacement) {
 					outputProcessor.ProcessSymbol(exprEvaluator.EvaluateSymbol(s, consts, functions));
@@ -148,6 +174,8 @@ namespace Malsys.Processing.Components.Rewriters {
 			if (leftContext.Count > leftCtxtMaxLen) {
 				leftContext.Dequeue();  // throw away unnecessary symbols from left context
 			}
+
+			rewrittenSymbols++;
 		}
 
 

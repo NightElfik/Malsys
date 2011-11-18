@@ -7,6 +7,7 @@ using System.Diagnostics.Contracts;
 using Malsys.Processing.Components.Rewriters;
 using Malsys.SemanticModel.Evaluated;
 using Malsys.SemanticModel;
+using Malsys.Processing.Components.Common;
 
 namespace Malsys.Processing.Components.RewriterIterators {
 	public class SingleRewriterIterator : IRewriterIterator {
@@ -52,13 +53,15 @@ namespace Malsys.Processing.Components.RewriterIterators {
 			set { outProcessor = value; }
 		}
 
-		public IEnumerable<Symbol<IValue>> Axiom {
+		[UserSettable]
+		public ImmutableList<Symbol<IValue>> Axiom {
 			set {
 				inBuffer.Clear();
 				inBuffer.AddRange(value);
 			}
 		}
 
+		[UserSettable]
 		public IValue Iterations {
 			set {
 				if (value.IsConstant && !((Constant)value).IsNaN && ((Constant)value).Value >= 0) {
@@ -70,11 +73,35 @@ namespace Malsys.Processing.Components.RewriterIterators {
 			}
 		}
 
+		#endregion
+
+		#region ISymbolProcessor Members
+
+		public void ProcessSymbol(Symbol<IValue> symbol) {
+			outBuffer.Add(symbol);
+		}
+
+		#endregion
+
+		#region IComponent Members
+
+		public ProcessContext Context { get; set; }
+
+		public void BeginProcessing(bool measuring) {
+		}
+
+		public void EndProcessing() {
+		}
+
+		#endregion
+
+		#region IProcessStarter Members
+
 		public void Start() {
 
 			for (int i = 0; i < iterations; i++) {
 
-				rewriter.BeginProcessing();
+				rewriter.BeginProcessing(true);
 				foreach (var s in inBuffer) {
 					rewriter.ProcessSymbol(s);
 				}
@@ -84,25 +111,17 @@ namespace Malsys.Processing.Components.RewriterIterators {
 				Swap.Them(ref inBuffer, ref outBuffer);
 			}
 
-			outProcessor.BeginProcessing();
+			outProcessor.BeginProcessing(true);
 			foreach (var s in inBuffer) {
 				outProcessor.ProcessSymbol(s);
 			}
 			outProcessor.EndProcessing();
-		}
 
-		#endregion
-
-		#region ISymbolProcessor Members
-
-		public void BeginProcessing() {
-		}
-
-		public void ProcessSymbol(Symbol<IValue> symbol) {
-			outBuffer.Add(symbol);
-		}
-
-		public void EndProcessing() {
+			outProcessor.BeginProcessing(false);
+			foreach (var s in inBuffer) {
+				outProcessor.ProcessSymbol(s);
+			}
+			outProcessor.EndProcessing();
 		}
 
 		#endregion

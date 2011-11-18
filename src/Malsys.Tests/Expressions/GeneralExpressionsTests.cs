@@ -8,6 +8,7 @@ using Microsoft.FSharp.Text.Lexing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Malsys.SemanticModel.Evaluated;
 using Malsys.Evaluators;
+using Malsys.SemanticModel;
 
 namespace Malsys.Tests.Expressions {
 	/// <summary>

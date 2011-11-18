@@ -124,8 +124,8 @@ namespace Malsys.Tests.Interpreters {
 			var context = new ProcessContext(lsystem, null, null, exprEvaluator);
 
 			var dummy = new DummyInterpreter();
-				caller.Interpreter = dummy;
-				caller.Context = context;
+			caller.Interpreter = dummy;
+			caller.Context = context;
 
 			foreach (var sym in symbols) {
 				caller.ProcessSymbol(exprEvaluator.EvaluateSymbol(sym, null, null));
@@ -156,6 +156,7 @@ namespace Malsys.Tests.Interpreters {
 				printer = new CanonicPrinter(writer);
 			}
 
+
 			#region IInterpreter Members
 
 			public IRenderer Renderer {
@@ -166,10 +167,16 @@ namespace Malsys.Tests.Interpreters {
 				throw new NotImplementedException();
 			}
 
-			public void BeginInterpreting() {
+			#endregion
+
+			#region IComponent Members
+
+			public ProcessContext Context { get; set; }
+
+			public void BeginProcessing(bool measuring) {
 			}
 
-			public void EndInterpreting() {
+			public void EndProcessing() {
 			}
 
 			#endregion

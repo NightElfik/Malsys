@@ -1,15 +1,11 @@
 ﻿
 namespace Malsys.Processing.Components {
 
-	public interface IInterpreter {
+	public interface IInterpreter : IComponent {
 
 		IRenderer Renderer { set; }
 
 		bool IsRendererCompatible(IRenderer renderer);
-
-		void BeginInterpreting();
-
-		void EndInterpreting();
 
 	}
 }

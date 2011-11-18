@@ -49,19 +49,9 @@ namespace Malsys.Processing.Components.Interpreters {
 			}
 		}
 
-		public ProcessContext Context {
-			set {
-				symbolToInstr = value.Lsystem.SymbolsInterpretation;
-			}
-		}
-
 		#endregion
 
 		#region ISymbolProcessor Members
-
-		public void BeginProcessing() {
-			interpret.BeginInterpreting();
-		}
 
 		public void ProcessSymbol(Symbol<IValue> symbol) {
 
@@ -83,8 +73,20 @@ namespace Malsys.Processing.Components.Interpreters {
 			}
 		}
 
+		#endregion
+
+		#region IComponent Members
+
+		public ProcessContext Context {
+			set { symbolToInstr = value.Lsystem.SymbolsInterpretation; }
+		}
+
+		public void BeginProcessing(bool measuring) {
+			interpret.BeginProcessing(measuring);
+		}
+
 		public void EndProcessing() {
-			interpret.EndInterpreting();
+			interpret.EndProcessing();
 		}
 
 		#endregion
@@ -116,7 +118,6 @@ namespace Malsys.Processing.Components.Interpreters {
 			var call = Expression.Call(instance, mi, argument);
 			return Expression.Lambda<InterpretAction>(call, argument).Compile();
 		}
-
 
 	}
 }

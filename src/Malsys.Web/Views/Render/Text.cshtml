@@ -1,0 +1,60 @@
+﻿@{
+	ViewBag.Title = "Text L-system evaluator";
+}
+<h2>Text L-system evaluator</h2>
+
+@using (Html.BeginForm()) {
+
+	<div>
+		<fieldset>
+			<legend>Source code</legend>
+
+			@Html.TextArea("src",
+@"lsystem fib {
+
+  set axiom = a(0) b(1);
+  let iterations = 42;
+
+  rewrite a(a) {b(b)} to a(b);
+  rewrite {a(a)} b(b) to b(a + b);
+}
+
+lsystem AnabaenaCatenula {
+
+  set axiom = A;
+  let iterations = 7;
+
+  rewrite A to A B;
+  rewrite B to A;
+}", 20, 80, null)
+
+			<p>
+				<input type="submit" value="Evaluate all L-systems" />
+			</p>
+		</fieldset>
+	</div>
+
+}
+
+@if (ViewBag.Messages != null) {
+	<h3>Messages:</h3>
+	<ul>
+	@foreach (var msg in ViewBag.Messages) {
+		<li>@msg.GetFullMessage()</li>
+	}
+	</ul>
+}
+else {
+	<p>No results</p>
+}
+@if (ViewBag.Results != null) {
+	<h3>Results:</h3>
+	<ul>
+	@foreach (var result in ViewBag.Results) {
+		<li>@File.ReadAllText(result)</li>
+	}
+	</ul>
+}
+else {
+	<h3>No results</h3>
+}

@@ -9,16 +9,15 @@ namespace Malsys.Processing.Components.Rewriters {
 		public static readonly EmptyRewriter Instance = new EmptyRewriter();
 
 
+
+
 		#region IRewriter Members
 
 		public ISymbolProcessor OutputProcessor {
 			set { throw new InvalidOperationException("Empty rewriter."); }
 		}
 
-		public ProcessContext Context {
-			set { throw new InvalidOperationException("Empty rewriter."); }
-		}
-
+		[UserSettable]
 		public IValue RandomSeed {
 			set { throw new InvalidOperationException("Empty rewriter."); }
 		}
@@ -27,11 +26,19 @@ namespace Malsys.Processing.Components.Rewriters {
 
 		#region ISymbolProcessor Members
 
-		public void BeginProcessing() {
+		public void ProcessSymbol(Symbol<IValue> symbol) {
 			throw new InvalidOperationException("Empty rewriter.");
 		}
 
-		public void ProcessSymbol(Symbol<IValue> symbol) {
+		#endregion
+
+		#region IComponent Members
+
+		public ProcessContext Context {
+			set { throw new InvalidOperationException("Empty rewriter."); }
+		}
+
+		public void BeginProcessing(bool measuring) {
 			throw new InvalidOperationException("Empty rewriter.");
 		}
 
@@ -40,6 +47,5 @@ namespace Malsys.Processing.Components.Rewriters {
 		}
 
 		#endregion
-
 	}
 }

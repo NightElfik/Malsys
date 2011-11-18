@@ -11,7 +11,6 @@ open Microsoft.FSharp.Text.Parsing
 open MessagesLogger
 open Malsys
 open Malsys.Ast
-open Malsys.Compilers
 
 
 
@@ -25,13 +24,13 @@ let getLastErrorPos = MessagesLogger.getLastErrPos
 
 
 let logError parserState msg =
-    MessagesLogger.logMessage CompilerMessageType.Error parserState msg
+    MessagesLogger.logMessage MessageType.Error parserState msg
 
-let logNoticePos pos msg =
-    MessagesLogger.logMessagePos CompilerMessageType.Notice pos msg
+let logInfoPos pos msg =
+    MessagesLogger.logMessagePos MessageType.Info pos msg
 
 let logErrorPos pos msg =
-    MessagesLogger.logMessagePos CompilerMessageType.Error pos msg
+    MessagesLogger.logMessagePos MessageType.Error pos msg
 
 
 let getPos (parserState : IParseState) =
@@ -266,7 +265,7 @@ OptRrLocalConsts:
     |
       { ImmutableListPos<ConstantDefinition>.Empty }
     | WITH
-      { logNoticePos (getPosI parseState 1) "Empty constant definition block.";
+      { logInfoPos (getPosI parseState 1) "Empty constant definition block.";
         ImmutableListPos<ConstantDefinition>(getStartPos parseState) }
     | WITH RrLocalConstsListNonEmpty
       { new ImmutableListPos<ConstantDefinition>($2 :> ResizeArray<ConstantDefinition>, getPos parseState) }
@@ -278,7 +277,7 @@ OptRrCondition:
     |
       { Expression.Empty }
     | WHERE
-      { logNoticePos (getPosI parseState 1) "Empty condition found.";
+      { logInfoPos (getPosI parseState 1) "Empty condition found.";
         new Expression(getEndPos parseState) }
     | WHERE ExpressionNonEmpty
       { $2 }
@@ -288,7 +287,7 @@ OptRrCondition:
 
 RrReplacList:
     |
-      { logNoticePos (getStartPos parseState) "Empty replacement block found, you can use keyword `nothing` to improve source code readability.";
+      { logInfoPos (getStartPos parseState) "Empty replacement block found, you can use keyword `nothing` to improve source code readability.";
         ImmutableListPos<RewriteRuleReplacement>.Empty }
     | RrReplacListNonEmpty
       { new ImmutableListPos<RewriteRuleReplacement>($1 :> ResizeArray<RewriteRuleReplacement>, getPos parseState) }
@@ -313,7 +312,7 @@ OptRrWeight:
     |
       { Expression.Empty }
     | WEIGHT
-      { logNoticePos (getPosI parseState 1) "Empty probability weight found.";
+      { logInfoPos (getPosI parseState 1) "Empty probability weight found.";
         new Expression(getEndPos parseState) }
     | WEIGHT ExpressionNonEmpty
       { $2 }

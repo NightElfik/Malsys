@@ -85,4 +85,25 @@ namespace Malsys.SemanticModel {
 
 		#endregion
 	}
+
+
+	public static class ConstantExtensions {
+
+		public static Constant ToConst(this int i) {
+			return new Constant(i);
+		}
+
+		public static Constant ToConst(this long i) {
+			return new Constant(i);
+		}
+
+		public static Constant ToConst(this double d) {
+			return new Constant(d);
+		}
+
+		public static Constant ToConst(this double d, Ast.FloatConstant astConst) {
+			return new Constant(d, astConst);
+		}
+	}
+
 }

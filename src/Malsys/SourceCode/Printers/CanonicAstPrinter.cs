@@ -5,11 +5,11 @@ using Malsys.IO;
 namespace Malsys.SourceCode.Printers {
 	public class CanonicAstPrinter : IInputVisitor, ILsystemVisitor, IExpressionVisitor, IFunctionVisitor {
 
-		private IndentTextWriter writer;
+		private IndentWriter writer;
 
 
 
-		public CanonicAstPrinter(IndentTextWriter writer) {
+		public CanonicAstPrinter(IndentWriter writer) {
 			this.writer = writer;
 		}
 

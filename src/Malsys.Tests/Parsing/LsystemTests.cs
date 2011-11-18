@@ -88,6 +88,14 @@ namespace Malsys.Tests.Parsing {
 			doTestAutoident("lsystem l {", "rewrite X", "\tto &({1 & 2});", "}");
 		}
 
+		[TestMethod]
+		public void SymbolsInterpretationsTests() {
+			doTestAutoident("lsystem l {", "interpret X as Action;", "}");
+			doTestAutoident("lsystem l {", "interpret X Y Z as Action;", "}");
+			doTestAutoident("lsystem l {", "interpret X as Action(0);", "}");
+			doTestAutoident("lsystem l {", "interpret X Y Z as Action(0, 1, 2);", "interpret x as Action(x);", "}");
+		}
+
 
 		private void doTestAutoident(params string[] inputLines) {
 			for (int i = 1; i < inputLines.Length - 1; i++) {

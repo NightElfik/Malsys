@@ -13,7 +13,6 @@ open Microsoft.FSharp.Text.Lexing
 
 open Malsys
 open Malsys.Ast
-open Malsys.Compilers
 open Malsys.Parsing.Parser
 
 // for float (double) parsing
@@ -27,16 +26,15 @@ let lexeme lexbuf = LexBuffer<_>.LexemeString lexbuf
 let newline (lexbuf : LexBuffer<_>) = lexbuf.EndPos <- lexbuf.EndPos.NextLine
 
 
-let msgErr = CompilerMessageType.Error
-let msgWarn = CompilerMessageType.Warning
-let msgNtc = CompilerMessageType.Notice
+let msgErr = MessageType.Error
+let msgWarn = MessageType.Warning
 
 /// Writes given message unto given args with range readed from given lexbuf.
-let writeMessage (msgColl : MessagesCollection, _) (lexbuf : LexBuffer<_>) (msgType : CompilerMessageType) (msg : string) =
+let writeMessage (msgColl : MessagesCollection, _) (lexbuf : LexBuffer<_>) (msgType : MessageType) (msg : string) =
     msgColl.AddMessage(msg, msgType, new Position(lexbuf.StartPos, lexbuf.EndPos));
     ()
 
-let writeMessagePos (msgColl : MessagesCollection, _) (pos : Position) (msgType : CompilerMessageType) (msg : string) =
+let writeMessagePos (msgColl : MessagesCollection, _) (pos : Position) (msgType : MessageType) (msg : string) =
     msgColl.AddMessage(msg, msgType, pos);
     ()
 
