@@ -1,12 +1,11 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.Threading;
-using Malsys.Compilers;
 using Malsys.IO;
 using Malsys.Parsing;
 using Malsys.SourceCode.Printers;
 using Microsoft.FSharp.Text.Lexing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 
 namespace Malsys.Tests.Parsing {
 	[TestClass]

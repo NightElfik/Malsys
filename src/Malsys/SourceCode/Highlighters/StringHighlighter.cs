@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
-using Malsys.Compilers;
-using TagFun = System.Func<Malsys.SourceCode.Highlighters.MarkType, bool, object[], string>;
-/*
+﻿/*
 namespace Malsys.SourceCode.Highlighters {
 	public static class StringHighlighter {
 

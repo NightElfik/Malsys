@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 using Malsys.Evaluators;
-using Malsys.SemanticModel.Evaluated;
 using Malsys.SemanticModel;
+using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Compilers.Expressions {
 	/// <summary>

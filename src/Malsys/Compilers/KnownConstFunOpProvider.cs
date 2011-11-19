@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using StringInt = System.Tuple<string, int>;
 using Malsys.Compilers.Expressions;
+using StringInt = System.Tuple<string, int>;
 
 namespace Malsys.Expressions {
 	public class KnownConstFunOpProvider : IKnownConstantsProvider, IKnownFunctionsProvider, IKnownOperatorsProvider {

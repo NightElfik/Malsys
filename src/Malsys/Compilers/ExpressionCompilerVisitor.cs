@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using Malsys.Ast;
-using Malsys.Expressions;
-using Malsys.SemanticModel.Compiled;
-using Malsys.SemanticModel;
-using Malsys.SemanticModel.Compiled.Expressions;
 using Malsys.Compilers.Expressions;
+using Malsys.SemanticModel;
+using Malsys.SemanticModel.Compiled;
+using Malsys.SemanticModel.Compiled.Expressions;
 
 namespace Malsys.Compilers {
 	class ExpressionCompilerVisitor : Ast.IExpressionVisitor {

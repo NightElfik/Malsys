@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.FSharp.Collections;
+﻿using Microsoft.FSharp.Collections;
 using Microsoft.FSharp.Core;
 
 namespace Malsys {

@@ -1,9 +1,6 @@
-﻿using Malsys.SemanticModel.Compiled;
+﻿using System.Collections.Generic;
+using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Evaluated;
-using System.Collections.Generic;
-using FunsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Compiled.FunctionEvaledParams>;
-using LsysMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Compiled.LsystemEvaledParams>;
-using ConstsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.IValue>;
 using Microsoft.FSharp.Collections;
 
 namespace Malsys.Evaluators {

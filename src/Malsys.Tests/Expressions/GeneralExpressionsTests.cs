@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 using Malsys.Compilers;
-using Malsys.Expressions;
+using Malsys.Evaluators;
 using Malsys.Parsing;
+using Malsys.SemanticModel;
+using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Text.Lexing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Malsys.SemanticModel.Evaluated;
-using Malsys.Evaluators;
-using Malsys.SemanticModel;
 
 namespace Malsys.Tests.Expressions {
 	/// <summary>

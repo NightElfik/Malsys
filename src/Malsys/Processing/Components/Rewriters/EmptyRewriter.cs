@@ -1,7 +1,6 @@
 ﻿using System;
-using Malsys.Expressions;
-using Malsys.SemanticModel.Evaluated;
 using Malsys.SemanticModel;
+using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Processing.Components.Rewriters {
 	class EmptyRewriter : IRewriter {

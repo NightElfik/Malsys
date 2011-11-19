@@ -3,9 +3,6 @@ using Malsys.Evaluators;
 using Malsys.Parsing;
 using Malsys.SemanticModel.Compiled;
 using Microsoft.FSharp.Text.Lexing;
-using FunsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Compiled.FunctionEvaledParams>;
-using ConstsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.IValue>;
-using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Compilers {
 	public class InputCompiler {

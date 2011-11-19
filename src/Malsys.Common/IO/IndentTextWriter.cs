@@ -1,5 +1,4 @@
-﻿using System.Text;
-using System.IO;
+﻿using System.IO;
 
 namespace Malsys.IO {
 	public class IndentTextWriter : IndentWriter {

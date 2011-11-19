@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Malsys.Media;
 using System.IO;
+using Malsys.Media;
 
 namespace Malsys.Processing.Components.Renderers.TwoD {
 	public class SvgRenderer2D : IRenderer2D {

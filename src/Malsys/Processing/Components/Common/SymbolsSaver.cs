@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Malsys.SourceCode.Printers;
+﻿using System.IO;
 using Malsys.IO;
-using System.IO;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Evaluated;
+using Malsys.SourceCode.Printers;
 
 namespace Malsys.Processing.Components.Common {
 	public class SymbolsSaver : ISymbolProcessor {

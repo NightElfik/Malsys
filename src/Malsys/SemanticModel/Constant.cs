@@ -1,8 +1,8 @@
 ﻿using System;
+using Malsys.Evaluators;
 using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Compiled.Expressions;
 using Malsys.SemanticModel.Evaluated;
-using Malsys.Evaluators;
 
 namespace Malsys.SemanticModel {
 	/// <summary>

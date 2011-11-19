@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Linq;
-using Malsys.Expressions;
-using Malsys.Processing.Components.Renderers;
-using Malsys.Media;
-using Malsys.SemanticModel.Evaluated;
-using Malsys.SemanticModel;
 using Malsys.Evaluators;
+using Malsys.Media;
+using Malsys.Processing.Components.Renderers;
+using Malsys.SemanticModel;
 
 namespace Malsys.Processing.Components.Interpreters.TwoD {
 	public class Interpreter2D : IInterpreter {

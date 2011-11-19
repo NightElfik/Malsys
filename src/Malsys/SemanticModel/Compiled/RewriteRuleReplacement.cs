@@ -1,5 +1,4 @@
-﻿using Malsys.SemanticModel;
-
+﻿
 namespace Malsys.SemanticModel.Compiled {
 	/// <summary>
 	/// Immutable.

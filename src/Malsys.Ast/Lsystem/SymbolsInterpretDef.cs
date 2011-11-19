@@ -1,5 +1,4 @@
-﻿using System;
-
+﻿
 namespace Malsys.Ast {
 	public class SymbolsInterpretDef : ILsystemStatement {
 

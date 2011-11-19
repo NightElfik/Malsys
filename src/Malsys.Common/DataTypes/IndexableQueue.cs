@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
-using System.Collections.Generic;
 
 namespace Malsys {
 	public class IndexableQueue<T> {

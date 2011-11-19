@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Malsys.Compilers;
+﻿using Malsys.Compilers;
 using Malsys.Evaluators;
 using Malsys.SemanticModel.Evaluated;
 

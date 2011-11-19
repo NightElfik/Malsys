@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Text;
 using System.Globalization;
+using System.Text;
 
 namespace Malsys {
 	public static class StringExtensions {

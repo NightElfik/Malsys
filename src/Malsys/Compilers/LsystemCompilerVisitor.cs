@@ -1,5 +1,4 @@
-﻿using System;
-using Malsys.SemanticModel.Compiled;
+﻿using Malsys.SemanticModel.Compiled;
 
 namespace Malsys.Compilers {
 	class LsystemCompilerVisitor : Ast.ILsystemVisitor {

@@ -1,21 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using Malsys.Compilers;
-using Malsys.Expressions;
-using Malsys.IO;
-using Malsys.Parsing;
-using Malsys.Processing.Components;
-using Malsys.Processing.Components.Interpreters;
-using Malsys.SourceCode.Printers;
-using Microsoft.FSharp.Text.Lexing;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Malsys.Processing;
 using Malsys.Evaluators;
-using Microsoft.FSharp.Collections;
-using Malsys.SemanticModel.Evaluated;
-using Malsys.SemanticModel.Compiled;
-using Malsys.SemanticModel;
+using Malsys.IO;
+using Malsys.Processing;
+using Malsys.Processing.Components;
 using Malsys.Processing.Components.Common;
+using Malsys.SemanticModel;
+using Malsys.SemanticModel.Compiled;
+using Malsys.SemanticModel.Evaluated;
+using Malsys.SourceCode.Printers;
+using Microsoft.FSharp.Collections;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Malsys.Tests.Rewriters {
 	public static class GenericRewriterTests {

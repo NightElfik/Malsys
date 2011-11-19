@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Malsys.Expressions;
 using Malsys.IO;
-using Malsys.SemanticModel.Compiled;
-using Malsys.SemanticModel.Evaluated;
 using Malsys.SemanticModel;
+using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Compiled.Expressions;
+using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.SourceCode.Printers {
 	public class CanonicPrinter : IExpressionVisitor {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
+using Malsys.Compilers.Expressions;
 using Malsys.Expressions;
 using Malsys.SemanticModel.Compiled;
-using Malsys.Compilers.Expressions;
 
 namespace Malsys.Compilers {
 	public class ExpressionCompiler {

@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Malsys.Expressions;
 using System.Diagnostics.Contracts;
-using Malsys.Processing.Components.Rewriters;
-using Malsys.SemanticModel.Evaluated;
-using Malsys.SemanticModel;
 using Malsys.Processing.Components.Common;
+using Malsys.Processing.Components.Rewriters;
+using Malsys.SemanticModel;
+using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Processing.Components.RewriterIterators {
 	public class SingleRewriterIterator : IRewriterIterator {

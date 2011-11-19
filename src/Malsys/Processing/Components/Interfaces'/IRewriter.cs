@@ -1,6 +1,4 @@
-﻿using Malsys.Expressions;
-using Malsys.SemanticModel.Evaluated;
-using Malsys.Evaluators;
+﻿using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Processing.Components {
 	public interface IRewriter : ISymbolProcessor {

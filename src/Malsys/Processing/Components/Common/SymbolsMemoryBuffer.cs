@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Symbol = Malsys.SemanticModel.Symbol<Malsys.SemanticModel.Evaluated.IValue>;
-using Malsys.IO;
 
 namespace Malsys.Processing.Components.Common {
 	public class SymbolsMemoryBuffer : ISymbolProcessor {

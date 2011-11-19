@@ -1,18 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Malsys.Compilers;
-using Malsys.Evaluators;
-using Malsys.IO;
-using Malsys.Parsing;
-using Malsys.Processing;
-using Malsys.Processing.Components;
-using Malsys.Processing.Components.Interpreters;
-using Malsys.SemanticModel;
-using Malsys.SemanticModel.Evaluated;
-using Malsys.SourceCode.Printers;
-using Microsoft.FSharp.Collections;
-using Microsoft.FSharp.Text.Lexing;
+﻿using Malsys.Processing.Components.Interpreters;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Malsys.Tests.Interpreters {

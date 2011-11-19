@@ -1,5 +1,4 @@
-﻿using Malsys.Expressions;
-using Malsys.SemanticModel.Compiled.Expressions;
+﻿using Malsys.SemanticModel.Compiled.Expressions;
 
 namespace Malsys.SemanticModel.Compiled {
 	/// <summary>

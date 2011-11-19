@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
-using Malsys.Compilers;
-/*
+﻿/*
 namespace Malsys.SourceCode.Highlighters {
 	static class MarksCollector {
 

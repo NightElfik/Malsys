@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Malsys.Processing.Components.Rewriters;
-using Malsys.Processing.Components.RewriterIterators;
+﻿using System.Collections.Generic;
+using Malsys.Processing.Components;
+using Malsys.Processing.Components.Common;
 using Malsys.Processing.Components.Interpreters;
 using Malsys.Processing.Components.Interpreters.TwoD;
 using Malsys.Processing.Components.Renderers.TwoD;
-using Malsys.Processing.Components;
+using Malsys.Processing.Components.RewriterIterators;
+using Malsys.Processing.Components.Rewriters;
+using Malsys.SemanticModel;
 using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Core;
-using Malsys.SemanticModel;
-using Malsys.Processing.Components.Common;
 
 namespace Malsys.Processing {
 	public class RenderSetupManager {
