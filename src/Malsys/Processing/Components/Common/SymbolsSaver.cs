@@ -36,7 +36,7 @@ namespace Malsys.Processing.Components.Common {
 			notMeasuring = !measuring;
 
 			if (notMeasuring) {
-				var path = filesMgr.GetNewOutputFilePath(".txt");
+				var path = filesMgr.GetNewOutputFilePath(typeof(SymbolsSaver).Name, ".txt");
 				writer = new StreamWriter(path);
 				printer = new CanonicPrinter(new IndentTextWriter(writer));
 			}

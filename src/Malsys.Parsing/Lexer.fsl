@@ -11,8 +11,11 @@ open System.Text
 open System.Globalization
 open Microsoft.FSharp.Text.Lexing
 
+open MessagesLogger
+
 open Malsys
 open Malsys.Ast
+open Malsys.Parsing
 open Malsys.Parsing.Parser
 
 // for float (double) parsing
@@ -26,16 +29,8 @@ let lexeme lexbuf = LexBuffer<_>.LexemeString lexbuf
 let newline (lexbuf : LexBuffer<_>) = lexbuf.EndPos <- lexbuf.EndPos.NextLine
 
 
-let msgErr = MessageType.Error
-let msgWarn = MessageType.Warning
-
-/// Writes given message unto given args with range readed from given lexbuf.
-let writeMessage (msgColl : MessagesCollection, _) (lexbuf : LexBuffer<_>) (msgType : MessageType) (msg : string) =
-    msgColl.AddMessage(msg, msgType, new Position(lexbuf.StartPos, lexbuf.EndPos));
-    ()
-
-let writeMessagePos (msgColl : MessagesCollection, _) (pos : Position) (msgType : MessageType) (msg : string) =
-    msgColl.AddMessage(msg, msgType, pos);
+let logMsg msgType (lexbuf : LexBuffer<_>) args =
+    logMessagePos msgType (new Position(lexbuf.StartPos, lexbuf.EndPos)) args;
     ()
 
 /// Adds given string as comment into comments list in args.
@@ -76,7 +71,7 @@ let keywords = List.map getKwStr kw |> Map.ofList
 
 let parseInt args lexbuf format =
     let s = if (format = ConstantFormat.HashHexadecimal) then ("0x" + (lexeme lexbuf).Substring(1)) else (lexeme lexbuf) in
-    let n = try int64 s |> double with _ -> writeMessage args lexbuf msgErr <| sprintf "Failed to parse `%s` as integer." s; Double.NaN in
+    let n = try int64 s |> double with _ -> logMsg ParsserMessageType.FailedParseInt lexbuf [| (lexeme lexbuf) |]; Double.NaN in
     FLOAT (n, format)
 
 
@@ -166,7 +161,7 @@ rule tokenize args = parse
         if Double.TryParse(lexeme lexbuf, floatStyle, invariantCulture, &d) then
             FLOAT (d, ConstantFormat.Float)
         else
-            writeMessage args lexbuf msgErr <| sprintf "Failed to parse `%s` as folating point number." (lexeme lexbuf)
+            logMsg ParsserMessageType.FailedParseFloat lexbuf [| (lexeme lexbuf) |]
             FLOAT (Double.NaN, ConstantFormat.Float) }
 
     | "/*"
@@ -198,7 +193,7 @@ rule tokenize args = parse
       { EOF }
 
     | _
-      { writeMessage args lexbuf msgErr <| sprintf  "Unrecognized input `%s`." (lexeme lexbuf);
+      { logMsg ParsserMessageType.UnrecognizedInput lexbuf [| (lexeme lexbuf) |]
         tokenize args lexbuf }
 
 // nested mult-line comment
@@ -223,7 +218,7 @@ and multiLineComment args bPos sb nest = parse
 
     | eof
       { addComment args (sb.ToString()) bPos lexbuf.StartPos;
-        writeMessagePos args (new Position(bPos, lexbuf.StartPos)) msgWarn "Unterminated multiline comment.";
+        logMessagePos ParsserMessageType.UnterminatedMultilineComment (new Position(bPos, lexbuf.StartPos)) Array.empty;
         EOF }
 
     | _

@@ -20,6 +20,8 @@ namespace Malsys.Processing {
 			FilesManager = filesManager;
 			InputData = data;
 			ExpressionEvaluator = exprEval;
+
+			filesManager.CurrentLsystem = lsystem;
 		}
 	}
 }

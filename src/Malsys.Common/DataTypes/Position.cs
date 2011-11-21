@@ -5,7 +5,8 @@ namespace Malsys {
 	/// <summary>
 	/// Immutable.
 	/// </summary>
-	public struct Position {
+	public class Position {
+
 		public static readonly Position Unknown = new Position(-1, -1, -1, -1);
 
 		public readonly int BeginLine;
@@ -63,6 +64,10 @@ namespace Malsys {
 
 		public Position GetEndPos() {
 			return new Position(EndLine, EndColumn, EndLine, EndColumn);
+		}
+
+		public override string ToString() {
+			return "[{0},{1}] - [{2},{3}]".Fmt(BeginLine, BeginColumn, EndLine, EndColumn);
 		}
 	}
 }

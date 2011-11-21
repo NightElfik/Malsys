@@ -70,6 +70,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MessagesLogger.cs" />
     <Compile Include="IO\IndentTextWriter.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="MessagesCollection.cs" />
@@ -88,6 +89,7 @@
     <Compile Include="Helpers\MathHelper.cs" />
     <Compile Include="IO\IndentStringWriter.cs" />
     <Compile Include="IO\IndentWriter.cs" />
+    <Compile Include="Parsing\ParserMessagesLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StringValueAttribute.cs" />
   </ItemGroup>

@@ -23,14 +23,13 @@ let parse_error_rich = Some (fun (ctxt: ParseErrorContext<_>) ->
 let getLastErrorPos = MessagesLogger.getLastErrPos
 
 
-let logError parserState msg =
-    MessagesLogger.logMessage MessageType.Error parserState msg
+let logMsg msgType (parserState : IParseState) =
+    logMessagePos msgType (new Position(parserState.ResultRange)) Array.empty;
+    ()
 
-let logInfoPos pos msg =
-    MessagesLogger.logMessagePos MessageType.Info pos msg
-
-let logErrorPos pos msg =
-    MessagesLogger.logMessagePos MessageType.Error pos msg
+let logMsgPos msgType pos =
+    logMessagePos msgType pos Array.empty;
+    ()
 
 
 let getPos (parserState : IParseState) =
@@ -154,7 +153,7 @@ ConstDef:
     | LET id EQUALS Expression SEMI
       { new ConstantDefinition($2, $4, getPos parseState) :> IStatement }
     | LET error SEMI
-      { logErrorPos (getPosBetween parseState 1 3) "Constant definition excpected.";
+      { logMsgPos ParsserMessageType.ConstDefInvalid (getPosBetween parseState 1 3);
         new EmptyStatement(getPos parseState) :> IStatement }
 
 //------------------------------------------------------------------------------
@@ -165,14 +164,14 @@ FunDef:
     | FUN id OptParamsParens FunBody
       { new FunctionDefinition($2, $3, $4, getPos parseState) :> IStatement }
     | FUN id error FunBody
-      { logErrorPos (getPosBetween parseState 2 4) "Function parameters excpected.";
+      { logMsgPos ParsserMessageType.ExcpectedParams (getPosBetween parseState 2 4);
         new EmptyStatement(getPos parseState) :> IStatement }
 
 FunBody:
     | LBRACE FunStatementsList RBRACE
       { new ImmutableListPos<IFunctionStatement>($2 :> ResizeArray<IFunctionStatement>, getPosI parseState 1, getPosI parseState 3, getPos parseState)  }
     | LBRACE error RBRACE
-      { logErrorPos (getPosBetween parseState 1 3) "Excpected function statements.";
+      { logMsgPos ParsserMessageType.FunStatementsInvalid (getPosBetween parseState 1 3);
         new ImmutableListPos<IFunctionStatement>(getPosI parseState 1, getPosI parseState 3, getPos parseState) }
 
 FunStatementsList:
@@ -196,12 +195,15 @@ LsystemDef:
     | LSYSTEM id OptParams LsysBody
       { new LsystemDefinition($2, $3, $4, getPos parseState) :> IInputStatement }
     | LSYSTEM error LsysBody
-      { logErrorPos (getPosBetween parseState 1 3) "Lsystem name and params excpected.";
+      { logMsgPos ParsserMessageType.LsystemHeaderInvalid (getPosBetween parseState 1 3);
         new EmptyStatement(getPos parseState) :> IInputStatement }
 
 LsysBody:
     | LBRACE LsysStatementsList RBRACE
       { new ImmutableListPos<ILsystemStatement>($2 :> ResizeArray<ILsystemStatement>, getPosI parseState 1, getPosI parseState 3, getPos parseState)  }
+    | LBRACE error RBRACE
+      { logMsgPos ParsserMessageType.LsystemStatementsInvalid (getPosBetween parseState 1 3);
+        new ImmutableListPos<ILsystemStatement>(getPosI parseState 1, getPosI parseState 3, getPos parseState)  }
 
 LsysStatementsList:
     |
@@ -227,14 +229,14 @@ SymbolsConstDef:
     | SET id EQUALS LsystemSymbolList SEMI
       { new SymbolsConstDefinition($2, $4, getPos parseState) :> ILsystemStatement }
     | SET error SEMI
-      { logErrorPos (getPosBetween parseState 1 3) "Symbols constant definition excpected.";
+      { logMsgPos ParsserMessageType.SymbolsConstDefInvalid (getPosBetween parseState 1 3);
         new EmptyStatement(getPos parseState) :> ILsystemStatement }
 
 SymbolsInterpretDef:
     | INTERPRET LsystemSymbolList AS id OptExpressionsListParen SEMI
       { new SymbolsInterpretDef($2, $4, $5, getPos parseState) :> ILsystemStatement }
     | INTERPRET error SEMI
-      { logErrorPos (getPosBetween parseState 1 3) "Symbols interpretation definition excpected.";
+      { logMsgPos ParsserMessageType.SymbolsInterpretationInvalid (getPosBetween parseState 1 3);
         new EmptyStatement(getPos parseState) :> ILsystemStatement }
 
 
@@ -246,10 +248,10 @@ RewriteRule:
     | REWRITE OptRrCtxt LsystemSymbol OptRrCtxt OptRrLocalConsts OptRrCondition TO RrReplacList SEMI
       { new RewriteRule($3, $2, $4, $5, $6, $8, getPos parseState) :> ILsystemStatement }
     | REWRITE OptRrCtxt LsystemSymbol OptRrCtxt OptRrLocalConsts OptRrCondition TO error SEMI
-      { logErrorPos (getPosBetween parseState 7 9) "Excpected rewrite rule replacement."
+      { logMsgPos ParsserMessageType.RrReplacementInvalid (getPosBetween parseState 7 9);
         new RewriteRule($3, $2, $4, $5, $6, ImmutableListPos<RewriteRuleReplacement>.Empty, getPos parseState) :> ILsystemStatement }
     | REWRITE error SEMI
-      { logErrorPos (getPosBetween parseState 1 3) "Excpected rewrite rule.";
+      { logMsgPos ParsserMessageType.RewriteRuleInvalid (getPosBetween parseState 1 3);
         new EmptyStatement(getPos parseState) :> ILsystemStatement }
 
 OptRrCtxt:
@@ -258,36 +260,36 @@ OptRrCtxt:
     | LBRACE LsystemSymbolList RBRACE
       { $2.AddSeparators(getPosI parseState 1, getPosI parseState 3, getPos parseState) }
     | LBRACE error RBRACE
-      { logErrorPos (getPosBetween parseState 1 3) "Excpected symbol patterns as context.";
+      { logMsgPos ParsserMessageType.SymbolsPatternInvalid (getPosBetween parseState 1 3);
         ImmutableListPos<LsystemSymbol>.Empty }
 
 OptRrLocalConsts:
     |
       { ImmutableListPos<ConstantDefinition>.Empty }
     | WITH
-      { logInfoPos (getPosI parseState 1) "Empty constant definition block.";
+      { logMsgPos ParsserMessageType.EmptyRrConstsDefBlock (getPosI parseState 1);
         ImmutableListPos<ConstantDefinition>(getStartPos parseState) }
     | WITH RrLocalConstsListNonEmpty
       { new ImmutableListPos<ConstantDefinition>($2 :> ResizeArray<ConstantDefinition>, getPos parseState) }
     | WITH error
-      { logError parseState "Excpected variable definitions separated by colon.";
+      { logMsg ParsserMessageType.RrConstsDefInvalid parseState;
         ImmutableListPos<ConstantDefinition>(getStartPos parseState) }
 
 OptRrCondition:
     |
       { Expression.Empty }
     | WHERE
-      { logInfoPos (getPosI parseState 1) "Empty condition found.";
+      { logMsgPos ParsserMessageType.EmptyRrConditionBlock (getPosI parseState 1);
         new Expression(getEndPos parseState) }
     | WHERE ExpressionNonEmpty
       { $2 }
     | WHERE error
-      { logError parseState "Excpected condition expression.";
+      { logMsg ParsserMessageType.RrConditionInvalid parseState;
         new Expression(getEndPos parseState) }
 
 RrReplacList:
     |
-      { logInfoPos (getStartPos parseState) "Empty replacement block found, you can use keyword `nothing` to improve source code readability.";
+      { logMsgPos ParsserMessageType.EmptyRrReplacementBlock (getStartPos parseState);
         ImmutableListPos<RewriteRuleReplacement>.Empty }
     | RrReplacListNonEmpty
       { new ImmutableListPos<RewriteRuleReplacement>($1 :> ResizeArray<RewriteRuleReplacement>, getPos parseState) }
@@ -312,12 +314,12 @@ OptRrWeight:
     |
       { Expression.Empty }
     | WEIGHT
-      { logInfoPos (getPosI parseState 1) "Empty probability weight found.";
+      { logMsg ParsserMessageType.EmptyRrProbabilityBlock parseState;
         new Expression(getEndPos parseState) }
     | WEIGHT ExpressionNonEmpty
       { $2 }
     | WEIGHT error
-      { logError parseState "Excpected probability weight (expression).";
+      { logMsg ParsserMessageType.RrProbabilityInvalid parseState;
         new Expression(getEndPos parseState) }
 
 
@@ -384,7 +386,7 @@ OptParamsParens:
     | LPAREN OptParamsList RPAREN
       { ($2 :> ImmutableListPos<OptionalParameter>).AddSeparators(getPosI parseState 1, getPosI parseState 3, getPos parseState) }
     | LPAREN error RPAREN
-      { logErrorPos (getPosBetween parseState 1 3) "Excpected parameters with optional default value separated by comma.";
+      { logMsgPos ParsserMessageType.OptionalParamsInvalid (getPosBetween parseState 1 3);
         new ImmutableListPos<OptionalParameter>(getPosI parseState 1, getPosI parseState 3, getPos parseState) }
 
 OptParamsList:
@@ -412,7 +414,7 @@ OptParam:
 
 Expression:
     |
-      { logError parseState "Excpected non-empty expression.";
+      { logMsg ParsserMessageType.EmptyExpression parseState;
         new Expression(getStartPos parseState) }
     | ExpressionMembersNonEmpty
       { new Expression($1, getPos parseState) }
@@ -449,7 +451,7 @@ ExpressionsArray:
     | LBRACE ExpressionsList RBRACE
       { new ExpressionsArray($2, getPosI parseState 1, getPosI parseState 3) }
     | LBRACE error RBRACE
-      { logErrorPos (getPosBetween parseState 1 3) "Excpected expressions separated by comma.";
+      { logMsgPos ParsserMessageType.ArrayExpressionInvalid (getPosBetween parseState 1 3);
         new ExpressionsArray(getPos parseState) }
 
 ExpressionsList:
@@ -463,9 +465,6 @@ ExpressionsListNonEmpty:
       { let mutable x = new ResizeArray<Expression>() in x.Add($1); x }
     | ExpressionsListNonEmpty COMMA Expression
       { $1.Add($3); $1 }
-    | ExpressionsListNonEmpty COMMA error
-      { logErrorPos (getPosFromTo (getPosI parseState 2) (getPos parseState)) "Invalid expression in array.";
-        $1 }
 
 ExprIndexer:
     | LBRACK Expression RBRACK

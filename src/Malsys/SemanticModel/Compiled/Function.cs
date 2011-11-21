@@ -14,6 +14,7 @@ namespace Malsys.SemanticModel.Compiled {
 		public Function(string name, ImmutableList<OptionalParameter> prms, ImmutableList<IFunctionStatement> stats,
 				Ast.FunctionDefinition astNode) {
 
+			Name = name;
 			Parameters = prms;
 			Statements = stats;
 			AstNode = astNode;

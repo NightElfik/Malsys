@@ -150,6 +150,8 @@ namespace Malsys.Processing.Components.Rewriters {
 
 		public IValue RewrittenSymbols { get { return rewrittenSymbols.ToConst(); } }
 
+		public IValue RewriteRuleApplied { get { return rewriteRuleApplied ? Constant.True : Constant.False; } }
+
 		#endregion
 
 
@@ -200,7 +202,7 @@ namespace Malsys.Processing.Components.Rewriters {
 					actualConsts = mapPatternConsts(rr.SymbolPattern, symbol, actualConsts);
 					// map local bindings
 					foreach (var cd in rr.LocalConstantDefs) {
-						actualConsts = actualConsts.Add(cd.Name, exprEvaluator.Evaluate(cd.Value));
+						actualConsts = actualConsts.Add(cd.Name, exprEvaluator.Evaluate(cd.Value, actualConsts, functions));
 					}
 
 					// check condition

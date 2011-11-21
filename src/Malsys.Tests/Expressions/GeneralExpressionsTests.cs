@@ -242,6 +242,14 @@ namespace Malsys.Tests.Expressions {
 			evalAndCompareD(tn, "1 && 1 ^^ 1 && 0 || 1 && 0 ^^ 0 && 1", 1.0);
 		}
 
+		[TestMethod]
+		public void ArrayTest() {
+			const string tn = "Array tests";
+
+			evalAndCompareD(tn, "{1}[0]", 1.0);
+			evalAndCompareD(tn, "{1, 2, 3, 4}[3]", 4.0);
+		}
+
 
 		private void evalAndCompareD(string testName, string exprStr, double exceptedValue) {
 			evalAndCompare(testName, exprStr, exceptedValue.ToConst());

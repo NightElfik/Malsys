@@ -4,23 +4,20 @@ using Malsys.SemanticModel.Compiled;
 
 namespace Malsys.Compilers {
 
-	public class LsystemCompiler {
+	public class LsystemCompiler : MessagesLogger<LsystemCompilerMessageType> {
 		/// <summary>
 		/// Pattern that matches anything, but does not bind.
 		/// </summary>
 		public const string PatternPlaceholder = "_";
 
 
-		private MessagesCollection msgs;
-
 		private InputCompiler inCompiler;
 		private LsystemCompilerVisitor lsysStatementCompiler;
 
 
-		public LsystemCompiler(InputCompiler inComp) {
-			inCompiler = inComp;
-			msgs = inCompiler.Messages;
+		public LsystemCompiler(MessagesCollection msgs, InputCompiler inComp) : base(msgs) {
 
+			inCompiler = inComp;
 			lsysStatementCompiler = new LsystemCompilerVisitor(inCompiler);
 		}
 
@@ -111,8 +108,7 @@ namespace Malsys.Compilers {
 
 				if (usedNames.ContainsKey(name)) {
 					var otherPos = usedNames[name];
-					msgs.AddError("Parameter name `{0}` in pattern `{1}` is not unique (in its context).".Fmt(name, symbol.Name),
-						symbol.AstSymbol.Arguments[i].Position, otherPos);
+					logMessage(LsystemCompilerMessageType.PatternsParamNameNotUnique, symbol.AstSymbol.Arguments[i].Position, name, symbol.Name, otherPos);
 					allAreUnique = false;
 				}
 
@@ -146,14 +142,14 @@ namespace Malsys.Compilers {
 			for (int i = 0; i < symbol.Arguments.Length; i++) {
 				if (allowArguments) {
 					if (symbol.Arguments[i].Members.Length != 1 || !(symbol.Arguments[i].Members[0] is Ast.Identificator)) {
-						msgs.AddError("Argument of symbol `{0}` can be only one identificator in this context.".Fmt(symbol.Name), symbol.Arguments[i].Position);
+						logMessage(LsystemCompilerMessageType.PatternParamCanBeOnlyId, symbol.Arguments[i].Position);
 					}
 
 					names[i] = ((Ast.Identificator)symbol.Arguments[i].Members[0]).Name;
 				}
 				else {
 					if (symbol.Arguments[i].Members.Length != 0) {
-						msgs.AddError("Arguments of symbol `{0}` are not alowed in thos context.".Fmt(symbol.Name), symbol.Arguments[i].Position);
+						logMessage(LsystemCompilerMessageType.SymbolsParamsNotAllowed, symbol.Arguments[i].Position, symbol.Name);
 					}
 				}
 			}
@@ -206,5 +202,82 @@ namespace Malsys.Compilers {
 			var defVals = inCompiler.ExpressionCompiler.CompileList(symbolsInterpretAst.DefaultParameters);
 			return new SymbolsInterpretation(symbolsInterpretAst.Instruction.Name, defVals, symbols);
 		}
+
+		public override string GetMessageTypeId(LsystemCompilerMessageType msgType) {
+			return ((int)msgType).ToString();
+		}
+
+		protected override string resolveMessage(LsystemCompilerMessageType msgType, out MessageType type, params object[] args) {
+
+			type = MessageType.Error;
+
+			switch (msgType) {
+				case LsystemCompilerMessageType.PatternsParamNameNotUnique:
+					return "Parameter name `{0}` in pattern `{1}` is not unique in its context. See also {2}.".Fmt(args);
+				case LsystemCompilerMessageType.PatternParamCanBeOnlyId:
+					return "Parameters of symbol pattern can be only dentificators.";
+				case LsystemCompilerMessageType.SymbolsParamsNotAllowed:
+					return "Parameters of symbol are not alowed in this context.";
+				default:
+					return "Unknown error.";
+			}
+		}
+
+		class LsystemCompilerVisitor : Ast.ILsystemVisitor {
+
+			private InputCompiler inCompiler;
+
+
+			private CompilerResult<ILsystemStatement> result;
+
+
+			public LsystemCompilerVisitor(InputCompiler inComp) {
+				inCompiler = inComp;
+			}
+
+
+			public CompilerResult<ILsystemStatement> TryCompile(Ast.ILsystemStatement astStatement) {
+				astStatement.Accept(this);
+				return result;
+			}
+
+
+			#region ILsystemVisitor Members
+
+			public void Visit(Ast.ConstantDefinition constDef) {
+				result = inCompiler.CompileConstDef(constDef);
+			}
+
+			public void Visit(Ast.EmptyStatement emptyStat) {
+				result = CompilerResult<ILsystemStatement>.Error;
+			}
+
+			public void Visit(Ast.FunctionDefinition funDef) {
+				result = inCompiler.CompileFunctionDef(funDef);
+			}
+
+			public void Visit(Ast.RewriteRule rewriteRule) {
+				result = inCompiler.LsystemCompiler.CompileRewriteRule(rewriteRule);
+			}
+
+			public void Visit(Ast.SymbolsInterpretDef symbolInterpretDef) {
+				result = inCompiler.LsystemCompiler.CompileSymbolsInterpretation(symbolInterpretDef);
+			}
+
+			public void Visit(Ast.SymbolsConstDefinition symbolsDef) {
+				result = inCompiler.LsystemCompiler.CompileSymbolConstant(symbolsDef);
+			}
+
+			#endregion
+		}
 	}
+
+
+	public enum LsystemCompilerMessageType {
+		Unknown,
+		PatternsParamNameNotUnique,
+		PatternParamCanBeOnlyId,
+		SymbolsParamsNotAllowed,
+	}
+
 }

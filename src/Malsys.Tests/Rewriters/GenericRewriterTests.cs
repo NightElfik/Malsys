@@ -137,6 +137,10 @@ namespace Malsys.Tests.Rewriters {
 				"x",
 				"x(10)");
 			doTest(rewriter,
+				"rewrite x(a) with y = a + a to x(y);",
+				"x(2)",
+				"x(4)");
+			doTest(rewriter,
 				"rewrite x(a) with a = 10 to x(a);",
 				"x(2)",
 				"x(10)");
@@ -203,11 +207,12 @@ namespace Malsys.Tests.Rewriters {
 
 			string input = "lsystem l {{ set axiom = {0}; {1} }}".Fmt(inputSymbols, rewriteRules);
 
-			var compiler = new InputCompiler(new MessagesCollection());
+			var msgs = new MessagesCollection();
+			var compiler = new InputCompiler(msgs);
 			var inCompiled = compiler.CompileFromString(input, "testInput");
 
-			if (compiler.Messages.ErrorOcured) {
-				Assert.Fail("Failed to parse/compile L-system." + compiler.Messages.ToString());
+			if (msgs.ErrorOcured) {
+				Assert.Fail("Failed to parse/compile L-system." + msgs.ToString());
 			}
 
 			var exprEvaluator = new ExpressionEvaluator();
@@ -222,7 +227,8 @@ namespace Malsys.Tests.Rewriters {
 			var lsystem = lsysEvaluator.Evaluate(inBlockEvaled.Lsystems["l"], ImmutableList<IValue>.Empty,
 				MapModule.Empty<string, IValue>(), MapModule.Empty<string, FunctionEvaledParams>());
 
-			var context = new ProcessContext(lsystem, null, inBlockEvaled, exprEvaluator);
+			var fm = new FilesManager("./");
+			var context = new ProcessContext(lsystem, fm, inBlockEvaled, exprEvaluator);
 
 			var symBuff = new SymbolsMemoryBuffer();
 			rewriter.OutputProcessor = symBuff;

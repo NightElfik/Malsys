@@ -65,11 +65,12 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HelpController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\RenderController.cs" />
+    <Compile Include="Controllers\ProcessLsystemController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountModels.cs" />
+    <Compile Include="Models\LsystemModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -123,12 +124,6 @@
     <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
-    <Content Include="Scripts\MicrosoftAjax.js" />
-    <Content Include="Scripts\MicrosoftAjax.debug.js" />
-    <Content Include="Scripts\MicrosoftMvcAjax.js" />
-    <Content Include="Scripts\MicrosoftMvcAjax.debug.js" />
-    <Content Include="Scripts\MicrosoftMvcValidation.js" />
-    <Content Include="Scripts\MicrosoftMvcValidation.debug.js" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Account\ChangePassword.cshtml" />
     <Content Include="Views\Account\ChangePasswordSuccess.cshtml" />
@@ -155,9 +150,6 @@
     <Content Include="Views\Help\Syntax.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Render\Text.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Malsys.Common\Malsys.Common.csproj">
       <Project>{433E2485-4265-4656-A197-D0EB315618E1}</Project>
       <Name>Malsys.Common</Name>
@@ -166,6 +158,9 @@
       <Project>{E80C526F-83F8-4899-B5DE-1F584E2C3D77}</Project>
       <Name>Malsys</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\ProcessLsystem\Text.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

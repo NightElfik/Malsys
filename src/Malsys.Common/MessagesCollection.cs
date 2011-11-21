@@ -24,27 +24,6 @@ namespace Malsys {
 			messages.Add(msg);
 		}
 
-		public void AddMessage(string message, MessageType type, Position pos) {
-			if (type == MessageType.Error) {
-				AddError(message, pos);
-				return;
-			}
-
-			messages.Add(new Message(message, type, DefaultSourceName, pos));
-		}
-
-		public void AddError(string message, Position pos) {
-			ErrorOcured = true;
-
-			messages.Add(new Message(message, MessageType.Error, DefaultSourceName, pos));
-		}
-
-		public void AddError(string message, Position pos, params Position[] otherPos) {
-			ErrorOcured = true;
-
-			messages.Add(new Message(message, MessageType.Error, DefaultSourceName, pos, otherPos));
-		}
-
 
 		public override string ToString() {
 

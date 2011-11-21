@@ -4,7 +4,7 @@ using Malsys.Expressions;
 using Malsys.SemanticModel.Compiled;
 
 namespace Malsys.Compilers {
-	public class ExpressionCompiler {
+	public partial class ExpressionCompiler : MessagesLogger<ExpressionCompilerMessageType> {
 
 		private static KnownConstFunOpProvider knownStuffProvider = new KnownConstFunOpProvider();
 
@@ -19,11 +19,8 @@ namespace Malsys.Compilers {
 		public IKnownFunctionsProvider KnownFunctions { get; set; }
 		public IKnownOperatorsProvider KnownOperators { get; set; }
 
-		private MessagesCollection msgs;
 
-
-		public ExpressionCompiler(MessagesCollection msgsColl) {
-			msgs = msgsColl;
+		public ExpressionCompiler(MessagesCollection msgs) : base(msgs) {
 
 			KnownConstants = knownStuffProvider;
 			KnownFunctions = knownStuffProvider;
@@ -32,7 +29,7 @@ namespace Malsys.Compilers {
 
 
 		public IExpression CompileExpression(Ast.Expression expr) {
-			var visitor = new ExpressionCompilerVisitor(this, msgs);
+			var visitor = new ExpressionCompilerVisitor(this);
 			return visitor.Compile(expr);
 		}
 
@@ -47,5 +44,48 @@ namespace Malsys.Compilers {
 			return new ImmutableList<IExpression>(resultArr, true);
 		}
 
+
+		public override string GetMessageTypeId(ExpressionCompilerMessageType msgType) {
+			return ((int)msgType).ToString();
+		}
+
+		protected override string resolveMessage(ExpressionCompilerMessageType msgType, out MessageType type, params object[] args) {
+
+			type = MessageType.Error;
+
+			switch (msgType) {
+				case ExpressionCompilerMessageType.InternalError:
+					return "Internal compiler error. {0}".Fmt(args);
+				case ExpressionCompilerMessageType.UnexcpectedEndOfExpression:
+					return "Unexcpected end of expression.";
+				case ExpressionCompilerMessageType.UnexcpectedOperand:
+					return "Unexcpected operand `{0}`, excpecting operator.".Fmt(args);
+				case ExpressionCompilerMessageType.UnexcpectedOperator:
+					return "Unexcpected `{0}` operator, excpecting operand.".Fmt(args);
+				case ExpressionCompilerMessageType.TooFewOperands:
+					return "Too few operands in expression.";
+				case ExpressionCompilerMessageType.TooManyOperands:
+					return "Too many operands in expression.";
+				case ExpressionCompilerMessageType.UnknownUnaryOperator:
+					return "Unknown unary operator `{0}`.".Fmt(args);
+				case ExpressionCompilerMessageType.UnknownBinaryOperator:
+					return "Unknown binary operator `{0}`.".Fmt(args);
+				default:
+					return "Unknown error.";
+			}
+
+		}
+	}
+
+	public enum ExpressionCompilerMessageType {
+		Unknown,
+		InternalError,
+		UnexcpectedEndOfExpression,
+		UnexcpectedOperand,
+		UnexcpectedOperator,
+		TooFewOperands,
+		TooManyOperands,
+		UnknownUnaryOperator,
+		UnknownBinaryOperator,
 	}
 }

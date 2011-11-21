@@ -1,35 +1,31 @@
 ﻿using System;
 
 namespace Malsys {
+	/// <summary>
+	/// Immutable.
+	/// </summary>
 	public class Message {
 
-		public int MessageId { get; private set; }
-		public string MessageStr { get; private set; }
-		public MessageType Type { get; private set; }
-		public string SourceName { get; private set; }
-		public Position Position { get; private set; }
-		public ImmutableList<Position> OtherPositions { get; private set; }
+		public readonly string Id;
+		public readonly string MessageStr;
+		public readonly MessageType Type;
+		public readonly string SourceName;
+		public readonly Position Position;
+		public readonly DateTime Time;
 
 
-		public Message(string message, MessageType type, string source, Position position) {
+		public Message(string id, MessageType type, string message, string source, Position position) {
+
+			Id = id;
 			MessageStr = message;
 			Type = type;
 			SourceName = source;
 			Position = position;
-			OtherPositions = ImmutableList<Position>.Empty;
-		}
-
-		public Message(string message, MessageType type, string source, Position position, params Position[] otherPositions) {
-			MessageStr = message;
-			Type = type;
-			SourceName = source;
-			Position = position;
-			OtherPositions = new ImmutableList<Position>(otherPositions);
+			Time = DateTime.Now;
 		}
 
 		public string GetFullMessage() {
-			return "{0}: {1} In `{2}` from line {3} col {4} to line {5} col {6}.".Fmt(
-				Type.ToString(), MessageStr, SourceName, Position.BeginLine, Position.BeginColumn, Position.EndLine, Position.EndColumn);
+			return "{0} [{1}]: {2} In `{3}` {4}.".Fmt(Type.ToString(), Id, MessageStr, SourceName, Position);
 		}
 
 		public override string ToString() {

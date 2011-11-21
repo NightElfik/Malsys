@@ -1,4 +1,6 @@
-﻿
+﻿using System;
+using System.Diagnostics.Contracts;
+
 namespace Malsys.Ast {
 	/// <summary>
 	/// Immutable.
@@ -9,8 +11,21 @@ namespace Malsys.Ast {
 
 
 		public Identificator(string name, Position pos) {
+
+			Contract.Requires<ArgumentNullException>(name != null);
+
 			Name = name;
 			Position = pos;
+		}
+
+		[ContractInvariantMethod]
+		private void objectInvariant() {
+			Contract.Invariant(Name != null);
+		}
+
+
+		public override string ToString() {
+			return Name;
 		}
 
 

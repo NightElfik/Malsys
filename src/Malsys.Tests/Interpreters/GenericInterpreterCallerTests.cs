@@ -107,7 +107,7 @@ namespace Malsys.Tests.Interpreters {
 				Assert.Fail("Failed to parse symbols. " + msgs.ToString());
 			}
 
-			var compiler = new LsystemCompiler(new InputCompiler(msgs));
+			var compiler = new LsystemCompiler(msgs, new InputCompiler(msgs));
 			var symbols = compiler.CompileSymbolsList(symbolsAst);
 
 			if (msgs.ErrorOcured) {

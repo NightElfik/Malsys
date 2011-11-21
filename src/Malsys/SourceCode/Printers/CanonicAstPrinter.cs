@@ -269,38 +269,7 @@ namespace Malsys.SourceCode.Printers {
 		}
 
 		public void Visit(FloatConstant floatConstant) {
-
-			double val = floatConstant.Value;
-
-			switch (floatConstant.Format) {
-				case ConstantFormat.Binary:
-					long valBin = (long)Math.Round(val);
-					writer.Write("0b");
-					writer.Write(Convert.ToString(valBin, 2));
-					break;
-
-				case ConstantFormat.Octal:
-					long valOct = (long)Math.Round(val);
-					writer.Write("0o");
-					writer.Write(Convert.ToString(valOct, 8));
-					break;
-
-				case ConstantFormat.Hexadecimal:
-					long valHex = (long)Math.Round(val);
-					writer.Write("0x");
-					writer.Write(Convert.ToString(valHex, 16).ToUpper());
-					break;
-
-				case ConstantFormat.HashHexadecimal:
-					long valHash = (long)Math.Round(val);
-					writer.Write("#");
-					writer.Write(Convert.ToString(valHash, 16).ToUpper());
-					break;
-
-				default:
-					writer.Write(val.ToStringInvariant());
-					break;
-			}
+			writer.Write(floatConstant.ToString());
 		}
 
 		public void Visit(Identificator variable) {

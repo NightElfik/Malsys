@@ -1,7 +1,9 @@
 ﻿module Malsys.Parsing.MessagesLogger
 
-open Malsys
 open Microsoft.FSharp.Text.Parsing
+
+open Malsys
+open Malsys.Parsing
 
 
 type internal ThreadStatic() =
@@ -10,7 +12,7 @@ type internal ThreadStatic() =
     static val mutable private lasErrorPos :  Malsys.Position
 
     [<System.ThreadStatic;DefaultValue>]
-    static val mutable private errorLogger : MessagesCollection
+    static val mutable private errorLogger : ParserMessagesLogger
 
     static member LasErrorPos
         with get() = ThreadStatic.lasErrorPos
@@ -21,11 +23,11 @@ type internal ThreadStatic() =
         and set(v) = ThreadStatic.errorLogger <- v
 
 
-let logMessage msgType (parseState : IParseState) msg =
-    ThreadStatic.ErrorLogger.AddMessage(msg, msgType, new Position(parseState.ResultRange))
+let logMessage msgType (parseState : IParseState) args =
+    ThreadStatic.ErrorLogger.LogMessage(msgType, new Position(parseState.ResultRange), args)
 
-let logMessagePos msgType (pos : Malsys.Position) msg =
-    ThreadStatic.ErrorLogger.AddMessage(msg, msgType, pos)
+let logMessagePos msgType pos args =
+    ThreadStatic.ErrorLogger.LogMessage(msgType, pos, args)
 
 let setErrPos (pos : Malsys.Position) =
     ThreadStatic.LasErrorPos <- pos

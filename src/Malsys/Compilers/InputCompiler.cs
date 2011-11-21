@@ -5,9 +5,7 @@ using Malsys.SemanticModel.Compiled;
 using Microsoft.FSharp.Text.Lexing;
 
 namespace Malsys.Compilers {
-	public class InputCompiler {
-
-		private MessagesCollection msgs;
+	public class InputCompiler : MessagesLogger<InputCompilerMessageType> {
 
 		private LsystemCompiler lsysCompiler;
 		private ExpressionCompiler exprCompiler;
@@ -15,19 +13,19 @@ namespace Malsys.Compilers {
 		private ExpressionEvaluator exprEvaluator;
 		private InputCompilerVisitor inVisitor;
 
-		public MessagesCollection Messages { get { return msgs; } }
 		public LsystemCompiler LsystemCompiler { get { return lsysCompiler; } }
 		public ExpressionCompiler ExpressionCompiler { get { return exprCompiler; } }
 
 
-		public InputCompiler(MessagesCollection msgsColl) {
-			msgs = msgsColl;
+		public InputCompiler(MessagesCollection msgs) : base(msgs) {
 
+			inVisitor = new InputCompilerVisitor(this);
+
+			lsysCompiler = new LsystemCompiler(msgs, this);
 			exprCompiler = new ExpressionCompiler(msgs);
-			lsysCompiler = new LsystemCompiler(this);
+
 			funCompiler = new FunctionCompilerVisitor(this);
 			exprEvaluator = new ExpressionEvaluator();
-			inVisitor = new InputCompilerVisitor(this);
 		}
 
 
@@ -36,10 +34,10 @@ namespace Malsys.Compilers {
 		public ImmutableList<IInputStatement> CompileFromString(string strInput, string sourceName) {
 
 			var lexBuff = LexBuffer<char>.FromString(strInput);
-			msgs.DefaultSourceName = sourceName;
+			messages.DefaultSourceName = sourceName;
 			var comments = new List<Ast.Comment>();
 
-			var parsedInput = ParserUtils.ParseInput(comments, lexBuff, msgs, sourceName);
+			var parsedInput = ParserUtils.ParseInput(comments, lexBuff, messages, sourceName);
 
 			return CompileFromAst(parsedInput);
 		}
@@ -74,16 +72,13 @@ namespace Malsys.Compilers {
 					wasOptional = true;
 				}
 				else if (wasOptional) {
-					msgs.AddError("Mandatory parameters have to be before all optional parameters, but mandatory parameter `{0}` is after optional."
-							.Fmt(parameters[i].NameId.Name),
-						parameters[i].Position);
+					logMessage(InputCompilerMessageType.RequiredParamAfterOptional, parameters[i].Position, parameters[i].NameId.Name);
 				}
 			}
 
 			// check wether parameters names are unique
 			foreach (var indices in result.GetEqualValuesIndices((l, r) => { return l.Name.Equals(r.Name); })) {
-				msgs.AddError("{0}. and {1}. parameter have same name `{2}`.".Fmt(indices.Item1 + 1, indices.Item2 + 1, result[indices.Item1].Name),
-					parameters[indices.Item1].Position, parameters[indices.Item2].Position);
+				logMessage(InputCompilerMessageType.ParamNameNotUnique, parameters[indices.Item1].Position, result[indices.Item1].Name, parameters[indices.Item2].Position);
 			}
 
 			return new ImmutableList<OptionalParameter>(result, true);
@@ -106,5 +101,73 @@ namespace Malsys.Compilers {
 			return new Function(funDefAst.NameId.Name, prms, stats, funDefAst);
 		}
 
+
+		public override string GetMessageTypeId(InputCompilerMessageType msgType) {
+			return ((int)msgType).ToString();
+		}
+
+		protected override string resolveMessage(InputCompilerMessageType msgType, out MessageType type, params object[] args) {
+
+			type = MessageType.Error;
+
+			switch (msgType) {
+				case InputCompilerMessageType.ParamNameNotUnique:
+					return "Parameter name `{0}` is not unique. See also {1}.".Fmt(args);
+				case InputCompilerMessageType.RequiredParamAfterOptional:
+					return "Optional parameters must appear after all required parameters, but required parameter `{0}` is after optional.".Fmt(args);
+				default:
+					return "Unknown error.";
+			}
+		}
+
+
+		class InputCompilerVisitor : Ast.IInputVisitor {
+
+
+			private InputCompiler inCompiler;
+
+
+			private CompilerResult<IInputStatement> result;
+
+
+			public InputCompilerVisitor(InputCompiler inComp) {
+				inCompiler = inComp;
+			}
+
+
+			public CompilerResult<IInputStatement> TryCompile(Ast.IInputStatement astStatement) {
+
+				astStatement.Accept(this);
+				return result;
+			}
+
+
+
+			#region IInputVisitor Members
+
+			public void Visit(Ast.ConstantDefinition constDef) {
+				result = inCompiler.CompileConstDef(constDef);
+			}
+
+			public void Visit(Ast.EmptyStatement emptyStat) {
+				result = CompilerResult<IInputStatement>.Error;
+			}
+
+			public void Visit(Ast.FunctionDefinition funDef) {
+				result = inCompiler.CompileFunctionDef(funDef);
+			}
+
+			public void Visit(Ast.LsystemDefinition lsysDef) {
+				result = inCompiler.LsystemCompiler.CompileLsystem(lsysDef);
+			}
+
+			#endregion
+		}
+	}
+
+	public enum InputCompilerMessageType {
+		Unknown,
+		RequiredParamAfterOptional,
+		ParamNameNotUnique,
 	}
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Processing {
 	public class FilesManager {
@@ -9,12 +10,13 @@ namespace Malsys.Processing {
 		private const int maxRandInt = 1000;
 
 		private string root;
-		private List<string> outFilePaths = new List<string>();
+		private List<OutputFile> outFilePaths = new List<OutputFile>();
 		private List<string> tmpFilePaths = new List<string>();
 		private Random rndGenerator = new Random();
 
 
 		public string FilesPrefix { get; set; }
+		public LsystemEvaled CurrentLsystem { get; set; }
 
 
 		public FilesManager(string workDirPath) {
@@ -27,9 +29,9 @@ namespace Malsys.Processing {
 			}
 		}
 
-		public string GetNewOutputFilePath(string suffix = ".out") {
+		public string GetNewOutputFilePath(string callerId, string suffix = ".out") {
 			string path = getNewFilePath(suffix);
-			outFilePaths.Add(path);
+			outFilePaths.Add(new OutputFile(path, CurrentLsystem.Name, callerId));
 			return path;
 		}
 
@@ -39,7 +41,7 @@ namespace Malsys.Processing {
 			return path;
 		}
 
-		public IEnumerable<string> GetOutputFilePaths() {
+		public IEnumerable<OutputFile> GetOutputFilePaths() {
 			return outFilePaths;
 		}
 

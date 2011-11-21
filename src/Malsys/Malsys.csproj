@@ -83,15 +83,14 @@
     <Compile Include="Compilers\CompilerParametersInternal.cs" />
     <Compile Include="Compilers\FunctionCompilerVisitor.cs" />
     <Compile Include="Compilers\InputCompiler.cs" />
-    <Compile Include="Compilers\InputCompilerVisitor.cs" />
     <Compile Include="Compilers\LsystemCompiler.cs" />
-    <Compile Include="Compilers\LsystemCompilerVisitor.cs" />
     <Compile Include="Evaluators\InputEvaluator.cs" />
     <Compile Include="Evaluators\LsystemEvaluator.cs" />
     <Compile Include="Processing\Components\Common\SymbolsSaver.cs" />
     <Compile Include="Processing\Components\UserReadableAttribute.cs" />
     <Compile Include="Processing\Components\Interfaces%27\IComponent.cs" />
     <Compile Include="Processing\Components\Interfaces%27\IProcessStarter.cs" />
+    <Compile Include="Processing\OutputFile.cs" />
     <Compile Include="Processing\RenderManager.cs" />
     <Compile Include="SemanticModel\Compiled\ConstantDefinition.cs" />
     <Compile Include="SemanticModel\Compiled\Expressions\EmptyExpression.cs" />

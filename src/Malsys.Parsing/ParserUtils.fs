@@ -1,9 +1,10 @@
 ﻿module Malsys.Parsing.ParserUtils
 
+open Microsoft.FSharp.Text.Lexing
 open Lexer
 open Malsys
 open Malsys.Ast
-open Microsoft.FSharp.Text.Lexing
+open Malsys.Parsing
 
 let setInitialBuffPos (lexbuf : LexBuffer<_>) sourceName =
     lexbuf.EndPos <- { pos_bol = 0;
@@ -14,7 +15,7 @@ let setInitialBuffPos (lexbuf : LexBuffer<_>) sourceName =
 
 let parseHelper (parseFun : (LexBuffer<_> -> Parser.token) -> LexBuffer<_> -> 'b) (comments : ResizeArray<Comment>) (lexbuf : LexBuffer<_>) (msgs : MessagesCollection) sourceName =
     msgs.DefaultSourceName <- sourceName;
-    MessagesLogger.ThreadStatic.ErrorLogger <- msgs;
+    MessagesLogger.ThreadStatic.ErrorLogger <- new ParserMessagesLogger(msgs);
     parseFun (Lexer.tokenize (msgs, comments)) (setInitialBuffPos lexbuf sourceName)
 
 // Can not write:

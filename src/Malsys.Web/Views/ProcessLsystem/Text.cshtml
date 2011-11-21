@@ -1,0 +1,56 @@
+﻿@model Malsys.Web.Models.ProcessLsystemResultModel
+
+@{
+	ViewBag.Title = "Text L-system evaluator";
+}
+<h2>Text L-system evaluator</h2>
+
+@using (Html.BeginForm()) {
+
+	<div>
+		<fieldset>
+			<legend>Source code</legend>
+
+			@Html.TextAreaFor(m => m.SourceCode, 20, 80, null)
+
+			<p>
+				<input type="submit" value="Evaluate all L-systems" />
+			</p>
+		</fieldset>
+	</div>
+
+}
+
+@if (Model.Messages != null) {
+	<h3>Messages:</h3>
+	<table>
+	<tr>
+		<th>Type</th>
+		<th>ID</th>
+		<th>Message</th>
+		<th>Position</th>
+	</tr>
+	@foreach (var msg in Model.Messages) {
+	 <tr>
+		<td>@msg.Type.ToString()</td>
+		<td>@msg.Id</td>
+		<td>@msg.MessageStr</td>
+		<td>@msg.Position.ToString()</td>
+	 </tr>
+	}
+	</table>
+}
+else {
+	<p>No messages</p>
+}
+@if (Model.OutputFiles != null) {
+	<h3>Results:</h3>
+	<ul>
+	@foreach (var result in Model.OutputFiles) {
+		<li><b>@result.LsystemName</b> @File.ReadAllText(result.FilePath)</li>
+	}
+	</ul>
+}
+else {
+	<h3>No results</h3>
+}
