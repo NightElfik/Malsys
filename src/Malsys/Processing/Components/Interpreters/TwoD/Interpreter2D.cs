@@ -27,7 +27,11 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 
 		#region IComponent Members
 
-		public ProcessContext Context { get; set; }
+		public bool RequiresMeasure { get { return false; } }
+
+		public void Initialize(ProcessContext context) { }
+
+		public void Cleanup() { }
 
 		public void BeginProcessing(bool measuring) {
 			currState = new State2D();

@@ -77,9 +77,13 @@ namespace Malsys.Processing.Components.Interpreters {
 
 		#region IComponent Members
 
-		public ProcessContext Context {
-			set { symbolToInstr = value.Lsystem.SymbolsInterpretation; }
+		public bool RequiresMeasure { get { return false; } }
+
+		public void Initialize(ProcessContext context) {
+			symbolToInstr = context.Lsystem.SymbolsInterpretation;
 		}
+
+		public void Cleanup() { }
 
 		public void BeginProcessing(bool measuring) {
 			interpret.BeginProcessing(measuring);

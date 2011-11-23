@@ -20,7 +20,11 @@ namespace Malsys.Processing.Components.Common {
 
 		#region IComponent Members
 
-		public ProcessContext Context { get; set; }
+		public bool RequiresMeasure { get { return false; } }
+
+		public void Initialize(ProcessContext context) { }
+
+		public void Cleanup() { }
 
 		public void BeginProcessing(bool measuring) {
 			buffer = measuring ? null : new List<Symbol>();

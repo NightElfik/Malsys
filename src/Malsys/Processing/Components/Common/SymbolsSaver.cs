@@ -28,9 +28,13 @@ namespace Malsys.Processing.Components.Common {
 
 		#region IComponent Members
 
-		public ProcessContext Context {
-			set { filesMgr = value.FilesManager; }
+		public bool RequiresMeasure { get { return false; } }
+
+		public void Initialize(ProcessContext context) {
+			filesMgr = context.FilesManager;
 		}
+
+		public void Cleanup() { }
 
 		public void BeginProcessing(bool measuring) {
 			notMeasuring = !measuring;

@@ -2,7 +2,15 @@
 namespace Malsys.Processing.Components {
 	public interface IComponent {
 
-		ProcessContext Context { set; }
+		/// <summary>
+		/// Retrieved at the end of component configuration.
+		/// </summary>
+		bool RequiresMeasure { get; }
+
+
+		void Initialize(ProcessContext context);
+
+		void Cleanup();
 
 
 		void BeginProcessing(bool measuring);

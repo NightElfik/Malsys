@@ -8,8 +8,6 @@ namespace Malsys.Processing.Components.Rewriters {
 		public static readonly EmptyRewriter Instance = new EmptyRewriter();
 
 
-
-
 		#region IRewriter Members
 
 		public ISymbolProcessor OutputProcessor {
@@ -33,8 +31,16 @@ namespace Malsys.Processing.Components.Rewriters {
 
 		#region IComponent Members
 
-		public ProcessContext Context {
-			set { throw new InvalidOperationException("Empty rewriter."); }
+		public bool RequiresMeasure {
+			get { throw new InvalidOperationException("Empty rewriter."); }
+		}
+
+		public void Initialize(ProcessContext context) {
+			throw new InvalidOperationException("Empty rewriter.");
+		}
+
+		public void Cleanup() {
+			throw new InvalidOperationException("Empty rewriter.");
 		}
 
 		public void BeginProcessing(bool measuring) {
@@ -46,5 +52,6 @@ namespace Malsys.Processing.Components.Rewriters {
 		}
 
 		#endregion
+
 	}
 }

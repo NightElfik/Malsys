@@ -3,6 +3,7 @@ using Malsys.Evaluators;
 using Malsys.Parsing;
 using Malsys.SemanticModel.Compiled;
 using Microsoft.FSharp.Text.Lexing;
+using System.Diagnostics;
 
 namespace Malsys.Compilers {
 	public class InputCompiler : MessagesLogger<InputCompilerMessageType> {
@@ -44,6 +45,9 @@ namespace Malsys.Compilers {
 
 		public ImmutableList<IInputStatement> CompileFromAst(Ast.InputBlock parsedInput) {
 
+			var sw = new Stopwatch();
+			sw.Start();
+
 			var statements = new List<IInputStatement>(parsedInput.Length);
 
 			for (int i = 0; i < parsedInput.Length; i++) {
@@ -52,6 +56,9 @@ namespace Malsys.Compilers {
 					statements.Add(stat.Result);
 				}
 			}
+
+			sw.Stop();
+			logMessage("ElapsedTime", MessageType.Info, Position.Unknown, sw.Elapsed.ToString());
 
 			return new ImmutableList<IInputStatement>(statements);
 		}
@@ -103,7 +110,7 @@ namespace Malsys.Compilers {
 
 
 		public override string GetMessageTypeId(InputCompilerMessageType msgType) {
-			return ((int)msgType).ToString();
+			return msgType.ToString();
 		}
 
 		protected override string resolveMessage(InputCompilerMessageType msgType, out MessageType type, params object[] args) {
@@ -115,6 +122,7 @@ namespace Malsys.Compilers {
 					return "Parameter name `{0}` is not unique. See also {1}.".Fmt(args);
 				case InputCompilerMessageType.RequiredParamAfterOptional:
 					return "Optional parameters must appear after all required parameters, but required parameter `{0}` is after optional.".Fmt(args);
+
 				default:
 					return "Unknown error.";
 			}

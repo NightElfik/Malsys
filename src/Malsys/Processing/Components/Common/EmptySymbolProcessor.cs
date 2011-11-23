@@ -19,8 +19,16 @@ namespace Malsys.Processing.Components.Common {
 
 		#region IComponent Members
 
-		public ProcessContext Context {
-			set { throw new InvalidOperationException("Empty symbol processor."); }
+		public bool RequiresMeasure {
+			get { throw new InvalidOperationException("Empty symbol processor."); }
+		}
+
+		public void Initialize(ProcessContext context) {
+			throw new InvalidOperationException("Empty symbol processor.");
+		}
+
+		public void Cleanup() {
+			throw new InvalidOperationException("Empty symbol processor.");
 		}
 
 		public void BeginProcessing(bool measuring) {

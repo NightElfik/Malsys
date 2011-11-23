@@ -121,11 +121,11 @@ namespace Malsys.Tests.Interpreters {
 				symToInstr = symToInstr.Add(item.Key, item.Value);
 			}
 			var lsystem = new LsystemEvaled("", null, null, null, symToInstr, null, null);
-			var context = new ProcessContext(lsystem, null, null, exprEvaluator);
+			var context = new ProcessContext(lsystem, null, null, exprEvaluator, msgs);
 
 			var dummy = new DummyInterpreter();
+			caller.Initialize(context);
 			caller.Interpreter = dummy;
-			caller.Context = context;
 
 			foreach (var sym in symbols) {
 				caller.ProcessSymbol(exprEvaluator.EvaluateSymbol(sym, null, null));
@@ -171,7 +171,15 @@ namespace Malsys.Tests.Interpreters {
 
 			#region IComponent Members
 
-			public ProcessContext Context { get; set; }
+			public bool RequiresMeasure { get { return false; } }
+
+			public void Initialize(ProcessContext context) {
+				throw new NotImplementedException();
+			}
+
+			public void Cleanup() {
+				throw new NotImplementedException();
+			}
 
 			public void BeginProcessing(bool measuring) {
 			}

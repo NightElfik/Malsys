@@ -16,7 +16,7 @@ namespace Malsys.Parsing {
 		}
 
 		public override string GetMessageTypeId(ParsserMessageType msgType) {
-			return ((int)msgType).ToString();
+			return msgType.ToString();
 		}
 
 		protected override string resolveMessage(ParsserMessageType msgType, out MessageType type, params object[] args) {

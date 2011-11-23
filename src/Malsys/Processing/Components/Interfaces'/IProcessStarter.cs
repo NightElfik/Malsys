@@ -2,7 +2,7 @@
 namespace Malsys.Processing.Components {
 	public interface IProcessStarter {
 
-		void Start();
+		void Start(bool measure);
 
 	}
 }

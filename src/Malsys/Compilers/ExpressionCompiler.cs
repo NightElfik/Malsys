@@ -46,7 +46,7 @@ namespace Malsys.Compilers {
 
 
 		public override string GetMessageTypeId(ExpressionCompilerMessageType msgType) {
-			return ((int)msgType).ToString();
+			return msgType.ToString();
 		}
 
 		protected override string resolveMessage(ExpressionCompilerMessageType msgType, out MessageType type, params object[] args) {

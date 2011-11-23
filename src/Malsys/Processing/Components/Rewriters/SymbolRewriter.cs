@@ -23,6 +23,7 @@ namespace Malsys.Processing.Components.Rewriters {
 
 		private Dictionary<string, RewriteRule[]> rewriteRules;
 
+		private ProcessContext context;
 		private ConstsMap constants;
 		private FunsMap functions;
 
@@ -39,6 +40,8 @@ namespace Malsys.Processing.Components.Rewriters {
 
 		private bool rewriteRuleApplied;
 		private long rewrittenSymbols;
+
+		private Stopwatch swRewriteTime = new Stopwatch();
 
 
 
@@ -108,15 +111,29 @@ namespace Malsys.Processing.Components.Rewriters {
 
 		#region IComponent Members
 
-		public ProcessContext Context {
-			set {
-				exprEvaluator = value.ExpressionEvaluator;
-				constants = value.Lsystem.Constants;
-				functions = value.Lsystem.Functions;
-				rewriteRules = createRrulesMap(value.Lsystem.RewriteRules);
+		public bool RequiresMeasure { get { return false; } }
 
-				initContextCaches();
-			}
+		public void Initialize(ProcessContext context) {
+			this.context = context;
+
+			exprEvaluator = context.ExpressionEvaluator;
+			constants = context.Lsystem.Constants;
+			functions = context.Lsystem.Functions;
+			rewriteRules = createRrulesMap(context.Lsystem.RewriteRules);
+
+			initContextCaches();
+
+			swRewriteTime.Reset();
+		}
+
+		public void Cleanup() {
+
+			context.Messages.AddMessage(new Message(
+				typeof(SymbolRewriter).Name + ".ElapsedTime",
+				MessageType.Info,
+				swRewriteTime.Elapsed.ToString(),
+				context.Messages.DefaultSourceName,
+				Position.Unknown));
 		}
 
 		public void BeginProcessing(bool measuring) {
@@ -158,23 +175,31 @@ namespace Malsys.Processing.Components.Rewriters {
 
 		private void rewrite(Symbol symbol) {
 
+			swRewriteTime.Start();
+
 			ConstsMap consts;
 			RewriteRule rrule;
+			IEnumerable<Symbol> symToProcess = null;
 
 			if (tryFindRewriteRule(symbol, out rrule, out consts)) {
 				rewriteRuleApplied = true;
 				var replac = chooseReplacement(rrule, consts, functions);
-				foreach (var s in replac.Replacement) {
-					outputProcessor.ProcessSymbol(exprEvaluator.EvaluateSymbol(s, consts, functions));
-				}
+				symToProcess = exprEvaluator.EvaluateSymbols(replac.Replacement, consts, functions);
 			}
 			else {
-				outputProcessor.ProcessSymbol(symbol);
+				// implicity identity
+				symToProcess = new Symbol[] { symbol };
 			}
 
 			leftContext.Enqueue(symbol);
 			if (leftContext.Count > leftCtxtMaxLen) {
 				leftContext.Dequeue();  // throw away unnecessary symbols from left context
+			}
+
+			swRewriteTime.Stop();
+
+			foreach (var s in symToProcess) {
+				outputProcessor.ProcessSymbol(s);
 			}
 
 			rewrittenSymbols++;

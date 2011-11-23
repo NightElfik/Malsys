@@ -228,11 +228,11 @@ namespace Malsys.Tests.Rewriters {
 				MapModule.Empty<string, IValue>(), MapModule.Empty<string, FunctionEvaledParams>());
 
 			var fm = new FilesManager("./");
-			var context = new ProcessContext(lsystem, fm, inBlockEvaled, exprEvaluator);
+			var context = new ProcessContext(lsystem, fm, inBlockEvaled, exprEvaluator, msgs);
 
 			var symBuff = new SymbolsMemoryBuffer();
+			rewriter.Initialize(context);
 			rewriter.OutputProcessor = symBuff;
-			rewriter.Context = context;
 
 			int iterations = excpectedIterations.Length;
 			IEnumerable<Symbol<IValue>> axiom = lsystem.SymbolsConstants["axiom"];

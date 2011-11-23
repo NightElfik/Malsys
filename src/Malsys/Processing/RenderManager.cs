@@ -28,9 +28,9 @@ namespace Malsys.Processing {
 				var lsysEvaled = lsysEvaluator.Evaluate(lsystemKvp.Value, ImmutableList<IValue>.Empty,
 					inBlockEvaled.GlobalConstants, inBlockEvaled.GlobalFunctions);
 
-				var context = new ProcessContext(lsysEvaled, fm, inBlockEvaled, exprEvaluator);
+				var context = new ProcessContext(lsysEvaled, fm, inBlockEvaled, exprEvaluator, msgs);
 
-				var setupMgr = new RenderSetupManager(context);
+				var setupMgr = new RenderSetupManager();
 
 				if (svg) {
 					setupMgr.BuildSvgRenderModel();
@@ -39,8 +39,11 @@ namespace Malsys.Processing {
 					setupMgr.BuildTextSymbolsModel();
 				}
 
-				setupMgr.starter.Start();
+				setupMgr.Initialize(context);
 
+				setupMgr.starter.Start(setupMgr.RequiresMeasure);
+
+				setupMgr.Cleanup();
 				setupMgr.ClearComponents();
 
 				fm.TryDeleteAllTempFiles();

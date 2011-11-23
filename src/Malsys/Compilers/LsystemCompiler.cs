@@ -204,7 +204,7 @@ namespace Malsys.Compilers {
 		}
 
 		public override string GetMessageTypeId(LsystemCompilerMessageType msgType) {
-			return ((int)msgType).ToString();
+			return msgType.ToString();
 		}
 
 		protected override string resolveMessage(LsystemCompilerMessageType msgType, out MessageType type, params object[] args) {

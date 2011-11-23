@@ -12,6 +12,7 @@ namespace Malsys.Processing.Components.Renderers.TwoD {
 
 		public string SvgFooter { get; set; }
 
+		private ProcessContext context;
 
 		private bool measuring;
 
@@ -34,7 +35,13 @@ namespace Malsys.Processing.Components.Renderers.TwoD {
 
 		#region IComponent Members
 
-		public ProcessContext Context { get; set; }
+		public bool RequiresMeasure { get { return false; } }
+
+		public void Initialize(ProcessContext context) {
+			this.context = context;
+		}
+
+		public void Cleanup() { }
 
 		public void BeginProcessing(bool measuring) {
 
@@ -47,7 +54,7 @@ namespace Malsys.Processing.Components.Renderers.TwoD {
 				maxY = 0;
 			}
 			else {
-				string filePath = Context.FilesManager.GetNewOutputFilePath(".svg");
+				string filePath = context.FilesManager.GetNewOutputFilePath(".svg");
 				writer = new StreamWriter(filePath);
 			}
 		}

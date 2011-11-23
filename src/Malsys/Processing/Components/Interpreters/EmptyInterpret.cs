@@ -20,8 +20,16 @@ namespace Malsys.Processing.Components.Interpreters {
 
 		#region IComponent Members
 
-		public ProcessContext Context {
-			set { throw new InvalidOperationException("Empty interpreter."); }
+		public bool RequiresMeasure {
+			get { throw new InvalidOperationException("Empty interpreter."); }
+		}
+
+		public void Initialize(ProcessContext context) {
+			throw new InvalidOperationException("Empty interpreter.");
+		}
+
+		public void Cleanup() {
+			throw new InvalidOperationException("Empty interpreter.");
 		}
 
 		public void BeginProcessing(bool measuring) {

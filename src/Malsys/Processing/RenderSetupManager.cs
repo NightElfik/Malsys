@@ -13,16 +13,14 @@ using Microsoft.FSharp.Core;
 namespace Malsys.Processing {
 	public class RenderSetupManager {
 
-		private ProcessContext context;
 
+		public bool RequiresMeasure { get; private set; }
 		public IProcessStarter starter { get; private set; }
+
 
 		private List<IComponent> components = new List<IComponent>();
 
 
-		public RenderSetupManager(ProcessContext ctxt) {
-			context = ctxt;
-		}
 
 
 		public void BuildSvgRenderModel() {
@@ -48,10 +46,6 @@ namespace Malsys.Processing {
 
 			starter = iterator;
 
-			foreach (var cp in components) {
-				cp.Context = context;
-				setUserSettableProperties(cp, context);
-			}
 		}
 
 		public void BuildTextSymbolsModel() {
@@ -70,10 +64,25 @@ namespace Malsys.Processing {
 			iterator.OutputProcessor = saver;
 
 			starter = iterator;
+		}
+
+		public void Initialize(ProcessContext ctxt) {
 
 			foreach (var cp in components) {
-				cp.Context = context;
-				setUserSettableProperties(cp, context);
+				cp.Initialize(ctxt);
+				setUserSettableProperties(cp, ctxt);
+			}
+
+			RequiresMeasure = false;
+			foreach (var cp in components) {
+				RequiresMeasure |= cp.RequiresMeasure;
+			}
+		}
+
+		public void Cleanup() {
+
+			foreach (var cp in components) {
+				cp.Cleanup();
 			}
 		}
 

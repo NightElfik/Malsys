@@ -23,6 +23,13 @@ namespace Malsys {
 			messages.AddMessage(msg);
 		}
 
+		protected void logMessage(string msgId, MessageType msgType, Position pos, string message) {
+
+			string id = reporterName + "." + msgId;
+			var msg = new Message(id, msgType, message, messages.DefaultSourceName, pos);
+			messages.AddMessage(msg);
+		}
+
 
 		protected abstract string resolveMessage(T msgType, out MessageType type, params object[] args);
 

@@ -82,7 +82,11 @@ namespace Malsys.Processing.Components.RewriterIterators {
 
 		#region IComponent Members
 
-		public ProcessContext Context { get; set; }
+		public bool RequiresMeasure { get { return false; } }
+
+		public void Initialize(ProcessContext context) { }
+
+		public void Cleanup() { }
 
 		public void BeginProcessing(bool measuring) {
 		}
@@ -94,7 +98,7 @@ namespace Malsys.Processing.Components.RewriterIterators {
 
 		#region IProcessStarter Members
 
-		public void Start() {
+		public void Start(bool measure) {
 
 			for (int i = 0; i < iterations; i++) {
 
@@ -108,11 +112,13 @@ namespace Malsys.Processing.Components.RewriterIterators {
 				Swap.Them(ref inBuffer, ref outBuffer);
 			}
 
-			outProcessor.BeginProcessing(true);
-			foreach (var s in inBuffer) {
-				outProcessor.ProcessSymbol(s);
+			if (measure) {
+				outProcessor.BeginProcessing(true);
+				foreach (var s in inBuffer) {
+					outProcessor.ProcessSymbol(s);
+				}
+				outProcessor.EndProcessing();
 			}
-			outProcessor.EndProcessing();
 
 			outProcessor.BeginProcessing(false);
 			foreach (var s in inBuffer) {

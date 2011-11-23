@@ -63,14 +63,13 @@ namespace Malsys.Tests.Rewriters {
 				MapModule.Empty<string, IValue>(), MapModule.Empty<string, FunctionEvaledParams>());
 
 			var fm = new FilesManager("./");
-			var context = new ProcessContext(lsystem, fm, inBlockEvaled, exprEvaluator);
+			var context = new ProcessContext(lsystem, fm, inBlockEvaled, exprEvaluator, msgs);
 
 			var symBuff = new SymbolsMemoryBuffer();
 
-			var rewriter = new SymbolRewriter() {
-				OutputProcessor = rewIt,
-				Context = context
-			};
+			var rewriter = new SymbolRewriter();
+			rewriter.Initialize(context);
+			rewriter.OutputProcessor = rewIt;
 
 			var axiom = lsystem.SymbolsConstants["axiom"];
 
@@ -79,7 +78,7 @@ namespace Malsys.Tests.Rewriters {
 			rewIt.Axiom = axiom;
 			rewIt.Iterations = iterations.ToConst();
 
-			rewIt.Start();
+			rewIt.Start(false);
 
 			var result = symBuff.GetAndClear();
 			var writer = new IndentStringWriter();
