@@ -21,7 +21,7 @@ namespace Malsys.SemanticModel.Compiled {
 		}
 
 
-		public bool IsOptional { get { return DefaultValue.IsEmptyExpression; } }
+		public bool IsOptional { get { return !DefaultValue.IsEmptyExpression; } }
 
 	}
 }
