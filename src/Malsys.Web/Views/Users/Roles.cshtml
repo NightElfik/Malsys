@@ -1,0 +1,26 @@
+﻿@model Tuple<User, IEnumerable<Role>>
+
+@{
+	ViewBag.Title = "Roles of user " + Model.Item1.UserName;
+}
+
+<h2>Roles of user @Model.Item1.UserName</h2>
+
+<table>
+	<tr>
+		<th>Role name</th>
+		<th></th>
+	</tr>
+	@foreach (var role in Model.Item1.Roles) {
+		<tr>
+			<td>@Html.DisplayFor(m => role.RoleName)</td>
+			<td>@Html.ActionLink("Delete", "DeleteUserRole", new { userId = Model.Item1.UserName, roleId = role.RoleName })</td>
+		</tr>
+	}
+</table>
+
+<h3>Add @Model.Item1.UserName to role:</h3>
+|
+@foreach (var role in Model.Item2) {
+	@Html.ActionLink(role.RoleName, "AddUserRole", new { userId = Model.Item1.UserName, roleId = role.RoleName }) @:|
+}

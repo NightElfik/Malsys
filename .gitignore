@@ -10,6 +10,8 @@ bin/
 obj/
 
 /src/TestResults
+/src/Malsys.Web/App_Data
+/src/Malsys.Web/Entities
 /src/Malsys.Web/WorkDir
 /src/Malsys.Web/Publish
 /src/packages

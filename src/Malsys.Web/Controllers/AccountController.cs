@@ -6,15 +6,9 @@ using Malsys.Web.Models;
 namespace Malsys.Web.Controllers {
 	public class AccountController : Controller {
 
-		//
-		// GET: /Account/LogOn
-
 		public ActionResult LogOn() {
 			return View();
 		}
-
-		//
-		// POST: /Account/LogOn
 
 		[HttpPost]
 		public ActionResult LogOn(LogOnModel model, string returnUrl) {
@@ -22,7 +16,7 @@ namespace Malsys.Web.Controllers {
 				if (Membership.ValidateUser(model.UserName, model.Password)) {
 					FormsAuthentication.SetAuthCookie(model.UserName, model.RememberMe);
 					if (Url.IsLocalUrl(returnUrl) && returnUrl.Length > 1 && returnUrl.StartsWith("/")
-						&& !returnUrl.StartsWith("//") && !returnUrl.StartsWith("/\\")) {
+							&& !returnUrl.StartsWith("//") && !returnUrl.StartsWith("/\\")) {
 						return Redirect(returnUrl);
 					}
 					else {
@@ -34,12 +28,10 @@ namespace Malsys.Web.Controllers {
 				}
 			}
 
-			// If we got this far, something failed, redisplay form
+			// if we got this far, something failed, redisplay form
 			return View(model);
 		}
 
-		//
-		// GET: /Account/LogOff
 
 		public ActionResult LogOff() {
 			FormsAuthentication.SignOut();
@@ -47,20 +39,16 @@ namespace Malsys.Web.Controllers {
 			return RedirectToAction("Index", "Home");
 		}
 
-		//
-		// GET: /Account/Register
 
 		public ActionResult Register() {
 			return View();
 		}
 
-		//
-		// POST: /Account/Register
 
 		[HttpPost]
 		public ActionResult Register(RegisterModel model) {
 			if (ModelState.IsValid) {
-				// Attempt to register the user
+				// attempt to register the user
 				MembershipCreateStatus createStatus;
 				Membership.CreateUser(model.UserName, model.Password, model.Email, null, null, true, null, out createStatus);
 
@@ -73,7 +61,7 @@ namespace Malsys.Web.Controllers {
 				}
 			}
 
-			// If we got this far, something failed, redisplay form
+			// if we got this far, something failed, redisplay form
 			return View(model);
 		}
 

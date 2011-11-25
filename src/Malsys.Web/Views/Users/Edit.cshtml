@@ -1,0 +1,53 @@
+﻿@model Malsys.Web.Models.UserModel
+
+@{
+	ViewBag.Title = "Edit user " + Model.UserId;
+}
+
+@section scripts {
+	@Content.Script("jquery.validate.min.js", Url)
+	@Content.Script("jquery.validate.unobtrusive.min.js", Url)
+}
+
+<h2>Edit user @Model.UserId</h2>
+
+@using (Html.BeginForm()) {
+	@Html.ValidationSummary(true)
+	<fieldset>
+		<legend>User @Model.UserId</legend>
+
+		@Html.HiddenFor(m => m.UserId)
+
+		<div class="editor-label">
+			@Html.LabelFor(m => m.Email)
+		</div>
+		<div class="editor-field">
+			@Html.EditorFor(m => m.Email)
+			@Html.ValidationMessageFor(m => m.Email)
+		</div>
+
+		<div class="editor-label">
+			@Html.LabelFor(m => m.Comment)
+		</div>
+		<div class="editor-field">
+			@Html.EditorFor(m => m.Comment)
+			@Html.ValidationMessageFor(m => m.Comment)
+		</div>
+
+		<div class="editor-label">
+			@Html.LabelFor(m => m.IsApproved)
+		</div>
+		<div class="editor-field">
+			@Html.EditorFor(m => m.IsApproved)
+			@Html.ValidationMessageFor(m => m.IsApproved)
+		</div>
+
+		<p>
+			<input type="submit" value="Save" />
+		</p>
+	</fieldset>
+}
+
+<div>
+	@Html.ActionLink("Back to List", "Index")
+</div>

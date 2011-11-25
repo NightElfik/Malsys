@@ -11,12 +11,16 @@ namespace Malsys.Processing.Components.RewriterIterators {
 
 		private IRewriter rewriter;
 
+		private ProcessContext context;
 		private ISymbolProcessor outProcessor;
 
 		private List<Symbol<IValue>> inBuffer;
 		private List<Symbol<IValue>> outBuffer;
 
 		private int iterations;
+
+		private bool aborting = false;
+		private bool aborted = false;
 
 
 
@@ -84,7 +88,9 @@ namespace Malsys.Processing.Components.RewriterIterators {
 
 		public bool RequiresMeasure { get { return false; } }
 
-		public void Initialize(ProcessContext context) { }
+		public void Initialize(ProcessContext context) {
+			this.context = context;
+		}
 
 		public void Cleanup() { }
 
@@ -100,10 +106,45 @@ namespace Malsys.Processing.Components.RewriterIterators {
 
 		public void Start(bool measure) {
 
+			rewrite();
+
+			if (aborted) {
+				return;
+			}
+
+			if (measure) {
+				interpret(true);
+			}
+
+			if (aborted) {
+				return;
+			}
+
+			interpret(false);
+
+		}
+
+		public void Abort() {
+			aborting = true;
+		}
+
+		#endregion
+
+		private void rewrite() {
+
 			for (int i = 0; i < iterations; i++) {
 
 				rewriter.BeginProcessing(true);
 				foreach (var s in inBuffer) {
+
+					if (aborting) {
+						rewriter.EndProcessing();
+						context.Messages.LogMessage<SingleRewriterIterator>("Aborted", MessageType.Info, Position.Unknown,
+							"Iterator aborted while rewriting iteration {0} of {1}.".Fmt(i, iterations));
+						aborted = true;
+						return;
+					}
+
 					rewriter.ProcessSymbol(s);
 				}
 				rewriter.EndProcessing();
@@ -111,22 +152,24 @@ namespace Malsys.Processing.Components.RewriterIterators {
 				inBuffer.Clear();
 				Swap.Them(ref inBuffer, ref outBuffer);
 			}
+		}
 
-			if (measure) {
-				outProcessor.BeginProcessing(true);
-				foreach (var s in inBuffer) {
-					outProcessor.ProcessSymbol(s);
-				}
-				outProcessor.EndProcessing();
-			}
+		private void interpret(bool measuring) {
 
-			outProcessor.BeginProcessing(false);
+			outProcessor.BeginProcessing(measuring);
 			foreach (var s in inBuffer) {
+
+				if (aborting) {
+					rewriter.EndProcessing();
+					context.Messages.LogMessage<SingleRewriterIterator>("Aborted", MessageType.Info, Position.Unknown,
+						"Iterator aborted while {0}.".Fmt(measuring ? "measuring" : "interpreting"));
+					aborted = true;
+					return;
+				}
+
 				outProcessor.ProcessSymbol(s);
 			}
 			outProcessor.EndProcessing();
 		}
-
-		#endregion
 	}
 }

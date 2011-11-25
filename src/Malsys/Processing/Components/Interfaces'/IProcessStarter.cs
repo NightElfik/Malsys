@@ -4,5 +4,7 @@ namespace Malsys.Processing.Components {
 
 		void Start(bool measure);
 
+		void Abort();
+
 	}
 }

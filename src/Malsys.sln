@@ -23,6 +23,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Malsys.Parsing", "Malsys.Pa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Malsys.Ast", "Malsys.Ast\Malsys.Ast.csproj", "{4DE67417-39CA-4AEC-AC75-9584112268F0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Altairis.Web.Security", "Altairis.Web.Security\Altairis.Web.Security.csproj", "{2220A1D8-7E2A-46DF-A2D9-74E5D643F6BD}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = Malsys.vsmdi
@@ -116,6 +118,16 @@ Global
 		{4DE67417-39CA-4AEC-AC75-9584112268F0}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{4DE67417-39CA-4AEC-AC75-9584112268F0}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{4DE67417-39CA-4AEC-AC75-9584112268F0}.Release|x86.ActiveCfg = Release|Any CPU
+		{2220A1D8-7E2A-46DF-A2D9-74E5D643F6BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2220A1D8-7E2A-46DF-A2D9-74E5D643F6BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2220A1D8-7E2A-46DF-A2D9-74E5D643F6BD}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{2220A1D8-7E2A-46DF-A2D9-74E5D643F6BD}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{2220A1D8-7E2A-46DF-A2D9-74E5D643F6BD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2220A1D8-7E2A-46DF-A2D9-74E5D643F6BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2220A1D8-7E2A-46DF-A2D9-74E5D643F6BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2220A1D8-7E2A-46DF-A2D9-74E5D643F6BD}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{2220A1D8-7E2A-46DF-A2D9-74E5D643F6BD}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{2220A1D8-7E2A-46DF-A2D9-74E5D643F6BD}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

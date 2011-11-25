@@ -1,0 +1,60 @@
+﻿@model Malsys.Web.Entities.User
+
+@{
+	ViewBag.Title = "Details of user" + Model.UserName;
+}
+
+<h2>Details of user</h2>
+
+<fieldset>
+	<legend>User @Model.UserName</legend>
+
+	<div class="display-label">E-mail</div>
+	<div class="display-field">
+		@Html.DisplayFor(m => m.Email)
+	</div>
+
+	<div class="display-label">Comment</div>
+	<div class="display-field">
+		@Html.DisplayFor(m => m.Comment)
+	</div>
+
+	<div class="display-label">Is approved</div>
+	<div class="display-field">
+		@Html.DisplayFor(m => m.IsApproved)
+	</div>
+
+	<div class="display-label">Created</div>
+	<div class="display-field">
+		@Html.DisplayFor(m => m.DateCreated)
+	</div>
+
+	<div class="display-label">Last login</div>
+	<div class="display-field">
+		@Html.DisplayFor(m => m.DateLastLogin)
+	</div>
+
+	<div class="display-label">Last activity</div>
+	<div class="display-field">
+		@Html.DisplayFor(m => m.DateLastActivity)
+	</div>
+
+	<div class="display-label">Last password change</div>
+	<div class="display-field">
+		@Html.DisplayFor(m => m.DateLastPasswordChange)
+	</div>
+
+	<div class="display-label">Roles</div>
+	<div class="display-field">
+		<ul>
+			@foreach (Malsys.Web.Entities.Role role in Model.Roles) {
+				<li>@role.RoleName</li>
+			}
+		</ul>
+		@Html.ActionLink("Manage roles", "Roles", new { id = Model.UserName })
+	</div>
+</fieldset>
+<p>
+	@Html.ActionLink("Edit", "Edit", new { id = Model.UserName }) |
+	@Html.ActionLink("Back to List", "Index")
+</p>

@@ -24,6 +24,13 @@ namespace Malsys {
 			messages.Add(msg);
 		}
 
+		public void LogMessage<TReporter>(string msgId, MessageType msgType, Position pos, string message) {
+
+			string id = typeof(TReporter).Name + "." + msgId;
+			var msg = new Message(id, msgType, message, DefaultSourceName, pos);
+			AddMessage(msg);
+		}
+
 
 		public override string ToString() {
 

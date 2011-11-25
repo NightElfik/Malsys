@@ -1,5 +1,7 @@
 ﻿using System.Web.Mvc;
 using System.Web.Routing;
+using Malsys.Web.Entities;
+using System.Data.Entity;
 
 namespace Malsys.Web {
 	// Note: For instructions on enabling IIS6 or IIS7 classic mode,
@@ -22,6 +24,9 @@ namespace Malsys.Web {
 		}
 
 		protected void Application_Start() {
+
+			//Database.SetInitializer(new DropCreateDatabaseAlways<DataContext>());
+
 			AreaRegistration.RegisterAllAreas();
 
 			RegisterGlobalFilters(GlobalFilters.Filters);

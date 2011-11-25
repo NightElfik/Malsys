@@ -1,0 +1,16 @@
+﻿@model Malsys.Web.Entities.Role
+
+@{
+	ViewBag.Title = "Delete role" + Model.RoleName;
+}
+
+<h2>Delete role @Model.RoleName</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+
+@using (Html.BeginForm()) {
+	<p>
+		<input type="submit" value="Delete role @Model.RoleName" /> |
+		@Html.ActionLink("Back to List", "Index")
+	</p>
+}

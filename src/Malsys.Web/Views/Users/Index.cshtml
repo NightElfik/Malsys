@@ -1,0 +1,39 @@
+﻿@model IEnumerable<Malsys.Web.Entities.User>
+
+@{
+	ViewBag.Title = "Users";
+}
+
+<h2>Users</h2>
+
+<table>
+	<tr>
+		<th>Name</th>
+		<th>E-mail</th>
+		<th>Comment</th>
+		<th>Is approved</th>
+		<th>Created</th>
+		<th>Last login</th>
+		<th>Last activity</th>
+		<th>Last password change</th>
+		<th>actions</th>
+	</tr>
+
+	@foreach (var user in Model) {
+		<tr>
+			<td>@Html.DisplayFor(m => user.UserName)</td>
+			<td>@Html.DisplayFor(m => user.Email)</td>
+			<td>@Html.DisplayFor(m => user.Comment)</td>
+			<td>@Html.DisplayFor(m => user.IsApproved)</td>
+			<td>@Html.DisplayFor(m => user.DateCreated)</td>
+			<td>@Html.DisplayFor(m => user.DateLastLogin)</td>
+			<td>@Html.DisplayFor(m => user.DateLastActivity)</td>
+			<td>@Html.DisplayFor(m => user.DateLastPasswordChange)</td>
+			<td>
+				@Html.ActionLink("Edit", "Edit", new { id = user.UserName }) |
+				@Html.ActionLink("Details", "Details", new { id = user.UserName })
+			</td>
+		</tr>
+	}
+
+</table>

@@ -1,0 +1,27 @@
+﻿@model IEnumerable<Malsys.Web.Entities.Role>
+
+@{
+	ViewBag.Title = "User roles";
+}
+
+<h2>User roles</h2>
+<p>
+	@Html.ActionLink("Create new role", "Create")
+</p>
+
+<table>
+	<tr>
+		<th>Role name</th>
+		<th>actions</th>
+	</tr>
+	@foreach (var role in Model) {
+		<tr>
+			<td>@Html.DisplayFor(m => role.RoleName)</td>
+			<td>
+				@Html.ActionLink("Edit", "Edit", new { id = role.RoleName }) |
+				@Html.ActionLink("Details", "Details", new { id = role.RoleName }) |
+				@Html.ActionLink("Delete", "Delete", new { id = role.RoleName })
+			</td>
+		</tr>
+	}
+</table>

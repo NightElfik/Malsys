@@ -1,0 +1,35 @@
+﻿@model Malsys.Web.Entities.Role
+
+@{
+	ViewBag.Title = "Create";
+}
+
+@section scripts {
+	@Content.Script("jquery.validate.min.js", Url)
+	@Content.Script("jquery.validate.unobtrusive.min.js", Url)
+}
+
+<h2>Create</h2>
+
+@using (Html.BeginForm()) {
+	@Html.ValidationSummary(true)
+	<fieldset>
+		<legend>Role</legend>
+
+		<div class="editor-label">
+			@Html.LabelFor(m => m.RoleName)
+		</div>
+		<div class="editor-field">
+			@Html.EditorFor(m => m.RoleName)
+			@Html.ValidationMessageFor(m => m.RoleName)
+		</div>
+
+		<p>
+			<input type="submit" value="Create" />
+		</p>
+	</fieldset>
+}
+
+<div>
+	@Html.ActionLink("Back to List", "Index")
+</div>
