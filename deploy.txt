@@ -1,0 +1,19 @@
+
+
+Database deploy:
+http://support.microsoft.com/kb/2002980
+
+1) Run the Internet Information Services (IIS) Manager tool.  This tool can be accessed either from the Administrative start menu, or by typing "inetmgr" in the Windows Start-->Search textbox and selecting the inetmgr tool.
+2) In the left-hand pane of the IIS Manager tool expand the machine node.
+3) Click on the "Application Pools" node so that the application pools display in the main window of the management tool.
+4) If you are troubleshooting an ASP.NET 2.0/3.0/3.5 application select the "DefaultAppPool" application pool.  For ASP.NET v4 select the "ASP.NET v4.0" application pool.
+5) Right-click on the selected application pool and choose "Advanced Settings"
+6) In the "Advanced Settings" dialog box find the category called "Process Model".  The first row in the category will be the "Identity" row.
+7) Click on the "Identity" row and then click on the small button that shows on the right-hand side of the value cell.  The button displays the text "…"
+8) A dialog box called "Application Pool Identity" will popup.  Within that dialog box there are two radio buttons.  Make sure the first radio button titled "Built-in Account" is selected.
+9) In the dropdown box below the radio button choose "Network Service" for the identity.
+10) Click "Ok" to close out the "Application Pool Identity" dialog box.
+11) Click "Ok" to close out the "Advanced Settings" dialog box.
+12) At this point the changes to the application pool identity will have been saved to IIS 7.5's configuration store.
+
++ set acces rights to DB dir for user "NETWORK SERVICE"

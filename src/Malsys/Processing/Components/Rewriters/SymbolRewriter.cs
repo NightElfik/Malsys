@@ -128,12 +128,8 @@ namespace Malsys.Processing.Components.Rewriters {
 
 		public void Cleanup() {
 
-			context.Messages.AddMessage(new Message(
-				typeof(SymbolRewriter).Name + ".ElapsedTime",
-				MessageType.Info,
-				swRewriteTime.Elapsed.ToString(),
-				context.Messages.DefaultSourceName,
-				Position.Unknown));
+			context.Messages.LogMessage<SymbolRewriter>("RewritingTime", MessageType.Info,
+				swRewriteTime.Elapsed.ToString());
 		}
 
 		public void BeginProcessing(bool measuring) {

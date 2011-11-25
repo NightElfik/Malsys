@@ -73,12 +73,13 @@ namespace Malsys.Tests.Rewriters {
 
 			var axiom = lsystem.SymbolsConstants["axiom"];
 
+			rewIt.Initialize(context);
 			rewIt.Rewriter = rewriter;
 			rewIt.OutputProcessor = symBuff;
 			rewIt.Axiom = axiom;
 			rewIt.Iterations = iterations.ToConst();
 
-			rewIt.Start(false);
+			rewIt.Start(false, new TimeSpan(0, 0, 1));
 
 			var result = symBuff.GetAndClear();
 			var writer = new IndentStringWriter();

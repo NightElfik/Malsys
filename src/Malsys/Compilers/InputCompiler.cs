@@ -58,7 +58,7 @@ namespace Malsys.Compilers {
 			}
 
 			sw.Stop();
-			logMessage("ElapsedTime", MessageType.Info, Position.Unknown, sw.Elapsed.ToString());
+			logMessage("CompilationTime", MessageType.Info, Position.Unknown, sw.Elapsed.ToString());
 
 			return new ImmutableList<IInputStatement>(statements);
 		}

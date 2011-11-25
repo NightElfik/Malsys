@@ -1,0 +1,17 @@
+﻿
+
+<ul id="menu">
+	<li>@Html.ActionLink("Home", "Index", "Home")</li>
+	<li>@Html.ActionLink("Text L-system evaluator", "Text", "ProcessLsystem")</li>
+	<li>@Html.ActionLink("Syntax", "Syntax", "Help")</li>
+
+	@if (Request.IsAuthenticated) {
+
+		<li>@Html.ActionLink("History", "History", "History")</li>
+
+		if (User.IsInRole("admins")) {
+			<li>@Html.ActionLink("Users", "Index", "Users")</li>
+			<li>@Html.ActionLink("Roles", "Index", "Roles")</li>
+		}
+	}
+</ul>

@@ -31,6 +31,10 @@ namespace Malsys {
 			AddMessage(msg);
 		}
 
+		public void LogMessage<TReporter>(string msgId, MessageType msgType, string message) {
+			LogMessage<TReporter>(msgId, msgType, Position.Unknown, message);
+		}
+
 
 		public override string ToString() {
 

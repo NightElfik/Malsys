@@ -5,33 +5,27 @@ using Malsys.Processing.Components.Common;
 using Malsys.Processing.Components.Rewriters;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Evaluated;
+using System.Diagnostics;
 
 namespace Malsys.Processing.Components.RewriterIterators {
 	public class SingleRewriterIterator : IRewriterIterator {
 
-		private IRewriter rewriter;
+		private IRewriter rewriter = EmptyRewriter.Instance;
 
 		private ProcessContext context;
-		private ISymbolProcessor outProcessor;
+		private ISymbolProcessor outProcessor = EmptySymbolProcessor.Instance;
 
-		private List<Symbol<IValue>> inBuffer;
-		private List<Symbol<IValue>> outBuffer;
+		private List<Symbol<IValue>> inBuffer = new List<Symbol<IValue>>();
+		private List<Symbol<IValue>> outBuffer = new List<Symbol<IValue>>();
 
 		private int iterations;
 
+		Stopwatch swDuration = new Stopwatch();
+		TimeSpan timeout;
 		private bool aborting = false;
 		private bool aborted = false;
 
 
-
-		public SingleRewriterIterator() {
-
-			rewriter = EmptyRewriter.Instance;
-			outProcessor = EmptySymbolProcessor.Instance;
-
-			inBuffer = new List<Symbol<IValue>>();
-			outBuffer = new List<Symbol<IValue>>();
-		}
 
 		[ContractInvariantMethod]
 		private void objectInvariant() {
@@ -104,24 +98,17 @@ namespace Malsys.Processing.Components.RewriterIterators {
 
 		#region IProcessStarter Members
 
-		public void Start(bool measure) {
+		public void Start(bool doMeasure, TimeSpan timeout) {
 
-			rewrite();
+			this.timeout = timeout;
+			swDuration.Restart();
 
-			if (aborted) {
-				return;
-			}
+			start(doMeasure);
 
-			if (measure) {
-				interpret(true);
-			}
+			swDuration.Stop();
 
-			if (aborted) {
-				return;
-			}
-
-			interpret(false);
-
+			context.Messages.LogMessage<SingleRewriterIterator>("TotalProcessTime", MessageType.Info,
+				swDuration.Elapsed.ToString());
 		}
 
 		public void Abort() {
@@ -130,6 +117,25 @@ namespace Malsys.Processing.Components.RewriterIterators {
 
 		#endregion
 
+		private void start(bool doMeasure) {
+
+			rewrite();
+
+			if (aborted) {
+				return;
+			}
+
+			if (doMeasure) {
+				interpret(true);
+			}
+
+			if (aborted) {
+				return;
+			}
+
+			interpret(false);
+		}
+
 		private void rewrite() {
 
 			for (int i = 0; i < iterations; i++) {
@@ -137,9 +143,9 @@ namespace Malsys.Processing.Components.RewriterIterators {
 				rewriter.BeginProcessing(true);
 				foreach (var s in inBuffer) {
 
-					if (aborting) {
+					if (swDuration.Elapsed > timeout || aborting) {
 						rewriter.EndProcessing();
-						context.Messages.LogMessage<SingleRewriterIterator>("Aborted", MessageType.Info, Position.Unknown,
+						context.Messages.LogMessage<SingleRewriterIterator>(aborting ? "Abort" : "Timeout", MessageType.Error,
 							"Iterator aborted while rewriting iteration {0} of {1}.".Fmt(i, iterations));
 						aborted = true;
 						return;
@@ -159,9 +165,9 @@ namespace Malsys.Processing.Components.RewriterIterators {
 			outProcessor.BeginProcessing(measuring);
 			foreach (var s in inBuffer) {
 
-				if (aborting) {
-					rewriter.EndProcessing();
-					context.Messages.LogMessage<SingleRewriterIterator>("Aborted", MessageType.Info, Position.Unknown,
+				if (swDuration.Elapsed > timeout || aborting) {
+					outProcessor.EndProcessing();
+					context.Messages.LogMessage<SingleRewriterIterator>(aborting ? "Abort" : "Timeout", MessageType.Error,
 						"Iterator aborted while {0}.".Fmt(measuring ? "measuring" : "interpreting"));
 					aborted = true;
 					return;

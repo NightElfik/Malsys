@@ -4,8 +4,6 @@ namespace Malsys {
 
 		protected MessagesCollection messages;
 
-		protected virtual string reporterName { get { return this.GetType().Name; } }
-
 
 		public MessagesLogger(MessagesCollection msgs) {
 			messages = msgs;
@@ -18,16 +16,17 @@ namespace Malsys {
 
 			MessageType type;
 			var msgStr = resolveMessage(msgType, out type, args);
-			string id = reporterName + "." + GetMessageTypeId(msgType);
-			var msg = new Message(id, type, msgStr, messages.DefaultSourceName, pos);
-			messages.AddMessage(msg);
+			string id = GetMessageTypeId(msgType);
+
+			messages.LogMessage<T>(id, type, pos, msgStr);
+		}
+
+		protected void logMessage(string msgId, MessageType msgType, string message) {
+			messages.LogMessage<T>(msgId, msgType, message);
 		}
 
 		protected void logMessage(string msgId, MessageType msgType, Position pos, string message) {
-
-			string id = reporterName + "." + msgId;
-			var msg = new Message(id, msgType, message, messages.DefaultSourceName, pos);
-			messages.AddMessage(msg);
+			messages.LogMessage<T>(msgId, msgType, pos, message);
 		}
 
 

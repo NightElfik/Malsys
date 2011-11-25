@@ -1,12 +1,15 @@
 ﻿using Malsys.Compilers;
 using Malsys.Evaluators;
 using Malsys.SemanticModel.Evaluated;
+using System;
 
 namespace Malsys.Processing {
 	public class RenderManager {
 
-		public RenderManager() {
+		public TimeSpan Timeout { get; set; }
 
+		public RenderManager() {
+			Timeout = new TimeSpan(0, 0, 20);
 		}
 
 
@@ -41,7 +44,7 @@ namespace Malsys.Processing {
 
 				setupMgr.Initialize(context);
 
-				setupMgr.starter.Start(setupMgr.RequiresMeasure);
+				setupMgr.starter.Start(setupMgr.RequiresMeasure, Timeout);
 
 				setupMgr.Cleanup();
 				setupMgr.ClearComponents();
