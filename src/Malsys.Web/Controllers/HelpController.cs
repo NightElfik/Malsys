@@ -11,5 +11,13 @@ namespace Malsys.Web.Controllers {
 			return View();
 		}
 
+		public ActionResult Grammar() {
+			return View();
+		}
+
+		public ActionResult GrammarRegexps() {
+			return View();
+		}
+
 	}
 }

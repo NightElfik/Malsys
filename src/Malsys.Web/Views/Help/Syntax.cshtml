@@ -3,10 +3,90 @@
 }
 
 @section scripts {
-	@Content.Script("Highlight.js", Url);
+	@Content.Script("GrammarHighlighter.js", Url)
 }
 
 <h2>Malsys syntax</h2>
+
+<p>
+	Syntax is described using grammar with regular expressions on right side.
+	Regular expressions are explained on @Html.ActionLink("separate page", "GrammarRegexps") as well as @Html.ActionLink("grammar syntax", "Grammar").
+</p>
+
+<p>
+	Syntax is whitespace-independant.
+	Between individual tokens can be any whitespaces like space, tab or new line.
+	On the other hand, whitspaces are not in single tokens, which are defined in Tokens section.
+</p>
+
+
+
+<h3>Tokens</h3>
+
+<p>
+	More about tokens syntax can be found on @Html.ActionLink("grammar syntax page", "Grammar").
+</p>
+
+
+<h4 id="grammar-ID">Identificator</h4>
+
+<pre class="grammar">
+ID = (ALPHABETIC_CHAR | '_') (ALPHABETIC_CHAR | DIGIT | '_' | ''')*
+</pre>
+
+<p>
+	Identificator regular expression is simplfied, to avoID using characters groups in unicode.
+	<code class="grammar">ALPHABETIC_CHAR</code> matches any letter and <code class="grammar">DIGIT</code> matches any digit.
+	From regular expression is obvious, that identificator can not start with digit.
+</p>
+
+
+<h4 id="grammar-NUMBER">Number</h4>
+
+<pre class="grammar">
+NUMBER =
+	| [0-9]+ ('.' [0-9]+)? ([eE] ('+'|'-')? [0-9]+)?
+	| '0'[bB] [01]+
+	| '0'[oO] [0-7]+
+	| '0'[xX] ([0-9] | [a-f] | [A-F])+
+	| '#' ([0-9] | [a-f] | [A-F])+
+</pre>
+
+<p>
+	Malsys supprots 5 different formats of number.
+</p>
+
+<ul>
+	<li>Floating-point format</li>
+	<li>Binary format with prefix <code class="re-match">0b</code></li>
+	<li>Octal format with prefix <code class="re-match">0o</code></li>
+	<li>Hexadecimal format with prefix <code class="re-match">0x</code></li>
+	<li>Hexadecimal format with prefix <code class="re-match">#</code></li>
+</ul>
+
+<p>
+	Each of format is usefull in some context, it is up to user to choose one.
+</p>
+
+
+<h4 id="grammar-OPERATOR">Operator</h4>
+
+<pre class="grammar">
+OPERATOR = first_op_char op_char*
+
+first_op_char = '!'|'$'|'%'|'&'|'*'|'+'|'.'|'\'|'<'|'>'|'@@'|'^'|'|'|'~'|'?'|':'|'-'
+
+op_char = first_op_char | '='|'/'
+</pre>
+
+<p>
+	Not all combinations of characters are defined as operator in Malsys, see list of predefined operators.
+</p>
+
+
+
+
+<h3>Malsys grammar</h3>
 
 <h4 id="grammar-input">Input</h4>
 
@@ -20,6 +100,14 @@ input_statement =
 	| lsystem_def
 </pre>
 
+<p>Input of Malsys is list of following statements:</p>
+<ul>
+	<li>empty statement</li>
+	<li>constant definition – global constant, can be used in any place after definition</li>
+	<li>function definition – global function, can be used in any place after definition</li>
+	<li>L-system definition</li>
+</ul>
+
 
 <h4 id="grammar-empty_statement">Empty statement</h4>
 
@@ -27,38 +115,84 @@ input_statement =
 empty_statement = ';'
 </pre>
 
+<p>To <i>eat</i> redundant semicolons.</p>
+
 
 <h4 id="grammar-constant_def">Constant definition</h4>
 
 <pre class="grammar">
-constant_def = 'let' id '=' expression ';'
+constant_def = 'let' ID '=' expression ';'
 </pre>
 
+<p>
+	Binds value of <code class="grammar">expression</code> to name represented by <code class="grammar">ID</code>.
+	If binding on same name alredy exists in current scope, it is hidden by new binding until end of the scope.
+	It means, that global constants can be temporaly hidden by local constants.
+</p>
+
+<p>Examples:</p>
 <pre class="malsys">
-let x = sqrt(2) + 1;
+let x = 42;
+
+let x' = sqrt(2) + 1;
+
+let var = min(x, x');
 </pre>
 
 
 <h4 id="grammar-function_def">Function definition</h4>
 
 <pre class="grammar">
-function_def = 'fun' id '(' params_list? ')' '{' constant_def* 'return' expression ';' '}'
+function_def = 'fun' ID '(' params_list? ')' '{' constant_def* 'return' expression ';' '}'
 
-params_list = id ('=' expression)?  (',' params_list)?
+params_list = ID ('=' expression)?  (',' params_list)?
 </pre>
 
+<p>
+	Binds function with parameters <code class="grammar">params_list</code>, local constants <code class="grammar">constant_def</code>
+		and return value <code class="grammar">expression</code> to name represented by <code class="grammar">ID</code>.
+	If binding on same name alredy exists in current scope, it is hidden by new binding until end of the scope.
+</p>
+
+<p>Examples:</p>
 <pre class="malsys">
+fun f() {
+	return e ^ pi;
+}
+
 fun addSquares(x, y) {
-	return x * x + y * y;
+	let x2 = x * x;
+	return x2 + y * y;
+}
+
+fun optParams(x, y = 8) {
+	return x ^ y - y;
 }
 </pre>
 
 <h4 id="grammar-lsystem_def">L-system definition</h4>
 
 <pre class="grammar">
-lsystem_def = 'lsystem' id ('(' params_list? ')')? '{' lsystem_statement* '}'
+lsystem_def = 'lsystem' ID ('(' params_list? ')')? '{' lsystem_statement* '}'
 
-params_list = id ('=' expression)?  (',' params_list)?
+params_list = ID ('=' expression)?  (',' params_list)?
+</pre>
+
+<p>Examples:</p>
+<pre class="malsys">
+lsystem lsys {
+	set axiom = A;
+	let iterations = 10;
+	rewrite A to B A;
+}
+
+lsystem fib {
+	set axiom = a(0) b(1);
+	let iterations = 10;
+
+	rewrite  a(a) {b(b)} to a(b);
+	rewrite {a(a)} b(b)  to b(a + b);
+}
 </pre>
 
 
@@ -78,14 +212,14 @@ lsystem_statement =
 <h4 id="grammar-symbols_list_def">Symbols list definition</h4>
 
 <pre class="grammar">
-symbols_list_def = 'set' id '=' symbol ';'
+symbols_list_def = 'set' ID '=' symbol ';'
 </pre>
 
 
 <h4 id="grammar-symbols_interpretation_def">Symbols interpretation definition</h4>
 
 <pre class="grammar">
-symbols_interpretation_def = 'interpret' symbol_no_params+ 'as' id ('(' params_expr_list? ')')? ';'
+symbols_interpretation_def = 'interpret' symbol_no_params+ 'as' ID ('(' params_expr_list? ')')? ';'
 
 params_expr_list = expression  (',' params_expr_list)?
 </pre>
@@ -114,7 +248,7 @@ rr_context = '{' symbol_pattern* '}'
 <pre class="grammar">
 rr_consts = 'with' rr_cost_defs_list?
 
-rr_cost_defs_list = id '=' expression  (',' rr_cost_defs_list)?
+rr_cost_defs_list = ID '=' expression  (',' rr_cost_defs_list)?
 </pre>
 
 Definition of local constants for rewrite rule.
@@ -127,7 +261,7 @@ rr_condition = 'where' expression
 </pre>
 
 
-<h5 id="grammar-rr_weight">Rewrite rule replacement</h5>
+<h5 id="grammar-rr_replacements">Rewrite rule replacement</h5>
 
 <pre class="grammar">
 rr_replacements = symbol* rr_weight? ('or' 'to' rr_replacements)?
@@ -139,9 +273,9 @@ rr_weight = 'weight' expression
 <h4 id="grammar-symbol">L-system symbol</h4>
 
 <pre class="grammar">
-symbol = symbol_char+ '(' expr_args ')'
+symbol = symbol_char+ '(' expr_args? ')'
 
-symbol_char = ALPHABETIC_CHAR | expr_operator | '[' | ']'
+symbol_char = ID | OPERATOR | '[' | ']'
 
 expr_args = expression (',' expr_args)?
 </pre>
@@ -153,42 +287,21 @@ expr_args = expression (',' expr_args)?
 expression = expr_member+
 
 expr_member =
-	| expr_number
-	| id
-	| expr_operator
+	| NUMBER
+	| ID
+	| OPERATOR
 	| expr_indexer
+	| expr_array
 	| expr_function
 	| '(' expression ')'
 
-expr_number =
-	| [0-9]+ ('.' [0-9]+)? (('e' | 'E') [0-9]+)?
-	| '0b' [0-1]+
-	| '0o' [0-7]+
-	| '#' [0-9a-f]+
-	| '0x' [0-9a-f]+
-
 expr_indexer = '[' expression ']'
 
-expr_function = id '(' params_expr_list? ')'
+expr_array = '{' (expression (',' expression)*)? '}'
+
+expr_function = ID '(' params_expr_list? ')'
 
 params_expr_list = expression (',' params_expr_list)?
 </pre>
 
-
-<h4 id="grammar-expr_operator">Expression operator</h4>
-
-<pre class="grammar">
-expr_operator = first_op_char op_char*
-
-first_op_char = '!'|'$'|'%'|'&'|'*'|'+'|'.'|'\\'|'<'|'>'|'@@'|'^'|'|'|'~'|'?'|':'|'-'
-
-op_char = first_op_char | '='|'/'
-</pre>
-
-
-<h4 id="grammar-id">Identificator</h4>
-
-<pre class="grammar">
-id = (ALPHABETIC_CHAR | '_') (ALPHABETIC_CHAR | DIGIT | ''')*
-</pre>
-
+Expression grammar is not strict, correctness of expression will ensure compiler or interpretation.

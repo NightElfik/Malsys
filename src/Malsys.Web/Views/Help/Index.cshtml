@@ -1,5 +1,178 @@
 ﻿@{
-    ViewBag.Title = "Help";
+	ViewBag.Title = "Malsys help";
 }
 
-<h2>Help index</h2>
+@section scripts {
+	@Content.Script("GrammarHighlighter.js", Url)
+}
+
+<h2>Malsys help</h2>
+
+<p>
+	Formal definition of syntax can be found on @Html.ActionLink("separate page", "Syntax").
+</p>
+
+
+<h3>First L-system</h3>
+
+<p>
+	L-system contains set of rewrite rules and axiom (start symbols).
+	Each iteration, axiom is rewritten using rewrite rules to another set of symbols, which is axiom for next iteration.
+	Symbol in Malsys is string of characters.
+</p>
+
+<p>
+	Let's define our first L-system called <code class="malsys">MyFirstLsystem</code> with axiom set to symbol <code class="lsys_symbols">A</code>,
+		number of iterations equal to <code class="malsys">5</code> and in each iteration we want to rewrite symbol
+		<code class="lsys_symbols">A</code> to symbols <code class="lsys_symbols">B</code> and <code class="lsys_symbols">A</code>.
+</p>
+
+<pre class="malsys">
+lsystem MyFirstLsystem {
+	set axiom = A;
+	let iterations = 5;
+
+	rewrite A to B A;
+}
+</pre>
+
+<p>
+	Pretty simple, isn't it?
+	This L-system will produce result equal to <code class="lsys_symbols">B B B B B A</code>, but let's look at symbols in each iteration.
+</p>
+
+<ol>
+	<li><code class="lsys_symbols">B A</code></li>
+	<li><code class="lsys_symbols">B B A</code></li>
+	<li><code class="lsys_symbols">B B B A</code></li>
+	<li><code class="lsys_symbols">B B B B A</code></li>
+	<li><code class="lsys_symbols">B B B B B A</code></li>
+</ol>
+
+<p>
+	As we can see, in every iteration, L-system can apply rewrite only last symbol and rewrites
+		<code class="lsys_symbols">A</code> to <code class="lsys_symbols">A B</code>.
+	Symbols on which can't be applied rewrite rule remains untouched.
+	So if we add second rewrite rule <code class="malsys">rewrite B to B;</code> to L-system, result will be exactly the same.
+</p>
+
+
+<h3>Order of rewrite rules matters</h3>
+
+<p>
+	We can define any number of rewrite rules to L-system, but searching for matching rewrite rule will end after first success.
+</p>
+
+<pre class="malsys">
+lsystem OrderOfRulesMatters {
+	set axiom = A;
+	let iterations = 5;
+	
+	rewrite A to B A;
+	rewrite A to C A;
+}
+</pre>
+
+<p>
+	This L-system will produce result equal to <code class="lsys_symbols">B B B B B A</code>.
+	If we switch order rewrite rules, result will be <code class="lsys_symbols">C C C C C A</code>.
+</p>
+
+
+<h3>More complex example</h3>
+
+<pre class="malsys">
+lsystem Fibonacci {
+	set axiom = A;
+	let iterations = 7;
+	
+	rewrite A to B;
+	rewrite B to A B;
+}
+</pre>
+
+<ol>
+	<li><code class="lsys_symbols">B</code></li>
+	<li><code class="lsys_symbols">A B</code></li>
+	<li><code class="lsys_symbols">B A B</code></li>
+	<li><code class="lsys_symbols">A B B A B</code></li>
+	<li><code class="lsys_symbols">B A B A B B A B</code></li>
+	<li><code class="lsys_symbols">A B B A B B A B A B B A B</code></li>
+	<li><code class="lsys_symbols">B A B A B B A B A B B A B B A B A B B A B</code></li>
+</ol>
+
+<p>
+	Count number of symbols in each iteration.
+	Axiom have 1, 1st iteration aslo 1, 2nd 2, 3, 5, 8, 13, 21.
+	Yes, thiese numbers are @Html.Link("Fibonacci sequence", "http://en.wikipedia.org/wiki/Fibonacci_sequence").
+	This L-system have many interesting properties.
+	For example suffix of any iteration is the previous one.
+</p>
+
+<h3>Only one symbol can be rewritten by rewrite rule</h3>
+
+<p>
+	It is not possible to create rewrite rule like this: <code class="malsys">rewrite A B to B A;</code>.
+	Rewrite rule can rewrite only one symbol.
+	But dont be affraid, this behavior can be simulated using context rewrite rules.
+</p>
+
+<h3>Context rewriting</h3>
+
+<p>
+	Quite advanced feature is context rewriting.
+	In each rewrite rule can be specified context around pattern symbol.
+	With context rewriting can be achieved rewriting two symbols or switching two symbols.
+	As an example will be propagation throughout a string of symbols.
+</p>
+
+<p>
+	Context in rewrite rule it is placed in braces on the appropriete (left or right) side of rewrite rule's pattern symbol.
+	If we want to rewrite <code class="lsys_symbols">A</code> to <code class="lsys_symbols">B</code> only if left neighbour of
+		<code class="lsys_symbols">A</code> is <code class="lsys_symbols">B</code>, we can write: <code class="malsys">rewrite {B} A to B;</code>.
+</p>
+
+<pre class="malsys">
+lsystem SignalPropagation {
+	set axiom = B A A A A;
+	let iterations = 3;
+	
+	rewrite {B} A to B;
+	rewrite B to A;
+}
+</pre>
+
+<ol>
+	<li><code class="lsys_symbols">A B A A A</code></li>
+	<li><code class="lsys_symbols">A A B A A</code></li>
+	<li><code class="lsys_symbols">A A A B A</code></li>
+	<li><code class="lsys_symbols">A A A A B</code></li>
+	<li><code class="lsys_symbols">A A A A A</code></li>
+</ol>
+
+
+<h3>Rewriting is paralell (concurrent)</h3>
+
+<p>
+	Another feature of L-system rewriting rules is that all symbols are rewritten <i>at once</i> (concurrently).
+	You may noticed this behavior in previous L-system <code class="malsys">SignalPropagation</code>.
+</p>
+
+<p>
+	If rewriting were not paralell, lets examine one iteration of <code class="malsys">SignalPropagation</code> L-system.
+	Axiom is <code class="lsys_symbols">B A A A A</code>.
+	The only rewrite rule matching first symbol is <code class="malsys">rewrite B to A</code>, so ally it and we have
+		<code class="lsys_symbols">A A A A A</code> now.
+	Second, third, fourth and fifth symbol do not match any rewrite rule,
+		so our result is <code class="lsys_symbols">A A A A A</code>.
+	What is wrong?
+	We have to decide which rewrite rule to use on each symbol and then apply them at once.
+	Or artenativelly do rewrite rule matching and context checking on old axiom.
+</p>
+
+
+<p>
+	
+</p>
+
+

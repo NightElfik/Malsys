@@ -6,12 +6,22 @@ using Malsys.Web.Models;
 namespace Malsys.Web.Controllers {
 	public class ProcessLsystemController : Controller {
 
-		public ActionResult Text() {
+		public ActionResult Text(string lsystem = null, string nl = null) {
+
+			if (lsystem != null) {
+				if (nl != null) {
+					lsystem = lsystem.Replace(nl, "\n");
+				}
+
+				return Text(lsystem);
+			}
+
 			return View(new ProcessLsystemResultModel());
 		}
 
 		[HttpPost]
 		public ActionResult Text(string sourceCode) {
+
 
 			var renderMgr = new RenderManager() { Timeout = new TimeSpan(0, 0, 5) };
 			var fileMgr = new FilesManager(Server.MapPath(Url.Content("~/WorkDir")));

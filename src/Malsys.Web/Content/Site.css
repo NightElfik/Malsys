@@ -5,8 +5,8 @@ to use a different color start by replacing all instances of
 ----------------------------------------------------------*/
 body {
 	background-color: #5c87b2;
-	font-size: .85em;
-	font-family: "Trebuchet MS", Verdana, Helvetica, Sans-Serif;
+	font-size: 1em;
+	font-family: "Trebuchet MS" , Verdana, Helvetica, Sans-Serif;
 	margin: 0;
 	padding: 0;
 	color: #333333;
@@ -35,10 +35,7 @@ p, ul {
 	line-height: 1.6em;
 }
 
-header,
-footer,
-nav,
-section {
+header, footer, nav, section {
 	display: block;
 }
 
@@ -108,8 +105,7 @@ header h1, #header h1 {
 	-moz-border-radius: 4px 0 0 0;
 }
 
-footer,
-#footer {
+footer, #footer {
 	background-color: #fff;
 	color: #999;
 	padding: 10px 0;
@@ -190,8 +186,7 @@ textarea {
 	min-height: 75px;
 }
 
-input[type="text"],
-input[type="password"] {
+input[type="text"], input[type="password"] {
 	border: 1px solid #ccc;
 	padding: 2px;
 	font-size: 1.2em;
@@ -241,8 +236,7 @@ table th {
 	color: Red;
 }
 
-nav,
-#menucontainer {
+nav, #menucontainer {
 	margin-top: 40px;
 }
 
@@ -301,13 +295,11 @@ div#title {
 
 /* Styles for editor and display helpers
 ----------------------------------------------------------*/
-.display-label,
-.editor-label {
+.display-label, .editor-label {
 	margin: 1em 0 0 0;
 }
 
-.display-field,
-.editor-field {
+.display-field, .editor-field {
 	margin: 0.5em 0 0 0;
 }
 
@@ -331,28 +323,36 @@ pre {
 	padding: 4px;
 	color: #000;
 	background: #ddd;
-
+	position: relative;
+	
 	border-top-left-radius: 4px;
 	border-top-right-radius: 4px;
 	-moz-border-radius-topleft: 4px;
 	-moz-border-radius-topright: 4px;
 	-webkit-border-top-left-radius: 4px;
 	-webkit-border-top-right-radius: 4px;
-
+	
 	box-shadow: 2px 2px 5px #aaa;
 	-moz-box-shadow: 2px 2px 5px #aaa;
 	-webkit-box-shadow: 2px 2px 5px #aaa;
 }
 
-pre .gr-terminal {
-	color: Maroon;
+code {
+	background: #ddd;
+	padding: 0 0.2em;
 }
 
-pre .gr-quantifier {
+
+pre .gr-terminal, code .gr-terminal {
+	color: #800000;
+}
+
+pre .gr-quantifier, code .gr-quantifier {
 	font-weight: bold;
 }
 
 pre a:link, pre a:visited, pre a:active {
+	border-bottom: 1px dashed #fff;
 	text-decoration: none;
 	color: #000;
 }
@@ -362,3 +362,26 @@ pre a:hover {
 	color: #000;
 }
 
+
+
+code.re-match {
+	border: 1px solid #ccc;
+	background: none;
+}
+
+code.lsys_symbols {
+	
+}
+
+pre .lsys_kw, code .lsys_kw  {
+	color: #7F0055;
+	font-weight: bold;
+}
+
+pre a.lsysTryMe  {
+	display: block;
+	position: absolute;
+	top: 8px;
+	right: 8px;
+	font-weight: bold;
+}
