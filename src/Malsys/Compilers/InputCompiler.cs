@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using Malsys.Evaluators;
 using Malsys.Parsing;
 using Malsys.SemanticModel.Compiled;
 using Microsoft.FSharp.Text.Lexing;
-using System.Diagnostics;
 
 namespace Malsys.Compilers {
 	public class InputCompiler : MessagesLogger<InputCompilerMessageType> {
@@ -38,7 +39,15 @@ namespace Malsys.Compilers {
 			messages.DefaultSourceName = sourceName;
 			var comments = new List<Ast.Comment>();
 
-			var parsedInput = ParserUtils.ParseInput(comments, lexBuff, messages, sourceName);
+			Ast.InputBlock parsedInput;
+
+			try {
+				parsedInput = ParserUtils.ParseInput(comments, lexBuff, messages, sourceName);
+			}
+			catch (Exception ex) {
+				logMessage(InputCompilerMessageType.ParsingFailed, Position.Unknown);
+				return ImmutableList<IInputStatement>.Empty;
+			}
 
 			return CompileFromAst(parsedInput);
 		}
@@ -118,6 +127,8 @@ namespace Malsys.Compilers {
 			type = MessageType.Error;
 
 			switch (msgType) {
+				case InputCompilerMessageType.ParsingFailed:
+					return "Parsing of input failed.";
 				case InputCompilerMessageType.ParamNameNotUnique:
 					return "Parameter name `{0}` is not unique. See also {1}.".Fmt(args);
 				case InputCompilerMessageType.RequiredParamAfterOptional:
@@ -169,12 +180,21 @@ namespace Malsys.Compilers {
 				result = inCompiler.LsystemCompiler.CompileLsystem(lsysDef);
 			}
 
+			public void Visit(Ast.ProcessConfigurationDefinition processConfDef) {
+				throw new NotImplementedException();
+			}
+
+			public void Visit(Ast.ProcessStatement processDef) {
+				throw new NotImplementedException();
+			}
+
 			#endregion
 		}
 	}
 
 	public enum InputCompilerMessageType {
 		Unknown,
+		ParsingFailed,
 		RequiredParamAfterOptional,
 		ParamNameNotUnique,
 	}

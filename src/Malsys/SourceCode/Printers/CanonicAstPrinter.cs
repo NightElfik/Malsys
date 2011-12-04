@@ -3,7 +3,7 @@ using Malsys.Ast;
 using Malsys.IO;
 
 namespace Malsys.SourceCode.Printers {
-	public class CanonicAstPrinter : IInputVisitor, ILsystemVisitor, IExpressionVisitor, IFunctionVisitor {
+	public class CanonicAstPrinter : IInputVisitor, ILsystemVisitor, IExpressionVisitor, IFunctionVisitor, IProcessConfigVisitor {
 
 		private IndentWriter writer;
 
@@ -100,6 +100,16 @@ namespace Malsys.SourceCode.Printers {
 
 		}
 
+		public void Print(ProcessComponentAssignment processCompAssign) {
+
+			Print(Keyword.Use);
+			writer.Write(processCompAssign.ComponentNameId.Name);
+			writer.Write(" ");
+
+			Print(Keyword.As);
+			writer.Write(processCompAssign.ContainerNameId.Name);
+		}
+
 
 		#region IInputVisitor Members
 
@@ -151,6 +161,48 @@ namespace Malsys.SourceCode.Printers {
 			writer.Unindent();
 			writer.NewLine();
 			writer.WriteLine("}");
+		}
+
+		public void Visit(ProcessConfigurationDefinition processConfDef) {
+
+			Print(Keyword.Configuration);
+			writer.Write(processConfDef.NameId.Name);
+
+			writer.Write(" {");
+			writer.Indent();
+
+			foreach (var statement in processConfDef.Statements) {
+				writer.NewLine();
+				statement.Accept(this);
+			}
+
+			writer.Unindent();
+			writer.NewLine();
+			writer.WriteLine("}");
+		}
+
+		public void Visit(ProcessStatement processDef) {
+
+			Print(Keyword.Process);
+			if (processDef.TargetLsystemNameId.IsEmpty) {
+				Print(Keyword.This, false);
+			}
+			else {
+				writer.Write(processDef.TargetLsystemNameId.Name);
+			}
+			writer.Write(" ");
+
+			Print(Keyword.With);
+			writer.Write(processDef.ProcessConfiNameId.Name);
+
+			writer.Indent();
+			foreach (var assign in processDef.ComponentAssignments) {
+				writer.NewLine();
+				Print(assign);
+			}
+
+			writer.Unindent();
+			writer.Write(";");
 		}
 
 		#endregion
@@ -289,6 +341,45 @@ namespace Malsys.SourceCode.Printers {
 		void IFunctionVisitor.Visit(Expression expr) {
 			Print(Keyword.Return);
 			Print(expr);
+			writer.Write(";");
+		}
+
+		#endregion
+
+		#region IProcessConfigVisitor Members
+
+		public void Visit(ProcessComponent component) {
+
+			Print(Keyword.Component);
+			writer.Write(component.NameId.Name);
+			writer.Write(" ");
+			Print(Keyword.Typeof);
+			writer.Write(component.TypeNameId.Name);
+			writer.Write(";");
+		}
+
+		public void Visit(ProcessContainer container) {
+
+			Print(Keyword.Container);
+			writer.Write(container.NameId.Name);
+			writer.Write(" ");
+			Print(Keyword.Typeof);
+			writer.Write(container.TypeNameId.Name);
+			writer.Write(" ");
+			Print(Keyword.Default);
+			writer.Write(container.DefaultTypeNameId.Name);
+			writer.Write(";");
+		}
+
+		public void Visit(ProcessConfigConnection connection) {
+
+			Print(Keyword.Connect);
+			writer.Write(connection.SourceNameId.Name);
+			writer.Write(" ");
+			Print(Keyword.To);
+			writer.Write(connection.TargetNameId.Name);
+			writer.Write(".");
+			writer.Write(connection.TargetInputNameId.Name);
 			writer.Write(";");
 		}
 

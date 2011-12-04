@@ -123,6 +123,10 @@
     <Compile Include="SemanticModel\Compiled\IFunctionStatement.cs" />
     <Compile Include="SemanticModel\Compiled\IInputStatement.cs" />
     <Compile Include="SemanticModel\Compiled\OptionalParameter.cs" />
+    <Compile Include="SemanticModel\Compiled\ProcessComponent.cs" />
+    <Compile Include="SemanticModel\Compiled\ProcessComponentsConnection.cs" />
+    <Compile Include="SemanticModel\Compiled\ProcessConfiguration.cs" />
+    <Compile Include="SemanticModel\Compiled\ProcessContainer.cs" />
     <Compile Include="SemanticModel\Compiled\RewriteRuleReplacement.cs" />
     <Compile Include="SemanticModel\Compiled\SymbolsConstDefinition.cs" />
     <Compile Include="SemanticModel\Compiled\SymbolsInterpretation.cs" />

@@ -72,11 +72,11 @@ NUMBER =
 <h4 id="grammar-OPERATOR">Operator</h4>
 
 <pre class="grammar">
-OPERATOR = first_op_char op_char*
+OPERATOR = (first_op_char op_char*) | '==' | '/'
 
-first_op_char = '!'|'$'|'%'|'&'|'*'|'+'|'.'|'\'|'<'|'>'|'@@'|'^'|'|'|'~'|'?'|':'|'-'
+first_op_char = '!'|'$'|'%'|'&'|'*'|'+'|'\'|'<'|'>'|'@@'|'^'|'|'|'~'|'?'|':'|'-'
 
-op_char = first_op_char | '='|'/'
+op_char = first_op_char | '=' | '/'
 </pre>
 
 <p>

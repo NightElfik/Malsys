@@ -44,21 +44,30 @@ let appendToSb lexbuf (sb : StringBuilder) =
 
 let kw =
     [
+        (Keyword.As, AS Keyword.As);
+        (Keyword.Component, COMPONENT Keyword.Component);
+        (Keyword.Configuration, CONFIGURATION Keyword.Configuration);
+        (Keyword.Connect, CONNECT Keyword.Connect);
         (Keyword.Consider, CONSIDER Keyword.Consider);
+        (Keyword.Container, CONTAINER Keyword.Container);
+        (Keyword.Default, DEFAULT Keyword.Default);
         (Keyword.Fun, FUN Keyword.Fun);
+        (Keyword.Interpret, INTERPRET Keyword.Interpret);
         (Keyword.Let, LET Keyword.Let);
         (Keyword.Lsystem, LSYSTEM Keyword.Lsystem);
         (Keyword.Nothing, NOTHING Keyword.Nothing);
         (Keyword.Or, OR Keyword.Or);
+        (Keyword.Process, PROCESS Keyword.Process);
         (Keyword.Return, RETURN Keyword.Return);
         (Keyword.Rewrite, REWRITE Keyword.Rewrite);
         (Keyword.Set, SET Keyword.Set);
+        (Keyword.This, THIS Keyword.This);
         (Keyword.To, TO Keyword.To);
+        (Keyword.Typeof, TYPEOF Keyword.Typeof);
+        (Keyword.Use, USE Keyword.Use);
         (Keyword.Weight, WEIGHT Keyword.Weight);
         (Keyword.With, WITH Keyword.With);
         (Keyword.Where, WHERE Keyword.Where);
-        (Keyword.Interpret, INTERPRET Keyword.Interpret);
-        (Keyword.As, AS Keyword.As);
     ]
 
 let getKwStr (kwEnum, token) =
@@ -93,7 +102,7 @@ let letter = '\Lu' | '\Ll' | '\Lt' | '\Lm' | '\Lo' | '\Nl'
 // Nd - Number, decimal digit
 let digit = '\Nd'
 
-let firstOpChar = '!'|'$'|'%'|'&'|'*'|'+'|'.'|'\\'|'<'|'>'|'@'|'^'|'|'|'~'|'?'|':'|'-'
+let firstOpChar = '!'|'$'|'%'|'&'|'*'|'+'|'\\'|'<'|'>'|'@'|'^'|'|'|'~'|'?'|':'|'-'
 let opChar = firstOpChar | '='|'/'
 let operator = firstOpChar opChar*
 let extraOperators = "==" | '/'
@@ -177,6 +186,7 @@ rule tokenize args = parse
         singleLineComment args (lexbuf.StartPos) sb lexbuf }
 
     | ';' { SEMI }
+    | '.' { DOT }
     | ',' { COMMA }
     | '(' { LPAREN }
     | ')' { RPAREN }

@@ -93,6 +93,12 @@ namespace Malsys.Tests.Parsing {
 			doTestAutoident("lsystem l {", "interpret X Y Z as Action(0, 1, 2);", "interpret x as Action(x);", "}");
 		}
 
+		[TestMethod]
+		public void SymbolsProcessStatementsTests() {
+			doTestAutoident("lsystem l {", "process this with SvgConfig;", "}");
+			doTestAutoident("lsystem l {", "process this with SvgConfig", "\tuse Assembly.Type as Container;", "}");
+		}
+
 
 		private void doTestAutoident(params string[] inputLines) {
 			for (int i = 1; i < inputLines.Length - 1; i++) {

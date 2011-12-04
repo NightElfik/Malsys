@@ -268,6 +268,10 @@ namespace Malsys.Compilers {
 				result = inCompiler.LsystemCompiler.CompileSymbolConstant(symbolsDef);
 			}
 
+			public void Visit(Ast.ProcessStatement processDef) {
+				throw new System.NotImplementedException();
+			}
+
 			#endregion
 		}
 	}

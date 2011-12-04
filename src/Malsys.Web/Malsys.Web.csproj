@@ -234,7 +234,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\ProcessLsystem\Text.cshtml" />
+    <Content Include="Views\ProcessLsystem\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Code\Content.cshtml" />

@@ -1,0 +1,51 @@
+
+
+
+configuration ConfigName {
+
+	component Interpret typeof SymbolsSaver;
+
+	container Rewriter typeof IRewriter default SymbolRewriter;
+	container Iterator typeof IRewriterIterator default SingleRewriterIterator;
+
+
+	connect Iterator to Rewriter.OutputProcessor;
+	connect Rewriter to Iterator.Rewriter;
+	connect Interpret to Iterator.OutputProcessor;
+
+}
+
+process LsystemName with ConfigName
+	where ContainerName = ComponentType
+	where AnotherContainerName = NextComponent;
+
+
+OR
+
+
+lsystem LsysName {
+
+
+	process with ConfigName;
+
+	OR
+
+	process with ConfigName
+		where ContainerName = ComponentType
+		where AnotherContainerName = NextComponentType;
+
+}
+
+
+component/container types should be able to contain full assembly path:
+
+process LsystemName with ConfigName
+	where ContainerName = UserAssembly.ComponentType
+
+
+
+
+
+
+
+

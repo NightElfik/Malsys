@@ -29,12 +29,28 @@
 		return code.replace(/(lsystem|rewrite|to|let|set)/g, "<span class=\"lsys_kw\">$1</span>");
 	}
 
-	function compressLsystem(code, wsChar, nlChar) {
+	function urlEncode(str) {
+		str = str.replace(/[%]/g, "%25");  // % has to be first
+		str = str.replace(/[#]/g, "%23");
+		str = str.replace(/[$]/g, "%24");
+		str = str.replace(/[&]/g, "%26");
+		str = str.replace(/[+]/g, "%2B");
+		str = str.replace(/[,]/g, "%2C");
+		str = str.replace(/\//g, "%2F");
+		str = str.replace(/[:]/g, "%3A");
+		str = str.replace(/[=]/g, "%3D");
+		str = str.replace(/[?]/g, "%3F");
+		str = str.replace(/[@]/g, "%40");
+		return str;
+	}
 
-		var wsTab = wsChar + wsChar + wsChar + wsChar;
-		code = code.replace(/\t/g, wsTab);
-		code = code.replace(/ /g, wsChar);
-		code = code.replace(/\r\n|\n|\r/g, nlChar);
+	function urlEncodeLsystem(code) {
+
+		code = urlEncode(code);
+		code = code.replace(/\t/g, "++++");
+		code = code.replace(/ /g, "+");
+		code = code.replace(/\r\n|\n|\r/g, "%0A");
+		//code = encodeURI(code);
 		return code;
 	}
 
@@ -71,8 +87,8 @@
 		$(this).text("");
 
 		// add try-me link
-		var compressedLsystem = compressLsystem(lsystemCode, "+", "~");
-		var tryMeHtml = '<a href="/ProcessLsystem/Text?nl=~&lsystem=' + compressedLsystem + '" class="lsysTryMe">Try me!</a>';
+		var encodedLsystem = urlEncodeLsystem(lsystemCode);
+		var tryMeHtml = '<a href="/ProcessLsystem?lsystem=' + encodedLsystem + '" class="lsysTryMe">Try me!</a>';
 		$(this).append(tryMeHtml);
 
 		// format code

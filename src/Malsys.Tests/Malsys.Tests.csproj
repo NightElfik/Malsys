@@ -114,6 +114,8 @@
     <Compile Include="Parsing\ExpressionTests.cs" />
     <Compile Include="Parsing\LsystemTests.cs" />
     <Compile Include="Parsing\FunctionDefinitionTests.cs" />
+    <Compile Include="Parsing\ProcessConfigurationTest.cs" />
+    <Compile Include="Parsing\ProcessStatementTests.cs" />
     <Compile Include="Parsing\VariableDefinitionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Common\StringExtensionsTest.cs" />

@@ -6,21 +6,18 @@ using Malsys.Web.Models;
 namespace Malsys.Web.Controllers {
 	public class ProcessLsystemController : Controller {
 
-		public ActionResult Text(string lsystem = null, string nl = null) {
+		public ActionResult Index(string lsystem = null) {
 
 			if (lsystem != null) {
-				if (nl != null) {
-					lsystem = lsystem.Replace(nl, "\n");
-				}
-
-				return Text(lsystem);
+				return IndexPost(lsystem);
 			}
 
 			return View(new ProcessLsystemResultModel());
 		}
 
 		[HttpPost]
-		public ActionResult Text(string sourceCode) {
+		[ActionName("Index")]
+		public ActionResult IndexPost(string sourceCode) {
 
 
 			var renderMgr = new RenderManager() { Timeout = new TimeSpan(0, 0, 5) };

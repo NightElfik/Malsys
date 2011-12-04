@@ -59,7 +59,7 @@ let getEndPos (parserState : IParseState) =
 let optionToStatement parseState (option : Option<#ILsystemStatement>) =
     match option with
         | Some(value) -> value
-        | None -> new EmptyStatement(getPos parseState, true) :> ILsystemStatement
+        | None -> new EmptyStatement(getPos parseState) :> ILsystemStatement
 
 type ImmutableListPos_LsystemSymbol = ImmutableListPos<LsystemSymbol>
 
@@ -71,8 +71,9 @@ type ImmutableListPos_LsystemSymbol = ImmutableListPos<LsystemSymbol>
 //------------------------------------------------------------------------------
 
 %token <string> ID
-%token <Keyword> LSYSTEM REWRITE WITH WHERE TO OR WEIGHT NOTHING CONSIDER LET SET FUN RETURN INTERPRET AS
-%token EQUALS SEMI COMMA QMARK COLON
+%token <Keyword> AS COMPONENT CONFIGURATION CONNECT CONSIDER CONTAINER DEFAULT FUN INTERPRET LET
+%token <Keyword> LSYSTEM NOTHING OR PROCESS RETURN REWRITE SET THIS TO TYPEOF USE WEIGHT WITH WHERE
+%token EQUALS SEMI DOT COMMA QMARK COLON
 %token LPAREN RPAREN LBRACE RBRACE
 %token <float * ConstantFormat> FLOAT
 %token <string> OPERATOR LBRACK RBRACK
@@ -141,6 +142,10 @@ InputStatement:
       { ($1 :> IStatement) :?> IInputStatement }
     | LsystemDef
       { $1 :> IInputStatement }
+    | ProcessConfig
+      { $1 :> IInputStatement }
+    | ProcessStatement
+      { ($1 :> IStatement) :?> IInputStatement }
     | SEMI
       { new EmptyStatement(getPos parseState) :> IInputStatement }
 
@@ -222,6 +227,8 @@ LsysStatement:
       { $1 :> ILsystemStatement }
     | SymbolsInterpretDef
       { $1 :> ILsystemStatement }
+    | ProcessStatement
+      { ($1 :> IStatement) :?> ILsystemStatement }
     | SEMI
       { new EmptyStatement(getPos parseState) :> ILsystemStatement }
 
@@ -470,7 +477,7 @@ ExprIndexer:
     | LBRACK Expression RBRACK
       { new ExpressionIndexer($2, getPos parseState) }
 
-// explicit ID to avoid shift/reduce conflict, dont know how to do just with `id` (tried `%prec ID` in many places)
+// explicit ID to avoid shift/reduce conflict, dont know how to do just with `id` (alredy tried `%prec ID` in many places)
 ExprFun:
     | ID LPAREN ExpressionsList RPAREN
       { let id = new Identificator($1, getPos parseState) in
@@ -481,6 +488,89 @@ ExprParen:
     | LPAREN Expression RPAREN
       { new ExpressionBracketed($2, getPos parseState) }
 
+
+//------------------------------------------------------------------------------
+// Process configuration.
+//------------------------------------------------------------------------------
+
+
+ProcessConfig:
+    | CONFIGURATION id ProcessConfigBody
+      { new ProcessConfigurationDefinition($2, $3, getPos parseState) }
+
+ProcessConfigBody:
+    | LBRACE ProcessConfigStatementsList RBRACE
+      { new ImmutableListPos<IProcessConfigStatement>($2 :> ResizeArray<IProcessConfigStatement>, getPosI parseState 1, getPosI parseState 3, getPos parseState) }
+    | LBRACE error RBRACE
+      { logMsgPos ParsserMessageType.ProcessConfigStatementsInvalid (getPosBetween parseState 1 3);
+        new ImmutableListPos<IProcessConfigStatement>(getPosI parseState 1, getPosI parseState 3, getPos parseState)}
+
+ProcessConfigStatementsList:
+    |
+      { new ResizeArray<IProcessConfigStatement>() }
+    | ProcessConfigStatementsList ProcessConfigStatement
+      { $1.Add($2); $1 }
+
+ProcessConfigStatement:
+    | ProcessComponentDef
+      { $1 :> IProcessConfigStatement }
+    | ProcessContainerDef
+      { $1 :> IProcessConfigStatement }
+    | ProcessConfigConnection
+      { $1 :> IProcessConfigStatement }
+    | SEMI
+      { new EmptyStatement(getPos parseState) :> IProcessConfigStatement }
+
+
+ProcessComponentDef:
+    | COMPONENT id TYPEOF FullyQualifiedTypeId SEMI
+      { new ProcessComponent($2, $4, getPos parseState) }
+
+ProcessContainerDef:
+    | CONTAINER id TYPEOF FullyQualifiedTypeId DEFAULT FullyQualifiedTypeId SEMI
+      { new ProcessContainer($2, $4, $6, getPos parseState) :> IProcessConfigStatement }
+    | CONTAINER id TYPEOF FullyQualifiedTypeId SEMI
+      { logMsgPos ParsserMessageType.ProcessConfigContainerMissingDefaultType (getPosBetween parseState 4 5);
+        new EmptyStatement(getPos parseState) :> IProcessConfigStatement }
+
+ProcessConfigConnection:
+    | CONNECT id TO id DOT id SEMI
+      { new ProcessConfigConnection($2, $4, $6, getPos parseState) }
+
+
+FullyQualifiedTypeId:
+    | ID
+      { new Identificator($1, getPos parseState) }
+    | FullyQualifiedTypeId DOT ID
+      { new Identificator($1.Name + "." + $3, getPos parseState) }
+
+
+//------------------------------------------------------------------------------
+// Process statement.
+//------------------------------------------------------------------------------
+
+ProcessStatement:
+    | PROCESS IdOrThisOpt WITH id ProcessComponentAssignmentList SEMI
+      { let statements = new ImmutableListPos<ProcessComponentAssignment>($5 :> ResizeArray<ProcessComponentAssignment>, getPos parseState)
+        new ProcessStatement($2, $4, statements, getPos parseState) :> IStatement }
+
+IdOrThisOpt:
+    |
+      { Identificator.Empty }
+    | THIS
+      { Identificator.Empty }
+    | id
+      { $1 }
+
+ProcessComponentAssignmentList:
+    |
+      { let mutable x = new ResizeArray<ProcessComponentAssignment>() in x }
+    | ProcessComponentAssignmentList ProcessComponentAssignment
+      { $1.Add($2); $1 }
+
+ProcessComponentAssignment:
+    | USE FullyQualifiedTypeId AS id
+      { new ProcessComponentAssignment($2, $4, getPos parseState) }
 
 //------------------------------------------------------------------------------
 // Other.

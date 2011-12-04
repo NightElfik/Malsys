@@ -67,6 +67,10 @@ namespace Malsys.Parsing {
 					return "Excpected non-empty expression.";
 				case ParsserMessageType.ArrayExpressionInvalid:
 					return "Array expression body is invalid.";
+				case ParsserMessageType.ProcessConfigStatementsInvalid:
+					return "Process configuration body is invalid.";
+				case ParsserMessageType.ProcessConfigContainerMissingDefaultType:
+					return "Missing default container type.";
 
 
 
@@ -115,6 +119,8 @@ namespace Malsys.Parsing {
 		OptionalParamsInvalid,
 		EmptyExpression,
 		ArrayExpressionInvalid,
+		ProcessConfigStatementsInvalid,
+		ProcessConfigContainerMissingDefaultType,
 
 
 		EmptyRrConstsDefBlock,
