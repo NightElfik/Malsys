@@ -7,20 +7,30 @@ using System.Web;
 using System.Web.Mvc;
 using Malsys.Web.Entities;
 using System.Web.Security;
+using Malsys.Web.Models;
 
 namespace Malsys.Web.Controllers.Administration {
-	[Authorize(Roles = "admins")]
+	//[Authorize(Roles = "admins")]
 	public class RolesController : Controller {
 
-		private MalsysDbEntities db = new MalsysDbEntities();
+		private readonly IUsersRepository usersRepo;
 
 
-		public ViewResult Index() {
-			return View(db.Roles.ToList());
+		public RolesController(IUsersRepository usersRepo) {
+			this.usersRepo = usersRepo;
 		}
 
-		public ViewResult Details(string id) {
-			Role role = db.Roles.Single(r => r.RoleName == id);
+		public ViewResult Index() {
+			return View(usersRepo.Roles.ToList());
+		}
+
+		public ViewResult Details(int id) {
+
+			Role role = usersRepo.Roles.SingleOrDefault(r => r.RoleId == id);
+			if (role == null) {
+				return View("Index");
+			}
+
 			return View(role);
 		}
 
@@ -30,31 +40,51 @@ namespace Malsys.Web.Controllers.Administration {
 		}
 
 		[HttpPost]
-		public ActionResult Create(Role role) {
+		public ActionResult Create(NewRoleModel roleModel) {
+
 			if (ModelState.IsValid) {
-				Roles.CreateRole(role.RoleName);
-				return RedirectToAction("Index");
+				bool success = false;
+				try {
+					usersRepo.CreateRole(roleModel);
+					success = true;
+				}
+				catch (Exception ex) {
+					ModelState.AddModelError("", ex.Message);
+				}
+
+				if (success) {
+					return RedirectToAction("Index");
+				}
 			}
 
-			return View(role);
+			return View(roleModel);
 		}
 
 
-		public ActionResult Delete(string id) {
-			Role role = db.Roles.Single(r => r.RoleName == id);
-			return View(role);
+		public ActionResult Edit(int id) {
+
+			Role role = usersRepo.Roles.SingleOrDefault(r => r.RoleId == id);
+			if (role == null) {
+				return View("Index");
+			}
+
+			return View(RoleDetailModel.FromRole(role));
 		}
 
-		[HttpPost, ActionName("Delete")]
-		public ActionResult DeleteConfirmed(string id) {
-			Roles.DeleteRole(id);
-			return RedirectToAction("Index");
-		}
+		[HttpPost]
+		public ActionResult Edit(RoleDetailModel roleModel) {
 
+			if (ModelState.IsValid) {
 
-		protected override void Dispose(bool disposing) {
-			db.Dispose();
-			base.Dispose(disposing);
+				Role role = usersRepo.Roles.SingleOrDefault(r => r.RoleId == roleModel.RoleId);
+				if (role != null) {
+					roleModel.UpdateRole(role);
+					usersRepo.SaveChanges();
+					return RedirectToAction("Index");
+				}
+			}
+
+			return View(roleModel);
 		}
 	}
 }

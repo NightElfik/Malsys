@@ -8,7 +8,7 @@
 
 		<li>@Html.ActionLink("History", "History", "History")</li>
 
-		if (User.IsInRole("admins")) {
+		if (!User.IsInRole("admins")) {
 			<li>@Html.ActionLink("Users", "Index", "Users")</li>
 			<li>@Html.ActionLink("Roles", "Index", "Roles")</li>
 		}

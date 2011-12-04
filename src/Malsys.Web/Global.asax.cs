@@ -1,13 +1,17 @@
-﻿using System.Web.Mvc;
+﻿using System.Web;
+using System.Web.Mvc;
 using System.Web.Routing;
+using System.Web.Security;
+using Autofac;
+using Autofac.Integration.Mvc;
 using Malsys.Web.Entities;
-using System.Data.Entity;
+using Malsys.Web.Models;
+using Malsys.Web.Models.Repositories;
+using Malsys.Web.Security;
 
 namespace Malsys.Web {
-	// Note: For instructions on enabling IIS6 or IIS7 classic mode,
-	// visit http://go.microsoft.com/?LinkId=9394801
+	public class MvcApplication : HttpApplication {
 
-	public class MvcApplication : System.Web.HttpApplication {
 		public static void RegisterGlobalFilters(GlobalFilterCollection filters) {
 			filters.Add(new HandleErrorAttribute());
 		}
@@ -25,7 +29,22 @@ namespace Malsys.Web {
 
 		protected void Application_Start() {
 
-			//Database.SetInitializer(new DropCreateDatabaseAlways<DataContext>());
+			var builder = new ContainerBuilder();
+
+			builder.RegisterType<StandardDateTimeProvider>().As<IDateTimeProvider>().SingleInstance();
+			builder.RegisterType<Sha512PasswordHasher>().As<IPasswordHasher>().SingleInstance();
+
+			builder.RegisterType<MalsysDb>().As<IUsersDb>().InstancePerHttpRequest();
+			builder.RegisterType<UsersRepository>().As<IUsersRepository>().InstancePerHttpRequest();
+
+			builder.RegisterType<UserAuthenticator>().As<IUserAuthenticator>().InstancePerHttpRequest();
+			builder.RegisterType<FormsAuthenticationProvider>().As<IAuthenticationProvider>().SingleInstance();
+
+
+			builder.RegisterControllers(typeof(MvcApplication).Assembly);
+
+			var container = builder.Build();
+			DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
 
 			AreaRegistration.RegisterAllAreas();
 

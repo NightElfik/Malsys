@@ -1,4 +1,4 @@
-﻿@model Malsys.Web.Models.LogOnModel
+﻿@model LogOnModel
 
 @{
 	ViewBag.Title = "Log On";
@@ -11,7 +11,7 @@
 
 <h2>Log On</h2>
 <p>
-	Please enter your user name and password. @Html.ActionLink("Register", "Register") if you don't have an account.
+	Please enter your user name and password. @Html.ActionLink("Register", "Register", "Account") if you don't have an account.
 </p>
 
 @Html.ValidationSummary(true, "Login was unsuccessful. Please correct the errors and try again.")

@@ -10,6 +10,9 @@ http://research.microsoft.com/en-us/projects/contracts/
 ASP.NET MVC 3 (Visual studio 2010 SP1 + Visual web developer feature, VS 2010 SP1 from web platform installer)
 http://www.asp.net/mvc
 
+Autofac ASP.NET MVC3 Integration
+http://code.google.com/p/autofac/wiki/Mvc3Integration
+PM> Install-Package Autofac.Mvc3
 
 
 

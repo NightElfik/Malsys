@@ -1,7 +1,7 @@
-﻿@model NewRoleModel
+﻿@model RoleDetailModel
 
 @{
-	ViewBag.Title = "Create role";
+	ViewBag.Title = "Edit role";
 }
 
 @section scripts {
@@ -9,23 +9,26 @@
 	@Content.Script("jquery.validate.unobtrusive.min.js", Url)
 }
 
-<h2>Create role</h2>
+<h2>Edit role</h2>
 
 @using (Html.BeginForm()) {
 	@Html.ValidationSummary(true)
+
 	<fieldset>
-		<legend>Role</legend>
+		<legend>Role @Model.Name [@Model.RoleId]</legend>
+
+		@Html.HiddenFor(model => model.RoleId)
 
 		<div class="editor-label">
-			@Html.LabelFor(m => m.RoleName)
+			@Html.LabelFor(model => model.Name)
 		</div>
 		<div class="editor-field">
-			@Html.EditorFor(m => m.RoleName)
-			@Html.ValidationMessageFor(m => m.RoleName)
+			@Html.EditorFor(model => model.Name)
+			@Html.ValidationMessageFor(model => model.Name)
 		</div>
 
 		<p>
-			<input type="submit" value="Create" />
+			<input type="submit" value="Save" />
 		</p>
 	</fieldset>
 }

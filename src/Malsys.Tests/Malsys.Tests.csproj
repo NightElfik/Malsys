@@ -121,6 +121,7 @@
     <Compile Include="Rewriters\SingleRewriterIteratorTests.cs" />
     <Compile Include="Rewriters\SymbolRewriterTests.cs" />
     <Compile Include="Rewriters\GenericRewriterTests.cs" />
+    <Compile Include="TestUtils\AssertEx.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Malsys.Ast\Malsys.Ast.csproj">

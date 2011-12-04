@@ -1,26 +1,43 @@
 ﻿@model Tuple<User, IEnumerable<Role>>
 
 @{
-	ViewBag.Title = "Roles of user " + Model.Item1.UserName;
+	ViewBag.Title = "Roles of user";
 }
 
-<h2>Roles of user @Model.Item1.UserName</h2>
+<h2>Roles of user @Model.Item1.Name [@Model.Item1.UserId]</h2>
 
-<table>
-	<tr>
-		<th>Role name</th>
-		<th></th>
-	</tr>
-	@foreach (var role in Model.Item1.Roles) {
+@Html.ValidationSummary()
+
+@using (Html.BeginForm()) {
+
+	@Html.Hidden("userId", Model.Item1.UserId)
+	@Html.Hidden("add", "false")
+
+	<table>
 		<tr>
-			<td>@Html.DisplayFor(m => role.RoleName)</td>
-			<td>@Html.ActionLink("Delete", "DeleteUserRole", new { userId = Model.Item1.UserName, roleId = role.RoleName })</td>
+			<th>Role ID</th>
+			<th>Role name</th>
+			<th>Click to remove</th>
 		</tr>
-	}
-</table>
+		@foreach (var role in Model.Item1.Roles) {
+			<tr>
+				<td>@Html.DisplayFor(m => role.RoleId)</td>
+				<td>@Html.DisplayFor(m => role.Name)</td>
+				<td>@Html.SubmitButton("RoleName", role.Name)</td>
+			</tr>
+  }
+	</table>
+}
 
-<h3>Add @Model.Item1.UserName to role:</h3>
-|
-@foreach (var role in Model.Item2) {
-	@Html.ActionLink(role.RoleName, "AddUserRole", new { userId = Model.Item1.UserName, roleId = role.RoleName }) @:|
+@using (Html.BeginForm()) {
+
+	@Html.Hidden("userId", Model.Item1.UserId)
+	@Html.Hidden("add", "true")
+
+	<h3>Add @Model.Item1.Name to role:</h3>
+	@:|
+	foreach (var role in Model.Item2) {
+		@Html.SubmitButton("RoleName", role.Name);
+		@:|
+	}
 }

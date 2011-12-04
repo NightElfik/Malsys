@@ -1,7 +1,7 @@
-﻿@model Malsys.Web.Models.UserModel
+﻿@model UserDetailModel
 
 @{
-	ViewBag.Title = "Edit user " + Model.UserId;
+	ViewBag.Title = "Edit user";
 }
 
 @section scripts {
@@ -9,14 +9,23 @@
 	@Content.Script("jquery.validate.unobtrusive.min.js", Url)
 }
 
-<h2>Edit user @Model.UserId</h2>
+<h2>Edit user</h2>
 
 @using (Html.BeginForm()) {
 	@Html.ValidationSummary(true)
+
 	<fieldset>
-		<legend>User @Model.UserId</legend>
+		<legend>User @Model.Name [@Model.UserId]</legend>
 
 		@Html.HiddenFor(m => m.UserId)
+
+		<div class="editor-label">
+			@Html.LabelFor(m => m.Name)
+		</div>
+		<div class="editor-field">
+			@Html.EditorFor(m => m.Name)
+			@Html.ValidationMessageFor(m => m.Name)
+		</div>
 
 		<div class="editor-label">
 			@Html.LabelFor(m => m.Email)
@@ -24,22 +33,6 @@
 		<div class="editor-field">
 			@Html.EditorFor(m => m.Email)
 			@Html.ValidationMessageFor(m => m.Email)
-		</div>
-
-		<div class="editor-label">
-			@Html.LabelFor(m => m.Comment)
-		</div>
-		<div class="editor-field">
-			@Html.EditorFor(m => m.Comment)
-			@Html.ValidationMessageFor(m => m.Comment)
-		</div>
-
-		<div class="editor-label">
-			@Html.LabelFor(m => m.IsApproved)
-		</div>
-		<div class="editor-field">
-			@Html.EditorFor(m => m.IsApproved)
-			@Html.ValidationMessageFor(m => m.IsApproved)
 		</div>
 
 		<p>

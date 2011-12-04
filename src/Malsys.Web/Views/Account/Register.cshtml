@@ -1,4 +1,4 @@
-﻿@model Malsys.Web.Models.RegisterModel
+﻿@model NewUserModel
 
 @{
 	ViewBag.Title = "Register";
@@ -13,12 +13,10 @@
 <p>
 	Use the form below to create a new account.
 </p>
-<p>
-	Passwords are required to be a minimum of @Membership.MinRequiredPasswordLength characters in length.
-</p>
 
 @using (Html.BeginForm()) {
 	@Html.ValidationSummary(true, "Account creation was unsuccessful. Please correct the errors and try again.")
+
 	<div>
 		<fieldset>
 			<legend>Account Information</legend>

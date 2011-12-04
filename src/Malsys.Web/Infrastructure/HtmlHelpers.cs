@@ -21,5 +21,16 @@ namespace Malsys.Web.Infrastructure {
 			return MvcHtmlString.Create(tb.ToString(TagRenderMode.Normal));
 		}
 
+		public static MvcHtmlString SubmitButton(this HtmlHelper html, string name, string value) {
+
+			var tb = new TagBuilder("input");
+			tb.MergeAttribute("type", "submit");
+
+			tb.MergeAttribute("name", name);
+			tb.MergeAttribute("value", value);
+
+			return MvcHtmlString.Create(tb.ToString(TagRenderMode.SelfClosing));
+		}
+
 	}
 }

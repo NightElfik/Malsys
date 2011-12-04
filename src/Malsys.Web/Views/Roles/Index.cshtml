@@ -11,16 +11,16 @@
 
 <table>
 	<tr>
-		<th>Role name</th>
+		<th>ID</th>
+		<th>Name</th>
 		<th>actions</th>
 	</tr>
 	@foreach (var role in Model) {
 		<tr>
-			<td>@Html.DisplayFor(m => role.RoleName)</td>
+			<td>@Html.DisplayFor(m => role.RoleId)</td>
+			<td>@Html.DisplayFor(m => role.Name)</td>
 			<td>
-				@Html.ActionLink("Edit", "Edit", new { id = role.RoleName }) |
-				@Html.ActionLink("Details", "Details", new { id = role.RoleName }) |
-				@Html.ActionLink("Delete", "Delete", new { id = role.RoleName })
+				@Html.ActionLink("Edit", "Edit", new { id = role.RoleId })
 			</td>
 		</tr>
 	}
