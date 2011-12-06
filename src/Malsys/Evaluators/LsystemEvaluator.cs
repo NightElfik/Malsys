@@ -9,36 +9,41 @@ using SymIntMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.Semantic
 using SymListMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.ImmutableList<Malsys.SemanticModel.Symbol<Malsys.SemanticModel.Evaluated.IValue>>>;
 
 namespace Malsys.Evaluators {
-	public class LsystemEvaluator {
+	internal class LsystemEvaluator : ILsystemEvaluator {
 
-		private ExpressionEvaluator exprEvaluator;
+		private IExpressionEvaluator exprEvaluator;
+		private IParametersEvaluator paramsEvaluator;
+		private ISymbolEvaluator symbolEvaluator;
 
 
-		public LsystemEvaluator(ExpressionEvaluator exprEval) {
+		public LsystemEvaluator(IExpressionEvaluator exprEval, IParametersEvaluator parametersEvaluator, ISymbolEvaluator iSymbolEvaluator) {
+
 			exprEvaluator = exprEval;
+			paramsEvaluator = parametersEvaluator;
+			symbolEvaluator = iSymbolEvaluator;
 		}
 
-		public LsystemEvaled Evaluate(LsystemEvaledParams lsystem, ImmutableList<IValue> arguments,
-				ConstsMap consts, FunsMap funs) {
 
-			if (lsystem.Parameters.Length < arguments.Length) {
+		public LsystemEvaled Evaluate(LsystemEvaledParams lsystem, IList<IValue> arguments, ConstsMap consts, FunsMap funs) {
+
+			if (lsystem.Parameters.Length < arguments.Count) {
 				throw new EvalException("Failed to evaluate L-system `{0}`. It takes only {1} parameters but {2} arguments were given."
-					.Fmt(lsystem.AstNode.NameId.Name, lsystem.Parameters.Length, arguments.Length));
+					.Fmt(lsystem.AstNode.NameId.Name, lsystem.Parameters.Length, arguments.Count));
 			}
 
-			// add arguments as new consts
+			// add arguments as new constants
 			for (int i = 0; i < lsystem.Parameters.Length; i++) {
 				IValue value;
 				if (lsystem.Parameters[i].IsOptional) {
-					value = i < arguments.Length ? value = arguments[i] : lsystem.Parameters[i].DefaultValue;
+					value = i < arguments.Count ? value = arguments[i] : lsystem.Parameters[i].DefaultValue;
 				}
 				else {
-					if (i < arguments.Length) {
+					if (i < arguments.Count) {
 						value = arguments[i];
 					}
 					else {
 						throw new EvalException("Failed to evaluate L-system `{0}`. {1}. parameter is not optional and only {2} values given."
-							.Fmt(lsystem.AstNode.NameId.Name, i + 1, arguments.Length));
+							.Fmt(lsystem.AstNode.NameId.Name, i + 1, arguments.Count));
 					}
 				}
 
@@ -68,13 +73,13 @@ namespace Malsys.Evaluators {
 
 					case LsystemStatementType.Function:
 						var fun = (Function)stat;
-						var funPrms = exprEvaluator.EvaluateOptParams(fun.Parameters, consts, funs);
+						var funPrms = paramsEvaluator.Evaluate(fun.Parameters, consts, funs);
 						funs = funs.Add(fun.Name, new FunctionEvaledParams(fun.Name, funPrms, fun.Statements, fun.AstNode));
 						break;
 
 					case LsystemStatementType.SymbolsConstant:
 						var symDef = (SymbolsConstDefinition)stat;
-						symDefs = symDefs.Add(symDef.Name, exprEvaluator.EvaluateSymbols(symDef.Symbols, consts, funs));
+						symDefs = symDefs.Add(symDef.Name, symbolEvaluator.EvaluateList(symDef.Symbols, consts, funs));
 						break;
 
 					case LsystemStatementType.RewriteRule:
@@ -83,7 +88,7 @@ namespace Malsys.Evaluators {
 
 					case LsystemStatementType.SymbolsInterpretation:
 						var symInt = (SymbolsInterpretation)stat;
-						var prms = exprEvaluator.Evaluate(symInt.DefaultParameters);
+						var prms = exprEvaluator.EvaluateList(symInt.DefaultParameters);
 						foreach (var sym in symInt.Symbols) {
 							symsInt = symsInt.Add(sym.Name, new Symbol<IValue>(symInt.InstructionName, prms));
 						}

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using Malsys.Compilers.Expressions;
 
-namespace Malsys.Compilers.Expressions {
+namespace Malsys.Compilers {
 
 	[ContractClass(typeof(IKnownFunctionsProviderContract))]
 	public interface IKnownFunctionsProvider {
@@ -13,10 +14,9 @@ namespace Malsys.Compilers.Expressions {
 
 	}
 
+
 	[ContractClassFor(typeof(IKnownFunctionsProvider))]
 	abstract class IKnownFunctionsProviderContract : IKnownFunctionsProvider {
-
-		#region IKnownFunctionsProvider Members
 
 		public bool TryGet(string syntax, int paramsCount, out FunctionCore result) {
 			Contract.Requires<ArgumentNullException>(syntax != null);
@@ -25,16 +25,10 @@ namespace Malsys.Compilers.Expressions {
 			throw new NotImplementedException();
 		}
 
-		#endregion
-
-		#region IKnownFunctionsProvider Members
-
-
 		public IEnumerable<FunctionCore> GetAllFunctions() {
 			Contract.Ensures(Contract.Result<IEnumerable<FunctionCore>>() != null);
 			throw new NotImplementedException();
 		}
 
-		#endregion
 	}
 }

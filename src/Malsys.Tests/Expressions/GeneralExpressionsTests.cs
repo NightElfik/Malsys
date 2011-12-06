@@ -278,13 +278,13 @@ namespace Malsys.Tests.Expressions {
 
 			// parsing
 			var lexBuff = LexBuffer<char>.FromString(exprStr);
-			var msgs = new MessagesCollection();
+			var msgs = new MessageLogger();
 			var parsedExpr = ParserUtils.ParseExpression(lexBuff, msgs, testName);
 
 
 			// compile
 
-			var compiledExpr = new ExpressionCompiler(msgs).CompileExpression(parsedExpr);
+			var compiledExpr = new ExpressionCompiler(msgs).Compile(parsedExpr);
 
 
 			// evaluate
@@ -305,7 +305,7 @@ namespace Malsys.Tests.Expressions {
 			var lexbuff = LexBuffer<char>.FromString(str);
 			StringBuilder sb = new StringBuilder();
 			var comments = new List<Ast.Comment>();
-			var msgs = new MessagesCollection();
+			var msgs = new MessageLogger();
 
 
 			Parser.token tok;

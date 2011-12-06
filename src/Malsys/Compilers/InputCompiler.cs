@@ -1,201 +1,73 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using Malsys.Evaluators;
-using Malsys.Parsing;
 using Malsys.SemanticModel.Compiled;
-using Microsoft.FSharp.Text.Lexing;
 
 namespace Malsys.Compilers {
-	public class InputCompiler : MessagesLogger<InputCompilerMessageType> {
+	internal class InputCompiler : IInputCompiler, Ast.IInputVisitor {
 
-		private LsystemCompiler lsysCompiler;
-		private ExpressionCompiler exprCompiler;
-		private FunctionCompilerVisitor funCompiler;
-		private ExpressionEvaluator exprEvaluator;
-		private InputCompilerVisitor inVisitor;
-
-		public LsystemCompiler LsystemCompiler { get { return lsysCompiler; } }
-		public ExpressionCompiler ExpressionCompiler { get { return exprCompiler; } }
+		private IConstantDefinitionCompiler constDefCompiler;
+		private IFunctionDefinitionCompiler funDefCompiler;
+		private ILsystemCompiler lsysCompiler;
+		private IExpressionCompiler exprCompiler;
 
 
-		public InputCompiler(MessagesCollection msgs) : base(msgs) {
+		private CompilerResult<IInputStatement> visitResult;
 
-			inVisitor = new InputCompilerVisitor(this);
 
-			lsysCompiler = new LsystemCompiler(msgs, this);
-			exprCompiler = new ExpressionCompiler(msgs);
+		public InputCompiler(IConstantDefinitionCompiler constantDefCompiler, IFunctionDefinitionCompiler functionDefCompiler,
+				ILsystemCompiler lsystemCompiler, IExpressionCompiler expressionCompiler) {
 
-			funCompiler = new FunctionCompilerVisitor(this);
-			exprEvaluator = new ExpressionEvaluator();
+			constDefCompiler = constantDefCompiler;
+			funDefCompiler = functionDefCompiler;
+			lsysCompiler = lsystemCompiler;
+			exprCompiler = expressionCompiler;
 		}
 
 
 
+		public InputBlock Compile(Ast.InputBlock parsedInput) {
 
-		public ImmutableList<IInputStatement> CompileFromString(string strInput, string sourceName) {
+			var statements = new List<IInputStatement>(parsedInput.Statements.Length);
 
-			var lexBuff = LexBuffer<char>.FromString(strInput);
-			messages.DefaultSourceName = sourceName;
-			var comments = new List<Ast.Comment>();
-
-			Ast.InputBlock parsedInput;
-
-			try {
-				parsedInput = ParserUtils.ParseInput(comments, lexBuff, messages, sourceName);
-			}
-			catch (Exception ex) {
-				logMessage(InputCompilerMessageType.ParsingFailed, Position.Unknown);
-				return ImmutableList<IInputStatement>.Empty;
-			}
-
-			return CompileFromAst(parsedInput);
-		}
-
-		public ImmutableList<IInputStatement> CompileFromAst(Ast.InputBlock parsedInput) {
-
-			var sw = new Stopwatch();
-			sw.Start();
-
-			var statements = new List<IInputStatement>(parsedInput.Length);
-
-			for (int i = 0; i < parsedInput.Length; i++) {
-				var stat = inVisitor.TryCompile(parsedInput[i]);
-				if (stat) {
-					statements.Add(stat.Result);
+			for (int i = 0; i < parsedInput.Statements.Length; i++) {
+				parsedInput.Statements[i].Accept(this);
+				if (visitResult) {
+					statements.Add(visitResult.Result);
 				}
 			}
 
-			sw.Stop();
-			logMessage("CompilationTime", MessageType.Info, Position.Unknown, sw.Elapsed.ToString());
-
-			return new ImmutableList<IInputStatement>(statements);
+			var statsImm = new ImmutableList<IInputStatement>(statements);
+			return new InputBlock(parsedInput.SourceName, statsImm);
 		}
 
 
+		#region IInputVisitor Members
 
-		public ImmutableList<OptionalParameter> CompileParameters(ImmutableList<Ast.OptionalParameter> parameters) {
-
-			int parametersCount = parameters.Count;
-			bool wasOptional = false;
-			var result = new OptionalParameter[parametersCount];
-
-			for (int i = 0; i < parametersCount; i++) {
-
-				result[i] = new OptionalParameter(parameters[i].NameId.Name, exprCompiler.CompileExpression(parameters[i].DefaultValue));
-
-				if (result[i].IsOptional) {
-					wasOptional = true;
-				}
-				else if (wasOptional) {
-					logMessage(InputCompilerMessageType.RequiredParamAfterOptional, parameters[i].Position, parameters[i].NameId.Name);
-				}
-			}
-
-			// check wether parameters names are unique
-			foreach (var indices in result.GetEqualValuesIndices((l, r) => { return l.Name.Equals(r.Name); })) {
-				logMessage(InputCompilerMessageType.ParamNameNotUnique, parameters[indices.Item1].Position, result[indices.Item1].Name, parameters[indices.Item2].Position);
-			}
-
-			return new ImmutableList<OptionalParameter>(result, true);
+		public void Visit(Ast.ConstantDefinition constDef) {
+			visitResult = constDefCompiler.Compile(constDef);
 		}
 
-		public ConstantDefinition CompileConstDef(Ast.ConstantDefinition constDefAst) {
-			return new ConstantDefinition(constDefAst.NameId.Name, exprCompiler.CompileExpression(constDefAst.ValueExpr), constDefAst);
+		public void Visit(Ast.EmptyStatement emptyStat) {
+			visitResult = CompilerResult<IInputStatement>.Error;
 		}
 
-		public Function CompileFunctionDef(Ast.FunctionDefinition funDefAst) {
-
-			var compiledStats = new IFunctionStatement[funDefAst.Statements.Length];
-
-			for (int i = 0; i < funDefAst.Statements.Length; i++) {
-				compiledStats[i] = funCompiler.Compile(funDefAst.Statements[i]);
-			}
-
-			var prms = CompileParameters(funDefAst.Parameters);
-			var stats = new ImmutableList<IFunctionStatement>(compiledStats, true);
-			return new Function(funDefAst.NameId.Name, prms, stats, funDefAst);
+		public void Visit(Ast.FunctionDefinition funDef) {
+			visitResult = funDefCompiler.Compile(funDef);
 		}
 
-
-		public override string GetMessageTypeId(InputCompilerMessageType msgType) {
-			return msgType.ToString();
+		public void Visit(Ast.LsystemDefinition lsysDef) {
+			visitResult = lsysCompiler.Compile(lsysDef);
 		}
 
-		protected override string resolveMessage(InputCompilerMessageType msgType, out MessageType type, params object[] args) {
-
-			type = MessageType.Error;
-
-			switch (msgType) {
-				case InputCompilerMessageType.ParsingFailed:
-					return "Parsing of input failed.";
-				case InputCompilerMessageType.ParamNameNotUnique:
-					return "Parameter name `{0}` is not unique. See also {1}.".Fmt(args);
-				case InputCompilerMessageType.RequiredParamAfterOptional:
-					return "Optional parameters must appear after all required parameters, but required parameter `{0}` is after optional.".Fmt(args);
-
-				default:
-					return "Unknown error.";
-			}
+		public void Visit(Ast.ProcessConfigurationDefinition processConfDef) {
+			throw new NotImplementedException();
 		}
 
-
-		class InputCompilerVisitor : Ast.IInputVisitor {
-
-
-			private InputCompiler inCompiler;
-
-
-			private CompilerResult<IInputStatement> result;
-
-
-			public InputCompilerVisitor(InputCompiler inComp) {
-				inCompiler = inComp;
-			}
-
-
-			public CompilerResult<IInputStatement> TryCompile(Ast.IInputStatement astStatement) {
-
-				astStatement.Accept(this);
-				return result;
-			}
-
-
-
-			#region IInputVisitor Members
-
-			public void Visit(Ast.ConstantDefinition constDef) {
-				result = inCompiler.CompileConstDef(constDef);
-			}
-
-			public void Visit(Ast.EmptyStatement emptyStat) {
-				result = CompilerResult<IInputStatement>.Error;
-			}
-
-			public void Visit(Ast.FunctionDefinition funDef) {
-				result = inCompiler.CompileFunctionDef(funDef);
-			}
-
-			public void Visit(Ast.LsystemDefinition lsysDef) {
-				result = inCompiler.LsystemCompiler.CompileLsystem(lsysDef);
-			}
-
-			public void Visit(Ast.ProcessConfigurationDefinition processConfDef) {
-				throw new NotImplementedException();
-			}
-
-			public void Visit(Ast.ProcessStatement processDef) {
-				throw new NotImplementedException();
-			}
-
-			#endregion
+		public void Visit(Ast.ProcessStatement processDef) {
+			throw new NotImplementedException();
 		}
+
+		#endregion
 	}
 
-	public enum InputCompilerMessageType {
-		Unknown,
-		ParsingFailed,
-		RequiredParamAfterOptional,
-		ParamNameNotUnique,
-	}
 }

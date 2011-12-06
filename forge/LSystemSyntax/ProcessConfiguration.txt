@@ -16,7 +16,7 @@ configuration ConfigName {
 }
 
 process LsystemName with ConfigName
-	where ContainerName = ComponentType
+	use SvgRewriter as Rewriter
 	where AnotherContainerName = NextComponent;
 
 

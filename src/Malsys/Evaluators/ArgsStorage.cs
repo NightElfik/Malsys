@@ -5,7 +5,7 @@ using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Evaluators {
 	/// <summary>
-	/// Argument storage to aviod creating small arrays to supply arguments for function invokes.
+	/// Argument storage to avoid creating small arrays to supply arguments for function invokes.
 	/// </summary>
 	public class ArgsStorage : IEnumerable<IValue> {
 
@@ -16,17 +16,13 @@ namespace Malsys.Evaluators {
 		private IValue[] args = new IValue[8];
 
 
-		public ArgsStorage() {
-			Clear();
-		}
-
 
 		public bool IsEmpty { get { return ArgsCount == 0; } }
 
 
 		/// <summary>
-		/// Cleares all previously stored arguments and takes (pops) given number of new arguments from given stack.
-		/// Top of stack is last agrument.
+		/// Clears all previously stored arguments and takes (pops) given number of new arguments from given stack.
+		/// Top of stack is last argument.
 		/// Do not check weather is enough items in stack.
 		/// </summary>
 		public void PopArgs(int argsCount, Stack<IValue> stack) {
@@ -40,7 +36,7 @@ namespace Malsys.Evaluators {
 		}
 
 		/// <summary>
-		/// Cleares all previously stored arguments and copies all args from first list and if second is longer,
+		/// Clears all previously stored arguments and copies all arguments from first list and if second is longer,
 		/// rest from second.
 		/// </summary>
 		public void AddArgs(ImmutableList<IValue> arguments, ImmutableList<IValue> defaultValues) {
@@ -59,26 +55,14 @@ namespace Malsys.Evaluators {
 			}
 		}
 
-		public void Clear() {
-			ArgsCount = 0;
-		}
-
-
-		#region IEnumerable Members
 
 		IEnumerator IEnumerable.GetEnumerator() {
 			return new Enumerator(this);
 		}
 
-		#endregion
-
-		#region IEnumerable<IValue> Members
-
 		public IEnumerator<IValue> GetEnumerator() {
 			return new Enumerator(this);
 		}
-
-		#endregion
 
 
 		private void ensureCapacity(int capacity) {
@@ -99,11 +83,15 @@ namespace Malsys.Evaluators {
 				index = -1;
 			}
 
-			#region IEnumerator Members
+
+			public IValue Current {
+				get { return argsStorage[index]; }
+			}
 
 			object IEnumerator.Current {
 				get { return argsStorage[index]; }
 			}
+
 
 			public bool MoveNext() {
 				index++;
@@ -114,24 +102,12 @@ namespace Malsys.Evaluators {
 				index = -1;
 			}
 
-			#endregion
-
-			#region IEnumerator<IValue> Members
-
-			public IValue Current {
-				get { return argsStorage[index]; }
-			}
-
-			#endregion
-
-			#region IDisposable Members
 
 			public void Dispose() {
 				argsStorage = null;
 				index = -1;
 			}
 
-			#endregion
 		}
 	}
 }

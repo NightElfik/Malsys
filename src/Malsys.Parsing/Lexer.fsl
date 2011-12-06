@@ -11,7 +11,7 @@ open System.Text
 open System.Globalization
 open Microsoft.FSharp.Text.Lexing
 
-open MessagesLogger
+open Logger
 
 open Malsys
 open Malsys.Ast
@@ -80,7 +80,7 @@ let keywords = List.map getKwStr kw |> Map.ofList
 
 let parseInt args lexbuf format =
     let s = if (format = ConstantFormat.HashHexadecimal) then ("0x" + (lexeme lexbuf).Substring(1)) else (lexeme lexbuf) in
-    let n = try int64 s |> double with _ -> logMsg ParsserMessageType.FailedParseInt lexbuf [| (lexeme lexbuf) |]; Double.NaN in
+    let n = try int64 s |> double with _ -> logMsg LexerMessage.FailedParseInt lexbuf [| (lexeme lexbuf) |]; Double.NaN in
     FLOAT (n, format)
 
 
@@ -170,7 +170,7 @@ rule tokenize args = parse
         if Double.TryParse(lexeme lexbuf, floatStyle, invariantCulture, &d) then
             FLOAT (d, ConstantFormat.Float)
         else
-            logMsg ParsserMessageType.FailedParseFloat lexbuf [| (lexeme lexbuf) |]
+            logMsg LexerMessage.FailedParseFloat lexbuf [| (lexeme lexbuf) |]
             FLOAT (Double.NaN, ConstantFormat.Float) }
 
     | "/*"
@@ -203,7 +203,7 @@ rule tokenize args = parse
       { EOF }
 
     | _
-      { logMsg ParsserMessageType.UnrecognizedInput lexbuf [| (lexeme lexbuf) |]
+      { logMsg LexerMessage.UnrecognizedInput lexbuf [| (lexeme lexbuf) |]
         tokenize args lexbuf }
 
 // nested mult-line comment
@@ -228,7 +228,7 @@ and multiLineComment args bPos sb nest = parse
 
     | eof
       { addComment args (sb.ToString()) bPos lexbuf.StartPos;
-        logMessagePos ParsserMessageType.UnterminatedMultilineComment (new Position(bPos, lexbuf.StartPos)) Array.empty;
+        logMessagePos LexerMessage.UnterminatedMultilineComment (new Position(bPos, lexbuf.StartPos)) Array.empty;
         EOF }
 
     | _

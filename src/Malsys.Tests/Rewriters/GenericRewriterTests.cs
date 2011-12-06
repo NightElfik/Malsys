@@ -207,7 +207,7 @@ namespace Malsys.Tests.Rewriters {
 
 			string input = "lsystem l {{ set axiom = {0}; {1} }}".Fmt(inputSymbols, rewriteRules);
 
-			var msgs = new MessagesCollection();
+			var msgs = new MessageLogger();
 			var compiler = new InputCompiler(msgs);
 			var inCompiled = compiler.CompileFromString(input, "testInput");
 

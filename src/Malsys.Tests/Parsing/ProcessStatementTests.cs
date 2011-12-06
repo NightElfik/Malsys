@@ -43,7 +43,7 @@ namespace Malsys.Tests.Parsing {
 			}
 
 			var lexBuff = LexBuffer<char>.FromString(input);
-			var msgs = new MessagesCollection();
+			var msgs = new MessageLogger();
 			var inBlock = ParserUtils.ParseInputNoComents(lexBuff, msgs, "testInput");
 
 			var writer = new IndentStringWriter();

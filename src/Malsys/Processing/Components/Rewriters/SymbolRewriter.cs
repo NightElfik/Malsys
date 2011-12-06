@@ -19,7 +19,7 @@ namespace Malsys.Processing.Components.Rewriters {
 	public class SymbolRewriter : IRewriter {
 
 		private ISymbolProcessor outputProcessor;
-		private ExpressionEvaluator exprEvaluator;
+		private IExpressionEvaluator exprEvaluator;
 
 		private Dictionary<string, RewriteRule[]> rewriteRules;
 
@@ -116,7 +116,7 @@ namespace Malsys.Processing.Components.Rewriters {
 		public void Initialize(ProcessContext context) {
 			this.context = context;
 
-			exprEvaluator = context.ExpressionEvaluator;
+			//exprEvaluator = context.ExpressionEvaluator;
 			constants = context.Lsystem.Constants;
 			functions = context.Lsystem.Functions;
 			rewriteRules = createRrulesMap(context.Lsystem.RewriteRules);
@@ -177,15 +177,15 @@ namespace Malsys.Processing.Components.Rewriters {
 			RewriteRule rrule;
 			IEnumerable<Symbol> symToProcess = null;
 
-			if (tryFindRewriteRule(symbol, out rrule, out consts)) {
-				rewriteRuleApplied = true;
-				var replac = chooseReplacement(rrule, consts, functions);
-				symToProcess = exprEvaluator.EvaluateSymbols(replac.Replacement, consts, functions);
-			}
-			else {
+			//if (tryFindRewriteRule(symbol, out rrule, out consts)) {
+			//    rewriteRuleApplied = true;
+			//    var replac = chooseReplacement(rrule, consts, functions);
+			//    symToProcess = exprEvaluator.EvaluateSymbols(replac.Replacement, consts, functions);
+			//}
+			//else {
 				// implicity identity
 				symToProcess = new Symbol[] { symbol };
-			}
+			//}
 
 			leftContext.Enqueue(symbol);
 			if (leftContext.Count > leftCtxtMaxLen) {

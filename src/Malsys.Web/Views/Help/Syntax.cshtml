@@ -14,9 +14,9 @@
 </p>
 
 <p>
-	Syntax is whitespace-independant.
+	Syntax is whitespace-independent.
 	Between individual tokens can be any whitespaces like space, tab or new line.
-	On the other hand, whitspaces are not in single tokens, which are defined in Tokens section.
+	On the other hand, whitespaces are not in single tokens, which are defined in Tokens section.
 </p>
 
 
@@ -35,7 +35,7 @@ ID = (ALPHABETIC_CHAR | '_') (ALPHABETIC_CHAR | DIGIT | '_' | ''')*
 </pre>
 
 <p>
-	Identificator regular expression is simplfied, to avoID using characters groups in unicode.
+	Identificator regular expression is simplified, to avoid using characters groups in unicode.
 	<code class="grammar">ALPHABETIC_CHAR</code> matches any letter and <code class="grammar">DIGIT</code> matches any digit.
 	From regular expression is obvious, that identificator can not start with digit.
 </p>
@@ -53,7 +53,7 @@ NUMBER =
 </pre>
 
 <p>
-	Malsys supprots 5 different formats of number.
+	Malsys supports 5 different formats of number.
 </p>
 
 <ul>
@@ -65,7 +65,7 @@ NUMBER =
 </ul>
 
 <p>
-	Each of format is usefull in some context, it is up to user to choose one.
+	Each of format is useful in some context, it is up to user to choose one.
 </p>
 
 
@@ -126,8 +126,8 @@ constant_def = 'let' ID '=' expression ';'
 
 <p>
 	Binds value of <code class="grammar">expression</code> to name represented by <code class="grammar">ID</code>.
-	If binding on same name alredy exists in current scope, it is hidden by new binding until end of the scope.
-	It means, that global constants can be temporaly hidden by local constants.
+	If binding on same name already exists in current scope, it is hidden by new binding until end of the scope.
+	It means, that global constants can be temporally hidden by local constants.
 </p>
 
 <p>Examples:</p>
@@ -151,7 +151,7 @@ params_list = ID ('=' expression)?  (',' params_list)?
 <p>
 	Binds function with parameters <code class="grammar">params_list</code>, local constants <code class="grammar">constant_def</code>
 		and return value <code class="grammar">expression</code> to name represented by <code class="grammar">ID</code>.
-	If binding on same name alredy exists in current scope, it is hidden by new binding until end of the scope.
+	If binding on same name already exists in current scope, it is hidden by new binding until end of the scope.
 </p>
 
 <p>Examples:</p>

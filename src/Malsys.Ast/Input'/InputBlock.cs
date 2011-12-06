@@ -1,14 +1,17 @@
 ﻿using System.Collections.Generic;
 
 namespace Malsys.Ast {
-	public class InputBlock : ImmutableList<IInputStatement> {
+	public class InputBlock {
 
-		public InputBlock()
-			: base(ImmutableList<IInputStatement>.Empty) {
-		}
+		public string SourceName;
 
-		public InputBlock(IEnumerable<IInputStatement> statements)
-			: base(statements) {
+		public ImmutableListPos<IInputStatement> Statements;
+
+
+		public InputBlock(string sourceName, ImmutableListPos<IInputStatement> statements) {
+
+			SourceName = sourceName;
+			Statements = statements;
 		}
 	}
 }

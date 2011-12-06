@@ -22,7 +22,7 @@ namespace Malsys.Web.Controllers {
 
 			var renderMgr = new RenderManager() { Timeout = new TimeSpan(0, 0, 5) };
 			var fileMgr = new FilesManager(Server.MapPath(Url.Content("~/WorkDir")));
-			var msgs = new MessagesCollection();
+			var msgs = new MessageLogger();
 
 			renderMgr.RenderAllLsystemsDefault(sourceCode, fileMgr, msgs, false);
 

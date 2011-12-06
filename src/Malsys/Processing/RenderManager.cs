@@ -13,9 +13,9 @@ namespace Malsys.Processing {
 		}
 
 
-		public void RenderAllLsystemsDefault(string src, FilesManager fm, MessagesCollection msgs, bool svg) {
+		public void RenderAllLsystemsDefault(string src, FilesManager fm, MessageLogger msgs, bool svg) {
 
-			var compiler = new InputCompiler(msgs);
+			/*var compiler = new InputCompiler(msgs);
 			var inCompiled = compiler.CompileFromString(src, "webInput");
 
 			if (msgs.ErrorOcured) {
@@ -50,7 +50,7 @@ namespace Malsys.Processing {
 				setupMgr.ClearComponents();
 
 				fm.TryDeleteAllTempFiles();
-			}
+			}*/
 
 		}
 

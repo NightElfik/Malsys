@@ -3,285 +3,102 @@ using Malsys.SemanticModel;
 using Malsys.SemanticModel.Compiled;
 
 namespace Malsys.Compilers {
+	internal class LsystemCompiler : ILsystemCompiler, Ast.ILsystemVisitor {
 
-	public class LsystemCompiler : MessagesLogger<LsystemCompilerMessageType> {
-		/// <summary>
-		/// Pattern that matches anything, but does not bind.
-		/// </summary>
-		public const string PatternPlaceholder = "_";
+		private MessageLogger msgs;
+		private IConstantDefinitionCompiler constDefCompiler;
+		private IFunctionDefinitionCompiler funDefCompiler;
+		private IExpressionCompiler exprCompiler;
+		private IParametersCompiler paramsCompiler;
+		private IRewriteRuleCompiler rrCompiler;
+		private ISymbolCompiler symbolCompiler;
+
+		private CompilerResult<ILsystemStatement> visitResult;
 
 
-		private InputCompiler inCompiler;
-		private LsystemCompilerVisitor lsysStatementCompiler;
+		public LsystemCompiler(MessageLogger messageLogger, IConstantDefinitionCompiler constantDefCompiler, IFunctionDefinitionCompiler functionDefCompiler,
+				IExpressionCompiler expressionCompiler, ParametersCompiler parametersCompiler, ISymbolCompiler symbolCompiler) {
 
-
-		public LsystemCompiler(MessagesCollection msgs, InputCompiler inComp) : base(msgs) {
-
-			inCompiler = inComp;
-			lsysStatementCompiler = new LsystemCompilerVisitor(inCompiler);
+			msgs = messageLogger;
+			constDefCompiler = constantDefCompiler;
+			funDefCompiler = functionDefCompiler;
+			exprCompiler = expressionCompiler;
+			paramsCompiler = parametersCompiler;
+			this.symbolCompiler = symbolCompiler;
 		}
 
-		public Lsystem CompileLsystem(Ast.LsystemDefinition lsysDef) {
 
-			var prms = inCompiler.CompileParameters(lsysDef.Parameters);
-			var stats = inCompiler.LsystemCompiler.CompileLsystemStatements(lsysDef.Statements);
+		public Lsystem Compile(Ast.LsystemDefinition lsysDef) {
+
+			var prms = paramsCompiler.CompileList(lsysDef.Parameters);
+			var stats = compileLsystemStatements(lsysDef.Statements);
 
 			return new Lsystem(lsysDef.NameId.Name, prms, stats, lsysDef);
 		}
 
-		public ImmutableList<ILsystemStatement> CompileLsystemStatements(ImmutableList<Ast.ILsystemStatement> statements) {
+
+		private ImmutableList<ILsystemStatement> compileLsystemStatements(ImmutableList<Ast.ILsystemStatement> statements) {
 
 			var compStats = new List<ILsystemStatement>(statements.Count);
 
 			foreach (var stat in statements) {
-
-				var compiledStat = lsysStatementCompiler.TryCompile(stat);
-				if (compiledStat) {
-					compStats.Add(compiledStat.Result);
+				stat.Accept(this);
+				if (visitResult) {
+					compStats.Add(visitResult.Result);
 				}
-
 			}
 
 			return new ImmutableList<ILsystemStatement>(compStats);
 		}
 
-		public RewriteRule CompileRewriteRule(Ast.RewriteRule rRuleAst) {
+		private SymbolsConstDefinition compileSymbolConstant(Ast.SymbolsConstDefinition symbolConstAst) {
 
-			var ptrn = CompileSymbolAsPattern(rRuleAst.Pattern, true);
-			var lCtxt = CompileSymbolsListAsPattern(rRuleAst.LeftContext, true);
-			var rCtxt = CompileSymbolsListAsPattern(rRuleAst.RightContext, true);
-
-			var usedNames = new Dictionary<string, Position>();
-			CheckPatternParams(lCtxt, usedNames);
-			CheckPatternParams(ptrn, usedNames);
-			CheckPatternParams(rCtxt, usedNames);
-			usedNames = null;
-
-			var locConsts = new ConstantDefinition[rRuleAst.LocalConstDefs.Length];
-			for (int i = 0; i < rRuleAst.LocalConstDefs.Length; i++) {
-				locConsts[i] = inCompiler.CompileConstDef(rRuleAst.LocalConstDefs[i]);
-			}
-			var locConstDefs =  new ImmutableList<ConstantDefinition>(locConsts, true);
-
-			var cond = rRuleAst.Condition.IsEmpty
-				? Constant.True
-				: inCompiler.ExpressionCompiler.CompileExpression(rRuleAst.Condition);
-
-			var replacs = CompileReplacementsList(rRuleAst.Replacements);
-
-			return new RewriteRule(ptrn, lCtxt, rCtxt, locConstDefs, cond, replacs);
-		}
-
-
-		public RewriteRuleReplacement CompileReplacement(Ast.RewriteRuleReplacement replacAst) {
-
-			var probab = replacAst.Weight.IsEmpty
-				? Constant.One
-				: inCompiler.ExpressionCompiler.CompileExpression(replacAst.Weight);
-
-			var replac = CompileSymbolsList(replacAst.Replacement);
-
-			return new RewriteRuleReplacement(replac, probab);
-		}
-
-		public ImmutableList<RewriteRuleReplacement> CompileReplacementsList(ImmutableList<Ast.RewriteRuleReplacement> replacList) {
-
-			var replac = new RewriteRuleReplacement[replacList.Length];
-
-			for (int i = 0; i < replacList.Length; i++) {
-				replac[i] = CompileReplacement(replacList[i]);
-			}
-
-			return new ImmutableList<RewriteRuleReplacement>(replac, true);
-		}
-
-
-		public bool CheckPatternParams(Symbol<string> symbol, Dictionary<string, Position> usedNames) {
-
-			bool allAreUnique = true;
-
-			for (int i = 0; i < symbol.Arguments.Length; i++) {
-				string name = symbol.Arguments[i];
-				if (name == PatternPlaceholder) {
-					continue;
-				}
-
-				if (usedNames.ContainsKey(name)) {
-					var otherPos = usedNames[name];
-					logMessage(LsystemCompilerMessageType.PatternsParamNameNotUnique, symbol.AstSymbol.Arguments[i].Position, name, symbol.Name, otherPos);
-					allAreUnique = false;
-				}
-
-				usedNames.Add(name, symbol.AstSymbol.Arguments[i].Position);
-			}
-
-			return allAreUnique;
-		}
-
-		public bool CheckPatternParams(SymbolsList<string> symbolsList, Dictionary<string, Position> usedNames) {
-
-			bool allAreUnique = true;
-
-			foreach (var symbol in symbolsList) {
-				allAreUnique &= CheckPatternParams(symbol, usedNames);
-			}
-
-			return allAreUnique;
-		}
-
-
-		public Symbol<string> CompileSymbolAsPattern(Ast.LsystemSymbol symbol, bool allowArguments) {
-
-
-			string[] names = null;
-
-			if (allowArguments) {
-				names = new string[symbol.Arguments.Length];
-			}
-
-			for (int i = 0; i < symbol.Arguments.Length; i++) {
-				if (allowArguments) {
-					if (symbol.Arguments[i].Members.Length != 1 || !(symbol.Arguments[i].Members[0] is Ast.Identificator)) {
-						logMessage(LsystemCompilerMessageType.PatternParamCanBeOnlyId, symbol.Arguments[i].Position);
-					}
-
-					names[i] = ((Ast.Identificator)symbol.Arguments[i].Members[0]).Name;
-				}
-				else {
-					if (symbol.Arguments[i].Members.Length != 0) {
-						logMessage(LsystemCompilerMessageType.SymbolsParamsNotAllowed, symbol.Arguments[i].Position, symbol.Name);
-					}
-				}
-			}
-
-			var namesImm = allowArguments ? new ImmutableList<string>(names, true) : ImmutableList<string>.Empty;
-			return new Symbol<string>(symbol.Name, namesImm, symbol);
-		}
-
-		public SymbolsList<string> CompileSymbolsListAsPattern(Ast.ImmutableListPos<Ast.LsystemSymbol> symbolsList, bool allowArguments) {
-
-			var compiledSymbols = new Symbol<string>[symbolsList.Length];
-
-			for (int i = 0; i < symbolsList.Length; i++) {
-				var symRslt = CompileSymbolAsPattern(symbolsList[i], allowArguments);
-				compiledSymbols[i] = symRslt;
-			}
-
-			var compiledSymImm = new ImmutableList<Symbol<string>>(compiledSymbols, true);
-			var result = new SymbolsList<string>(compiledSymImm);
-
-			return result;
-		}
-
-
-		public Symbol<IExpression> CompileSymbol(Ast.LsystemSymbol symbol) {
-
-			return new Symbol<IExpression>(symbol.Name, inCompiler.ExpressionCompiler.CompileList(symbol.Arguments), symbol);
-		}
-
-		public ImmutableList<Symbol<IExpression>> CompileSymbolsList(Ast.ImmutableListPos<Ast.LsystemSymbol> symbolsList) {
-
-			var compiledSymbols = new Symbol<IExpression>[symbolsList.Length];
-
-			for (int i = 0; i < symbolsList.Length; i++) {
-				compiledSymbols[i] = CompileSymbol(symbolsList[i]);
-			}
-
-			return new ImmutableList<Symbol<IExpression>>(compiledSymbols, true);
-		}
-
-		public SymbolsConstDefinition CompileSymbolConstant(Ast.SymbolsConstDefinition symbolConstAst) {
-
-			var symbols = CompileSymbolsList(symbolConstAst.SymbolsList);
+			var symbols = symbolCompiler.CompileList<Ast.LsystemSymbol, Symbol<IExpression>>(symbolConstAst.SymbolsList);
 			return new SymbolsConstDefinition(symbolConstAst.NameId.Name, symbols);
 		}
 
-		public SymbolsInterpretation CompileSymbolsInterpretation(Ast.SymbolsInterpretDef symbolsInterpretAst) {
+		private SymbolsInterpretation compileSymbolsInterpretation(Ast.SymbolsInterpretDef symbolsInterpretAst) {
 
-			var symbols = CompileSymbolsListAsPattern(symbolsInterpretAst.Symbols, false);
-			var defVals = inCompiler.ExpressionCompiler.CompileList(symbolsInterpretAst.DefaultParameters);
+			var symbols = symbolCompiler.CompileList<Ast.LsystemSymbol, Symbol<VoidStruct>>(symbolsInterpretAst.Symbols);
+			var defVals = exprCompiler.CompileList(symbolsInterpretAst.DefaultParameters);
 			return new SymbolsInterpretation(symbolsInterpretAst.Instruction.Name, defVals, symbols);
 		}
 
-		public override string GetMessageTypeId(LsystemCompilerMessageType msgType) {
-			return msgType.ToString();
+
+		#region ILsystemVisitor Members
+
+		public void Visit(Ast.ConstantDefinition constDef) {
+			visitResult = constDefCompiler.Compile(constDef);
 		}
 
-		protected override string resolveMessage(LsystemCompilerMessageType msgType, out MessageType type, params object[] args) {
-
-			type = MessageType.Error;
-
-			switch (msgType) {
-				case LsystemCompilerMessageType.PatternsParamNameNotUnique:
-					return "Parameter name `{0}` in pattern `{1}` is not unique in its context. See also {2}.".Fmt(args);
-				case LsystemCompilerMessageType.PatternParamCanBeOnlyId:
-					return "Parameters of symbol pattern can be only dentificators.";
-				case LsystemCompilerMessageType.SymbolsParamsNotAllowed:
-					return "Parameters of symbol are not alowed in this context.";
-				default:
-					return "Unknown error.";
-			}
+		public void Visit(Ast.EmptyStatement emptyStat) {
+			visitResult = CompilerResult<ILsystemStatement>.Error;
 		}
 
-		class LsystemCompilerVisitor : Ast.ILsystemVisitor {
-
-			private InputCompiler inCompiler;
-
-
-			private CompilerResult<ILsystemStatement> result;
-
-
-			public LsystemCompilerVisitor(InputCompiler inComp) {
-				inCompiler = inComp;
-			}
-
-
-			public CompilerResult<ILsystemStatement> TryCompile(Ast.ILsystemStatement astStatement) {
-				astStatement.Accept(this);
-				return result;
-			}
-
-
-			#region ILsystemVisitor Members
-
-			public void Visit(Ast.ConstantDefinition constDef) {
-				result = inCompiler.CompileConstDef(constDef);
-			}
-
-			public void Visit(Ast.EmptyStatement emptyStat) {
-				result = CompilerResult<ILsystemStatement>.Error;
-			}
-
-			public void Visit(Ast.FunctionDefinition funDef) {
-				result = inCompiler.CompileFunctionDef(funDef);
-			}
-
-			public void Visit(Ast.RewriteRule rewriteRule) {
-				result = inCompiler.LsystemCompiler.CompileRewriteRule(rewriteRule);
-			}
-
-			public void Visit(Ast.SymbolsInterpretDef symbolInterpretDef) {
-				result = inCompiler.LsystemCompiler.CompileSymbolsInterpretation(symbolInterpretDef);
-			}
-
-			public void Visit(Ast.SymbolsConstDefinition symbolsDef) {
-				result = inCompiler.LsystemCompiler.CompileSymbolConstant(symbolsDef);
-			}
-
-			public void Visit(Ast.ProcessStatement processDef) {
-				throw new System.NotImplementedException();
-			}
-
-			#endregion
+		public void Visit(Ast.FunctionDefinition funDef) {
+			visitResult = funDefCompiler.Compile(funDef);
 		}
+
+		public void Visit(Ast.RewriteRule rewriteRule) {
+			visitResult = rrCompiler.Compile(rewriteRule);
+		}
+
+		public void Visit(Ast.SymbolsInterpretDef symbolInterpretDef) {
+			visitResult = compileSymbolsInterpretation(symbolInterpretDef);
+		}
+
+		public void Visit(Ast.SymbolsConstDefinition symbolsDef) {
+			visitResult = compileSymbolConstant(symbolsDef);
+		}
+
+		public void Visit(Ast.ProcessStatement processDef) {
+			throw new System.NotImplementedException();
+		}
+
+		#endregion
+
 	}
 
 
-	public enum LsystemCompilerMessageType {
-		Unknown,
-		PatternsParamNameNotUnique,
-		PatternParamCanBeOnlyId,
-		SymbolsParamsNotAllowed,
-	}
 
 }

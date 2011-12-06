@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using Malsys.Compilers.Expressions;
 
-namespace Malsys.Compilers.Expressions {
+namespace Malsys.Compilers {
 	public interface IKnownConstantsProvider {
 
 		/// <summary>

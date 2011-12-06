@@ -15,7 +15,7 @@ namespace Malsys.SourceCode.Printers {
 
 
 		public void Print(InputBlock input) {
-			foreach (var statement in input) {
+			foreach (var statement in input.Statements) {
 				statement.Accept(this);
 			}
 		}

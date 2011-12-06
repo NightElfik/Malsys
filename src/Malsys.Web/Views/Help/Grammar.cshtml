@@ -1,5 +1,5 @@
 ﻿@{
-	ViewBag.Title = "Fromal grammar";
+	ViewBag.Title = "Formal grammar";
 }
 
 @section scripts {
@@ -7,10 +7,10 @@
 }
 
 
-<h2>Fromal grammar</h2>
+<h2>Formal grammar</h2>
 
 <p>
-	@Html.ActionLink("Malsys syntax", "Syntax") is described using fromal grammar rules.
+	@Html.ActionLink("Malsys syntax", "Syntax") is described using formal grammar rules.
 	Instead of describing what exactly formal grammar is (you can read it on @Html.Link("wiki", "http://en.wikipedia.org/wiki/Formal_grammar")),
 		this page will explain grammar rules using examples.
 </p>
@@ -18,9 +18,9 @@
 <h3>Syntax of grammar rules</h3>
 
 <p>
-	Each grammar rule describes one part of Malsys input, name of rule is often connected with its actual semantic meaning, but not allways.
+	Each grammar rule describes one part of Malsys input, name of rule is often connected with its actual semantic meaning, but not always.
 	There are two ways how to write rule.
-	Simpliest rule is just name followed by equals character (<code class="grammar">=</code>) and then is one reguler expression.
+	The simplest rule is just name followed by equals character (<code class="grammar">=</code>) and then is one regular expression.
 	Second way is to use <i>OR</i> represented as vertical bar (<code class="grammar">|</code>) to allow more regular expressions to match the rule.
 </p>
 
@@ -57,11 +57,11 @@ NUMBER =
 <p>
 	<code class="grammar">NUMBER</code> will match regular expression which is created by joining all defined regular expressions
 		by logical <i>OR</i> (<code class="grammar">|</code>).
-	Individual regular expressions are separated to improve readability, one huge regular expression would be unreadabale.
+	Individual regular expressions are separated to improve readability, one huge regular expression would be unreadable.
 </p>
 
 
-<h3>Whitespace-separeted members in regular expressions in grammar rule</h3>
+<h3>Whitespace-separated members in regular expressions in grammar rule</h3>
 
 <p>
 	Very important is the regular expression on the right side of grammar rule.
@@ -157,7 +157,7 @@ params_list = ID ('=' expression)?  (',' params_list)?
 </pre>
 
 <p>
-	If input is <code class="re-match">ID, ID, ID</code> the regula expression will use <code class="grammar">params_list</code> to match more IDs.
+	If input is <code class="re-match">ID, ID, ID</code> the regular expression will use <code class="grammar">params_list</code> to match more IDs.
 	The progress can look like this:
 </p>
 <ul>

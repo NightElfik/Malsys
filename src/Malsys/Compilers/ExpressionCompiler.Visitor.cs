@@ -7,23 +7,23 @@ using Malsys.SemanticModel.Compiled.Expressions;
 using OperatorCorePos = System.Tuple<Malsys.Compilers.Expressions.OperatorCore, Malsys.Position>;
 
 namespace Malsys.Compilers {
-	public partial class ExpressionCompiler {
+	internal partial class ExpressionCompiler {
 
-		class ExpressionCompilerVisitor : Ast.IExpressionVisitor {
+		private class Visitor : Ast.IExpressionVisitor {
 
 			public static readonly IExpression ErrorResult = Constant.NaN;
 
 
-			private ExpressionCompiler parent;
+			private ExpressionCompiler parentExprCompiler;
 
 			private State state;
 			private Stack<OperatorCorePos> optorsStack;
 			private Stack<IExpression> operandsStack;
 
 
-			public ExpressionCompilerVisitor(ExpressionCompiler exprComp) {
+			public Visitor(ExpressionCompiler parentExpressionCompiler) {
 
-				parent = exprComp;
+				parentExprCompiler = parentExpressionCompiler;
 
 				optorsStack = new Stack<OperatorCorePos>();
 				operandsStack = new Stack<IExpression>();
@@ -47,25 +47,26 @@ namespace Malsys.Compilers {
 				}
 
 				if (state != State.ExcpectingOperator) {
-					parent.logMessage(ExpressionCompilerMessageType.UnexcpectedEndOfExpression, expr.Position);
+					parentExprCompiler.msgs.LogMessage(Message.UnexcpectedEndOfExpression, expr.Position);
 					return ErrorResult;
 				}
 
 				// pop all remaining operators
 				while (optorsStack.Count > 0) {
 					if (!tryPopOperator()) {
-						parent.logMessage(ExpressionCompilerMessageType.TooFewOperands, expr.Position);
+						parentExprCompiler.msgs.LogMessage(Message.TooFewOperands, expr.Position);
 						return ErrorResult;
 					}
 				}
 
 				if (operandsStack.Count != 1) {
-					parent.logMessage(ExpressionCompilerMessageType.TooManyOperands, expr.Position);
+					parentExprCompiler.msgs.LogMessage(Message.TooManyOperands, expr.Position);
 					return ErrorResult;
 				}
 
 				return operandsStack.Pop();
 			}
+
 
 			#region IExpressionVisitor Members
 
@@ -73,15 +74,15 @@ namespace Malsys.Compilers {
 
 				switch (state) {
 					case State.ExcpectingOperand:
-						operandsStack.Push(parent.CompileExpression(bracketedExpr.Expression));
+						operandsStack.Push(parentExprCompiler.Compile(bracketedExpr.Expression));
 						state = State.ExcpectingOperator;
 						break;
 
 					case State.ExcpectingOperator:
-						// Expression (probably in parenthesis) while excpecting binary operator?
+						// Expression (probably in parenthesis) while excepting binary operator?
 						// So directly before it is operand.
 						// Lets add implicit multiplication between them.
-						operandsStack.Push(parent.CompileExpression(bracketedExpr.Expression));
+						operandsStack.Push(parentExprCompiler.Compile(bracketedExpr.Expression));
 						// implicit multiplication
 						optorsStack.Push(new OperatorCorePos(OperatorCore.Multiply, bracketedExpr.Position.GetBeginPos()));
 						state = State.ExcpectingOperator;
@@ -102,7 +103,7 @@ namespace Malsys.Compilers {
 						break;
 
 					case State.ExcpectingOperator:
-						// Function while excpecting binary operator?
+						// Function while expecting binary operator?
 						// So directly before function is operand.
 						// Lets add implicit multiplication between them.
 						compileFunctionCall(funExpr);
@@ -121,19 +122,19 @@ namespace Malsys.Compilers {
 
 				switch (state) {
 					case State.ExcpectingOperand:
-						parent.logMessage(ExpressionCompilerMessageType.UnexcpectedOperator, indexerExpr.Position, "indexer");
+						parentExprCompiler.msgs.LogMessage(Message.UnexcpectedOperator, indexerExpr.Position, "indexer");
 						state = State.Error;
 						break;
 
 					case State.ExcpectingOperator:
 						if (operandsStack.Count < 1) {
-							parent.logMessage(ExpressionCompilerMessageType.TooFewOperands, indexerExpr.Position);
+							parentExprCompiler.msgs.LogMessage(Message.TooFewOperands, indexerExpr.Position);
 							state = State.Error;
 							break;
 						}
 
 						// apply indexer on previous operand
-						var indexExpr = parent.CompileExpression(indexerExpr.Index);
+						var indexExpr = parentExprCompiler.Compile(indexerExpr.Index);
 						operandsStack.Push(new Indexer(operandsStack.Pop(), indexExpr));
 						state = State.ExcpectingOperator;
 						break;
@@ -148,13 +149,13 @@ namespace Malsys.Compilers {
 
 				switch (state) {
 					case State.ExcpectingOperand:
-						var arr = parent.CompileList(arrExpr);
+						var arr = parentExprCompiler.CompileList(arrExpr);
 						operandsStack.Push(new ExpressionValuesArray(arr));
 						state = State.ExcpectingOperator;
 						break;
 
 					case State.ExcpectingOperator:
-						parent.logMessage(ExpressionCompilerMessageType.UnexcpectedOperand, arrExpr.Position, "array");
+						parentExprCompiler.msgs.LogMessage(Message.UnexcpectedOperand, arrExpr.Position, "array");
 						state = State.Error;
 						break;
 
@@ -173,7 +174,7 @@ namespace Malsys.Compilers {
 						break;
 
 					case State.ExcpectingOperator:
-						parent.logMessage(ExpressionCompilerMessageType.UnexcpectedOperand, floatConstant.Position, floatConstant.ToString());
+						parentExprCompiler.msgs.LogMessage(Message.UnexcpectedOperand, floatConstant.Position, floatConstant.ToString());
 						state = State.Error;
 						break;
 
@@ -188,7 +189,7 @@ namespace Malsys.Compilers {
 				switch (state) {
 					case State.ExcpectingOperand:
 						KnownConstant cnst;
-						if (parent.KnownConstants.TryGet(variable.Name, out cnst)) {
+						if (parentExprCompiler.knownConstants.TryGet(variable.Name, out cnst)) {
 							// known constant
 							operandsStack.Push(new Constant(cnst.Value));
 						}
@@ -201,7 +202,7 @@ namespace Malsys.Compilers {
 						break;
 
 					case State.ExcpectingOperator:
-						parent.logMessage(ExpressionCompilerMessageType.UnexcpectedOperand, variable.Position, variable.Name);
+						parentExprCompiler.msgs.LogMessage(Message.UnexcpectedOperand, variable.Position, variable.Name);
 						state = State.Error;
 						break;
 
@@ -215,13 +216,13 @@ namespace Malsys.Compilers {
 
 				switch (state) {
 					case State.ExcpectingOperand:
-						// operator while excpecting operand? It must be unary!
+						// operator while expecting operand? It must be unary!
 						OperatorCore opUnary;
-						if (parent.KnownOperators.TryGet(optor.Syntax, 1, out opUnary)) {
+						if (parentExprCompiler.knownOperators.TryGet(optor.Syntax, 1, out opUnary)) {
 							state = tryPushOperator(new OperatorCorePos(opUnary, optor.Position)) ? State.ExcpectingOperand : State.Error;
 						}
 						else {
-							parent.logMessage(ExpressionCompilerMessageType.UnknownUnaryOperator, optor.Position, optor.Syntax);
+							parentExprCompiler.msgs.LogMessage(Message.UnknownUnaryOperator, optor.Position, optor.Syntax);
 							state = State.Error;
 						}
 						break;
@@ -229,11 +230,11 @@ namespace Malsys.Compilers {
 					case State.ExcpectingOperator:
 						// operator must be binary
 						OperatorCore opBinary;
-						if (parent.KnownOperators.TryGet(optor.Syntax, 2, out opBinary)) {
+						if (parentExprCompiler.knownOperators.TryGet(optor.Syntax, 2, out opBinary)) {
 							state = tryPushOperator(new OperatorCorePos(opBinary, optor.Position)) ? State.ExcpectingOperand : State.Error;
 						}
 						else {
-							parent.logMessage(ExpressionCompilerMessageType.UnknownBinaryOperator, optor.Position, optor.Syntax);
+							parentExprCompiler.msgs.LogMessage(Message.UnknownBinaryOperator, optor.Position, optor.Syntax);
 							state = State.Error;
 						}
 						break;
@@ -255,16 +256,16 @@ namespace Malsys.Compilers {
 			}
 
 			private void badState(IExpressionMember member) {
-				parent.logMessage(ExpressionCompilerMessageType.InternalError, member.Position, "Unknown compiler state `{0}`.".Fmt(state));
+				parentExprCompiler.msgs.LogMessage(Message.InternalError, member.Position, "Unknown compiler state `{0}`.".Fmt(state));
 				state = State.Error;
 			}
 
 			private void compileFunctionCall(ExpressionFunction funCall) {
 
-				var rsltArgs = parent.CompileList(funCall.Arguments);
+				var rsltArgs = parentExprCompiler.CompileList(funCall.Arguments);
 
 				FunctionCore knownFun;
-				if (parent.KnownFunctions.TryGet(funCall.NameId.Name, funCall.Arguments.Length, out knownFun)) {
+				if (parentExprCompiler.knownFunctions.TryGet(funCall.NameId.Name, funCall.Arguments.Length, out knownFun)) {
 					operandsStack.Push(new FunctionCall(funCall.NameId.Name, knownFun.EvalFunction, rsltArgs, knownFun.ParamsTypes));
 				}
 				else {
@@ -282,7 +283,7 @@ namespace Malsys.Compilers {
 
 				while (optorsStack.Count > 0 && op.Item1.ActivePrecedence > optorsStack.Peek().Item1.Precedence) {
 					if (!tryPopOperator()) {
-						// error alredy reported by tryPopOperator()
+						// error already reported by tryPopOperator()
 						return false;
 					}
 				}
@@ -307,7 +308,7 @@ namespace Malsys.Compilers {
 
 				if (opTop.Arity == 1) {
 					if (operandsStack.Count < 1) {
-						parent.logMessage(ExpressionCompilerMessageType.TooFewOperands, opTopPos.Item2);
+						parentExprCompiler.msgs.LogMessage(Message.TooFewOperands, opTopPos.Item2);
 						return false;
 					}
 
@@ -317,7 +318,7 @@ namespace Malsys.Compilers {
 
 				else if (opTop.Arity == 2) {
 					if (operandsStack.Count < 2) {
-						parent.logMessage(ExpressionCompilerMessageType.TooFewOperands, opTopPos.Item2);
+						parentExprCompiler.msgs.LogMessage(Message.TooFewOperands, opTopPos.Item2);
 						return false;
 					}
 					var right = operandsStack.Pop();
@@ -328,7 +329,7 @@ namespace Malsys.Compilers {
 				}
 
 				else {
-					parent.logMessage(ExpressionCompilerMessageType.InternalError, opTopPos.Item2, "Operator with unexcpected arity {0}.".Fmt(opTop.Arity));
+					parentExprCompiler.msgs.LogMessage(Message.InternalError, opTopPos.Item2, "Operator with unexpected arity {0}.".Fmt(opTop.Arity));
 					return false;
 				}
 
@@ -342,5 +343,6 @@ namespace Malsys.Compilers {
 				ExcpectingOperator,
 			}
 		}
+
 	}
 }

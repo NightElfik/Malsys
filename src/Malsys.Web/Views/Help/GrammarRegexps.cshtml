@@ -1,5 +1,5 @@
 ﻿@{
-	ViewBag.Title = "graegular expressions";
+	ViewBag.Title = "Regular expressions";
 }
 
 @section scripts {
@@ -12,12 +12,12 @@
 <p>
 	Regular expression (or <i>regexp</i>) is a pattern which is describing some text.
 	Regular expression is <i>matching</i> some text if the text is exactly described by the regular expression.
-	More about reguar expressions on @Html.Link("Wikipedia", "http://en.wikipedia.org/wiki/Regular_expression").
+	More about regular expressions on @Html.Link("Wikipedia", "http://en.wikipedia.org/wiki/Regular_expression").
 </p>
 
 <p>
 	Simplified regular expressions are used @Html.ActionLink("formal definition of L-system syntax", "Syntax") to describe the possible input (grammar).
-	There are some differences between common regual expressions and regexps used in Malsys,
+	There are some differences between common regular expressions and regexps used in Malsys,
 		so their syntax is described on this page, to avoid misunderstanding.
 </p>
 
@@ -53,10 +53,10 @@
 
 
 
-<h3>Bollean OR operator</h3>
+<h3>Boolean OR operator</h3>
 
 <p>
-	Another usefull thing is <i>OR</i> operator represented as vertical bar (<code class="grammar">|</code>) in regular expressions.
+	Another useful thing is <i>OR</i> operator represented as vertical bar (<code class="grammar">|</code>) in regular expressions.
 	For example <code class="grammar">'gray' | 'grey'</code> matches <code class="re-match">gray</code> or <code class="re-match">grey</code>.
 </p>
 
@@ -65,7 +65,7 @@
 <h3>Grouping and quantification</h3>
 
 <p>
-	Any part of regular expression can be groupped by parenthesis.
+	Any part of regular expression can be grouped by parenthesis.
 	Groups are used for quantify more than one element.
 </p>
 
@@ -73,7 +73,7 @@
 	A quantifier after a literal or group specifies how often that preceding element is allowed to occur.
 	There are 3 different quantifiers: <b>?</b> (question mark), <b>+</b> (plus sign) and <b>*</b> (asterisk).
 	Quantifier is applied on exactly one preceding element.
-	To quantify more elemenets, they must be groupped to one element (group) which is quantified.
+	To quantify more elements, they must be grouped to one element (group) which is quantified.
 </p>
 
 <p>
@@ -92,7 +92,7 @@
 <p>
 	The asterisk indicates there is <i>zero or more</i> of the preceding element.
 	It is combination of previous two quantifiers, because <code class="grammar">(expression)*</code>
-		can be raplaced with <code class="grammar">((expression)+)?</code>.
+		can be replaced with <code class="grammar">((expression)+)?</code>.
 	Useful usage of asterisk can be regular expression, that matches non-empty comma-separated list of non-negative integers.
 	<code class="grammar">[0-9]+ (',' [0-9]+)*</code> matches <code class="re-match">0</code>,
 		<code class="re-match">127,721</code> or <code class="re-match">1,1,2,3,5,8</code>.
@@ -108,8 +108,8 @@
 <h3>Whitespaces</h3>
 
 <p>
-	Whitespaces are not significant unless they are as literal, but whitespace literals are not needed for ours purpouses.
-	This allows some formatting of regualr expressions with whitespaces to made them more readable.
+	Whitespaces are not significant unless they are as literal, but whitespace literals are not needed for ours purposes.
+	This allows some formatting of regular expressions with whitespaces to made them more readable.
 </p>
 
 
@@ -140,7 +140,7 @@
 	<tr>
 		<td><code class="grammar">'0' [xX] ([0-9] | [a-f] | [A-F])+</code></td>
 		<td><code class="re-match">0xf8f</code>, <code class="re-match">0x12ab</code></td>
-		<td>non-negative integer in case-insetive hexadecimal format prefixed with <code class="re-match">0x</code></td>
+		<td>non-negative integer in case-insensitive hexadecimal format prefixed with <code class="re-match">0x</code></td>
 	</tr>
 	<tr>
 		<td><code class="grammar">('+'|'-')? [0-9]+ ('.' [0-9]+)? ([eE] ('+'|'-')? [0-9]+)?</code></td>

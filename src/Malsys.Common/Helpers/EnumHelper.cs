@@ -1,4 +1,6 @@
 ﻿using System.Diagnostics;
+using System.Diagnostics.Contracts;
+using System;
 
 namespace Malsys {
 	public static class EnumHelper {
@@ -7,7 +9,7 @@ namespace Malsys {
 		/// </summary>
 		public static string GetStringVal<T>(T enumValue) where T : struct {
 
-			Debug.Assert(typeof(T).IsEnum, "T must be an enumerated type.");
+			Contract.Requires<ArgumentException>(typeof(T).IsEnum, "T must be an enumerated type.");
 
 			var member = typeof(T).GetField(enumValue.ToString());
 			if (member == null) {

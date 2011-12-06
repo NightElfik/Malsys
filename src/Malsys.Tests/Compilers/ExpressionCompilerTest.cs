@@ -51,9 +51,9 @@ namespace Malsys.Tests {
 			}
 
 			var lexBuff = LexBuffer<char>.FromString(input);
-			var msgs = new MessagesCollection();
+			var msgs = new MessageLogger();
 			var expr = ParserUtils.ParseExpression(lexBuff, msgs, "testInput");
-			var compiledExpr = new ExpressionCompiler(msgs).CompileExpression(expr);
+			var compiledExpr = new ExpressionCompiler(msgs).Compile(expr);
 
 			var writer = new IndentStringWriter();
 			var printer = new CanonicPrinter(writer);

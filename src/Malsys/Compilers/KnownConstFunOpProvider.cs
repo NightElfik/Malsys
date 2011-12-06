@@ -4,12 +4,13 @@ using System.Reflection;
 using Malsys.Compilers.Expressions;
 using StringInt = System.Tuple<string, int>;
 
-namespace Malsys.Expressions {
+namespace Malsys.Compilers {
 	public class KnownConstFunOpProvider : IKnownConstantsProvider, IKnownFunctionsProvider, IKnownOperatorsProvider {
 
 		private Dictionary<string, KnownConstant> constCache = new Dictionary<string, KnownConstant>();
 		private Dictionary<StringInt, FunctionCore> funCache = new Dictionary<StringInt,FunctionCore>();
 		private Dictionary<StringInt, OperatorCore> opCache = new Dictionary<StringInt,OperatorCore>();
+
 
 		/// <summary>
 		/// Loads all constants, functions and operators from public static fields of given type.
@@ -29,7 +30,7 @@ namespace Malsys.Expressions {
 			}
 		}
 
-		#region IKnownConstantsProvider Members
+		#region IKnown...Provider Members
 
 		public bool TryGet(string name, out KnownConstant result) {
 			return constCache.TryGetValue(name.ToLowerInvariant(), out result);
@@ -39,9 +40,6 @@ namespace Malsys.Expressions {
 			return constCache.Values;
 		}
 
-		#endregion
-
-		#region IKnownFunctionsProvider Members
 
 		public bool TryGet(string syntax, int paramsCount, out FunctionCore result) {
 
@@ -64,9 +62,6 @@ namespace Malsys.Expressions {
 			return funCache.Values;
 		}
 
-		#endregion
-
-		#region IKnownOperatorsProvider Members
 
 		public bool TryGet(string syntax, byte arity, out OperatorCore result) {
 			return opCache.TryGetValue(new StringInt(syntax, arity), out result);
@@ -88,7 +83,7 @@ namespace Malsys.Expressions {
 					constCache[key] = cnst;
 				}
 				else {
-					throw new Exception("Known constant `{0}` alredy exists in cache.".Fmt(key));
+					throw new Exception("Known constant `{0}` already exists in cache.".Fmt(key));
 				}
 			}
 			else {
@@ -105,7 +100,7 @@ namespace Malsys.Expressions {
 					funCache[key] = fun;
 				}
 				else {
-					throw new Exception("Known function `{0}` alredy exists in cache.".Fmt(key));
+					throw new Exception("Known function `{0}` already exists in cache.".Fmt(key));
 				}
 			}
 			else {
@@ -122,7 +117,7 @@ namespace Malsys.Expressions {
 					opCache[key] = op;
 				}
 				else {
-					throw new Exception("Known operator `{0}` alredy exists in cache.".Fmt(key));
+					throw new Exception("Known operator `{0}` already exists in cache.".Fmt(key));
 				}
 			}
 			else {

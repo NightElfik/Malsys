@@ -9,7 +9,7 @@ namespace Malsys.Web.Models {
 
 		public string SourceCode { get; set; }
 
-		public MessagesCollection Messages { get; set; }
+		public MessageLogger Messages { get; set; }
 
 		public IEnumerable<OutputFile> OutputFiles { get; set; }
 

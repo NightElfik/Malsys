@@ -99,7 +99,7 @@ namespace Malsys.Tests.Interpreters {
 				string inputSymbols, string[] excpected) {
 
 			var lexBuff = LexBuffer<char>.FromString(inputSymbols);
-			var msgs = new MessagesCollection();
+			var msgs = new MessageLogger();
 			var symbolsAst = ParserUtils.ParseSymbols(lexBuff, msgs, "testInput");
 
 			if (msgs.ErrorOcured) {

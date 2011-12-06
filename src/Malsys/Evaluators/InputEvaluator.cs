@@ -1,26 +1,28 @@
-﻿using System.Collections.Generic;
-using Malsys.SemanticModel.Compiled;
+﻿using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Collections;
 
 namespace Malsys.Evaluators {
-	public class InputEvaluator {
+	internal class InputEvaluator : IInputEvaluator {
 
 		private ExpressionEvaluator exprEvaluator;
+		private IParametersEvaluator paramsEvaluator;
 
 
-		public InputEvaluator(ExpressionEvaluator exprEval) {
+		public InputEvaluator(ExpressionEvaluator exprEval, IParametersEvaluator parametersEvaluator) {
+
 			exprEvaluator = exprEval;
+			paramsEvaluator = parametersEvaluator;
 		}
 
 
-		public InputBlock Evaluate(IEnumerable<IInputStatement> inStatements) {
+		public SemanticModel.Evaluated.InputBlock Evaluate(SemanticModel.Compiled.InputBlock input) {
 
 			var consts = MapModule.Empty<string, IValue>();
 			var funs = MapModule.Empty<string, FunctionEvaledParams>();
 			var lsys = MapModule.Empty<string, LsystemEvaledParams>();
 
-			foreach (var stat in inStatements) {
+			foreach (var stat in input.Statements) {
 				switch (stat.StatementType) {
 					case InputStatementType.Constant:
 						var cst = (ConstantDefinition)stat;
@@ -29,13 +31,13 @@ namespace Malsys.Evaluators {
 
 					case InputStatementType.Function:
 						var fun = (Function)stat;
-						var funPrms = exprEvaluator.EvaluateOptParams(fun.Parameters, consts, funs);
+						var funPrms = paramsEvaluator.Evaluate(fun.Parameters, consts, funs);
 						funs = funs.Add(fun.Name, new FunctionEvaledParams(fun.Name, funPrms, fun.Statements, fun.AstNode));
 						break;
 
 					case InputStatementType.Lsystem:
 						var ls = (Lsystem)stat;
-						var lsPrms = exprEvaluator.EvaluateOptParams(ls.Parameters, consts, funs);
+						var lsPrms = paramsEvaluator.Evaluate(ls.Parameters, consts, funs);
 						lsys = lsys.Add(ls.Name, new LsystemEvaledParams(ls.Name, lsPrms, ls.Statements, ls.AstNode));
 						break;
 
@@ -44,7 +46,7 @@ namespace Malsys.Evaluators {
 				}
 			}
 
-			return new InputBlock(consts, funs, lsys);
+			return new SemanticModel.Evaluated.InputBlock(consts, funs, lsys);
 		}
 
 	}

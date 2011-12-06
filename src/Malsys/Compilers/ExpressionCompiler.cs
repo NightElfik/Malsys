@@ -1,91 +1,52 @@
-﻿using System.Collections.Generic;
-using Malsys.Compilers.Expressions;
-using Malsys.Expressions;
+﻿using Malsys.Compilers.Expressions;
 using Malsys.SemanticModel.Compiled;
 
 namespace Malsys.Compilers {
-	public partial class ExpressionCompiler : MessagesLogger<ExpressionCompilerMessageType> {
+	internal partial class ExpressionCompiler : IExpressionCompiler {
 
-		private static KnownConstFunOpProvider knownStuffProvider = new KnownConstFunOpProvider();
+		private MessageLogger msgs;
+		// used by visitor
+		private IKnownConstantsProvider knownConstants;
+		private IKnownFunctionsProvider knownFunctions;
+		private IKnownOperatorsProvider knownOperators;
 
-		static ExpressionCompiler() {
-			knownStuffProvider.LoadFromType(typeof(KnownConstant));
-			knownStuffProvider.LoadFromType(typeof(FunctionCore));
-			knownStuffProvider.LoadFromType(typeof(OperatorCore));
+
+		public ExpressionCompiler(MessageLogger messageLogger, IKnownConstantsProvider constants,
+				IKnownFunctionsProvider functions, IKnownOperatorsProvider operators) {
+
+			msgs = messageLogger;
+			knownConstants = constants;
+			knownFunctions = functions;
+			knownOperators = operators;
 		}
 
 
-		public IKnownConstantsProvider KnownConstants { get; set; }
-		public IKnownFunctionsProvider KnownFunctions { get; set; }
-		public IKnownOperatorsProvider KnownOperators { get; set; }
-
-
-		public ExpressionCompiler(MessagesCollection msgs) : base(msgs) {
-
-			KnownConstants = knownStuffProvider;
-			KnownFunctions = knownStuffProvider;
-			KnownOperators = knownStuffProvider;
-		}
-
-
-		public IExpression CompileExpression(Ast.Expression expr) {
-			var visitor = new ExpressionCompilerVisitor(this);
+		public IExpression Compile(Ast.Expression expr) {
+			var visitor = new Visitor(this);
 			return visitor.Compile(expr);
 		}
 
-		public ImmutableList<IExpression> CompileList(IList<Ast.Expression> exprsList) {
 
-			IExpression[] resultArr = new IExpression[exprsList.Count];
+		public enum Message {
 
-			for (int i = 0; i < resultArr.Length; i++) {
-				resultArr[i] = CompileExpression(exprsList[i]);
-			}
-
-			return new ImmutableList<IExpression>(resultArr, true);
-		}
-
-
-		public override string GetMessageTypeId(ExpressionCompilerMessageType msgType) {
-			return msgType.ToString();
-		}
-
-		protected override string resolveMessage(ExpressionCompilerMessageType msgType, out MessageType type, params object[] args) {
-
-			type = MessageType.Error;
-
-			switch (msgType) {
-				case ExpressionCompilerMessageType.InternalError:
-					return "Internal compiler error. {0}".Fmt(args);
-				case ExpressionCompilerMessageType.UnexcpectedEndOfExpression:
-					return "Unexcpected end of expression.";
-				case ExpressionCompilerMessageType.UnexcpectedOperand:
-					return "Unexcpected operand `{0}`, excpecting operator.".Fmt(args);
-				case ExpressionCompilerMessageType.UnexcpectedOperator:
-					return "Unexcpected `{0}` operator, excpecting operand.".Fmt(args);
-				case ExpressionCompilerMessageType.TooFewOperands:
-					return "Too few operands in expression.";
-				case ExpressionCompilerMessageType.TooManyOperands:
-					return "Too many operands in expression.";
-				case ExpressionCompilerMessageType.UnknownUnaryOperator:
-					return "Unknown unary operator `{0}`.".Fmt(args);
-				case ExpressionCompilerMessageType.UnknownBinaryOperator:
-					return "Unknown binary operator `{0}`.".Fmt(args);
-				default:
-					return "Unknown error.";
-			}
+			[Message(MessageType.Error, "Expression compiler internal error. {0}")]
+			InternalError,
+			[Message(MessageType.Error, "Unexpected end of expression.")]
+			UnexcpectedEndOfExpression,
+			[Message(MessageType.Error, "Unexpected operand `{0}`, expecting operator.")]
+			UnexcpectedOperand,
+			[Message(MessageType.Error, "Unexpected `{0}` operator, expecting operand.")]
+			UnexcpectedOperator,
+			[Message(MessageType.Error, "Too few operands in expression.")]
+			TooFewOperands,
+			[Message(MessageType.Error, "Too many operands in expression.")]
+			TooManyOperands,
+			[Message(MessageType.Error, "Unknown unary operator `{0}`.")]
+			UnknownUnaryOperator,
+			[Message(MessageType.Error, "Unknown binary operator `{0}`.")]
+			UnknownBinaryOperator,
 
 		}
-	}
 
-	public enum ExpressionCompilerMessageType {
-		Unknown,
-		InternalError,
-		UnexcpectedEndOfExpression,
-		UnexcpectedOperand,
-		UnexcpectedOperator,
-		TooFewOperands,
-		TooManyOperands,
-		UnknownUnaryOperator,
-		UnknownBinaryOperator,
 	}
 }

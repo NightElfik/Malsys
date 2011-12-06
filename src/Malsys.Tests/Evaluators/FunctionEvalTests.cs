@@ -43,7 +43,7 @@ namespace Malsys.Tests.Evaluators {
 
 		private void doTest(string inputDefinitions, string inputExpression, string excpected) {
 
-			var msgs = new MessagesCollection();
+			var msgs = new MessageLogger();
 			var compiler = new InputCompiler(msgs);
 			var inCompiled = compiler.CompileFromString(inputDefinitions, "TestDefs");
 
@@ -57,7 +57,7 @@ namespace Malsys.Tests.Evaluators {
 
 			var lexBuff = LexBuffer<char>.FromString(inputExpression);
 			var parsedExpr = ParserUtils.ParseExpression(lexBuff, msgs, "TestExprs");
-			var compiledExpr = new ExpressionCompiler(msgs).CompileExpression(parsedExpr);
+			var compiledExpr = new ExpressionCompiler(msgs).Compile(parsedExpr);
 
 			if (msgs.ErrorOcured) {
 				Assert.Fail("Failed to parse/compile expression." + msgs.ToString());

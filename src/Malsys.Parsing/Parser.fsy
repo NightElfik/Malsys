@@ -8,19 +8,19 @@
 open System
 open Microsoft.FSharp.Text.Parsing
 
-open MessagesLogger
+open Logger
 open Malsys
 open Malsys.Ast
 
 
 
 // This function is called by the generated parser code. Returning initiates error recovery.
-// Saves last error position to thread-static messages logger.
+// Saves last error position to thread-static message logger.
 let parse_error_rich = Some (fun (ctxt: ParseErrorContext<_>) ->
-   MessagesLogger.setErrPos (new Position(ctxt.ParseState.ResultRange))  )
+   Logger.setErrPos (new Position(ctxt.ParseState.ResultRange))  )
 
 
-let getLastErrorPos = MessagesLogger.getLastErrPos
+let getLastErrorPos = Logger.getLastErrPos
 
 
 let logMsg msgType (parserState : IParseState) =
@@ -113,7 +113,9 @@ type ImmutableListPos_LsystemSymbol = ImmutableListPos<LsystemSymbol>
 
 ParseInput:
     | InputStatementsList EOF
-      { new InputBlock($1 :> ResizeArray<IInputStatement>) }
+      { let sourceName = ThreadStatic.MessageLogger.DefaultSourceName in
+        let statements = new ImmutableListPos<IInputStatement>($1 :> ResizeArray<IInputStatement>, getPos parseState) in
+        new InputBlock(sourceName, statements) }
 
 
 ParseExpression:
@@ -158,7 +160,7 @@ ConstDef:
     | LET id EQUALS Expression SEMI
       { new ConstantDefinition($2, $4, getPos parseState) :> IStatement }
     | LET error SEMI
-      { logMsgPos ParsserMessageType.ConstDefInvalid (getPosBetween parseState 1 3);
+      { logMsgPos ParsserMessage.ConstDefInvalid (getPosBetween parseState 1 3);
         new EmptyStatement(getPos parseState) :> IStatement }
 
 //------------------------------------------------------------------------------
@@ -169,14 +171,14 @@ FunDef:
     | FUN id OptParamsParens FunBody
       { new FunctionDefinition($2, $3, $4, getPos parseState) :> IStatement }
     | FUN id error FunBody
-      { logMsgPos ParsserMessageType.ExcpectedParams (getPosBetween parseState 2 4);
+      { logMsgPos ParsserMessage.ExcpectedParams (getPosBetween parseState 2 4);
         new EmptyStatement(getPos parseState) :> IStatement }
 
 FunBody:
     | LBRACE FunStatementsList RBRACE
       { new ImmutableListPos<IFunctionStatement>($2 :> ResizeArray<IFunctionStatement>, getPosI parseState 1, getPosI parseState 3, getPos parseState)  }
     | LBRACE error RBRACE
-      { logMsgPos ParsserMessageType.FunStatementsInvalid (getPosBetween parseState 1 3);
+      { logMsgPos ParsserMessage.FunStatementsInvalid (getPosBetween parseState 1 3);
         new ImmutableListPos<IFunctionStatement>(getPosI parseState 1, getPosI parseState 3, getPos parseState) }
 
 FunStatementsList:
@@ -200,14 +202,14 @@ LsystemDef:
     | LSYSTEM id OptParams LsysBody
       { new LsystemDefinition($2, $3, $4, getPos parseState) :> IInputStatement }
     | LSYSTEM error LsysBody
-      { logMsgPos ParsserMessageType.LsystemHeaderInvalid (getPosBetween parseState 1 3);
+      { logMsgPos ParsserMessage.LsystemHeaderInvalid (getPosBetween parseState 1 3);
         new EmptyStatement(getPos parseState) :> IInputStatement }
 
 LsysBody:
     | LBRACE LsysStatementsList RBRACE
       { new ImmutableListPos<ILsystemStatement>($2 :> ResizeArray<ILsystemStatement>, getPosI parseState 1, getPosI parseState 3, getPos parseState)  }
     | LBRACE error RBRACE
-      { logMsgPos ParsserMessageType.LsystemStatementsInvalid (getPosBetween parseState 1 3);
+      { logMsgPos ParsserMessage.LsystemStatementsInvalid (getPosBetween parseState 1 3);
         new ImmutableListPos<ILsystemStatement>(getPosI parseState 1, getPosI parseState 3, getPos parseState)  }
 
 LsysStatementsList:
@@ -236,14 +238,14 @@ SymbolsConstDef:
     | SET id EQUALS LsystemSymbolList SEMI
       { new SymbolsConstDefinition($2, $4, getPos parseState) :> ILsystemStatement }
     | SET error SEMI
-      { logMsgPos ParsserMessageType.SymbolsConstDefInvalid (getPosBetween parseState 1 3);
+      { logMsgPos ParsserMessage.SymbolsConstDefInvalid (getPosBetween parseState 1 3);
         new EmptyStatement(getPos parseState) :> ILsystemStatement }
 
 SymbolsInterpretDef:
     | INTERPRET LsystemSymbolList AS id OptExpressionsListParen SEMI
       { new SymbolsInterpretDef($2, $4, $5, getPos parseState) :> ILsystemStatement }
     | INTERPRET error SEMI
-      { logMsgPos ParsserMessageType.SymbolsInterpretationInvalid (getPosBetween parseState 1 3);
+      { logMsgPos ParsserMessage.SymbolsInterpretationInvalid (getPosBetween parseState 1 3);
         new EmptyStatement(getPos parseState) :> ILsystemStatement }
 
 
@@ -255,10 +257,10 @@ RewriteRule:
     | REWRITE OptRrCtxt LsystemSymbol OptRrCtxt OptRrLocalConsts OptRrCondition TO RrReplacList SEMI
       { new RewriteRule($3, $2, $4, $5, $6, $8, getPos parseState) :> ILsystemStatement }
     | REWRITE OptRrCtxt LsystemSymbol OptRrCtxt OptRrLocalConsts OptRrCondition TO error SEMI
-      { logMsgPos ParsserMessageType.RrReplacementInvalid (getPosBetween parseState 7 9);
+      { logMsgPos ParsserMessage.RrReplacementInvalid (getPosBetween parseState 7 9);
         new RewriteRule($3, $2, $4, $5, $6, ImmutableListPos<RewriteRuleReplacement>.Empty, getPos parseState) :> ILsystemStatement }
     | REWRITE error SEMI
-      { logMsgPos ParsserMessageType.RewriteRuleInvalid (getPosBetween parseState 1 3);
+      { logMsgPos ParsserMessage.RewriteRuleInvalid (getPosBetween parseState 1 3);
         new EmptyStatement(getPos parseState) :> ILsystemStatement }
 
 OptRrCtxt:
@@ -267,36 +269,36 @@ OptRrCtxt:
     | LBRACE LsystemSymbolList RBRACE
       { $2.AddSeparators(getPosI parseState 1, getPosI parseState 3, getPos parseState) }
     | LBRACE error RBRACE
-      { logMsgPos ParsserMessageType.SymbolsPatternInvalid (getPosBetween parseState 1 3);
+      { logMsgPos ParsserMessage.SymbolsPatternInvalid (getPosBetween parseState 1 3);
         ImmutableListPos<LsystemSymbol>.Empty }
 
 OptRrLocalConsts:
     |
       { ImmutableListPos<ConstantDefinition>.Empty }
     | WITH
-      { logMsgPos ParsserMessageType.EmptyRrConstsDefBlock (getPosI parseState 1);
+      { logMsgPos ParsserMessage.EmptyRrConstsDefBlock (getPosI parseState 1);
         ImmutableListPos<ConstantDefinition>(getStartPos parseState) }
     | WITH RrLocalConstsListNonEmpty
       { new ImmutableListPos<ConstantDefinition>($2 :> ResizeArray<ConstantDefinition>, getPos parseState) }
     | WITH error
-      { logMsg ParsserMessageType.RrConstsDefInvalid parseState;
+      { logMsg ParsserMessage.RrConstsDefInvalid parseState;
         ImmutableListPos<ConstantDefinition>(getStartPos parseState) }
 
 OptRrCondition:
     |
       { Expression.Empty }
     | WHERE
-      { logMsgPos ParsserMessageType.EmptyRrConditionBlock (getPosI parseState 1);
+      { logMsgPos ParsserMessage.EmptyRrConditionBlock (getPosI parseState 1);
         new Expression(getEndPos parseState) }
     | WHERE ExpressionNonEmpty
       { $2 }
     | WHERE error
-      { logMsg ParsserMessageType.RrConditionInvalid parseState;
+      { logMsg ParsserMessage.RrConditionInvalid parseState;
         new Expression(getEndPos parseState) }
 
 RrReplacList:
     |
-      { logMsgPos ParsserMessageType.EmptyRrReplacementBlock (getStartPos parseState);
+      { logMsgPos ParsserMessage.EmptyRrReplacementBlock (getStartPos parseState);
         ImmutableListPos<RewriteRuleReplacement>.Empty }
     | RrReplacListNonEmpty
       { new ImmutableListPos<RewriteRuleReplacement>($1 :> ResizeArray<RewriteRuleReplacement>, getPos parseState) }
@@ -321,12 +323,12 @@ OptRrWeight:
     |
       { Expression.Empty }
     | WEIGHT
-      { logMsg ParsserMessageType.EmptyRrProbabilityBlock parseState;
+      { logMsg ParsserMessage.EmptyRrProbabilityBlock parseState;
         new Expression(getEndPos parseState) }
     | WEIGHT ExpressionNonEmpty
       { $2 }
     | WEIGHT error
-      { logMsg ParsserMessageType.RrProbabilityInvalid parseState;
+      { logMsg ParsserMessage.RrProbabilityInvalid parseState;
         new Expression(getEndPos parseState) }
 
 
@@ -393,7 +395,7 @@ OptParamsParens:
     | LPAREN OptParamsList RPAREN
       { ($2 :> ImmutableListPos<OptionalParameter>).AddSeparators(getPosI parseState 1, getPosI parseState 3, getPos parseState) }
     | LPAREN error RPAREN
-      { logMsgPos ParsserMessageType.OptionalParamsInvalid (getPosBetween parseState 1 3);
+      { logMsgPos ParsserMessage.OptionalParamsInvalid (getPosBetween parseState 1 3);
         new ImmutableListPos<OptionalParameter>(getPosI parseState 1, getPosI parseState 3, getPos parseState) }
 
 OptParamsList:
@@ -421,7 +423,7 @@ OptParam:
 
 Expression:
     |
-      { logMsg ParsserMessageType.EmptyExpression parseState;
+      { logMsg ParsserMessage.EmptyExpression parseState;
         new Expression(getStartPos parseState) }
     | ExpressionMembersNonEmpty
       { new Expression($1, getPos parseState) }
@@ -458,7 +460,7 @@ ExpressionsArray:
     | LBRACE ExpressionsList RBRACE
       { new ExpressionsArray($2, getPosI parseState 1, getPosI parseState 3) }
     | LBRACE error RBRACE
-      { logMsgPos ParsserMessageType.ArrayExpressionInvalid (getPosBetween parseState 1 3);
+      { logMsgPos ParsserMessage.ArrayExpressionInvalid (getPosBetween parseState 1 3);
         new ExpressionsArray(getPos parseState) }
 
 ExpressionsList:
@@ -502,7 +504,7 @@ ProcessConfigBody:
     | LBRACE ProcessConfigStatementsList RBRACE
       { new ImmutableListPos<IProcessConfigStatement>($2 :> ResizeArray<IProcessConfigStatement>, getPosI parseState 1, getPosI parseState 3, getPos parseState) }
     | LBRACE error RBRACE
-      { logMsgPos ParsserMessageType.ProcessConfigStatementsInvalid (getPosBetween parseState 1 3);
+      { logMsgPos ParsserMessage.ProcessConfigStatementsInvalid (getPosBetween parseState 1 3);
         new ImmutableListPos<IProcessConfigStatement>(getPosI parseState 1, getPosI parseState 3, getPos parseState)}
 
 ProcessConfigStatementsList:
@@ -530,7 +532,7 @@ ProcessContainerDef:
     | CONTAINER id TYPEOF FullyQualifiedTypeId DEFAULT FullyQualifiedTypeId SEMI
       { new ProcessContainer($2, $4, $6, getPos parseState) :> IProcessConfigStatement }
     | CONTAINER id TYPEOF FullyQualifiedTypeId SEMI
-      { logMsgPos ParsserMessageType.ProcessConfigContainerMissingDefaultType (getPosBetween parseState 4 5);
+      { logMsgPos ParsserMessage.ProcessConfigContainerMissingDefaultType (getPosBetween parseState 4 5);
         new EmptyStatement(getPos parseState) :> IProcessConfigStatement }
 
 ProcessConfigConnection:

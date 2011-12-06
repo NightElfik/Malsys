@@ -7,11 +7,11 @@ namespace Malsys.SemanticModel.Compiled {
 
 		public readonly string InstructionName;
 		public readonly ImmutableList<IExpression> DefaultParameters;
-		public readonly ImmutableList<Symbol<string>> Symbols;
+		public readonly ImmutableList<Symbol<VoidStruct>> Symbols;
 
 
 		public SymbolsInterpretation(string instrName, ImmutableList<IExpression> defParams,
-				ImmutableList<Symbol<string>> symbols) {
+				ImmutableList<Symbol<VoidStruct>> symbols) {
 
 			InstructionName = instrName;
 			DefaultParameters = defParams;
@@ -19,12 +19,9 @@ namespace Malsys.SemanticModel.Compiled {
 		}
 
 
-		#region ILsystemStatement Members
-
 		public LsystemStatementType StatementType {
 			get { return LsystemStatementType.SymbolsInterpretation; }
 		}
 
-		#endregion
 	}
 }

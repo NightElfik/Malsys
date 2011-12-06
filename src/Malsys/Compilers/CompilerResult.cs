@@ -1,6 +1,6 @@
 ﻿
 namespace Malsys.Compilers {
-	public class CompilerResult<TData> where TData : class {
+	internal class CompilerResult<TData> where TData : class {
 
 		public static readonly CompilerResult<TData> Error = new CompilerResult<TData>(null, true);
 
@@ -10,37 +10,26 @@ namespace Malsys.Compilers {
 		public TData Result { get; private set; }
 
 
-		internal CompilerResult(TData rslt) {
+		public CompilerResult(TData rslt) {
 			Result = rslt;
 			ErrorOcured = false;
 		}
 
-		internal CompilerResult(TData rslt, bool err) {
+		public CompilerResult(TData rslt, bool err) {
 			Result = rslt;
 			ErrorOcured = err;
 		}
 
-		//internal CompilerResult<T> TransformTo<T>()
-		//    where T : class
-		//    where TData : T {
-
-		//    if (ErrorOcured) {
-		//        return CompilerResult<T>.Error;
-		//    }
-		//    else {
-		//        return new CompilerResult<T>((T)Result);
-		//    }
-		//}
 
 		/// <summary>
-		/// Returns true if no error ocured.
+		/// Returns true if no error occurred.
 		/// </summary>
 		public static implicit operator bool(CompilerResult<TData> cr) {
 			return !cr.ErrorOcured;
 		}
 
 		/// <summary>
-		/// Raturns data (result).
+		/// Returns data (result).
 		/// </summary>
 		public static implicit operator TData(CompilerResult<TData> cr) {
 			return cr.Result;
