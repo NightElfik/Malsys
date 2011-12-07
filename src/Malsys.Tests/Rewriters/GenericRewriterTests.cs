@@ -208,27 +208,19 @@ namespace Malsys.Tests.Rewriters {
 			string input = "lsystem l {{ set axiom = {0}; {1} }}".Fmt(inputSymbols, rewriteRules);
 
 			var msgs = new MessageLogger();
-			var compiler = new InputCompiler(msgs);
-			var inCompiled = compiler.CompileFromString(input, "testInput");
-
-			if (msgs.ErrorOcured) {
-				Assert.Fail("Failed to parse/compile L-system." + msgs.ToString());
-			}
-
-			var exprEvaluator = new ExpressionEvaluator();
-			var evaluator = new InputEvaluator(exprEvaluator);
-			var inBlockEvaled = evaluator.Evaluate(inCompiled);
+			var inBlockEvaled = CompilerUtils.EvaluateLsystem(input);
 
 			if (inBlockEvaled.Lsystems.Count != 1) {
 				Assert.Fail("L-system not defined.");
 			}
 
-			var lsysEvaluator = new LsystemEvaluator(exprEvaluator);
+			var evaluator = new MalsysEvaluator();
+			var lsysEvaluator = evaluator.Resolve<ILsystemEvaluator>();
 			var lsystem = lsysEvaluator.Evaluate(inBlockEvaled.Lsystems["l"], ImmutableList<IValue>.Empty,
 				MapModule.Empty<string, IValue>(), MapModule.Empty<string, FunctionEvaledParams>());
 
 			var fm = new FilesManager("./");
-			var context = new ProcessContext(lsystem, fm, inBlockEvaled, exprEvaluator, msgs);
+			var context = new ProcessContext(lsystem, fm, inBlockEvaled, evaluator, msgs);
 
 			var symBuff = new SymbolsMemoryBuffer();
 			rewriter.Initialize(context);
@@ -264,7 +256,7 @@ namespace Malsys.Tests.Rewriters {
 					}
 					Console.WriteLine("in: " + w.GetResult().TrimEnd());
 					Console.WriteLine("out: " + actual);
-					Console.WriteLine("excpected: " + excpectedIterations[i]);
+					Console.WriteLine("excepted: " + excpectedIterations[i]);
 				}
 				Assert.AreEqual(excpectedIterations[i], actual);
 

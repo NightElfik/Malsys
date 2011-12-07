@@ -9,23 +9,21 @@ namespace Malsys {
 		public readonly string Id;
 		public readonly string MessageStr;
 		public readonly MessageType Type;
-		public readonly string SourceName;
 		public readonly Position Position;
 		public readonly DateTime Time;
 
 
-		public Message(string id, MessageType type, string message, string source, Position position) {
+		public Message(string id, MessageType type, string message, Position position, DateTime time) {
 
 			Id = id;
 			MessageStr = message;
 			Type = type;
-			SourceName = source;
 			Position = position;
-			Time = DateTime.Now;
+			Time = time;
 		}
 
 		public string GetFullMessage() {
-			return "{0} [{1}]: {2} In `{3}` {4}.".Fmt(Type.ToString(), Id, MessageStr, SourceName, Position);
+			return "{0} [{1}] at {2}: {3} ".Fmt(Type.ToString(), Id, Position, MessageStr);
 		}
 
 		public override string ToString() {

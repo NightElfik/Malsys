@@ -19,6 +19,7 @@ namespace Malsys.Processing.Components.Rewriters {
 	public class SymbolRewriter : IRewriter {
 
 		private ISymbolProcessor outputProcessor;
+		private ISymbolEvaluator symbolsEvaluator;
 		private IExpressionEvaluator exprEvaluator;
 
 		private Dictionary<string, RewriteRule[]> rewriteRules;
@@ -116,7 +117,8 @@ namespace Malsys.Processing.Components.Rewriters {
 		public void Initialize(ProcessContext context) {
 			this.context = context;
 
-			//exprEvaluator = context.ExpressionEvaluator;
+			symbolsEvaluator = context.Evaluator.Resolve<ISymbolEvaluator>();
+			exprEvaluator = context.Evaluator.Resolve<IExpressionEvaluator>();
 			constants = context.Lsystem.Constants;
 			functions = context.Lsystem.Functions;
 			rewriteRules = createRrulesMap(context.Lsystem.RewriteRules);
@@ -128,8 +130,8 @@ namespace Malsys.Processing.Components.Rewriters {
 
 		public void Cleanup() {
 
-			context.Messages.LogMessage<SymbolRewriter>("RewritingTime", MessageType.Info,
-				swRewriteTime.Elapsed.ToString());
+			//context.Messages.LogMessage<SymbolRewriter>("RewritingTime", MessageType.Info,
+			//    swRewriteTime.Elapsed.ToString());
 		}
 
 		public void BeginProcessing(bool measuring) {
@@ -177,15 +179,15 @@ namespace Malsys.Processing.Components.Rewriters {
 			RewriteRule rrule;
 			IEnumerable<Symbol> symToProcess = null;
 
-			//if (tryFindRewriteRule(symbol, out rrule, out consts)) {
-			//    rewriteRuleApplied = true;
-			//    var replac = chooseReplacement(rrule, consts, functions);
-			//    symToProcess = exprEvaluator.EvaluateSymbols(replac.Replacement, consts, functions);
-			//}
-			//else {
-				// implicity identity
+			if (tryFindRewriteRule(symbol, out rrule, out consts)) {
+			    rewriteRuleApplied = true;
+			    var replac = chooseReplacement(rrule, consts, functions);
+				symToProcess = symbolsEvaluator.EvaluateList(replac.Replacement, consts, functions);
+			}
+			else {
+				// implicit identity
 				symToProcess = new Symbol[] { symbol };
-			//}
+			}
 
 			leftContext.Enqueue(symbol);
 			if (leftContext.Count > leftCtxtMaxLen) {
@@ -194,11 +196,11 @@ namespace Malsys.Processing.Components.Rewriters {
 
 			swRewriteTime.Stop();
 
+			rewrittenSymbols++;
+
 			foreach (var s in symToProcess) {
 				outputProcessor.ProcessSymbol(s);
 			}
-
-			rewrittenSymbols++;
 		}
 
 

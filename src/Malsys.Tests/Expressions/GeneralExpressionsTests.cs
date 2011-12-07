@@ -257,47 +257,11 @@ namespace Malsys.Tests.Expressions {
 
 		private void evalAndCompare(string testName, string exprStr, IValue exceptedValue) {
 
-			Console.WriteLine("Excpected: {0}", exceptedValue);
+			var actual = CompilerUtils.EvaluateExpression(exprStr);
 
-			var result = parseCompileEvaluateExpression(testName, exprStr);
-
-			Console.WriteLine("Actual: {0}", result);
-			Console.WriteLine();
-
-			Assert.IsTrue((result.CompareTo(exceptedValue) == 0) || (result.IsNaN && exceptedValue.IsNaN),
-				"Expression `{0}` evaluated to `{1}`, but excpected value was `{2}`.",
-				exprStr, result, exceptedValue);
-		}
-
-		private IValue parseCompileEvaluateExpression(string testName, string exprStr) {
-
-			Console.WriteLine(exprStr);
-
-			// lexing
-			Console.WriteLine(getTokensFromStr(exprStr));
-
-			// parsing
-			var lexBuff = LexBuffer<char>.FromString(exprStr);
-			var msgs = new MessageLogger();
-			var parsedExpr = ParserUtils.ParseExpression(lexBuff, msgs, testName);
-
-
-			// compile
-
-			var compiledExpr = new ExpressionCompiler(msgs).Compile(parsedExpr);
-
-
-			// evaluate
-			var result = new ExpressionEvaluator().Evaluate(compiledExpr);
-
-			foreach (var err in msgs) {
-				Console.WriteLine(err.GetFullMessage());
-			}
-
-
-			Assert.IsFalse(msgs.ErrorOcured, "Failed to compile or evaluate expression `{0}`.", exprStr);
-
-			return result;
+			Assert.IsTrue((actual.CompareTo(exceptedValue) == 0) || (actual.IsNaN && exceptedValue.IsNaN),
+				"Expression `{0}` evaluated to `{1}`, but excepted value was `{2}`.",
+				exprStr, actual, exceptedValue);
 		}
 
 		private string getTokensFromStr(string str) {

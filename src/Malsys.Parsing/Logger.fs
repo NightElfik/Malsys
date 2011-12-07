@@ -12,7 +12,7 @@ type internal ThreadStatic() =
     static val mutable private lastErrorPos : Malsys.Position
 
     [<System.ThreadStatic;DefaultValue>]
-    static val mutable private logger : Malsys.MessageLogger
+    static val mutable private logger : Malsys.IMessageLogger
 
     static member LastErrorPos
         with get() = ThreadStatic.lastErrorPos

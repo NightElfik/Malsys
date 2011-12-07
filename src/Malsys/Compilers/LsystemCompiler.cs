@@ -5,7 +5,6 @@ using Malsys.SemanticModel.Compiled;
 namespace Malsys.Compilers {
 	internal class LsystemCompiler : ILsystemCompiler, Ast.ILsystemVisitor {
 
-		private MessageLogger msgs;
 		private IConstantDefinitionCompiler constDefCompiler;
 		private IFunctionDefinitionCompiler funDefCompiler;
 		private IExpressionCompiler exprCompiler;
@@ -13,33 +12,36 @@ namespace Malsys.Compilers {
 		private IRewriteRuleCompiler rrCompiler;
 		private ISymbolCompiler symbolCompiler;
 
+		private IMessageLogger logger;
 		private CompilerResult<ILsystemStatement> visitResult;
 
 
-		public LsystemCompiler(MessageLogger messageLogger, IConstantDefinitionCompiler constantDefCompiler, IFunctionDefinitionCompiler functionDefCompiler,
-				IExpressionCompiler expressionCompiler, ParametersCompiler parametersCompiler, ISymbolCompiler symbolCompiler) {
+		public LsystemCompiler(IConstantDefinitionCompiler constantDefCompiler, IFunctionDefinitionCompiler functionDefCompiler,
+				IExpressionCompiler expressionCompiler, IParametersCompiler parametersCompiler, ISymbolCompiler symbolCompiler,
+				IRewriteRuleCompiler rewriteRuleCompiler) {
 
-			msgs = messageLogger;
 			constDefCompiler = constantDefCompiler;
 			funDefCompiler = functionDefCompiler;
 			exprCompiler = expressionCompiler;
 			paramsCompiler = parametersCompiler;
+			rrCompiler = rewriteRuleCompiler;
 			this.symbolCompiler = symbolCompiler;
 		}
 
 
-		public Lsystem Compile(Ast.LsystemDefinition lsysDef) {
+		public Lsystem Compile(Ast.LsystemDefinition lsysDef, IMessageLogger logger) {
 
-			var prms = paramsCompiler.CompileList(lsysDef.Parameters);
-			var stats = compileLsystemStatements(lsysDef.Statements);
+			var prms = paramsCompiler.CompileList(lsysDef.Parameters, logger);
+			var stats = compileLsystemStatements(lsysDef.Statements, logger);
 
 			return new Lsystem(lsysDef.NameId.Name, prms, stats, lsysDef);
 		}
 
 
-		private ImmutableList<ILsystemStatement> compileLsystemStatements(ImmutableList<Ast.ILsystemStatement> statements) {
+		private ImmutableList<ILsystemStatement> compileLsystemStatements(ImmutableList<Ast.ILsystemStatement> statements, IMessageLogger logger) {
 
 			var compStats = new List<ILsystemStatement>(statements.Count);
+			this.logger = logger;
 
 			foreach (var stat in statements) {
 				stat.Accept(this);
@@ -48,19 +50,20 @@ namespace Malsys.Compilers {
 				}
 			}
 
+			logger = null;
 			return new ImmutableList<ILsystemStatement>(compStats);
 		}
 
 		private SymbolsConstDefinition compileSymbolConstant(Ast.SymbolsConstDefinition symbolConstAst) {
 
-			var symbols = symbolCompiler.CompileList<Ast.LsystemSymbol, Symbol<IExpression>>(symbolConstAst.SymbolsList);
+			var symbols = symbolCompiler.CompileList<Ast.LsystemSymbol, Symbol<IExpression>>(symbolConstAst.SymbolsList, logger);
 			return new SymbolsConstDefinition(symbolConstAst.NameId.Name, symbols);
 		}
 
 		private SymbolsInterpretation compileSymbolsInterpretation(Ast.SymbolsInterpretDef symbolsInterpretAst) {
 
-			var symbols = symbolCompiler.CompileList<Ast.LsystemSymbol, Symbol<VoidStruct>>(symbolsInterpretAst.Symbols);
-			var defVals = exprCompiler.CompileList(symbolsInterpretAst.DefaultParameters);
+			var symbols = symbolCompiler.CompileList<Ast.LsystemSymbol, Symbol<VoidStruct>>(symbolsInterpretAst.Symbols, logger);
+			var defVals = exprCompiler.CompileList(symbolsInterpretAst.DefaultParameters, logger);
 			return new SymbolsInterpretation(symbolsInterpretAst.Instruction.Name, defVals, symbols);
 		}
 
@@ -68,7 +71,7 @@ namespace Malsys.Compilers {
 		#region ILsystemVisitor Members
 
 		public void Visit(Ast.ConstantDefinition constDef) {
-			visitResult = constDefCompiler.Compile(constDef);
+			visitResult = constDefCompiler.Compile(constDef, logger);
 		}
 
 		public void Visit(Ast.EmptyStatement emptyStat) {
@@ -76,11 +79,11 @@ namespace Malsys.Compilers {
 		}
 
 		public void Visit(Ast.FunctionDefinition funDef) {
-			visitResult = funDefCompiler.Compile(funDef);
+			visitResult = funDefCompiler.Compile(funDef, logger);
 		}
 
 		public void Visit(Ast.RewriteRule rewriteRule) {
-			visitResult = rrCompiler.Compile(rewriteRule);
+			visitResult = rrCompiler.Compile(rewriteRule, logger);
 		}
 
 		public void Visit(Ast.SymbolsInterpretDef symbolInterpretDef) {

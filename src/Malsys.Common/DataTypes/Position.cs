@@ -67,7 +67,7 @@ namespace Malsys {
 		}
 
 		public override string ToString() {
-			return "[{0},{1}] - [{2},{3}]".Fmt(BeginLine, BeginColumn, EndLine, EndColumn);
+			return "({0},{1}) - ({2},{3})".Fmt(BeginLine, BeginColumn, EndLine, EndColumn);
 		}
 	}
 }

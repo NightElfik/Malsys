@@ -14,6 +14,7 @@ using Malsys.SourceCode.Printers;
 using Microsoft.FSharp.Collections;
 using Microsoft.FSharp.Text.Lexing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Malsys.SemanticModel.Compiled;
 
 namespace Malsys.Tests.Interpreters {
 	public static class GenericInterpreterCallerTests {
@@ -99,36 +100,38 @@ namespace Malsys.Tests.Interpreters {
 				string inputSymbols, string[] excpected) {
 
 			var lexBuff = LexBuffer<char>.FromString(inputSymbols);
-			var msgs = new MessageLogger();
-			var symbolsAst = ParserUtils.ParseSymbols(lexBuff, msgs, "testInput");
+			var logger = new MessageLogger();
+			var symbolsAst = ParserUtils.ParseSymbols(lexBuff, logger, "testInput");
 
-			if (msgs.ErrorOcured) {
+			if (logger.ErrorOcured) {
 				Console.WriteLine("in: " + inputSymbols);
-				Assert.Fail("Failed to parse symbols. " + msgs.ToString());
+				Assert.Fail("Failed to parse symbols. " + logger.ToString());
 			}
 
-			var compiler = new LsystemCompiler(msgs, new InputCompiler(msgs));
-			var symbols = compiler.CompileSymbolsList(symbolsAst);
+			var compiler = new MalsysCompiler().Resolve<ISymbolCompiler>();
+			var symbols = compiler.CompileList<Ast.LsystemSymbol, Symbol<IExpression>>(symbolsAst, logger);
 
-			if (msgs.ErrorOcured) {
+			if (logger.ErrorOcured) {
 				Console.WriteLine("in: " + inputSymbols);
-				Assert.Fail("Failed to compile symbols. " + msgs.ToString());
+				Assert.Fail("Failed to compile symbols. " + logger.ToString());
 			}
 
-			var exprEvaluator = new ExpressionEvaluator();
+			var evaluator = new MalsysEvaluator();
 			var symToInstr = MapModule.Empty<string, Symbol<IValue>>();
 			foreach (var item in symbolToInstr) {
 				symToInstr = symToInstr.Add(item.Key, item.Value);
 			}
 			var lsystem = new LsystemEvaled("", null, null, null, symToInstr, null, null);
-			var context = new ProcessContext(lsystem, null, null, exprEvaluator, msgs);
+			var context = new ProcessContext(lsystem, null, null, evaluator, logger);
 
 			var dummy = new DummyInterpreter();
 			caller.Initialize(context);
 			caller.Interpreter = dummy;
 
+			var symbolEvaluator = evaluator.Resolve<ISymbolEvaluator>();
+
 			foreach (var sym in symbols) {
-				caller.ProcessSymbol(exprEvaluator.EvaluateSymbol(sym, null, null));
+				caller.ProcessSymbol(symbolEvaluator.Evaluate(sym, null, null));
 			}
 
 			var actual = dummy.Actions.ToArray();

@@ -4,25 +4,22 @@ using Malsys.SemanticModel.Compiled;
 namespace Malsys.Compilers {
 	internal partial class ExpressionCompiler : IExpressionCompiler {
 
-		private MessageLogger msgs;
 		// used by visitor
 		private IKnownConstantsProvider knownConstants;
 		private IKnownFunctionsProvider knownFunctions;
 		private IKnownOperatorsProvider knownOperators;
 
 
-		public ExpressionCompiler(MessageLogger messageLogger, IKnownConstantsProvider constants,
-				IKnownFunctionsProvider functions, IKnownOperatorsProvider operators) {
+		public ExpressionCompiler(IKnownConstantsProvider constants, IKnownFunctionsProvider functions, IKnownOperatorsProvider operators) {
 
-			msgs = messageLogger;
 			knownConstants = constants;
 			knownFunctions = functions;
 			knownOperators = operators;
 		}
 
 
-		public IExpression Compile(Ast.Expression expr) {
-			var visitor = new Visitor(this);
+		public IExpression Compile(Ast.Expression expr, IMessageLogger logger) {
+			var visitor = new Visitor(this, logger);
 			return visitor.Compile(expr);
 		}
 

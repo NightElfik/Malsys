@@ -55,6 +55,9 @@ let getEndPos (parserState : IParseState) =
     let endPos = snd parserState.ResultRange
     new Position(endPos, endPos)
 
+let getInpuFile (parserState : IParseState) =
+    (fst parserState.ResultRange).FileName
+
 
 let optionToStatement parseState (option : Option<#ILsystemStatement>) =
     match option with
@@ -113,7 +116,7 @@ type ImmutableListPos_LsystemSymbol = ImmutableListPos<LsystemSymbol>
 
 ParseInput:
     | InputStatementsList EOF
-      { let sourceName = ThreadStatic.MessageLogger.DefaultSourceName in
+      { let sourceName = getInpuFile parseState in
         let statements = new ImmutableListPos<IInputStatement>($1 :> ResizeArray<IInputStatement>, getPos parseState) in
         new InputBlock(sourceName, statements) }
 
@@ -479,7 +482,7 @@ ExprIndexer:
     | LBRACK Expression RBRACK
       { new ExpressionIndexer($2, getPos parseState) }
 
-// explicit ID to avoid shift/reduce conflict, dont know how to do just with `id` (alredy tried `%prec ID` in many places)
+// explicit ID to avoid shift/reduce conflict, don't know how to do just with `id` (already tried `%prec ID` in many places)
 ExprFun:
     | ID LPAREN ExpressionsList RPAREN
       { let id = new Identificator($1, getPos parseState) in

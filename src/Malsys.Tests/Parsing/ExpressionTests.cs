@@ -46,7 +46,9 @@ namespace Malsys.Tests.Parsing {
 			doTest(" - 0");
 			doTest("0 + a");
 			doTest("{5}[0] ^ 0");
-			doTest(@"0 !$%&*+.\<>@^~?:-=/ a");
+			doTest(@"0 !$%&*+\<>@^~?:-=/ a");
+			doTest("0 == 0");
+			doTest("0 / 0");
 		}
 
 		[TestMethod]
@@ -105,21 +107,7 @@ namespace Malsys.Tests.Parsing {
 				excpected = input;
 			}
 
-			var lexBuff = LexBuffer<char>.FromString(input);
-			var msgs = new MessageLogger();
-			var expr = ParserUtils.ParseExpression(lexBuff, msgs, "testInput");
-
-			var writer = new IndentStringWriter();
-			new CanonicAstPrinter(writer).Print(expr);
-
-			string actual = writer.GetResult().TrimEnd();
-
-			if (msgs.ErrorOcured) {
-				Console.WriteLine("in: " + input);
-				Console.WriteLine("exc: " + excpected);
-				Console.WriteLine("act: " + actual);
-				Assert.Fail(msgs.ToString());
-			}
+			var actual = CompilerUtils.Print(CompilerUtils.ParseExpression(input)).TrimEnd();
 
 			Assert.AreEqual(excpected, actual);
 		}

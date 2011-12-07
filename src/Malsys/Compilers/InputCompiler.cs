@@ -10,7 +10,7 @@ namespace Malsys.Compilers {
 		private ILsystemCompiler lsysCompiler;
 		private IExpressionCompiler exprCompiler;
 
-
+		private IMessageLogger logger;
 		private CompilerResult<IInputStatement> visitResult;
 
 
@@ -25,9 +25,10 @@ namespace Malsys.Compilers {
 
 
 
-		public InputBlock Compile(Ast.InputBlock parsedInput) {
+		public InputBlock Compile(Ast.InputBlock parsedInput, IMessageLogger logger) {
 
 			var statements = new List<IInputStatement>(parsedInput.Statements.Length);
+			this.logger = logger;
 
 			for (int i = 0; i < parsedInput.Statements.Length; i++) {
 				parsedInput.Statements[i].Accept(this);
@@ -36,6 +37,7 @@ namespace Malsys.Compilers {
 				}
 			}
 
+			logger = null;
 			var statsImm = new ImmutableList<IInputStatement>(statements);
 			return new InputBlock(parsedInput.SourceName, statsImm);
 		}
@@ -44,7 +46,7 @@ namespace Malsys.Compilers {
 		#region IInputVisitor Members
 
 		public void Visit(Ast.ConstantDefinition constDef) {
-			visitResult = constDefCompiler.Compile(constDef);
+			visitResult = constDefCompiler.Compile(constDef, logger);
 		}
 
 		public void Visit(Ast.EmptyStatement emptyStat) {
@@ -52,11 +54,11 @@ namespace Malsys.Compilers {
 		}
 
 		public void Visit(Ast.FunctionDefinition funDef) {
-			visitResult = funDefCompiler.Compile(funDef);
+			visitResult = funDefCompiler.Compile(funDef, logger);
 		}
 
 		public void Visit(Ast.LsystemDefinition lsysDef) {
-			visitResult = lsysCompiler.Compile(lsysDef);
+			visitResult = lsysCompiler.Compile(lsysDef, logger);
 		}
 
 		public void Visit(Ast.ProcessConfigurationDefinition processConfDef) {

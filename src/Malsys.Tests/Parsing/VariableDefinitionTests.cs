@@ -46,22 +46,7 @@ namespace Malsys.Tests.Parsing {
 				excpected = input;
 			}
 
-			var lexBuff = LexBuffer<char>.FromString(input);
-			var msgs = new MessageLogger();
-			var inBlock = ParserUtils.ParseInputNoComents(lexBuff, msgs, "testInput");
-
-			var writer = new IndentStringWriter();
-			new CanonicAstPrinter(writer).Print(inBlock);
-
-			string actual = writer.GetResult().TrimEnd();
-
-			if (msgs.ErrorOcured) {
-				Console.WriteLine("in: " + input);
-				Console.WriteLine("exc: " + excpected);
-				Console.WriteLine("act: " + actual);
-				Assert.Fail(msgs.ToString());
-			}
-
+			string actual = CompilerUtils.Print(CompilerUtils.ParseLsystem(input)).TrimEnd();
 			Assert.AreEqual(excpected, actual);
 		}
 	}

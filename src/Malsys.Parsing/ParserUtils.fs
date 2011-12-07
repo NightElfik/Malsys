@@ -13,8 +13,7 @@ let setInitialBuffPos (lexbuf : LexBuffer<_>) sourceName =
         pos_lnum = 1 }
     lexbuf
 
-let parseHelper (parseFun : (LexBuffer<_> -> Parser.token) -> LexBuffer<_> -> 'b) (comments : ResizeArray<Comment>) (lexbuf : LexBuffer<_>) (logger : MessageLogger) sourceName =
-    logger.DefaultSourceName <- sourceName;
+let parseHelper (parseFun : (LexBuffer<_> -> Parser.token) -> LexBuffer<_> -> 'b) (comments : ResizeArray<Comment>) (lexbuf : LexBuffer<_>) (logger : IMessageLogger) sourceName =
     Logger.ThreadStatic.MessageLogger <- logger;
     parseFun (Lexer.tokenize (logger, comments)) (setInitialBuffPos lexbuf sourceName)
 

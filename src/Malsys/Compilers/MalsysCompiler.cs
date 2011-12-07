@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Malsys.SemanticModel.Compiled;
-using Microsoft.FSharp.Text.Lexing;
-using Malsys.Parsing;
+using System.Diagnostics;
 using Autofac;
 using Malsys.Compilers.Expressions;
-using System.Diagnostics;
+using Malsys.Parsing;
+using Malsys.SemanticModel.Compiled;
+using Microsoft.FSharp.Text.Lexing;
 
 namespace Malsys.Compilers {
 	public class MalsysCompiler {
@@ -15,11 +13,7 @@ namespace Malsys.Compilers {
 		private IContainer container;
 
 
-		public MalsysCompiler(IContainer cont) {
-			container = cont;
-		}
-
-		public MalsysCompiler(MessageLogger messageLogger) {
+		public MalsysCompiler() {
 
 			var builder = new ContainerBuilder();
 
@@ -27,24 +21,25 @@ namespace Malsys.Compilers {
 			knownStuffProvider.LoadFromType(typeof(KnownConstant));
 			knownStuffProvider.LoadFromType(typeof(FunctionCore));
 			knownStuffProvider.LoadFromType(typeof(OperatorCore));
-
-			builder.Register(x => messageLogger).As<MessageLogger>().SingleInstance();
-
 			builder.Register(x => knownStuffProvider).As<IKnownConstantsProvider>().SingleInstance();
+			builder.Register(x => knownStuffProvider).As<IKnownFunctionsProvider>().SingleInstance();
+			builder.Register(x => knownStuffProvider).As<IKnownOperatorsProvider>().SingleInstance();
 
-			builder.RegisterType<InputCompiler>().As<IInputCompiler>().InstancePerLifetimeScope();
-			builder.RegisterType<ConstantDefCompiler>().As<IConstantDefinitionCompiler>().InstancePerLifetimeScope();
-			builder.RegisterType<FunctionDefCompiler>().As<IFunctionDefinitionCompiler>().InstancePerLifetimeScope();
-			builder.RegisterType<LsystemCompiler>().As<ILsystemCompiler>().InstancePerLifetimeScope();
-			builder.RegisterType<ParametersCompiler>().As<IParametersCompiler>().InstancePerLifetimeScope();
-			builder.RegisterType<RewriteRuleCompiler>().As<IRewriteRuleCompiler>().InstancePerLifetimeScope();
-			builder.RegisterType<SymbolsCompiler>().As<ISymbolCompiler>().InstancePerLifetimeScope();
-			builder.RegisterType<ExpressionCompiler>().As<IExpressionCompiler>().InstancePerLifetimeScope();
+			builder.RegisterType<InputCompiler>().As<IInputCompiler>().SingleInstance();
+			builder.RegisterType<ConstantDefCompiler>().As<IConstantDefinitionCompiler>().SingleInstance();
+			builder.RegisterType<FunctionDefCompiler>().As<IFunctionDefinitionCompiler>().SingleInstance();
+			builder.RegisterType<LsystemCompiler>().As<ILsystemCompiler>().SingleInstance();
+			builder.RegisterType<ParametersCompiler>().As<IParametersCompiler>().SingleInstance();
+			builder.RegisterType<RewriteRuleCompiler>().As<IRewriteRuleCompiler>().SingleInstance();
+			builder.RegisterType<SymbolsCompiler>().As<ISymbolCompiler>().SingleInstance();
+			builder.RegisterType<ExpressionCompiler>().As<IExpressionCompiler>().SingleInstance();
 
 			container = builder.Build();
 		}
 
-
+		/// <summary>
+		/// Can be used to resolve other sub-compilers like expression compiler.
+		/// </summary>
 		public T Resolve<T>() {
 			return container.Resolve<T>();
 		}
@@ -53,55 +48,45 @@ namespace Malsys.Compilers {
 			return container.Resolve<IInputCompiler>();
 		}
 
-		public MessageLogger ResolveMessageLogger() {
-			return container.Resolve<MessageLogger>();
-		}
 
-
-		public InputBlock CompileFromString(string strInput, string sourceName) {
-
-			var logger = ResolveMessageLogger();
+		public InputBlock CompileFromString(string strInput, string sourceName, IMessageLogger logger) {
 
 			var lexBuff = LexBuffer<char>.FromString(strInput);
-			logger.DefaultSourceName = sourceName;
-			var comments = new List<Ast.Comment>();
 
 			Ast.InputBlock parsedInput;
 
 			try {
-				parsedInput = ParserUtils.ParseInput(comments, lexBuff, logger, sourceName);
+				parsedInput = ParserUtils.ParseInputNoComents(lexBuff, logger, sourceName);
 			}
 			catch (Exception ex) {
-				logger.LogMessage(Message.ParsingFailed, Position.Unknown);
+				logger.LogMessage(Message.ParsingFailed, ex.Message);
 				return new InputBlock(sourceName, ImmutableList<IInputStatement>.Empty);
 			}
 
-			return CompileFromAst(parsedInput);
+			return CompileFromAst(parsedInput, logger);
 		}
 
-		public InputBlock CompileFromAst(Ast.InputBlock parsedInput) {
+		public InputBlock CompileFromAst(Ast.InputBlock parsedInput, IMessageLogger logger) {
 
 			var sw = new Stopwatch();
 			sw.Start();
 
-			InputBlock result;
-
-			using (var lifetime = container.BeginLifetimeScope()) {
-				var compiler = ResolveInputCompiler();
-
-				result = compiler.Compile(parsedInput);
-			}
+			InputBlock result = ResolveInputCompiler().Compile(parsedInput, logger);
 
 			sw.Stop();
-			var logger = ResolveMessageLogger();
-			logger.LogMessage<MalsysCompiler>("CompilationTime", MessageType.Info, sw.Elapsed.ToString());
+			logger.LogMessage(Message.CompilationTime, sw.Elapsed.ToString());
 
 			return result;
 		}
 
 		public enum Message {
+
 			[Message(MessageType.Error, "Parsing failed. {0}")]
-			ParsingFailed
+			ParsingFailed,
+
+			[Message(MessageType.Info, "{0}")]
+			CompilationTime,
+
 		}
 
 	}

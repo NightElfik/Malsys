@@ -97,6 +97,7 @@
   <ItemGroup>
     <Compile Include="Helpers\AttributeHelper.cs" />
     <Compile Include="IDateTimeProvider.cs" />
+    <Compile Include="IMessageLogger.cs" />
     <Compile Include="MessageAttribute.cs" />
     <Compile Include="IO\IndentTextWriter.cs" />
     <Compile Include="Message.cs" />

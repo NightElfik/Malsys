@@ -1,10 +1,4 @@
-﻿using Malsys.Compilers;
-using Malsys.Evaluators;
-using Malsys.IO;
-using Malsys.Parsing;
-using Malsys.SourceCode.Printers;
-using Microsoft.FSharp.Text.Lexing;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Malsys.Tests.Evaluators {
 	[TestClass]
@@ -43,32 +37,11 @@ namespace Malsys.Tests.Evaluators {
 
 		private void doTest(string inputDefinitions, string inputExpression, string excpected) {
 
-			var msgs = new MessageLogger();
-			var compiler = new InputCompiler(msgs);
-			var inCompiled = compiler.CompileFromString(inputDefinitions, "TestDefs");
+			var inBlockEvaled = CompilerUtils.EvaluateLsystem(inputDefinitions);
+			var result = CompilerUtils.EvaluateExpression(inputExpression, inBlockEvaled.GlobalConstants, inBlockEvaled.GlobalFunctions);
+			string actual = CompilerUtils.Print(result);
 
-			if (msgs.ErrorOcured) {
-				Assert.Fail("Failed to parse/compile definitions." + msgs.ToString());
-			}
-
-			var exprEvaluator = new ExpressionEvaluator();
-			var evaluator = new InputEvaluator(exprEvaluator);
-			var inBlockEvaled = evaluator.Evaluate(inCompiled);
-
-			var lexBuff = LexBuffer<char>.FromString(inputExpression);
-			var parsedExpr = ParserUtils.ParseExpression(lexBuff, msgs, "TestExprs");
-			var compiledExpr = new ExpressionCompiler(msgs).Compile(parsedExpr);
-
-			if (msgs.ErrorOcured) {
-				Assert.Fail("Failed to parse/compile expression." + msgs.ToString());
-			}
-
-			var result = new ExpressionEvaluator().Evaluate(compiledExpr, inBlockEvaled.GlobalConstants, inBlockEvaled.GlobalFunctions);
-
-			var w = new IndentStringWriter();
-			new CanonicPrinter(w).Print(result);
-
-			Assert.AreEqual(excpected, w.GetResult());
+			Assert.AreEqual(excpected, actual);
 
 		}
 	}

@@ -1,10 +1,4 @@
-﻿using System;
-using Malsys.Compilers;
-using Malsys.IO;
-using Malsys.Parsing;
-using Malsys.SourceCode.Printers;
-using Microsoft.FSharp.Text.Lexing;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Malsys.Tests {
 	[TestClass]
@@ -50,23 +44,8 @@ namespace Malsys.Tests {
 				excpected = input;
 			}
 
-			var lexBuff = LexBuffer<char>.FromString(input);
-			var msgs = new MessageLogger();
-			var expr = ParserUtils.ParseExpression(lexBuff, msgs, "testInput");
-			var compiledExpr = new ExpressionCompiler(msgs).Compile(expr);
-
-			var writer = new IndentStringWriter();
-			var printer = new CanonicPrinter(writer);
-			printer.Print(compiledExpr);
-
-			string actual = writer.GetResult();
-
-			if (msgs.ErrorOcured) {
-				Console.WriteLine("in: " + input);
-				Console.WriteLine("exc: " + excpected);
-				Console.WriteLine("act: " + actual);
-				Assert.Fail(msgs.ToString());
-			}
+			var compiledExpr = CompilerUtils.CompileExpression(input);
+			string actual = CompilerUtils.Print(compiledExpr);
 
 			Assert.AreEqual(excpected, actual);
 		}

@@ -5,11 +5,11 @@ using Microsoft.FSharp.Collections;
 namespace Malsys.Evaluators {
 	internal class InputEvaluator : IInputEvaluator {
 
-		private ExpressionEvaluator exprEvaluator;
+		private IExpressionEvaluator exprEvaluator;
 		private IParametersEvaluator paramsEvaluator;
 
 
-		public InputEvaluator(ExpressionEvaluator exprEval, IParametersEvaluator parametersEvaluator) {
+		public InputEvaluator(IExpressionEvaluator exprEval, IParametersEvaluator parametersEvaluator) {
 
 			exprEvaluator = exprEval;
 			paramsEvaluator = parametersEvaluator;

@@ -26,5 +26,27 @@ namespace Malsys {
 			}
 
 		}
+
+		public static TAttr GetAttrFromEnumVal<TEnum, TAttr>(TEnum enumValue)
+			where TEnum : struct
+			where TAttr : class {
+
+			Contract.Requires<ArgumentException>(typeof(TEnum).IsEnum, "T must be an enumerated type.");
+
+			var member = typeof(TEnum).GetField(enumValue.ToString());
+			if (member == null) {
+				Debug.Fail("Value `{0}` is not value of `{1}` enumeration.".Fmt(enumValue, typeof(TEnum).Name));
+				return null;
+			}
+
+			var attrs = member.GetCustomAttributes(typeof(TAttr), false);
+			if (attrs.Length > 0) {
+				return (TAttr)attrs[0];
+			}
+			else {
+				return null;
+			}
+
+		}
 	}
 }

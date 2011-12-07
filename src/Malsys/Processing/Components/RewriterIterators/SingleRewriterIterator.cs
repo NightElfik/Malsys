@@ -107,8 +107,8 @@ namespace Malsys.Processing.Components.RewriterIterators {
 
 			swDuration.Stop();
 
-			context.Messages.LogMessage<SingleRewriterIterator>("TotalProcessTime", MessageType.Info,
-				swDuration.Elapsed.ToString());
+			//context.Messages.LogMessage<SingleRewriterIterator>("TotalProcessTime", MessageType.Info,
+			//    swDuration.Elapsed.ToString());
 		}
 
 		public void Abort() {
@@ -145,8 +145,8 @@ namespace Malsys.Processing.Components.RewriterIterators {
 
 					if (swDuration.Elapsed > timeout || aborting) {
 						rewriter.EndProcessing();
-						context.Messages.LogMessage<SingleRewriterIterator>(aborting ? "Abort" : "Timeout", MessageType.Error,
-							"Iterator aborted while rewriting iteration {0} of {1}.".Fmt(i, iterations));
+						//context.Messages.LogMessage<SingleRewriterIterator>(aborting ? "Abort" : "Timeout", MessageType.Error,
+						//    "Iterator aborted while rewriting iteration {0} of {1}.".Fmt(i, iterations));
 						aborted = true;
 						return;
 					}
@@ -167,8 +167,8 @@ namespace Malsys.Processing.Components.RewriterIterators {
 
 				if (swDuration.Elapsed > timeout || aborting) {
 					outProcessor.EndProcessing();
-					context.Messages.LogMessage<SingleRewriterIterator>(aborting ? "Abort" : "Timeout", MessageType.Error,
-						"Iterator aborted while {0}.".Fmt(measuring ? "measuring" : "interpreting"));
+					//context.Messages.LogMessage<SingleRewriterIterator>(aborting ? "Abort" : "Timeout", MessageType.Error,
+					//    "Iterator aborted while {0}.".Fmt(measuring ? "measuring" : "interpreting"));
 					aborted = true;
 					return;
 				}
