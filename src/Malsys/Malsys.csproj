@@ -146,6 +146,7 @@
     <Compile Include="Processing\Components\Interfaces%27\IProcessStarter.cs" />
     <Compile Include="Processing\IComponentResolver.cs" />
     <Compile Include="Processing\OutputFile.cs" />
+    <Compile Include="Processing\ProcessConfigurations.cs" />
     <Compile Include="Processing\ProcessManager.cs" />
     <Compile Include="SemanticModel\Compiled\ConstantDefinition.cs" />
     <Compile Include="SemanticModel\Compiled\Expressions\EmptyExpression.cs" />

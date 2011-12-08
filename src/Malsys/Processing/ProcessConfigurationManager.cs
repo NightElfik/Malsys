@@ -12,7 +12,7 @@ namespace Malsys.Processing {
 
 
 		public bool RequiresMeasure { get; private set; }
-		public IProcessStarter starter { get; private set; }
+		public IProcessStarter StarterComponent { get; private set; }
 
 		private Dictionary<string, IComponent> components = new Dictionary<string, IComponent>();
 
@@ -51,7 +51,7 @@ namespace Malsys.Processing {
 			}
 
 
-			initializeCompoennts(ctxt);
+			initializeComponents(ctxt);
 
 		}
 
@@ -63,14 +63,23 @@ namespace Malsys.Processing {
 			}
 
 			components.Clear();
+
+			StarterComponent = null;
 		}
 
 
-		private void initializeCompoennts(ProcessContext ctxt) {
+		private void initializeComponents(ProcessContext ctxt) {
 
 			foreach (var cp in components.Values) {
 				cp.Initialize(ctxt);
 				setUserSettableProperties(cp, ctxt);
+
+				if (cp is IProcessStarter) {
+					if (StarterComponent != null) {
+						throw new ApplicationException("Configuration can not have more than one `{0}` component.".Fmt(typeof(IProcessStarter)));
+					}
+					StarterComponent = (IProcessStarter)cp;
+				}
 			}
 
 			RequiresMeasure = false;

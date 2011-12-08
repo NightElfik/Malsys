@@ -1,5 +1,8 @@
 ﻿using Autofac;
 using Malsys.SemanticModel.Evaluated;
+using ConstsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.IValue>;
+using FunsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Compiled.FunctionEvaledParams>;
+using System.Collections.Generic;
 
 namespace Malsys.Evaluators {
 	/// <summary>
@@ -35,6 +38,10 @@ namespace Malsys.Evaluators {
 			return container.Resolve<IInputEvaluator>();
 		}
 
+		public ILsystemEvaluator ResolveLsystemEvaluator() {
+			return container.Resolve<ILsystemEvaluator>();
+		}
+
 		public IExpressionEvaluator ResolveExpressionEvaluator() {
 			return container.Resolve<IExpressionEvaluator>();
 		}
@@ -46,6 +53,11 @@ namespace Malsys.Evaluators {
 
 		public static InputBlock EvaluateInput(this EvaluatorsContainer container, SemanticModel.Compiled.InputBlock input) {
 			return container.ResolveInputEvaluator().Evaluate(input);
+		}
+
+		public static LsystemEvaled EvaluateLsystem(this EvaluatorsContainer container, SemanticModel.Compiled.LsystemEvaledParams input,
+				IList<IValue> arguments, ConstsMap consts, FunsMap funs) {
+			return container.ResolveLsystemEvaluator().Evaluate(input, arguments, consts, funs);
 		}
 
 		public static IValue EvaluateExpression(this EvaluatorsContainer container, SemanticModel.Compiled.IExpression input) {

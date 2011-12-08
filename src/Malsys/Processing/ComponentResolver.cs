@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Malsys.Processing {
 	public class ComponentResolver : IComponentContainer, IComponentResolver {
@@ -74,7 +76,6 @@ namespace Malsys.Processing {
 			container.RegisterComponent(t.Name, t, replaceIfExists);
 			container.RegisterComponent(t.FullName, t, replaceIfExists);
 		}
-
 
 		public static void RegisterContainer(this IComponentContainer container, Type t, bool replaceIfExists = false) {
 			container.RegisterContainer(t.Name, t, replaceIfExists);
