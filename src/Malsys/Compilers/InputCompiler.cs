@@ -9,18 +9,20 @@ namespace Malsys.Compilers {
 		private IFunctionDefinitionCompiler funDefCompiler;
 		private ILsystemCompiler lsysCompiler;
 		private IExpressionCompiler exprCompiler;
+		private IProcessStatementsCompiler processStatsCompiler;
 
 		private IMessageLogger logger;
 		private CompilerResult<IInputStatement> visitResult;
 
 
 		public InputCompiler(IConstantDefinitionCompiler constantDefCompiler, IFunctionDefinitionCompiler functionDefCompiler,
-				ILsystemCompiler lsystemCompiler, IExpressionCompiler expressionCompiler) {
+				ILsystemCompiler lsystemCompiler, IExpressionCompiler expressionCompiler, IProcessStatementsCompiler processStatementsCompiler) {
 
 			constDefCompiler = constantDefCompiler;
 			funDefCompiler = functionDefCompiler;
 			lsysCompiler = lsystemCompiler;
 			exprCompiler = expressionCompiler;
+			processStatsCompiler = processStatementsCompiler;
 		}
 
 
@@ -38,8 +40,7 @@ namespace Malsys.Compilers {
 			}
 
 			logger = null;
-			var statsImm = new ImmutableList<IInputStatement>(statements);
-			return new InputBlock(parsedInput.SourceName, statsImm);
+			return new InputBlock(parsedInput.SourceName, statements.ToImmutableList());
 		}
 
 
@@ -62,11 +63,11 @@ namespace Malsys.Compilers {
 		}
 
 		public void Visit(Ast.ProcessConfigurationDefinition processConfDef) {
-			throw new NotImplementedException();
+			visitResult = processStatsCompiler.Compile(processConfDef, logger);
 		}
 
-		public void Visit(Ast.ProcessStatement processDef) {
-			throw new NotImplementedException();
+		public void Visit(Ast.ProcessStatement processStat) {
+			visitResult = processStatsCompiler.Compile(processStat, logger);
 		}
 
 		#endregion

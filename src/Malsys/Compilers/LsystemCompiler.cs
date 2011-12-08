@@ -11,6 +11,7 @@ namespace Malsys.Compilers {
 		private IParametersCompiler paramsCompiler;
 		private IRewriteRuleCompiler rrCompiler;
 		private ISymbolCompiler symbolCompiler;
+		private IProcessStatementsCompiler processStatsCompiler;
 
 		private IMessageLogger logger;
 		private CompilerResult<ILsystemStatement> visitResult;
@@ -18,7 +19,7 @@ namespace Malsys.Compilers {
 
 		public LsystemCompiler(IConstantDefinitionCompiler constantDefCompiler, IFunctionDefinitionCompiler functionDefCompiler,
 				IExpressionCompiler expressionCompiler, IParametersCompiler parametersCompiler, ISymbolCompiler symbolCompiler,
-				IRewriteRuleCompiler rewriteRuleCompiler) {
+				IRewriteRuleCompiler rewriteRuleCompiler, IProcessStatementsCompiler processStatementsCompiler) {
 
 			constDefCompiler = constantDefCompiler;
 			funDefCompiler = functionDefCompiler;
@@ -26,6 +27,7 @@ namespace Malsys.Compilers {
 			paramsCompiler = parametersCompiler;
 			rrCompiler = rewriteRuleCompiler;
 			this.symbolCompiler = symbolCompiler;
+			processStatsCompiler = processStatementsCompiler;
 		}
 
 
@@ -94,8 +96,8 @@ namespace Malsys.Compilers {
 			visitResult = compileSymbolConstant(symbolsDef);
 		}
 
-		public void Visit(Ast.ProcessStatement processDef) {
-			throw new System.NotImplementedException();
+		public void Visit(Ast.ProcessStatement processStat) {
+			visitResult = processStatsCompiler.Compile(processStat, logger);
 		}
 
 		#endregion

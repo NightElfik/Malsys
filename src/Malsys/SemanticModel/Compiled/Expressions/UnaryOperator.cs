@@ -6,7 +6,7 @@ namespace Malsys.SemanticModel.Compiled.Expressions {
 	/// <summary>
 	/// Immutable.
 	/// </summary>
-	public class UnaryOperator : IExpression, IExpressionVisitable {
+	public class UnaryOperator : IExpression {
 
 		public readonly string Syntax;
 
@@ -32,18 +32,13 @@ namespace Malsys.SemanticModel.Compiled.Expressions {
 		}
 
 
-		#region IExpression Members
 
 		public bool IsEmptyExpression { get { return false; } }
 
-		#endregion
-
-		#region IExpressionVisitable Members
 
 		public void Accept(IExpressionVisitor visitor) {
 			visitor.Visit(this);
 		}
 
-		#endregion
 	}
 }

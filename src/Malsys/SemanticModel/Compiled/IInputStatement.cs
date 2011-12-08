@@ -1,5 +1,6 @@
 ﻿
 namespace Malsys.SemanticModel.Compiled {
+
 	public interface IInputStatement {
 
 		InputStatementType StatementType { get; }
@@ -10,5 +11,8 @@ namespace Malsys.SemanticModel.Compiled {
 		Constant,
 		Function,
 		Lsystem,
+		ProcessStatement,
+		ProcessConfiguration,
 	}
+
 }

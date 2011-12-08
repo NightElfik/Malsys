@@ -103,7 +103,7 @@ namespace Malsys.SourceCode.Printers {
 		public void Print(ProcessComponentAssignment processCompAssign) {
 
 			Print(Keyword.Use);
-			writer.Write(processCompAssign.ComponentNameId.Name);
+			writer.Write(processCompAssign.ComponentTypeNameId.Name);
 			writer.Write(" ");
 
 			Print(Keyword.As);

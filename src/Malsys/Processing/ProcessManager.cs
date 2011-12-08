@@ -4,11 +4,11 @@ using Malsys.SemanticModel.Evaluated;
 using System;
 
 namespace Malsys.Processing {
-	public class RenderManager {
+	public class ProcessManager {
 
 		public TimeSpan Timeout { get; set; }
 
-		public RenderManager() {
+		public ProcessManager() {
 			Timeout = new TimeSpan(0, 0, 20);
 		}
 

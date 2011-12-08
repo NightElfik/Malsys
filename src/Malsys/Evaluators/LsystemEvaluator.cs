@@ -53,18 +53,11 @@ namespace Malsys.Evaluators {
 			var symDefs = MapModule.Empty<string, ImmutableList<Symbol<IValue>>>();
 			var symsInt = MapModule.Empty<string, Symbol<IValue>>();
 
-			var rewriteRules = evaluateStatements(lsystem.Statements, ref consts, ref funs, ref symDefs, ref symsInt);
+			// statements evaluation
+			var rRules = new List<RewriteRule>();
+			var processStats = new List<ProcessStatement>();
 
-			return new LsystemEvaled(lsystem.Name, consts, funs, symDefs, symsInt, rewriteRules, lsystem.AstNode);
-		}
-
-
-		private ImmutableList<RewriteRule> evaluateStatements(IEnumerable<ILsystemStatement> statements,
-				ref ConstsMap consts, ref FunsMap funs, ref SymListMap symDefs, ref SymIntMap symsInt) {
-
-			var rrs = new List<RewriteRule>();
-
-			foreach (var stat in statements) {
+			foreach (var stat in lsystem.Statements) {
 				switch (stat.StatementType) {
 					case LsystemStatementType.Constant:
 						var cst = (ConstantDefinition)stat;
@@ -83,7 +76,7 @@ namespace Malsys.Evaluators {
 						break;
 
 					case LsystemStatementType.RewriteRule:
-						rrs.Add((RewriteRule)stat);
+						rRules.Add((RewriteRule)stat);
 						break;
 
 					case LsystemStatementType.SymbolsInterpretation:
@@ -94,12 +87,17 @@ namespace Malsys.Evaluators {
 						}
 						break;
 
+					case LsystemStatementType.ProcessStatement:
+						processStats.Add((ProcessStatement)stat);
+						break;
+
 					default:
 						break;
 				}
 			}
 
-			return new ImmutableList<RewriteRule>(rrs);
+			return new LsystemEvaled(lsystem.Name, consts, funs, symDefs, symsInt,
+				rRules.ToImmutableList(), processStats.ToImmutableList(), lsystem.AstNode);
 		}
 
 	}

@@ -3,7 +3,7 @@ namespace Malsys.SemanticModel.Compiled.Expressions {
 	/// <summary>
 	/// Immutable.
 	/// </summary>
-	public class ExprVariable : IExpression, IExpressionVisitable {
+	public class ExprVariable : IExpression {
 
 		public readonly string Name;
 
@@ -18,25 +18,22 @@ namespace Malsys.SemanticModel.Compiled.Expressions {
 		}
 
 
-		#region IExpression Members
 
 		public bool IsEmptyExpression { get { return false; } }
 
-		#endregion
-
-		#region IExpressionVisitable Members
 
 		public void Accept(IExpressionVisitor visitor) {
 			visitor.Visit(this);
 		}
 
-		#endregion
 	}
 
 
 	public static class ExprVariableExtensions {
+
 		public static ExprVariable ToVar(this string name) {
 			return new ExprVariable(name);
 		}
+
 	}
 }

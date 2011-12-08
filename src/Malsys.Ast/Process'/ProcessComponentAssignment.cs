@@ -5,13 +5,13 @@ namespace Malsys.Ast {
 	/// </summary>
 	public class ProcessComponentAssignment : IToken {
 
-		public readonly Identificator ComponentNameId;
+		public readonly Identificator ComponentTypeNameId;
 		public readonly Identificator ContainerNameId;
 
 
-		public ProcessComponentAssignment(Identificator component, Identificator container, Position pos) {
+		public ProcessComponentAssignment(Identificator componentType, Identificator container, Position pos) {
 
-			ComponentNameId = component;
+			ComponentTypeNameId = componentType;
 			ContainerNameId = container;
 
 			Position = pos;

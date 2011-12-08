@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Malsys {
 	/// <summary>
-	/// Immutable.
+	/// Immutable generic list of values.
 	/// </summary>
 	public class ImmutableList<T> : IList<T> {
 
@@ -18,14 +18,23 @@ namespace Malsys {
 		private T[] values;
 
 
+		#region Constructors
+
 		private ImmutableList() {
+			Length = 0;
 			values = new T[0];
 		}
 
+		private ImmutableList(T[] vals, int dummy) {
+			Length = vals.Length;
+			values = vals;
+		}
+
+
 		public ImmutableList(IEnumerable<T> vals) {
 
-			Debug.Assert(!(vals is ImmutableList<T>), "Bad constructor of {0} used, probably somewhere missing ctor with {0} and it was downcasted to {1}.".Fmt(
-				typeof(ImmutableList<T>).Name, typeof(IEnumerable<T>).Name));
+			Debug.Assert(!(vals is ImmutableList<T>), "Bad constructor of {0} used, probably somewhere missing ctor with {0} and it was downcasted to {1}."
+					.Fmt(typeof(ImmutableList<T>).Name, typeof(IEnumerable<T>).Name));
 
 			values = vals.ToArray();
 			Length = values.Length;
@@ -33,8 +42,8 @@ namespace Malsys {
 
 		public ImmutableList(IList<T> vals) {
 
-			Debug.Assert(!(vals is ImmutableList<T>), "Bad constructor of {0} used, probably somewhere missing ctor with {0} and it was downcasted to {1}.".Fmt(
-				typeof(ImmutableList<T>).Name, typeof(IList<T>).Name));
+			Debug.Assert(!(vals is ImmutableList<T>), "Bad constructor of {0} used, probably somewhere missing ctor with {0} and it was downcasted to {1}."
+					.Fmt(typeof(ImmutableList<T>).Name, typeof(IList<T>).Name));
 
 			Length = vals.Count;
 
@@ -43,9 +52,7 @@ namespace Malsys {
 			}
 			else {
 				values = new T[Length];
-				for (int i = 0; i < Length; i++) {
-					values[i] = vals[i];
-				}
+				vals.CopyTo(values, 0);
 			}
 		}
 
@@ -78,8 +85,22 @@ namespace Malsys {
 			}
 		}
 
+		#endregion
+
 
 		public bool IsEmpty { get { return Length == 0; } }
+
+
+		public ImmutableList<TResult> Convert<TResult>(Func<T, TResult> convertFunc) {
+
+			TResult[] resultArr = new TResult[Length];
+
+			for (int i = 0; i < Length; i++) {
+				resultArr[i] = convertFunc(values[i]);
+			}
+
+			return new ImmutableList<TResult>(resultArr, 0);
+		}
 
 
 		#region IList<T> Members
@@ -139,20 +160,29 @@ namespace Malsys {
 
 		#endregion
 
-		#region IEnumerable Members
+		#region IEnumerable<T> Members
 
 		IEnumerator IEnumerable.GetEnumerator() {
 			return values.GetEnumerator();
 		}
-
-		#endregion
-
-		#region IEnumerable<T> Members
 
 		public IEnumerator<T> GetEnumerator() {
 			return ((IEnumerable<T>)values).GetEnumerator();
 		}
 
 		#endregion
+	}
+
+
+	public static class ImmutableListExtensions {
+
+		public static ImmutableList<T> ToImmutableList<T>(this IList<T> list) {
+			return new ImmutableList<T>(list);
+		}
+
+		public static ImmutableList<T> ToImmutableList<T>(this IEnumerable<T> list) {
+			return new ImmutableList<T>(list);
+		}
+
 	}
 }

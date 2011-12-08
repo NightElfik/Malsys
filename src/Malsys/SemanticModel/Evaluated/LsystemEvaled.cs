@@ -25,11 +25,15 @@ namespace Malsys.SemanticModel.Evaluated {
 
 		public readonly ImmutableList<RewriteRule> RewriteRules;
 
+		public readonly ImmutableList<ProcessStatement> ProcessStatements;
+
+
+
 		public readonly Ast.LsystemDefinition AstNode;
 
 
 		public LsystemEvaled(string name, ConstsMap consts, FunsMap funs, SymListMap symbolsConsts, SymIntMap symsInt,
-				ImmutableList<RewriteRule> rRules, Ast.LsystemDefinition astNode) {
+				ImmutableList<RewriteRule> rRules, ImmutableList<ProcessStatement> processStatements, Ast.LsystemDefinition astNode) {
 
 			Name = name;
 			Constants = consts;
@@ -37,6 +41,7 @@ namespace Malsys.SemanticModel.Evaluated {
 			SymbolsConstants = symbolsConsts;
 			SymbolsInterpretation = symsInt;
 			RewriteRules = rRules;
+			ProcessStatements = processStatements;
 			AstNode = astNode;
 		}
 	}

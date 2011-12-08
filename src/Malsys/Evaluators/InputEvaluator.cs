@@ -1,12 +1,13 @@
 ﻿using Malsys.SemanticModel.Compiled;
-using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Collections;
+using System.Collections.Generic;
 
 namespace Malsys.Evaluators {
 	internal class InputEvaluator : IInputEvaluator {
 
 		private IExpressionEvaluator exprEvaluator;
 		private IParametersEvaluator paramsEvaluator;
+
 
 
 		public InputEvaluator(IExpressionEvaluator exprEval, IParametersEvaluator parametersEvaluator) {
@@ -16,11 +17,13 @@ namespace Malsys.Evaluators {
 		}
 
 
-		public SemanticModel.Evaluated.InputBlock Evaluate(SemanticModel.Compiled.InputBlock input) {
+		public SemanticModel.Evaluated.InputBlock Evaluate(InputBlock input) {
 
-			var consts = MapModule.Empty<string, IValue>();
+			var consts = MapModule.Empty<string, Malsys.SemanticModel.Evaluated.IValue>();
 			var funs = MapModule.Empty<string, FunctionEvaledParams>();
 			var lsys = MapModule.Empty<string, LsystemEvaledParams>();
+			var procConfs = MapModule.Empty<string, ProcessConfiguration>();
+			var procStats = new List<ProcessStatement>();
 
 			foreach (var stat in input.Statements) {
 				switch (stat.StatementType) {
@@ -41,12 +44,21 @@ namespace Malsys.Evaluators {
 						lsys = lsys.Add(ls.Name, new LsystemEvaledParams(ls.Name, lsPrms, ls.Statements, ls.AstNode));
 						break;
 
+					case InputStatementType.ProcessConfiguration:
+						var config = (ProcessConfiguration)stat;
+						procConfs = procConfs.Add(config.Name, config);
+						break;
+
+					case InputStatementType.ProcessStatement:
+						procStats.Add((ProcessStatement)stat);
+						break;
+
 					default:
 						throw new EvalException("Unknown input statement type `{0}`.".Fmt(stat.StatementType));
 				}
 			}
 
-			return new SemanticModel.Evaluated.InputBlock(consts, funs, lsys);
+			return new SemanticModel.Evaluated.InputBlock(consts, funs, lsys, procConfs, procStats.ToImmutableList());
 		}
 
 	}

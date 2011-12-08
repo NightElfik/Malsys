@@ -10,13 +10,13 @@ namespace Malsys.Processing {
 
 		public InputBlock InputData { get; private set; }
 
-		public MalsysEvaluator Evaluator { get; private set; }
+		public EvaluatorsContainer Evaluator { get; private set; }
 
 		public MessageLogger Messages { get; private set; }
 
 
 		public ProcessContext(LsystemEvaled lsystem, FilesManager filesManager,
-				InputBlock data, MalsysEvaluator evaluator, MessageLogger msgs) {
+				InputBlock data, EvaluatorsContainer evaluator, MessageLogger msgs) {
 
 			Lsystem = lsystem;
 			FilesManager = filesManager;

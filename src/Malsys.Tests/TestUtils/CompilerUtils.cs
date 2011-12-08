@@ -48,9 +48,7 @@ namespace Malsys.Tests {
 		public static IExpression CompileExpression(Ast.Expression input) {
 
 			var logger = new MessageLogger();
-			var compiler = new MalsysCompiler().Resolve<IExpressionCompiler>();
-
-			var compiledExpr = compiler.Compile(input, logger);
+			var compiledExpr = new CompilersContainer().ResolveExpressionCompiler().Compile(input, logger);
 
 			if (logger.ErrorOcured) {
 				Console.WriteLine(logger.ToString());
@@ -67,9 +65,7 @@ namespace Malsys.Tests {
 		public static InputBlock CompileLsystem(Ast.InputBlock input) {
 
 			var logger = new MessageLogger();
-			var compiler = new MalsysCompiler();
-
-			var compiled = compiler.CompileFromAst(input, logger);
+			var compiled = new CompilersContainer().ResolveInputCompiler().Compile(input, logger);
 
 			if (logger.ErrorOcured) {
 				Console.WriteLine(logger.ToString());
@@ -96,12 +92,12 @@ namespace Malsys.Tests {
 
 		public static SemanticModel.Evaluated.InputBlock EvaluateLsystem(InputBlock input) {
 
-			return new MalsysEvaluator().Evaluate(input);
+			return new EvaluatorsContainer().EvaluateInput(input);
 		}
 
 		public static SemanticModel.Evaluated.InputBlock EvaluateLsystem(string input) {
 
-			return new MalsysEvaluator().Evaluate(CompileLsystem(input));
+			return new EvaluatorsContainer().EvaluateInput(CompileLsystem(input));
 		}
 
 

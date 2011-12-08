@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Autofac;
+﻿using Autofac;
 using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Evaluators {
-	public class MalsysEvaluator {
+	/// <summary>
+	/// All evaluators in this container have single-instance lifetime.
+	/// </summary>
+	public class EvaluatorsContainer {
 
-		private IContainer container;
+		protected IContainer container;
 
 
-		public MalsysEvaluator() {
+		public EvaluatorsContainer() {
 
 			var builder = new ContainerBuilder();
 
@@ -28,7 +27,7 @@ namespace Malsys.Evaluators {
 		/// <summary>
 		/// Can be used to resolve other evaluators.
 		/// </summary>
-		public T Resolve<T>() {
+		public virtual T Resolve<T>() {
 			return container.Resolve<T>();
 		}
 
@@ -40,9 +39,17 @@ namespace Malsys.Evaluators {
 			return container.Resolve<IExpressionEvaluator>();
 		}
 
+	}
 
-		public InputBlock Evaluate(SemanticModel.Compiled.InputBlock input) {
-			return ResolveInputEvaluator().Evaluate(input);
+
+	public static class EvaluatorsContainerExtensions {
+
+		public static InputBlock EvaluateInput(this EvaluatorsContainer container, SemanticModel.Compiled.InputBlock input) {
+			return container.ResolveInputEvaluator().Evaluate(input);
+		}
+
+		public static IValue EvaluateExpression(this EvaluatorsContainer container, SemanticModel.Compiled.IExpression input) {
+			return container.ResolveExpressionEvaluator().Evaluate(input);
 		}
 
 	}

@@ -19,16 +19,14 @@ namespace Malsys.SemanticModel.Compiled {
 			Name = name;
 			Parameters = prms;
 			Statements = statements;
+
 			AstNode = astNode;
 		}
 
-
-		#region IInputStatement Members
 
 		public InputStatementType StatementType {
 			get { return InputStatementType.Lsystem; }
 		}
 
-		#endregion
 	}
 }

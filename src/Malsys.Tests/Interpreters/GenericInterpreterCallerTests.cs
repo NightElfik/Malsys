@@ -108,7 +108,7 @@ namespace Malsys.Tests.Interpreters {
 				Assert.Fail("Failed to parse symbols. " + logger.ToString());
 			}
 
-			var compiler = new MalsysCompiler().Resolve<ISymbolCompiler>();
+			var compiler = new CompilersContainer().Resolve<ISymbolCompiler>();
 			var symbols = compiler.CompileList<Ast.LsystemSymbol, Symbol<IExpression>>(symbolsAst, logger);
 
 			if (logger.ErrorOcured) {
@@ -116,12 +116,12 @@ namespace Malsys.Tests.Interpreters {
 				Assert.Fail("Failed to compile symbols. " + logger.ToString());
 			}
 
-			var evaluator = new MalsysEvaluator();
+			var evaluator = new EvaluatorsContainer();
 			var symToInstr = MapModule.Empty<string, Symbol<IValue>>();
 			foreach (var item in symbolToInstr) {
 				symToInstr = symToInstr.Add(item.Key, item.Value);
 			}
-			var lsystem = new LsystemEvaled("", null, null, null, symToInstr, null, null);
+			var lsystem = new LsystemEvaled("", null, null, null, symToInstr, null, null, null);
 			var context = new ProcessContext(lsystem, null, null, evaluator, logger);
 
 			var dummy = new DummyInterpreter();

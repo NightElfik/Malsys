@@ -13,5 +13,7 @@ namespace Malsys.SemanticModel.Compiled {
 		SymbolsConstant,
 		RewriteRule,
 		SymbolsInterpretation,
+		ProcessStatement,
 	}
+
 }

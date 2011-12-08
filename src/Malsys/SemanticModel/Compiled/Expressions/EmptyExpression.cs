@@ -3,7 +3,7 @@ namespace Malsys.SemanticModel.Compiled.Expressions {
 	/// <summary>
 	/// Immutable.
 	/// </summary>
-	public class EmptyExpression : IExpression, IExpressionVisitable {
+	public class EmptyExpression : IExpression {
 
 		public static readonly EmptyExpression Instance = new EmptyExpression();
 
@@ -14,18 +14,13 @@ namespace Malsys.SemanticModel.Compiled.Expressions {
 
 		}
 
-		#region IExpression Members
 
 		public bool IsEmptyExpression { get { return true; } }
 
-		#endregion
-
-		#region IExpressionVisitable Members
 
 		public void Accept(IExpressionVisitor visitor) {
 			visitor.Visit(this);
 		}
 
-		#endregion
 	}
 }

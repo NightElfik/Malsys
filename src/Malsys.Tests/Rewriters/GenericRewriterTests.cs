@@ -214,7 +214,7 @@ namespace Malsys.Tests.Rewriters {
 				Assert.Fail("L-system not defined.");
 			}
 
-			var evaluator = new MalsysEvaluator();
+			var evaluator = new EvaluatorsContainer();
 			var lsysEvaluator = evaluator.Resolve<ILsystemEvaluator>();
 			var lsystem = lsysEvaluator.Evaluate(inBlockEvaled.Lsystems["l"], ImmutableList<IValue>.Empty,
 				MapModule.Empty<string, IValue>(), MapModule.Empty<string, FunctionEvaledParams>());
