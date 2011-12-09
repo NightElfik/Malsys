@@ -4,7 +4,7 @@ using System.Linq;
 using Malsys.Web.Entities;
 
 namespace Malsys.Web.Security {
-	class UserAuthenticator : IUserAuthenticator {
+	internal class UserAuthenticator : IUserAuthenticator {
 
 		private readonly IUsersDb usersDb;
 		private readonly IPasswordHasher pwdHasher;
@@ -37,7 +37,7 @@ namespace Malsys.Web.Security {
 
 			// password ok, update last login date
 
-			user.LastLoginDate = DateTime.Now;
+			user.LastLoginDate = dateTimeProvider.Now;
 			usersDb.SaveChanges();
 
 			return true;

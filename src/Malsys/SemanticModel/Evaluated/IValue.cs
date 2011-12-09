@@ -36,4 +36,59 @@ namespace Malsys.SemanticModel.Evaluated {
 			}
 		}
 	}
+
+
+	public static class IValueExtensions {
+
+		public static double ConstOrDefault(this IValue val, double defaultValue = 0) {
+
+			if (val.IsConstant) {
+				return ((Constant)val).Value;
+			}
+			else {
+				return defaultValue;
+			}
+		}
+
+		public static bool IsConstArray(this IValue val) {
+
+			if (!val.IsArray) {
+				return false;
+			}
+
+			var arr = (ValuesArray)val;
+
+			for (int i = 0; i < arr.Length; i++) {
+				if (!arr[i].IsConstant) {
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		public static bool IsConstArrayOfLength(this IValue val, int length) {
+
+			if (!val.IsArray) {
+				return false;
+			}
+
+			var arr = (ValuesArray)val;
+
+			if (arr.Length != length) {
+				return false;
+			}
+
+			for (int i = 0; i < arr.Length; i++) {
+				if (!arr[i].IsConstant) {
+					return false;
+				}
+			}
+
+			return true;
+
+		}
+
+	}
+
 }

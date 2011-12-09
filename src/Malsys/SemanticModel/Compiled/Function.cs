@@ -20,20 +20,15 @@ namespace Malsys.SemanticModel.Compiled {
 			AstNode = astNode;
 		}
 
-		#region IInputStatement Members
 
 		InputStatementType IInputStatement.StatementType {
 			get { return InputStatementType.Function; }
 		}
 
-		#endregion
-
-		#region ILsystemStatement Members
 
 		LsystemStatementType ILsystemStatement.StatementType {
 			get { return LsystemStatementType.Function; }
 		}
 
-		#endregion
 	}
 }

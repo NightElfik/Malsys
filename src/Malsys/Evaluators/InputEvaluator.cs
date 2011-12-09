@@ -29,7 +29,7 @@ namespace Malsys.Evaluators {
 				switch (stat.StatementType) {
 					case InputStatementType.Constant:
 						var cst = (ConstantDefinition)stat;
-						consts = consts.Add(cst.Name, exprEvaluator.Evaluate(cst.Value));
+						consts = consts.Add(cst.Name, exprEvaluator.Evaluate(cst.Value, consts, funs));
 						break;
 
 					case InputStatementType.Function:

@@ -112,7 +112,7 @@ namespace Malsys.Processing {
 
 		private IComponent createComponent(string contTypeName, string compTypeName, IComponentResolver typeResolver) {
 
-			var contType = typeResolver.ResolveContainer(contTypeName);
+			var contType = typeResolver.ResolveComponent(contTypeName);
 			if (contType == null) {
 				throw new ApplicationException("Failed to resolve cotainer with type `{0}`.".Fmt(contTypeName));
 			}

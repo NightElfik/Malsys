@@ -1,0 +1,32 @@
+﻿@{
+	ViewBag.Title = "Examples";
+}
+
+@section scripts {
+	@Content.Script("GrammarHighlighter.js", Url)
+}
+
+
+<h2>Examples</h2>
+
+
+<h2>Dragon curve</h2>
+
+<pre class="malsys">
+lsystem DragonCurve {
+
+	set axiom = L;
+	let iterations = 10;
+	let margin = 2;
+
+	rewrite L to L + R +;
+	rewrite R to - L - R;
+
+	interpret R L as DrawLine(4);
+	interpret + as TurnLeft(90);
+	interpret - as TurnRight(90);
+
+	process this with InterpretConfig;
+}
+</pre>
+

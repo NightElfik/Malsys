@@ -29,7 +29,7 @@ namespace Malsys.Processing {
 			}
 		}
 
-		public string GetNewOutputFilePath(string callerId, string suffix = ".out") {
+		public string GetNewOutputFilePath(string callerId, string suffix) {
 			string path = getNewFilePath(suffix);
 			outFilePaths.Add(new OutputFile(path, CurrentLsystem.Name, callerId));
 			return path;
@@ -55,7 +55,7 @@ namespace Malsys.Processing {
 
 			for (int i = 0; i < tmpFilePaths.Count; i++) {
 
-				if (File.Exists(tmpFilePaths[i])) {
+				if (!File.Exists(tmpFilePaths[i])) {
 					tmpFilePaths.RemoveAt(i);
 					i--;
 					continue;

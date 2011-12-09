@@ -30,9 +30,9 @@ namespace Malsys.Tests.Process {
 					"connect Boy to Girl.Component;",
 					" }"),
 				"process this with Config use DummyContaineredGirl as Girl;",
-				new string[]{
+				new string[] {
 					"DummyContaineredBoy:DummyContaineredGirl",
-					"DummyContaineredGirl:DummyContaineredBoy" });
+					"DummyContaineredGirl:DummyContaineredBoy"});
 		}
 
 
@@ -59,7 +59,7 @@ namespace Malsys.Tests.Process {
 			resolver.RegisterComponent(typeof(DummySymbolProcessor));
 			resolver.RegisterComponent(typeof(DummyContaineredBoy));
 			resolver.RegisterComponent(typeof(DummyContaineredGirl));
-			resolver.RegisterContainer(typeof(IDummyContainer));
+			resolver.RegisterComponent(typeof(IDummyContainer));
 
 			var logger = new MessageLogger();
 			var ctxt = new ProcessContext(null, null, input, null, logger);

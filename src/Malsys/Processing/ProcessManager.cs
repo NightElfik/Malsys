@@ -20,7 +20,7 @@ namespace Malsys.Processing {
 		}
 
 
-		public void RenderLsystems(string src, FilesManager fm, MessageLogger logger, IComponentResolver componentResolver) {
+		public void RenderLsystems(string src, FilesManager filesMgr, MessageLogger logger, IComponentResolver componentResolver) {
 
 			var compiler = new CompilersContainer();
 			var inCompiled = compiler.CompileInput(src, "webInput", logger);
@@ -36,7 +36,7 @@ namespace Malsys.Processing {
 				var lsysEvaled = evaluator.EvaluateLsystem(lsystemKvp.Value, ImmutableList<IValue>.Empty,
 					inBlockEvaled.GlobalConstants, inBlockEvaled.GlobalFunctions);
 
-				var context = new ProcessContext(lsysEvaled, fm, inBlockEvaled, evaluator, logger);
+				var context = new ProcessContext(lsysEvaled, filesMgr, inBlockEvaled, evaluator, logger);
 
 				IEnumerable<ProcessStatement> processStatements;
 				if(lsysEvaled.ProcessStatements.Length != 0){
@@ -48,6 +48,7 @@ namespace Malsys.Processing {
 
 				var processConfigsMap = inBlockEvaled.ProcessConfigurations;
 				processConfigsMap = processConfigsMap.Add(ProcessConfigurations.PrintSymbolsConfig.Name, ProcessConfigurations.PrintSymbolsConfig);
+				processConfigsMap = processConfigsMap.Add(ProcessConfigurations.InterpretConfig.Name, ProcessConfigurations.InterpretConfig);
 
 				foreach (var processStat in processStatements) {
 
@@ -65,7 +66,7 @@ namespace Malsys.Processing {
 					configMgr.ClearComponents();
 				}
 
-				fm.TryDeleteAllTempFiles();
+				filesMgr.TryDeleteAllTempFiles();
 			}
 
 		}

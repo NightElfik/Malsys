@@ -26,37 +26,11 @@ namespace Malsys.Processing {
 
 		}
 
-		public void RegisterContainer(string name, Type type, bool replaceIfExists = false) {
-
-			if (containers.ContainsKey(name)) {
-				if (replaceIfExists) {
-					containers[name] = type;
-				}
-				else {
-					throw new ArgumentException("Container `{0}` alredy registered to type `{1}`".Fmt(name, containers[name]));
-				}
-			}
-			else {
-				containers.Add(name, type);
-			}
-		}
-
 
 		public Type ResolveComponent(string name) {
 
 			Type result;
 			if (components.TryGetValue(name, out result)) {
-				return result;
-			}
-			else {
-				return null;
-			}
-		}
-
-		public Type ResolveContainer(string name) {
-
-			Type result;
-			if (containers.TryGetValue(name, out result)) {
 				return result;
 			}
 			else {
@@ -75,15 +49,6 @@ namespace Malsys.Processing {
 		public static void RegisterComponentNameAndFullName(this IComponentContainer container, Type t, bool replaceIfExists = false) {
 			container.RegisterComponent(t.Name, t, replaceIfExists);
 			container.RegisterComponent(t.FullName, t, replaceIfExists);
-		}
-
-		public static void RegisterContainer(this IComponentContainer container, Type t, bool replaceIfExists = false) {
-			container.RegisterContainer(t.Name, t, replaceIfExists);
-		}
-
-		public static void RegisterContainerNameAndFullName(this IComponentContainer container, Type t, bool replaceIfExists = false) {
-			container.RegisterContainer(t.Name, t, replaceIfExists);
-			container.RegisterContainer(t.FullName, t, replaceIfExists);
 		}
 
 	}

@@ -26,7 +26,7 @@
 	}
 
 	function highlightLsystemKeywords(code) {
-		return code.replace(/(lsystem|rewrite|to|let|set)/g, "<span class=\"lsys_kw\">$1</span>");
+		return code.replace(/(lsystem|rewrite|to|let|set|interpret|as|process|with|use|this)/g, "<span class=\"lsys_kw\">$1</span>");
 	}
 
 	function urlEncode(str) {

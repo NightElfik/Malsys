@@ -3,7 +3,13 @@ using System;
 namespace Malsys.Media {
 	public struct ColorF {
 
-		public static readonly ColorF Black = new ColorF();
+		// for fast conversion to hexa
+		private static readonly char[] hexDigits = {
+			 '0', '1', '2', '3', '4', '5', '6', '7',
+			 '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
+		};
+
+		public static readonly ColorF Black = new ColorF(0, 0, 0);
 
 
 		public float A;
@@ -26,16 +32,20 @@ namespace Malsys.Media {
 			B = b;
 		}
 
-		public string ToArgbHexString() {
+		public string ToRgbHexString() {
 
-			char[] result = new char[8];
-			long a = (long)(MathHelper.Clamp01(A) * 255);
 			long r = (long)(MathHelper.Clamp01(R) * 255);
 			long g = (long)(MathHelper.Clamp01(G) * 255);
 			long b = (long)(MathHelper.Clamp01(B) * 255);
-			long clr = (a << 24) | (r << 16) | (g << 8) | b;
+			long clr = (r << 16) | (g << 8) | b;
 
-			return Convert.ToString(clr, 16);
+			char[] result = new char[6];
+
+			for (int i = 5; i >= 0; i--, clr >>= 4) {
+				result[i] = hexDigits[clr & 0xf];
+			}
+
+			return new string(result);
 		}
 
 	}

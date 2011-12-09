@@ -214,7 +214,7 @@ namespace Malsys.Tests.Interpreters {
 				}
 
 				writer.Write("(");
-				printer.PrintValueSeparated(args);
+				printer.PrintSeparated(args, v => printer.Print(v));
 				writer.Write(")");
 				string result = writer.GetResultAndClear();
 

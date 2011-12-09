@@ -108,6 +108,7 @@
   <ItemGroup>
     <Compile Include="Compilers\ExpressionCompilerTest.cs" />
     <Compile Include="Evaluators\FunctionEvalTests.cs" />
+    <Compile Include="Evaluators\InputEvalTests.cs" />
     <Compile Include="Expressions\GeneralExpressionsTests.cs" />
     <Compile Include="Interpreters\GenericInterpreterCallerTests.cs" />
     <Compile Include="Interpreters\InterpreterCallerTests.cs" />

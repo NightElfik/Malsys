@@ -129,5 +129,12 @@ namespace Malsys.Tests {
 			return writer.GetResult();
 		}
 
+		public static string Print(Malsys.SemanticModel.Evaluated.InputBlock input) {
+
+			var writer = new IndentStringWriter();
+			new CanonicPrinter(writer).Print(input);
+			return writer.GetResult();
+		}
+
 	}
 }

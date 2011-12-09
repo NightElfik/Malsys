@@ -1,0 +1,35 @@
+﻿@model Malsys.Processing.OutputFile
+
+
+<p><b>@Model.LsystemName</b> by @Model.Source</p>
+
+@{
+var fi = new FileInfo(Model.FilePath);
+	if (!fi.Exists) {
+		return;
+	}
+
+	if (fi.Extension == ".txt") {
+		var sr = fi.OpenText();
+		var buff = new char[256];
+		int readed = sr.ReadBlock(buff, 0, buff.Length);
+		string strOut = new string(buff, 0, Math.Min(readed, 250));
+
+		if (readed > 250) {
+			<p class="outputTruncated">(showing first 250 characters)</p>
+		}
+
+		<p>@strOut</p>
+	}
+	else if (fi.Extension == ".svg") {
+		if (fi.Length > 1024 * 512) {
+			<p>Output SVG file is not shown directly (it is greater than 0.5 MB)</p>
+		}
+		else {
+			<img src="/ProcessLsystem/DownloadResult?FileName=@fi.Name&mime=@Url.Encode("image/svg+xml")" alt="process result" />
+		}
+	}
+
+	<p>@Html.ActionLink(string.Format("Download {0} [{1:0.0} kB]", fi.Name, fi.Length / 1024f), "DownloadResult", new { FileName = fi.Name })</p>
+
+}

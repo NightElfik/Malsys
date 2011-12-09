@@ -45,11 +45,10 @@ else {
 }
 @if (Model.OutputFiles != null) {
 	<h3>Results:</h3>
-	<ul>
-	@foreach (var result in Model.OutputFiles) {
-		<li><b>@result.LsystemName</b> @File.ReadAllText(result.FilePath)</li>
+	foreach (var result in Model.OutputFiles) {
+		@Html.Partial("OutputPartial", result)
+		<hr />
 	}
-	</ul>
 }
 else {
 	<h3>No results</h3>

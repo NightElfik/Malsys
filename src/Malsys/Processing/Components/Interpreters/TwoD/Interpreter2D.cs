@@ -92,9 +92,9 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 		#endregion
 
 
-		private double getParamAsDouble(ArgsStorage args, int i) {
-			if (args.ArgsCount < i && args[i].IsConstant) {
-				return ((Constant)args[i]).Value;
+		private double getParamAsDouble(ArgsStorage args, int index) {
+			if (index < args.ArgsCount && args[index].IsConstant) {
+				return ((Constant)args[index]).Value;
 			}
 			else {
 				return 0.0;
