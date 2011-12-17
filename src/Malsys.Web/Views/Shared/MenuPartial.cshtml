@@ -1,0 +1,14 @@
+﻿
+@Html.ActionLink("L-system processor", "Index", "ProcessLsystem")
+@Html.ActionLink("Examples", "Index", "Examples")
+@Html.ActionLink("Help", "Index", "Help")
+
+@if (Request.IsAuthenticated) {
+
+	@Html.ActionLink("History", "History", "History")
+
+	if (!User.IsInRole("admins")) {
+		@Html.ActionLink("Users", "Index", "Users")
+		@Html.ActionLink("Roles", "Index", "Roles")
+	}
+}

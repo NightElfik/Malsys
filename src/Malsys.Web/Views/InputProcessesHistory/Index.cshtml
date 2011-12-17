@@ -1,0 +1,22 @@
+﻿@model IList<Malsys.Web.Entities.InputProcess>
+
+@{
+    ViewBag.Title = "Input processes history";
+}
+
+<h2>Input processes history</h2>
+
+<table>
+    <tr>
+        <th>User</th>
+        <th>ProcessDate</th>
+    </tr>
+
+@foreach (var ip in Model) {
+    <tr>
+        <td>@Html.DisplayFor(m => ip.UserId)</td>
+        <td>@Html.DisplayFor(m => ip.ProcessDate)</td>
+    </tr>
+}
+
+</table>

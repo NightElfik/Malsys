@@ -1,7 +1,6 @@
 ﻿using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
-using System.Web.Security;
 using Autofac;
 using Autofac.Integration.Mvc;
 using Malsys.Web.Entities;
@@ -20,9 +19,9 @@ namespace Malsys.Web {
 			routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
 			routes.MapRoute(
-				"Default", // Route name
-				"{controller}/{action}/{id}", // URL with parameters
-				new { controller = "Home", action = "Index", id = UrlParameter.Optional } // Parameter defaults
+				"Default",
+				"{controller}/{action}/{id}",
+				new { controller = "Home", action = "Index", id = UrlParameter.Optional }
 			);
 
 		}
@@ -35,7 +34,10 @@ namespace Malsys.Web {
 			builder.RegisterType<Sha512PasswordHasher>().As<IPasswordHasher>().SingleInstance();
 
 			builder.RegisterType<MalsysDb>().As<IUsersDb>().InstancePerHttpRequest();
+			builder.RegisterType<MalsysDb>().As<IInputDb>().InstancePerHttpRequest();
+
 			builder.RegisterType<UsersRepository>().As<IUsersRepository>().InstancePerHttpRequest();
+			builder.RegisterType<InputProcessesRepository>().As<IInputProcessesRepository>().InstancePerHttpRequest();
 
 			builder.RegisterType<UserAuthenticator>().As<IUserAuthenticator>().InstancePerHttpRequest();
 			builder.RegisterType<FormsAuthenticationProvider>().As<IAuthenticationProvider>().SingleInstance();

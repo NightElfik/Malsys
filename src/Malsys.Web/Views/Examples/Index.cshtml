@@ -3,7 +3,7 @@
 }
 
 @section scripts {
-	@Content.Script("GrammarHighlighter.js", Url)
+	@Content.Js("GrammarHighlighter.js?v=1", Url)
 }
 
 
@@ -13,20 +13,27 @@
 <h2>Dragon curve</h2>
 
 <pre class="malsys">
+/**
+ * http://en.wikipedia.org/wiki/Dragon_curve
+ */
 lsystem DragonCurve {
 
 	set axiom = L;
 	let iterations = 10;
 	let margin = 2;
 
+	// normalize line length -- reult image will have allways same size
+	let lineLength = 2 ^ -(iterations / 2) * 200;
+
 	rewrite L to L + R +;
 	rewrite R to - L - R;
 
-	interpret R L as DrawLine(4);
+	interpret R L as DrawLine(lineLength);
 	interpret + as TurnLeft(90);
 	interpret - as TurnRight(90);
 
-	process this with InterpretConfig;
+	process this with InterpretConfig
+		use SvgRenderer2D as Interpret;  // render as SVG
 }
 </pre>
 

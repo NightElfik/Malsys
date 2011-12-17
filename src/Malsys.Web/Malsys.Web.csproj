@@ -126,6 +126,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\Administration\InputProcessesHistoryController.cs" />
     <Compile Include="Controllers\AuthenticationController.cs" />
     <Compile Include="Controllers\Administration\RolesController.cs" />
     <Compile Include="Controllers\Administration\UsersController.cs" />
@@ -167,24 +168,24 @@
     <Compile Include="Security\UserAuthenticator.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="404.html" />
     <Content Include="App_Data\MalsysDb.mdf" />
     <Content Include="App_Data\MalsysDb_log.ldf">
       <DependentUpon>MalsysDb.mdf</DependentUpon>
     </Content>
+    <Content Include="Content\style.css" />
+    <Content Include="Error.html" />
     <Content Include="Global.asax" />
     <Content Include="Scripts\GrammarHighlighter.js" />
     <Content Include="Scripts\jquery-1.7.1-vsdoc.js" />
-    <Content Include="Scripts\jquery-1.7.1.js" />
     <Content Include="Scripts\jquery-1.7.1.min.js" />
-    <Content Include="Scripts\jquery-ui-1.8.11.js" />
-    <Content Include="Scripts\jquery-ui-1.8.11.min.js" />
-    <Content Include="Scripts\jquery-ui-1.8.16.js" />
     <Content Include="Scripts\jquery-ui-1.8.16.min.js" />
     <Content Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
-    <Content Include="Scripts\modernizr-1.7.js" />
-    <Content Include="Scripts\modernizr-1.7.min.js" />
+    <Content Include="Scripts\modernizr-2.0.6.js" />
+    <Content Include="Scripts\modernizr-2.0.6.min.js" />
+    <Content Include="Scripts\respond-1.0.1.min.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -229,6 +230,10 @@
     <Content Include="Views\Help\Syntax.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Malsys.Ast\Malsys.Ast.csproj">
+      <Project>{4DE67417-39CA-4AEC-AC75-9584112268F0}</Project>
+      <Name>Malsys.Ast</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Malsys.Common\Malsys.Common.csproj">
       <Project>{433E2485-4265-4656-A197-D0EB315618E1}</Project>
       <Name>Malsys.Common</Name>
@@ -263,7 +268,7 @@
     <Content Include="Views\Users\Roles.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Shared\_MenuPartial.cshtml" />
+    <Content Include="Views\Shared\MenuPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Help\GrammarRegexps.cshtml" />
@@ -285,6 +290,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Examples\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\InputProcessesHistory\Index.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

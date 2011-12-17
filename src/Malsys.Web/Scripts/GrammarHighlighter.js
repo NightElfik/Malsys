@@ -17,6 +17,10 @@
 		return code;
 	}
 
+	function highlightComments(code) {
+		return code.replace(/(\/\/.*)/g, "<span class=\"lsys_cmt\">$1</span>");
+	}
+
 	function replaceTabs(code) {
 		return code.replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;");
 	}
@@ -93,8 +97,10 @@
 
 		// format code
 		var newHtml = highlightLsystemKeywords(lsystemCode);
+		newHtml = highlightComments(newHtml);
 		newHtml = replaceTabs(newHtml);
 		$(this).append(newHtml);
+
 	});
 
 	$("code.malsys").each(function (i) {
