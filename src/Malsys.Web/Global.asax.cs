@@ -7,6 +7,7 @@ using Malsys.Web.Entities;
 using Malsys.Web.Models;
 using Malsys.Web.Models.Repositories;
 using Malsys.Web.Security;
+using Malsys.Web.Infrastructure;
 
 namespace Malsys.Web {
 	public class MvcApplication : HttpApplication {
@@ -33,14 +34,18 @@ namespace Malsys.Web {
 			builder.RegisterType<StandardDateTimeProvider>().As<IDateTimeProvider>().SingleInstance();
 			builder.RegisterType<Sha512PasswordHasher>().As<IPasswordHasher>().SingleInstance();
 
-			builder.RegisterType<MalsysDb>().As<IUsersDb>().InstancePerHttpRequest();
-			builder.RegisterType<MalsysDb>().As<IInputDb>().InstancePerHttpRequest();
+			builder.RegisterType<MalsysDb>()
+				.As<IUsersDb>()
+				.As<IInputDb>()
+				.InstancePerHttpRequest();
 
 			builder.RegisterType<UsersRepository>().As<IUsersRepository>().InstancePerHttpRequest();
 			builder.RegisterType<InputProcessesRepository>().As<IInputProcessesRepository>().InstancePerHttpRequest();
 
 			builder.RegisterType<UserAuthenticator>().As<IUserAuthenticator>().InstancePerHttpRequest();
 			builder.RegisterType<FormsAuthenticationProvider>().As<IAuthenticationProvider>().SingleInstance();
+
+			builder.RegisterType<AppSettingsProvider>().As<IAppSettingsProvider>().SingleInstance();
 
 
 			builder.RegisterControllers(typeof(MvcApplication).Assembly);

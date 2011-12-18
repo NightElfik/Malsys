@@ -98,6 +98,8 @@
     <Compile Include="Helpers\AttributeHelper.cs" />
     <Compile Include="IDateTimeProvider.cs" />
     <Compile Include="IMessageLogger.cs" />
+    <Compile Include="Random%27\CryptographicRandomGenerator.cs" />
+    <Compile Include="Random%27\IRandomGenerator.cs" />
     <Compile Include="MessageAttribute.cs" />
     <Compile Include="IO\IndentTextWriter.cs" />
     <Compile Include="Message.cs" />
@@ -119,6 +121,7 @@
     <Compile Include="Parsing\LexerMessage.cs" />
     <Compile Include="Parsing\ParsserMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Random%27\PseudoRandomGenerator.cs" />
     <Compile Include="StandardDateTimeProvider.cs" />
     <Compile Include="StringValueAttribute.cs" />
     <Compile Include="VoidStruct.cs" />

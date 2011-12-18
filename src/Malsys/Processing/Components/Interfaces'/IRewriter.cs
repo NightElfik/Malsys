@@ -1,11 +1,9 @@
 ﻿using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Processing.Components {
-	public interface IRewriter : ISymbolProcessor {
+	public interface IRewriter : ISymbolProvider {
 
-		ISymbolProcessor OutputProcessor { set; }
+		ISymbolProvider SymbolProvider { set; }
 
-		[UserSettable]
-		IValue RandomSeed { set; }
 	}
 }

@@ -1,7 +1,5 @@
 ﻿using System;
-using Malsys.Evaluators;
 using Malsys.SemanticModel.Compiled;
-using Malsys.SemanticModel.Compiled.Expressions;
 using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.SemanticModel {
@@ -34,8 +32,19 @@ namespace Malsys.SemanticModel {
 			AstNode = astNode;
 		}
 
+		public bool IsZero { get { return Math.Abs(Value) < FloatArithmeticHelper.Epsilon; } }
+
+		public bool IsNaN { get { return double.IsNaN(Value); } }
 
 		public bool IsInfinity { get { return double.IsInfinity(Value); } }
+
+		public bool IsConstant { get { return true; } }
+
+		public bool IsArray { get { return false; } }
+
+		public ExpressionValueType Type { get { return ExpressionValueType.Constant; } }
+
+		public bool IsEmptyExpression { get { return false; } }
 
 		public int RoundedIntValue { get { return (int)Math.Round(Value); } }
 
@@ -49,30 +58,11 @@ namespace Malsys.SemanticModel {
 			return Value.ToStringInvariant();
 		}
 
-		#region IExpression Members
-
-		public bool IsEmptyExpression { get { return false; } }
-
-		#endregion
-
-		#region IExpressionVisitable Members
 
 		public void Accept(IExpressionVisitor visitor) {
 			visitor.Visit(this);
 		}
 
-		#endregion
-
-		#region IValue Members
-
-		public bool IsConstant { get { return true; } }
-		public bool IsArray { get { return false; } }
-		public bool IsNaN { get { return double.IsNaN(Value); } }
-		public ExpressionValueType Type { get { return ExpressionValueType.Constant; } }
-
-		#endregion
-
-		#region IComparable<IArithmeticValue> Members
 
 		public int CompareTo(IValue other) {
 			if (other.IsConstant) {
@@ -83,7 +73,6 @@ namespace Malsys.SemanticModel {
 			}
 		}
 
-		#endregion
 	}
 
 

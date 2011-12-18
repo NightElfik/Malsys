@@ -12,6 +12,12 @@ namespace Malsys.Tests.Evaluators {
 				"let a = 0;",
 				"let b = 1;",
 				"let c = 2;");
+
+			doTestAutoidentOutput(
+				"let a = {4,3,2,1,0}; let c = a[1]; let b = a[c];",
+				"let a = {4, 3, 2, 1, 0};",
+				"let b = 1;",
+				"let c = 3;");
 		}
 
 		[TestMethod]
@@ -63,6 +69,13 @@ namespace Malsys.Tests.Evaluators {
 				"let x = 5; lsystem l(q, p = 10-x) { }",
 				"let x = 5;",
 				"lsystem l(q, p = 5) {",
+				"}");
+			doTestAutoidentOutput(
+				"lsystem l { let x = 0; set c = a; set a = c; }",
+				"lsystem l {",
+				"let x = 0;",
+				"set c = a;",
+				"set a = c;",
 				"}");
 		}
 

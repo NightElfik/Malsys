@@ -122,7 +122,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Common\StringExtensionsTest.cs" />
     <Compile Include="Rewriters\GenericRewriterIteratorTests.cs" />
-    <Compile Include="Rewriters\SingleRewriterIteratorTests.cs" />
+    <Compile Include="Rewriters\MemoryBufferedIteratorTests.cs" />
     <Compile Include="Rewriters\SymbolRewriterTests.cs" />
     <Compile Include="Rewriters\GenericRewriterTests.cs" />
     <Compile Include="TestUtils\AssertEx.cs" />

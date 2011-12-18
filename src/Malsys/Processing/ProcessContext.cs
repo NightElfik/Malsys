@@ -6,27 +6,26 @@ namespace Malsys.Processing {
 
 		public LsystemEvaled Lsystem { get; private set; }
 
-		public FilesManager FilesManager { get; private set; }
+		public IOutputProvider OutputProvider { get; private set; }
 
 		public InputBlock InputData { get; private set; }
 
 		public EvaluatorsContainer Evaluator { get; private set; }
 
-		public MessageLogger Messages { get; private set; }
+		public IMessageLogger Logger { get; private set; }
 
 
-		public ProcessContext(LsystemEvaled lsystem, FilesManager filesManager,
-				InputBlock data, EvaluatorsContainer evaluator, MessageLogger msgs) {
+		public ProcessContext(LsystemEvaled lsystem, IFilesManager filesManager,
+				InputBlock data, EvaluatorsContainer evaluator, IMessageLogger logger) {
 
 			Lsystem = lsystem;
-			FilesManager = filesManager;
+			OutputProvider = filesManager;
 			InputData = data;
 			Evaluator = evaluator;
-			Messages = msgs;
+			Logger = logger;
 
-			if (filesManager != null) {
-				filesManager.CurrentLsystem = lsystem;
-			}
+			filesManager.CurrentLsystem = lsystem;
+
 		}
 	}
 }

@@ -97,13 +97,13 @@ namespace Malsys.Processing {
 			}
 
 			if (!typeof(IComponent).IsAssignableFrom(compType)) {
-				throw new ApplicationException("Component `{0}` does not implemet `{1}` interface."
+				throw new ApplicationException("Component `{0}` does not implement `{1}` interface."
 					.Fmt(compType.FullName, typeof(IComponent).FullName));
 			}
 
 			var ctorInfo = compType.GetConstructor(System.Type.EmptyTypes);
 			if(ctorInfo == null){
-				throw new ApplicationException("Component `{0}` does not have prameter-less constructor."
+				throw new ApplicationException("Component `{0}` does not have parameter-less constructor."
 					.Fmt(compType.FullName));
 			}
 
@@ -114,7 +114,7 @@ namespace Malsys.Processing {
 
 			var contType = typeResolver.ResolveComponent(contTypeName);
 			if (contType == null) {
-				throw new ApplicationException("Failed to resolve cotainer with type `{0}`.".Fmt(contTypeName));
+				throw new ApplicationException("Failed to resolve container with type `{0}`.".Fmt(contTypeName));
 			}
 
 			var comp = createComponent(compTypeName, typeResolver);

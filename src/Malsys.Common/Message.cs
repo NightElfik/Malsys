@@ -32,6 +32,8 @@ namespace Malsys {
 	}
 
 	public enum MessageType {
-		Error, Warning, Info
+		Error,
+		Warning,
+		Info
 	}
 }

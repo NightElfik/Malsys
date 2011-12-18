@@ -1,9 +1,9 @@
-﻿using Malsys.Compilers;
-using Malsys.Evaluators;
-using Malsys.SemanticModel.Evaluated;
-using System;
-using Malsys.SemanticModel.Compiled;
+﻿using System;
 using System.Collections.Generic;
+using Malsys.Compilers;
+using Malsys.Evaluators;
+using Malsys.SemanticModel.Compiled;
+using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Core;
 
 namespace Malsys.Processing {
@@ -11,6 +11,8 @@ namespace Malsys.Processing {
 
 		private ProcessStatement defaultProcessStatement = new ProcessStatement("",
 			ProcessConfigurations.PrintSymbolsConfig.Name, ImmutableList<ProcessComponentAssignment>.Empty);
+
+		private readonly EvaluatorsContainer evaluator = new EvaluatorsContainer();
 
 
 		public TimeSpan Timeout { get; set; }
@@ -20,23 +22,25 @@ namespace Malsys.Processing {
 		}
 
 
-		public void RenderLsystems(string src, FilesManager filesMgr, MessageLogger logger, IComponentResolver componentResolver) {
+		public SemanticModel.Evaluated.InputBlock CompileAndEvaluateInput(string src, MessageLogger logger) {
 
-			var compiler = new CompilersContainer();
-			var inCompiled = compiler.CompileInput(src, "webInput", logger);
+			var inCompiled = new CompilersContainer().CompileInput(src, "webInput", logger);
 
 			if (logger.ErrorOcured) {
-				return;
+				return null;
 			}
 
-			var evaluator = new EvaluatorsContainer();
-			var inBlockEvaled = evaluator.EvaluateInput(inCompiled);
+			return evaluator.TryEvaluateInput(inCompiled, logger);
+		}
+
+
+		public void ProcessInput(SemanticModel.Evaluated.InputBlock inBlockEvaled, IFilesManager storageManager, MessageLogger logger, IComponentResolver componentResolver) {
 
 			foreach (var lsystemKvp in inBlockEvaled.Lsystems) {
 				var lsysEvaled = evaluator.EvaluateLsystem(lsystemKvp.Value, ImmutableList<IValue>.Empty,
 					inBlockEvaled.GlobalConstants, inBlockEvaled.GlobalFunctions);
 
-				var context = new ProcessContext(lsysEvaled, filesMgr, inBlockEvaled, evaluator, logger);
+				var context = new ProcessContext(lsysEvaled, storageManager, inBlockEvaled, evaluator, logger);
 
 				IEnumerable<ProcessStatement> processStatements;
 				if(lsysEvaled.ProcessStatements.Length != 0){
@@ -66,7 +70,7 @@ namespace Malsys.Processing {
 					configMgr.ClearComponents();
 				}
 
-				filesMgr.TryDeleteAllTempFiles();
+				storageManager.Cleanup();
 			}
 
 		}

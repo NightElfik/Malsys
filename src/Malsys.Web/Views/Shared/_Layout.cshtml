@@ -40,8 +40,10 @@
 		</header>
 	</div>
 
-	<div id="main" role="main" class="wrapper">
-		@RenderBody()
+	<div id="main" role="main" class="@RenderSection("main_class", false)">
+		<div class="wrapper">
+			@RenderBody()
+		</div>
 	</div>
 
 	<div id="footer_container">

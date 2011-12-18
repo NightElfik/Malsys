@@ -248,7 +248,7 @@ namespace Malsys.SourceCode.Printers {
 				Print(replac);
 			}
 
-			writer.Write(";");
+			writer.WriteLine(";");
 			writer.Unindent();
 		}
 
@@ -294,7 +294,7 @@ namespace Malsys.SourceCode.Printers {
 			writer.Write(symbolsDef.Name);
 			writer.Write(" = ");
 			PrintSeparated(symbolsDef.Symbols, s => Print(s), " ");
-			writer.Write(";");
+			writer.WriteLine(";");
 		}
 
 		public void Print(Symbol<VoidStruct> symbol) {
@@ -486,7 +486,7 @@ namespace Malsys.SourceCode.Printers {
 
 		public void Visit(ExpressionValuesArray expressionValuesArray) {
 			writer.Write("{");
-			Print(expressionValuesArray);
+			PrintSeparated(expressionValuesArray, e => Print(e));
 			writer.Write("}");
 		}
 

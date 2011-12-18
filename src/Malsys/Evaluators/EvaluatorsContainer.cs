@@ -55,6 +55,16 @@ namespace Malsys.Evaluators {
 			return container.ResolveInputEvaluator().Evaluate(input);
 		}
 
+		public static InputBlock TryEvaluateInput(this EvaluatorsContainer container, SemanticModel.Compiled.InputBlock input, MessageLogger logger) {
+			try {
+				return container.ResolveInputEvaluator().Evaluate(input);
+			}
+			catch (EvalException ex) {
+				logger.LogMessage(Message.EvalFailed, ex.GetWholeMessage());
+				return null;
+			}
+		}
+
 		public static LsystemEvaled EvaluateLsystem(this EvaluatorsContainer container, SemanticModel.Compiled.LsystemEvaledParams input,
 				IList<IValue> arguments, ConstsMap consts, FunsMap funs) {
 			return container.ResolveLsystemEvaluator().Evaluate(input, arguments, consts, funs);
@@ -62,6 +72,11 @@ namespace Malsys.Evaluators {
 
 		public static IValue EvaluateExpression(this EvaluatorsContainer container, SemanticModel.Compiled.IExpression input) {
 			return container.ResolveExpressionEvaluator().Evaluate(input);
+		}
+
+		public enum Message {
+			[Message(MessageType.Error, "Evaluation failed. {0}")]
+			EvalFailed
 		}
 
 	}

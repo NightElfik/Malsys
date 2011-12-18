@@ -13,14 +13,18 @@ namespace Malsys.Processing {
 		public static readonly ProcessConfiguration PrintSymbolsConfig = new ProcessConfiguration(
 			"PrintSymbolsConfig",
 			new ImmutableList<ProcessComponent>(
-				new ProcessComponent("Interpret", typeof(SymbolsSaver).FullName),
 				new ProcessComponent("Rewriter", typeof(SymbolRewriter).FullName),
-				new ProcessComponent("Iterator", typeof(SingleRewriterIterator).FullName)
+				new ProcessComponent("RandomProvider", typeof(RandomGeneratorProvider).FullName),
+				new ProcessComponent("Iterator", typeof(MemoryBufferedIterator).FullName),
+				new ProcessComponent("Interpret", typeof(SymbolsSaver).FullName),
+				new ProcessComponent("AxiomProvider", typeof(AxiomProvider).FullName)
 			),
 			ImmutableList<ProcessContainer>.Empty,
 			new ImmutableList<ProcessComponentsConnection>(
-				new ProcessComponentsConnection("Iterator", "Rewriter", "OutputProcessor"),
-				new ProcessComponentsConnection("Rewriter", "Iterator", "Rewriter"),
+				new ProcessComponentsConnection("Iterator", "Rewriter", "SymbolProvider"),
+				new ProcessComponentsConnection("RandomProvider", "Rewriter", "RandomGeneratorProvider"),
+				new ProcessComponentsConnection("Rewriter", "Iterator", "SymbolProvider"),
+				new ProcessComponentsConnection("AxiomProvider", "Iterator", "AxiomProvider"),
 				new ProcessComponentsConnection("Interpret", "Iterator", "OutputProcessor")
 			)
 		);
@@ -30,7 +34,7 @@ namespace Malsys.Processing {
 			"InterpretConfig",
 			new ImmutableList<ProcessComponent>(
 				new ProcessComponent("Rewriter", typeof(SymbolRewriter).FullName),
-				new ProcessComponent("Iterator", typeof(SingleRewriterIterator).FullName),
+				new ProcessComponent("Iterator", typeof(MemoryBufferedIterator).FullName),
 				new ProcessComponent("InterpreterCaller", typeof(InterpreterCaller).FullName)
 			),
 			new ImmutableList<ProcessContainer>(

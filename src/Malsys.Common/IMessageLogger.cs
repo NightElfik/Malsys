@@ -13,6 +13,10 @@ namespace Malsys {
 
 	public static class IMessageLoggerExtensions {
 
+		public static void LogError(this IMessageLogger logger, string msgId, string message, params object[] args) {
+			logger.LogMessage(msgId, MessageType.Error, Position.Unknown, message.Fmt(args));
+		}
+
 		public static void LogError(this IMessageLogger logger, string msgId, Position pos, string message, params object[] args) {
 			logger.LogMessage(msgId, MessageType.Error, pos, message.Fmt(args));
 		}

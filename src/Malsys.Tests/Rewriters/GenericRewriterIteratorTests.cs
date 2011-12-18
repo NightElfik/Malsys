@@ -16,20 +16,20 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Malsys.Tests.Rewriters {
 	public static class GenericRewriterIteratorTests {
 
-		public static void EmptyInputTests(IRewriterIterator rewIt) {
+		public static void EmptyInputTests(IIterator rewIt) {
 			doTest(rewIt, 0, "", "", "");
 			doTest(rewIt, 1, "", "", "");
 			doTest(rewIt, 8, "", "", "");
 		}
 
-		public static void ManyItersTests(IRewriterIterator rewIt) {
+		public static void ManyItersTests(IIterator rewIt) {
 			doTest(rewIt, 1000,
 				"rewrite x(x) to x(x + 1);",
 				"x(0)",
 				"x(1000)");
 		}
 
-		public static void FibTests(IRewriterIterator rewIt) {
+		public static void FibTests(IIterator rewIt) {
 			doTest(rewIt, 42,
 				"rewrite a(a) {b(b)} to a(b); rewrite {a(a)} b(b) to b(a + b);",
 				"a(0) b(1)",
@@ -37,7 +37,7 @@ namespace Malsys.Tests.Rewriters {
 		}
 
 
-		private static void doTest(IRewriterIterator rewIt, int iterations, string rewriteRules,
+		private static void doTest(IIterator rewIt, int iterations, string rewriteRules,
 				string inputSymbols, string excpected) {
 
 			string input = "lsystem l {{ set axiom = {0}; {1} }}".Fmt(inputSymbols, rewriteRules);
@@ -60,18 +60,16 @@ namespace Malsys.Tests.Rewriters {
 			var symBuff = new SymbolsMemoryBuffer();
 
 			var rewriter = new SymbolRewriter();
+			rewriter.SymbolProvider = rewIt;
 			rewriter.Initialize(context);
-			rewriter.OutputProcessor = rewIt;
 
-			var axiom = lsystem.SymbolsConstants["axiom"];
-
-			rewIt.Initialize(context);
-			rewIt.Rewriter = rewriter;
+			rewIt.SymbolProvider = rewriter;
 			rewIt.OutputProcessor = symBuff;
-			rewIt.Axiom = axiom;
+			rewIt.AxiomProvider = new SymbolProvider(lsystem.SymbolsConstants["axiom"]);
 			rewIt.Iterations = iterations.ToConst();
+			rewIt.Initialize(context);
 
-			rewIt.Start(false, new TimeSpan(0, 0, 1));
+			rewIt.Start(false, new TimeSpan(1, 0, 0));
 
 			var result = symBuff.GetAndClear();
 			var writer = new IndentStringWriter();
@@ -83,15 +81,8 @@ namespace Malsys.Tests.Rewriters {
 
 			string actual = writer.GetResult().TrimEnd();
 			if (excpected != actual) {
-				var w = new IndentStringWriter();
-				var p = new CanonicPrinter(w);
-				foreach (var sym in axiom) {
-					p.Print(sym);
-					w.Write(" ");
-				}
-				Console.WriteLine("in: " + w.GetResult().TrimEnd());
 				Console.WriteLine("out: " + actual);
-				Console.WriteLine("excpected: " + excpected);
+				Console.WriteLine("excepted: " + excpected);
 			}
 
 			Assert.AreEqual(excpected, actual);

@@ -10,14 +10,14 @@ namespace Malsys.Processing {
 		private Dictionary<string, Type> containers = new Dictionary<string, Type>();
 
 
-		public void RegisterComponent(string name, Type type, bool replaceIfExists = false) {
+		public void RegisterComponent(string name, Type type, bool ignoreConflicts = true) {
 
 			if (components.ContainsKey(name)) {
-				if (replaceIfExists) {
+				if (ignoreConflicts) {
 					components[name] = type;
 				}
 				else {
-					throw new ArgumentException("Component `{0}` alredy registered to type `{1}`".Fmt(name, components[name]));
+					throw new ArgumentException("Component `{0}` already registered to type `{1}`.".Fmt(name, components[name]));
 				}
 			}
 			else {
@@ -42,13 +42,13 @@ namespace Malsys.Processing {
 
 	public static class IComponentResolverExtensions {
 
-		public static void RegisterComponent(this IComponentContainer container, Type t, bool replaceIfExists = false) {
-			container.RegisterComponent(t.Name, t, replaceIfExists);
+		public static void RegisterComponent(this IComponentContainer container, Type t, bool ignoreConflicts = true) {
+			container.RegisterComponent(t.Name, t, ignoreConflicts);
 		}
 
-		public static void RegisterComponentNameAndFullName(this IComponentContainer container, Type t, bool replaceIfExists = false) {
-			container.RegisterComponent(t.Name, t, replaceIfExists);
-			container.RegisterComponent(t.FullName, t, replaceIfExists);
+		public static void RegisterComponentNameAndFullName(this IComponentContainer container, Type t, bool ignoreConflicts = true) {
+			container.RegisterComponent(t.Name, t, ignoreConflicts);
+			container.RegisterComponent(t.FullName, t, ignoreConflicts);
 		}
 
 	}

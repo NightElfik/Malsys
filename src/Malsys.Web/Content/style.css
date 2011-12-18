@@ -246,7 +246,7 @@ html, #header_container, #footer_container {
 	-webkit-box-shadow: 0 40px 40px -40px #888;
 }
 
-.title_container { float: left; margin-top: 1em; }
+.title_container { float: left; margin-top: 20px; }
 
 #title {
 	font-size: 3.1em;
@@ -260,9 +260,10 @@ html, #header_container, #footer_container {
 
 #subtitle { font-size: 0.6em; line-height: 1; letter-spacing: 0.65em; }
 
-.wrapper { margin: auto; width: 960px; padding: 0 1em; }
+.wrapper { margin: 0 auto; width: 960px; padding: 0 20px; }
 
-header nav { float: right; margin-top: 64px; }
+header nav { float: right; margin-top: 64px; width: 700px; }
+header nav li { display: inline; }
 
 nav a {
 	font-size: 1.5em;
@@ -279,9 +280,7 @@ nav a {
 nav a:link, nav a:hover, nav a:visited, nav a:active { color: #FFF; }
 nav a:hover { background-color: #000; }
 
-#main {
-	padding-bottom: 0.5em;
-}
+#main { padding-bottom: 10px; }
 
 #footer_container {
 	height: 256px;
@@ -291,15 +290,12 @@ nav a:hover { background-color: #000; }
 	-webkit-box-shadow: 0 -40px 40px -40px #888;
 }
 
-footer.wrapper { padding: 1em; }
+footer.wrapper { padding: 20px; }
 
 footer p { font-size: 0.8em; }
 
 .center { text-align: center; }
 
-.floating_container { text-align: justify; }
-
-.floating_box { display: inline; float: left;  width: 470px; padding: 0.2em; }
 
 
 .w100 { width: 100%; }
@@ -372,8 +368,32 @@ pre a.lsysTryMe  {
 
 .malsys_source textarea { font-family: Consolas, "Courier New", monospace; width: 98%; }
 
+.outputTruncated { font-size: 0.8em; color: #888888; }
 
 
+/* Styles for validation helpers */
+
+.field-validation-error {
+	color: #ff0000;
+}
+
+.field-validation-valid {
+	display: none;
+}
+
+.input-validation-error {
+	border: 1px solid #ff0000;
+	background-color: #ffeeee;
+}
+
+.validation-summary-errors {
+	font-weight: bold;
+	color: #ff0000;
+}
+
+.validation-summary-valid {
+	display: none;
+}
 
 
 
@@ -413,18 +433,17 @@ pre a.lsysTryMe  {
    ========================================================================== */
 
 @media only screen and (min-width: 480px) {
-	/* Style adjustments for viewports 480px and over go here */
 
 }
 
 @media only screen and (min-width: 768px) {
-	/* Style adjustments for viewports 768px and over go here */
 
 }
 
-@media only screen and (min-width: 1024px) {
-	/* Style adjustments for viewports 1024px and over go here */
-
+@media only screen and (min-width: 1600px) {
+	#main.processor .wrapper { width: 1520px; }
+	#main.processor .floating_box { display: inline; float: left; text-align: left; width: 750px; }
+	#main.processor .floating_container { text-align: center; }
 }
 
 

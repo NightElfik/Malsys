@@ -3,12 +3,12 @@ namespace Malsys.Processing.Components {
 	public interface IComponent {
 
 		/// <summary>
-		/// Retrieved at the end of component configuration.
+		/// Retrieved after component initialization.
 		/// </summary>
 		bool RequiresMeasure { get; }
 
 
-		void Initialize(ProcessContext context);
+		void Initialize(ProcessContext ctxt);
 
 		void Cleanup();
 

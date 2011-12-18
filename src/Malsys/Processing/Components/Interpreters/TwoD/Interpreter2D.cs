@@ -16,20 +16,21 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 		#region IInterpreter Members
 
 		public IRenderer Renderer {
-			set { renderer = (IRenderer2D)value; }
+			set {
+				if (!IsRendererCompatible(value)) {
+					throw new ArgumentException("Renderer is not compatible.");
+				}
+				renderer = (IRenderer2D)value;
+			}
 		}
 
 		public bool IsRendererCompatible(IRenderer renderer) {
 			return renderer.GetType().GetInterfaces().Contains(typeof(IRenderer2D));
 		}
 
-		#endregion
-
-		#region IComponent Members
-
 		public bool RequiresMeasure { get { return false; } }
 
-		public void Initialize(ProcessContext context) { }
+		public void Initialize(ProcessContext ctxt) { }
 
 		public void Cleanup() { }
 

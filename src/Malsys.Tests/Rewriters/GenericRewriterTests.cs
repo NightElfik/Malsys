@@ -224,44 +224,38 @@ namespace Malsys.Tests.Rewriters {
 
 			var symBuff = new SymbolsMemoryBuffer();
 			rewriter.Initialize(context);
-			rewriter.OutputProcessor = symBuff;
+			rewriter.SymbolProvider = new SymbolProvider(lsystem.SymbolsConstants["axiom"]);
 
 			int iterations = excpectedIterations.Length;
-			IEnumerable<Symbol<IValue>> axiom = lsystem.SymbolsConstants["axiom"];
 
 			for (int i = 0; i < iterations; i++) {
 
+				var symbolsBuffer = new List<Symbol<IValue>>();
+
 				rewriter.BeginProcessing(false);
-				foreach (var sym in axiom) {
-					rewriter.ProcessSymbol(sym);
+				foreach (var sym in rewriter) {
+					symbolsBuffer.Add(sym);
 				}
 				rewriter.EndProcessing();
 
-				var result = symBuff.GetAndClear();
-
 				var writer = new IndentStringWriter();
 				var printer = new CanonicPrinter(writer);
-				foreach (var sym in result) {
+				foreach (var sym in symbolsBuffer) {
 					printer.Print(sym);
 					writer.Write(" ");
 				}
 				string actual = writer.GetResult().TrimEnd();
 				if (excpectedIterations[i] != actual) {
 					Console.WriteLine("iteration: " + i);
-					var w = new IndentStringWriter();
-					var p = new CanonicPrinter(w);
-					foreach (var sym in axiom) {
-						p.Print(sym);
-						w.Write(" ");
-					}
-					Console.WriteLine("in: " + w.GetResult().TrimEnd());
 					Console.WriteLine("out: " + actual);
 					Console.WriteLine("excepted: " + excpectedIterations[i]);
 				}
 				Assert.AreEqual(excpectedIterations[i], actual);
 
-				axiom = result;
+				rewriter.SymbolProvider = new SymbolProvider(symbolsBuffer);
 			}
+
+			rewriter.Cleanup();
 
 		}
 	}

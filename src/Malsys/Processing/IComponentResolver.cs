@@ -11,7 +11,7 @@ namespace Malsys.Processing {
 
 	public interface IComponentContainer {
 
-		void RegisterComponent(string name, Type type, bool replaceIfExists);
+		void RegisterComponent(string name, Type type, bool ignoreConflicts);
 
 	}
 

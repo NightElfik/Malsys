@@ -22,7 +22,7 @@ namespace Malsys.Processing.Components.Common {
 
 		public bool RequiresMeasure { get { return false; } }
 
-		public void Initialize(ProcessContext context) { }
+		public void Initialize(ProcessContext ctxt) { }
 
 		public void Cleanup() { }
 
@@ -41,6 +41,5 @@ namespace Malsys.Processing.Components.Common {
 			buffer = null;
 			return buff;
 		}
-
 	}
 }

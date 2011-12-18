@@ -122,11 +122,11 @@ namespace Malsys.Tests.Interpreters {
 				symToInstr = symToInstr.Add(item.Key, item.Value);
 			}
 			var lsystem = new LsystemEvaled("", null, null, null, symToInstr, null, null, null);
-			var context = new ProcessContext(lsystem, null, null, evaluator, logger);
+			var context = new ProcessContext(lsystem, new FilesManager("./"), null, evaluator, logger);
 
 			var dummy = new DummyInterpreter();
-			caller.Initialize(context);
 			caller.Interpreter = dummy;
+			caller.Initialize(context);
 
 			var symbolEvaluator = evaluator.Resolve<ISymbolEvaluator>();
 
@@ -160,7 +160,7 @@ namespace Malsys.Tests.Interpreters {
 			}
 
 
-			#region IInterpreter Members
+			 #region IInterpreter Members
 
 			public IRenderer Renderer {
 				set { throw new NotImplementedException(); }
@@ -169,10 +169,6 @@ namespace Malsys.Tests.Interpreters {
 			public bool IsRendererCompatible(IRenderer renderer) {
 				throw new NotImplementedException();
 			}
-
-			#endregion
-
-			#region IComponent Members
 
 			public bool RequiresMeasure { get { return false; } }
 

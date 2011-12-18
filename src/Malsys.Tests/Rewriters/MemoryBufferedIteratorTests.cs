@@ -3,21 +3,21 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Malsys.Tests.Rewriters {
 	[TestClass]
-	public class SingleRewriterIteratorTests {
+	public class MemoryBufferedIteratorTests {
 
 		[TestMethod]
 		public void EmptyInputTests() {
-			GenericRewriterIteratorTests.EmptyInputTests(new SingleRewriterIterator());
+			GenericRewriterIteratorTests.EmptyInputTests(new MemoryBufferedIterator());
 		}
 
 		[TestMethod]
 		public void ManyItersTests() {
-			GenericRewriterIteratorTests.ManyItersTests(new SingleRewriterIterator());
+			GenericRewriterIteratorTests.ManyItersTests(new MemoryBufferedIterator());
 		}
 
 		[TestMethod]
 		public void FibTests() {
-			GenericRewriterIteratorTests.FibTests(new SingleRewriterIterator());
+			GenericRewriterIteratorTests.FibTests(new MemoryBufferedIterator());
 		}
 
 	}

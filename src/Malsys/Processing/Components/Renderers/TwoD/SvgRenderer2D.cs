@@ -67,12 +67,10 @@ namespace Malsys.Processing.Components.Renderers.TwoD {
 
 		private void writeSvgFile() {
 
-			string filePath = context.FilesManager.GetNewOutputFilePath(typeof(IRenderer2D).Name, ".svg");
-
-			using (StreamWriter writer = new StreamWriter(filePath)) {
+			using (StreamWriter writer = new StreamWriter(context.OutputProvider.GetOutputStream<SvgRenderer2D>(".svg"))) {
 
 				writer.WriteLine(FileHeader);
-				writer.WriteLine(SvgHeader.Fmt(
+				writer.WriteLine(SvgHeader.FmtInvariant(
 					minX - marginL,
 					minY - marginT,
 					maxX - minX + marginL + marginR,
@@ -91,8 +89,8 @@ namespace Malsys.Processing.Components.Renderers.TwoD {
 
 		public bool RequiresMeasure { get { return false; } }
 
-		public void Initialize(ProcessContext context) {
-			this.context = context;
+		public void Initialize(ProcessContext ctxt) {
+			context = ctxt;
 		}
 
 		public void Cleanup() { }
@@ -107,8 +105,8 @@ namespace Malsys.Processing.Components.Renderers.TwoD {
 			maxY = 0;
 
 			if (notMeasuring) {
-				tmpFilePath = context.FilesManager.GetNewTempFilePath(".svg.tmp");
-				writer = new StreamWriter(tmpFilePath);
+				//tmpFilePath = context.FilesManager.GetNewTempFilePath();
+				//writer = new StreamWriter(tmpFilePath);
 			}
 		}
 

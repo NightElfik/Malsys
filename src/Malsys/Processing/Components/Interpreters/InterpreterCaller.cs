@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 using System.Reflection;
 using Malsys.Evaluators;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Evaluated;
-using Microsoft.FSharp.Collections;
 using Microsoft.FSharp.Core;
 using InterpretAction = System.Action<Malsys.Evaluators.ArgsStorage>;
 using SymIntMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Symbol<Malsys.SemanticModel.Evaluated.IValue>>;
@@ -14,7 +12,7 @@ using SymIntMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.Semantic
 namespace Malsys.Processing.Components.Interpreters {
 	public class InterpreterCaller : IInterpreterCaller {
 
-		private IInterpreter interpret;
+		private IInterpreter interpreter;
 
 		private SymIntMap symbolToInstr;
 
@@ -23,28 +21,12 @@ namespace Malsys.Processing.Components.Interpreters {
 		private ArgsStorage args = new ArgsStorage();
 
 
-		public InterpreterCaller() {
-			interpret = EmptyInterpret.Instance;
-			symbolToInstr = MapModule.Empty<string, Symbol<IValue>>();
-
-			createInstrToDelCahce();
-		}
-
-		[ContractInvariantMethod]
-		private void objectInvariant() {
-
-			Contract.Invariant(interpret != null);
-			Contract.Invariant(symbolToInstr != null);
-			Contract.Invariant(instrToDel != null);
-			Contract.Invariant(args != null);
-		}
-
 
 		#region IInterpreterCaller Members
 
 		public IInterpreter Interpreter {
 			set {
-				interpret = value;
+				interpreter = value;
 				createInstrToDelCahce();
 			}
 		}
@@ -79,18 +61,21 @@ namespace Malsys.Processing.Components.Interpreters {
 
 		public bool RequiresMeasure { get { return false; } }
 
-		public void Initialize(ProcessContext context) {
-			symbolToInstr = context.Lsystem.SymbolsInterpretation;
+		public void Initialize(ProcessContext ctxt) {
+
+			symbolToInstr = ctxt.Lsystem.SymbolsInterpretation;
+
+			createInstrToDelCahce();
 		}
 
 		public void Cleanup() { }
 
 		public void BeginProcessing(bool measuring) {
-			interpret.BeginProcessing(measuring);
+			interpreter.BeginProcessing(measuring);
 		}
 
 		public void EndProcessing() {
-			interpret.EndProcessing();
+			interpreter.EndProcessing();
 		}
 
 		#endregion
@@ -100,7 +85,7 @@ namespace Malsys.Processing.Components.Interpreters {
 
 			instrToDel = new Dictionary<string, InterpretAction>();
 
-			foreach (var methodInfo in interpret.GetType().GetMethods()) {
+			foreach (var methodInfo in interpreter.GetType().GetMethods()) {
 				var attrs = methodInfo.GetCustomAttributes(typeof(SymbolInterpretationAttribute), false);
 				if (attrs.Length != 1) {
 					continue;
@@ -117,8 +102,8 @@ namespace Malsys.Processing.Components.Interpreters {
 		}
 
 		private InterpretAction createInterpretAction(MethodInfo mi) {
-			var instance = Expression.Constant(interpret, interpret.GetType());
-			var argument = Expression.Parameter(typeof(ArgsStorage), "args");
+			var instance = Expression.Constant(interpreter, interpreter.GetType());
+			var argument = Expression.Parameter(typeof(ArgsStorage), "arguments");
 			var call = Expression.Call(instance, mi, argument);
 			return Expression.Lambda<InterpretAction>(call, argument).Compile();
 		}

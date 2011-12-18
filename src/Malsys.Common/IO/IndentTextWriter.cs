@@ -1,7 +1,8 @@
 ﻿using System.IO;
+using System;
 
 namespace Malsys.IO {
-	public class IndentTextWriter : IndentWriter {
+	public class IndentTextWriter : IndentWriter, IDisposable {
 
 		private TextWriter writer;
 
@@ -18,5 +19,10 @@ namespace Malsys.IO {
 		protected override void newLine() {
 			writer.WriteLine();
 		}
+
+		public void Dispose() {
+			writer.Dispose();
+		}
+
 	}
 }

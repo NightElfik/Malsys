@@ -62,7 +62,7 @@ namespace Malsys.Tests.Process {
 			resolver.RegisterComponent(typeof(IDummyContainer));
 
 			var logger = new MessageLogger();
-			var ctxt = new ProcessContext(null, null, input, null, logger);
+			var ctxt = new ProcessContext(null, new FilesManager("./"), input, null, logger);
 			var manager = new ProcessConfigurationManager();
 			manager.BuildConfiguration(procConfig, procStat.ComponentAssignments, resolver, ctxt);
 			manager.ClearComponents();
@@ -90,7 +90,7 @@ namespace Malsys.Tests.Process {
 			public bool RequiresMeasure { get { return false; } }
 
 			public void Initialize(ProcessContext context) {
-				context.Messages.LogError(typeof(DummyContaineredBoy).Name, Position.Unknown, Component.GetType().Name);
+				context.Logger.LogError(typeof(DummyContaineredBoy).Name, Position.Unknown, Component.GetType().Name);
 			}
 
 			public void Cleanup() { }
@@ -112,7 +112,7 @@ namespace Malsys.Tests.Process {
 			public bool RequiresMeasure { get { return false; } }
 
 			public void Initialize(ProcessContext context) {
-				context.Messages.LogError(typeof(DummyContaineredGirl).Name, Position.Unknown, Component.GetType().Name);
+				context.Logger.LogError(typeof(DummyContaineredGirl).Name, Position.Unknown, Component.GetType().Name);
 			}
 
 			public void Cleanup() { }
@@ -134,7 +134,7 @@ namespace Malsys.Tests.Process {
 			public bool RequiresMeasure { get { return false; } }
 
 			public void Initialize(ProcessContext context) {
-				context.Messages.LogError(typeof(DummyRewriter).Name, Position.Unknown, SymbolProcessor.GetType().Name);
+				context.Logger.LogError(typeof(DummyRewriter).Name, Position.Unknown, SymbolProcessor.GetType().Name);
 			}
 
 			public void Cleanup() { }
@@ -153,7 +153,7 @@ namespace Malsys.Tests.Process {
 			public bool RequiresMeasure { get { return false; } }
 
 			public void Initialize(ProcessContext context) {
-				context.Messages.LogError(typeof(DummySymbolProcessor).Name, Position.Unknown, "");
+				context.Logger.LogError(typeof(DummySymbolProcessor).Name, Position.Unknown, "");
 			}
 
 			public void Cleanup() { }

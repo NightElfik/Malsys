@@ -1,5 +1,8 @@
 ﻿
 namespace Malsys.Processing {
+	/// <summary>
+	/// Immutable.
+	/// </summary>
 	public class OutputFile {
 
 		public readonly string FilePath;

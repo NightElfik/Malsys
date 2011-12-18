@@ -139,12 +139,22 @@
     <Compile Include="Evaluators\EvaluatorsContainer.cs" />
     <Compile Include="Evaluators\ParametersEvaluator.cs" />
     <Compile Include="Evaluators\SymbolEvaluator.cs" />
+    <Compile Include="Helpers%27\FloatArithmeticHelper.cs" />
     <Compile Include="Processing\ComponentResolver.cs" />
+    <Compile Include="Processing\Components\Common\AxiomProvider.cs" />
+    <Compile Include="Processing\Components\Common\RandomGeneratorProvider.cs" />
+    <Compile Include="Processing\Components\Common\SymbolProvider.cs" />
     <Compile Include="Processing\Components\Common\SymbolsSaver.cs" />
+    <Compile Include="Processing\Components\Interfaces%27\IRandomGeneratorProvider.cs" />
+    <Compile Include="Processing\Components\UserConnectableAttribute.cs" />
+    <Compile Include="Processing\Components\Interfaces%27\ISymbolProvider.cs" />
+    <Compile Include="Processing\Components\Rewriters\SymbolRewriter.Enumerator.cs" />
     <Compile Include="Processing\Components\UserReadableAttribute.cs" />
     <Compile Include="Processing\Components\Interfaces%27\IComponent.cs" />
     <Compile Include="Processing\Components\Interfaces%27\IProcessStarter.cs" />
     <Compile Include="Processing\IComponentResolver.cs" />
+    <Compile Include="Processing\IOutputProvider.cs" />
+    <Compile Include="Processing\IFilesManager.cs" />
     <Compile Include="Processing\OutputFile.cs" />
     <Compile Include="Processing\ProcessConfigurations.cs" />
     <Compile Include="Processing\ProcessManager.cs" />
@@ -190,7 +200,6 @@
     <Compile Include="Evaluators\EvalException.cs" />
     <Compile Include="SemanticModel\Evaluated\IValue.cs" />
     <Compile Include="SemanticModel\Compiled\Expressions\BinaryOperator.cs" />
-    <Compile Include="Evaluators\FloatArithmeticHelper.cs" />
     <Compile Include="Compilers\Expressions\FunctionCore.cs" />
     <Compile Include="Compilers\Expressions\KnownConstant.cs" />
     <Compile Include="SemanticModel\Compiled\Expressions\ExprVariable.cs" />
@@ -198,7 +207,6 @@
     <Compile Include="Processing\Components\Interpreters\TwoD\State2D.cs" />
     <Compile Include="Processing\FilesManager.cs" />
     <Compile Include="Processing\Components\Interpreters\TwoD\Interpreter2D.cs" />
-    <Compile Include="Processing\Components\Interpreters\EmptyInterpret.cs" />
     <Compile Include="Processing\Components\Interfaces%27\IInterpreterCaller.cs" />
     <Compile Include="Processing\Components\Interpreters\InterpreterCaller.cs" />
     <Compile Include="Processing\Components\Interpreters\SymbolInterpretation.cs" />
@@ -213,10 +221,8 @@
     <Compile Include="Processing\Components\Renderers\IRenderer2D.cs" />
     <Compile Include="Processing\Components\Interfaces%27\IRenderer.cs" />
     <Compile Include="Processing\Components\Renderers\TwoD\SvgRenderer2D.cs" />
-    <Compile Include="Processing\Components\Rewriters\EmptyRewriter.cs" />
-    <Compile Include="Processing\Components\Common\EmptySymbolProcessor.cs" />
-    <Compile Include="Processing\Components\Interfaces%27\IRewriterIterator.cs" />
-    <Compile Include="Processing\Components\RewriterIterators\SingleRewriterIterator.cs" />
+    <Compile Include="Processing\Components\Interfaces%27\IIterator.cs" />
+    <Compile Include="Processing\Components\Iterators\MemoryBufferedIterator.cs" />
     <Compile Include="Processing\Components\Rewriters\SymbolRewriter.cs" />
     <Compile Include="Processing\Components\Interfaces%27\IRewriter.cs" />
     <Compile Include="Processing\Components\Interfaces%27\ISymbolProcessor.cs" />
@@ -244,7 +250,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Extensions\" />
+    <Folder Include="Extensions%27\" />
     <Folder Include="SourceCode\Formatters\" />
   </ItemGroup>
   <ItemGroup>

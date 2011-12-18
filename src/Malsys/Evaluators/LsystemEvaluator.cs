@@ -81,7 +81,7 @@ namespace Malsys.Evaluators {
 
 					case LsystemStatementType.SymbolsInterpretation:
 						var symInt = (SymbolsInterpretation)stat;
-						var prms = exprEvaluator.EvaluateList(symInt.DefaultParameters);
+						var prms = exprEvaluator.EvaluateList(symInt.DefaultParameters, consts, funs);
 						foreach (var sym in symInt.Symbols) {
 							symsInt = symsInt.Add(sym.Name, new Symbol<IValue>(symInt.InstructionName, prms));
 						}

@@ -7,9 +7,9 @@ using Malsys.SourceCode.Printers;
 namespace Malsys.Processing.Components.Common {
 	public class SymbolsSaver : ISymbolProcessor {
 
-		private FilesManager filesMgr;
+		private IOutputProvider outProvider;
 
-		private TextWriter writer;
+		private IndentTextWriter writer;
 		private CanonicPrinter printer;
 
 		bool notMeasuring;
@@ -24,14 +24,10 @@ namespace Malsys.Processing.Components.Common {
 			}
 		}
 
-		#endregion
-
-		#region IComponent Members
-
 		public bool RequiresMeasure { get { return false; } }
 
-		public void Initialize(ProcessContext context) {
-			filesMgr = context.FilesManager;
+		public void Initialize(ProcessContext ctxt) {
+			outProvider = ctxt.OutputProvider;
 		}
 
 		public void Cleanup() { }
@@ -40,15 +36,16 @@ namespace Malsys.Processing.Components.Common {
 			notMeasuring = !measuring;
 
 			if (notMeasuring) {
-				var path = filesMgr.GetNewOutputFilePath(typeof(SymbolsSaver).Name, ".txt");
-				writer = new StreamWriter(path);
-				printer = new CanonicPrinter(new IndentTextWriter(writer));
+				writer = new IndentTextWriter(new StreamWriter(outProvider.GetOutputStream<SymbolsSaver>(".txt")));
+				printer = new CanonicPrinter(writer);
 			}
 		}
 
 		public void EndProcessing() {
 			if (notMeasuring) {
-				writer.Close();
+				writer.Dispose();
+				writer = null;
+				printer = null;
 			}
 		}
 

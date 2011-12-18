@@ -40,7 +40,7 @@ namespace Malsys.Web.Models.Repositories {
 
 			var user = usersDb.Users.SingleOrDefault(u => u.NameLowercase == userNameLower);
 			if (user != null) {
-				throw new ApplicationException("User name `{0}` alredy exists.".Fmt(userName));
+				throw new ApplicationException("User name `{0}` already exists.".Fmt(userName));
 			}
 
 			DateTime now = dateTimeProvider.Now;
@@ -73,7 +73,7 @@ namespace Malsys.Web.Models.Repositories {
 
 			var role = usersDb.Roles.SingleOrDefault(r => r.NameLowercase == roleNameLower);
 			if (role != null) {
-				throw new ApplicationException("Role `{0}` alredy exists.".Fmt(roleName));
+				throw new ApplicationException("Role `{0}` already exists.".Fmt(roleName));
 			}
 
 			var newDbRole = new Role() {

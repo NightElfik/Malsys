@@ -1,18 +1,21 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Processing {
-	public class FilesManager {
+	public class FilesManager : IFilesManager, IDisposable {
 
 		private const int maxRandInt = 1000;
 
 		private string root;
-		private List<OutputFile> outFilePaths = new List<OutputFile>();
-		private List<string> tmpFilePaths = new List<string>();
+		private List<ManagedFile> managedFiles = new List<ManagedFile>();
+
 		private Random rndGenerator = new Random();
+
+		private bool dirty = false;
 
 
 		public string FilesPrefix { get; set; }
@@ -29,61 +32,60 @@ namespace Malsys.Processing {
 			}
 		}
 
-		public string GetNewOutputFilePath(string callerId, string suffix) {
-			string path = getNewFilePath(suffix);
-			outFilePaths.Add(new OutputFile(path, CurrentLsystem.Name, callerId));
-			return path;
+
+
+		#region IFilesManager Members
+
+		public FileStream GetOutputStream<TCaller>(string fileNameSuffix, bool temp = false) {
+
+			string path = getNewFilePath(fileNameSuffix);
+			var stream = new FileStream(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Delete, 4096,
+				temp ? FileOptions.DeleteOnClose : FileOptions.None);
+
+			if (!temp) {
+				var mf = new ManagedFile() {
+					OutputFile = new OutputFile(path, CurrentLsystem.Name, typeof(TCaller).FullName),
+					Stream = stream
+				};
+
+				managedFiles.Add(mf);
+				dirty = true;
+			}
+
+			return stream;
 		}
 
-		public string GetNewTempFilePath(string suffix = ".tmp") {
-			string path = getNewFilePath(suffix);
-			tmpFilePaths.Add(path);
-			return path;
-		}
+		public void Cleanup() {
 
-		public IEnumerable<OutputFile> GetOutputFilePaths() {
-			return outFilePaths;
-		}
+			if (!dirty) {
+				return;
+			}
 
-		public IEnumerable<string> GetTempFilePaths() {
-			return tmpFilePaths;
-		}
-
-		public bool TryDeleteAllTempFiles() {
-
-			bool allDeleted = true;
-
-			for (int i = 0; i < tmpFilePaths.Count; i++) {
-
-				if (!File.Exists(tmpFilePaths[i])) {
-					tmpFilePaths.RemoveAt(i);
-					i--;
-					continue;
-				}
-
-				try {
-					File.Delete(tmpFilePaths[i]);
-					tmpFilePaths.RemoveAt(i);
-					i--;
-					continue;
-				}
-				catch (Exception) {
-					allDeleted = false;
+			for (int i = 0; i < managedFiles.Count; i++) {
+				if (managedFiles[i].Stream.CanWrite) {
+					managedFiles[i].Stream.Dispose();
 				}
 			}
 
-			return allDeleted;
+			dirty = false;
 		}
+
+		#endregion
+
+
+		public IEnumerable<OutputFile> GetOutputFilePaths() {
+			Cleanup();
+			return managedFiles.Select(mf => mf.OutputFile);
+		}
+
 
 
 		private string getNewFilePath(string suffix) {
 
-			string timeStamp = DateTime.Now.ToString("yyyy-MM-ddTHH-mm-ss", CultureInfo.InvariantCulture.DateTimeFormat);  // s: 2008-06-15T21:15:07
-			int randInt = rndGenerator.Next(0, maxRandInt);
-
 			string filePath;
 			do {
-				randInt = (randInt + 1) % maxRandInt;
+				string timeStamp = DateTime.Now.ToString("yyyy-MM-ddTHH-mm-ss", CultureInfo.InvariantCulture.DateTimeFormat);
+				int randInt = rndGenerator.Next(0, maxRandInt);
 				string fileName = "{0}{1}.{2}{3}".Fmt(FilesPrefix, timeStamp, randInt, suffix);
 				filePath = Path.Combine(root, fileName);
 				filePath = Path.GetFullPath(filePath);
@@ -95,5 +97,17 @@ namespace Malsys.Processing {
 			return filePath;
 		}
 
+
+		private class ManagedFile {
+
+			public OutputFile OutputFile { get; set; }
+			public FileStream Stream { get; set; }
+
+		}
+
+
+		public void Dispose() {
+			Cleanup();
+		}
 	}
 }

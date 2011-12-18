@@ -1,21 +1,21 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Web.Mvc;
 using Malsys.Processing;
-using Malsys.Web.Models;
-using System.Reflection;
 using Malsys.Processing.Components;
-using System.IO;
-using Malsys.Web.Entities;
+using Malsys.Web.Infrastructure;
+using Malsys.Web.Models;
 
 namespace Malsys.Web.Controllers {
 	public class ProcessLsystemController : Controller {
 
-		private const string workDir = "~/WorkDir";
 		private static readonly ComponentResolver componentResolver;
 
 
 		static ProcessLsystemController() {
+
 			var resolver = new ComponentResolver();
 
 			var componentsTypes = Assembly.GetAssembly(typeof(ComponentResolver)).GetTypes()
@@ -27,11 +27,21 @@ namespace Malsys.Web.Controllers {
 		}
 
 
+		private readonly string workDir;
+		private readonly int maxWorkDirFiles;
+
 		private readonly IInputProcessesRepository inputProcRepo;
+		private readonly IDateTimeProvider dateTime;
 
 
-		public ProcessLsystemController(IInputProcessesRepository inputProcessesRepository) {
+		public ProcessLsystemController(IInputProcessesRepository inputProcessesRepository, IAppSettingsProvider appSettingsProvider,
+				IDateTimeProvider dateTimeProvider) {
+
 			inputProcRepo = inputProcessesRepository;
+			dateTime = dateTimeProvider;
+
+			workDir = appSettingsProvider["WorkDir"];
+			maxWorkDirFiles = int.Parse(appSettingsProvider["WorkDir_MaxFilesCount"]);
 		}
 
 
@@ -48,20 +58,22 @@ namespace Malsys.Web.Controllers {
 		[ActionName("Index")]
 		public ActionResult IndexPost(string sourceCode) {
 
+			string workDirFullPath = Server.MapPath(Url.Content(workDir));
 			var manager = new ProcessManager() { Timeout = new TimeSpan(0, 0, 5) };
-			var fileMgr = new FilesManager(Server.MapPath(Url.Content(workDir)));
+			var fileMgr = new FilesManager(workDirFullPath);
 			var logger = new MessageLogger();
 
 			var evaledInput = manager.CompileAndEvaluateInput(sourceCode, logger);
 
+			inputProcRepo.CleanProcessOutputs(workDirFullPath, maxWorkDirFiles);
+
 			if (!logger.ErrorOcured) {
 				manager.ProcessInput(evaledInput, fileMgr, logger, componentResolver);
 
-				/*if (!logger.ErrorOcured) {
-					inputProcRepo.AddInput(evaledInput)
-				}*/
+				if (!logger.ErrorOcured) {
+					inputProcRepo.AddInput(evaledInput, fileMgr.GetOutputFilePaths(), User.Identity.Name);
+				}
 			}
-
 
 			var resultModel = new ProcessLsystemResultModel();
 			resultModel.SourceCode = sourceCode;
@@ -71,15 +83,33 @@ namespace Malsys.Web.Controllers {
 			return View(resultModel);
 		}
 
-		public ActionResult DownloadResult(string fileName, string mime = "application/octet-stream") {
+		public ActionResult DownloadResult(string fileName, bool download = true) {
 
-			string realPath = Server.MapPath(Url.Content(workDir));
-			string filePath = Path.GetFullPath(realPath + "\\" + fileName);
-			if (!filePath.StartsWith(realPath) || !System.IO.File.Exists(filePath)) {
-				return new HttpNotFoundResult("File `" + fileName + "` not found");
+			var procOutput = inputProcRepo.InputDb.ProcessOutputs.Where(po => po.FileName == fileName).SingleOrDefault();
+
+			if (procOutput == null) {
+				return new HttpNotFoundResult("File `" + fileName + "` not found.");
 			}
 
-			return File(new FileStream(filePath, FileMode.Open, FileAccess.Read), mime);
+			procOutput.LastOpenDate = dateTime.Now;
+
+			string realPath = Server.MapPath(Url.Content(workDir));
+			string filePath = Path.Combine(realPath, fileName);
+
+
+			if (download) {
+				return File(filePath, "application/octet-stream", fileName);
+			}
+			else {
+				string mime;
+				switch (Path.GetExtension(filePath)) {
+					case "txt": mime = "text/plain"; break;
+					case "svg":
+					case "svgz": mime = "image/svg+xml"; break;
+					default: mime = "application/octet-stream"; break;
+				}
+				return File(filePath, mime);
+			}
 		}
 
 	}
