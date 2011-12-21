@@ -60,7 +60,7 @@ namespace Malsys.Evaluators {
 				return container.ResolveInputEvaluator().Evaluate(input);
 			}
 			catch (EvalException ex) {
-				logger.LogMessage(Message.EvalFailed, ex.GetWholeMessage());
+				logger.LogMessage(Message.EvalFailed, ex.GetFullMessage());
 				return null;
 			}
 		}
@@ -75,8 +75,10 @@ namespace Malsys.Evaluators {
 		}
 
 		public enum Message {
+
 			[Message(MessageType.Error, "Evaluation failed. {0}")]
-			EvalFailed
+			EvalFailed,
+
 		}
 
 	}

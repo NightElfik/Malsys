@@ -15,6 +15,7 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 
 		#region IInterpreter Members
 
+		[UserConnectable]
 		public IRenderer Renderer {
 			set {
 				if (!IsRendererCompatible(value)) {

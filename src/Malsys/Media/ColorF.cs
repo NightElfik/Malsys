@@ -3,13 +3,14 @@ using System;
 namespace Malsys.Media {
 	public struct ColorF {
 
-		// for fast conversion to hexa
+		// for fast conversion to hex
 		private static readonly char[] hexDigits = {
 			 '0', '1', '2', '3', '4', '5', '6', '7',
 			 '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
 		};
 
 		public static readonly ColorF Black = new ColorF(0, 0, 0);
+		public static readonly ColorF White = new ColorF(1f, 1f, 1f);
 
 
 		public float A;
@@ -31,6 +32,7 @@ namespace Malsys.Media {
 			G = g;
 			B = b;
 		}
+
 
 		public string ToRgbHexString() {
 

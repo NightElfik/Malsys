@@ -154,6 +154,7 @@ namespace Malsys.SourceCode.Printers {
 				writer.NewLine();
 				Print(Ast.Keyword.Use);
 				writer.Write(assign.ComponentTypeName);
+				writer.Write(" ");
 				Print(Ast.Keyword.As);
 				writer.Write(assign.ContainerName);
 			}
@@ -286,7 +287,7 @@ namespace Malsys.SourceCode.Printers {
 				writer.Write(")");
 			}
 
-			writer.Write(";");
+			writer.WriteLine(";");
 		}
 
 		public void Print(SymbolsConstDefinition symbolsDef) {

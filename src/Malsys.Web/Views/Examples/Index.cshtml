@@ -2,10 +2,6 @@
 	ViewBag.Title = "Examples";
 }
 
-@section scripts {
-	@Content.Js("GrammarHighlighter.js?v=1", Url)
-}
-
 
 <h2>Examples</h2>
 
@@ -22,7 +18,7 @@ lsystem DragonCurve {
 	let iterations = 10;
 	let margin = 2;
 
-	// normalize line length -- reult image will have allways same size
+	// normalize line length -- result image will have always same size
 	let lineLength = 2 ^ -(iterations / 2) * 200;
 
 	rewrite L to L + R +;

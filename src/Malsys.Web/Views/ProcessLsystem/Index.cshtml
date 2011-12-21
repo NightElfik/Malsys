@@ -6,6 +6,14 @@
 
 @section main_class { processor }
 
+@section scripts {
+	@Content.Js("jquery.textarea-0.11.js", Url)
+	<script type="text/javascript">
+		jQuery(document).ready(function () {
+			$("#SourceCode").tabby();
+		});
+	</script>
+}
 
 <h2>L-system processor</h2>
 
@@ -38,7 +46,7 @@
 	@foreach (var msg in Model.Messages) {
 	 <tr class="@msg.Type.ToString().ToLower()">
 		<td><abbr title="@msg.Type (@msg.Id)">@msg.Type.ToString()[0]</abbr></td>
-		<td>@msg.MessageStr</td>
+		<td><p class="malsys_message">@msg.MessageStr</p></td>
 		<td>@(msg.Position.IsUnknown ? "" : msg.Position.ToString())</td>
 	 </tr>
 	}

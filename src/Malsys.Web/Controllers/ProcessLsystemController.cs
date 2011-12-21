@@ -45,10 +45,10 @@ namespace Malsys.Web.Controllers {
 		}
 
 
-		public ActionResult Index(string lsystem = null) {
+		public ActionResult Index(string lsystem = null, bool spacesToTab = true) {
 
 			if (lsystem != null) {
-				return IndexPost(lsystem);
+				return IndexPost(spacesToTab ? lsystem.Replace("    ", "\t") : lsystem);
 			}
 
 			return View(new ProcessLsystemResultModel());
@@ -92,6 +92,7 @@ namespace Malsys.Web.Controllers {
 			}
 
 			procOutput.LastOpenDate = dateTime.Now;
+			inputProcRepo.InputDb.SaveChanges();
 
 			string realPath = Server.MapPath(Url.Content(workDir));
 			string filePath = Path.Combine(realPath, fileName);
@@ -103,9 +104,12 @@ namespace Malsys.Web.Controllers {
 			else {
 				string mime;
 				switch (Path.GetExtension(filePath)) {
-					case "txt": mime = "text/plain"; break;
-					case "svg":
-					case "svgz": mime = "image/svg+xml"; break;
+					case ".txt": mime = "text/plain"; break;
+					case ".svg":
+					case ".svgz":
+						Response.AppendHeader("Content-Encoding", "gzip");
+						mime = "image/svg+xml";
+						break;
 					default: mime = "application/octet-stream"; break;
 				}
 				return File(filePath, mime);

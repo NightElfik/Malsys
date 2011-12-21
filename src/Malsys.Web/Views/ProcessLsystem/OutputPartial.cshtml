@@ -27,12 +27,14 @@ var fi = new FileInfo(Model.FilePath);
 			<p>@strOut</p>
 		}
 	}
-	else if (fi.Extension == ".svg") {
+	else if (fi.Extension == ".svg" || fi.Extension == ".svgz") {
 		if (fi.Length > 1024 * 512) {
-			<p>Output SVG file is not shown directly (it is greater than 0.5 MB)</p>
+			<p class="outputTruncated">SVG file is not shown directly (it is greater than 0.5 MB)</p>
 		}
 		else {
-			<img src="/ProcessLsystem/DownloadResult?FileName=@fi.Name&download=false" alt="process result" />
+			<div class="scroll_box">
+				<img src="/ProcessLsystem/DownloadResult?FileName=@fi.Name&download=false" alt="process result" />
+			</div>
 		}
 	}
 

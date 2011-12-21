@@ -64,7 +64,12 @@ namespace Malsys.Tests.Process {
 			var logger = new MessageLogger();
 			var ctxt = new ProcessContext(null, new FilesManager("./"), input, null, logger);
 			var manager = new ProcessConfigurationManager();
-			manager.BuildConfiguration(procConfig, procStat.ComponentAssignments, resolver, ctxt);
+			if (!manager.TryBuildConfiguration(procConfig, procStat.ComponentAssignments, resolver, ctxt, logger)) {
+				Console.WriteLine(logger.ToString());
+				Assert.Fail("Failed to build configuration.");
+			}
+
+
 			manager.ClearComponents();
 
 			var actualMsgs = logger.Select(msg => msg.Id + ":" + msg.MessageStr).ToList();

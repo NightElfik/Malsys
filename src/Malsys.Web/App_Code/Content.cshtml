@@ -1,9 +1,9 @@
 ﻿@using System.Web.Mvc
 
 @helper Js(string fileName, UrlHelper url) {
-	<script src="@url.Content("~/Scripts/" + fileName)"></script>
+	<script type="text/javascript" src="@url.Content("~/Scripts/" + fileName + "?v=5")"></script>
 }
 
 @helper Css(string fileName, UrlHelper url) {
-	<link rel="stylesheet" href="@url.Content("~/Content/" + fileName)" />
+	<link rel="stylesheet" href="@url.Content("~/Content/" + fileName + "?v=2")" />
 }

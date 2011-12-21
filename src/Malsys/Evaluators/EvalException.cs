@@ -13,10 +13,10 @@ namespace Malsys.Evaluators {
 		protected EvalException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 
 
-		public string GetWholeMessage() {
+		public string GetFullMessage() {
 			if (InnerException != null) {
 				if (InnerException is EvalException) {
-					return Message + " " + ((EvalException)InnerException).GetWholeMessage();
+					return Message + " " + ((EvalException)InnerException).GetFullMessage();
 				}
 				else {
 					return Message + " " + InnerException.Message;

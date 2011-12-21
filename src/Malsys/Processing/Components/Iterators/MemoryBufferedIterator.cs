@@ -26,7 +26,7 @@ namespace Malsys.Processing.Components.RewriterIterators {
 
 
 
-		[UserSettable]
+		[UserSettable(IsMandatory = true)]
 		public IValue Iterations {
 			set {
 				if (value.IsConstant && !((Constant)value).IsNaN && ((Constant)value).Value >= 0) {
@@ -37,14 +37,14 @@ namespace Malsys.Processing.Components.RewriterIterators {
 					iterationsArray = new int[arr.Length];
 					for (int i = 0; i < arr.Length; i++) {
 						if (((Constant)arr[i]).IsNaN || ((Constant)arr[i]).Value < 0) {
-							throw new ArgumentException("Iterations value `{0}` in array is invalid at index {1} (zero-based)."
+							throw new InvalidUserValueException("Iterations value `{0}` in given array is invalid (at index {1})."
 								.Fmt(arr[i].ToString(), i));
 						}
 						iterationsArray[i] = ((Constant)arr[i]).RoundedIntValue;
 					}
 				}
 				else {
-					throw new ArgumentException("Iterations value is invalid.");
+					throw new InvalidUserValueException("Iterations value is invalid.");
 				}
 			}
 		}
@@ -52,12 +52,15 @@ namespace Malsys.Processing.Components.RewriterIterators {
 
 		#region IIterator Members
 
+		[UserConnectable]
 		public ISymbolProvider SymbolProvider {
 			set { symbolProvider = value; }
 		}
 
+		[UserConnectable]
 		public ISymbolProvider AxiomProvider { get; set; }
 
+		[UserConnectable]
 		public ISymbolProcessor OutputProcessor {
 			set { outProcessor = value; }
 		}

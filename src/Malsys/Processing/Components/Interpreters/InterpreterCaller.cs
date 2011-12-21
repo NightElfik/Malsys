@@ -24,16 +24,13 @@ namespace Malsys.Processing.Components.Interpreters {
 
 		#region IInterpreterCaller Members
 
+		[UserConnectable]
 		public IInterpreter Interpreter {
 			set {
 				interpreter = value;
 				createInstrToDelCahce();
 			}
 		}
-
-		#endregion
-
-		#region ISymbolProcessor Members
 
 		public void ProcessSymbol(Symbol<IValue> symbol) {
 
@@ -54,10 +51,6 @@ namespace Malsys.Processing.Components.Interpreters {
 				// TODO: resolve missing interpret method for symbol
 			}
 		}
-
-		#endregion
-
-		#region IComponent Members
 
 		public bool RequiresMeasure { get { return false; } }
 

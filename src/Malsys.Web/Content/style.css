@@ -373,31 +373,27 @@ pre a.lsysTryMe  {
 
 /* Styles for validation helpers */
 
-.field-validation-error {
-	color: #ff0000;
-}
+.field-validation-error { color: #ff0000;}
 
-.field-validation-valid {
-	display: none;
-}
+.field-validation-valid { display: none; }
 
-.input-validation-error {
-	border: 1px solid #ff0000;
-	background-color: #ffeeee;
-}
+.input-validation-error { border: 1px solid #ff0000; background-color: #ffeeee; }
 
-.validation-summary-errors {
-	font-weight: bold;
-	color: #ff0000;
-}
+.validation-summary-errors { font-weight: bold; color: #ff0000; }
 
-.validation-summary-valid {
-	display: none;
-}
+.validation-summary-valid { display: none; }
 
 
+/* Pagination */
+
+.pagination { margin: 0 auto; display: block; }
+.pagination .paginationLeft { float: left; }
+.pagination .paginationRight { float: right; }
 
 
+.scroll_box { overflow: auto; margin: 0 auto; }
+
+p.malsys_message { margin:0; padding:0 }
 
 /* ==|== non-semantic helper classes ========================================
    Please define your styles before this section.
@@ -407,7 +403,7 @@ pre a.lsysTryMe  {
 .ir { display: block; border: 0; text-indent: -999em; overflow: hidden; background-color: transparent; background-repeat: no-repeat; text-align: left; direction: ltr; }
 .ir br { display: none; }
 
-/* Hide from both screenreaders and browsers: h5bp.com/u */
+/* Hide from both screen-readers and browsers: h5bp.com/u */
 .hidden { display: none !important; visibility: hidden; }
 
 /* Hide only visually, but have it available for screenreaders: h5bp.com/v */
@@ -440,7 +436,7 @@ pre a.lsysTryMe  {
 
 }
 
-@media only screen and (min-width: 1600px) {
+@media only screen and (min-width: 1550px) {
 	#main.processor .wrapper { width: 1520px; }
 	#main.processor .floating_box { display: inline; float: left; text-align: left; width: 750px; }
 	#main.processor .floating_container { text-align: center; }

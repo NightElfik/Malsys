@@ -1,24 +1,24 @@
 ﻿
-
-
 (function ($) {
 
 	function addRefLinks(code) {
-		return code.replace(/(.)([_a-z]+)/gi, "$1<a href=\"#grammar-$2\">$2</a>");
+		return code.replace(/(.)([_a-z]+)/gi, '$1<a href="#grammar-$2">$2</a>');
 	}
 
 	function highlightTerminals(code) {
 
-		code = code.replace(/('.[^']*')/g, "<span class=\"gr-terminal\">$1</span>");
-		code = code.replace(/\[(.)\-(.)\]/g, "[<span class=\"gr-terminal\">$1</span>-<span class=\"gr-terminal\">$2</span>]");
-		code = code.replace(/\[([^'\-<\]]+)\]/g, "[<span class=\"gr-terminal\">$1</span>]");
-		// quantifiers needs to be after terminals because of quatificator after terminal
-		code = code.replace(/([^'])([?+*])/g, "$1<span class=\"gr-quantifier\">$2</span>");
+		code = code.replace(/('.[^']*')/g, '<span class="gr-terminal">$1</span>');
+		code = code.replace(/\[(.)\-(.)\]/g, '[<span class="gr-terminal">$1</span>-<span class="gr-terminal">$2</span>]');
+		code = code.replace(/\[([^'\-<\]]+)\]/g, '[<span class="gr-terminal">$1</span>]');
+		// quantifiers needs to be after terminals because of quantifiers after terminal
+		code = code.replace(/([^'])([?+*])/g, '$1<span class="gr-quantifier">$2</span>');
 		return code;
 	}
 
 	function highlightComments(code) {
-		return code.replace(/(\/\/.*)/g, "<span class=\"lsys_cmt\">$1</span>");
+		code = code.replace(/(\/\*(.|[\r\n])*?\*\/)/g, '<span class="lsys_cmt">$1</span>');
+		code = code.replace(/(\/\/.*)/g, '<span class="lsys_cmt">$1</span>');
+		return code;
 	}
 
 	function replaceTabs(code) {
@@ -30,7 +30,7 @@
 	}
 
 	function highlightLsystemKeywords(code) {
-		return code.replace(/(lsystem|rewrite|to|let|set|interpret|as|process|with|use|this)/g, "<span class=\"lsys_kw\">$1</span>");
+		return code.replace(/(as|component|configuration|connect|consider|container|default|fun|interpret|let|lsystem|nothing|or|process|return|rewrite|set|this|to|typeof|use|weight|with|where)/g, '<span class="lsys_kw">$1</span>');
 	}
 
 	function urlEncode(str) {
@@ -101,6 +101,10 @@
 		newHtml = replaceTabs(newHtml);
 		$(this).append(newHtml);
 
+		// clean tags from comments
+		$(this).find("span.lsys_cmt").each(function (i) {
+			$(this).text($(this).text());
+		});
 	});
 
 	$("code.malsys").each(function (i) {
@@ -109,6 +113,14 @@
 		newHtml = highlightLsystemKeywords(newHtml);
 		newHtml = replaceTabs(newHtml);
 
+		$(this).text("");
+		$(this).append(newHtml);
+	});
+
+	$("p.malsys_message").each(function (i) {
+
+		var newHtml = $(this).text();
+		newHtml = newHtml.replace(/`([a-zA-Z]+)` \((`[a-zA-Z\+\.]+`)\)/g, '`<abbr title="$2">$1</abbr>`');
 		$(this).text("");
 		$(this).append(newHtml);
 	});

@@ -37,8 +37,16 @@ namespace Malsys.Processing {
 		public void ProcessInput(SemanticModel.Evaluated.InputBlock inBlockEvaled, IFilesManager storageManager, MessageLogger logger, IComponentResolver componentResolver) {
 
 			foreach (var lsystemKvp in inBlockEvaled.Lsystems) {
-				var lsysEvaled = evaluator.EvaluateLsystem(lsystemKvp.Value, ImmutableList<IValue>.Empty,
-					inBlockEvaled.GlobalConstants, inBlockEvaled.GlobalFunctions);
+
+				LsystemEvaled lsysEvaled;
+				try {
+					lsysEvaled = evaluator.EvaluateLsystem(lsystemKvp.Value, ImmutableList<IValue>.Empty,
+						inBlockEvaled.GlobalConstants, inBlockEvaled.GlobalFunctions);
+				}
+				catch (EvalException ex) {
+					logger.LogMessage(EvaluatorsContainerExtensions.Message.EvalFailed, ex.GetFullMessage());
+					continue;
+				}
 
 				var context = new ProcessContext(lsysEvaled, storageManager, inBlockEvaled, evaluator, logger);
 
@@ -59,11 +67,14 @@ namespace Malsys.Processing {
 					var maybeConfig = processConfigsMap.TryFind(processStat.ProcessConfiName);
 					if (OptionModule.IsNone(maybeConfig)) {
 						logger.LogError("UnknownProcessConfig", Position.Unknown, "Unknown process configuration `{0}`.".Fmt(processStat.ProcessConfiName));
-						return;
+						continue;
 					}
 					var configMgr = new ProcessConfigurationManager();
 
-					configMgr.BuildConfiguration(maybeConfig.Value, processStat.ComponentAssignments, componentResolver, context);
+					if (!configMgr.TryBuildConfiguration(maybeConfig.Value, processStat.ComponentAssignments, componentResolver, context, context.Logger)) {
+						continue;
+					}
+
 
 					configMgr.StarterComponent.Start(configMgr.RequiresMeasure, Timeout);
 

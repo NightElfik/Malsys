@@ -1,16 +1,15 @@
 ﻿
 <ul>
+
 <li>@Html.ActionLink("L-system processor", "Index", "ProcessLsystem")</li>
 <li>@Html.ActionLink("Examples", "Index", "Examples")</li>
 <li>@Html.ActionLink("Help", "Index", "Help")</li>
 
 @if (Request.IsAuthenticated) {
 
-	<li>@Html.ActionLink("History", "Index", "InputProcessesHistory")</li>
-
 	if (User.IsInRole("admins")) {
-		<li>@Html.ActionLink("Users", "Index", "Users")</li>
-		<li>@Html.ActionLink("Roles", "Index", "Roles")</li>
+		<li>@Html.ActionLink("A", "Index", "Administration")</li>
 	}
 }
+
 </ul>

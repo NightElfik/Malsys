@@ -6,6 +6,7 @@ using Malsys.SemanticModel;
 using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Core;
+using System.Reflection;
 
 namespace Malsys.Processing {
 	public class ProcessConfigurationManager {
@@ -18,17 +19,24 @@ namespace Malsys.Processing {
 
 
 
-		public void BuildConfiguration(ProcessConfiguration processConfig, IEnumerable<ProcessComponentAssignment> componentsAssigns,
-				IComponentResolver typeResolver, ProcessContext ctxt) {
+		public bool TryBuildConfiguration(ProcessConfiguration processConfig, IEnumerable<ProcessComponentAssignment> componentsAssigns,
+				IComponentResolver typeResolver, ProcessContext ctxt, IMessageLogger logger) {
 
 			ClearComponents();
 
 			var compAssignsDict = componentsAssigns.ToDictionary(ca => ca.ContainerName, ca => ca.ComponentTypeName);
 
+			bool errorOcured = false;
+
 			// components
 			foreach (var procComp in processConfig.Components) {
-				var comp = createComponent(procComp.TypeName, typeResolver);
-				components.Add(procComp.Name, comp);
+				var comp = createComponent(procComp.TypeName, typeResolver, logger);
+				if (comp != null) {
+					components.Add(procComp.Name, comp);
+				}
+				else {
+					errorOcured = true;
+				}
 			}
 
 			// containers
@@ -39,23 +47,45 @@ namespace Malsys.Processing {
 					contCompTypeName = procCont.DefaultTypeName;
 				}
 
-				var comp = createComponent(procCont.TypeName, contCompTypeName, typeResolver);
-				components.Add(procCont.Name, comp);
+				var comp = createContaineredComponent(procCont.TypeName, contCompTypeName, typeResolver, logger);
+				if (comp != null) {
+					components.Add(procCont.Name, comp);
+				}
+				else {
+					errorOcured = true;
+				}
 			}
 
-			// connections
-			// it is possible to connect a connection, that is not visible (illegal) from config:
-			// component in container can use properties, that are not declared in ints container
-			foreach (var conn in processConfig.Connections) {
-				connect(conn.SourceName, conn.TargetName, conn.TargetInputName);
+			if (errorOcured) {
+				// return early if some error occurred to prevent wired errors
+				return false;
 			}
 
+			if (!connectAndCheck(processConfig.Connections, logger)) {
+				return false;
+			}
+
+			foreach (var compKvp in components) {
+				errorOcured |= !trySetAndCheckUserSettableProperties(compKvp.Value, compKvp.Key, ctxt.Lsystem, logger);
+			}
+
+			if (errorOcured) {
+				return false;
+			}
 
 			initializeComponents(ctxt);
 
+			RequiresMeasure = false;
+			foreach (var cp in components.Values) {
+				RequiresMeasure |= cp.RequiresMeasure;
+			}
+
+			return true;
 		}
 
-
+		/// <summary>
+		/// Cleanups all components and clears them from internal storage.
+		/// </summary>
 		public void ClearComponents() {
 
 			foreach (var cp in components.Values) {
@@ -67,130 +97,262 @@ namespace Malsys.Processing {
 			StarterComponent = null;
 		}
 
-
 		private void initializeComponents(ProcessContext ctxt) {
 
+			StarterComponent = null;
+
 			foreach (var cp in components.Values) {
+
 				cp.Initialize(ctxt);
-				setUserSettableProperties(cp, ctxt);
 
 				if (cp is IProcessStarter) {
 					if (StarterComponent != null) {
-						throw new ApplicationException("Configuration can not have more than one `{0}` component.".Fmt(typeof(IProcessStarter)));
+						ctxt.Logger.LogMessage(Message.MoreStartComponents, typeof(IProcessStarter).Name);
 					}
 					StarterComponent = (IProcessStarter)cp;
 				}
 			}
 
-			RequiresMeasure = false;
-			foreach (var cp in components.Values) {
-				RequiresMeasure |= cp.RequiresMeasure;
+			if (StarterComponent == null) {
+				ctxt.Logger.LogMessage(Message.NoStartComponent, typeof(IProcessStarter).Name);
 			}
 		}
 
 
-		private IComponent createComponent(string compTypeName, IComponentResolver typeResolver) {
+		private IComponent createComponent(string compTypeName, IComponentResolver typeResolver, IMessageLogger logger) {
 
 			var compType = typeResolver.ResolveComponent(compTypeName);
 			if (compType == null) {
-				throw new ApplicationException("Failed to resolve component with type `{0}`.".Fmt(compTypeName));
+				logger.LogMessage(Message.ComponentResolveError, compTypeName);
+				return null;
 			}
 
 			if (!typeof(IComponent).IsAssignableFrom(compType)) {
-				throw new ApplicationException("Component `{0}` does not implement `{1}` interface."
-					.Fmt(compType.FullName, typeof(IComponent).FullName));
+				logger.LogMessage(Message.ComponentDontImplementInterface, compType.FullName, typeof(IComponent).FullName);
+				return null;
 			}
 
 			var ctorInfo = compType.GetConstructor(System.Type.EmptyTypes);
-			if(ctorInfo == null){
-				throw new ApplicationException("Component `{0}` does not have parameter-less constructor."
-					.Fmt(compType.FullName));
+			if (ctorInfo == null) {
+				logger.LogMessage(Message.ComponentParamlessCtorMissing, compType.FullName);
+				return null;
 			}
 
 			return (IComponent)ctorInfo.Invoke(null);
 		}
 
-		private IComponent createComponent(string contTypeName, string compTypeName, IComponentResolver typeResolver) {
+		private IComponent createContaineredComponent(string contTypeName, string compTypeName, IComponentResolver typeResolver, IMessageLogger logger) {
 
 			var contType = typeResolver.ResolveComponent(contTypeName);
 			if (contType == null) {
-				throw new ApplicationException("Failed to resolve container with type `{0}`.".Fmt(contTypeName));
+				logger.LogMessage(Message.ContainerResolveError, contTypeName);
+				return null;
 			}
 
-			var comp = createComponent(compTypeName, typeResolver);
+			var comp = createComponent(compTypeName, typeResolver, logger);
+			if (comp == null) {
+				return null;
+			}
 
 			if (!contType.IsAssignableFrom(comp.GetType())) {
-				throw new ApplicationException("Component `{0}` in not compatible with container `{1}`."
-					.Fmt(comp.GetType().FullName, contType.FullName));
+				logger.LogMessage(Message.ComponentDontFitContainer, comp.GetType().FullName, contType.FullName);
+				return null;
 			}
 
 			return comp;
 		}
 
-		private void connect(string srcCompName, string destCompName, string destMemberName) {
+		/// <summary>
+		///
+		/// </summary>
+		/// <remarks>
+		/// Now it is possible to connect a connection, that is not visible (illegal) from configuration:
+		/// Component in container can use properties, that are not declared in its container.
+		/// </remarks>
+		private bool connectAndCheck(IEnumerable<ProcessComponentsConnection> connections, IMessageLogger logger) {
+
+			bool error = false;
+
+			foreach (var compKvp in components) {
+
+				var componentConnections = connections.Where(c => c.TargetName == compKvp.Key);
+
+				foreach (var pi in compKvp.Value.GetType().GetProperties()) {
+					var attrs = pi.GetCustomAttributes(typeof(UserConnectableAttribute), true);
+					if (attrs.Length != 1) {
+						continue;
+					}
+
+					var attr = (UserConnectableAttribute)attrs[0];
+					var conn = componentConnections.Where(c => c.TargetInputName == pi.Name).ToList();
+
+					if (conn.Count == 0) {
+						if (!attr.IsOptional) {
+							error = true;
+							logger.LogMessage(Message.UnsetMandatoryConnection, compKvp.Key, pi.Name, compKvp.Value.GetType().FullName);
+						}
+						continue;
+					}
+					else if (!attr.AllowMultiple && conn.Count > 1) {
+						logger.LogMessage(Message.MoreThanOneConnection, compKvp.Key, pi.Name, compKvp.Value.GetType().FullName);
+					}
+
+					error |= !tryConnect(conn[0], logger);
+				}
+			}
+
+			return !error;
+		}
+
+		private bool tryConnect(ProcessComponentsConnection conn, IMessageLogger logger) {
 
 			IComponent srcComp;
-			if (!components.TryGetValue(srcCompName, out srcComp)) {
-				throw new ApplicationException("Failed to connect `{0}` and `{1}.{2}`, `{0}` not found."
-					.Fmt(srcCompName, destCompName, destMemberName));
+			if (!components.TryGetValue(conn.SourceName, out srcComp)) {
+				logger.LogMessage(Message.FailedToConnect, conn.SourceName, conn.TargetName, conn.TargetInputName, conn.TargetName);
+				return false;
 			}
 
 			IComponent destComp;
-			if (!components.TryGetValue(destCompName, out destComp)) {
-				throw new ApplicationException("Failed to connect `{0}` and `{1}.{2}`, `{1}` not found."
-					.Fmt(srcCompName, destCompName, destMemberName));
+			if (!components.TryGetValue(conn.TargetName, out destComp)) {
+				logger.LogMessage(Message.FailedToConnect, conn.SourceName, conn.TargetName, conn.TargetInputName, conn.TargetInputName);
+				return false;
 			}
 
-			var prop = destComp.GetType().GetProperty(destMemberName);
+			var prop = destComp.GetType().GetProperty(conn.TargetInputName);
 			if (prop == null) {
-				throw new ApplicationException("Failed to connect `{0}` and `{1}.{2}`, public property `{2}` on `{1}` does not exist."
-					.Fmt(srcCompName, destCompName, destMemberName));
+				logger.LogMessage(Message.FailedToConnectPropertyDontExist, conn.SourceName, conn.TargetName, conn.TargetInputName);
+				return false;
 			}
 
 			if (!prop.PropertyType.IsAssignableFrom(srcComp.GetType())) {
-				throw new ApplicationException("Failed to connect `{0}` and `{1}.{2}`, `{0}` is not assignable to `{1}.{2}`."
-					.Fmt(srcCompName, destCompName, destMemberName));
+				logger.LogMessage(Message.FailedToConnectNotAssignable, conn.SourceName, conn.TargetName, conn.TargetInputName);
+				return false;
 			}
 
 			prop.SetValue(destComp, srcComp, null);
-
+			return true;
 		}
 
 
-		private void setUserSettableProperties(IComponent component, ProcessContext ctxt) {
+		private bool trySetAndCheckUserSettableProperties(IComponent component, string componentConfigName, LsystemEvaled lsystem, IMessageLogger logger) {
+
+			bool error = false;
 
 			foreach (var propInfo in component.GetType().GetProperties()) {
 
-				if (propInfo.GetCustomAttributes(typeof(UserSettableAttribute), true).Length != 1) {
+				var attr = propInfo.GetCustomAttributes(typeof(UserSettableAttribute), true);
+				if (attr.Length != 1) {
 					continue;
 				}
 
-				if (propInfo.PropertyType.Equals(typeof(IValue))) {
-					var maybeConst = ctxt.Lsystem.Constants.TryFind(propInfo.Name.ToLowerInvariant());
-					if (OptionModule.IsSome(maybeConst)) {
-						propInfo.SetValue(component, maybeConst.Value, null);
+				bool mandatory = ((UserSettableAttribute)attr[0]).IsMandatory;
+				bool valueSet = false;
+				string nameLower = propInfo.Name.ToLowerInvariant();
+
+				var maybeSyms = lsystem.SymbolsConstants.TryFind(nameLower);
+				if (OptionModule.IsSome(maybeSyms)) {
+					if (propInfo.PropertyType.Equals(typeof(ImmutableList<Symbol<IValue>>))) {
+						valueSet |= trySetPropertyValue(propInfo, component, maybeSyms.Value, component, componentConfigName, logger);
 					}
-				}
-				if (propInfo.PropertyType.Equals(typeof(Constant))) {
-					var maybeConst = ctxt.Lsystem.Constants.TryFind(propInfo.Name.ToLowerInvariant());
-					if (OptionModule.IsSome(maybeConst) && maybeConst.Value.IsConstant) {
-						propInfo.SetValue(component, (Constant)maybeConst.Value, null);
-					}
-				}
-				if (propInfo.PropertyType.Equals(typeof(ValuesArray))) {
-					var maybeConst = ctxt.Lsystem.Constants.TryFind(propInfo.Name.ToLowerInvariant());
-					if (OptionModule.IsSome(maybeConst) && maybeConst.Value.IsArray) {
-						propInfo.SetValue(component, (ValuesArray)maybeConst.Value, null);
-					}
-				}
-				else if (propInfo.PropertyType.Equals(typeof(ImmutableList<Symbol<IValue>>))) {
-					var maybeSyms = ctxt.Lsystem.SymbolsConstants.TryFind(propInfo.Name.ToLowerInvariant());
-					if (OptionModule.IsSome(maybeSyms)) {
-						propInfo.SetValue(component, maybeSyms.Value, null);
+					else {
+						logger.LogMessage(Message.ExpectedSymbolListAsValue, propInfo.Name, component.GetType().FullName);
 					}
 				}
 
+
+				var maybeConst = lsystem.Constants.TryFind(nameLower);
+				if (OptionModule.IsSome(maybeConst)) {
+
+					var constant = maybeConst.Value;
+
+					if (propInfo.PropertyType.Equals(typeof(IValue))) {
+						valueSet |= trySetPropertyValue(propInfo, component, constant, component, componentConfigName, logger);
+					}
+					else if (propInfo.PropertyType.Equals(typeof(Constant))) {
+						if (constant.IsConstant) {
+							valueSet |= trySetPropertyValue(propInfo, component, constant, component, componentConfigName, logger);
+						}
+						else {
+							logger.LogMessage(Message.ExpectedConstantAsValue, propInfo.Name, componentConfigName, component.GetType().FullName);
+						}
+					}
+					else if (propInfo.PropertyType.Equals(typeof(ValuesArray))) {
+						if (constant.IsArray) {
+							valueSet |= trySetPropertyValue(propInfo, component, constant, component, componentConfigName, logger);
+						}
+						else {
+							logger.LogMessage(Message.ExpectedArrayAsValue, propInfo.Name, componentConfigName, component.GetType().FullName);
+						}
+					}
+					else {
+						logger.LogMessage(Message.ExpectedIValueAsValue, propInfo.Name, componentConfigName, component.GetType().FullName);
+					}
+				}
+
+				if (mandatory && !valueSet) {
+					logger.LogMessage(Message.UnsetMandatoryProperty, propInfo.Name, componentConfigName, component.GetType().FullName);
+					error = true;
+				}
+
 			}
+
+			return !error;
+		}
+
+		bool trySetPropertyValue(PropertyInfo pi, object obj, object value, IComponent component, string configName, IMessageLogger logger) {
+			try {
+				pi.SetValue(obj, value, null);
+				return true;
+			}
+			catch (InvalidUserValueException ex) {
+				logger.LogMessage(Message.FailedToSetPropertyValue, pi.Name, configName, component.GetType().FullName, ex.Message);
+			}
+
+			return false;
+		}
+
+
+		public enum Message {
+
+			[Message(MessageType.Error, "Configuration do not have starting component (component implementing `{0}` interface).")]
+			NoStartComponent,
+			[Message(MessageType.Error, "Configuration have more than one starting component (component implementing `{0}` interface).")]
+			MoreStartComponents,
+			[Message(MessageType.Error, "Unset mandatory connection `{0}.{1}` of `{2}`.")]
+			UnsetMandatoryConnection,
+			[Message(MessageType.Error, "More than one component is connected to `{0}.{1}` of `{2}` which do not support multiple connections.")]
+			MoreThanOneConnection,
+			[Message(MessageType.Error, "Unset mandatory property `{0}` of `{1}` (`{2}`).")]
+			UnsetMandatoryProperty,
+			[Message(MessageType.Error, "Failed to resolve component with type `{0}`.")]
+			ComponentResolveError,
+			[Message(MessageType.Error, "Failed to resolve container with type `{0}`.")]
+			ContainerResolveError,
+			[Message(MessageType.Error, "Component `{0}` does not implement required interface `{1}`.")]
+			ComponentDontImplementInterface,
+			[Message(MessageType.Error, "Component `{0}` does not have parameter-less constructor.")]
+			ComponentParamlessCtorMissing,
+			[Message(MessageType.Error, "Component `{0}` in not compatible with container `{1}`.")]
+			ComponentDontFitContainer,
+			[Message(MessageType.Error, "Failed to connect `{0}` and `{1}.{2}`, `{3}` not found.")]
+			FailedToConnect,
+			[Message(MessageType.Error, "Failed to connect `{0}` and `{1}.{2}`, public property `{2}` on `{1}` does not exist.")]
+			FailedToConnectPropertyDontExist,
+			[Message(MessageType.Error, "Failed to connect `{0}` and `{1}.{2}`, `{0}` is not assignable to `{1}.{2}`.")]
+			FailedToConnectNotAssignable,
+
+
+			[Message(MessageType.Warning, "Expected constant as value of property `{0}` of `{1}` (`{2}`).")]
+			ExpectedConstantAsValue,
+			[Message(MessageType.Warning, "Expected array as value of property `{0}` of `{1}` (`{2}`).")]
+			ExpectedArrayAsValue,
+			[Message(MessageType.Warning, "Expected symbols list as value of property `{0}` of `{1}` (`{2}`).")]
+			ExpectedSymbolListAsValue,
+			[Message(MessageType.Warning, "Expected constant or array as value of property `{0}` of `{1}` (`{2}`).")]
+			ExpectedIValueAsValue,
+			[Message(MessageType.Warning, "Failed to set value of property `{0}` of `{1}` (`{2}`). {3}")]
+			FailedToSetPropertyValue,
+
 
 		}
 
