@@ -9,7 +9,8 @@ using System.IO.Compression;
 
 namespace Malsys.Processing.Components.Renderers.TwoD {
 	public class SvgRenderer2D : IRenderer2D {
-
+		
+		private const float invertY = -1;
 		public const string SvgFileExtension = ".svg";
 		public const string SvgzFileExtension = ".svgz";
 
@@ -27,12 +28,6 @@ namespace Malsys.Processing.Components.Renderers.TwoD {
 		private float marginT, marginR, marginB, marginL;
 		private float measuredMinX, measuredMinY, measuredMaxX, measuredMaxY;
 		private float minX, minY, maxX, maxY;
-
-
-
-		private List<PointF> points;
-		private List<ColorF> colors;
-		private List<float> widths;
 
 
 		public SvgRenderer2D() {
@@ -108,11 +103,6 @@ namespace Malsys.Processing.Components.Renderers.TwoD {
 		public void Initialize(ProcessContext ctxt) {
 
 			context = ctxt;
-
-			points = new List<PointF>();
-			colors = new List<ColorF>();
-			widths = new List<float>();
-
 		}
 
 		public void Cleanup() { }
@@ -145,6 +135,11 @@ namespace Malsys.Processing.Components.Renderers.TwoD {
 					 minY - marginT,
 					 maxX - minX + marginL + marginR,
 					 maxY - minY + marginT + marginB));
+
+				lastPoint.X = originX;
+				lastPoint.Y = originY;
+				lastColor = ColorF.Black;
+				lastWidth = 1f;
 			}
 		}
 
@@ -165,9 +160,11 @@ namespace Malsys.Processing.Components.Renderers.TwoD {
 
 		#endregion
 
-		#region IBasic2DRenderer Members
+		#region IRenderer2D Members
 
 		public void MoveTo(PointF point, ColorF color, float width) {
+
+			point.Y *= invertY;
 
 			if (measuring) {
 				measure(point);
@@ -181,6 +178,7 @@ namespace Malsys.Processing.Components.Renderers.TwoD {
 
 		public void LineTo(PointF point, ColorF color, float width) {
 
+			point.Y *= invertY;
 
 			if (measuring) {
 				measure(point);

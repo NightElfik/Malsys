@@ -1,0 +1,33 @@
+﻿@model IPagination<InputProcessesHistoryItem>
+
+@{
+	ViewBag.Title = "Input processes history";
+}
+
+
+<div class="clearfix">
+@Html.Pager(Model)
+</div>
+
+@Html.Grid(Model).Columns(col => {
+		col.For(m => m.ProcessId)
+			.HeaderAttributes(style => "width: 40px;")
+			.Attributes(@class => "center");
+		col.For(m => m.User)
+			.HeaderAttributes(style => "width: 100px;");
+		col.For(m => m.ParentProcessId)
+			.HeaderAttributes(style => "width: 40px;")
+			.Attributes(@class => "center");
+		col.For(m => "<abbr title=\"" + m.Date + "\">" + Math.Round((DateTime.Now - m.Date).TotalDays, 2) + "</abbr>")
+			.Named("Days old")
+			.HeaderAttributes(style => "width: 100px;")
+			.Attributes(@class => "center")
+			.Encode(false);
+		col.For(m => m.SourceId)
+			.HeaderAttributes(style => "width: 40px;")
+			.Attributes(@class => "center");
+		col.For(m => "<pre class='malsys collapsable noMargin'>" + m.Source + "</pre>")
+			.Named("Source")
+			.Encode(false);
+	}).Attributes(@class => "w100")
+

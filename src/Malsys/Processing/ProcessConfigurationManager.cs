@@ -300,12 +300,19 @@ namespace Malsys.Processing {
 		}
 
 		bool trySetPropertyValue(PropertyInfo pi, object obj, object value, IComponent component, string configName, IMessageLogger logger) {
+
 			try {
 				pi.SetValue(obj, value, null);
 				return true;
 			}
-			catch (InvalidUserValueException ex) {
-				logger.LogMessage(Message.FailedToSetPropertyValue, pi.Name, configName, component.GetType().FullName, ex.Message);
+			catch (TargetInvocationException ex) {
+				if (ex.InnerException is InvalidUserValueException) {
+					logger.LogMessage(Message.FailedToSetPropertyValue, pi.Name, configName, component.GetType().FullName, ex.InnerException.Message);
+				}
+				else {
+					logger.LogMessage(Message.SetPropertyValueError, pi.Name, configName, component.GetType().FullName,
+						(ex.InnerException ?? ex).GetType().Name);
+				}
 			}
 
 			return false;
@@ -340,6 +347,8 @@ namespace Malsys.Processing {
 			FailedToConnectPropertyDontExist,
 			[Message(MessageType.Error, "Failed to connect `{0}` and `{1}.{2}`, `{0}` is not assignable to `{1}.{2}`.")]
 			FailedToConnectNotAssignable,
+			[Message(MessageType.Error, "Exception `{3}` was thrown on set value of property `{0}` of `{1}` (`{2}`).")]
+			SetPropertyValueError,
 
 
 			[Message(MessageType.Warning, "Expected constant as value of property `{0}` of `{1}` (`{2}`).")]

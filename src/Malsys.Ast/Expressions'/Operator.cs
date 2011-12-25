@@ -5,6 +5,9 @@ namespace Malsys.Ast {
 	/// </summary>
 	public class Operator : IExpressionMember {
 
+		/// <remarks>
+		/// Can be null for procedurally created operators like implicit multiplication.
+		/// </remarks>
 		public readonly string Syntax;
 
 

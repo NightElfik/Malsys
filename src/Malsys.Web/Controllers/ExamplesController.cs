@@ -5,9 +5,9 @@ using System.Web;
 using System.Web.Mvc;
 
 namespace Malsys.Web.Controllers {
-	public class ExamplesController : Controller {
+	public partial class ExamplesController : Controller {
 
-		public ActionResult Index() {
+		public virtual ActionResult Index() {
 			return View();
 		}
 

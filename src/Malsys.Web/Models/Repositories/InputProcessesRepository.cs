@@ -30,7 +30,7 @@ namespace Malsys.Web.Models.Repositories {
 		public IInputDb InputDb { get { return inputDb; } }
 
 
-		public InputProcess AddInput(InputBlock input, IEnumerable<OutputFile> outputs, string userName) {
+		public InputProcess AddInput(InputBlock input, int? parentId, IEnumerable<OutputFile> outputs, string userName) {
 
 			var user = usersDb.TryGetUserByName(userName);
 
@@ -50,7 +50,13 @@ namespace Malsys.Web.Models.Repositories {
 
 			CanonicInput canonicInput = inputDb.CanonicInputs.Where(i => i.Hash == hash).Where(i => i.Source == inputStr).SingleOrDefault();
 
-			if (canonicInput == null) {
+			if (canonicInput != null){
+				var oldestProcess = canonicInput.InputProcesses.OrderBy(ci => ci.ProcessDate).FirstOrDefault();
+				if (oldestProcess != null) {
+					parentId = oldestProcess.InputProcessId;
+				}
+			}
+			else  {
 				canonicInput = new CanonicInput() {
 					Hash = hash,
 					Source = inputStr,
@@ -61,10 +67,16 @@ namespace Malsys.Web.Models.Repositories {
 				inputDb.SaveChanges();
 			}
 
+			// make sure that parent ID is valid
+			if (inputDb.InputProcesses.SingleOrDefault(ip => ip.InputProcessId == parentId) == null) {
+				parentId = null;
+			}
+
 			DateTime now = dateTimeProvider.Now;
 
 			var inputProcess = new InputProcess() {
 				CanonicInput = canonicInput,
+				ParentInputProcessId = parentId,
 				User = user,
 				ProcessDate = now
 			};

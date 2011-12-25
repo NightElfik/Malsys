@@ -4,7 +4,7 @@ using Malsys.Compilers.Expressions;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Compiled.Expressions;
-using OperatorCorePos = System.Tuple<Malsys.Compilers.Expressions.OperatorCore, Malsys.Position>;
+using OperatorCoreAst = System.Tuple<Malsys.Compilers.Expressions.OperatorCore, Malsys.Ast.Operator>;
 
 namespace Malsys.Compilers {
 	internal partial class ExpressionCompiler {
@@ -17,7 +17,7 @@ namespace Malsys.Compilers {
 			private ExpressionCompiler parentExprCompiler;
 
 			private State state;
-			private Stack<OperatorCorePos> optorsStack;
+			private Stack<OperatorCoreAst> optorsStack;
 			private Stack<IExpression> operandsStack;
 
 
@@ -26,7 +26,7 @@ namespace Malsys.Compilers {
 				this.logger = logger;
 				parentExprCompiler = parentExpressionCompiler;
 
-				optorsStack = new Stack<OperatorCorePos>();
+				optorsStack = new Stack<OperatorCoreAst>();
 				operandsStack = new Stack<IExpression>();
 			}
 
@@ -85,7 +85,7 @@ namespace Malsys.Compilers {
 						// Lets add implicit multiplication between them.
 						operandsStack.Push(parentExprCompiler.Compile(bracketedExpr.Expression, logger));
 						// implicit multiplication
-						optorsStack.Push(new OperatorCorePos(OperatorCore.Multiply, bracketedExpr.Position.GetBeginPos()));
+						optorsStack.Push(new OperatorCoreAst(OperatorCore.Multiply, new Operator(null, bracketedExpr.Position.GetBeginPos())));
 						state = State.ExcpectingOperator;
 						break;
 
@@ -108,7 +108,7 @@ namespace Malsys.Compilers {
 						// So directly before function is operand.
 						// Lets add implicit multiplication between them.
 						compileFunctionCall(funExpr);
-						optorsStack.Push(new OperatorCorePos(OperatorCore.Multiply, funExpr.Position.GetBeginPos()));
+						optorsStack.Push(new OperatorCoreAst(OperatorCore.Multiply, new Operator(null, funExpr.Position.GetBeginPos())));
 						state = State.ExcpectingOperator;
 						break;
 
@@ -136,7 +136,7 @@ namespace Malsys.Compilers {
 
 						// apply indexer on previous operand
 						var indexExpr = parentExprCompiler.Compile(indexerExpr.Index, logger);
-						operandsStack.Push(new Indexer(operandsStack.Pop(), indexExpr));
+						operandsStack.Push(new Indexer(operandsStack.Pop(), indexExpr, indexerExpr));
 						state = State.ExcpectingOperator;
 						break;
 
@@ -151,7 +151,7 @@ namespace Malsys.Compilers {
 				switch (state) {
 					case State.ExcpectingOperand:
 						var arr = parentExprCompiler.CompileList(arrExpr, logger);
-						operandsStack.Push(new ExpressionValuesArray(arr));
+						operandsStack.Push(new ExpressionValuesArray(arr, arrExpr));
 						state = State.ExcpectingOperator;
 						break;
 
@@ -192,11 +192,11 @@ namespace Malsys.Compilers {
 						KnownConstant cnst;
 						if (parentExprCompiler.knownConstants.TryGet(variable.Name, out cnst)) {
 							// known constant
-							operandsStack.Push(new Constant(cnst.Value));
+							operandsStack.Push(new Constant(cnst.Value, new FloatConstant(cnst.Value, ConstantFormat.Float, variable.Position)));
 						}
 						else {
 							// variable
-							operandsStack.Push(new ExprVariable(variable.Name));
+							operandsStack.Push(new ExprVariable(variable.Name, variable));
 						}
 
 						state = State.ExcpectingOperator;
@@ -220,7 +220,7 @@ namespace Malsys.Compilers {
 						// operator while expecting operand? It must be unary!
 						OperatorCore opUnary;
 						if (parentExprCompiler.knownOperators.TryGet(optor.Syntax, 1, out opUnary)) {
-							state = tryPushOperator(new OperatorCorePos(opUnary, optor.Position)) ? State.ExcpectingOperand : State.Error;
+							state = tryPushOperator(new OperatorCoreAst(opUnary, optor)) ? State.ExcpectingOperand : State.Error;
 						}
 						else {
 							logger.LogMessage(Message.UnknownUnaryOperator, optor.Position, optor.Syntax);
@@ -232,7 +232,7 @@ namespace Malsys.Compilers {
 						// operator must be binary
 						OperatorCore opBinary;
 						if (parentExprCompiler.knownOperators.TryGet(optor.Syntax, 2, out opBinary)) {
-							state = tryPushOperator(new OperatorCorePos(opBinary, optor.Position)) ? State.ExcpectingOperand : State.Error;
+							state = tryPushOperator(new OperatorCoreAst(opBinary, optor)) ? State.ExcpectingOperand : State.Error;
 						}
 						else {
 							logger.LogMessage(Message.UnknownBinaryOperator, optor.Position, optor.Syntax);
@@ -267,10 +267,10 @@ namespace Malsys.Compilers {
 
 				FunctionCore knownFun;
 				if (parentExprCompiler.knownFunctions.TryGet(funCall.NameId.Name, funCall.Arguments.Length, out knownFun)) {
-					operandsStack.Push(new FunctionCall(funCall.NameId.Name, knownFun.EvalFunction, rsltArgs, knownFun.ParamsTypes));
+					operandsStack.Push(new FunctionCall(funCall.NameId.Name, knownFun.EvalFunction, rsltArgs, knownFun.ParamsTypes, funCall));
 				}
 				else {
-					operandsStack.Push(new UserFunctionCall(funCall.NameId.Name, rsltArgs));
+					operandsStack.Push(new UserFunctionCall(funCall.NameId.Name, rsltArgs, funCall));
 				}
 			}
 
@@ -280,7 +280,7 @@ namespace Malsys.Compilers {
 			/// active precedence are popped end evaluated before the push.
 			/// </summary>
 			/// <returns>Returns false if there was not enough operands on stack to evaluate popped operators.</returns>
-			private bool tryPushOperator(OperatorCorePos op) {
+			private bool tryPushOperator(OperatorCoreAst op) {
 
 				while (optorsStack.Count > 0 && op.Item1.ActivePrecedence > optorsStack.Peek().Item1.Precedence) {
 					if (!tryPopOperator()) {
@@ -304,33 +304,33 @@ namespace Malsys.Compilers {
 			/// <returns>Returns false operation failed (i.e. if there was not enough operands on stack or internal error).</returns>
 			private bool tryPopOperator() {
 
-				var opTopPos = optorsStack.Pop();
-				var opTop = opTopPos.Item1;
+				var opTopAst = optorsStack.Pop();
+				var opTop = opTopAst.Item1;
 
 				if (opTop.Arity == 1) {
 					if (operandsStack.Count < 1) {
-						logger.LogMessage(Message.TooFewOperands, opTopPos.Item2);
+						logger.LogMessage(Message.TooFewOperands, opTopAst.Item2.Position);
 						return false;
 					}
 
 					operandsStack.Push(new UnaryOperator(opTop.Syntax, opTop.Precedence, opTop.ActivePrecedence,
-						opTop.EvalFunction, operandsStack.Pop(), opTop.ParamsTypes[0]));
+						opTop.EvalFunction, operandsStack.Pop(), opTop.ParamsTypes[0], opTopAst.Item2));
 				}
 
 				else if (opTop.Arity == 2) {
 					if (operandsStack.Count < 2) {
-						logger.LogMessage(Message.TooFewOperands, opTopPos.Item2);
+						logger.LogMessage(Message.TooFewOperands, opTopAst.Item2.Position);
 						return false;
 					}
 					var right = operandsStack.Pop();
 					var left = operandsStack.Pop();
 
 					operandsStack.Push(new BinaryOperator(opTop.Syntax, opTop.Precedence, opTop.ActivePrecedence,
-						opTop.EvalFunction, left, opTop.ParamsTypes[0], right, opTop.ParamsTypes[1]));
+						opTop.EvalFunction, left, opTop.ParamsTypes[0], right, opTop.ParamsTypes[1], opTopAst.Item2));
 				}
 
 				else {
-					logger.LogMessage(Message.InternalError, opTopPos.Item2, "Operator with unexpected arity {0}.".Fmt(opTop.Arity));
+					logger.LogMessage(Message.InternalError, opTopAst.Item2.Position, "Operator with unexpected arity {0}.".Fmt(opTop.Arity));
 					return false;
 				}
 

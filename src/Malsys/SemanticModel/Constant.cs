@@ -17,20 +17,17 @@ namespace Malsys.SemanticModel {
 		public static readonly Constant False = Zero;
 
 
+
 		public readonly double Value;
 
 		public readonly Ast.FloatConstant AstNode;
 
 
-		public Constant(double value) {
-			Value = value;
-			AstNode = null;
-		}
-
-		public Constant(double value, Ast.FloatConstant astNode) {
+		public Constant(double value, Ast.FloatConstant astNode = null) {
 			Value = value;
 			AstNode = astNode;
 		}
+
 
 		public bool IsZero { get { return Math.Abs(Value) < FloatArithmeticHelper.Epsilon; } }
 
@@ -47,6 +44,8 @@ namespace Malsys.SemanticModel {
 		public bool IsEmptyExpression { get { return false; } }
 
 		public int RoundedIntValue { get { return (int)Math.Round(Value); } }
+
+		public Position AstPosition { get { return AstNode == null ? Position.Unknown : AstNode.Position; } }
 
 
 		public static implicit operator double(Constant c) {
@@ -69,7 +68,7 @@ namespace Malsys.SemanticModel {
 				return Value.EpsilonCompareTo(((Constant)other).Value);
 			}
 			else {
-				return -1; // constant is less than array
+				return -1;  // constant is less than array
 			}
 		}
 

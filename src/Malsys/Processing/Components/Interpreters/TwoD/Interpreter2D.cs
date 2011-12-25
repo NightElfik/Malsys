@@ -4,6 +4,7 @@ using Malsys.Evaluators;
 using Malsys.Media;
 using Malsys.Processing.Components.Renderers;
 using Malsys.SemanticModel;
+using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Processing.Components.Interpreters.TwoD {
 	public class Interpreter2D : IInterpreter {
@@ -11,6 +12,18 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 		private IRenderer2D renderer;
 
 		private State2D currState;
+
+		private bool continousColoring;
+		private bool colorContinously;
+		private ColorGradient colorGradient;
+		private uint drawCommandsCalled;
+		private uint drawCommandsMeasured;
+
+
+		private bool measuring;
+
+		[UserSettable]
+		public IValue ContinousColoring { get; set; }
 
 
 		#region IInterpreter Members
@@ -29,18 +42,49 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 			return renderer.GetType().GetInterfaces().Contains(typeof(IRenderer2D));
 		}
 
-		public bool RequiresMeasure { get { return false; } }
+		public bool RequiresMeasure { get { return continousColoring; } }
 
-		public void Initialize(ProcessContext ctxt) { }
+		public void Initialize(ProcessContext ctxt) {
+
+			if (ContinousColoring != null) {
+				if (ContinousColoring.IsConstant) {
+					continousColoring = !((Constant)ContinousColoring).IsZero;
+					colorGradient = ColorGradients.Rainbow;
+				}
+				else {
+					continousColoring = true;
+					colorGradient = new ColorGradientFactory().CreateFromValuesArray((ValuesArray)ContinousColoring, ctxt.Logger);
+				}
+			}
+
+		}
 
 		public void Cleanup() { }
 
 		public void BeginProcessing(bool measuring) {
+
+			this.measuring = measuring;
+
+			if (measuring) {
+				drawCommandsMeasured = 0;
+				colorContinously = false;
+			}
+			else {
+				colorContinously = continousColoring;
+			}
+
+			drawCommandsCalled = 0;
 			currState = new State2D();
+
 			renderer.BeginProcessing(measuring);
 		}
 
 		public void EndProcessing() {
+
+			if (measuring) {
+				drawCommandsMeasured = drawCommandsCalled;
+			}
+
 			renderer.EndProcessing();
 		}
 
@@ -61,7 +105,9 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 			currState.X += param * Math.Cos(currState.CurrentAngle * MathHelper.PiOver180);
 			currState.Y += param * Math.Sin(currState.CurrentAngle * MathHelper.PiOver180);
 
-			renderer.MoveTo(new PointF((float)currState.X, (float)currState.Y), ColorF.Black, 1);
+			ColorF color = colorContinously ? colorGradient[(float)drawCommandsCalled / drawCommandsMeasured] : ColorF.Black;
+
+			renderer.MoveTo(new PointF((float)currState.X, (float)currState.Y), color, 1);
 		}
 
 		[SymbolInterpretation]
@@ -72,7 +118,10 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 			currState.X += param * Math.Cos(currState.CurrentAngle * MathHelper.PiOver180);
 			currState.Y += param * Math.Sin(currState.CurrentAngle * MathHelper.PiOver180);
 
-			renderer.LineTo(new PointF((float)currState.X, (float)currState.Y), ColorF.Black, 1);
+			ColorF color = colorContinously ? colorGradient[(float)drawCommandsCalled / drawCommandsMeasured] : ColorF.Black;
+			drawCommandsCalled++;
+
+			renderer.LineTo(new PointF((float)currState.X, (float)currState.Y), color, 1);
 		}
 
 		[SymbolInterpretation]

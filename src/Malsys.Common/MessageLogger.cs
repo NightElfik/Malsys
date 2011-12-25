@@ -6,14 +6,18 @@ using System.Text;
 namespace Malsys {
 	public class MessageLogger : IMessageLogger, IEnumerable<Message> {
 
-		public bool ErrorOcured { get; private set; }
-
 		private List<Message> messages = new List<Message>();
 
 
 		public MessageLogger() {
 			ErrorOcured = false;
 		}
+
+
+		public bool ErrorOcured { get; private set; }
+
+		public int Count { get { return messages.Count; } }
+
 
 		public void AddMessage(Message msg) {
 			if (msg.Type == MessageType.Error) {

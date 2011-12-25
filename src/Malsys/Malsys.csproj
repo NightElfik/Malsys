@@ -140,8 +140,12 @@
     <Compile Include="Evaluators\ParametersEvaluator.cs" />
     <Compile Include="Evaluators\SymbolEvaluator.cs" />
     <Compile Include="Helpers%27\FloatArithmeticHelper.cs" />
+    <Compile Include="Media\ColorGradient.cs" />
+    <Compile Include="Media\ColorGradientFactory.cs" />
+    <Compile Include="Media\ColorGradients.cs" />
     <Compile Include="Processing\ComponentResolver.cs" />
     <Compile Include="Processing\Components\Common\AxiomProvider.cs" />
+    <Compile Include="Processing\Components\Common\ConstantsDumper.cs" />
     <Compile Include="Processing\Components\Common\RandomGeneratorProvider.cs" />
     <Compile Include="Processing\Components\Common\SymbolProvider.cs" />
     <Compile Include="Processing\Components\Common\SymbolsSaver.cs" />

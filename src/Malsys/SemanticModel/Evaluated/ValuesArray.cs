@@ -7,22 +7,46 @@ namespace Malsys.SemanticModel.Evaluated {
 	/// </summary>
 	public class ValuesArray : ImmutableList<IValue>, IValue {
 
-		new public static readonly ValuesArray Empty = new ValuesArray();
+		new public static readonly ValuesArray Empty = new ValuesArray(null);
 
 
-		public ValuesArray()
-			: base(ImmutableList<IValue>.Empty) { }
 
-		public ValuesArray(IEnumerable<IValue> vals)
-			: base(vals) { }
+		public readonly Ast.ExpressionsArray AstNode;
 
 
-		public ValuesArray(ImmutableList<IValue> vals)
-			: base(vals) { }
+		public ValuesArray(Ast.ExpressionsArray astNode = null)
+			: base(ImmutableList<IValue>.Empty) {
+
+				AstNode = astNode;
+		}
+
+		public ValuesArray(IEnumerable<IValue> vals, Ast.ExpressionsArray astNode = null)
+			: base(vals) {
+
+			AstNode = astNode;
+		}
 
 
-		public override string ToString() {
-			StringBuilder sb = new StringBuilder();
+		public ValuesArray(ImmutableList<IValue> vals, Ast.ExpressionsArray astNode = null)
+			: base(vals) {
+
+			AstNode = astNode;
+		}
+
+		public bool IsConstant { get { return false; } }
+
+		public bool IsArray { get { return true; } }
+
+		public bool IsNaN { get { return false; } }
+
+		public ExpressionValueType Type { get { return ExpressionValueType.Array; } }
+
+		public Position AstPosition { get { return AstNode == null ? Position.Unknown : AstNode.Position; } }
+
+
+
+		public void ToString(StringBuilder sb) {
+
 			sb.Append("{");
 
 			for (int i = 0; i < Length; i++) {
@@ -34,20 +58,15 @@ namespace Malsys.SemanticModel.Evaluated {
 			}
 
 			sb.Append("}");
+		}
+
+		public override string ToString() {
+
+			var sb = new StringBuilder();
+			ToString(sb);
 			return sb.ToString();
 		}
 
-
-		#region IValue Members
-
-		public bool IsConstant { get { return false; } }
-		public bool IsArray { get { return true; } }
-		public bool IsNaN { get { return false; } }
-		public ExpressionValueType Type { get { return ExpressionValueType.Array; } }
-
-		#endregion
-
-		#region IComparable<IArithmeticValue> Members
 
 		public int CompareTo(IValue other) {
 			if (other.IsConstant) {
@@ -58,7 +77,7 @@ namespace Malsys.SemanticModel.Evaluated {
 				int cmp = Length.CompareTo(o.Length);
 
 				if (cmp == 0) {
-					// arrays have same length
+					// arrays have the same length
 					for (int i = 0; i < Length; i++) {
 						cmp = this[i].CompareTo(o[i]);
 						if (cmp != 0) {
@@ -66,7 +85,7 @@ namespace Malsys.SemanticModel.Evaluated {
 						}
 					}
 
-					return 0; // they are same
+					return 0;  // they are the same
 				}
 				else {
 					return cmp;
@@ -74,6 +93,6 @@ namespace Malsys.SemanticModel.Evaluated {
 			}
 		}
 
-		#endregion
+
 	}
 }

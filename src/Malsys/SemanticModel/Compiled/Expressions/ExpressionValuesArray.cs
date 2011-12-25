@@ -5,11 +5,20 @@ namespace Malsys.SemanticModel.Compiled.Expressions {
 	/// </summary>
 	public class ExpressionValuesArray : ImmutableList<IExpression>, IExpression {
 
-		public ExpressionValuesArray()
-			: base(ImmutableList<IExpression>.Empty) { }
+		public readonly Ast.ExpressionsArray AstNode;
 
-		public ExpressionValuesArray(ImmutableList<IExpression> values)
-			: base(values) { }
+
+		public ExpressionValuesArray(Ast.ExpressionsArray astNode)
+			: base(ImmutableList<IExpression>.Empty) {
+
+			AstNode = astNode;
+		}
+
+		public ExpressionValuesArray(ImmutableList<IExpression> values, Ast.ExpressionsArray astNode)
+			: base(values) {
+
+			AstNode = astNode;
+		}
 
 
 

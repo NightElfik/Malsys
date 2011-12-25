@@ -7,16 +7,25 @@
     <Schema Namespace="MalsysDb.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
         <EntityContainer Name="MalsysDbStoreContainer">
           <EntitySet Name="CanonicInputs" EntityType="MalsysDb.Store.CanonicInputs" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Feedbacks" EntityType="MalsysDb.Store.Feedbacks" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="InputProcesses" EntityType="MalsysDb.Store.InputProcesses" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="ProcessOutputs" EntityType="MalsysDb.Store.ProcessOutputs" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Roles" EntityType="MalsysDb.Store.Roles" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Users" EntityType="MalsysDb.Store.Users" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="UsersInRoles" EntityType="MalsysDb.Store.UsersInRoles" store:Type="Tables" Schema="dbo" />
-          <AssociationSet Name="FK_LsystemProcesses_CanonicLsystems" Association="MalsysDb.Store.FK_LsystemProcesses_CanonicLsystems">
+          <AssociationSet Name="FK_Feedbacks_Users" Association="MalsysDb.Store.FK_Feedbacks_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Feedbacks" EntitySet="Feedbacks" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InputProcesses_CanonicInputs" Association="MalsysDb.Store.FK_InputProcesses_CanonicInputs">
             <End Role="CanonicInputs" EntitySet="CanonicInputs" />
             <End Role="InputProcesses" EntitySet="InputProcesses" />
           </AssociationSet>
-          <AssociationSet Name="FK_LsystemProcesses_Users" Association="MalsysDb.Store.FK_LsystemProcesses_Users">
+          <AssociationSet Name="FK_InputProcesses_InputProcesses" Association="MalsysDb.Store.FK_InputProcesses_InputProcesses">
+            <End Role="InputProcesses" EntitySet="InputProcesses" />
+            <End Role="InputProcesses1" EntitySet="InputProcesses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InputProcesses_Users" Association="MalsysDb.Store.FK_InputProcesses_Users">
             <End Role="Users" EntitySet="Users" />
             <End Role="InputProcesses" EntitySet="InputProcesses" />
           </AssociationSet>
@@ -43,11 +52,23 @@
           <Property Name="SourceSize" Type="int" Nullable="false" />
           <Property Name="OutputSize" Type="bigint" Nullable="false" />
         </EntityType>
+        <EntityType Name="Feedbacks">
+          <Key>
+            <PropertyRef Name="FeedbackId" />
+          </Key>
+          <Property Name="FeedbackId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="UserId" Type="int" />
+          <Property Name="Subject" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="SubmitDate" Type="datetime" Nullable="false" />
+          <Property Name="Email" Type="nvarchar(max)" />
+          <Property Name="Message" Type="nvarchar(max)" Nullable="false" />
+        </EntityType>
         <EntityType Name="InputProcesses">
           <Key>
             <PropertyRef Name="InputProcessId" />
           </Key>
           <Property Name="InputProcessId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="ParentInputProcessId" Type="int" />
           <Property Name="CanonicInputId" Type="int" Nullable="false" />
           <Property Name="UserId" Type="int" />
           <Property Name="ProcessDate" Type="datetime" Nullable="false" />
@@ -58,7 +79,7 @@
           </Key>
           <Property Name="ProcessOutputId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
           <Property Name="InputProcessId" Type="int" Nullable="false" />
-          <Property Name="FileName" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="FileName" Type="nvarchar" Nullable="false" MaxLength="64" />
           <Property Name="CreationDate" Type="datetime" Nullable="false" />
           <Property Name="LastOpenDate" Type="datetime" Nullable="false" />
         </EntityType>
@@ -93,8 +114,24 @@
           <Property Name="UserId" Type="int" Nullable="false" />
           <Property Name="RoleId" Type="int" Nullable="false" />
         </EntityType>
-        <Association Name="FK_LsystemProcesses_CanonicLsystems">
-          <End Role="CanonicInputs" Type="MalsysDb.Store.CanonicInputs" Multiplicity="1" />
+        <Association Name="FK_Feedbacks_Users">
+          <End Role="Users" Type="MalsysDb.Store.Users" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Feedbacks" Type="MalsysDb.Store.Feedbacks" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Feedbacks">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InputProcesses_CanonicInputs">
+          <End Role="CanonicInputs" Type="MalsysDb.Store.CanonicInputs" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
           <End Role="InputProcesses" Type="MalsysDb.Store.InputProcesses" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="CanonicInputs">
@@ -105,8 +142,22 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_LsystemProcesses_Users">
-          <End Role="Users" Type="MalsysDb.Store.Users" Multiplicity="0..1" />
+        <Association Name="FK_InputProcesses_InputProcesses">
+          <End Role="InputProcesses" Type="MalsysDb.Store.InputProcesses" Multiplicity="0..1" />
+          <End Role="InputProcesses1" Type="MalsysDb.Store.InputProcesses" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InputProcesses">
+              <PropertyRef Name="InputProcessId" />
+            </Principal>
+            <Dependent Role="InputProcesses1">
+              <PropertyRef Name="ParentInputProcessId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InputProcesses_Users">
+          <End Role="Users" Type="MalsysDb.Store.Users" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
           <End Role="InputProcesses" Type="MalsysDb.Store.InputProcesses" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Users">
@@ -165,25 +216,34 @@
       <Schema Namespace="MalsysDbEntities" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
         <EntityContainer Name="MalsysDb" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="CanonicInputs" EntityType="MalsysDbEntities.CanonicInput" />
+          <EntitySet Name="Feedbacks" EntityType="MalsysDbEntities.Feedback" />
           <EntitySet Name="InputProcesses" EntityType="MalsysDbEntities.InputProcess" />
+          <EntitySet Name="ProcessOutputs" EntityType="MalsysDbEntities.ProcessOutput" />
           <EntitySet Name="Roles" EntityType="MalsysDbEntities.Role" />
           <EntitySet Name="Users" EntityType="MalsysDbEntities.User" />
-          <AssociationSet Name="FK_LsystemProcesses_CanonicLsystems" Association="MalsysDbEntities.FK_LsystemProcesses_CanonicLsystems">
+          <AssociationSet Name="FK_InputProcesses_CanonicInputs" Association="MalsysDbEntities.FK_InputProcesses_CanonicInputs">
             <End Role="CanonicInput" EntitySet="CanonicInputs" />
             <End Role="InputProcess" EntitySet="InputProcesses" />
           </AssociationSet>
-          <AssociationSet Name="FK_LsystemProcesses_Users" Association="MalsysDbEntities.FK_LsystemProcesses_Users">
+          <AssociationSet Name="FK_Feedbacks_Users" Association="MalsysDbEntities.FK_Feedbacks_Users">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Feedback" EntitySet="Feedbacks" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InputProcesses_InputProcesses" Association="MalsysDbEntities.FK_InputProcesses_InputProcesses">
+            <End Role="InputProcess" EntitySet="InputProcesses" />
+            <End Role="InputProcess1" EntitySet="InputProcesses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_InputProcesses_Users" Association="MalsysDbEntities.FK_InputProcesses_Users">
             <End Role="User" EntitySet="Users" />
             <End Role="InputProcess" EntitySet="InputProcesses" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProcessOutputs_InputProcesses" Association="MalsysDbEntities.FK_ProcessOutputs_InputProcesses">
+            <End Role="InputProcess" EntitySet="InputProcesses" />
+            <End Role="ProcessOutput" EntitySet="ProcessOutputs" />
           </AssociationSet>
           <AssociationSet Name="UsersInRoles" Association="MalsysDbEntities.UsersInRoles">
             <End Role="Role" EntitySet="Roles" />
             <End Role="User" EntitySet="Users" />
-          </AssociationSet>
-          <EntitySet Name="ProcessOutputs" EntityType="MalsysDbEntities.ProcessOutput" />
-          <AssociationSet Name="FK_ProcessOutputs_InputProcesses" Association="MalsysDbEntities.FK_ProcessOutputs_InputProcesses">
-            <End Role="InputProcess" EntitySet="InputProcesses" />
-            <End Role="ProcessOutput" EntitySet="ProcessOutputs" />
           </AssociationSet>
         </EntityContainer>
         <EntityType Name="CanonicInput">
@@ -195,19 +255,45 @@
           <Property Type="String" Name="Source" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Type="Int32" Name="SourceSize" Nullable="false" />
           <Property Type="Int64" Name="OutputSize" Nullable="false" />
-          <NavigationProperty Name="InputProcesses" Relationship="MalsysDbEntities.FK_LsystemProcesses_CanonicLsystems" FromRole="CanonicInput" ToRole="InputProcess" />
+          <NavigationProperty Name="InputProcesses" Relationship="MalsysDbEntities.FK_InputProcesses_CanonicInputs" FromRole="CanonicInput" ToRole="InputProcess" />
+        </EntityType>
+        <EntityType Name="Feedback">
+          <Key>
+            <PropertyRef Name="FeedbackId" />
+          </Key>
+          <Property Type="Int32" Name="FeedbackId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="UserId" />
+          <Property Type="String" Name="Subject" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="DateTime" Name="SubmitDate" Nullable="false" />
+          <Property Type="String" Name="Email" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Message" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="User" Relationship="MalsysDbEntities.FK_Feedbacks_Users" FromRole="Feedback" ToRole="User" />
         </EntityType>
         <EntityType Name="InputProcess">
           <Key>
             <PropertyRef Name="InputProcessId" />
           </Key>
           <Property Type="Int32" Name="InputProcessId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="ParentInputProcessId" />
           <Property Type="Int32" Name="CanonicInputId" Nullable="false" />
           <Property Type="Int32" Name="UserId" />
           <Property Type="DateTime" Name="ProcessDate" Nullable="false" />
-          <NavigationProperty Name="CanonicInput" Relationship="MalsysDbEntities.FK_LsystemProcesses_CanonicLsystems" FromRole="InputProcess" ToRole="CanonicInput" />
-          <NavigationProperty Name="User" Relationship="MalsysDbEntities.FK_LsystemProcesses_Users" FromRole="InputProcess" ToRole="User" />
+          <NavigationProperty Name="CanonicInput" Relationship="MalsysDbEntities.FK_InputProcesses_CanonicInputs" FromRole="InputProcess" ToRole="CanonicInput" />
+          <NavigationProperty Name="InputProcesses" Relationship="MalsysDbEntities.FK_InputProcesses_InputProcesses" FromRole="InputProcess" ToRole="InputProcess1" />
+          <NavigationProperty Name="ParentInputProcess" Relationship="MalsysDbEntities.FK_InputProcesses_InputProcesses" FromRole="InputProcess1" ToRole="InputProcess" />
+          <NavigationProperty Name="User" Relationship="MalsysDbEntities.FK_InputProcesses_Users" FromRole="InputProcess" ToRole="User" />
           <NavigationProperty Name="ProcessOutputs" Relationship="MalsysDbEntities.FK_ProcessOutputs_InputProcesses" FromRole="InputProcess" ToRole="ProcessOutput" />
+        </EntityType>
+        <EntityType Name="ProcessOutput">
+          <Key>
+            <PropertyRef Name="ProcessOutputId" />
+          </Key>
+          <Property Type="Int32" Name="ProcessOutputId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="InputProcessId" Nullable="false" />
+          <Property Type="String" Name="FileName" Nullable="false" MaxLength="64" FixedLength="false" Unicode="true" />
+          <Property Type="DateTime" Name="CreationDate" Nullable="false" />
+          <Property Type="DateTime" Name="LastOpenDate" Nullable="false" />
+          <NavigationProperty Name="InputProcess" Relationship="MalsysDbEntities.FK_ProcessOutputs_InputProcesses" FromRole="ProcessOutput" ToRole="InputProcess" />
         </EntityType>
         <EntityType Name="Role">
           <Key>
@@ -232,10 +318,11 @@
           <Property Type="DateTime" Name="LastLoginDate" Nullable="false" />
           <Property Type="DateTime" Name="LastActivityDate" Nullable="false" />
           <Property Type="DateTime" Name="LastPwdChangeDate" Nullable="false" />
-          <NavigationProperty Name="InputProcesses" Relationship="MalsysDbEntities.FK_LsystemProcesses_Users" FromRole="User" ToRole="InputProcess" />
+          <NavigationProperty Name="Feedbacks" Relationship="MalsysDbEntities.FK_Feedbacks_Users" FromRole="User" ToRole="Feedback" />
+          <NavigationProperty Name="InputProcesses" Relationship="MalsysDbEntities.FK_InputProcesses_Users" FromRole="User" ToRole="InputProcess" />
           <NavigationProperty Name="Roles" Relationship="MalsysDbEntities.UsersInRoles" FromRole="User" ToRole="Role" />
         </EntityType>
-        <Association Name="FK_LsystemProcesses_CanonicLsystems">
+        <Association Name="FK_InputProcesses_CanonicInputs">
           <End Type="MalsysDbEntities.CanonicInput" Role="CanonicInput" Multiplicity="1" />
           <End Type="MalsysDbEntities.InputProcess" Role="InputProcess" Multiplicity="*" />
           <ReferentialConstraint>
@@ -247,7 +334,31 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_LsystemProcesses_Users">
+        <Association Name="FK_Feedbacks_Users">
+          <End Type="MalsysDbEntities.User" Role="User" Multiplicity="0..1" />
+          <End Type="MalsysDbEntities.Feedback" Role="Feedback" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Feedback">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InputProcesses_InputProcesses">
+          <End Type="MalsysDbEntities.InputProcess" Role="InputProcess" Multiplicity="0..1" />
+          <End Type="MalsysDbEntities.InputProcess" Role="InputProcess1" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="InputProcess">
+              <PropertyRef Name="InputProcessId" />
+            </Principal>
+            <Dependent Role="InputProcess1">
+              <PropertyRef Name="ParentInputProcessId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_InputProcesses_Users">
           <End Type="MalsysDbEntities.User" Role="User" Multiplicity="0..1" />
           <End Type="MalsysDbEntities.InputProcess" Role="InputProcess" Multiplicity="*" />
           <ReferentialConstraint>
@@ -259,21 +370,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="UsersInRoles">
-          <End Type="MalsysDbEntities.Role" Role="Role" Multiplicity="*" />
-          <End Type="MalsysDbEntities.User" Role="User" Multiplicity="*" />
-        </Association>
-        <EntityType Name="ProcessOutput">
-          <Key>
-            <PropertyRef Name="ProcessOutputId" />
-          </Key>
-          <Property Type="Int32" Name="ProcessOutputId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Type="Int32" Name="InputProcessId" Nullable="false" />
-          <Property Type="String" Name="FileName" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Type="DateTime" Name="CreationDate" Nullable="false" />
-          <Property Type="DateTime" Name="LastOpenDate" Nullable="false" />
-          <NavigationProperty Name="InputProcess" Relationship="MalsysDbEntities.FK_ProcessOutputs_InputProcesses" FromRole="ProcessOutput" ToRole="InputProcess" />
-        </EntityType>
         <Association Name="FK_ProcessOutputs_InputProcesses">
           <End Type="MalsysDbEntities.InputProcess" Role="InputProcess" Multiplicity="1" />
           <End Type="MalsysDbEntities.ProcessOutput" Role="ProcessOutput" Multiplicity="*" />
@@ -285,6 +381,10 @@
               <PropertyRef Name="InputProcessId" />
             </Dependent>
           </ReferentialConstraint>
+        </Association>
+        <Association Name="UsersInRoles">
+          <End Type="MalsysDbEntities.Role" Role="Role" Multiplicity="*" />
+          <End Type="MalsysDbEntities.User" Role="User" Multiplicity="*" />
         </Association>
         </Schema>
     </edmx:ConceptualModels>
@@ -303,13 +403,37 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="Feedbacks">
+            <EntityTypeMapping TypeName="MalsysDbEntities.Feedback">
+              <MappingFragment StoreEntitySet="Feedbacks">
+                <ScalarProperty Name="Message" ColumnName="Message" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="SubmitDate" ColumnName="SubmitDate" />
+                <ScalarProperty Name="Subject" ColumnName="Subject" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="FeedbackId" ColumnName="FeedbackId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="InputProcesses">
             <EntityTypeMapping TypeName="MalsysDbEntities.InputProcess">
               <MappingFragment StoreEntitySet="InputProcesses">
                 <ScalarProperty Name="ProcessDate" ColumnName="ProcessDate" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="CanonicInputId" ColumnName="CanonicInputId" />
+                <ScalarProperty Name="ParentInputProcessId" ColumnName="ParentInputProcessId" />
                 <ScalarProperty Name="InputProcessId" ColumnName="InputProcessId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ProcessOutputs">
+            <EntityTypeMapping TypeName="MalsysDbEntities.ProcessOutput">
+              <MappingFragment StoreEntitySet="ProcessOutputs">
+                <ScalarProperty Name="LastOpenDate" ColumnName="LastOpenDate" />
+                <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
+                <ScalarProperty Name="FileName" ColumnName="FileName" />
+                <ScalarProperty Name="InputProcessId" ColumnName="InputProcessId" />
+                <ScalarProperty Name="ProcessOutputId" ColumnName="ProcessOutputId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -346,17 +470,6 @@
               <ScalarProperty Name="RoleId" ColumnName="RoleId" />
             </EndProperty>
           </AssociationSetMapping>
-          <EntitySetMapping Name="ProcessOutputs">
-            <EntityTypeMapping TypeName="MalsysDbEntities.ProcessOutput">
-              <MappingFragment StoreEntitySet="ProcessOutputs">
-                <ScalarProperty Name="LastOpenDate" ColumnName="LastOpenDate" />
-                <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
-                <ScalarProperty Name="FileName" ColumnName="FileName" />
-                <ScalarProperty Name="InputProcessId" ColumnName="InputProcessId" />
-                <ScalarProperty Name="ProcessOutputId" ColumnName="ProcessOutputId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
@@ -378,26 +491,37 @@
     <!-- Diagram content (shape and connector positions) -->
     <Diagrams>
       <Diagram Name="MalsysDbModel">
-        <EntityTypeShape EntityType="MalsysDbEntities.CanonicInput" Width="1.5" PointX="8.125" PointY="1.625" Height="2.1725878906249996" />
-        <EntityTypeShape EntityType="MalsysDbEntities.InputProcess" Width="1.5" PointX="5.5" PointY="1.5" Height="2.3648893229166674" />
-        <EntityTypeShape EntityType="MalsysDbEntities.Role" Width="1.5" PointX="1" PointY="1.75" Height="1.7879850260416674" />
-        <EntityTypeShape EntityType="MalsysDbEntities.User" Width="1.5" PointX="3.25" PointY="1" Height="3.3263964843749996" />
-        <AssociationConnector Association="MalsysDbEntities.FK_LsystemProcesses_CanonicLsystems" >
-          <ConnectorPoint PointX="8.125" PointY="2.7112939453125" />
-          <ConnectorPoint PointX="7" PointY="2.7112939453125" />
+        <EntityTypeShape EntityType="MalsysDbEntities.CanonicInput" Width="1.5" PointX="9.625" PointY="4.125" Height="2.1725878906249996" />
+        <EntityTypeShape EntityType="MalsysDbEntities.Feedback" Width="1.5" PointX="2.125" PointY="3.875" Height="2.3648893229166674" />
+        <EntityTypeShape EntityType="MalsysDbEntities.InputProcess" Width="1.75" PointX="7.125" PointY="1.75" Height="2.9417936197916674" />
+        <EntityTypeShape EntityType="MalsysDbEntities.ProcessOutput" Width="1.5" PointX="9.625" PointY="1.75" Height="2.1725878906249996" />
+        <EntityTypeShape EntityType="MalsysDbEntities.Role" Width="1.5" PointX="2.125" PointY="1.75" Height="1.7879850260416674" />
+        <EntityTypeShape EntityType="MalsysDbEntities.User" Width="1.75" PointX="4.625" PointY="1.75" Height="3.5186979166666674" />
+        <AssociationConnector Association="MalsysDbEntities.FK_InputProcesses_CanonicInputs" >
+          <ConnectorPoint PointX="9.625" PointY="4.4083968098958337" />
+          <ConnectorPoint PointX="8.875" PointY="4.4083968098958337" />
         </AssociationConnector>
-        <AssociationConnector Association="MalsysDbEntities.FK_LsystemProcesses_Users" >
-          <ConnectorPoint PointX="4.75" PointY="2.6824446614583337" />
-          <ConnectorPoint PointX="5.5" PointY="2.6824446614583337" />
+        <AssociationConnector Association="MalsysDbEntities.FK_Feedbacks_Users" >
+          <ConnectorPoint PointX="4.625" PointY="4.5718489583333337" />
+          <ConnectorPoint PointX="3.625" PointY="4.5718489583333337" />
+        </AssociationConnector>
+        <AssociationConnector Association="MalsysDbEntities.FK_InputProcesses_InputProcesses" >
+          <ConnectorPoint PointX="7.7455769230769231" PointY="4.6917936197916674" />
+          <ConnectorPoint PointX="7.7455769230769231" PointY="4.9417936197916674" />
+          <ConnectorPoint PointX="8.2665384615384614" PointY="4.9417936197916674" />
+          <ConnectorPoint PointX="8.2665384615384614" PointY="4.6917936197916674" />
+        </AssociationConnector>
+        <AssociationConnector Association="MalsysDbEntities.FK_InputProcesses_Users" >
+          <ConnectorPoint PointX="6.375" PointY="3.2208968098958337" />
+          <ConnectorPoint PointX="7.125" PointY="3.2208968098958337" />
+        </AssociationConnector>
+        <AssociationConnector Association="MalsysDbEntities.FK_ProcessOutputs_InputProcesses" >
+          <ConnectorPoint PointX="8.875" PointY="2.8362939453125" />
+          <ConnectorPoint PointX="9.625" PointY="2.8362939453125" />
         </AssociationConnector>
         <AssociationConnector Association="MalsysDbEntities.UsersInRoles" >
-          <ConnectorPoint PointX="2.5" PointY="2.6439925130208337" />
-          <ConnectorPoint PointX="3.25" PointY="2.6439925130208337" />
-        </AssociationConnector>
-        <EntityTypeShape EntityType="MalsysDbEntities.ProcessOutput" Width="1.5" PointX="5.5" PointY="4.625" Height="2.1725878906249996" />
-        <AssociationConnector Association="MalsysDbEntities.FK_ProcessOutputs_InputProcesses" >
-          <ConnectorPoint PointX="6.25" PointY="3.864889322916667" />
-          <ConnectorPoint PointX="6.25" PointY="4.625" />
+          <ConnectorPoint PointX="3.625" PointY="2.6439925130208337" />
+          <ConnectorPoint PointX="4.625" PointY="2.6439925130208337" />
         </AssociationConnector>
       </Diagram>
     </Diagrams>

@@ -1,12 +1,12 @@
 ﻿using System.Web.Mvc;
 
 namespace Malsys.Web.Controllers {
-	public class HomeController : Controller {
-		public ActionResult Index() {
+	public partial class HomeController : Controller {
+		public virtual ActionResult Index() {
 			return View();
 		}
 
-		public ActionResult About() {
+		public virtual ActionResult About() {
 			return View();
 		}
 	}

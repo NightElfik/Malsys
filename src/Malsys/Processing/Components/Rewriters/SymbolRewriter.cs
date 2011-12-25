@@ -19,6 +19,7 @@ namespace Malsys.Processing.Components.Rewriters {
 		private int leftCtxtMaxLen;
 		private int rightCtxtMaxLen;
 		private int rrReplacementMaxLen;
+		private bool stochasticRules;
 
 
 		[UserSettable]
@@ -69,6 +70,8 @@ namespace Malsys.Processing.Components.Rewriters {
 			rrReplacementMaxLen = lsystem.RewriteRules
 				.Select(rr => rr.Replacements.Select(replac => replac.Replacement.Length).DefaultIfEmpty().Max())
 				.DefaultIfEmpty().Max();
+
+			stochasticRules = lsystem.RewriteRules.Any(rr => rr.Replacements.Length > 1);
 
 			if (RandomGeneratorProvider == null) {
 				ctxt.Logger.LogMessage(Message.NoRandomGenerator);

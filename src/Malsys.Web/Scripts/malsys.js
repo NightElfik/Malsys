@@ -1,4 +1,5 @@
-﻿
+﻿/// <reference path="~/Scripts/jquery-1.7.1-vsdoc.js" />
+
 (function ($) {
 
 	function addRefLinks(code) {
@@ -7,17 +8,17 @@
 
 	function highlightTerminals(code) {
 
-		code = code.replace(/('.[^']*')/g, '<span class="gr-terminal">$1</span>');
-		code = code.replace(/\[(.)\-(.)\]/g, '[<span class="gr-terminal">$1</span>-<span class="gr-terminal">$2</span>]');
-		code = code.replace(/\[([^'\-<\]]+)\]/g, '[<span class="gr-terminal">$1</span>]');
+		code = code.replace(/('.[^']*')/g, '<span class="grTerminal">$1</span>');
+		code = code.replace(/\[(.)\-(.)\]/g, '[<span class="grTerminal">$1</span>-<span class="grTerminal">$2</span>]');
+		code = code.replace(/\[([^'\-<\]]+)\]/g, '[<span class="grTerminal">$1</span>]');
 		// quantifiers needs to be after terminals because of quantifiers after terminal
-		code = code.replace(/([^'])([?+*])/g, '$1<span class="gr-quantifier">$2</span>');
+		code = code.replace(/([^'])([?+*])/g, '$1<span class="grQuantifier">$2</span>');
 		return code;
 	}
 
 	function highlightComments(code) {
-		code = code.replace(/(\/\*(.|[\r\n])*?\*\/)/g, '<span class="lsys_cmt">$1</span>');
-		code = code.replace(/(\/\/.*)/g, '<span class="lsys_cmt">$1</span>');
+		code = code.replace(/(\/\*(.|[\r\n])*?\*\/)/g, '<span class="comment">$1</span>');
+		code = code.replace(/(\/\/.*)/g, '<span class="comment">$1</span>');
 		return code;
 	}
 
@@ -30,7 +31,7 @@
 	}
 
 	function highlightLsystemKeywords(code) {
-		return code.replace(/(as|component|configuration|connect|consider|container|default|fun|interpret|let|lsystem|nothing|or|process|return|rewrite|set|this|to|typeof|use|weight|with|where)/g, '<span class="lsys_kw">$1</span>');
+		return code.replace(/(as|component|configuration|connect|consider|container|default|fun|interpret|let|lsystem|nothing|or|process|return|rewrite|set|this|to|typeof|use|weight|with|where)([ \r\n\t])/g, '<span class="keyword">$1</span>$2');
 	}
 
 	function urlEncode(str) {
@@ -57,6 +58,7 @@
 		//code = encodeURI(code);
 		return code;
 	}
+
 
 	$("pre.grammar").each(function (i) {
 
@@ -87,7 +89,11 @@
 
 	$("pre.malsys").each(function (i) {
 
-		var lsystemCode = $(this).text();
+		var lsystemCode = $(this).text().trim();
+		if (lsystemCode.length == 0) {
+			return;
+		}
+
 		$(this).text("");
 
 		// add try-me link
@@ -99,12 +105,21 @@
 		var newHtml = highlightLsystemKeywords(lsystemCode);
 		newHtml = highlightComments(newHtml);
 		newHtml = replaceTabs(newHtml);
+
+		if ($(this).hasClass("collapsable") && newHtml.search(/^([^\n]*)\n((.|\s)*)/) == 0) {
+			newHtml = newHtml.replace(/^([^\n]*)\n((.|\s)*)/,
+				"$1<div class='toggleSwitch'><span class='s'>Show</span><span class='h'>Hide</span></div>"
+				+ "<div class='toggleContent'>$2</div>");
+		}
+
 		$(this).append(newHtml);
 
 		// clean tags from comments
 		$(this).find("span.lsys_cmt").each(function (i) {
 			$(this).text($(this).text());
 		});
+
+
 	});
 
 	$("code.malsys").each(function (i) {
@@ -120,9 +135,14 @@
 	$("p.malsys_message").each(function (i) {
 
 		var newHtml = $(this).text();
-		newHtml = newHtml.replace(/`([a-zA-Z]+)` \((`[a-zA-Z\+\.]+`)\)/g, '`<abbr title="$2">$1</abbr>`');
+		newHtml = newHtml.replace(/`([a-zA-Z0-9]+)` \((`[a-zA-Z0-9\+\.]+`)\)/g, '`<abbr title="$2">$1</abbr>`');
 		$(this).text("");
 		$(this).append(newHtml);
+	});
+
+	$(".toggleContent").hide();
+	$(".toggleSwitch").click(function () {
+		$(this).toggleClass("show").next().slideToggle(0);
 	});
 
 } (jQuery));

@@ -67,11 +67,13 @@ namespace Malsys.Processing.Components.Rewriters {
 				functions = parent.lsystem.Functions;
 
 				contextIgnoredSymbolNames = parent.contextIgnoredSymbolNames;
-				if (parent.RandomGeneratorProvider == null) {
-					rndGenerator = new PseudoRandomGenerator();
-				}
-				else {
-					rndGenerator = parent.RandomGeneratorProvider.GetRandomGenerator();
+				if (parent.stochasticRules) {
+					if (parent.RandomGeneratorProvider == null) {
+						rndGenerator = new PseudoRandomGenerator();
+					}
+					else {
+						rndGenerator = parent.RandomGeneratorProvider.GetRandomGenerator();
+					}
 				}
 				leftCtxtMaxLen = parent.leftCtxtMaxLen;
 				rightCtxtMaxLen = parent.rightCtxtMaxLen;

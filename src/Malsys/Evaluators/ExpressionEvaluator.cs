@@ -111,7 +111,7 @@ namespace Malsys.Evaluators {
 			}
 
 			var rsltImm = new ImmutableList<IValue>(arr, true);
-			valuesStack.Push(new ValuesArray(rsltImm));
+			valuesStack.Push(new ValuesArray(rsltImm, expressionValuesArray.AstNode));
 		}
 
 		public void Visit(ExprVariable variable) {

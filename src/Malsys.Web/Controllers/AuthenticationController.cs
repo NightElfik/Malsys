@@ -6,7 +6,7 @@ using Malsys.Web.Models;
 using Malsys.Web.Security;
 
 namespace Malsys.Web.Controllers {
-	public class AuthenticationController : Controller {
+	public partial class AuthenticationController : Controller {
 
 		private readonly IUserAuthenticator userAuth;
 		private readonly IAuthenticationProvider authProvider;
@@ -21,7 +21,7 @@ namespace Malsys.Web.Controllers {
 
 
 
-		public ActionResult LogOn(string userName = null) {
+		public virtual ActionResult LogOn(string userName = null) {
 
 			if (string.IsNullOrWhiteSpace(userName)) {
 				return View();
@@ -32,7 +32,7 @@ namespace Malsys.Web.Controllers {
 		}
 
 		[HttpPost]
-		public ActionResult LogOn(LogOnModel model, string returnUrl) {
+		public virtual ActionResult LogOn(LogOnModel model, string returnUrl) {
 
 			if (ModelState.IsValid) {
 
@@ -57,7 +57,7 @@ namespace Malsys.Web.Controllers {
 		}
 
 
-		public ActionResult LogOff() {
+		public virtual ActionResult LogOff() {
 
 			authProvider.LogOff();
 

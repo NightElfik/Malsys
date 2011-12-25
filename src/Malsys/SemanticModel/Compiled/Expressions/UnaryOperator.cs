@@ -18,9 +18,11 @@ namespace Malsys.SemanticModel.Compiled.Expressions {
 
 		public readonly Func<ArgsStorage, IValue> Evaluate;
 
+		public readonly Ast.Operator AstNode;
+
 
 		public UnaryOperator(string syntax, int prec, int activePrec, Func<ArgsStorage, IValue> evalFunc,
-				IExpression operand, ExpressionValueType operandType) {
+				IExpression operand, ExpressionValueType operandType, Ast.Operator astNode) {
 
 			Syntax = syntax;
 			Precedence = prec;
@@ -29,6 +31,8 @@ namespace Malsys.SemanticModel.Compiled.Expressions {
 
 			Operand = operand;
 			OperandType = operandType;
+
+			AstNode = astNode;
 		}
 
 

@@ -1,30 +1,45 @@
-﻿@model Malsys.Web.Models.ProcessLsystemResultModel
+﻿@model ProcessLsystemResultModel
 
 @{
 	ViewBag.Title = "Malsys L-system processor";
+	ViewBag.MainClass = "processor";
 }
 
-@section main_class { processor }
-
 @section scripts {
-	@Content.Js("jquery.textarea-0.11.js", Url)
-	<script type="text/javascript">
-		jQuery(document).ready(function () {
-			$("#SourceCode").tabby();
-		});
-	</script>
+	@Content.Js(Links.Scripts.jquery_textarea_js)
+	<script type="text/javascript">jQuery(document).ready(function () { $("#SourceCode").tabby() })</script>
 }
 
 <h2>L-system processor</h2>
+
+@if (Model.Logger != null && Model.Logger.Count > 0) {
+	<table class="w100">
+	<tr>
+		<th style="width: 24px;"></th>
+		<th>Message</th>
+		<th style="width: 90px;">Position</th>
+	</tr>
+	@foreach (var msg in Model.Logger) {
+	<tr class="@msg.Type.ToString().ToLower()">
+		<td class="center"><abbr title="@msg.Type (@msg.Id)">@msg.Type.ToString()[0]</abbr></td>
+		<td><p class="malsys_message">@msg.MessageStr</p></td>
+		<td>@(msg.Position.IsUnknown ? "" : msg.Position.ToString())</td>
+	</tr>
+	}
+	</table>
+	<hr />
+}
 
 <div class="floating_container clearfix">
 
 <div class="floating_box">
 @using (Html.BeginForm(new { source = "" })) {
-	<fieldset class="malsys_source">
+	<fieldset class="malsysSource">
 		<legend>Source code</legend>
 
 		@Html.TextAreaFor(m => m.SourceCode, 20, 60, null)
+
+		@Html.HiddenFor(m => m.ReferenceId)
 
 		<p>
 			<input type="submit" value="Evaluate" />
@@ -33,26 +48,6 @@
 	</fieldset>
 }
 </div>
-
-@if (Model.Messages != null) {
-<div class="floating_box">
-	<h3>Messages:</h3>
-	<table class="w100">
-	<tr>
-		<th></th>
-		<th>Message</th>
-		<th>Position</th>
-	</tr>
-	@foreach (var msg in Model.Messages) {
-	 <tr class="@msg.Type.ToString().ToLower()">
-		<td><abbr title="@msg.Type (@msg.Id)">@msg.Type.ToString()[0]</abbr></td>
-		<td><p class="malsys_message">@msg.MessageStr</p></td>
-		<td>@(msg.Position.IsUnknown ? "" : msg.Position.ToString())</td>
-	 </tr>
-	}
-	</table>
-</div>
-}
 
 @if (Model.OutputFiles != null) {
 	foreach (var result in Model.OutputFiles) {

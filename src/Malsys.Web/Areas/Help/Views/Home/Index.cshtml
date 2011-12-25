@@ -1,0 +1,24 @@
+﻿@{
+	ViewBag.Title = "Malsys help index";
+}
+
+<h2>Malsys help index</h2>
+
+<ol>
+	<li>@Html.ActionLink("Basic principles of rewriting", MVC.Help.Home.BasicRewriting())</li>
+	<li>Symbols interpretation to render SVG image</li>
+	<li>Symbols parameters</li>
+	<li>Process configurations</li>
+</ol>
+
+<ol class="uRoman">
+	<li>Available component list</li>
+	<li>Predefined process configurations</li>
+	<li>List of predefined functions & operators</li>
+</ol>
+
+<ol class="uAlpha">
+	<li>@Html.ActionLink("Malsys syntax reference", MVC.Help.Syntax.Index())</li>
+	<li>@Html.ActionLink("Grammar syntax reference", MVC.Help.Syntax.Grammar())</li>
+	<li>@Html.ActionLink("Regular expressions used in grammar reference", MVC.Help.Syntax.GrammarRegexps())</li>
+</ol>

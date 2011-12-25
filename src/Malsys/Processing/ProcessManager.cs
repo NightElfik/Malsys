@@ -34,7 +34,15 @@ namespace Malsys.Processing {
 		}
 
 
-		public void ProcessInput(SemanticModel.Evaluated.InputBlock inBlockEvaled, IFilesManager storageManager, MessageLogger logger, IComponentResolver componentResolver) {
+		public void ProcessLsystems(SemanticModel.Evaluated.InputBlock inBlockEvaled, IFilesManager storageManager, MessageLogger logger, IComponentResolver componentResolver) {
+
+			if (inBlockEvaled.Lsystems.Count == 0) {
+				logger.LogMessage(Message.NoLsysFoundDumpingConstants);
+
+				new Malsys.Processing.Components.Common.ConstantsDumper().DumpConstants(inBlockEvaled.GlobalConstants, storageManager, logger);
+				return;
+
+			}
 
 			foreach (var lsystemKvp in inBlockEvaled.Lsystems) {
 
@@ -75,14 +83,26 @@ namespace Malsys.Processing {
 						continue;
 					}
 
-
-					configMgr.StarterComponent.Start(configMgr.RequiresMeasure, Timeout);
+					try {
+						configMgr.StarterComponent.Start(configMgr.RequiresMeasure, Timeout);
+					}
+					catch (EvalException ex) {
+						logger.LogMessage(EvaluatorsContainerExtensions.Message.EvalFailed, ex.GetFullMessage());
+						continue;
+					}
 
 					configMgr.ClearComponents();
 				}
 
 				storageManager.Cleanup();
 			}
+
+		}
+
+		public enum Message {
+
+			[Message(MessageType.Warning, "No L-systems found, dumping constants.")]
+			NoLsysFoundDumpingConstants,
 
 		}
 

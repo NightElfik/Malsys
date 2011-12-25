@@ -3,11 +3,17 @@
 namespace Malsys.SemanticModel.Evaluated {
 
 	public interface IValue : IComparable<IValue> {
+
 		bool IsConstant { get; }
+
 		bool IsArray { get; }
 
 		bool IsNaN { get; }
+
 		ExpressionValueType Type { get; }
+
+		Position AstPosition { get; }
+
 	}
 
 	[Flags]

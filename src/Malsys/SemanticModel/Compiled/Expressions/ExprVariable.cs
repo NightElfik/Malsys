@@ -7,9 +7,12 @@ namespace Malsys.SemanticModel.Compiled.Expressions {
 
 		public readonly string Name;
 
+		public readonly Ast.Identificator AstNode;
 
-		public ExprVariable(string name) {
+
+		public ExprVariable(string name, Ast.Identificator astNode) {
 			Name = name;
+			AstNode = astNode;
 		}
 
 
@@ -32,7 +35,7 @@ namespace Malsys.SemanticModel.Compiled.Expressions {
 	public static class ExprVariableExtensions {
 
 		public static ExprVariable ToVar(this string name) {
-			return new ExprVariable(name);
+			return new ExprVariable(name, null);
 		}
 
 	}

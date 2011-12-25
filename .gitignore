@@ -19,8 +19,13 @@ obj/
 /src/packages
 
 # Dependencies
-/src/Elmah
 /src/MvcContrib
+/src/dotless.Core.dll
+
+# T4 templaates generated files & rubbsih
+*.generated.cs
+/src/Malsys.Web/Css/style.css
+/src/Malsys.Web/T4MVC.cs
 
 # LaTeX rubbish
 *.aux

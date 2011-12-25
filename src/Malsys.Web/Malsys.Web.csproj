@@ -94,14 +94,27 @@
     <Reference Include="Autofac.Integration.Mvc">
       <HintPath>..\packages\Autofac.Mvc3.2.5.2.830\lib\NET40\Autofac.Integration.Mvc.dll</HintPath>
     </Reference>
-    <Reference Include="Elmah">
-      <HintPath>..\Elmah\Elmah.dll</HintPath>
+    <Reference Include="DataAnnotationsExtensions">
+      <HintPath>..\packages\DataAnnotationsExtensions.1.0.0.0\lib\NETFramework40\DataAnnotationsExtensions.dll</HintPath>
+    </Reference>
+    <Reference Include="DataAnnotationsExtensions.ClientValidation">
+      <HintPath>..\packages\DataAnnotationsExtensions.MVC3.1.0.0.0\lib\NETFramework40\DataAnnotationsExtensions.ClientValidation.dll</HintPath>
+    </Reference>
+    <Reference Include="EcmaScript.NET.modified">
+      <HintPath>..\packages\YUICompressor.NET-MsBuild-Task.1.6.0.2\lib\NET35\EcmaScript.NET.modified.dll</HintPath>
+    </Reference>
+    <Reference Include="Elmah, Version=1.2.14318.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\elmah.corelibrary.1.2.1\lib\Elmah.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\EntityFramework.4.2.0.0\lib\net40\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Web.Helpers">
+      <HintPath>..\packages\microsoft-web-helpers.1.15\lib\Microsoft.Web.Helpers.dll</HintPath>
+    </Reference>
     <Reference Include="MvcContrib, Version=3.0.51.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\MvcContrib\MvcContrib.dll</HintPath>
     </Reference>
@@ -129,19 +142,53 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
+    <Reference Include="WebActivator">
+      <HintPath>..\packages\WebActivator.1.2.0.0\lib\NETFramework40\WebActivator.dll</HintPath>
+    </Reference>
+    <Reference Include="Yahoo.Yui.Compressor">
+      <HintPath>..\packages\YUICompressor.NET-MsBuild-Task.1.6.0.2\lib\NET35\Yahoo.Yui.Compressor.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AccountController.generated.cs">
+      <DependentUpon>T4MVC.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Administration.HomeController.generated.cs">
+      <DependentUpon>T4MVC.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Administration.InputStatsController.generated.cs">
+      <DependentUpon>T4MVC.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Administration.RolesController.generated.cs">
+      <DependentUpon>T4MVC.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Administration.SharedController.generated.cs">
+      <DependentUpon>T4MVC.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Administration.UsersController.generated.cs">
+      <DependentUpon>T4MVC.tt</DependentUpon>
+    </Compile>
+    <Compile Include="App_Start\RegisterClientValidationExtensions.cs" />
+    <Compile Include="Areas\Administration\AdministrationAreaRegistration.cs" />
+    <Compile Include="Areas\Administration\Controllers\HomeController.cs" />
+    <Compile Include="Areas\Help\Controllers\HomeController.cs" />
+    <Compile Include="Areas\Help\Controllers\SyntaxController.cs" />
+    <Compile Include="Areas\Help\HelpAreaRegistration.cs" />
+    <Compile Include="AuthenticationController.generated.cs">
+      <DependentUpon>T4MVC.tt</DependentUpon>
+    </Compile>
     <Compile Include="Controllers\AccountController.cs" />
-    <Compile Include="Controllers\Administration\AdministrationController.cs" />
-    <Compile Include="Controllers\Administration\InputStatsController.cs" />
+    <Compile Include="Areas\Administration\Controllers\InputStatsController.cs" />
     <Compile Include="Controllers\AuthenticationController.cs" />
-    <Compile Include="Controllers\Administration\RolesController.cs" />
-    <Compile Include="Controllers\Administration\UsersController.cs" />
+    <Compile Include="Areas\Administration\Controllers\RolesController.cs" />
+    <Compile Include="Areas\Administration\Controllers\UsersController.cs" />
     <Compile Include="Controllers\ExamplesController.cs" />
-    <Compile Include="Controllers\HelpController.cs" />
+    <Compile Include="Controllers\FeedbackController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ProcessLsystemController.cs" />
+    <Compile Include="Entities\IFeedbackDb.cs" />
     <Compile Include="Entities\IInputDb.cs" />
+    <Compile Include="Entities\IQueriableExtensions.cs" />
     <Compile Include="Entities\IUsersDb.cs" />
     <Compile Include="Entities\MalsysDb.cs" />
     <Compile Include="Entities\MalsysDbModel.Designer.cs">
@@ -149,8 +196,26 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>MalsysDbModel.edmx</DependentUpon>
     </Compile>
+    <Compile Include="ExamplesController.generated.cs">
+      <DependentUpon>T4MVC.tt</DependentUpon>
+    </Compile>
+    <Compile Include="FeedbackController.generated.cs">
+      <DependentUpon>T4MVC.tt</DependentUpon>
+    </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Help.HomeController.generated.cs">
+      <DependentUpon>T4MVC.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Help.SharedController.generated.cs">
+      <DependentUpon>T4MVC.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Help.SyntaxController.generated.cs">
+      <DependentUpon>T4MVC.tt</DependentUpon>
+    </Compile>
+    <Compile Include="HomeController.generated.cs">
+      <DependentUpon>T4MVC.tt</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\AppSettingsProvider.cs" />
     <Compile Include="Infrastructure\HtmlHelpers.cs">
@@ -162,8 +227,12 @@
     <Compile Include="Models\Repositories\InputProcessesRepository.cs" />
     <Compile Include="Models\Repositories\UsersRepository.cs" />
     <Compile Include="Models\NewRoleModel.cs" />
+    <Compile Include="Models\ViewModels%27\FeedbackModel.cs" />
     <Compile Include="Models\ViewModels%27\InputProcessesHistoryItem.cs" />
-    <Compile Include="Models\ViewModels%27\RoleDetailModel.cs" />
+    <Compile Include="Areas\Administration\Models\RoleDetailModel.cs" />
+    <Compile Include="ProcessLsystemController.generated.cs">
+      <DependentUpon>T4MVC.tt</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Security\FormsAuthenticationProvider.cs" />
     <Compile Include="Security\Interfaces%27\IAuthenticationProvider.cs" />
@@ -175,30 +244,41 @@
     <Compile Include="Models\ViewModels%27\LogOnModel.cs" />
     <Compile Include="Models\ViewModels%27\ProcessLsystemResultModel.cs" />
     <Compile Include="Models\NewUserModel.cs" />
-    <Compile Include="Models\ViewModels%27\UserDetailModel.cs" />
+    <Compile Include="Areas\Administration\Models\UserDetailModel.cs" />
     <Compile Include="Security\Sha512PasswordHasher.cs" />
     <Compile Include="Security\UserAuthenticator.cs" />
+    <Compile Include="SharedController.generated.cs">
+      <DependentUpon>T4MVC.tt</DependentUpon>
+    </Compile>
+    <Compile Include="T4MVC.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>T4MVC.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="404.html" />
-    <Content Include="App_Data\MalsysDb.mdf" />
-    <Content Include="App_Data\MalsysDb_log.ldf">
+    <None Include="App_Data\MalsysDb.mdf" />
+    <None Include="App_Data\MalsysDb_log.ldf">
       <DependentUpon>MalsysDb.mdf</DependentUpon>
+    </None>
+    <Content Include="Css\style.less.css" />
+    <Content Include="Css\style.css">
+      <DependentUpon>T4CSS.tt</DependentUpon>
     </Content>
-    <Content Include="Content\style.css" />
     <Content Include="Error.html" />
     <Content Include="Global.asax" />
-    <Content Include="Scripts\jquery.textarea-0.11.js" />
-    <Content Include="Scripts\malsys.js" />
-    <Content Include="Scripts\jquery-1.7.1-vsdoc.js" />
-    <Content Include="Scripts\jquery-1.7.1.min.js" />
-    <Content Include="Scripts\jquery-ui-1.8.16.min.js" />
-    <Content Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Release Notes - Microsoft.Web.Helpers.txt" />
+    <Content Include="Scripts\jquery-ui.min.js" />
+    <Content Include="Scripts\jquery.min.js" />
+    <Content Include="Scripts\jquery.textarea.js" />
     <Content Include="Scripts\jquery.validate.js" />
+    <Content Include="Scripts\jquery.js" />
+    <Content Include="Scripts\malsys.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
-    <Content Include="Scripts\modernizr-2.0.6.js" />
-    <Content Include="Scripts\modernizr-2.0.6.min.js" />
-    <Content Include="Scripts\respond-1.0.1.min.js" />
+    <Content Include="Scripts\modernizr.js" />
+    <Content Include="Scripts\modernizr.min.js" />
+    <Content Include="Scripts\respond.min.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -209,7 +289,6 @@
       <DependentUpon>Web.config</DependentUpon>
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="Content\Site.css" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
@@ -225,8 +304,38 @@
     <Content Include="Views\Shared\_LogOnPartial.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Web.config" />
+    <Content Include="Views\Feedback\Index.cshtml" />
+    <Content Include="Views\Feedback\Thanks.cshtml" />
+    <Content Include="Areas\Administration\Views\Web.config" />
+    <Content Include="Areas\Help\Views\Web.config" />
+    <Content Include="Areas\Administration\Views\Home\Index.cshtml" />
+    <Content Include="Areas\Help\Views\Home\Index.cshtml" />
+    <Content Include="Areas\Administration\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Help\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Help\Views\Home\BasicRewriting.cshtml" />
+    <Content Include="Areas\Help\Views\Syntax\Index.cshtml" />
+    <Content Include="Areas\Help\Views\Syntax\Grammar.cshtml" />
+    <Content Include="Areas\Help\Views\Syntax\GrammarRegexps.cshtml" />
+    <None Include="Css\T4CSS.log">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>T4CSS.tt</DependentUpon>
+    </None>
+    <None Include="Css\T4CSS.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>T4CSS.log</LastGenOutput>
+    </None>
+    <None Include="T4MVC.settings.t4" />
+    <None Include="T4MVC.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>T4MVC.cs</LastGenOutput>
+    </None>
+    <Content Include="Views\Feedback\EmailToAuthor.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Areas\Administration\Views\Shared\" />
+    <Folder Include="Areas\Help\Models\" />
+    <Folder Include="Areas\Help\Views\Shared\" />
     <Folder Include="Content\themes\" />
     <Folder Include="Models\Lsystem\" />
     <Folder Include="Views\Shared\DisplayTemplates\" />
@@ -235,12 +344,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Help\Index.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Help\Syntax.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Malsys.Ast\Malsys.Ast.csproj">
@@ -263,31 +366,25 @@
     <Content Include="App_Code\Content.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Roles\Index.cshtml" />
+    <Content Include="Areas\Administration\Views\Roles\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Roles\Create.cshtml" />
+    <Content Include="Areas\Administration\Views\Roles\Create.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Users\Index.cshtml" />
+    <Content Include="Areas\Administration\Views\Users\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Users\Details.cshtml" />
+    <Content Include="Areas\Administration\Views\Users\Details.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Users\Edit.cshtml" />
+    <Content Include="Areas\Administration\Views\Users\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Users\Roles.cshtml" />
+    <Content Include="Areas\Administration\Views\Users\Roles.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Shared\MenuPartial.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Help\GrammarRegexps.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Help\Grammar.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <EntityDeploy Include="Entities\MalsysDbModel.edmx">
@@ -296,7 +393,7 @@
     </EntityDeploy>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Roles\Edit.cshtml" />
+    <Content Include="Areas\Administration\Views\Roles\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\ProcessLsystem\OutputPartial.cshtml" />
@@ -305,10 +402,10 @@
     <Content Include="Views\Examples\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\InputStats\Index.cshtml" />
+    <Content Include="Areas\Administration\Views\InputStats\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Administration\Index.cshtml" />
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />

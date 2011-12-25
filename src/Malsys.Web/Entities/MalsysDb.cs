@@ -1,30 +1,30 @@
 ﻿using System.Linq;
 
 namespace Malsys.Web.Entities {
-	public partial class MalsysDb : IUsersDb, IInputDb {
+	public partial class MalsysDb : IUsersDb, IInputDb, IFeedbackDb {
 
 
 		#region IUsersDb Members
 
-		IQueryable<User> IUsersDb.Users { get { return this.Users; } }
+		IQueryable<User> IUsersDb.Users { get { return Users; } }
 
 		public void AddUser(User user) {
-			this.Users.AddObject(user);
+			Users.AddObject(user);
 		}
 
 		public void DeleteUser(User user) {
-			this.Users.DeleteObject(user);
+			Users.DeleteObject(user);
 		}
 
 
-		IQueryable<Role> IUsersDb.Roles { get { return this.Roles; } }
+		IQueryable<Role> IUsersDb.Roles { get { return Roles; } }
 
 		public void AddRole(Role role) {
-			this.Roles.AddObject(role);
+			Roles.AddObject(role);
 		}
 
 		public void DeleteRole(Role role) {
-			this.Roles.DeleteObject(role);
+			Roles.DeleteObject(role);
 		}
 
 		#endregion
@@ -32,26 +32,39 @@ namespace Malsys.Web.Entities {
 
 		#region IInputDb Members
 
-		IQueryable<CanonicInput> IInputDb.CanonicInputs { get { return this.CanonicInputs; } }
+		IQueryable<CanonicInput> IInputDb.CanonicInputs { get { return CanonicInputs; } }
 
 		public void AddCanonicInput(CanonicInput canonicInput) {
-			this.CanonicInputs.AddObject(canonicInput);
+			CanonicInputs.AddObject(canonicInput);
 		}
 
-		IQueryable<InputProcess> IInputDb.InputProcesses { get { return this.InputProcesses; } }
+		IQueryable<InputProcess> IInputDb.InputProcesses { get { return InputProcesses; } }
 
 		public void AddInputProcess(InputProcess inputProcess) {
-			this.InputProcesses.AddObject(inputProcess);
+			InputProcesses.AddObject(inputProcess);
 		}
 
-		IQueryable<ProcessOutput> IInputDb.ProcessOutputs { get { return this.ProcessOutputs; } }
+		IQueryable<ProcessOutput> IInputDb.ProcessOutputs { get { return ProcessOutputs; } }
 
 		public void AddProcessOutput(ProcessOutput processOutput) {
-			this.ProcessOutputs.AddObject(processOutput);
+			ProcessOutputs.AddObject(processOutput);
 		}
 
 		public void DeleteProcessOutput(ProcessOutput processOutput) {
-			this.ProcessOutputs.DeleteObject(processOutput);
+			ProcessOutputs.DeleteObject(processOutput);
+		}
+
+		#endregion
+
+
+		#region IFeedbackDb Members
+
+		IQueryable<Feedback> IFeedbackDb.Feedbacks {
+			get { return Feedbacks; }
+		}
+
+		public void AddFeedback(Feedback feedback) {
+			Feedbacks.AddObject(feedback);
 		}
 
 		#endregion

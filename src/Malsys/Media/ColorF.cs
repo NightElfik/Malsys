@@ -1,5 +1,5 @@
-﻿
-using System;
+﻿using System;
+
 namespace Malsys.Media {
 	public struct ColorF {
 
@@ -9,8 +9,17 @@ namespace Malsys.Media {
 			 '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
 		};
 
-		public static readonly ColorF Black = new ColorF(0, 0, 0);
+		public static readonly ColorF Black = new ColorF(0f, 0f, 0f);
 		public static readonly ColorF White = new ColorF(1f, 1f, 1f);
+
+		public static readonly ColorF Red = new ColorF(1f, 0f, 0f);
+		public static readonly ColorF Yellow = new ColorF(1f, 1f, 0f);
+		public static readonly ColorF Green = new ColorF(0f, 1f, 0f);
+		public static readonly ColorF Cyan = new ColorF(0f, 1f, 1f);
+		public static readonly ColorF Blue = new ColorF(0f, 0f, 1f);
+		public static readonly ColorF Magenta = new ColorF(1f, 0f, 1f);
+
+		public static readonly ColorF TransparentBlack = new ColorF(0f, 0f, 0f, 0f);
 
 
 		public float A;
@@ -26,11 +35,25 @@ namespace Malsys.Media {
 			B = b;
 		}
 
+		public ColorF(double r, double g, double b) {
+			A = 1f;
+			R = (float)r;
+			G = (float)g;
+			B = (float)b;
+		}
+
 		public ColorF(float a, float r, float g, float b) {
 			A = a;
 			R = r;
 			G = g;
 			B = b;
+		}
+
+		public ColorF(double a, double r, double g, double b) {
+			A = (float)a;
+			R = (float)r;
+			G = (float)g;
+			B = (float)b;
 		}
 
 

@@ -1,0 +1,304 @@
+﻿@{
+	ViewBag.Title = "Malsys syntax";
+}
+
+
+<h2>Malsys syntax</h2>
+
+<p>
+	Syntax is described using formal grammar with regular expressions on right side.
+	Regular expressions are explained on the @Html.ActionLink("separate page", MVC.Help.Syntax.GrammarRegexps()) as well as @Html.ActionLink("grammar syntax", MVC.Help.Syntax.Grammar()).
+</p>
+
+<p>
+	Syntax is whitespace-independent.
+	Between individual tokens can be any number of whitespaces like space, tab or new line.
+	On the other hand, whitespaces are not allowed in single tokens, which are defined in Tokens section.
+</p>
+
+
+
+<h3>Tokens</h3>
+
+<p>
+	More about tokens syntax can be found on @Html.ActionLink("grammar syntax page", MVC.Help.Syntax.Grammar()).
+</p>
+
+
+<h4 id="grammar-ID">Identificator</h4>
+
+<pre class="grammar">
+ID = (ALPHABETIC_CHAR | '_') (ALPHABETIC_CHAR | DIGIT | '_' | ''')*
+</pre>
+
+<p>
+	Identificator regular expression is simplified, to avoid using characters groups in unicode.
+	<code class="grammar">ALPHABETIC_CHAR</code> matches any letter and <code class="grammar">DIGIT</code> matches any digit.
+	From regular expression is obvious, that identificator can not start with digit.
+</p>
+
+
+<h4 id="grammar-NUMBER">Number</h4>
+
+<pre class="grammar">
+NUMBER =
+	| [0-9]+ ('.' [0-9]+)? ([eE] ('+'|'-')? [0-9]+)?
+	| '0'[bB] [01]+
+	| '0'[oO] [0-7]+
+	| '0'[xX] ([0-9] | [a-f] | [A-F])+
+	| '#' ([0-9] | [a-f] | [A-F])+
+</pre>
+
+<p>
+	Malsys supports 5 different formats of number literal.
+</p>
+
+<ul>
+	<li>Floating-point format</li>
+	<li>Binary format with prefix <code class="match">0b</code></li>
+	<li>Octal format with prefix <code class="match">0o</code></li>
+	<li>Hexadecimal format with prefix <code class="match">0x</code></li>
+	<li>Hexadecimal format with prefix <code class="match">#</code></li>
+</ul>
+
+<p>
+	Each of format is useful in some context, it is up to user to choose one.
+</p>
+
+
+<h4 id="grammar-OPERATOR">Operator</h4>
+
+<pre class="grammar">
+OPERATOR = (first_op_char op_char*) | '==' | '/'
+
+first_op_char = '!'|'$'|'%'|'&'|'*'|'+'|'\'|'<'|'>'|'@@'|'^'|'|'|'~'|'?'|':'|'-'
+
+op_char = first_op_char | '=' | '/'
+</pre>
+
+<p>
+	Not all combinations of characters are defined as operator in Malsys, see list of predefined operators.
+</p>
+
+
+
+
+<h3>Malsys grammar</h3>
+
+<h4 id="grammar-input">Input</h4>
+
+<pre class="grammar">
+input = input_statement*
+
+input_statement =
+	| empty_statement
+	| constant_def
+	| function_def
+	| lsystem_def
+</pre>
+
+<p>Input of Malsys is list of following statements:</p>
+<ul>
+	<li>empty statement</li>
+	<li>constant definition – global constant, can be used in any place after definition</li>
+	<li>function definition – global function, can be used in any place after definition</li>
+	<li>L-system definition</li>
+</ul>
+
+
+<h4 id="grammar-empty_statement">Empty statement</h4>
+
+<pre class="grammar">
+empty_statement = ';'
+</pre>
+
+<p>To <i>eat</i> redundant semicolons.</p>
+
+
+<h4 id="grammar-constant_def">Constant definition</h4>
+
+<pre class="grammar">
+constant_def = 'let' ID '=' expression ';'
+</pre>
+
+<p>
+	Binds value of <code class="grammar">expression</code> to name represented by <code class="grammar">ID</code>.
+	If binding on same name already exists in current scope, it is hidden by new binding until end of the scope.
+	It means, that global constants can be temporally hidden by local constants.
+</p>
+
+<p>Examples:</p>
+<pre class="malsys">
+let x = 42;
+
+let x' = sqrt(2) + 1;
+
+let var = min(x, x');
+</pre>
+
+
+<h4 id="grammar-function_def">Function definition</h4>
+
+<pre class="grammar">
+function_def = 'fun' ID '(' params_list? ')' '{' constant_def* 'return' expression ';' '}'
+
+params_list = ID ('=' expression)?  (',' params_list)?
+</pre>
+
+<p>
+	Binds function with parameters <code class="grammar">params_list</code>, local constants <code class="grammar">constant_def</code>
+		and return value <code class="grammar">expression</code> to name represented by <code class="grammar">ID</code>.
+	If binding on same name already exists in current scope, it is hidden by new binding until end of the scope.
+</p>
+
+<p>Examples:</p>
+<pre class="malsys">
+fun f() {
+	return e ^ pi;
+}
+
+fun addSquares(x, y) {
+	let x2 = x * x;
+	return x2 + y * y;
+}
+
+fun optParams(x, y = 8) {
+	return x ^ y - y;
+}
+</pre>
+
+<h4 id="grammar-lsystem_def">L-system definition</h4>
+
+<pre class="grammar">
+lsystem_def = 'lsystem' ID ('(' params_list? ')')? '{' lsystem_statement* '}'
+
+params_list = ID ('=' expression)?  (',' params_list)?
+</pre>
+
+<p>Examples:</p>
+<pre class="malsys">
+lsystem lsys {
+	set axiom = A;
+	let iterations = 10;
+	rewrite A to B A;
+}
+
+lsystem fib {
+	set axiom = a(0) b(1);
+	let iterations = 10;
+
+	rewrite  a(a) {b(b)} to a(b);
+	rewrite {a(a)} b(b)  to b(a + b);
+}
+</pre>
+
+
+<h4 id="grammar-lsystem_statement">L-system statement</h4>
+
+<pre class="grammar">
+lsystem_statement =
+	| empty_statement
+	| constant_def
+	| function_def
+	| symbols_list_def
+	| symbols_interpretation_def
+	| rewrite_rule
+</pre>
+
+
+<h4 id="grammar-symbols_list_def">Symbols list definition</h4>
+
+<pre class="grammar">
+symbols_list_def = 'set' ID '=' symbol ';'
+</pre>
+
+
+<h4 id="grammar-symbols_interpretation_def">Symbols interpretation definition</h4>
+
+<pre class="grammar">
+symbols_interpretation_def = 'interpret' symbol_no_params+ 'as' ID ('(' params_expr_list? ')')? ';'
+
+params_expr_list = expression  (',' params_expr_list)?
+</pre>
+
+
+<h4 id="grammar-rewrite_rule">Rewrite rule</h4>
+
+<pre class="grammar">
+rewrite_rule = 'rewrite' rr_pattern rr_consts? rr_condition? 'to' (rr_replacements | 'nothing') ';'
+</pre>
+
+
+<h5 id="grammar-rr_pattern">Rewrite rule pattern</h5>
+
+<pre class="grammar">
+rr_pattern = rr_context? symbol_pattern ('(' params_pattern_list? ')')? rr_context?
+
+params_pattern_list = symbol_pattern  (',' params_pattern_list)?
+
+rr_context = '{' symbol_pattern* '}'
+</pre>
+
+
+<h5 id="grammar-rr_consts">Rewrite rule constants definition</h5>
+
+<pre class="grammar">
+rr_consts = 'with' rr_cost_defs_list?
+
+rr_cost_defs_list = ID '=' expression  (',' rr_cost_defs_list)?
+</pre>
+
+Definition of local constants for rewrite rule.
+
+
+<h5 id="grammar-rr_condition">Rewrite rule condition</h5>
+
+<pre class="grammar">
+rr_condition = 'where' expression
+</pre>
+
+
+<h5 id="grammar-rr_replacements">Rewrite rule replacement</h5>
+
+<pre class="grammar">
+rr_replacements = symbol* rr_weight? ('or' 'to' rr_replacements)?
+
+rr_weight = 'weight' expression
+</pre>
+
+
+<h4 id="grammar-symbol">L-system symbol</h4>
+
+<pre class="grammar">
+symbol = symbol_char+ '(' expr_args? ')'
+
+symbol_char = ID | OPERATOR | '[' | ']'
+
+expr_args = expression (',' expr_args)?
+</pre>
+
+
+<h4 id="grammar-expression">Expression</h4>
+
+<pre class="grammar">
+expression = expr_member+
+
+expr_member =
+	| NUMBER
+	| ID
+	| OPERATOR
+	| expr_indexer
+	| expr_array
+	| expr_function
+	| '(' expression ')'
+
+expr_indexer = '[' expression ']'
+
+expr_array = '{' (expression (',' expression)*)? '}'
+
+expr_function = ID '(' params_expr_list? ')'
+
+params_expr_list = expression (',' params_expr_list)?
+</pre>
+
+Expression grammar is not strict, correctness of expression will ensure compiler or interpretation.

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 
 namespace Malsys.Web.Infrastructure {
 	public static class HtmlHelpers {
@@ -19,6 +15,10 @@ namespace Malsys.Web.Infrastructure {
 			tb.SetInnerText(text);
 
 			return MvcHtmlString.Create(tb.ToString(TagRenderMode.Normal));
+		}
+
+		public static MvcHtmlString EmailLink(this HtmlHelper html, string email, string title = null) {
+			return Link(html, title ?? email, "mailto:" + email);
 		}
 
 		public static MvcHtmlString SubmitButton(this HtmlHelper html, string name, string value) {

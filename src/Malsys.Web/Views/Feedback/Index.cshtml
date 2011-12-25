@@ -1,0 +1,51 @@
+﻿@model FeedbackModel
+
+@{
+	ViewBag.Title = "Send a feedback";
+}
+
+@section scripts {
+	@Content.Js(Links.Scripts.jquery_validate_js)
+	@Content.Js(Links.Scripts.jquery_validate_unobtrusive_js)
+}
+
+
+<h2>Send a feedback</h2>
+
+<p>
+	Please let me know what do you think about Malsys.
+	I appreciate all comments, suggestions, complaints, bug reports, including answers to following questions.
+</p>
+
+<ul>
+	<li>What feature do you miss in Malsys?</li>
+	<li>Is there anything you don't understand or it is not documented well?</li>
+</ul>
+
+<p>
+	Please note that I might not respond to all submissions.
+	If you want to contact directly me (the author), e-mail can be found on @Html.ActionLink("this page", MVC.Feedback.EmailToAuthor()).
+	Both positive and negative feedback motivates me to improve Malsys.
+</p>
+
+<p>Thank you, Marek Fišer.</p>
+
+@using (Html.BeginForm()) {
+
+	<fieldset>
+		<legend>Feedback submission</legend>
+
+		@Html.ValidationSummary(true)
+
+		@Html.EditorForModel()
+		<br />
+
+		@ReCaptcha.GetHtml(theme: "clean")
+
+		<p>
+			<input type="submit" value="Send" />
+		</p>
+
+	</fieldset>
+}
+

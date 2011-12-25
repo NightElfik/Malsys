@@ -4,16 +4,16 @@ using System.Web.Routing;
 using Autofac;
 using Autofac.Integration.Mvc;
 using Malsys.Web.Entities;
+using Malsys.Web.Infrastructure;
 using Malsys.Web.Models;
 using Malsys.Web.Models.Repositories;
 using Malsys.Web.Security;
-using Malsys.Web.Infrastructure;
 
 namespace Malsys.Web {
 	public class MvcApplication : HttpApplication {
 
 		public static void RegisterGlobalFilters(GlobalFilterCollection filters) {
-			filters.Add(new HandleErrorAttribute());
+			//filters.Add(new HandleErrorAttribute());
 		}
 
 		public static void RegisterRoutes(RouteCollection routes) {
@@ -22,7 +22,8 @@ namespace Malsys.Web {
 			routes.MapRoute(
 				"Default",
 				"{controller}/{action}/{id}",
-				new { controller = "Home", action = "Index", id = UrlParameter.Optional }
+				new { controller = "Home", action = "Index", id = UrlParameter.Optional },
+				new string[] { "Malsys.Web.Controllers" }
 			);
 
 		}
@@ -37,6 +38,7 @@ namespace Malsys.Web {
 			builder.RegisterType<MalsysDb>()
 				.As<IUsersDb>()
 				.As<IInputDb>()
+				.As<IFeedbackDb>()
 				.InstancePerHttpRequest();
 
 			builder.RegisterType<UsersRepository>().As<IUsersRepository>().InstancePerHttpRequest();
@@ -53,10 +55,13 @@ namespace Malsys.Web {
 			var container = builder.Build();
 			DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
 
+
 			AreaRegistration.RegisterAllAreas();
 
 			RegisterGlobalFilters(GlobalFilters.Filters);
 			RegisterRoutes(RouteTable.Routes);
+
 		}
+
 	}
 }

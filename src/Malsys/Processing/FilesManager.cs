@@ -44,7 +44,7 @@ namespace Malsys.Processing {
 
 			if (!temp) {
 				var mf = new ManagedFile() {
-					OutputFile = new OutputFile(path, CurrentLsystem.Name, typeof(TCaller).FullName),
+					OutputFile = new OutputFile(path, CurrentLsystem != null ? CurrentLsystem.Name : "unknown source", typeof(TCaller).FullName),
 					Stream = stream
 				};
 
@@ -86,7 +86,7 @@ namespace Malsys.Processing {
 			do {
 				string timeStamp = DateTime.Now.ToString("yyyy-MM-ddTHH-mm-ss", CultureInfo.InvariantCulture.DateTimeFormat);
 				int randInt = rndGenerator.Next(0, maxRandInt);
-				string fileName = "{0}{1}.{2}{3}".Fmt(FilesPrefix, timeStamp, randInt, suffix);
+				string fileName = "{0}{1}.{2:000}{3}".Fmt(FilesPrefix, timeStamp, randInt, suffix);
 				filePath = Path.Combine(root, fileName);
 				filePath = Path.GetFullPath(filePath);
 				if (!filePath.StartsWith(root)) {

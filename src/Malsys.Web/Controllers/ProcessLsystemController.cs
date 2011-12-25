@@ -9,7 +9,7 @@ using Malsys.Web.Infrastructure;
 using Malsys.Web.Models;
 
 namespace Malsys.Web.Controllers {
-	public class ProcessLsystemController : Controller {
+	public partial class ProcessLsystemController : Controller {
 
 		private static readonly ComponentResolver componentResolver;
 
@@ -45,10 +45,10 @@ namespace Malsys.Web.Controllers {
 		}
 
 
-		public ActionResult Index(string lsystem = null, bool spacesToTab = true) {
+		public virtual ActionResult Index(string lsystem = null, bool spacesToTabs = true) {
 
 			if (lsystem != null) {
-				return IndexPost(spacesToTab ? lsystem.Replace("    ", "\t") : lsystem);
+				return IndexPost(spacesToTabs ? lsystem.Replace("    ", "\t") : lsystem);
 			}
 
 			return View(new ProcessLsystemResultModel());
@@ -56,7 +56,7 @@ namespace Malsys.Web.Controllers {
 
 		[HttpPost]
 		[ActionName("Index")]
-		public ActionResult IndexPost(string sourceCode) {
+		public virtual ActionResult IndexPost(string sourceCode, int? referenceId = null) {
 
 			string workDirFullPath = Server.MapPath(Url.Content(workDir));
 			var manager = new ProcessManager() { Timeout = new TimeSpan(0, 0, 5) };
@@ -68,22 +68,25 @@ namespace Malsys.Web.Controllers {
 			inputProcRepo.CleanProcessOutputs(workDirFullPath, maxWorkDirFiles);
 
 			if (!logger.ErrorOcured) {
-				manager.ProcessInput(evaledInput, fileMgr, logger, componentResolver);
+				manager.ProcessLsystems(evaledInput, fileMgr, logger, componentResolver);
 
 				if (!logger.ErrorOcured) {
-					inputProcRepo.AddInput(evaledInput, fileMgr.GetOutputFilePaths(), User.Identity.Name);
+					var ip = inputProcRepo.AddInput(evaledInput, referenceId, fileMgr.GetOutputFilePaths(), User.Identity.Name);
+					referenceId = ip.InputProcessId;
 				}
 			}
 
-			var resultModel = new ProcessLsystemResultModel();
-			resultModel.SourceCode = sourceCode;
-			resultModel.Messages = logger;
-			resultModel.OutputFiles = fileMgr.GetOutputFilePaths();
+			var resultModel = new ProcessLsystemResultModel() {
+				SourceCode = sourceCode,
+				ReferenceId = referenceId,
+				Logger = logger,
+				OutputFiles = fileMgr.GetOutputFilePaths()
+			};
 
 			return View(resultModel);
 		}
 
-		public ActionResult DownloadResult(string fileName, bool download = true) {
+		public virtual ActionResult DownloadResult(string fileName, bool download = true) {
 
 			var procOutput = inputProcRepo.InputDb.ProcessOutputs.Where(po => po.FileName == fileName).SingleOrDefault();
 
@@ -106,6 +109,8 @@ namespace Malsys.Web.Controllers {
 				switch (Path.GetExtension(filePath)) {
 					case ".txt": mime = "text/plain"; break;
 					case ".svg":
+						mime = "image/svg+xml";
+						break;
 					case ".svgz":
 						Response.AppendHeader("Content-Encoding", "gzip");
 						mime = "image/svg+xml";

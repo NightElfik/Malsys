@@ -5,12 +5,20 @@ namespace Malsys.SemanticModel.Compiled.Expressions {
 	/// </summary>
 	public class Indexer : IExpression {
 
+
 		public readonly IExpression Array;
+
 		public readonly IExpression Index;
 
-		public Indexer(IExpression array, IExpression index) {
+		public readonly Ast.ExpressionIndexer AstNode;
+
+
+		public Indexer(IExpression array, IExpression index, Ast.ExpressionIndexer astNode) {
+
 			Array = array;
 			Index = index;
+
+			AstNode = astNode;
 		}
 
 

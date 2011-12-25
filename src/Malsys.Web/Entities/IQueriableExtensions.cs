@@ -1,0 +1,39 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Data.Objects;
+using System.Linq.Expressions;
+using System.Web.Mvc;
+
+namespace Malsys.Web.Entities {
+	public static class IQueriableExtensions {
+
+		public static IQueryable<TEntity> Include<TEntity>(this IQueryable<TEntity> value, string path) where TEntity : class {
+
+			if (value is ObjectQuery<TEntity>) {
+				return ((ObjectQuery<TEntity>)value).Include(path);
+			}
+			else {
+				return value;
+			}
+
+		}
+
+		public static IQueryable<TEntity> Include<TEntity, TValue>(
+				this IQueryable<TEntity> value, Expression<Func<TEntity, TValue>> path) where TEntity : class {
+
+			if (value is ObjectQuery<TEntity>) {
+				var expression = (MemberExpression)path.Body;
+				string name = expression.Member.Name;
+
+				return ((ObjectQuery<TEntity>)value).Include(name);
+			}
+			else {
+				return value;
+			}
+
+		}
+
+	}
+}

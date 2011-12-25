@@ -7,7 +7,7 @@ using Malsys.Web.Models;
 using Malsys.Web.Security;
 
 namespace Malsys.Web.Controllers {
-	public class AccountController : Controller {
+	public partial class AccountController : Controller {
 
 		private readonly IUsersRepository usersRepo;
 
@@ -21,12 +21,12 @@ namespace Malsys.Web.Controllers {
 
 
 
-		public ActionResult Register() {
+		public virtual ActionResult Register() {
 			return View();
 		}
 
 		[HttpPost]
-		public ActionResult Register(NewUserModel model) {
+		public virtual ActionResult Register(NewUserModel model) {
 
 			if (ModelState.IsValid) {
 				bool success = false;
@@ -47,13 +47,13 @@ namespace Malsys.Web.Controllers {
 		}
 
 		[Authorize]
-		public ActionResult ChangePassword() {
+		public virtual ActionResult ChangePassword() {
 			return View();
 		}
 
 		[Authorize]
 		[HttpPost]
-		public ActionResult ChangePassword(ChangePasswordModel model) {
+		public virtual ActionResult ChangePassword(ChangePasswordModel model) {
 
 			if (ModelState.IsValid) {
 				bool success = false;
@@ -73,7 +73,7 @@ namespace Malsys.Web.Controllers {
 			return View(model);
 		}
 
-		public ActionResult ChangePasswordSuccess() {
+		public virtual ActionResult ChangePasswordSuccess() {
 			return View();
 		}
 

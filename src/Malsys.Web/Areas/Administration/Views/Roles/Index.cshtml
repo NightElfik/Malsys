@@ -1,0 +1,26 @@
+﻿@model IPagination<Role>
+
+@{
+	ViewBag.Title = "User roles";
+}
+
+<h2>User roles</h2>
+<p>
+	@Html.ActionLink("Create new role", "Create")
+</p>
+
+<div class="clearfix">
+@Html.Pager(Model)
+</div>
+
+@Html.Grid(Model).Columns(col => {
+		col.For(x => x.RoleId)
+			.Named("Id")
+			.HeaderAttributes(style => "width: 40px;")
+			.Attributes(@class => "center");
+		col.For(x => x.Name);
+		col.For(x => Html.ActionLink("Edit", "Edit", new { id = x.RoleId }))
+			.Attributes(@class => "center")
+			.HeaderAttributes(style => "width: 50px;")
+			.Encode(false);
+	}).Attributes(@class => "w100")

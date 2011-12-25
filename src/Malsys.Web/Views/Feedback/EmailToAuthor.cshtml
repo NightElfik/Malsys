@@ -1,0 +1,32 @@
+﻿@model string
+
+@{
+	ViewBag.Title = "Email to author";
+}
+
+<h2>Email to author</h2>
+
+
+@if (Model != null) {
+	<p>
+		Marek Fišer, @Html.EmailLink(Model)
+	</p>
+}
+else {
+	<p>
+		Feel free to contact me directly with an e-mail.
+		Please solve captcha to display it.
+	</p>
+
+	using (Html.BeginForm()) {
+
+		@Html.ValidationSummary(true)
+
+		@ReCaptcha.GetHtml(theme: "clean")
+
+		<p>
+			<input type="submit" value="Show e-mail" />
+		</p>
+
+	}
+}

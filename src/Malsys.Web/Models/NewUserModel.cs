@@ -1,15 +1,17 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
+using DataAnnotationsExtensions;
 
 namespace Malsys.Web.Models {
 	public class NewUserModel {
 
 		[Required]
+		[StringLength(64, MinimumLength=4)]
 		[Display(Name = "User name")]
 		public string UserName { get; set; }
 
 		[Required]
-		[DataType(DataType.EmailAddress)]
+		[Email]
 		[Display(Name = "E-mail address")]
 		public string Email { get; set; }
 

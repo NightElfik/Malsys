@@ -33,3 +33,23 @@ lsystem DragonCurve {
 }
 </pre>
 
+<pre class="malsys">
+lsystem HexaGosperCurve	 {
+
+	set axiom = L;
+	let iterations = 5;
+	let margin = 2;
+	let continouscoloring = true;
+
+	rewrite L to L + R + + R - L - - L L - R +;
+	rewrite R to - L + R R + + R + L - - L - R;
+
+	interpret R L as DrawLine(4);
+	interpret + as TurnLeft(60);
+	interpret - as TurnRight(60);
+
+	process this with InterpretConfig
+		use SvgRenderer2D as Interpret;
+}
+</pre>
+

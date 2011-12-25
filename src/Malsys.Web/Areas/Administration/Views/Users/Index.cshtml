@@ -1,0 +1,45 @@
+﻿@model IPagination<User>
+@using Malsys;
+
+@{
+	ViewBag.Title = "Users";
+}
+
+<h2>Users</h2>
+
+<div class="clearfix">
+@Html.Pager(Model)
+</div>
+
+@Html.Grid(Model).Columns(col => {
+		col.For(x => x.UserId)
+			.Named("Id")
+			.HeaderAttributes(style => "width: 40px;")
+			.Attributes(@class => "center");
+		col.For(x => x.Name);
+		col.For(x => x.Email);
+		col.For(x => "<abbr title=\"" + x.LastActivityDate + "\">" + x.LastActivityDate.ToTimeSpanStringFromNow() + "</abbr>")
+			.Named("Last activity")
+			.HeaderAttributes(style => "width: 100px;")
+			.Attributes(@class => "center")
+			.Encode(false);
+		col.For(x => "<abbr title=\"" + x.LastLoginDate + "\">" + x.LastLoginDate.ToTimeSpanStringFromNow() + "</abbr>")
+			.Named("Last login")
+			.HeaderAttributes(style => "width: 100px;")
+			.Attributes(@class => "center")
+			.Encode(false);
+		col.For(x => "<abbr title=\"" + x.LastPwdChangeDate + "\">" + x.LastPwdChangeDate.ToTimeSpanStringFromNow() + "</abbr>")
+			.Named("Last pwd change")
+			.HeaderAttributes(style => "width: 100px;")
+			.Attributes(@class => "center")
+			.Encode(false);
+		col.For(x => "<abbr title=\"" + x.RegistrationDate + "\">" + x.RegistrationDate.ToShortDateString() + "</abbr>")
+			.Named("Registration date")
+			.HeaderAttributes(style => "width: 100px;")
+			.Attributes(@class => "center")
+			.Encode(false);
+		col.For(x => Html.ActionLink("Edit", "Edit", new { id = x.UserId }) + "|" + Html.ActionLink("Details", "Details", new { id = x.UserId }))
+			.Attributes(@class => "center")
+			.HeaderAttributes(style => "width: 110px;")
+			.Encode(false);
+	}).Attributes(@class => "w100")
