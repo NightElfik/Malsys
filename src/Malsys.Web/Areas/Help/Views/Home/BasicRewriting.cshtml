@@ -13,11 +13,12 @@
 
 <p>
 	Let's define very simple L-system called <code class="malsys">MyFirstLsystem</code> with an axiom set to one symbol <code class="lsysSymbols">A</code>,
-		number of iterations equal to <code class="malsys">5</code> and in each iteration we want to rewrite symbol
+		number of iterations equal to <code class="lsysSymbols">5</code> and in each iteration we want to rewrite symbol
 		<code class="lsysSymbols">A</code> to symbols <code class="lsysSymbols">B</code> and <code class="lsysSymbols">A</code>.
 </p>
 
 <pre class="malsys">
+// My first comment :)
 lsystem MyFirstLsystem {
 	set axiom = A;
 	let iterations = 5;
@@ -43,7 +44,7 @@ lsystem MyFirstLsystem {
 	As we can see, in every iteration the L-system can apply the rewrite only on the last symbol and rewrites
 		<code class="lsysSymbols">A</code> to <code class="lsysSymbols">A B</code>.
 	Symbols on which can't be applied rewrite rule remains untouched.
-	So if we add second rewrite rule <code class="malsys">rewrite B to B;</code> to the L-system, result will be exactly the same.
+	So if we add second rewrite rule <code class="malsys"> rewrite B to B;</code> to the L-system, result will be exactly the same.
 </p>
 
 
@@ -54,6 +55,7 @@ lsystem MyFirstLsystem {
 </p>
 
 <pre class="malsys">
+// Order of rewrite rules matters
 lsystem OrderOfRulesMatters {
 	set axiom = A;
 	let iterations = 5;
@@ -72,6 +74,7 @@ lsystem OrderOfRulesMatters {
 <h3>More complex example</h3>
 
 <pre class="malsys">
+// Where is the Fibonacci sequence?
 lsystem Fibonacci {
 	set axiom = A;
 	let iterations = 7;
@@ -103,7 +106,7 @@ lsystem Fibonacci {
 <h3>Only one symbol can be rewritten by the rewrite rule</h3>
 
 <p>
-	It is not possible to create rewrite rule like this: <code class="malsys">rewrite A B to B A;</code>.
+	It is not possible to create rewrite rule like this: <code class="malsys"> rewrite A B to B A;</code>.
 	Rewrite rule can rewrite only one symbol, but it can be replaced for any number of symbols (including 0).
 	But don't be afraid, this behavior can be simulated using context rewrite rules.
 </p>
@@ -116,7 +119,7 @@ lsystem Fibonacci {
 	The way how rewrite rule is matched on symbol can be restricted with context (symbols directly before and after).
 	Context specification in the rewrite rule is placed in braces on the appropriate (left or right) side of rewrite rule's pattern symbol.
 	If we want to rewrite <code class="lsysSymbols">A</code> to <code class="lsysSymbols">B</code> only if left neighbor of
-		<code class="lsysSymbols">A</code> is <code class="lsysSymbols">B</code>, we can write: <code class="malsys">rewrite {B} A to B;</code>.
+		<code class="lsysSymbols">A</code> is <code class="lsysSymbols">B</code>, we can write: <code class="malsys"> rewrite {B} A to B;</code>.
 	As an example will be signal propagation through a string of symbols.
 </p>
 
@@ -140,13 +143,14 @@ lsystem SignalPropagation {
 
 <p>
 	With context rewrite rules can be simulated switching two neighbor symbols.
-	Imagine situation that we need rewrite rules <code class="malsys">rewrite X Y to Y X;</code>
-		and rewrite <code class="malsys">rewrite Y X to X Y;</code> which are unfortunately not legal in Malsys,
+	Imagine situation that we need rewrite rules <code class="malsys"> rewrite X Y to Y X;</code>
+		and rewrite <code class="malsys"> rewrite Y X to X Y;</code> which are unfortunately not legal in Malsys,
 		it is not possible to rewrite more than one symbol at once.
 	But we can simulate desired behavior with context rewrite rules.
 </p>
 
 <pre class="malsys">
+// Transpose of X and Y
 lsystem Transpose {
 	set axiom = A  X Y  B;
 	let iterations = {0,1,2,3};
@@ -169,10 +173,11 @@ lsystem Transpose {
 
 <p>
 	It is also possible to simulate rewriting two symbols at once.
-	Following L-system is simulating rewrite rule <code class="malsys">rewrite A B to C D E;</code> which is not legal rewrite rule of Malsys.
+	Following L-system is simulating rewrite rule <code class="malsys"> rewrite A B to C D E;</code> which is not legal rewrite rule of Malsys.
 </p>
 
 <pre class="malsys">
+// Rewrite A B to C D E
 lsystem TwoAtOnce {
 	set axiom = A  A B  B  A B  A;
 	let iterations = 1;
@@ -197,7 +202,7 @@ lsystem TwoAtOnce {
 <p>
 	If rewriting were not parallel, lets examine one iteration of <code class="malsys">SignalPropagation</code> L-system.
 	Axiom is <code class="lsysSymbols">B A A A A</code>.
-	The only rewrite rule matching first symbol is <code class="malsys">rewrite B to A</code>, after application this
+	The only rewrite rule matching first symbol is <code class="malsys"> rewrite B to A</code>, after application this
 		rewrite rule we have <code class="lsysSymbols">A A A A A</code>.
 	Second, third, fourth and fifth symbol do not match any rewrite rule,
 		so our result is <code class="lsysSymbols">A A A A A</code>.

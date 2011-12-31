@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using Malsys.Media;
-using System.Diagnostics;
-using Malsys.SemanticModel.Evaluated;
-using Malsys.SemanticModel;
+﻿using System.IO;
 using System.IO.Compression;
+using Malsys.Media;
+using Malsys.SemanticModel;
+using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Processing.Components.Renderers.TwoD {
+	[Component("2D SVG renderer", ComponentGroupNames.Renderers)]
 	public class SvgRenderer2D : IRenderer2D {
 
 		private const float invertY = -1;
@@ -26,7 +24,7 @@ namespace Malsys.Processing.Components.Renderers.TwoD {
 
 		private bool compress;
 
-		private float marginT, marginR, marginB, marginL;
+		private float marginT = 2, marginR = 2, marginB = 2, marginL = 2;
 		private float measuredMinX, measuredMinY, measuredMaxX, measuredMaxY;
 		private float minX, minY, maxX, maxY;
 
@@ -90,7 +88,6 @@ namespace Malsys.Processing.Components.Renderers.TwoD {
 		public bool RequiresMeasure { get { return true; } }
 
 		public void Initialize(ProcessContext ctxt) {
-
 			context = ctxt;
 		}
 

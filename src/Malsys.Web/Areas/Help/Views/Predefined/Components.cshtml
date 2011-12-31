@@ -1,0 +1,23 @@
+﻿@model IEnumerable<ComponentModel>
+@using Malsys
+
+@{
+	ViewBag.Title = "Components";
+}
+
+<h2>Components</h2>
+
+<p>
+	This page contains list of all components and containers that you can use custom process configuration.
+</p>
+
+@foreach (var compGroup in Model.GroupBy(x => x.Group)) {
+	<h3>@(string.IsNullOrEmpty(compGroup.Key) ? "Uncategorized" : compGroup.Key)</h3>
+
+	foreach (var comp in compGroup.OrderBy(x => x.IsContainer)) {
+		Html.RenderPartial(MVC.Help.Shared.Views.ComponentPartial, comp);
+	}
+
+	<hr />
+
+}

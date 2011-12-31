@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Diagnostics;
+using System.Linq;
 using System.Web.Mvc;
 using Malsys.Processing;
 using Malsys.SemanticModel.Evaluated;
@@ -33,10 +33,10 @@ namespace Malsys.Web.Controllers {
 		}
 
 
-		public virtual ActionResult Index(string lsystem = null, bool? spacesToTabs = null) {
+		public virtual ActionResult Index(string lsystem = null) {
 
 			if (lsystem != null) {
-				return IndexPost(spacesToTabs != null ? lsystem.Replace("    ", "\t") : lsystem);
+				return IndexPost(lsystem.Replace("    ", "\t"));
 			}
 
 			return View(new ProcessLsystemResultModel());
@@ -123,6 +123,22 @@ namespace Malsys.Web.Controllers {
 
 			return View(new ProcessLsystemResultModel() { SavedInputId = id });
 		}
+
+		public virtual ActionResult MakeAdminAdmin() {
+
+			var role = usersRepository.Roles.Where(x => x.NameLowercase == UserRoles.Administrator.ToLower()).SingleOrDefault();
+			if (role == null) {
+				role = usersRepository.CreateRole(new NewRoleModel() { RoleName = UserRoles.Administrator });
+			}
+			var user = usersRepository.Users.Where(x => x.NameLowercase == UserRoles.Administrator.ToLower()).SingleOrDefault();
+
+			if (user != null && role != null) {
+				usersRepository.AddUserToRole(user.UserId, role.RoleId);
+			}
+
+			return RedirectToAction(MVC.Home.Index());
+		}
+
 
 	}
 }

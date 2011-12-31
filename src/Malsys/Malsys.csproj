@@ -50,6 +50,7 @@
     <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <DocumentationFile>bin\Debug\Malsys.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -83,6 +84,7 @@
     <CodeContractsRuntimeCheckingLevel>None</CodeContractsRuntimeCheckingLevel>
     <CodeContractsReferenceAssembly>DoNotBuild</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
+    <DocumentationFile>bin\Release\Malsys.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Autofac">
@@ -152,6 +154,8 @@
     <Compile Include="Processing\Components\Common\RandomGeneratorProvider.cs" />
     <Compile Include="Processing\Components\Common\SymbolProvider.cs" />
     <Compile Include="Processing\Components\Common\SymbolsSaver.cs" />
+    <Compile Include="Processing\Components\ComponentAttribute.cs" />
+    <Compile Include="Processing\Components\ComponentGroupNames.cs" />
     <Compile Include="Processing\Components\Interfaces%27\IRandomGeneratorProvider.cs" />
     <Compile Include="Media\Polygon2D.cs" />
     <Compile Include="Processing\Components\UserConnectableAttribute.cs" />

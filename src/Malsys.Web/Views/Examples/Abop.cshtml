@@ -1,0 +1,386 @@
+﻿@{
+	ViewBag.Title = "From The Algorithmic Beauty of Plants";
+	ViewBag.MainClass = "twoColumns";
+}
+
+<h2>From The Algorithmic Beauty of Plants</h2>
+
+<p>
+	Algorithmic Beauty of Plants can be found on @Html.Link("http://algorithmicbotany.org", "http://algorithmicbotany.org/papers/#abop").
+</p>
+
+
+<div class="floating_container clearfix">
+
+
+<div class="floating_box">
+<pre class="malsys">
+/**
+ * The Algorithmic Beauty of Plants (figure 1.7b)
+ */
+lsystem QuadraticKochCurve {
+
+	set axiom = - F;
+	let iterations = 4;
+	let initialAngle = 90;
+
+	interpret F as DrawLine(8, 2);
+	interpret + as TurnLeft(90);
+	interpret - as TurnLeft(-90);
+
+	rewrite F to F + F - F - F + F;
+
+	process with SvgRenderer;
+
+}
+</pre>
+</div>
+
+<div class="floating_box">
+<pre class="malsys">
+/**
+ * The Algorithmic Beauty of Plants (figure 1.7a)
+ */
+lsystem QuadraticKochIsland {
+
+	set axiom = F - F - F - F;
+	let iterations = 2;
+
+	interpret F as DrawLine(6, 2);
+	interpret + as TurnLeft(90);
+	interpret - as TurnLeft(-90);
+
+	rewrite F to
+		F + F F - F F - F - F + F + F
+		F - F - F + F + F F + F F - F;
+
+	process with SvgRenderer;
+
+}
+</pre>
+</div>
+
+<div class="floating_box">
+<pre class="malsys">
+/**
+ * The Algorithmic Beauty of Plants (figure 1.8)
+ */
+lsystem IslandsAndLakes {
+
+	set axiom = F + F + F + F;
+	let iterations = 2;
+
+	interpret F as DrawLine(6, 1);
+	interpret f as MoveForward(4);
+	interpret + as TurnLeft(90);
+	interpret - as TurnLeft(-90);
+
+	rewrite F to F + f - F F + F + F F + F f + F
+		F - f + F F - F - F F - F f - F F F;
+	rewrite f to f f f f f f;
+
+	process with SvgRenderer;
+
+}
+</pre>
+</div>
+<div class="floating_box">
+<pre class="malsys">
+/**
+ * The Algorithmic Beauty of Plants (figure 1.8)
+ */
+lsystem IslandsAndLakesColored {
+
+	let darkColor = #000000;
+	let lightColor = #FFFFFF;
+
+	set axiom = <(darkColor) . f. - f. - f. - f. >;
+	let iterations = 2;
+	let reversepolygonOrder = true;
+
+	interpret f as MoveForward(8);
+	interpret + as TurnLeft(90);
+	interpret - as TurnLeft(-90);
+	interpret < as StartPolygon(0, 0);
+	interpret . as RecordPolygonVertex;
+	interpret > as EndPolygon;
+
+	rewrite f to f + f <(darkColor, 0) . f. - f. f. - f. - f. f. > + f + f f
+		- f <(lightColor, 0) . f. + f. f. + f. + f. f. > - f - f f f;
+	rewrite f to f f f f f f;
+
+	process with SvgRenderer;
+
+}
+</pre>
+</div>
+
+<div class="floating_box">
+<pre class="malsys">
+
+/**
+ * The Algorithmic Beauty of Plants (figure 1.11a)
+ */
+lsystem HexagonalGosperCurve {
+
+	set axiom = L;
+	let iterations = 5;
+	let continousColoring = true;
+
+	rewrite L to L + R + + R - L - - L L - R +;
+	rewrite R to - L + R R + + R + L - - L - R;
+
+	interpret R L as DrawLine(4);
+	interpret + as TurnLeft(60);
+	interpret - as TurnLeft(-60);
+
+	process with SvgRenderer;
+
+}
+</pre>
+</div>
+
+<div class="floating_box">
+<pre class="malsys">
+/**
+ * The Algorithmic Beauty of Plants (figure 1.11b)
+ */
+lsystem QuadraticGosperCurve {
+
+	set axiom = -R;
+	let iterations = 2;
+
+	interpret R L as DrawLine(8);
+	interpret + as TurnLeft(90);
+	interpret - as TurnLeft(-90);
+
+	rewrite L to L L - R - R + L + L - R - R L + R + L L R
+		- L + R + L L + R - L R - R - L + L + R R -;
+	rewrite R to + L L - R - R + L + L R + L - R R - L - R
+		+ L R R - L - R L + L + R - R - L + L + R R;
+
+	process with SvgRenderer;
+
+}
+</pre>
+</div>
+
+<div class="floating_box">
+<pre class="malsys">
+/**
+ * The Algorithmic Beauty of Plants (figure 1.10b)
+ */
+lsystem SierpinskiGasket {
+
+	set axiom = R;
+	let iterations = 6;
+
+	interpret L R as DrawLine(6);
+	interpret + as TurnLeft(60);
+	interpret - as TurnLeft(-60);
+
+	rewrite L to R+L+R;
+	rewrite R to L-R-L;
+
+	process with SvgRenderer;
+
+}
+</pre>
+</div>
+
+<div class="floating_box">
+<pre class="malsys">
+/**
+ * The Algorithmic Beauty of Plants (figure 1.24c)
+ */
+lsystem Plant3 {
+
+	set axiom = F;
+	let initialAngle = 90;
+	let iterations = 4;
+
+	interpret F as DrawLine(10);
+	interpret + as TurnLeft(360/16);
+	interpret - as TurnLeft(-360/16);
+	interpret [ as StartBranch;
+	interpret ] as EndBranch;
+
+	rewrite F to F F - [ - F + F + F ] + [ + F - F - F ];
+
+	process with SvgRenderer;
+
+}
+</pre>
+</div>
+
+<div class="floating_box">
+<pre class="malsys">
+/**
+ * The Algorithmic Beauty of Plants (figure 1.24d)
+ */
+lsystem Plant4 {
+
+	set axiom = X;
+	let initialAngle = 90;
+	let iterations = 7;
+
+	interpret F as DrawLine(3);
+	interpret + as TurnLeft(20);
+	interpret - as TurnLeft(-20);
+	interpret [ as StartBranch;
+	interpret ] as EndBranch;
+
+	rewrite X to F [ + X ] F [ - X ] + X;
+	rewrite F to F F;
+
+	process with SvgRenderer;
+
+}
+</pre>
+</div>
+
+<div class="floating_box">
+<pre class="malsys">
+/**
+ * The Algorithmic Beauty of Plants (figure 1.24e)
+ */
+lsystem Plant5 {
+
+	set axiom = X;
+	let initialAngle = 90;
+	let iterations = 7;
+
+	interpret F as DrawLine(3);
+	interpret + as TurnLeft(360/14);
+	interpret - as TurnLeft(-360/14);
+	interpret [ as StartBranch;
+	interpret ] as EndBranch;
+
+	rewrite X to F [ + X ] [ - X ] F X;
+	rewrite F to F F;
+
+	process with SvgRenderer;
+
+}
+</pre>
+</div>
+
+
+<div class="floating_box">
+<pre class="malsys">
+/**
+ * The Algorithmic Beauty of Plants (figure 5.5)
+ */
+lsystem Leaf {
+
+	set axiom = [ A ] [ B ];
+	let iterations = {5, 10, 15};
+	let initialAngle = 90;
+
+	interpret G as DrawLine(10);
+	interpret + as TurnLeft(10);
+	interpret - as TurnLeft(-10);
+	interpret [ as StartBranch;
+	interpret ] as EndBranch;
+	interpret < as StartPolygon(#007700, 1);
+	interpret . as RecordPolygonVertex;
+	interpret > as EndPolygon;
+
+	rewrite A to [ + A < . ] . C . >;
+	rewrite B to [ - B < . ] . C . >;
+	rewrite C to G C;
+
+	process with SvgRenderer;
+
+}
+</pre>
+</div>
+
+
+@*
+<div class="floating_box">
+<pre class="malsys">
+/**
+ * The Algorithmic Beauty of Plants (figure 3.3)
+ */
+lsystem MycelisMuralis {
+
+	set axiom = I(20) F A(0);
+	let iterations = {1,2,3,4,5};
+	let initialAngle = 90;
+
+	interpret K as DrawLine(10);
+	interpret + as TurnLeft;
+	interpret [ as StartBranch;
+	interpret ] as EndBranch;
+
+	rewrite {S} A(t)  to T V K;
+	rewrite {V} A(t)  to T V K;
+	rewrite     A(t) where t > 0 to A(t-1);
+	rewrite     A(t) where t == 0 to M [ +(30) G ] F A(2);
+	rewrite {S} M     to S;
+	rewrite     S {T} to T;
+	rewrite {T} G     to F A(2);
+	rewrite {V} M     to S;
+	rewrite     T {V} to W;
+	rewrite     W     to V;
+	rewrite     I(t) where t > 0 to I(t-1);
+	rewrite     I(t) where t == 0 to S;
+
+	process with SvgRenderer;
+
+}
+</pre>
+</div>
+
+*@
+
+
+<div class="floating_box">
+<pre class="malsys">
+/**
+ * The Algorithmic Beauty of Plants (figure 5.8)
+ */
+lsystem RoseLeaf {
+
+	set axiom = [ < A(0,0) . > ] [ < A(0,1) . > ];
+	let iterations = 25;
+	let initialAngle = 150;
+	let LA = 5; // initial length - main segment
+	let RA = 1.15; // growth rate - main segment
+	let LB = 1.3; // initial length - lateral segment
+	let RB = 1.25; // growth rate - lateral segment
+	let LC = 3; // initial length - marginal notch
+	let RC = 1.19; // growth rate - marginal notch
+
+	interpret G as DrawLine(4);
+	interpret + as TurnLeft(60);
+	interpret - as TurnLeft(-60);
+	interpret [ as StartBranch;
+	interpret ] as EndBranch;
+	interpret < as StartPolygon(#007700, 2);
+	interpret . as RecordPolygonVertex;
+	interpret > as EndPolygon;
+
+	rewrite A(t,d)
+		where d == 0
+		to . G(LA,RA,-1) . [ + B(t) G(LC,RC,t) . > ]
+			[ + B(t) < . ] A(t+1,d);
+	rewrite A(t,d)
+		where d == 1
+		to . G(LA,RA,-1) . [ - B(t) G(LC,RC,t) . > ]
+			[ - B(t) < . ] A(t+1,d);
+	rewrite B(t)
+		where t > 0 to G(LB,RB,-1) B(t-1);
+	rewrite G(s,r,t)
+		where t > 1 to G(s*r,r,t-1);
+	rewrite G(s,r,t)
+		where t == -1 to G(s*r,r,-1);
+
+	process with SvgRenderer;
+
+}
+</pre>
+</div>
+
+</div>

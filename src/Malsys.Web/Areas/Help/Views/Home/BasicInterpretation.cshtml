@@ -1,0 +1,112 @@
+﻿@model ComponentModel
+
+@{
+	ViewBag.Title = "Symbols interpretation";
+}
+
+<h2>Symbols interpretation</h2>
+
+<p>
+	Next important feature after @Html.ActionLink("rewriting", MVC.Help.Home.BasicRewriting()) is interpretation of symbols.
+	Every symbol can be associated with some action.
+	The set of actions you can use is given by the Interpreter component.
+	Default interpretation of symbols is printing them to string.
+	More interesting interpretation is drawing an image.
+</p>
+
+
+<h3>2D interpreter</h3>
+
+<p>
+	2D interpreter interprets symbols as basic commands for pen on 2D plane.
+	Pen can move or draw forward, change direction or color.
+	Interpret can also save or load its state which allows branching.
+	The basic 2D elements like line or polygon are rendered by renderer.
+	Following list shows all actions of 2D interpreter (withdrawn from
+		<a href="@Url.Action(MVC.Help.Predefined.Components())#@Model.Type.FullName">components list</a>).
+</p>
+
+<ul>
+@foreach (var intMethod in Model.InterpretationMethods) {
+	<li>
+		<span class="monospace">@intMethod.Name</span>
+		@if(intMethod.RequiredParametersCount > 0) {
+			@string.Format("({0} required parameter(s))", intMethod.RequiredParametersCount);
+		}
+		@if(!string.IsNullOrEmpty(intMethod.Documentation)){
+			<ul class="clean"><li>@intMethod.Documentation</li></ul>
+		}
+	</li>
+}
+</ul>
+
+<p>
+	Interpret action can be associated to symbol by following syntax: <code class="malsys"> interpret symbol as action;</code>.
+	All parameters from symbol will be send to interpret action.
+	Symbols with no defined action are ignored.
+	For example symbols <code class="lsysSymbols">F(1, 2) G(3)</code> with interpretation definition <code class="malsys"> interpret F as DrawLine;</code>
+		will interpret as <code class="lsysSymbols">DrawLine(1, 2)</code>.
+</p>
+
+<p>
+	There can be specified more than one symbol to interpret with single action using syntax:
+		<code class="malsys"> interpret symbol1 symbol2 symbol3 … as action;</code>.
+	For example symbols <code class="lsysSymbols">C A B</code> with interpretation definition <code class="malsys"> interpret A B C as DrawLine;</code>
+		will interpret as <code class="lsysSymbols">DrawLine DrawLine DrawLine</code>.
+</p>
+
+<p>
+	Default parameters of interpretation can be also specified by following syntax: <code class="malsys"> interpret symbol as action(x, y, …);</code>
+		where <code class="lsysSymbols">x</code> and <code class="lsysSymbols">y</code> are parameters.
+	Parameters from symbol have greater priority than default parameters.
+	For example symbols <code class="lsysSymbols">G F(5) G(5, 5)</code> with interpretation definition <code class="malsys"> interpret F G as DrawLine(0, 2);</code>
+		will interpret as <code class="lsysSymbols">DrawLine(0, 2) DrawLine(5, 2) DrawLine(5, 5)</code>.
+</p>
+
+
+<h3>2D renderer</h3>
+
+<p>
+	Rendered accepts drawing requests from interpret and actually draws them.
+	The simplest implementation of renderer is @Html.Link("SVG", "http://en.wikipedia.org/wiki/Scalable_Vector_Graphics") renderer.
+</p>
+
+
+<h3>Specifying renderer</h3>
+
+<p>
+	Renderer is specified by process configuration.
+	There are some predefined configurations which are very simple to use.
+	If you want to render L-system with SVG renderer, just add <code class="malsys"> process with SvgRenderer;</code> clause to your definition.
+</p>
+
+
+<h3>Example</h3>
+
+<p>
+	Many examples can be found on @Html.ActionLink("examples page", MVC.Examples.Index()) but one little example follows.
+</p>
+
+<pre class="malsys">
+/**
+ * The Algorithmic Beauty of Plants (figure 1.24d)
+ */
+lsystem Plant {
+
+	set axiom = X;
+	let initialAngle = 90;
+	let iterations = 7;
+
+	interpret F as DrawLine(3);
+	interpret + as TurnLeft(20);
+	interpret - as TurnLeft(-20);
+	interpret [ as StartBranch;
+	interpret ] as EndBranch;
+
+	rewrite X to F [ + X ] F [ - X ] + X;
+	rewrite F to F F;
+
+	process with SvgRenderer;
+
+}
+</pre>

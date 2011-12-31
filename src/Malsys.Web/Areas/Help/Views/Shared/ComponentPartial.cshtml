@@ -1,0 +1,81 @@
+﻿@model ComponentModel
+
+<div class="componentBox">
+<h4 id="@Model.Type.FullName">
+	@Model.Name @(Model.IsContainer ? "(container)" : "")
+	<span class="type">[<abbr title="@Model.Type.FullName">@Model.Type.Name</abbr>]</span>
+</h4>
+
+@if (!string.IsNullOrEmpty(Model.Documentation)) {
+	<p>@Model.Documentation</p>
+}
+
+<dl>
+	@if (Model.BaseTypes.Count() > 0) {
+		<dt><strong>Base Components</strong></dt>
+		<dd><ul class="clean">
+		@foreach (var baseType in Model.BaseTypes) {
+			<li><a href="#@baseType.FullName" class="type">[<abbr title="@baseType.FullName">@baseType.Name</abbr>]</a></li>
+		}
+		</ul></dd>
+	}
+
+	@if (Model.DerivedTypes.Count() > 0) {
+		<dt><strong>Derived Components</strong></dt>
+		<dd><ul class="clean">
+		@foreach (var derivedType in Model.DerivedTypes) {
+			<li><a href="#@derivedType.FullName" class="type">[<abbr title="@derivedType.FullName">@derivedType.Name</abbr>]</a></li>
+		}
+		</ul></dd>
+	}
+
+	@if (Model.SettableProperties.Count() > 0) {
+		<dt><strong>Settable properties</strong></dt>
+		<dd><ul class="clean">
+		@foreach (var prop in Model.SettableProperties) {
+			<li>
+				<span class="monospace">@prop.Name</span> (only @prop.ValueTypeHumanReadableString values)
+				@(prop.IsMandatory ? "(mandatory)" : "")
+			</li>
+		}
+		</ul></dd>
+	}
+
+	@if (Model.ConnectableProperties.Count() > 0) {
+		<dt><strong>Connectable properties</strong></dt>
+		<dd><ul class="clean">
+		@foreach (var prop in Model.ConnectableProperties) {
+			<li>
+				<span class="monospace">@prop.Name</span> <a href="#@prop.Type.FullName" class="type">[<abbr title="@prop.Type.FullName">@prop.Type.Name</abbr>]</a>
+				@(prop.IsOptional ? "(optional)" : "")
+			</li>
+		}
+		</ul></dd>
+	}
+
+	@if (Model.InterpretationMethods.Count() > 0) {
+		<dt><strong>Interpretation methods</strong></dt>
+		<dd><ul class="clean">
+		@foreach (var intMethod in Model.InterpretationMethods) {
+			<li>
+				<span class="monospace">@intMethod.Name</span>
+				@if(intMethod.RequiredParametersCount > 0) {
+					@string.Format("({0} required parameter(s))", intMethod.RequiredParametersCount);
+				}
+				@if(!string.IsNullOrEmpty(intMethod.Documentation)){
+					<ul class="clean"><li>@intMethod.Documentation</li></ul>
+				}
+			</li>
+		}
+		</ul></dd>
+	}
+
+	<dt><strong>Configuration access names</strong></dt>
+	<dd><ul class="clean monospace">
+	@foreach (var name in Model.AccessibleNames) {
+		<li>@name</li>
+	}
+	</ul></dd>
+
+</dl>
+</div>

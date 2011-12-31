@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Malsys {
 	public static class LinqExtensions {
@@ -19,8 +20,22 @@ namespace Malsys {
 		}
 
 
-		public static ImmutableList<T> ToImmutableList<T>(this IEnumerable<T> source) {
-			return new ImmutableList<T>(source);
+		public static string JoinToString<T>(this IEnumerable<T> source, string separator = "") {
+
+			bool first = true;
+			StringBuilder sb = new StringBuilder();
+
+			foreach (var item in source) {
+				if (first) {
+					first = false;
+				}
+				else {
+					sb.Append(separator);
+				}
+				sb.Append(item.ToString());
+			}
+
+			return sb.ToString();
 		}
 	}
 }

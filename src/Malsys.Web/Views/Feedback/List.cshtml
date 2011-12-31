@@ -1,0 +1,31 @@
+﻿@model IPagination<Feedback>
+@using Malsys;
+
+@{
+	ViewBag.Title = "Feedbacks";
+}
+
+<h2>Feedbacks</h2>
+
+<div class="clearfix">
+@Html.Pager(Model)
+</div>
+
+<table>
+
+@Html.Grid(Model).Columns(col => {
+	col.For(x => "<abbr title=" + x.Email + ">" + (x.User == null ? "anonymous" : x.User.Name) + "</abbr>")
+			.Named("User / mail")
+			.HeaderAttributes(style => "width: 100px;")
+			.Encode(false);
+	col.For(m => "<abbr title=\"" + m.SubmitDate + "\">" + m.SubmitDate.ToTimeSpanStringFromNow() + "</abbr>")
+			.Named("Age")
+			.HeaderAttributes(style => "width: 100px;")
+			.Attributes(@class => "center")
+			.Encode(false);
+		col.For(x => x.Subject);
+		col.For(x => x.Message);
+	}).Attributes(@class => "w100")
+
+
+</table>

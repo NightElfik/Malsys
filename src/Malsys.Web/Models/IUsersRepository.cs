@@ -10,9 +10,9 @@ namespace Malsys.Web.Models {
 
 		void LogUserActivity(string userName);
 
-		void CreateUser(NewUserModel user);
+		User CreateUser(NewUserModel user);
 
-		void CreateRole(NewRoleModel role);
+		Role CreateRole(NewRoleModel role);
 
 		void AddUserToRole(int userId, int roleId);
 

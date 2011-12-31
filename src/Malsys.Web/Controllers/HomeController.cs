@@ -2,6 +2,7 @@
 
 namespace Malsys.Web.Controllers {
 	public partial class HomeController : Controller {
+
 		public virtual ActionResult Index() {
 			return View();
 		}
@@ -9,5 +10,6 @@ namespace Malsys.Web.Controllers {
 		public virtual ActionResult About() {
 			return View();
 		}
+
 	}
 }

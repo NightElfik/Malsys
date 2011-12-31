@@ -19,6 +19,7 @@ using Malsys.Web.Infrastructure;
 using Malsys.Web.Models;
 using Malsys.Web.Models.Repositories;
 using Malsys.Web.Security;
+using Malsys.Reflection;
 
 namespace Malsys.Web {
 	public class MvcApplication : HttpApplication {
@@ -62,6 +63,9 @@ namespace Malsys.Web {
 
 			builder.RegisterType<AppSettingsProvider>().As<IAppSettingsProvider>().SingleInstance();
 
+			string basePath = Server.MapPath("~/bin");
+			builder.Register(x => new XmlDocReader(basePath)).SingleInstance();
+
 			registerMalsysStuff(builder);
 
 
@@ -97,7 +101,10 @@ namespace Malsys.Web {
 			foreach (var type in componentsTypes) {
 				componentResolver.RegisterComponentNameAndFullName(type, false);
 			}
-			builder.Register(x => componentResolver).As<IComponentResolver>().SingleInstance();
+			builder.Register(x => componentResolver)
+				.As<IComponentResolver>()
+				.As<IComponentContainer>()
+				.SingleInstance();
 
 			builder.RegisterType<ProcessManager>().InstancePerHttpRequest();
 

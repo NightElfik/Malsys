@@ -1,5 +1,7 @@
-﻿
+﻿using System;
+
 namespace Malsys.Processing.Components {
+	[Component("Generic component", ComponentGroupNames.Common)]
 	public interface IComponent {
 
 		/// <summary>
@@ -18,4 +20,5 @@ namespace Malsys.Processing.Components {
 		void EndProcessing();
 
 	}
+
 }

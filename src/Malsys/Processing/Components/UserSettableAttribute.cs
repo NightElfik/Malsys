@@ -17,6 +17,7 @@ namespace Malsys.Processing.Components {
 		/// </summary>
 		public bool IsMandatory { get; set; }
 
+
 	}
 
 	/// <summary>

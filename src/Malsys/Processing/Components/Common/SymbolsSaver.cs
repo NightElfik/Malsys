@@ -5,6 +5,7 @@ using Malsys.SemanticModel.Evaluated;
 using Malsys.SourceCode.Printers;
 
 namespace Malsys.Processing.Components.Common {
+	[Component("Symbol saver", ComponentGroupNames.Interpreters)]
 	public class SymbolsSaver : ISymbolProcessor {
 
 		private IOutputProvider outProvider;

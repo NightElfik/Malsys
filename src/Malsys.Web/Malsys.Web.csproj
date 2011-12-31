@@ -83,6 +83,7 @@
     <CodeContractsRuntimeCheckingLevel>None</CodeContractsRuntimeCheckingLevel>
     <CodeContractsReferenceAssembly>DoNotBuild</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
+    <ExcludeApp_Data>true</ExcludeApp_Data>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Autofac">
@@ -178,6 +179,7 @@
     <Compile Include="Areas\Help\Controllers\PredefinedController.cs" />
     <Compile Include="Areas\Help\Controllers\SyntaxController.cs" />
     <Compile Include="Areas\Help\HelpAreaRegistration.cs" />
+    <Compile Include="Areas\Help\Models\ComponentModel.cs" />
     <Compile Include="AuthenticationController.generated.cs">
       <DependentUpon>T4MVC.tt</DependentUpon>
     </Compile>
@@ -274,11 +276,14 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="404.html" />
-    <None Include="App_Data\MalsysDb.mdf" />
-    <None Include="App_Data\MalsysDb_log.ldf">
+    <Content Include="App_Data\MalsysDb.mdf" />
+    <Content Include="App_Data\MalsysDb_log.ldf">
       <DependentUpon>MalsysDb.mdf</DependentUpon>
-    </None>
-    <Content Include="Css\style.less.css" />
+    </Content>
+    <Content Include="Areas\Help\Views\Predefined\Components.cshtml" />
+    <Content Include="Areas\Help\Views\Home\BasicInterpretation.cshtml" />
+    <Content Include="Areas\Help\Views\Shared\ComponentPartial.cshtml" />
+    <None Include="Css\style.less.css" />
     <Content Include="Css\style.css">
       <DependentUpon>T4CSS.tt</DependentUpon>
     </Content>
@@ -351,11 +356,14 @@
     <Content Include="Views\Process\Load.cshtml" />
     <Content Include="Views\User\SavedInputs.cshtml" />
     <Content Include="Views\User\Index.cshtml" />
+    <Content Include="Views\Feedback\List.cshtml" />
+    <Content Include="Views\Examples\Abop.cshtml" />
+    <Content Include="Views\Examples\FassCurves.cshtml" />
+    <Content Include="Views\Examples\Tilings.cshtml" />
+    <Content Include="Views\Examples\Other.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Areas\Administration\Views\Shared\" />
-    <Folder Include="Areas\Help\Models\" />
-    <Folder Include="Areas\Help\Views\Shared\" />
     <Folder Include="Content\themes\" />
     <Folder Include="Models\Lsystem\" />
     <Folder Include="Views\Shared\DisplayTemplates\" />
@@ -363,7 +371,7 @@
     <Folder Include="WorkDir\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="packages.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Malsys.Ast\Malsys.Ast.csproj">

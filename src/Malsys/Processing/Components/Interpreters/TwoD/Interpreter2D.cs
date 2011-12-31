@@ -8,6 +8,7 @@ using Malsys.SemanticModel;
 using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Processing.Components.Interpreters.TwoD {
+	[Component("2D Interpreter", ComponentGroupNames.Interpreters)]
 	public class Interpreter2D : IInterpreter {
 
 		private readonly ColorFactory colorFactory = new ColorFactory();
@@ -32,7 +33,7 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 
 		private double initX = 0, initY = 0;
 		private double initAngle = 0;
-		private double initWdth = 1;
+		private double initWdth = 2;
 		private ColorF initColor = ColorF.Black;
 		private Stack<State2D> statesStack = new Stack<State2D>();
 
@@ -191,12 +192,18 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 
 		#region Symbols interpretation methods
 
-		[SymbolInterpretation("Symbol is ignored.")]
+		/// <summary>
+		/// Symbol is ignored.
+		/// </summary>
+		[SymbolInterpretation]
 		public void Nothing(ArgsStorage args) {
 
 		}
 
-		[SymbolInterpretation(1, "Moves pen forward (without drawing) by distance equal to value of first parameter.")]
+		/// <summary>
+		/// Moves pen forward (without drawing) by distance equal to value of the first parameter.
+		/// </summary>
+		[SymbolInterpretation(1)]
 		public void MoveForward(ArgsStorage args) {
 
 			double length = getArgumentAsDouble(args, 0);
@@ -210,7 +217,10 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 			}
 		}
 
-		[SymbolInterpretation(1, "Draws line in current direction with length equal to value of first parameter.")]
+		/// <summary>
+		/// Draws line in current direction with length equal to value of first parameter.
+		/// </summary>
+		[SymbolInterpretation(1)]
 		public void DrawLine(ArgsStorage args) {
 
 			double length = getArgumentAsDouble(args, 0);
@@ -234,7 +244,10 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 			}
 		}
 
-		[SymbolInterpretation(1, "Adds value of first parameter (in degrees) to current direction angle.")]
+		/// <summary>
+		/// Adds value of first parameter (in degrees) to current direction angle.
+		/// </summary>
+		[SymbolInterpretation(1)]
 		public void TurnLeft(ArgsStorage args) {
 
 			double angle = getArgumentAsDouble(args, 0);
@@ -242,12 +255,18 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 			currState.CurrentAngle += angle;
 		}
 
-		[SymbolInterpretation("Saves current state (on stack).")]
+		/// <summary>
+		/// Saves current state (on stack).
+		/// </summary>
+		[SymbolInterpretation]
 		public void StartBranch(ArgsStorage args) {
 			statesStack.Push(currState.Clone());
 		}
 
-		[SymbolInterpretation("Loads previously saved state (returns to last saved position).")]
+		/// <summary>
+		/// Loads previously saved state (returns to last saved position).
+		/// </summary>
+		[SymbolInterpretation]
 		public void EndBranch(ArgsStorage args) {
 			if (statesStack.Count > 0) {
 				currState = statesStack.Pop();
@@ -258,8 +277,11 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 			}
 		}
 
-		[SymbolInterpretation("Starts to record polygon vertices (do not saves current position as first vertex). "
-			+ "If another polygon is opened, its state is saved and will be restored after closing of current polygon.")]
+		/// <summary>
+		/// Starts to record polygon vertices (do not saves current position as first vertex).
+		/// If another polygon is opened, its state is saved and will be restored after closing of current polygon.
+		/// </summary>
+		[SymbolInterpretation]
 		public void StartPolygon(ArgsStorage args) {
 
 			if (!interpretPloygons) {
@@ -294,7 +316,10 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 
 		}
 
-		[SymbolInterpretation("Records current position to opened polygon.")]
+		/// <summary>
+		/// Records current position to opened polygon.
+		/// </summary>
+		[SymbolInterpretation]
 		public void RecordPolygonVertex(ArgsStorage args) {
 
 			if (!interpretPloygons) {
@@ -308,7 +333,10 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 			currPolygon.Ponits.Add(new PointF((float)currState.X, (float)currState.Y));
 		}
 
-		[SymbolInterpretation("Ends current polygon (do not saves current position as last vertex).")]
+		/// <summary>
+		/// Ends current polygon (do not saves current position as last vertex).
+		/// </summary>
+		[SymbolInterpretation]
 		public void EndPolygon(ArgsStorage args) {
 
 			if (!interpretPloygons) {

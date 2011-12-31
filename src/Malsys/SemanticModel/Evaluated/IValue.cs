@@ -18,6 +18,7 @@ namespace Malsys.SemanticModel.Evaluated {
 
 	[Flags]
 	public enum ExpressionValueType {
+		Unknown = 0x0,
 		Constant = 0x1,
 		Array = 0x2,
 		Any = Constant | Array,

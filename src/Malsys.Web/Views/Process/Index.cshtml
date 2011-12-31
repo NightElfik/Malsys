@@ -42,7 +42,7 @@
 <div class="floating_container clearfix">
 
 <div class="floating_box">
-@using (Html.BeginForm(MVC.Process.Index(null))) {
+@using (Html.BeginForm(MVC.Process.Index())) {
 	<fieldset class="malsysSource">
 		<legend>Source code</legend>
 
@@ -50,7 +50,8 @@
 
 		@Html.TextAreaFor(m => m.SourceCode, 20, 60, null)
 
-		@Html.HiddenFor(m => m.ReferenceId)
+		@* @Html.HiddenFor(m => m.ReferenceId) inserts old value from POST instead of updated value from model *@
+		<input id="ReferenceId" name="ReferenceId" type="hidden" value="@Model.ReferenceId" />
 
 		<p>
 			<input type="submit" name="Process" value="Process & display results" />

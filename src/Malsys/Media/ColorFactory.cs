@@ -7,7 +7,11 @@ namespace Malsys.Media {
 		public bool IsColor(IValue value) {
 
 			if (value.IsConstant) {
-				long val = ((Constant)value).RoundedLongValue;
+				var c = ((Constant)value);
+				if (c.IsNaN) {
+					return false;
+				}
+				long val = c.RoundedLongValue;
 				if (val < 0 || val > 0xFFFFFF) {
 					return false;
 				}

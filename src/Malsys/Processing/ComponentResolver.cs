@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
-using System.Reflection;
 
 namespace Malsys.Processing {
 	public class ComponentResolver : IComponentContainer, IComponentResolver {
 
 		private Dictionary<string, Type> components = new Dictionary<string, Type>();
-		private Dictionary<string, Type> containers = new Dictionary<string, Type>();
 
 
 		public void RegisterComponent(string name, Type type, bool ignoreConflicts = true) {
@@ -36,6 +33,10 @@ namespace Malsys.Processing {
 			else {
 				return null;
 			}
+		}
+
+		public IEnumerable<KeyValuePair<string, Type>> GetAllRegisteredComponents() {
+			return components;
 		}
 
 	}

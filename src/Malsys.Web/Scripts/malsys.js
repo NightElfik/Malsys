@@ -17,7 +17,7 @@
 	}
 
 	function highlightComments(code) {
-		code = code.replace(/(\/\*(.|[\r\n])*?\*\/)/g, '<span class="comment">$1</span>');
+		code = code.replace(/(\/\*(.|\s)*?\*\/)/g, '<span class="comment">$1</span>');
 		code = code.replace(/(\/\/.*)/g, '<span class="comment">$1</span>');
 		return code;
 	}
@@ -31,7 +31,7 @@
 	}
 
 	function highlightLsystemKeywords(code) {
-		return code.replace(/(as|component|configuration|connect|consider|container|default|fun|interpret|let|lsystem|nothing|or|process|return|rewrite|set|this|to|typeof|use|weight|with|where)([ \r\n\t])/g, '<span class="keyword">$1</span>$2');
+		return code.replace(/(\s)(as|component|configuration|connect|consider|container|default|fun|interpret|let|lsystem|nothing|or|process|return|rewrite|set|this|to|typeof|use|weight|with|where)(?=\s)/g, '$1<span class="keyword">$2</span>');
 	}
 
 	function urlEncode(str) {
@@ -50,16 +50,14 @@
 		return str;
 	}
 
-	function urlEncodeLsystem(code) {
-
-		code = urlEncode(code);
-		code = code.replace(/\t/g, "++++");
-		code = code.replace(/ /g, "+");
-		code = code.replace(/\r\n|\n|\r/g, "%0A");
-		//code = encodeURI(code);
-		return code;
+	function htmlEncode(str) {
+		str = str.replace(/[&]/g, "&amp;");
+		str = str.replace(/["]/g, "&quot;");
+		str = str.replace(/[']/g, "&#39;"); // &apos; does not work in IE
+		str = str.replace(/[<]/g, "&lt;");
+		str = str.replace(/[>]/g, "&gt;");
+		return str;
 	}
-
 
 	$("pre.grammar").each(function (i) {
 
@@ -98,8 +96,8 @@
 		$(this).text("");
 
 		// add try-me link
-		var encodedLsystem = urlEncodeLsystem(lsystemCode);
-		var tryMeHtml = '<a href="/Process?lsystem=' + encodedLsystem + '" class="lsysTryMe">Try me!</a>';
+		var tryMeHtml = '<form action="/Process" method="post"><input type="submit" class="lsysTryMe" name="Process" value="Try me!" />'
+			+ '<input name="SourceCode" type="hidden" value="' + htmlEncode(lsystemCode) + '"></form>';
 		$(this).append(tryMeHtml);
 
 		// format code
@@ -113,12 +111,12 @@
 			$(this).append(colapseHtml);
 		}
 
+		$(this).append(newHtml);
+
 		// clean tags from comments
 		$(this).find("span.comment").each(function (i) {
 			$(this).text($(this).text());
 		});
-
-		$(this).append(newHtml);
 
 	});
 

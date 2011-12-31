@@ -7,7 +7,6 @@ namespace Malsys.Web.Models {
 
 		public string SourceCode { get; set; }
 
-		[HiddenInput(DisplayValue = false)]
 		public int? ReferenceId { get; set; }
 
 		public MessageLogger Logger { get; set; }

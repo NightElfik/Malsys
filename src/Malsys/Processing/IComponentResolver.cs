@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Malsys.Processing {
 
@@ -12,6 +13,8 @@ namespace Malsys.Processing {
 	public interface IComponentContainer {
 
 		void RegisterComponent(string name, Type type, bool ignoreConflicts);
+
+		IEnumerable<KeyValuePair<string, Type>> GetAllRegisteredComponents();
 
 	}
 

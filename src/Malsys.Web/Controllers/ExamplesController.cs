@@ -1,13 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 
 namespace Malsys.Web.Controllers {
 	public partial class ExamplesController : Controller {
 
 		public virtual ActionResult Index() {
+			return View();
+		}
+
+
+		public virtual ActionResult FassCurves() {
+			return View();
+		}
+
+		public virtual ActionResult Abop() {
+			return View();
+		}
+
+		public virtual ActionResult Tilings() {
+			return View();
+		}
+
+		public virtual ActionResult Other() {
 			return View();
 		}
 

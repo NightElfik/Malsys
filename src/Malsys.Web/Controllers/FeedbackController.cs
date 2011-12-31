@@ -1,8 +1,10 @@
-﻿using System.Web.Mvc;
+﻿using System.Linq;
+using System.Web.Mvc;
 using Malsys.Web.Entities;
-using Malsys.Web.Models;
 using Malsys.Web.Infrastructure;
+using Malsys.Web.Models;
 using Microsoft.Web.Helpers;
+using MvcContrib.Pagination;
 
 namespace Malsys.Web.Controllers {
 	public partial class FeedbackController : Controller {
@@ -77,6 +79,18 @@ namespace Malsys.Web.Controllers {
 			}
 
 		}
+
+
+		[Authorize(Roles = UserRoles.ViewFeedbacks)]
+		public virtual ActionResult List(int page = 1) {
+
+			if (page <= 0) {
+				page = 1;
+			}
+
+			return View(feedbackDb.Feedbacks.OrderByDescending(x => x.SubmitDate).AsPagination(page));
+		}
+
 
 	}
 }

@@ -6,7 +6,9 @@ using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Evaluated;
 using Symbol = Malsys.SemanticModel.Symbol<Malsys.SemanticModel.Evaluated.IValue>;
 
+
 namespace Malsys.Processing.Components.Rewriters {
+	[Component("Symbol rewriter", ComponentGroupNames.Rewriters)]
 	public partial class SymbolRewriter : IRewriter {
 
 

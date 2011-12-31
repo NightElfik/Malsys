@@ -5,14 +5,14 @@
 <h2>Malsys help index</h2>
 
 <ol>
-	<li>@Html.ActionLink("Basic principles of rewriting", MVC.Help.Home.BasicRewriting())</li>
-	<li>Symbols interpretation to render SVG image</li>
+	<li>@Html.ActionLink("Basic principles of L-system rewriting", MVC.Help.Home.BasicRewriting())</li>
+	<li>@Html.ActionLink("Interpret symbols to render image", MVC.Help.Home.BasicInterpretation())</li>
 	<li>Symbols parameters</li>
 	<li>Process configurations</li>
 </ol>
 
 <ol class="uRoman">
-	<li>Available components list</li>
+	<li>@Html.ActionLink("Available components list", MVC.Help.Predefined.Components())</li>
 	<li>Predefined process configurations</li>
 	<li>@Html.ActionLink("Predefined constants", MVC.Help.Predefined.Constants())</li>
 	<li>@Html.ActionLink("Predefined functions", MVC.Help.Predefined.Functions())</li>

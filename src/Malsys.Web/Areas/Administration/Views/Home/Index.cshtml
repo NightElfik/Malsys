@@ -7,13 +7,18 @@
 <ul>
 	<li>
 		<ul>
-			<li>@Html.ActionLink("Users", "Index", "Users")</li>
-			<li>@Html.ActionLink("Roles", "Index", "Roles")</li>
+			<li>@Html.ActionLink("Users", MVC.Administration.Users.Index())</li>
+			<li>@Html.ActionLink("Roles", MVC.Administration.Roles.Index())</li>
 		</ul>
 	</li>
 	<li>
 		<ul>
-			<li>@Html.ActionLink("Input stats", "Index", "InputStats")</li>
+			<li>@Html.ActionLink("Input stats", MVC.Administration.InputStats.Index())</li>
+		</ul>
+	</li>
+	<li>
+		<ul>
+			<li>@Html.ActionLink("Feedbacks", MVC.Feedback.List())</li>
 		</ul>
 	</li>
 </ul>

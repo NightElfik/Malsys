@@ -39,6 +39,8 @@
 	-webkit-border-radius: @radius 0 @radius 0;
 	-moz-border-radius: @radius 0 @radius 0;
 }
+
+
 /* Derived from HTML5 ✰ Boilerplate http://html5boilerplate.com/ ========================= */
 
 /* HTML5 display definitions ================================================ */
@@ -116,6 +118,7 @@ sub { bottom: -0.25em; }
 ul, ol { margin: 1em 0; padding: 0 0 0 40px; }
 dd { margin: 0 0 0 40px; }
 nav ul, nav ol { list-style: none; list-style-image: none; margin: 0; padding: 0; }
+ul.clean { list-style: none; list-style-image: none; }
 
 
 /* Embedded content ========================================================= */
@@ -312,6 +315,8 @@ header {
 
 #main { margin-bottom: 32px; }
 
+input[type="submit"] { padding: 0.5em 1em; }
+
 
 /* Footer =================================================================== */
 
@@ -358,22 +363,22 @@ ol.lAlpha { list-style-type: lower-alpha; }
 
 /* Source code ============================================================== */
 
-@scColor: #000;
-@scKeywordColor: #7F0055;
-@scStringColor: #800000;
-@scCommentColor: #007700;
+@srcColor: #000;
+@srcKeywordColor: #7F0055;
+@srcStringColor: #800000;
+@srcCommentColor: #007700;
 
 pre {
 	border: 1px solid #aaa;
 	padding: 0.3em;
-	color: @scColor;
+	color: @srcColor;
 	background: #ddd;
 	position: relative;
 	.border-radius-malsys;
 	.box-shadow(2px, 2px, 5px, 0, #AAA);
 
-	a:hover { text-decoration: underline; color: @scColor; }
-	a.lsysTryMe { right: 8px; border-bottom: none; }
+	a:hover { text-decoration: underline; color: @srcColor; }
+	.lsysTryMe { right: 8px; border-bottom: none; }
 	.collapseSwitch { right: 96px; }
 	.collapseSwitch:hover { text-decoration: underline; }
 	&.collapsed { height: 1.5em; overflow: hidden;  }
@@ -385,12 +390,12 @@ code {
 }
 
 
-pre .grTerminal, code .grTerminal { color: @scStringColor; }
+pre .grTerminal, code .grTerminal { color: @srcStringColor; }
 
 pre .grQuantifier, code .grQuantifier { font-weight: bold; }
 
-pre .keyword, code .keyword { color: @scKeywordColor; font-weight: bold; }
-pre .comment, code .comment { color: @scCommentColor; }
+pre .keyword, code .keyword { color: @srcKeywordColor; font-weight: bold; }
+pre .comment, code .comment { color: @srcCommentColor; }
 
 pre a:link, pre a:visited, pre a:active {
 	border-bottom: 1px solid #777;
@@ -403,11 +408,11 @@ code.match {
 	background: none;
 }
 
-pre a.lsysTryMe, pre .collapseSwitch {
+pre .lsysTryMe, pre .collapseSwitch {
 	display: block;
 	position: absolute;
 	top: 4px;
-	padding: 0 0.3em;
+	padding: 0.1em 0.3em;
 
 	color: #444;
 	text-align: center;
@@ -425,6 +430,20 @@ pre a.lsysTryMe, pre .collapseSwitch {
 .outputTruncated { font-size: 0.8em; color: #888888; }
 
 
+/* Components ============================================================== */
+.componentBox {
+	border: 1px solid #aaa;
+	padding: 0.3em;
+	margin: 0.5em 0;
+	background: #ddd;
+	.border-radius-malsys;
+	.box-shadow(2px, 2px, 5px, 0, #AAA);
+	.type { font-size: 90%; color: #555; }
+	h4 { line-heigth: 1em; margin: 0; }
+	dl {
+		dt { padding-top: 0.5em; }
+	}
+}
 
 /* Editor and display helpers =============================================== */
 
@@ -473,8 +492,6 @@ p.malsysMsg {
 
 .error { background-color: #FFDDDD; }
 .warning { background-color: #FBEC5D; }
-
-input[type="submit"] { padding: 0.5em 1em; }
 
 .monospace { font-family: @monospaceFonts; }
 

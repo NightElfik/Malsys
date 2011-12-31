@@ -5,6 +5,8 @@ using Malsys.Processing.Components;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Evaluated;
+using Malsys.Reflection;
+using System;
 
 namespace Malsys.Processing {
 	public class ProcessConfigurationManager {
@@ -180,24 +182,20 @@ namespace Malsys.Processing {
 
 				var componentConnections = connections.Where(c => c.TargetName == compKvp.Key);
 
-				foreach (var pi in compKvp.Value.GetType().GetProperties()) {
-					var attrs = pi.GetCustomAttributes(typeof(UserConnectableAttribute), true);
-					if (attrs.Length != 1) {
-						continue;
-					}
+				foreach (var piAttr in compKvp.Value.GetType().GetPropertiesHavingAttr<UserConnectableAttribute>()) {
 
-					var attr = (UserConnectableAttribute)attrs[0];
-					var conn = componentConnections.Where(c => c.TargetInputName == pi.Name).ToList();
+					var attr = piAttr.Item2;
+					var conn = componentConnections.Where(c => c.TargetInputName == piAttr.Item1.Name).ToList();
 
 					if (conn.Count == 0) {
 						if (!attr.IsOptional) {
 							error = true;
-							logger.LogMessage(Message.UnsetMandatoryConnection, compKvp.Key, pi.Name, compKvp.Value.GetType().FullName);
+							logger.LogMessage(Message.UnsetMandatoryConnection, compKvp.Key, piAttr.Item1.Name, compKvp.Value.GetType().FullName);
 						}
 						continue;
 					}
 					else if (!attr.AllowMultiple && conn.Count > 1) {
-						logger.LogMessage(Message.MoreThanOneConnection, compKvp.Key, pi.Name, compKvp.Value.GetType().FullName);
+						logger.LogMessage(Message.MoreThanOneConnection, compKvp.Key, piAttr.Item1.Name, compKvp.Value.GetType().FullName);
 					}
 
 					error |= !tryConnect(conn[0], logger);
@@ -244,24 +242,22 @@ namespace Malsys.Processing {
 			var symbolsCanonicDict = lsystem.SymbolsConstants.ToDictionary(x => x.Key.ToLower(), x => x.Value);
 			var constantsCanonicDict = lsystem.Constants.ToDictionary(x => x.Key.ToLower(), x => x.Value);
 
-			foreach (var propInfo in component.GetType().GetProperties()) {
+			foreach (var propInfoAttr in component.GetType().GetPropertiesHavingAttr<UserSettableAttribute>()) {
 
-				var attr = propInfo.GetCustomAttributes(typeof(UserSettableAttribute), true);
-				if (attr.Length != 1) {
-					continue;
-				}
+				PropertyInfo prop = propInfoAttr.Item1;
+				Type propType = prop.PropertyType;
+				bool mandatory = propInfoAttr.Item2.IsMandatory;
 
-				bool mandatory = ((UserSettableAttribute)attr[0]).IsMandatory;
 				bool valueSet = false;
-				string nameLower = propInfo.Name.ToLowerInvariant();
+				string nameLower = prop.Name.ToLowerInvariant();
 
 				ImmutableList<Symbol<IValue>> symbolsVal;
 				if (symbolsCanonicDict.TryGetValue(nameLower, out symbolsVal)) {
-					if (propInfo.PropertyType.Equals(typeof(ImmutableList<Symbol<IValue>>))) {
-						valueSet |= trySetPropertyValue(propInfo, component, symbolsVal, component, componentConfigName, logger);
+					if (propType.Equals(typeof(ImmutableList<Symbol<IValue>>))) {
+						valueSet |= trySetPropertyValue(prop, component, symbolsVal, component, componentConfigName, logger);
 					}
 					else {
-						logger.LogMessage(Message.ExpectedSymbolListAsValue, propInfo.Name, component.GetType().FullName);
+						logger.LogMessage(Message.ExpectedSymbolListAsValue, prop.Name, component.GetType().FullName);
 					}
 				}
 
@@ -269,32 +265,32 @@ namespace Malsys.Processing {
 				IValue constVal;
 				if (constantsCanonicDict.TryGetValue(nameLower, out constVal)) {
 
-					if (propInfo.PropertyType.Equals(typeof(IValue))) {
-						valueSet |= trySetPropertyValue(propInfo, component, constVal, component, componentConfigName, logger);
+					if (propType.Equals(typeof(IValue))) {
+						valueSet |= trySetPropertyValue(prop, component, constVal, component, componentConfigName, logger);
 					}
-					else if (propInfo.PropertyType.Equals(typeof(Constant))) {
+					else if (propType.Equals(typeof(Constant))) {
 						if (constVal.IsConstant) {
-							valueSet |= trySetPropertyValue(propInfo, component, constVal, component, componentConfigName, logger);
+							valueSet |= trySetPropertyValue(prop, component, constVal, component, componentConfigName, logger);
 						}
 						else {
-							logger.LogMessage(Message.ExpectedConstantAsValue, propInfo.Name, componentConfigName, component.GetType().FullName);
+							logger.LogMessage(Message.ExpectedConstantAsValue, prop.Name, componentConfigName, component.GetType().FullName);
 						}
 					}
-					else if (propInfo.PropertyType.Equals(typeof(ValuesArray))) {
+					else if (propType.Equals(typeof(ValuesArray))) {
 						if (constVal.IsArray) {
-							valueSet |= trySetPropertyValue(propInfo, component, constVal, component, componentConfigName, logger);
+							valueSet |= trySetPropertyValue(prop, component, constVal, component, componentConfigName, logger);
 						}
 						else {
-							logger.LogMessage(Message.ExpectedArrayAsValue, propInfo.Name, componentConfigName, component.GetType().FullName);
+							logger.LogMessage(Message.ExpectedArrayAsValue, prop.Name, componentConfigName, component.GetType().FullName);
 						}
 					}
 					else {
-						logger.LogMessage(Message.ExpectedIValueAsValue, propInfo.Name, componentConfigName, component.GetType().FullName);
+						logger.LogMessage(Message.ExpectedIValueAsValue, prop.Name, componentConfigName, component.GetType().FullName);
 					}
 				}
 
 				if (mandatory && !valueSet) {
-					logger.LogMessage(Message.UnsetMandatoryProperty, propInfo.Name, componentConfigName, component.GetType().FullName);
+					logger.LogMessage(Message.UnsetMandatoryProperty, prop.Name, componentConfigName, component.GetType().FullName);
 					error = true;
 				}
 

@@ -43,7 +43,7 @@ namespace Malsys.Web.Models.Repositories {
 
 		}
 
-		public void CreateUser(NewUserModel newUser) {
+		public User CreateUser(NewUserModel newUser) {
 
 			// TODO: validate model somehow
 
@@ -74,9 +74,11 @@ namespace Malsys.Web.Models.Repositories {
 
 			usersDb.AddUser(newDbUser);
 			usersDb.SaveChanges();
+
+			return newDbUser;
 		}
 
-		public void CreateRole(NewRoleModel newRole) {
+		public Role CreateRole(NewRoleModel newRole) {
 
 			// TODO: validate model somehow
 
@@ -95,6 +97,8 @@ namespace Malsys.Web.Models.Repositories {
 
 			usersDb.AddRole(newDbRole);
 			usersDb.SaveChanges();
+
+			return newDbRole;
 		}
 
 		public void AddUserToRole(int userId, int roleId) {

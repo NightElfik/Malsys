@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System;
 using System.Linq;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Malsys.Evaluators;
@@ -14,6 +13,7 @@ using SymIntMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.Semantic
 
 
 namespace Malsys.Processing.Components.Interpreters {
+	[Component("Interpreter caller", ComponentGroupNames.Interpreters)]
 	public class InterpreterCaller : IInterpreterCaller {
 
 		private IInterpreter interpreter;

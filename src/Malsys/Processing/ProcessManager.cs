@@ -64,6 +64,7 @@ namespace Malsys.Processing {
 						null,
 						defaultConfigName,
 						ImmutableList<Malsys.SemanticModel.Compiled.ProcessComponentAssignment>.Empty);
+					procStats = new ImmutableList<SemanticModel.Compiled.ProcessStatement>(stat);
 				}
 
 				foreach (var processStat in procStats) {

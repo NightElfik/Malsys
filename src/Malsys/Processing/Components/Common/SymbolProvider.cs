@@ -3,13 +3,19 @@ using Malsys.SemanticModel;
 using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Processing.Components.Common {
+	[Component("Symbol provider", ComponentGroupNames.Common)]
 	public class SymbolProvider : ISymbolProvider {
 
-		public readonly IEnumerable<Symbol<IValue>> Symbols;
+		[UserSettable]
+		public ImmutableList<Symbol<IValue>> Symbols { get; set; }
 
+
+		public SymbolProvider() {
+			Symbols = ImmutableList<Symbol<IValue>>.Empty;
+		}
 
 		public SymbolProvider(IEnumerable<Symbol<IValue>> symbols) {
-			Symbols = symbols;
+			Symbols = symbols.ToImmutableList();
 		}
 
 
@@ -23,9 +29,7 @@ namespace Malsys.Processing.Components.Common {
 		}
 
 
-		public bool RequiresMeasure {
-			get { return false; }
-		}
+		public bool RequiresMeasure { get { return false; } }
 
 		public void Initialize(ProcessContext ctxt) { }
 
