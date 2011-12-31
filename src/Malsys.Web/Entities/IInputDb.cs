@@ -21,6 +21,11 @@ namespace Malsys.Web.Entities {
 		void DeleteProcessOutput(ProcessOutput processOutput);
 
 
+		IQueryable<SavedInput> SavedInputs { get; }
+
+		void AddSavedInput(SavedInput savedInput);
+
+
 		int SaveChanges();
 
 		void Detach(object entity);

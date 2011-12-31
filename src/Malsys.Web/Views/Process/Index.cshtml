@@ -2,7 +2,7 @@
 
 @{
 	ViewBag.Title = "Malsys L-system processor";
-	ViewBag.MainClass = "processor";
+	ViewBag.MainClass = "twoColumns";
 }
 
 @section scripts {
@@ -12,17 +12,26 @@
 
 <h2>L-system processor</h2>
 
+@if (Model.SavedInputId != null) {
+	string url = Request.Url.Scheme + System.Uri.SchemeDelimiter + Request.Url.Host +
+		(Request.Url.IsDefaultPort ? "" : ":" + Request.Url.Port) + Url.Action(MVC.Process.Load(Model.SavedInputId));
+	<p>
+		Your input was saved under ID `@Model.SavedInputId`.
+		You can share it by URL @Html.Link(url).
+	</p>
+}
+
 @if (Model.Logger != null && Model.Logger.Count > 0) {
 	<table class="w100">
 	<tr>
 		<th style="width: 24px;"></th>
 		<th>Message</th>
-		<th style="width: 90px;">Position</th>
+		<th style="width: 150px;">Position</th>
 	</tr>
 	@foreach (var msg in Model.Logger) {
 	<tr class="@msg.Type.ToString().ToLower()">
 		<td class="center"><abbr title="@msg.Type (@msg.Id)">@msg.Type.ToString()[0]</abbr></td>
-		<td><p class="malsys_message">@msg.MessageStr</p></td>
+		<td><p class="malsysMsg">@msg.MessageStr</p></td>
 		<td>@(msg.Position.IsUnknown ? "" : msg.Position.ToString())</td>
 	</tr>
 	}
@@ -33,17 +42,20 @@
 <div class="floating_container clearfix">
 
 <div class="floating_box">
-@using (Html.BeginForm(new { source = "" })) {
+@using (Html.BeginForm(MVC.Process.Index(null))) {
 	<fieldset class="malsysSource">
 		<legend>Source code</legend>
+
+		@Html.ValidationSummary(true)
 
 		@Html.TextAreaFor(m => m.SourceCode, 20, 60, null)
 
 		@Html.HiddenFor(m => m.ReferenceId)
 
 		<p>
-			<input type="submit" value="Evaluate" />
-			<input type="submit" value="Compile" />
+			<input type="submit" name="Process" value="Process & display results" />
+			<input type="submit" name="Compile" value="Try to compile" />
+			<input type="submit" name="Save" value="Save & get permanent link" />
 		</p>
 	</fieldset>
 }

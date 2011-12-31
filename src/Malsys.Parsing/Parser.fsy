@@ -76,10 +76,10 @@ type ImmutableListPos_LsystemSymbol = ImmutableListPos<LsystemSymbol>
 %token <string> ID
 %token <Keyword> AS COMPONENT CONFIGURATION CONNECT CONSIDER CONTAINER DEFAULT FUN INTERPRET LET
 %token <Keyword> LSYSTEM NOTHING OR PROCESS RETURN REWRITE SET THIS TO TYPEOF USE WEIGHT WITH WHERE
-%token EQUALS SEMI DOT COMMA QMARK COLON
+%token EQUALS SEMI COMMA QMARK COLON
 %token LPAREN RPAREN LBRACE RBRACE
 %token <float * ConstantFormat> FLOAT
-%token <string> OPERATOR LBRACK RBRACK
+%token <string> OPERATOR LBRACK RBRACK DOT
 %token EOF
 
 
@@ -381,6 +381,8 @@ Symbol:
     | LBRACK
       { $1 }
     | RBRACK
+      { $1 }
+    | DOT
       { $1 }
 
 

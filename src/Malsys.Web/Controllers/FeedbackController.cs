@@ -36,18 +36,17 @@ namespace Malsys.Web.Controllers {
 			}
 
 			if (!ReCaptcha.Validate()) {
-
 				ModelState.AddModelError("", "Captcha invalid.");
-
 				return View(model);
 			}
 
 			var feedback = new Feedback() {
-				UserId = usersDb.TryGetUserByName(User.Identity.Name).UserId,
+				User = usersDb.TryGetUserByName(User.Identity.Name),
 				SubmitDate = dateTimeProvider.Now,
 				Subject = model.Subject.Trim(),
 				Email = string.IsNullOrWhiteSpace(model.Email) ? null : model.Email.Trim(),
-				Message = model.Message.Trim()
+				Message = model.Message.Trim(),
+				IsNew = true
 			};
 
 			feedbackDb.AddFeedback(feedback);

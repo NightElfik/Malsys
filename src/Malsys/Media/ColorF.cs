@@ -28,6 +28,13 @@ namespace Malsys.Media {
 		public float B;
 
 
+		public ColorF(uint argb) {
+			A = ((argb >> 24) & 0xFF) / 255f;
+			R = ((argb >> 16) & 0xFF) / 255f;
+			G = ((argb >> 8) & 0xFF) / 255f;
+			B = (argb & 0xFF) / 255f;
+		}
+
 		public ColorF(float r, float g, float b) {
 			A = 1f;
 			R = r;
@@ -56,6 +63,15 @@ namespace Malsys.Media {
 			B = (float)b;
 		}
 
+		public uint ToArgb() {
+
+			uint a = (uint)(MathHelper.Clamp01(A) * 255);
+			uint r = (uint)(MathHelper.Clamp01(R) * 255);
+			uint g = (uint)(MathHelper.Clamp01(G) * 255);
+			uint b = (uint)(MathHelper.Clamp01(B) * 255);
+
+			return (a << 24) | (r << 16) | (g << 8) | b;
+		}
 
 		public string ToRgbHexString() {
 

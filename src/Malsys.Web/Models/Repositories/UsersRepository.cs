@@ -31,6 +31,18 @@ namespace Malsys.Web.Models.Repositories {
 		}
 
 
+		public void LogUserActivity(string userName) {
+
+			string userNameLower = userName.Trim().ToLower();
+
+			var user = usersDb.Users.Where(u => u.NameLowercase == userNameLower).SingleOrDefault();
+			if (user != null) {
+				user.LastActivityDate = dateTimeProvider.Now;
+				usersDb.SaveChanges();
+			}
+
+		}
+
 		public void CreateUser(NewUserModel newUser) {
 
 			// TODO: validate model somehow

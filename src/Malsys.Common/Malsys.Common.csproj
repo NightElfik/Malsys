@@ -77,8 +77,8 @@
     <CodeContractsExtraAnalysisOptions />
     <CodeContractsBaseLineFile />
     <CodeContractsCacheAnalysisResults>False</CodeContractsCacheAnalysisResults>
-    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
-    <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
+    <CodeContractsRuntimeCheckingLevel>None</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsReferenceAssembly>DoNotBuild</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
   </PropertyGroup>
   <ItemGroup>
@@ -95,8 +95,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Extensions%27\DateTimeExtensions.cs" />
-    <Compile Include="Helpers\AttributeHelper.cs" />
+    <Compile Include="Extensions%27\TimeExtensions.cs" />
+    <Compile Include="Helpers%27\AttributeHelper.cs" />
+    <Compile Include="Helpers%27\DataSizeHelper.cs" />
     <Compile Include="IDateTimeProvider.cs" />
     <Compile Include="IMessageLogger.cs" />
     <Compile Include="Random%27\CryptographicRandomGenerator.cs" />
@@ -112,11 +113,11 @@
     <Compile Include="Extensions%27\DoubleExtensions.cs" />
     <Compile Include="Extensions%27\FSharpMapExtensions.cs" />
     <Compile Include="Extensions%27\SwapExtension.cs" />
-    <Compile Include="Helpers\EnumHelper.cs" />
+    <Compile Include="Helpers%27\EnumHelper.cs" />
     <Compile Include="Extensions%27\LinqExtensions.cs" />
     <Compile Include="Extensions%27\StringExtensions.cs" />
-    <Compile Include="Helpers\CharHelper.cs" />
-    <Compile Include="Helpers\MathHelper.cs" />
+    <Compile Include="Helpers%27\CharHelper.cs" />
+    <Compile Include="Helpers%27\MathHelper.cs" />
     <Compile Include="IO\IndentStringWriter.cs" />
     <Compile Include="IO\IndentWriter.cs" />
     <Compile Include="Parsing\LexerMessage.cs" />

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Malsys.Ast;
 using Malsys.Compilers.Expressions;
+using Malsys.Resources;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Compiled.Expressions;
@@ -85,7 +86,7 @@ namespace Malsys.Compilers {
 						// Lets add implicit multiplication between them.
 						operandsStack.Push(parentExprCompiler.Compile(bracketedExpr.Expression, logger));
 						// implicit multiplication
-						optorsStack.Push(new OperatorCoreAst(OperatorCore.Multiply, new Operator(null, bracketedExpr.Position.GetBeginPos())));
+						optorsStack.Push(new OperatorCoreAst(StdOperators.Multiply, new Operator(null, bracketedExpr.Position.GetBeginPos())));
 						state = State.ExcpectingOperator;
 						break;
 
@@ -108,7 +109,7 @@ namespace Malsys.Compilers {
 						// So directly before function is operand.
 						// Lets add implicit multiplication between them.
 						compileFunctionCall(funExpr);
-						optorsStack.Push(new OperatorCoreAst(OperatorCore.Multiply, new Operator(null, funExpr.Position.GetBeginPos())));
+						optorsStack.Push(new OperatorCoreAst(StdOperators.Multiply, new Operator(null, funExpr.Position.GetBeginPos())));
 						state = State.ExcpectingOperator;
 						break;
 

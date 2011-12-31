@@ -1,30 +1,29 @@
 ﻿using System;
-using System.Collections.Generic;
 using Malsys.Compilers;
 using Malsys.Evaluators;
-using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Core;
 
 namespace Malsys.Processing {
 	public class ProcessManager {
 
-		private ProcessStatement defaultProcessStatement = new ProcessStatement("",
-			ProcessConfigurations.PrintSymbolsConfig.Name, ImmutableList<ProcessComponentAssignment>.Empty);
+		private readonly CompilersContainer compiler;
+		private readonly EvaluatorsContainer evaluator;
+		private readonly IComponentResolver componentResolver;
 
-		private readonly EvaluatorsContainer evaluator = new EvaluatorsContainer();
 
 
-		public TimeSpan Timeout { get; set; }
+		public ProcessManager(CompilersContainer compilersContainer, EvaluatorsContainer evaluatorsContainer, IComponentResolver componentResolver) {
 
-		public ProcessManager() {
-			Timeout = new TimeSpan(0, 0, 10);
+			compiler = compilersContainer;
+			evaluator = evaluatorsContainer;
+			this.componentResolver = componentResolver;
 		}
 
 
-		public SemanticModel.Evaluated.InputBlock CompileAndEvaluateInput(string src, MessageLogger logger) {
+		public InputBlock CompileAndEvaluateInput(string src, MessageLogger logger) {
 
-			var inCompiled = new CompilersContainer().CompileInput(src, "webInput", logger);
+			var inCompiled = compiler.CompileInput(src, "webInput", logger);
 
 			if (logger.ErrorOcured) {
 				return null;
@@ -34,14 +33,14 @@ namespace Malsys.Processing {
 		}
 
 
-		public void ProcessLsystems(SemanticModel.Evaluated.InputBlock inBlockEvaled, IFilesManager storageManager, MessageLogger logger, IComponentResolver componentResolver) {
+		public void ProcessLsystems(InputBlock inBlockEvaled, IFilesManager storageManager, MessageLogger logger,
+			TimeSpan timeout, bool dumpConstantsIfNoLsystems = true) {
 
-			if (inBlockEvaled.Lsystems.Count == 0) {
+			if (dumpConstantsIfNoLsystems && inBlockEvaled.Lsystems.Count == 0) {
 				logger.LogMessage(Message.NoLsysFoundDumpingConstants);
 
 				new Malsys.Processing.Components.Common.ConstantsDumper().DumpConstants(inBlockEvaled.GlobalConstants, storageManager, logger);
 				return;
-
 			}
 
 			foreach (var lsystemKvp in inBlockEvaled.Lsystems) {
@@ -58,23 +57,20 @@ namespace Malsys.Processing {
 
 				var context = new ProcessContext(lsysEvaled, storageManager, inBlockEvaled, evaluator, logger);
 
-				IEnumerable<ProcessStatement> processStatements;
-				if(lsysEvaled.ProcessStatements.Length != 0){
-					processStatements = lsysEvaled.ProcessStatements;
+				const string defaultConfigName = "SymbolPrinter";
+				var procStats = lsysEvaled.ProcessStatements;
+				if (procStats.Count == 0 && inBlockEvaled.ProcessConfigurations.ContainsKey(defaultConfigName)) {
+					var stat = new Malsys.SemanticModel.Compiled.ProcessStatement(
+						null,
+						defaultConfigName,
+						ImmutableList<Malsys.SemanticModel.Compiled.ProcessComponentAssignment>.Empty);
 				}
-				else{
-					processStatements = new ProcessStatement[]{ defaultProcessStatement };
-				}
 
-				var processConfigsMap = inBlockEvaled.ProcessConfigurations;
-				processConfigsMap = processConfigsMap.Add(ProcessConfigurations.PrintSymbolsConfig.Name, ProcessConfigurations.PrintSymbolsConfig);
-				processConfigsMap = processConfigsMap.Add(ProcessConfigurations.InterpretConfig.Name, ProcessConfigurations.InterpretConfig);
+				foreach (var processStat in procStats) {
 
-				foreach (var processStat in processStatements) {
-
-					var maybeConfig = processConfigsMap.TryFind(processStat.ProcessConfiName);
+					var maybeConfig = inBlockEvaled.ProcessConfigurations.TryFind(processStat.ProcessConfiName);
 					if (OptionModule.IsNone(maybeConfig)) {
-						logger.LogError("UnknownProcessConfig", Position.Unknown, "Unknown process configuration `{0}`.".Fmt(processStat.ProcessConfiName));
+						logger.LogMessage(Message.UndefinedProcessConfig, processStat.AstNode.ProcessConfiNameId.Position, processStat.ProcessConfiName);
 						continue;
 					}
 					var configMgr = new ProcessConfigurationManager();
@@ -84,10 +80,14 @@ namespace Malsys.Processing {
 					}
 
 					try {
-						configMgr.StarterComponent.Start(configMgr.RequiresMeasure, Timeout);
+						configMgr.StarterComponent.Start(configMgr.RequiresMeasure, timeout);
 					}
 					catch (EvalException ex) {
 						logger.LogMessage(EvaluatorsContainerExtensions.Message.EvalFailed, ex.GetFullMessage());
+						continue;
+					}
+					catch (InterpretationException ex) {
+						logger.LogMessage(EvaluatorsContainerExtensions.Message.EvalFailed, ex.Message);
 						continue;
 					}
 
@@ -99,7 +99,12 @@ namespace Malsys.Processing {
 
 		}
 
+
+
 		public enum Message {
+
+			[Message(MessageType.Error, "Undefined process configuration name `{0}`.")]
+			UndefinedProcessConfig,
 
 			[Message(MessageType.Warning, "No L-systems found, dumping constants.")]
 			NoLsysFoundDumpingConstants,

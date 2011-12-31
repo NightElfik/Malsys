@@ -50,7 +50,7 @@ namespace Malsys.Compilers {
 			}
 			else if (funCache.TryGetValue(new StringInt(syntax, FunctionCore.AnyParamsCount), out result)) {
 				// set arity to desired number
-				result = new FunctionCore(result.Name, paramsCount, result.ParamsTypes, result.EvalFunction);
+				result = new FunctionCore(result.Name, null, null, paramsCount, result.ParamsTypes, result.EvalFunction);
 				return true;
 			}
 			else {

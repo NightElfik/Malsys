@@ -7,7 +7,7 @@ using Malsys.Web.Models;
 using MvcContrib.Pagination;
 
 namespace Malsys.Web.Areas.Administration.Controllers {
-	[Authorize(Roles = "admins")]
+	[Authorize(Roles = UserRoles.Administrator)]
 	public partial class RolesController : Controller {
 
 		private readonly IUsersRepository usersRepo;

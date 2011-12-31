@@ -1,4 +1,5 @@
-﻿using Malsys.Processing.Components.Interpreters;
+﻿using Malsys.Processing;
+using Malsys.Processing.Components.Interpreters;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Malsys.Tests.Interpreters {
@@ -16,6 +17,7 @@ namespace Malsys.Tests.Interpreters {
 		}
 
 		[TestMethod]
+		[ExpectedException(typeof(InterpretationException))]
 		public void UnknownSymbolsTests() {
 			GenericInterpreterCallerTests.UnknownActionsTests(new InterpreterCaller());
 		}

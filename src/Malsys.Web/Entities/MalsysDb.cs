@@ -54,6 +54,12 @@ namespace Malsys.Web.Entities {
 			ProcessOutputs.DeleteObject(processOutput);
 		}
 
+		IQueryable<SavedInput> IInputDb.SavedInputs { get { return SavedInputs; } }
+
+		public void AddSavedInput(SavedInput savedInput) {
+			SavedInputs.AddObject(savedInput);
+		}
+
 		#endregion
 
 

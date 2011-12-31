@@ -64,7 +64,7 @@ namespace Malsys.Tests.Process {
 			var logger = new MessageLogger();
 			var ctxt = new ProcessContext(null, new FilesManager("./"), input, null, logger);
 			var manager = new ProcessConfigurationManager();
-			if (!manager.TryBuildConfiguration(procConfig, procStat.ComponentAssignments, resolver, ctxt, logger)) {
+			if (!manager.TryBuildConfiguration(procConfig, procStat.ComponentAssignments, resolver, ctxt, new MessageLogger())) {
 				Console.WriteLine(logger.ToString());
 				Assert.Fail("Failed to build configuration.");
 			}
@@ -81,12 +81,14 @@ namespace Malsys.Tests.Process {
 
 		private interface IDummyContainer {
 
+			[UserConnectable]
 			IComponent Component { set; }
 
 		}
 
 		private class DummyContaineredBoy : IDummyContainer, IComponent {
 
+			[UserConnectable]
 			public IComponent Component { get; set; }
 
 
@@ -109,6 +111,7 @@ namespace Malsys.Tests.Process {
 
 		private class DummyContaineredGirl : IDummyContainer, IComponent {
 
+			[UserConnectable]
 			public IComponent Component { get; set; }
 
 
@@ -131,6 +134,7 @@ namespace Malsys.Tests.Process {
 
 		private class DummyRewriter : IComponent {
 
+			[UserConnectable]
 			public IComponent SymbolProcessor { get; set; }
 
 

@@ -1,0 +1,50 @@
+﻿/**
+ * Malsys standard library.
+ */
+
+//------------------------------------------------------------------------------
+// Process configurations.
+//------------------------------------------------------------------------------
+
+configuration SvgRenderer {
+
+	component AxiomProvider typeof AxiomProvider;
+	component RandomGeneratorProvider typeof RandomGeneratorProvider;
+
+	container Rewriter typeof IRewriter default SymbolRewriter;
+	container Iterator typeof IIterator default MemoryBufferedIterator;
+	container InterpreterCaller typeof IInterpreterCaller default InterpreterCaller;
+	container Interpreter typeof IInterpreter default Interpreter2D;
+	container Renderer typeof IRenderer default SvgRenderer2D;
+
+	connect AxiomProvider to Iterator.AxiomProvider;
+	connect Iterator to Rewriter.SymbolProvider;
+	connect RandomGeneratorProvider to Rewriter.RandomGeneratorProvider;
+	connect Rewriter to Iterator.SymbolProvider;
+	connect InterpreterCaller to Iterator.OutputProcessor;
+	connect Interpreter to InterpreterCaller.Interpreter;
+	connect Renderer to Interpreter.Renderer;
+
+}
+
+configuration SymbolPrinter {
+
+	component AxiomProvider typeof AxiomProvider;
+	component RandomGeneratorProvider typeof RandomGeneratorProvider;
+
+	container Rewriter typeof IRewriter default SymbolRewriter;
+	container Iterator typeof IIterator default MemoryBufferedIterator;
+	container SymbolProcessor typeof ISymbolProcessor default SymbolsSaver;
+
+	connect AxiomProvider to Iterator.AxiomProvider;
+	connect Iterator to Rewriter.SymbolProvider;
+	connect RandomGeneratorProvider to Rewriter.RandomGeneratorProvider;
+	connect Rewriter to Iterator.SymbolProvider;
+	connect SymbolProcessor to Iterator.OutputProcessor;
+
+}
+
+
+// default process
+process with SymbolPrinter;
+

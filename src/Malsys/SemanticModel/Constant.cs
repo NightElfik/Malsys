@@ -10,8 +10,9 @@ namespace Malsys.SemanticModel {
 
 		public static readonly Constant NaN = new Constant(double.NaN);
 
-		public static readonly Constant One = new Constant(1);
-		public static readonly Constant Zero = new Constant(0);
+		public static readonly Constant MinusOne = new Constant(-1d);
+		public static readonly Constant Zero = new Constant(0d);
+		public static readonly Constant One = new Constant(1d);
 
 		public static readonly Constant True = One;
 		public static readonly Constant False = Zero;
@@ -44,6 +45,8 @@ namespace Malsys.SemanticModel {
 		public bool IsEmptyExpression { get { return false; } }
 
 		public int RoundedIntValue { get { return (int)Math.Round(Value); } }
+
+		public long RoundedLongValue { get { return (long)Math.Round(Value); } }
 
 		public Position AstPosition { get { return AstNode == null ? Position.Unknown : AstNode.Position; } }
 

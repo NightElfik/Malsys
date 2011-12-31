@@ -12,13 +12,13 @@
 </p>
 
 <p>
-	Simplified regular expressions are used @Html.ActionLink("formal definition of L-system syntax", "Syntax") to describe the possible input (grammar).
+	Simplified form of regular expressions are used in @Html.ActionLink("formal definition of L-system syntax", "Syntax") to describe the possible input (grammar).
 	There are some differences between common regular expressions and regexps used in Malsys,
 		so their syntax is described on this page, to avoid misunderstanding.
 </p>
 
 <p>
-	If you are familiar with regular expressions, you can skip detailed explanation and look at @Html.Link("examples on the bottom of this page", "#examples").
+	If you are familiar with regular expressions, you can skip detailed explanation and look at @Html.Link("examples", "#examples") on the bottom of this page.
 </p>
 
 
@@ -38,7 +38,7 @@
 <p>
 	Set of allowed characters is described by list of individual characters in brackets.
 	Regular expression <code class="grammar">[ab]</code> matches only <code class="match">a</code> or <code class="match">b</code>.
-	So regual expression matching a digit can be written as <code class="grammar">[0123456789]</code>, but there is easier way to achieve this, using range.
+	So regular expression matching a digit can be written as <code class="grammar">[0123456789]</code> but there is easier way to achieve this, using range.
 </p>
 
 <p>
@@ -104,7 +104,7 @@
 <h3>Whitespaces</h3>
 
 <p>
-	Whitespaces are not significant unless they are as literal, but whitespace literals are not needed for ours purposes.
+	Whitespaces in regular expressions are not significant.
 	This allows some formatting of regular expressions with whitespaces to made them more readable.
 </p>
 

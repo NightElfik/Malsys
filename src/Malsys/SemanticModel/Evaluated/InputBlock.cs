@@ -22,5 +22,19 @@ namespace Malsys.SemanticModel.Evaluated {
 			ProcessConfigurations = procConfigs;
 			ProcessStatements = procStats;
 		}
+
+
+		public InputBlock JoinWith(InputBlock inputBlock) {
+
+			return new InputBlock(
+				GlobalConstants.AddRange(inputBlock.GlobalConstants),
+				GlobalFunctions.AddRange(inputBlock.GlobalFunctions),
+				Lsystems.AddRange(inputBlock.Lsystems),
+				ProcessConfigurations.AddRange(inputBlock.ProcessConfigurations),
+				ProcessStatements.AddRange(inputBlock.ProcessStatements));
+
+		}
+
+
 	}
 }

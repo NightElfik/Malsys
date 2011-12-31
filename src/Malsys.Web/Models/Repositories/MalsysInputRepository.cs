@@ -12,14 +12,14 @@ using Malsys.SourceCode.Printers;
 using Malsys.Web.Entities;
 
 namespace Malsys.Web.Models.Repositories {
-	public class InputProcessesRepository : IInputProcessesRepository {
+	public class MalsysInputRepository : IMalsysInputRepository {
 
 		private readonly IUsersDb usersDb;
 		private readonly IInputDb inputDb;
 		private readonly IDateTimeProvider dateTimeProvider;
 
 
-		public InputProcessesRepository(IUsersDb usersDb, IInputDb inputDb, IDateTimeProvider dateTimeProvider) {
+		public MalsysInputRepository(IUsersDb usersDb, IInputDb inputDb, IDateTimeProvider dateTimeProvider) {
 
 			this.usersDb = usersDb;
 			this.inputDb = inputDb;
@@ -30,7 +30,7 @@ namespace Malsys.Web.Models.Repositories {
 		public IInputDb InputDb { get { return inputDb; } }
 
 
-		public InputProcess AddInput(InputBlock input, int? parentId, IEnumerable<OutputFile> outputs, string userName) {
+		public InputProcess AddInputProcess(InputBlock input, int? parentId, IEnumerable<OutputFile> outputs, string userName, TimeSpan duration) {
 
 			var user = usersDb.TryGetUserByName(userName);
 
@@ -50,13 +50,13 @@ namespace Malsys.Web.Models.Repositories {
 
 			CanonicInput canonicInput = inputDb.CanonicInputs.Where(i => i.Hash == hash).Where(i => i.Source == inputStr).SingleOrDefault();
 
-			if (canonicInput != null){
+			if (canonicInput != null) {
 				var oldestProcess = canonicInput.InputProcesses.OrderBy(ci => ci.ProcessDate).FirstOrDefault();
 				if (oldestProcess != null) {
 					parentId = oldestProcess.InputProcessId;
 				}
 			}
-			else  {
+			else {
 				canonicInput = new CanonicInput() {
 					Hash = hash,
 					Source = inputStr,
@@ -78,7 +78,8 @@ namespace Malsys.Web.Models.Repositories {
 				CanonicInput = canonicInput,
 				ParentInputProcessId = parentId,
 				User = user,
-				ProcessDate = now
+				ProcessDate = now,
+				Duration = duration.Ticks
 			};
 
 			inputDb.AddInputProcess(inputProcess);
@@ -97,6 +98,58 @@ namespace Malsys.Web.Models.Repositories {
 			inputDb.SaveChanges();
 
 			return inputProcess;
+		}
+
+
+		public SavedInput SaveInput(string source, int? parentId, IEnumerable<OutputFile> outputs, string userName, TimeSpan duration) {
+
+			var user = usersDb.TryGetUserByName(userName);
+			if (user == null) {
+				return null;
+			}
+
+			const int randomIdLength = 8;
+			var rnd = new Random();
+			var sb = new StringBuilder(randomIdLength);
+			string randomId;
+
+			while (true) {
+				sb.Clear();
+				for (int i = 0; i < randomIdLength; i++) {
+					var rNum = rnd.Next(10 + 26 + 26);
+					if (rNum < 10) {
+						sb.Append((char)('0' + rNum));
+					}
+					else if (rNum < 10 + 26) {
+						sb.Append((char)('a' + rNum - 10));
+					}
+					else {
+						sb.Append((char)('A' + rNum - 10 - 26));
+					}
+				}
+				randomId = sb.ToString();
+				if (inputDb.SavedInputs.Where(x => x.RandomId == randomId).Count() == 0) {
+					break;  // free random ID found
+				}
+			}
+
+
+			DateTime now = dateTimeProvider.Now;
+
+			var savedInput = new SavedInput() {
+				RandomId = randomId,
+				User = user,
+				ParentInputProcessId = parentId,
+				Date = now,
+				Source = source,
+				SourceSize = source.Length,
+				OutputSize = outputs.Sum(o => new FileInfo(o.FilePath).Length),
+				Duration = duration.Ticks,
+				Views = 0
+			};
+			inputDb.SaveChanges();
+
+			return savedInput;
 		}
 
 

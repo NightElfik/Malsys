@@ -1,0 +1,8 @@
+﻿
+@if (Request.IsAuthenticated) {
+	<b>@Html.ActionLink(User.Identity.Name, MVC.User.Index())</b>
+	@:[ @Html.ActionLink("Log Off", MVC.Authentication.LogOff()) ]
+}
+else {
+	@:[ @Html.ActionLink("Log On", MVC.Authentication.LogOn()) ]
+}

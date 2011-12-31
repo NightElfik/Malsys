@@ -77,15 +77,15 @@ namespace Malsys.Evaluators {
 			binaryOperator.LeftOperand.Accept(this);
 
 			if ((int)(valuesStack.Peek().Type & binaryOperator.LeftOperandType) == 0) {
-				throw new EvalException("Failed to evaluate binary operator `{0}`. As left operand excepted {1}, but {2} was given.".Fmt(
-					binaryOperator.Syntax, binaryOperator.LeftOperandType.ToTypeString(), valuesStack.Peek().Type.ToTypeString()));
+				throw new EvalException("Failed to evaluate binary operator `{0}`. As left operand excepted {1}, but {2} was given."
+					.Fmt(binaryOperator.Syntax, binaryOperator.LeftOperandType.ToTypeString(), valuesStack.Peek().Type.ToTypeString()));
 			}
 
 			binaryOperator.RightOperand.Accept(this);
 
 			if ((int)(valuesStack.Peek().Type & binaryOperator.LeftOperandType) == 0) {
-				throw new EvalException("Failed to evaluate binary operator `{0}`. As right operand excepted {1}, but {2} was given.".Fmt(
-					binaryOperator.Syntax, binaryOperator.LeftOperandType.ToTypeString(), valuesStack.Peek().Type.ToTypeString()));
+				throw new EvalException("Failed to evaluate binary operator `{0}`. As right operand excepted {1}, but {2} was given."
+					.Fmt(binaryOperator.Syntax, binaryOperator.LeftOperandType.ToTypeString(), valuesStack.Peek().Type.ToTypeString()));
 			}
 
 			argsStorage.PopArgs(2, valuesStack);
@@ -139,8 +139,8 @@ namespace Malsys.Evaluators {
 				functionCall.Arguments[i].Accept(this);
 
 				if ((int)(valuesStack.Peek().Type & functionCall.GetValueType(i)) == 0) {
-					throw new EvalException("Failed to evaluate function `{0}`. As {1}. argument excepted {2}, but {3} was given.".Fmt(
-						functionCall.Name, i, functionCall.GetValueType(i).ToTypeString(), valuesStack.Peek().Type.ToTypeString()));
+					throw new EvalException("Failed to evaluate function `{0}`. As {1}. argument excepted {2}, but {3} was given."
+						.Fmt(functionCall.Name, i, functionCall.GetValueType(i).ToTypeString(), valuesStack.Peek().Type.ToTypeString()));
 				}
 			}
 
@@ -153,8 +153,8 @@ namespace Malsys.Evaluators {
 			indexer.Array.Accept(this);
 
 			if (valuesStack.Peek().Type != ExpressionValueType.Array) {
-				throw new EvalException("Failed to evaluate indexer. As operand excepted {0}, but {1} was given.".Fmt(
-					ExpressionValueType.Array.ToTypeString(), valuesStack.Peek().Type.ToTypeString()));
+				throw new EvalException("Failed to evaluate indexer. As operand excepted {0}, but {1} was given."
+					.Fmt(ExpressionValueType.Array.ToTypeString(), valuesStack.Peek().Type.ToTypeString()));
 			}
 			ValuesArray arr = (ValuesArray)valuesStack.Pop();
 
@@ -162,22 +162,25 @@ namespace Malsys.Evaluators {
 			indexer.Index.Accept(this);
 
 			if (valuesStack.Peek().Type != ExpressionValueType.Constant) {
-				throw new EvalException("Failed to evaluate indexer. As index excepted {0}, but {1} was given.".Fmt(
-					ExpressionValueType.Constant.ToTypeString(), valuesStack.Peek().Type.ToTypeString()));
+				throw new EvalException("Failed to evaluate indexer. As index excepted {0}, but {1} was given."
+					.Fmt(ExpressionValueType.Constant.ToTypeString(), valuesStack.Peek().Type.ToTypeString()));
 			}
 
 			Constant index = (Constant)valuesStack.Pop();
+			if (index.IsNaN) {
+				throw new EvalException("Failed to evaluate indexer, index is NaN.");
+			}
 
 			int intIndex = index.RoundedIntValue;
 
 			if (intIndex < 0) {
-				throw new EvalException("Failed to evaluate indexer, index out of range. Index is zero-based but negative value `{0}` was given.".Fmt(
-					intIndex));
+				throw new EvalException("Failed to evaluate indexer, index out of range. Index is zero-based but negative value `{0}` was given."
+					.Fmt(intIndex));
 			}
 
 			if (intIndex >= arr.Length) {
-				throw new EvalException("Failed to evaluate indexer, index out of range. Can not index array of length {0} with zero-based index {1}.".Fmt(
-					arr.Length, intIndex));
+				throw new EvalException("Failed to evaluate indexer, index out of range. Can not index array of length {0} with zero-based index {1}."
+					.Fmt(arr.Length, intIndex));
 			}
 
 			valuesStack.Push(arr[intIndex]);
@@ -188,8 +191,8 @@ namespace Malsys.Evaluators {
 			unaryOperator.Operand.Accept(this);
 
 			if ((int)(valuesStack.Peek().Type & unaryOperator.OperandType) == 0) {
-				throw new EvalException("Failed to evaluate unary operator `{0}`. As operand excepted {1}, but {2} was given.".Fmt(
-					unaryOperator.Syntax, unaryOperator.OperandType.ToTypeString(), valuesStack.Peek().Type.ToTypeString()));
+				throw new EvalException("Failed to evaluate unary operator `{0}`. As operand excepted {1}, but {2} was given."
+					.Fmt(unaryOperator.Syntax, unaryOperator.OperandType.ToTypeString(), valuesStack.Peek().Type.ToTypeString()));
 			}
 
 			argsStorage.PopArgs(1, valuesStack);
@@ -208,8 +211,8 @@ namespace Malsys.Evaluators {
 			var fun = maybeFun.Value;
 
 			if (userFunction.Arguments.Length > fun.Parameters.Length) {
-				throw new EvalException("Failed to evaluate function `{0}`. It takes only {1} parameters but {2} arguments were given.".Fmt(
-					userFunction.Name, fun.Parameters.Length, userFunction.Arguments.Length));
+				throw new EvalException("Failed to evaluate function `{0}`. It takes only {1} parameters but {2} arguments were given."
+					.Fmt(userFunction.Name, fun.Parameters.Length, userFunction.Arguments.Length));
 			}
 
 			// evaluate arguments
@@ -287,8 +290,8 @@ namespace Malsys.Evaluators {
 
 			var cond = valuesStack.Pop();
 			if (!cond.IsConstant) {
-				throw new EvalException("Failed to evaluate function `{0}`. As first argument excepted {1}, but {2} was given.".Fmt(
-					fun.Name, (ExpressionValueType.Constant).ToTypeString(), cond.Type.ToTypeString()));
+				throw new EvalException("Failed to evaluate function `{0}`. As first argument excepted {1}, but {2} was given."
+					.Fmt(fun.Name, (ExpressionValueType.Constant).ToTypeString(), cond.Type.ToTypeString()));
 			}
 
 			IExpression arg;

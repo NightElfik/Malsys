@@ -17,6 +17,8 @@
 
 @baseWidth: 960px;
 
+@monospaceFonts: Consolas, "Courier New", monospace;
+
 
 /* Mixins =================================================================== */
 
@@ -93,7 +95,7 @@ ins { background: #FF9; color: #000; text-decoration: none; }
 mark { background: #FF0; color: #000; font-style: italic; font-weight: bold; }
 
 /* Redeclare monospace font family: h5bp.com/j */
-pre, code, kbd, samp { font-family: Consolas, "Courier New", monospace; _font-family: Consolas, "Courier New", monospace; font-size: 1em; }
+pre, code, kbd, samp { font-family: @monospaceFonts; _font-family: @monospaceFonts; font-size: 1em; }
 
 /* Improve readability of pre-formatted text in all browsers */
 pre { white-space: pre; white-space: pre-wrap; word-wrap: break-word; }
@@ -253,7 +255,7 @@ html, #headerContainer, #footerContainer {
 
 .betaContainer {
 	float: left;
-	width: 2em;
+	width: 1em;
 	font-size: 0.8em;
 	line-height: 1.2em;
 	color: @bgColor;
@@ -263,42 +265,52 @@ html, #headerContainer, #footerContainer {
 
 .wrapper { margin: 0 auto; width: @baseWidth; padding: 0 20px; }
 
-header nav {
-	float: right;
-	margin-top: 64px;
-	width: 700px;
-	ul { float: right; }
-	li { display: inline; }
-}
+header {
+	nav {
+		float: right;
+		margin-top: 32px;
+		width: 700px;
+		ul { float: right; }
+		li { display: inline; font-weight: bolder; }
+		a {
+			font-size: 1.3em;
+			padding: 0.3em;
+			margin: 0.1em;
+			text-decoration: none;
+			background-color: @themeColor;
+			color: #FFF;
 
-nav a {
-	font-size: 1.4em;
-	padding: 0.3em;
-	margin: 0.1em;
-	text-decoration: none;
-	background-color: @themeColor;
-	color: #FFF;
+			text-shadow: 2px 2px 2px @themeColorDarkerDarker;
 
-	text-shadow: 2px 2px 2px @themeColorDarkerDarker;
+			border: 1px solid @themeColorDarkerDarker;
+			.border-radius-malsys;
 
-	border: 1px solid @themeColorDarkerDarker;
-	.border-radius-malsys;
-
-	&:hover {
-		text-decoration: none;
-		border-color: #FFF;
-
-		text-shadow: 0px 0px 3px #FFF;
-		.box-shadow-inset(0, 0, 8px, 0, #FFF);
+			&:hover { text-decoration: none; border-color: #FFF;
+				text-shadow: 0px 0px 3px #FFF; .box-shadow-inset(0, 0, 8px, 0, #FFF); }
+			&:link { color: #FFF; }
+			&:visited { color: #FFF; }
+		}
 	}
-	&:link { color: #FFF; }
-	&:visited { color: #FFF; }
-}
 
+	.logonBox {
+		float: right;
+		margin-top: 8px;
+		width: 700px;
+		color: #FFF;
+		font-size: 0.8em;
+		text-align: right;
+		a {
+			color: #FFF;
+			&:hover { text-shadow: 0px 0px 3px #FFF; }
+			&:link { color: #FFF; }
+			&:visited { color: #FFF; }
+		}
+	}
+}
 
 /* Main ===================================================================== */
 
-#main { padding-bottom: 32px; }
+#main { margin-bottom: 32px; }
 
 
 /* Footer =================================================================== */
@@ -319,6 +331,7 @@ footer {
 /* General styles =========================================================== */
 
 .center { text-align: center; }
+.right { text-align: right; }
 .w100 { width: 100%; }
 .noMargin { margin: 0; }
 
@@ -332,13 +345,13 @@ ol.lAlpha { list-style-type: lower-alpha; }
 
 /* Collapsation ============================================================= */
 
-.toggleSwitch {
+.collapseSwitch {
 	cursor: pointer;
-	span.h { display: none; }
-	span.s { display: block; }
-	&.show {
-		span.h { display: block; }
-		span.s { display: none; }
+	span.c { display: block; }
+	span.u { display: none; }
+	&.collapsed {
+		span.c { display: none; }
+		span.u { display: block; }
 	}
 }
 
@@ -361,8 +374,9 @@ pre {
 
 	a:hover { text-decoration: underline; color: @scColor; }
 	a.lsysTryMe { right: 8px; border-bottom: none; }
-	.toggleSwitch { right: 96px; }
-	.toggleSwitch:hover { text-decoration: underline; }
+	.collapseSwitch { right: 96px; }
+	.collapseSwitch:hover { text-decoration: underline; }
+	&.collapsed { height: 1.5em; overflow: hidden;  }
 }
 
 code {
@@ -389,7 +403,7 @@ code.match {
 	background: none;
 }
 
-pre a.lsysTryMe, pre .toggleSwitch {
+pre a.lsysTryMe, pre .collapseSwitch {
 	display: block;
 	position: absolute;
 	top: 4px;
@@ -406,7 +420,7 @@ pre a.lsysTryMe, pre .toggleSwitch {
 	&:hover { color: #000; background: #FFF; }
 }
 
-.malsysSource textarea { font-family: Consolas, "Courier New", monospace; width: 98%; }
+.malsysSource textarea { font-family: @monospaceFonts; width: 98%; }
 
 .outputTruncated { font-size: 0.8em; color: #888888; }
 
@@ -449,17 +463,20 @@ pre a.lsysTryMe, pre .toggleSwitch {
 
 /* Uncategorized ============================================================ */
 
-.scroll_box { overflow: auto; margin: 0 auto; }
+.scrollBox { overflow: auto; margin: 0 auto; }
 
-p.malsys_message { margin: 0; padding: 0 }
+p.malsysMsg {
+	margin: 0;
+	padding: 0;
+	.quoted { font-family: @monospaceFonts; font-weight: bolder; }
+}
+
+.error { background-color: #FFDDDD; }
+.warning { background-color: #FBEC5D; }
 
 input[type="submit"] { padding: 0.5em 1em; }
 
-.error { background-color: #FFDDDD; }
-
-.warning { background-color: #FBEC5D; }
-
-
+.monospace { font-family: @monospaceFonts; }
 
 
 /* Non-semantic helper classes ============================================== */
@@ -498,9 +515,9 @@ input[type="submit"] { padding: 0.5em 1em; }
 }
 
 @media only screen and (min-width: 1550px) {
-	#main.processor {
+	#main.twoColumns {
 		.wrapper { width: 1520px; }
-		.floating_box { display: inline; float: left; text-align: left; width: 750px; }
+		.floating_box { display: inline; float: left; text-align: left; width: 740px; padding-right: 8px; }
 		.floating_container { text-align: center; }
 	}
 }

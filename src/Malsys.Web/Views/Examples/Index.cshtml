@@ -1,13 +1,14 @@
 ﻿@{
 	ViewBag.Title = "Examples";
+	ViewBag.MainClass = "twoColumns";
 }
 
 
 <h2>Examples</h2>
 
+<div class="floating_container clearfix">
 
-<h2>Dragon curve</h2>
-
+<div class="floating_box">
 <pre class="malsys">
 /**
  * http://en.wikipedia.org/wiki/Dragon_curve
@@ -18,38 +19,162 @@ lsystem DragonCurve {
 	let iterations = 10;
 	let margin = 2;
 
-	// normalize line length -- result image will have always same size
-	let lineLength = 2 ^ -(iterations / 2) * 200;
+	// normalize line length (result image will have always same size)
+	let lineLength = 2 ^ -(iterations / 2) * 256;
 
 	rewrite L to L + R +;
 	rewrite R to - L - R;
 
-	interpret R L as DrawLine(lineLength);
+	interpret R L as DrawLine(lineLength, 2);
 	interpret + as TurnLeft(90);
-	interpret - as TurnRight(90);
+	interpret - as TurnLeft(-90);
 
-	process this with InterpretConfig
-		use SvgRenderer2D as Interpret;  // render as SVG
+	process with SvgRenderer;
+
 }
 </pre>
+</div>
 
+<div class="floating_box">
 <pre class="malsys">
+/**
+ * William McWorter
+ */
+lsystem XBorder {
+
+	set axiom =
+		X Y X Y X Y X +
+		X Y X Y X Y X +
+		X Y X Y X Y X +
+		X Y X Y X Y X;
+
+	let iterations = 3;
+
+
+	interpret F as DrawLine(4);
+
+	interpret + as TurnLeft(90);
+	interpret - as TurnLeft(-90);
+
+
+	rewrite F to nothing;
+	rewrite X to F X + F X + F X F Y - F Y -;
+	rewrite Y to + F X + F X F Y - F Y - F Y;
+
+
+	process with SvgRenderer;
+
+}
+</pre>
+</div>
+
+<div class="floating_box">
+<pre class="malsys">
+/**
+ * http://en.wikipedia.org/wiki/Penrose_tiling
+ */
+lsystem PenroseTiling {
+
+	set axiom = [N] + + [N] + + [N] + + [N] + + [N];
+	let iterations = 4;
+	let reversePolygonOrder = true;
+
+	let strokeColor = #000000;  // black
+	let darkColor = #221166;  // dark blue
+	let lightColor = #FFCC66;  // dark yellow
+
+
+	interpret + as TurnLeft(36);
+	interpret ++ as TurnLeft(36 * 4);
+	interpret - as TurnLeft(-36);
+	interpret -- as TurnLeft(-36 * 4);
+
+	interpret M N O P as MoveForward(40);
+
+	interpret [ as StartBranch;
+	interpret ] as EndBranch;
+
+	interpret < as StartPolygon(0, 2, strokeColor);
+	interpret . as RecordPolygonVertex;
+	interpret > as EndPolygon;
+
+
+	rewrite M
+		to O + + <(darkColor) . P . -- N . [ - O . -- M . > ] + +;
+	rewrite N
+		to + <(lightColor) . O . - -  P . [ - - - M . - - N . > ] +;
+	rewrite O
+		to - <(lightColor) . M . + +  N . [ + + + O . + + P . > ] -;
+	rewrite P
+		to - - <(darkColor) . O . ++ M . [ + P . ++ N . > ] - - N;
+
+
+	process with SvgRenderer;
+
+}
+</pre>
+</div>
+
+<div class="floating_box">
+<pre class="malsys">
+/**
+ * http://en.wikipedia.org/wiki/Gosper_curve
+ */
 lsystem HexaGosperCurve	 {
 
 	set axiom = L;
 	let iterations = 5;
 	let margin = 2;
-	let continouscoloring = true;
+	let continousColoring = true;
 
 	rewrite L to L + R + + R - L - - L L - R +;
 	rewrite R to - L + R R + + R + L - - L - R;
 
-	interpret R L as DrawLine(4);
+	interpret R L as DrawLine(4, 2);
 	interpret + as TurnLeft(60);
-	interpret - as TurnRight(60);
+	interpret - as TurnLeft(-60);
 
-	process this with InterpretConfig
-		use SvgRenderer2D as Interpret;
+	process with SvgRenderer;
+
 }
 </pre>
+</div>
 
+<div class="floating_box">
+<pre class="malsys">
+/**
+ * http://en.wikipedia.org/wiki/H_tree
+ */
+lsystem H_tree {
+
+	let baseStep = 128;
+	let baseLineWidth = 8;
+
+	set axiom = T(baseStep, baseLineWidth) + +
+		f(baseStep) T(baseStep, baseLineWidth);
+	let iterations = 8;
+
+
+	interpret + as TurnLeft(90);
+	interpret f as MoveForward(4);
+	interpret T F as DrawLine(4);
+
+	interpret [ as StartBranch;
+	interpret ] as EndBranch;
+
+
+	rewrite T(length, width)
+		with newLength = length / sqrt(2),
+			newWidth = width / sqrt(2)
+		to F(length, width) [ + T(newLength, newWidth) + +
+			f(newLength) T(newLength, newWidth) ];
+
+	process with SvgRenderer;
+
+}
+</pre>
+</div>
+
+
+
+</div>

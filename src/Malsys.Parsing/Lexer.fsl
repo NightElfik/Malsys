@@ -186,7 +186,6 @@ rule tokenize args = parse
         singleLineComment args (lexbuf.StartPos) sb lexbuf }
 
     | ';' { SEMI }
-    | '.' { DOT }
     | ',' { COMMA }
     | '(' { LPAREN }
     | ')' { RPAREN }
@@ -194,6 +193,7 @@ rule tokenize args = parse
     | '}' { RBRACE }
     | '[' { LBRACK (lexeme lexbuf) }
     | ']' { RBRACK (lexeme lexbuf) }
+    | '.' { DOT (lexeme lexbuf) }
     | '=' { EQUALS }
 
     | operator | extraOperators

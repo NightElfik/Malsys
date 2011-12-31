@@ -12,11 +12,17 @@ namespace Malsys.SemanticModel.Compiled {
 		public readonly ImmutableList<ProcessComponentAssignment> ComponentAssignments;
 
 
-		public ProcessStatement(string targetLsystemName, string processConfiName, ImmutableList<ProcessComponentAssignment> componentAssignments) {
+		public readonly Ast.ProcessStatement AstNode;
+
+
+		public ProcessStatement(string targetLsystemName, string processConfiName, ImmutableList<ProcessComponentAssignment> componentAssignments,
+				Ast.ProcessStatement astNode = null) {
 
 			TargetLsystemName = targetLsystemName;
 			ProcessConfiName = processConfiName;
 			ComponentAssignments = componentAssignments;
+
+			AstNode = astNode;
 		}
 
 

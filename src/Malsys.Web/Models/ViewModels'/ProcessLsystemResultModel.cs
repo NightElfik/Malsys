@@ -14,5 +14,7 @@ namespace Malsys.Web.Models {
 
 		public IEnumerable<OutputFile> OutputFiles { get; set; }
 
+		public string SavedInputId { get; set; }
+
 	}
 }

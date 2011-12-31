@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿
 namespace Malsys.SemanticModel.Compiled {
 	/// <summary>
 	/// Immutable.
@@ -14,15 +10,18 @@ namespace Malsys.SemanticModel.Compiled {
 		public readonly ImmutableList<ProcessContainer> Containers;
 		public readonly ImmutableList<ProcessComponentsConnection> Connections;
 
+		public readonly Ast.ProcessConfigurationDefinition AstNode;
+
 
 		public ProcessConfiguration(string name, ImmutableList<ProcessComponent> components, ImmutableList<ProcessContainer> containers,
-				ImmutableList<ProcessComponentsConnection> connections) {
+				ImmutableList<ProcessComponentsConnection> connections, Ast.ProcessConfigurationDefinition astNode) {
 
 			Name = name;
 			Components = components;
 			Containers = containers;
 			Connections = connections;
 
+			AstNode = astNode;
 		}
 
 

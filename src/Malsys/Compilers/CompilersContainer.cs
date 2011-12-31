@@ -5,6 +5,8 @@ using Malsys.Parsing;
 using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Compiled.Expressions;
 using Microsoft.FSharp.Text.Lexing;
+using System.IO;
+using Malsys.Resources;
 
 namespace Malsys.Compilers {
 	/// <summary>
@@ -12,20 +14,28 @@ namespace Malsys.Compilers {
 	/// </summary>
 	public class CompilersContainer {
 
+		private static readonly KnownConstFunOpProvider defaultKnownStuffProvider;
+
+
+		static CompilersContainer() {
+
+			defaultKnownStuffProvider = new KnownConstFunOpProvider();
+			defaultKnownStuffProvider.LoadFromType(typeof(StdConstants));
+			defaultKnownStuffProvider.LoadFromType(typeof(StdFunctions));
+			defaultKnownStuffProvider.LoadFromType(typeof(StdOperators));
+
+		}
+
+
 		protected IContainer container;
+
 
 
 		/// <summary>
 		/// Creates container with default constants, functions and operators.
 		/// </summary>
-		public CompilersContainer() {
-
-			var knownStuffProvider = new KnownConstFunOpProvider();
-			knownStuffProvider.LoadFromType(typeof(KnownConstant));
-			knownStuffProvider.LoadFromType(typeof(FunctionCore));
-			knownStuffProvider.LoadFromType(typeof(OperatorCore));
-
-			buildContainer(knownStuffProvider, knownStuffProvider, knownStuffProvider);
+		internal CompilersContainer() {
+			buildContainer(defaultKnownStuffProvider, defaultKnownStuffProvider, defaultKnownStuffProvider);
 		}
 
 		public CompilersContainer(IKnownConstantsProvider knownConstantsProvider, IKnownFunctionsProvider knownFunctionsProvider,
@@ -76,9 +86,7 @@ namespace Malsys.Compilers {
 
 	public static class CompilersContainerExtensions {
 
-		public static InputBlock CompileInput(this CompilersContainer container, string strInput, string sourceName, IMessageLogger logger) {
-
-			var lexBuff = LexBuffer<char>.FromString(strInput);
+		public static InputBlock CompileInput(this CompilersContainer container, LexBuffer<char> lexBuff, string sourceName, IMessageLogger logger) {
 
 			Ast.InputBlock parsedInput;
 
@@ -91,6 +99,18 @@ namespace Malsys.Compilers {
 			}
 
 			return container.ResolveInputCompiler().Compile(parsedInput, logger);
+		}
+
+		public static InputBlock CompileInput(this CompilersContainer container, string strInput, string sourceName, IMessageLogger logger) {
+
+			return CompileInput(container, LexBuffer<char>.FromString(strInput), sourceName, logger);
+
+		}
+
+		public static InputBlock CompileInput(this CompilersContainer container, TextReader inputReader, string sourceName, IMessageLogger logger) {
+
+			return CompileInput(container, LexBuffer<char>.FromTextReader(inputReader), sourceName, logger);
+
 		}
 
 		public static IExpression CompileExpression(this CompilersContainer container, string strInput, string sourceName, IMessageLogger logger) {
@@ -109,6 +129,7 @@ namespace Malsys.Compilers {
 
 			return container.ResolveExpressionCompiler().Compile(parsedInput, logger);
 		}
+
 
 
 		public enum Message {

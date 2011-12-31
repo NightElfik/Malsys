@@ -1,4 +1,7 @@
 ﻿using System.Collections.Generic;
+using System;
+using System.Linq;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Malsys.Evaluators;
@@ -6,6 +9,7 @@ using Malsys.SemanticModel;
 using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Core;
 using InterpretAction = System.Action<Malsys.Evaluators.ArgsStorage>;
+using InterpretActionParams = System.Tuple<System.Action<Malsys.Evaluators.ArgsStorage>, int>;
 using SymIntMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Symbol<Malsys.SemanticModel.Evaluated.IValue>>;
 
 
@@ -13,10 +17,11 @@ namespace Malsys.Processing.Components.Interpreters {
 	public class InterpreterCaller : IInterpreterCaller {
 
 		private IInterpreter interpreter;
+		private IMessageLogger logger;
 
-		private SymIntMap symbolToInstr;
+		private Dictionary<string, Symbol<IValue>> symbolToInstr;
 
-		private Dictionary<string, InterpretAction> instrToDel;
+		private Dictionary<string, InterpretActionParams> instrToDel;
 
 		private ArgsStorage args = new ArgsStorage();
 
@@ -28,35 +33,39 @@ namespace Malsys.Processing.Components.Interpreters {
 		public IInterpreter Interpreter {
 			set {
 				interpreter = value;
-				createInstrToDelCahce();
 			}
 		}
 
 		public void ProcessSymbol(Symbol<IValue> symbol) {
 
-			var maybeInstr = symbolToInstr.TryFind(symbol.Name);
-			if (OptionModule.IsSome(maybeInstr)) {
-				var instr = maybeInstr.Value;
+			Symbol<IValue> instr;
+			if (!symbolToInstr.TryGetValue(symbol.Name, out instr)) {
+				// TODO: handle missing interpret method for symbol
+				return;
+			}
 
-				InterpretAction iAction;
-				if (instrToDel.TryGetValue(instr.Name.ToLowerInvariant(), out iAction)) {
-					args.AddArgs(symbol.Arguments, instr.Arguments);
-					iAction.Invoke(args);
-				}
-				else {
-					// TODO: handle symbol with unknown action
-				}
+			InterpretActionParams iActionParams;
+			if (!instrToDel.TryGetValue(instr.Name.ToLowerInvariant(), out iActionParams)) {
+				throw new InterpretationException("Unknown interpreter action `{0}` of symbol `{1}` of interpreter `{2}`."
+					.Fmt(instr.Name, symbol.Name, interpreter.GetType().FullName));
 			}
-			else {
-				// TODO: resolve missing interpret method for symbol
+
+			args.AddArgs(symbol.Arguments, instr.Arguments);
+			if (args.ArgsCount < iActionParams.Item2) {
+				throw new InterpretationException("Not enough arguments supplied. "
+					+ "Symbol `{0}` needs {1} arguments for invoking `{2}` but only {3} were given."
+					.Fmt(symbol.Name, iActionParams.Item2, instr.Name, args.ArgsCount));
 			}
+
+			iActionParams.Item1.Invoke(args);
 		}
 
 		public bool RequiresMeasure { get { return false; } }
 
 		public void Initialize(ProcessContext ctxt) {
 
-			symbolToInstr = ctxt.Lsystem.SymbolsInterpretation;
+			logger = ctxt.Logger;
+			symbolToInstr = ctxt.Lsystem.SymbolsInterpretation.ToDictionary(x => x.Key, x => x.Value);
 
 			createInstrToDelCahce();
 		}
@@ -76,21 +85,25 @@ namespace Malsys.Processing.Components.Interpreters {
 
 		private void createInstrToDelCahce() {
 
-			instrToDel = new Dictionary<string, InterpretAction>();
+			instrToDel = new Dictionary<string, InterpretActionParams>();
 
 			foreach (var methodInfo in interpreter.GetType().GetMethods()) {
-				var attrs = methodInfo.GetCustomAttributes(typeof(SymbolInterpretationAttribute), false);
+
+				var attrs = methodInfo.GetCustomAttributes(typeof(SymbolInterpretationAttribute), true);
 				if (attrs.Length != 1) {
 					continue;
 				}
 
+				var attr = (SymbolInterpretationAttribute)attrs[0];
+
 				var prms = methodInfo.GetParameters();
-				if (prms.Length != 1 && !prms[0].ParameterType.Equals(typeof(ArgsStorage))) {
-					continue;
+				if (prms.Length != 1 || !prms[0].ParameterType.Equals(typeof(ArgsStorage))) {
+					throw new ComponentInitializationException("Interpreter method marked by `{0}` have invalid parameters."
+						.Fmt(typeof(SymbolInterpretationAttribute).Name));
 				}
 
 				var del = createInterpretAction(methodInfo);
-				instrToDel.Add(methodInfo.Name.ToLowerInvariant(), del);
+				instrToDel.Add(methodInfo.Name.ToLowerInvariant(), new InterpretActionParams(del, attr.RequiredParametersCount));
 			}
 		}
 

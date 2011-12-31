@@ -1,11 +1,12 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Web.Mvc;
 using Malsys.Web.Entities;
 using Malsys.Web.Models;
 using MvcContrib.Pagination;
 
 namespace Malsys.Web.Areas.Administration.Controllers {
-	[Authorize]
+	[Authorize(Roles = UserRoles.ViewStats)]
 	public partial class InputStatsController : Controller {
 
 		private readonly IInputDb inputDb;
@@ -30,6 +31,7 @@ namespace Malsys.Web.Areas.Administration.Controllers {
 					ParentProcessId = p.ParentInputProcessId,
 					User = p.User.Name,
 					Date = p.ProcessDate,
+					Duration = p.Duration,
 					SourceId = p.CanonicInput.CanonicInputId,
 					Source = p.CanonicInput.Source
 				})

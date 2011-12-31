@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Malsys.Processing.Components;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Evaluated;
-using Microsoft.FSharp.Core;
-using System.Reflection;
 
 namespace Malsys.Processing {
 	public class ProcessConfigurationManager {
@@ -73,7 +71,7 @@ namespace Malsys.Processing {
 				return false;
 			}
 
-			initializeComponents(ctxt);
+			initializeComponents(ctxt, logger);
 
 			RequiresMeasure = false;
 			foreach (var cp in components.Values) {
@@ -97,13 +95,18 @@ namespace Malsys.Processing {
 			StarterComponent = null;
 		}
 
-		private void initializeComponents(ProcessContext ctxt) {
+		private void initializeComponents(ProcessContext ctxt, IMessageLogger logger) {
 
 			StarterComponent = null;
 
 			foreach (var cp in components.Values) {
-
-				cp.Initialize(ctxt);
+				try {
+					cp.Initialize(ctxt);
+				}
+				catch (ComponentInitializationException ex) {
+					logger.LogMessage(Message.ComponentInitializationError, cp.GetType().FullName, ex.Message);
+					continue;
+				}
 
 				if (cp is IProcessStarter) {
 					if (StarterComponent != null) {
@@ -114,7 +117,7 @@ namespace Malsys.Processing {
 			}
 
 			if (StarterComponent == null) {
-				ctxt.Logger.LogMessage(Message.NoStartComponent, typeof(IProcessStarter).Name);
+				logger.LogMessage(Message.NoStartComponent, typeof(IProcessStarter).Name);
 			}
 		}
 
@@ -238,6 +241,9 @@ namespace Malsys.Processing {
 
 			bool error = false;
 
+			var symbolsCanonicDict = lsystem.SymbolsConstants.ToDictionary(x => x.Key.ToLower(), x => x.Value);
+			var constantsCanonicDict = lsystem.Constants.ToDictionary(x => x.Key.ToLower(), x => x.Value);
+
 			foreach (var propInfo in component.GetType().GetProperties()) {
 
 				var attr = propInfo.GetCustomAttributes(typeof(UserSettableAttribute), true);
@@ -249,10 +255,10 @@ namespace Malsys.Processing {
 				bool valueSet = false;
 				string nameLower = propInfo.Name.ToLowerInvariant();
 
-				var maybeSyms = lsystem.SymbolsConstants.TryFind(nameLower);
-				if (OptionModule.IsSome(maybeSyms)) {
+				ImmutableList<Symbol<IValue>> symbolsVal;
+				if (symbolsCanonicDict.TryGetValue(nameLower, out symbolsVal)) {
 					if (propInfo.PropertyType.Equals(typeof(ImmutableList<Symbol<IValue>>))) {
-						valueSet |= trySetPropertyValue(propInfo, component, maybeSyms.Value, component, componentConfigName, logger);
+						valueSet |= trySetPropertyValue(propInfo, component, symbolsVal, component, componentConfigName, logger);
 					}
 					else {
 						logger.LogMessage(Message.ExpectedSymbolListAsValue, propInfo.Name, component.GetType().FullName);
@@ -260,25 +266,23 @@ namespace Malsys.Processing {
 				}
 
 
-				var maybeConst = lsystem.Constants.TryFind(nameLower);
-				if (OptionModule.IsSome(maybeConst)) {
-
-					var constant = maybeConst.Value;
+				IValue constVal;
+				if (constantsCanonicDict.TryGetValue(nameLower, out constVal)) {
 
 					if (propInfo.PropertyType.Equals(typeof(IValue))) {
-						valueSet |= trySetPropertyValue(propInfo, component, constant, component, componentConfigName, logger);
+						valueSet |= trySetPropertyValue(propInfo, component, constVal, component, componentConfigName, logger);
 					}
 					else if (propInfo.PropertyType.Equals(typeof(Constant))) {
-						if (constant.IsConstant) {
-							valueSet |= trySetPropertyValue(propInfo, component, constant, component, componentConfigName, logger);
+						if (constVal.IsConstant) {
+							valueSet |= trySetPropertyValue(propInfo, component, constVal, component, componentConfigName, logger);
 						}
 						else {
 							logger.LogMessage(Message.ExpectedConstantAsValue, propInfo.Name, componentConfigName, component.GetType().FullName);
 						}
 					}
 					else if (propInfo.PropertyType.Equals(typeof(ValuesArray))) {
-						if (constant.IsArray) {
-							valueSet |= trySetPropertyValue(propInfo, component, constant, component, componentConfigName, logger);
+						if (constVal.IsArray) {
+							valueSet |= trySetPropertyValue(propInfo, component, constVal, component, componentConfigName, logger);
 						}
 						else {
 							logger.LogMessage(Message.ExpectedArrayAsValue, propInfo.Name, componentConfigName, component.GetType().FullName);
@@ -349,6 +353,8 @@ namespace Malsys.Processing {
 			FailedToConnectNotAssignable,
 			[Message(MessageType.Error, "Exception `{3}` was thrown on set value of property `{0}` of `{1}` (`{2}`).")]
 			SetPropertyValueError,
+			[Message(MessageType.Error, "Failed initialize component `{0}`. {1}")]
+			ComponentInitializationError,
 
 
 			[Message(MessageType.Warning, "Expected constant as value of property `{0}` of `{1}` (`{2}`).")]

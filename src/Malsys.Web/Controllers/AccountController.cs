@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
+using Malsys.Web.Infrastructure;
 using Malsys.Web.Models;
 using Malsys.Web.Security;
+using Microsoft.Web.Helpers;
 
 namespace Malsys.Web.Controllers {
 	public partial class AccountController : Controller {
@@ -14,9 +13,12 @@ namespace Malsys.Web.Controllers {
 		private readonly IUserAuthenticator userAuth;
 
 
-		public AccountController(IUsersRepository usersRepo, IUserAuthenticator userAuth) {
+		public AccountController(IUsersRepository usersRepo, IUserAuthenticator userAuth, IAppSettingsProvider appSettingsProvider) {
 			this.usersRepo = usersRepo;
 			this.userAuth = userAuth;
+
+			ReCaptcha.PublicKey = appSettingsProvider["ReCaptcha_PublicKey"];
+			ReCaptcha.PrivateKey = appSettingsProvider["ReCaptcha_PrivateKey"];
 		}
 
 
@@ -28,22 +30,30 @@ namespace Malsys.Web.Controllers {
 		[HttpPost]
 		public virtual ActionResult Register(NewUserModel model) {
 
-			if (ModelState.IsValid) {
-				bool success = false;
-				try {
-					usersRepo.CreateUser(model);
-					success = true;
-				}
-				catch (Exception ex) {
-					ModelState.AddModelError("", ex.Message);
-				}
-
-				if (success) {
-					return RedirectToAction("LogOn", "Authentication");
-				}
+			if (!ModelState.IsValid) {
+				return View(model);
 			}
 
-			return View(model);
+			if (!ReCaptcha.Validate()) {
+				ModelState.AddModelError("", "Captcha invalid.");
+				return View(model);
+			}
+
+			bool success = false;
+			try {
+				usersRepo.CreateUser(model);
+				success = true;
+			}
+			catch (Exception ex) {
+				ModelState.AddModelError("", ex.Message);
+			}
+
+			if (success) {
+				return RedirectToAction("LogOn", "Authentication");
+			}
+			else {
+				return View(model);
+			}
 		}
 
 		[Authorize]

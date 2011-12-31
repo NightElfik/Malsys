@@ -49,6 +49,7 @@
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
     <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -79,8 +80,8 @@
     <CodeContractsExtraAnalysisOptions />
     <CodeContractsBaseLineFile />
     <CodeContractsCacheAnalysisResults>False</CodeContractsCacheAnalysisResults>
-    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
-    <CodeContractsReferenceAssembly>%28none%29</CodeContractsReferenceAssembly>
+    <CodeContractsRuntimeCheckingLevel>None</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsReferenceAssembly>DoNotBuild</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
   </PropertyGroup>
   <ItemGroup>
@@ -140,9 +141,11 @@
     <Compile Include="Evaluators\ParametersEvaluator.cs" />
     <Compile Include="Evaluators\SymbolEvaluator.cs" />
     <Compile Include="Helpers%27\FloatArithmeticHelper.cs" />
+    <Compile Include="Media\ColorFactory.cs" />
     <Compile Include="Media\ColorGradient.cs" />
     <Compile Include="Media\ColorGradientFactory.cs" />
     <Compile Include="Media\ColorGradients.cs" />
+    <Compile Include="Processing\ComponentInitializationException.cs" />
     <Compile Include="Processing\ComponentResolver.cs" />
     <Compile Include="Processing\Components\Common\AxiomProvider.cs" />
     <Compile Include="Processing\Components\Common\ConstantsDumper.cs" />
@@ -150,6 +153,7 @@
     <Compile Include="Processing\Components\Common\SymbolProvider.cs" />
     <Compile Include="Processing\Components\Common\SymbolsSaver.cs" />
     <Compile Include="Processing\Components\Interfaces%27\IRandomGeneratorProvider.cs" />
+    <Compile Include="Media\Polygon2D.cs" />
     <Compile Include="Processing\Components\UserConnectableAttribute.cs" />
     <Compile Include="Processing\Components\Interfaces%27\ISymbolProvider.cs" />
     <Compile Include="Processing\Components\Rewriters\SymbolRewriter.Enumerator.cs" />
@@ -157,11 +161,15 @@
     <Compile Include="Processing\Components\Interfaces%27\IComponent.cs" />
     <Compile Include="Processing\Components\Interfaces%27\IProcessStarter.cs" />
     <Compile Include="Processing\IComponentResolver.cs" />
+    <Compile Include="Processing\InterpretationException.cs" />
     <Compile Include="Processing\IOutputProvider.cs" />
     <Compile Include="Processing\IFilesManager.cs" />
     <Compile Include="Processing\OutputFile.cs" />
-    <Compile Include="Processing\ProcessConfigurations.cs" />
     <Compile Include="Processing\ProcessManager.cs" />
+    <Compile Include="Resources\ResourcesReader.cs" />
+    <Compile Include="Resources\StdConstants.cs" />
+    <Compile Include="Resources\StdFunctions.cs" />
+    <Compile Include="Resources\StdOperators.cs" />
     <Compile Include="SemanticModel\Compiled\ConstantDefinition.cs" />
     <Compile Include="SemanticModel\Compiled\Expressions\EmptyExpression.cs" />
     <Compile Include="SemanticModel\Compiled\FunctionReturnExpr.cs" />
@@ -259,6 +267,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <EmbeddedResource Include="Resources\StdLib.malsys" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

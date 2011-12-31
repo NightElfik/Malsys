@@ -5,8 +5,8 @@
 }
 
 @section scripts {
-	@Content.Js("jquery.validate.min.js", Url)
-	@Content.Js("jquery.validate.unobtrusive.min.js", Url)
+	@Content.Js(Links.Scripts.jquery_validate_js)
+	@Content.Js(Links.Scripts.jquery_validate_unobtrusive_js)
 }
 
 <h2>Create a New Account</h2>
@@ -21,37 +21,11 @@
 		<fieldset>
 			<legend>Account Information</legend>
 
-			<div class="editor-label">
-				@Html.LabelFor(m => m.UserName)
-			</div>
-			<div class="editor-field">
-				@Html.TextBoxFor(m => m.UserName)
-				@Html.ValidationMessageFor(m => m.UserName)
-			</div>
+			@Html.EditorForModel()
 
-			<div class="editor-label">
-				@Html.LabelFor(m => m.Email)
-			</div>
-			<div class="editor-field">
-				@Html.TextBoxFor(m => m.Email)
-				@Html.ValidationMessageFor(m => m.Email)
-			</div>
+			<br />
 
-			<div class="editor-label">
-				@Html.LabelFor(m => m.Password)
-			</div>
-			<div class="editor-field">
-				@Html.PasswordFor(m => m.Password)
-				@Html.ValidationMessageFor(m => m.Password)
-			</div>
-
-			<div class="editor-label">
-				@Html.LabelFor(m => m.ConfirmPassword)
-			</div>
-			<div class="editor-field">
-				@Html.PasswordFor(m => m.ConfirmPassword)
-				@Html.ValidationMessageFor(m => m.ConfirmPassword)
-			</div>
+			@ReCaptcha.GetHtml(theme: "clean")
 
 			<p>
 				<input type="submit" value="Register" />

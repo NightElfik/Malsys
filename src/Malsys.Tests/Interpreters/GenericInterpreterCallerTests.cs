@@ -189,17 +189,17 @@ namespace Malsys.Tests.Interpreters {
 			#endregion
 
 
-			[SymbolInterpretation]
+			[SymbolInterpretation("dummy")]
 			public void ActionA(ArgsStorage args) {
 				Actions.Add("ActionA" + printParams(args));
 			}
 
-			[SymbolInterpretation]
+			[SymbolInterpretation("dummy")]
 			public void ActionB(ArgsStorage args) {
 				Actions.Add("ActionB" + printParams(args));
 			}
 
-			[SymbolInterpretation]
+			[SymbolInterpretation("dummy")]
 			public void ActionC(ArgsStorage args) {
 				Actions.Add("ActionC" + printParams(args));
 			}

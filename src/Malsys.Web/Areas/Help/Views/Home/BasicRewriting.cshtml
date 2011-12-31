@@ -148,7 +148,7 @@ lsystem SignalPropagation {
 
 <pre class="malsys">
 lsystem Transpose {
-	set axiom = X Y;
+	set axiom = A  X Y  B;
 	let iterations = {0,1,2,3};
 
 	// simulation of: rewrite X Y to Y X;
@@ -162,18 +162,18 @@ lsystem Transpose {
 </pre>
 
 <ol>
-	<li><code class="lsysSymbols">Y X</code></li>
-	<li><code class="lsysSymbols">X Y</code></li>
-	<li><code class="lsysSymbols">Y X</code></li>
+	<li><code class="lsysSymbols">A Y X B</code></li>
+	<li><code class="lsysSymbols">A X Y B</code></li>
+	<li><code class="lsysSymbols">A Y X B</code></li>
 </ol>
 
 <p>
 	It is also possible to simulate rewriting two symbols at once.
-	Next L-system is simulating rewrite rule <code class="malsys">rewrite A B to C D E;</code> in two iterations.
+	Following L-system is simulating rewrite rule <code class="malsys">rewrite A B to C D E;</code> which is not legal rewrite rule of Malsys.
 </p>
 
 <pre class="malsys">
-lsystem ToAtOnce {
+lsystem TwoAtOnce {
 	set axiom = A  A B  B  A B  A;
 	let iterations = 1;
 
@@ -183,7 +183,7 @@ lsystem ToAtOnce {
 </pre>
 
 <ol>
-	<li><code class="lsysSymbols">A  C D E  B  C D E  A</code></li>
+	<li><code class="lsysSymbols">A C D E B C D E A</code></li>
 </ol>
 
 

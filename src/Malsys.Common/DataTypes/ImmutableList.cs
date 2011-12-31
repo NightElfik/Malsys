@@ -103,6 +103,26 @@ namespace Malsys {
 		}
 
 
+		public ImmutableList<T> AddRange(ImmutableList<T> addedVals) {
+
+			if (Length == 0) {
+				return addedVals;
+			}
+
+			if (addedVals.Length == 0) {
+				return this;
+			}
+
+			int len = Length + values.Length;
+
+			var newVals = new T[len];
+			Array.Copy(values, newVals, Length);
+			Array.Copy(addedVals.values, 0, newVals, Length, addedVals.Length);
+
+			return new ImmutableList<T>(newVals, 0);
+		}
+
+
 		#region IList<T> Members
 
 		public int IndexOf(T item) {

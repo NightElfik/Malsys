@@ -1,4 +1,5 @@
-﻿@model IPagination<InputProcessesHistoryItem>
+﻿@model IPagination<Malsys.Web.Models.InputProcessesHistoryItem>
+@using Malsys
 
 @{
 	ViewBag.Title = "Input processes history";
@@ -18,11 +19,15 @@
 		col.For(m => m.ParentProcessId)
 			.HeaderAttributes(style => "width: 40px;")
 			.Attributes(@class => "center");
-		col.For(m => "<abbr title=\"" + m.Date + "\">" + Math.Round((DateTime.Now - m.Date).TotalDays, 2) + "</abbr>")
-			.Named("Days old")
+		col.For(m => "<abbr title=\"" + m.Date + "\">" + m.Date.ToTimeSpanStringFromNow() + "</abbr>")
+			.Named("Age")
 			.HeaderAttributes(style => "width: 100px;")
 			.Attributes(@class => "center")
 			.Encode(false);
+		col.For(m => TimeSpan.FromTicks(m.Duration).ToAutoscaledString())
+			.Named("Process duration")
+			.HeaderAttributes(style => "width: 60px;")
+			.Attributes(@class => "center");
 		col.For(m => m.SourceId)
 			.HeaderAttributes(style => "width: 40px;")
 			.Attributes(@class => "center");

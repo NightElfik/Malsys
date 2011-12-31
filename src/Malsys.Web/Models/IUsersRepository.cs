@@ -8,6 +8,8 @@ namespace Malsys.Web.Models {
 		IQueryable<Role> Roles { get; }
 
 
+		void LogUserActivity(string userName);
+
 		void CreateUser(NewUserModel user);
 
 		void CreateRole(NewRoleModel role);

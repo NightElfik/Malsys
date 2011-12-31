@@ -36,6 +36,7 @@
 
 	function urlEncode(str) {
 		str = str.replace(/[%]/g, "%25");  // % has to be first
+		str = str.replace(/["]/g, "%22");
 		str = str.replace(/[#]/g, "%23");
 		str = str.replace(/[$]/g, "%24");
 		str = str.replace(/[&]/g, "%26");
@@ -98,7 +99,7 @@
 
 		// add try-me link
 		var encodedLsystem = urlEncodeLsystem(lsystemCode);
-		var tryMeHtml = '<a href="/ProcessLsystem?lsystem=' + encodedLsystem + '" class="lsysTryMe">Try me!</a>';
+		var tryMeHtml = '<a href="/Process?lsystem=' + encodedLsystem + '" class="lsysTryMe">Try me!</a>';
 		$(this).append(tryMeHtml);
 
 		// format code
@@ -106,19 +107,18 @@
 		newHtml = highlightComments(newHtml);
 		newHtml = replaceTabs(newHtml);
 
-		if ($(this).hasClass("collapsable") && newHtml.search(/^([^\n]*)\n((.|\s)*)/) == 0) {
-			newHtml = newHtml.replace(/^([^\n]*)\n((.|\s)*)/,
-				"$1<div class='toggleSwitch'><span class='s'>Show</span><span class='h'>Hide</span></div>"
-				+ "<div class='toggleContent'>$2</div>");
+
+		if ($(this).hasClass("collapsable")) {
+			var colapseHtml = '<div class="collapseSwitch"><span class="u">Show</span><span class="c">Hide</span></div>';
+			$(this).append(colapseHtml);
 		}
 
-		$(this).append(newHtml);
-
 		// clean tags from comments
-		$(this).find("span.lsys_cmt").each(function (i) {
+		$(this).find("span.comment").each(function (i) {
 			$(this).text($(this).text());
 		});
 
+		$(this).append(newHtml);
 
 	});
 
@@ -132,18 +132,22 @@
 		$(this).append(newHtml);
 	});
 
-	$("p.malsys_message").each(function (i) {
+	$("p.malsysMsg").each(function (i) {
 
 		var newHtml = $(this).text();
-		newHtml = newHtml.replace(/`([a-zA-Z0-9]+)` \((`[a-zA-Z0-9\+\.]+`)\)/g, '`<abbr title="$2">$1</abbr>`');
+		newHtml = newHtml.replace(/`(([a-zA-Z0-9\+]+\.)+([a-zA-Z0-9\+]+))`/g, '`<abbr title="$1">$3</abbr>`');
+		newHtml = newHtml.replace(/`(.+?)`/g, '`<span class="quoted">$1</span>`');
+
 		$(this).text("");
 		$(this).append(newHtml);
 	});
 
-	$(".toggleContent").hide();
-	$(".toggleSwitch").click(function () {
-		$(this).toggleClass("show").next().slideToggle(0);
+	$(".collapseSwitch").click(function () {
+		$(this).toggleClass("collapsed").parent().toggleClass("collapsed");
 	});
+
+	$(".collapseSwitch").trigger('click');
+
 
 } (jQuery));
 

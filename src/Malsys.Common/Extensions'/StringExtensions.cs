@@ -7,7 +7,7 @@ using System.Text;
 namespace Malsys {
 	public static class StringExtensions {
 		/// <summary>
-		/// Formates this string by standard <c>string.Format</c> function.
+		/// Formats this string by standard <c>string.Format</c> function.
 		/// </summary>
 		/// <remarks>
 		/// Name of this method cannot be `Format` because of wired error:
@@ -23,7 +23,7 @@ namespace Malsys {
 		}
 
 		/// <summary>
-		/// Formates this string by standard <c>string.Format</c> function using Invariant Culture.
+		/// Formats this string by standard <c>string.Format</c> function using Invariant Culture.
 		/// </summary>
 		public static string FmtInvariant(this string format, params object[] args) {
 

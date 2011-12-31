@@ -1,0 +1,35 @@
+﻿@model IEnumerable<Malsys.Compilers.Expressions.KnownConstant>
+
+@{
+	ViewBag.Title = "Predefined constants";
+}
+
+<h2>Predefined constants</h2>
+
+<p>
+	Following constants are recognized in the compiler though it is not possible to change their value.
+	They also can not be redefined in code.
+	Their names are case-insensitive to be independent on user's naming conventions.
+</p>
+
+<table class="center">
+	<tr><th style="width: 128px;">Name</th><th style="width: 192px;">Value</th></tr>
+@foreach (var constGroup in  Model.GroupBy(x => x.Group)) {
+
+	<tr class="th"><th colspan="2">@constGroup.Key</th></tr>
+	foreach (var valGroup in constGroup.GroupBy(x => x.Value)) {
+		var count = valGroup.Count();
+		bool first = true;
+		foreach (var c in valGroup) {
+		<tr>
+			<td class="monospace">@c.Name</td>
+			@if(first) {
+				first = false;
+				<td rowspan="@count">@c.Value</td>
+			}
+		</tr>
+		}
+	}
+
+}
+</table>

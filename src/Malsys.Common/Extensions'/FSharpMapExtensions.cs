@@ -1,4 +1,5 @@
-﻿using Microsoft.FSharp.Collections;
+﻿using System.Collections.Generic;
+using Microsoft.FSharp.Collections;
 using Microsoft.FSharp.Core;
 
 namespace Malsys {
@@ -16,9 +17,25 @@ namespace Malsys {
 			return map.Add(key, value);
 		}
 
-		public static FSharpMap<TKey, TValue> AddRange<TKey, TValue>(this FSharpMap<TKey, TValue> map, FSharpMap<TKey, TValue> anotherMap) {
+		public static FSharpMap<TKey, TValue> AddRange<TKey, TValue>(this FSharpMap<TKey, TValue> map, IEnumerable<KeyValuePair<TKey, TValue>> values) {
 
-			foreach (var keyValue in anotherMap) {
+			foreach (var keyValue in values) {
+				map = map.Add(keyValue.Key, keyValue.Value);
+			}
+
+			return map;
+		}
+
+		public static FSharpMap<TKey, TValue> AddRange<TKey, TValue>(this FSharpMap<TKey, TValue> map, FSharpMap<TKey, TValue> values) {
+
+			if (map.Count == 0) {
+				return values;
+			}
+			if (values.Count == 0) {
+				return map;
+			}
+
+			foreach (var keyValue in values) {
 				map = map.Add(keyValue.Key, keyValue.Value);
 			}
 

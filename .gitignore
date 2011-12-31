@@ -18,6 +18,9 @@ obj/
 /src/Malsys.Web/Malsys.Web.Publish.xml
 /src/packages
 
+
+*.min.js
+
 # Dependencies
 /src/MvcContrib
 /src/dotless.Core.dll

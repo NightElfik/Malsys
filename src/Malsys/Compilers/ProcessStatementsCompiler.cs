@@ -16,7 +16,7 @@ namespace Malsys.Compilers {
 
 			var assigns = statement.ComponentAssignments.Convert(a => new ProcessComponentAssignment(a.ComponentTypeNameId.Name, a.ContainerNameId.Name));
 
-			return new ProcessStatement(statement.TargetLsystemNameId.Name, statement.ProcessConfiNameId.Name, assigns);
+			return new ProcessStatement(statement.TargetLsystemNameId.Name, statement.ProcessConfiNameId.Name, assigns, statement);
 		}
 
 
@@ -33,7 +33,7 @@ namespace Malsys.Compilers {
 			}
 
 			var result = new ProcessConfiguration(processConfig.NameId.Name, components.ToImmutableList(),
-				containers.ToImmutableList(), connections.ToImmutableList());
+				containers.ToImmutableList(), connections.ToImmutableList(), processConfig);
 
 			//  cleanup
 			logger = null;

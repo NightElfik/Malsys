@@ -1,0 +1,45 @@
+﻿@model IEnumerable<Malsys.Compilers.Expressions.FunctionCore>
+
+
+@{
+	ViewBag.Title = "Functions";
+	var anyParams = Malsys.Compilers.Expressions.FunctionCore.AnyParamsCount;
+}
+
+<h2>Functions</h2>
+
+
+<table class="w100">
+@foreach (var funGroup in  Model.GroupBy(x => x.Group)) {
+
+	<tr>
+		<th style="width: 128px;">Name</th>
+		<th style="width: 64px;">Number of parameters</th>
+		<th style="width: 128px;">Parameters type pattern</th>
+		<th>Description</th>
+	</tr>
+	<tr class="th"><th colspan="4">@funGroup.Key</th></tr>
+
+	foreach (var equalFunGroup in funGroup.GroupBy(x => x.EvalFunction)) {
+		var count = equalFunGroup.Count();
+		bool first = true;
+		foreach (var fun in equalFunGroup) {
+		<tr>
+			<td class="monospace">@fun.Name</td>
+			@if (first) {
+				first = false;
+				<td rowspan="@count" class="center">@(fun.ParametersCount == anyParams ? "any" : fun.ParametersCount.ToString())</td>
+				<td rowspan="@count" class="center">
+					@for (int i = 0; i < fun.ParamsTypes.Length; i++) {
+						@(i == 0 ? "" : ", ")
+						@Malsys.SemanticModel.Evaluated.ExpressionValueTypeExtensions.ToTypeString(fun.ParamsTypes[i])
+					}
+				</td>
+				<td rowspan="@count">@fun.Documentation</td>
+			}
+		</tr>
+		}
+	}
+
+}
+</table>

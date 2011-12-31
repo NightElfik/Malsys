@@ -9,7 +9,7 @@ using System.IO.Compression;
 
 namespace Malsys.Processing.Components.Renderers.TwoD {
 	public class SvgRenderer2D : IRenderer2D {
-		
+
 		private const float invertY = -1;
 		public const string SvgFileExtension = ".svg";
 		public const string SvgzFileExtension = ".svgz";
@@ -19,10 +19,11 @@ namespace Malsys.Processing.Components.Renderers.TwoD {
 		private bool measuring;
 
 		private TextWriter writer;
-		private PointF lastPoint;
-		private ColorF lastColor;
+
+		private float lastX, lastY;
 		private float lastWidth;
-		private float originX, originY;
+		private ColorF lastColor;
+
 		private bool compress;
 
 		private float marginT, marginR, marginB, marginL;
@@ -77,18 +78,6 @@ namespace Malsys.Processing.Components.Renderers.TwoD {
 		}
 
 		[UserSettable]
-		public ValuesArray Origin {
-			set {
-				if (!value.IsConstArrayOfLength(2)) {
-					throw new InvalidUserValueException("Origin have to be array of 2 constants representing x and y coordination, like `{-1, 3}`.");
-				}
-
-				originX = (float)((Constant)value[0]).Value;
-				originY = (float)((Constant)value[1]).Value;
-			}
-		}
-
-		[UserSettable]
 		public Constant CompressSvg {
 			set {
 				compress = !value.IsZero;
@@ -113,10 +102,6 @@ namespace Malsys.Processing.Components.Renderers.TwoD {
 
 			if (measuring) {
 				writer = null;
-				minX = originX;
-				maxX = originX;
-				minY = originY;
-				maxY = originY;
 			}
 			else {
 				if (compress) {
@@ -131,15 +116,11 @@ namespace Malsys.Processing.Components.Renderers.TwoD {
 
 				writer.WriteLine(FileHeader);
 				writer.WriteLine(SvgHeader.FmtInvariant(
-					 minX - marginL,
-					 minY - marginT,
-					 maxX - minX + marginL + marginR,
-					 maxY - minY + marginT + marginB));
+					 measuredMinX - marginL,
+					 measuredMinY - marginT,
+					 measuredMaxX - measuredMinX + marginL + marginR,
+					 measuredMaxY - measuredMinY + marginT + marginB));
 
-				lastPoint.X = originX;
-				lastPoint.Y = originY;
-				lastColor = ColorF.Black;
-				lastWidth = 1f;
 			}
 		}
 
@@ -162,59 +143,92 @@ namespace Malsys.Processing.Components.Renderers.TwoD {
 
 		#region IRenderer2D Members
 
-		public void MoveTo(PointF point, ColorF color, float width) {
+		public void InitializeState(PointF point, float width, ColorF color) {
 
 			point.Y *= invertY;
 
 			if (measuring) {
-				measure(point);
+				minX = maxX = point.X;
+				maxY = minY = point.Y;
 			}
 			else {
-				lastPoint = point;
-				lastColor = color;
+				lastX = point.X;
+				lastY = point.Y;
 				lastWidth = width;
+				lastColor = color;
+			}
+
+		}
+
+		public void MoveTo(PointF point, float width, ColorF color) {
+
+			point.Y *= invertY;
+
+			if (measuring) {
+				measure(point.X, point.Y);
+			}
+			else {
+				lastX = point.X;
+				lastY = point.Y;
+				lastWidth = width;
+				lastColor = color;
 			}
 		}
 
-		public void LineTo(PointF point, ColorF color, float width) {
+		public void LineTo(PointF point, float width, ColorF color) {
 
 			point.Y *= invertY;
 
 			if (measuring) {
-				measure(point);
+				measure(point.X, point.Y);
 			}
 			else {
 				writer.WriteLine("<line x1=\"{0:0.###}\" y1=\"{1:0.###}\" x2=\"{2:0.###}\" y2=\"{3:0.###}\" stroke=\"#{4}\" stroke-width=\"{5:0.###}\" />"
-					.FmtInvariant(lastPoint.X, lastPoint.Y, point.X, point.Y, color.ToRgbHexString(), width));
+					.FmtInvariant(lastX, lastY, point.X, point.Y, color.ToRgbHexString(), width));
 
-				lastPoint = point;
-				lastColor = color;
+				lastX = point.X;
+				lastY = point.Y;
 				lastWidth = width;
+				lastColor = color;
 			}
 		}
 
-		public void DrawPolygon(IEnumerable<PointF> points, ColorF color) {
-			throw new NotImplementedException();
+		public void DrawPolygon(Polygon2D polygon) {
+
+			if (measuring) {
+				foreach (var pt in polygon.Ponits) {
+					measure(pt.X, pt.Y * invertY);
+				}
+			}
+			else {
+				writer.Write("<polygon fill=\"#{0}\" stroke-width=\"{1:0.###}px\" stroke=\"#{2}\" points=\""
+					.FmtInvariant(polygon.Color.ToRgbHexString(), polygon.StrokeWidth, polygon.StrokeColor.ToRgbHexString()));
+
+				foreach (var pt in polygon.Ponits) {
+					writer.Write("{0:0.###},{1:0.###} ".FmtInvariant(pt.X, pt.Y * invertY));
+				}
+
+				writer.WriteLine("\" />");
+			}
 		}
 
 		#endregion
 
 
-		private void measure(PointF pt) {
-			if (pt.X < minX) {
-				minX = pt.X;
+		private void measure(float x, float y) {
+			if (x < minX) {
+				minX = x;
 			}
-			else if (pt.X > maxX) {
-				maxX = pt.X;
-			}
-
-			if (pt.Y < minY) {
-				minY = pt.Y;
-			}
-			else if (pt.Y > maxY) {
-				maxY = pt.Y;
+			else if (x > maxX) {
+				maxX = x;
 			}
 
+			if (y < minY) {
+				minY = y;
+			}
+			else if (y > maxY) {
+				maxY = y;
+			}
 		}
 	}
 }
