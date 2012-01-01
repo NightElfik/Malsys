@@ -160,13 +160,13 @@
     <Compile Include="Administration.HomeController.generated.cs">
       <DependentUpon>T4MVC.tt</DependentUpon>
     </Compile>
-    <Compile Include="Administration.InputStatsController.generated.cs">
-      <DependentUpon>T4MVC.tt</DependentUpon>
-    </Compile>
     <Compile Include="Administration.RolesController.generated.cs">
       <DependentUpon>T4MVC.tt</DependentUpon>
     </Compile>
     <Compile Include="Administration.SharedController.generated.cs">
+      <DependentUpon>T4MVC.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Administration.StatsController.generated.cs">
       <DependentUpon>T4MVC.tt</DependentUpon>
     </Compile>
     <Compile Include="Administration.UsersController.generated.cs">
@@ -175,6 +175,7 @@
     <Compile Include="App_Start\RegisterClientValidationExtensions.cs" />
     <Compile Include="Areas\Administration\AdministrationAreaRegistration.cs" />
     <Compile Include="Areas\Administration\Controllers\HomeController.cs" />
+    <Compile Include="Areas\Administration\Models\SavedInputModel.cs" />
     <Compile Include="Areas\Help\Controllers\HomeController.cs" />
     <Compile Include="Areas\Help\Controllers\PredefinedController.cs" />
     <Compile Include="Areas\Help\Controllers\SyntaxController.cs" />
@@ -184,7 +185,7 @@
       <DependentUpon>T4MVC.tt</DependentUpon>
     </Compile>
     <Compile Include="Controllers\AccountController.cs" />
-    <Compile Include="Areas\Administration\Controllers\InputStatsController.cs" />
+    <Compile Include="Areas\Administration\Controllers\StatsController.cs" />
     <Compile Include="Controllers\AuthenticationController.cs" />
     <Compile Include="Areas\Administration\Controllers\RolesController.cs" />
     <Compile Include="Areas\Administration\Controllers\UsersController.cs" />
@@ -239,7 +240,7 @@
     <Compile Include="Models\Repositories\UsersRepository.cs" />
     <Compile Include="Models\NewRoleModel.cs" />
     <Compile Include="Models\ViewModels%27\FeedbackModel.cs" />
-    <Compile Include="Models\ViewModels%27\InputProcessesHistoryItem.cs" />
+    <Compile Include="Areas\Administration\Models\InputProcessesHistoryItem.cs" />
     <Compile Include="Areas\Administration\Models\RoleDetailModel.cs" />
     <Compile Include="ProcessController.generated.cs">
       <DependentUpon>T4MVC.tt</DependentUpon>
@@ -283,6 +284,8 @@
     <Content Include="Areas\Help\Views\Predefined\Components.cshtml" />
     <Content Include="Areas\Help\Views\Home\BasicInterpretation.cshtml" />
     <Content Include="Areas\Help\Views\Shared\ComponentPartial.cshtml" />
+    <Content Include="Areas\Administration\Views\Stats\Index.cshtml" />
+    <Content Include="Areas\Administration\Views\Stats\SavedInputs.cshtml" />
     <None Include="Css\style.less.css" />
     <Content Include="Css\style.css">
       <DependentUpon>T4CSS.tt</DependentUpon>
@@ -291,12 +294,14 @@
     <Content Include="Global.asax" />
     <Content Include="Scripts\jquery-ui.min.js" />
     <Content Include="Scripts\jquery.min.js" />
-    <Content Include="Scripts\jquery.textarea.js" />
-    <Content Include="Scripts\jquery.validate.js" />
-    <Content Include="Scripts\jquery.js" />
-    <Content Include="Scripts\malsys.js" />
+    <None Include="Scripts\jquery.textarea.js" />
+    <Content Include="Scripts\jquery.textarea.min.js" />
+    <None Include="Scripts\jquery.validate.js" />
+    <None Include="Scripts\jquery.js" />
+    <None Include="Scripts\malsys.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
-    <Content Include="Scripts\modernizr.js" />
+    <Content Include="Scripts\malsys.min.js" />
+    <None Include="Scripts\modernizr.js" />
     <Content Include="Scripts\modernizr.min.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Web.config">
@@ -309,9 +314,9 @@
       <DependentUpon>Web.config</DependentUpon>
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
+    <None Include="Scripts\jquery.unobtrusive-ajax.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
-    <Content Include="Scripts\jquery.validate.unobtrusive.js" />
+    <None Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Account\ChangePassword.cshtml" />
@@ -347,6 +352,15 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>T4CSS.log</LastGenOutput>
     </None>
+    <None Include="Scripts\MinifyJs.log">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </None>
+    <None Include="Scripts\MinifyJs.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>MinifyJs.log</LastGenOutput>
+    </None>
     <None Include="T4MVC.settings.t4" />
     <None Include="T4MVC.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -361,6 +375,7 @@
     <Content Include="Views\Examples\FassCurves.cshtml" />
     <Content Include="Views\Examples\Tilings.cshtml" />
     <Content Include="Views\Examples\Other.cshtml" />
+    <Content Include="Views\Examples\Ascii.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Areas\Administration\Views\Shared\" />
@@ -430,7 +445,7 @@
     <Content Include="Views\Examples\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Areas\Administration\Views\InputStats\Index.cshtml" />
+    <Content Include="Areas\Administration\Views\Stats\Input.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

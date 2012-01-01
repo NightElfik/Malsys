@@ -36,5 +36,89 @@ lsystem XBorder {
 </pre>
 </div>
 
+<div class="floating_box">
+<pre class="malsys">
+/**
+ * http://en.wikipedia.org/wiki/Sierpinski_triangle
+ */
+lsystem SierpinskiTrangle {
+
+	set axiom = F + F + F;
+	let iterations = 6;
+	// normalize line length (result image will have always same size)
+	let lineLength = 2 ^ -iterations * 512;
+
+	interpret F f as MoveForward(lineLength);
+	interpret + as TurnLeft(120);
+	interpret - as TurnLeft(-120);
+	interpret < as StartPolygon(0, 0);
+	interpret . as RecordPolygonVertex;
+	interpret > as EndPolygon;
+
+	rewrite F to < . F . + F . > + f + f F;
+	rewrite f to f f;
+	rewrite < to nothing;
+	rewrite . to nothing;
+	rewrite > to nothing;
+
+	process with SvgRenderer;
+
+}
+</pre>
+</div>
+
+<div class="floating_box">
+<pre class="malsys">
+/**
+ * http://en.wikipedia.org/wiki/Sierpinski_triangle
+ */
+lsystem SierpinskiTrangle {
+
+	set axiom = A;
+	let iterations = 6;
+
+	interpret A B as DrawLine(8);
+	interpret + as TurnLeft(60);
+	interpret - as TurnLeft(-60);
+
+	rewrite A to B - A - B;
+	rewrite B to A + B + A;
+
+	process with SvgRenderer;
+
+}
+</pre>
+</div>
+
+<div class="floating_box">
+<pre class="malsys">
+/**
+ * Accidentally created while building Sierpinski Trangle.
+ * Marek Fišer
+ */
+lsystem BrokenSierpinski {
+
+	set axiom = F + F + F;
+	let iterations = 6;
+	let lineLength = 2 ^ -iterations * 1024;
+	let continousColoring = true;
+
+	interpret F f as MoveForward(lineLength);
+	interpret + as TurnLeft(120);
+	interpret - as TurnLeft(-120);
+	interpret < as StartPolygon(0, 0);
+	interpret . as RecordPolygonVertex;
+	interpret > as EndPolygon;
+
+	rewrite F to < . F . + F . > + f + f F;
+	rewrite < to nothing;
+	rewrite . to nothing;
+	rewrite > to nothing;
+
+	process with SvgRenderer;
+
+}
+</pre>
+</div>
 
 </div>

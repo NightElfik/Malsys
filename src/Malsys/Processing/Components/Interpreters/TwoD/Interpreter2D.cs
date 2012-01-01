@@ -8,7 +8,7 @@ using Malsys.SemanticModel;
 using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Processing.Components.Interpreters.TwoD {
-	[Component("2D Interpreter", ComponentGroupNames.Interpreters)]
+	[Component("2D interpreter", ComponentGroupNames.Interpreters)]
 	public class Interpreter2D : IInterpreter {
 
 		private readonly ColorFactory colorFactory = new ColorFactory();
@@ -21,8 +21,8 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 
 		private bool measuring;
 
-		private uint drawCommandsCalled;
-		private uint drawCommandsMeasured;
+		private uint colorEvents;
+		private uint colorEventsMeasured;
 
 		private bool continousColoring = false;
 		private bool colorContinously = false;
@@ -98,7 +98,7 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 		public IRenderer Renderer {
 			set {
 				if (!IsRendererCompatible(value)) {
-					throw new ArgumentException("Renderer is not compatible.");
+					throw new InvalidUserValueException("Renderer do not implement `{0}`.".Fmt(typeof(IRenderer2D).FullName));
 				}
 				renderer = (IRenderer2D)value;
 			}
@@ -106,7 +106,7 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 
 
 		public bool IsRendererCompatible(IRenderer renderer) {
-			return renderer.GetType().GetInterfaces().Contains(typeof(IRenderer2D));
+			return typeof(IRenderer2D).IsAssignableFrom(renderer.GetType());
 		}
 
 		public bool RequiresMeasure { get { return continousColoring; } }
@@ -146,14 +146,14 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 			polygonReverseHistory.Clear();
 
 			if (measuring) {
-				drawCommandsMeasured = 0;
+				colorEventsMeasured = 0;
 				colorContinously = false;
 			}
 			else {
 				colorContinously = continousColoring;
 			}
 
-			drawCommandsCalled = 0;
+			colorEvents = 0;
 			currState = new State2D() {
 				X = initX,
 				Y = initY,
@@ -169,7 +169,7 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 		public void EndProcessing() {
 
 			if (measuring) {
-				drawCommandsMeasured = drawCommandsCalled;
+				colorEventsMeasured = colorEvents;
 			}
 
 			if (statesStack.Count > 0) {
@@ -212,7 +212,7 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 			currState.Y += length * Math.Sin(currState.CurrentAngle * MathHelper.PiOver180);
 
 			if (interpretLines) {
-				ColorF color = colorContinously ? colorGradient[(float)drawCommandsCalled / drawCommandsMeasured] : currState.Color;
+				ColorF color = colorContinously ? colorGradient[(float)colorEvents / colorEventsMeasured] : currState.Color;
 				renderer.MoveTo(new PointF((float)currState.X, (float)currState.Y), (float)currState.LineWidth, color);
 			}
 		}
@@ -234,12 +234,13 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 				ColorF color = currState.Color;
 
 				if (colorContinously) {
-					color = colorGradient[(float)drawCommandsCalled / drawCommandsMeasured];
-				} else if (args.ArgsCount >= 3) {
+					color = colorGradient[(float)colorEvents / colorEventsMeasured];
+				}
+				else if (args.ArgsCount >= 3) {
 					colorFactory.ParseColor(args[2], ref color);
 				}
 
-				drawCommandsCalled++;
+				colorEvents++;
 				renderer.LineTo(new PointF((float)currState.X, (float)currState.Y), (float)width, color);
 			}
 		}
@@ -296,16 +297,24 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 				strokeColor = currState.Color;
 			float strokeWidth = (float)currState.LineWidth;
 
-			if (args.ArgsCount >= 3) {
-				colorFactory.ParseColor(args[2], ref strokeColor);
+
+
+			if (colorContinously) {
+				color = strokeColor = colorGradient[(float)colorEvents / colorEventsMeasured];
 			}
+			else {
+				if (args.ArgsCount >= 1) {
+					colorFactory.ParseColor(args[0], ref color);
+				}
+				if (args.ArgsCount >= 3) {
+					colorFactory.ParseColor(args[2], ref strokeColor);
+				}
+			}
+
+			colorEvents++;
 
 			if (args.ArgsCount >= 2 && args[1].IsConstant) {
 				strokeWidth = (float)((Constant)args[1]).Value;
-			}
-
-			if (args.ArgsCount >= 1) {
-				colorFactory.ParseColor(args[0], ref color);
 			}
 
 

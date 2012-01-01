@@ -31,7 +31,7 @@
 	}
 
 	function highlightLsystemKeywords(code) {
-		return code.replace(/(\s)(as|component|configuration|connect|consider|container|default|fun|interpret|let|lsystem|nothing|or|process|return|rewrite|set|this|to|typeof|use|weight|with|where)(?=\s)/g, '$1<span class="keyword">$2</span>');
+		return (' '+code).replace(/(\s)(as|component|configuration|connect|consider|container|default|fun|interpret|let|lsystem|nothing|or|process|return|rewrite|set|this|to|typeof|use|weight|with|where)(?=\s)/g, '$1<span class="keyword">$2</span>').trim();
 	}
 
 	function urlEncode(str) {
@@ -122,7 +122,7 @@
 
 	$("code.malsys").each(function (i) {
 
-		var newHtml = $(this).text();
+		var newHtml = $(this).text().trim();
 		newHtml = highlightLsystemKeywords(newHtml);
 		newHtml = replaceTabs(newHtml);
 

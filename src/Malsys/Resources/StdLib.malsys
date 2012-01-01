@@ -6,6 +6,23 @@
 // Process configurations.
 //------------------------------------------------------------------------------
 
+configuration SymbolPrinter {
+
+	component AxiomProvider typeof AxiomProvider;
+	component RandomGeneratorProvider typeof RandomGeneratorProvider;
+
+	container Rewriter typeof IRewriter default SymbolRewriter;
+	container Iterator typeof IIterator default MemoryBufferedIterator;
+	container SymbolProcessor typeof ISymbolProcessor default SymbolsSaver;
+
+	connect AxiomProvider to Iterator.AxiomProvider;
+	connect Iterator to Rewriter.SymbolProvider;
+	connect RandomGeneratorProvider to Rewriter.RandomGeneratorProvider;
+	connect Rewriter to Iterator.SymbolProvider;
+	connect SymbolProcessor to Iterator.OutputProcessor;
+
+}
+
 configuration SvgRenderer {
 
 	component AxiomProvider typeof AxiomProvider;
@@ -27,20 +44,24 @@ configuration SvgRenderer {
 
 }
 
-configuration SymbolPrinter {
+configuration HexAsciiRenderer {
 
 	component AxiomProvider typeof AxiomProvider;
 	component RandomGeneratorProvider typeof RandomGeneratorProvider;
 
 	container Rewriter typeof IRewriter default SymbolRewriter;
 	container Iterator typeof IIterator default MemoryBufferedIterator;
-	container SymbolProcessor typeof ISymbolProcessor default SymbolsSaver;
+	container InterpreterCaller typeof IInterpreterCaller default InterpreterCaller;
+	container Interpreter typeof IInterpreter default HexaAsciiInterpreter;
+	container Renderer typeof IRenderer default TextRenderer;
 
 	connect AxiomProvider to Iterator.AxiomProvider;
 	connect Iterator to Rewriter.SymbolProvider;
 	connect RandomGeneratorProvider to Rewriter.RandomGeneratorProvider;
 	connect Rewriter to Iterator.SymbolProvider;
-	connect SymbolProcessor to Iterator.OutputProcessor;
+	connect InterpreterCaller to Iterator.OutputProcessor;
+	connect Interpreter to InterpreterCaller.Interpreter;
+	connect Renderer to Interpreter.Renderer;
 
 }
 

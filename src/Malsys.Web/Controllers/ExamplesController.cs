@@ -20,6 +20,10 @@ namespace Malsys.Web.Controllers {
 			return View();
 		}
 
+		public virtual ActionResult Ascii() {
+			return View();
+		}
+
 		public virtual ActionResult Other() {
 			return View();
 		}

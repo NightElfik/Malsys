@@ -9,6 +9,10 @@
 
 @if (Request.IsAuthenticated) {
 
+	if (User.IsInRole(UserRoles.ViewStats)) {
+		<li>@Html.ActionLink("S", MVC.Administration.Stats.Index())</li>
+	}
+
 	if (User.IsInRole(UserRoles.Administrator)) {
 		<li>@Html.ActionLink("A", MVC.Administration.Home.Index())</li>
 	}

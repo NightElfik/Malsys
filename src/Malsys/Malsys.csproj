@@ -158,6 +158,9 @@
     <Compile Include="Processing\Components\ComponentGroupNames.cs" />
     <Compile Include="Processing\Components\Interfaces%27\IRandomGeneratorProvider.cs" />
     <Compile Include="Media\Polygon2D.cs" />
+    <Compile Include="Processing\Components\Interpreters\TwoD\HexaAsciiInterpreter.cs" />
+    <Compile Include="Processing\Components\Renderers\ITextRenderer.cs" />
+    <Compile Include="Processing\Components\Renderers\TwoD\TextRenderer.cs" />
     <Compile Include="Processing\Components\UserConnectableAttribute.cs" />
     <Compile Include="Processing\Components\Interfaces%27\ISymbolProvider.cs" />
     <Compile Include="Processing\Components\Rewriters\SymbolRewriter.Enumerator.cs" />

@@ -14,28 +14,38 @@ var fi = new FileInfo(Model.FilePath);
 	</p>
 
 
-	if (fi.Extension == ".txt") {
-		using (var sr = fi.OpenText()) {
-			var buff = new char[1001];
-			int readed = sr.ReadBlock(buff, 0, buff.Length);
-			string strOut = new string(buff, 0, Math.Min(readed, 1000));
+	switch (fi.Extension) {
+		case ".txt":
+			using (var sr = fi.OpenText()) {
+				bool ascii = fi.Name.EndsWith(".ascii.txt");
+				int readChars = 1000;
+				if (ascii) {
+					readChars *= 4;
+				}
+				var buff = new char[readChars + 1];
+				int readed = sr.ReadBlock(buff, 0, buff.Length);
+				string strOut = new string(buff, 0, Math.Min(readed, readChars));
 
-			if (readed > 1000) {
-				<p class="outputTruncated">(showing first 1000 characters)</p>
+				if (readed > readChars) {
+					<p class="outputTruncated">(showing first @readChars characters)</p>
+				}
+
+				<pre class="@(ascii?  "asciiArt" : "")">@strOut</pre>
 			}
-
-			<pre>@strOut</pre>
-		}
-	}
-	else if (fi.Extension == ".svg" || fi.Extension == ".svgz") {
-		if (fi.Length > 1024 * 512) {
-			<p class="outputTruncated">SVG image is not shown directly (it is greater than 0.5 MB)</p>
-		}
-		else {
-			<div class="scrollBox">
-				<img src="@Url.Action(MVC.ProcessOutput.Show(fi.Name))" alt="Process result" />
-			</div>
-		}
+			break;
+		case ".svg":
+		case ".svgz":
+			if (fi.Length > 1024 * 512) {
+				<p class="outputTruncated">SVG image is not shown directly (it is greater than 0.5 MB)</p>
+			}
+			else {
+				<div class="scrollBox">
+					<img src="@Url.Action(MVC.ProcessOutput.Show(fi.Name))" alt="Process result" />
+				</div>
+			}
+			break;
+		default:
+			break;
 	}
 
 }

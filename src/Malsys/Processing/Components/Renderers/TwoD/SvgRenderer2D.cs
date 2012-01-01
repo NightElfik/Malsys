@@ -22,7 +22,7 @@ namespace Malsys.Processing.Components.Renderers.TwoD {
 		private float lastWidth;
 		private ColorF lastColor;
 
-		private bool compress;
+		private bool compress = true;  // compress by default
 
 		private float marginT = 2, marginR = 2, marginB = 2, marginL = 2;
 		private float measuredMinX, measuredMinY, measuredMaxX, measuredMaxY;
@@ -36,7 +36,6 @@ namespace Malsys.Processing.Components.Renderers.TwoD {
 			SvgHeader = "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" viewBox=\"{0:0.###} {1:0.###} {2:0.###} {3:0.###}\" width=\"{2:0.###}px\" height=\"{3:0.###}px\">";
 			SvgFooter = "</svg>";
 
-			compress = true;  // compress by default
 		}
 
 

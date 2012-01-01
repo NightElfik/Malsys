@@ -429,6 +429,11 @@ pre .lsysTryMe, pre .collapseSwitch {
 
 .outputTruncated { font-size: 0.8em; color: #888888; }
 
+pre.asciiArt {
+	font-size: 0.5em;
+	line-height: 1em;
+	word-wrap: normal;
+}
 
 /* Components ============================================================== */
 .componentBox {

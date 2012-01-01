@@ -1,0 +1,88 @@
+﻿<#@ template language="C#v3.5" hostspecific="True" #>
+<#@ Output Extension=".log" #>
+<#@ assembly name="$(ProjectDir)$(OutDir)Yahoo.Yui.Compressor.dll" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="System.Data.Linq" #>
+<#@ assembly name="EnvDTE" #>
+<#@ assembly name="System.Xml" #>
+<#@ assembly name="System.Xml.Linq" #>
+<#@ assembly name="$(ProjectDir)$(OutDir)EcmaScript.NET.modified.dll" #>
+<#@ import namespace="System" #>
+<#@ import namespace="Yahoo.Yui.Compressor" #>
+<#@ import namespace="System.CodeDom" #>
+<#@ import namespace="System.CodeDom.Compiler" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Data.Linq" #>
+<#@ import namespace="System.Data.Linq.Mapping" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Reflection" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Xml.Linq" #>
+<#@ import namespace="Microsoft.VisualStudio.TextTemplating" #>
+<#
+/*-------------------------------------------------*/
+// Settings
+/*-------------------------------------------------*/
+bool _minimize = true;
+#>
+
+T4. Js Log
+---------------
+<#
+var currentDirectory = Path.GetDirectoryName(Host.TemplateFile);
+var jsFiles = Directory.GetFiles(currentDirectory, "*.js");
+#>
+
+Template File: <#=Host.TemplateFile #>
+Template Directory: <#= currentDirectory #>
+.Js Files Found: <#= jsFiles.Length #>
+Converting:
+<# foreach(var jsFile in jsFiles) { #>
+  * <#= jsFile #>
+<# }
+
+foreach(var jsFile in jsFiles)
+{
+	if (!jsFile.Contains(".min.js"))
+		{
+				string name = GetMinJsFileName(jsFile);
+				name = currentDirectory + @"\" + name;
+
+			try
+			{
+				// Read File
+				string readFile = ReadFile(jsFile);
+
+				if(_minimize)
+				{
+					string compressed = JavaScriptCompressor.Compress(readFile);
+					File.WriteAllText(name, compressed);
+				}
+
+			}
+			catch(Exception e)
+			{
+				File.WriteAllText(name, e.ToString());
+			}
+	}
+}
+
+#>
+
+<#+
+
+public string GetJsFileName(string jsFileName) {
+    return Path.GetFileNameWithoutExtension(jsFileName) + ".js";
+}
+
+public string GetMinJsFileName(string jsFileName) {
+    return Path.GetFileNameWithoutExtension(jsFileName)+ ".min.js";
+}
+
+public string ReadFile(string jsFileName) {
+			StreamReader myFile = new StreamReader(jsFileName);
+			string myString = myFile.ReadToEnd();
+			return myString;
+}
+#>

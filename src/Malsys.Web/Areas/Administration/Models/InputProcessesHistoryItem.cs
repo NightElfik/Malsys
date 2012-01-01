@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Malsys.Web.Models {
+namespace Malsys.Web.Areas.Administration.Models {
 	public class InputProcessesHistoryItem {
 
 		public int ProcessId { get; set; }

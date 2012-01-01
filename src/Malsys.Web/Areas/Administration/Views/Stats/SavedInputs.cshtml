@@ -1,8 +1,8 @@
-﻿@model IPagination<Malsys.Web.Models.InputProcessesHistoryItem>
+﻿@model IPagination<SavedInputModel>
 @using Malsys
 
 @{
-	ViewBag.Title = "Input processes history";
+	ViewBag.Title = "Saved inputs";
 }
 
 
@@ -11,14 +11,14 @@
 </div>
 
 @Html.Grid(Model).Columns(col => {
-		col.For(m => m.ProcessId)
+		col.For(m => m.SavedInputId)
+			.HeaderAttributes(style => "width: 40px;")
+			.Attributes(@class => "center");
+		col.For(m => m.RandomId)
 			.HeaderAttributes(style => "width: 40px;")
 			.Attributes(@class => "center");
 		col.For(m => m.User)
 			.HeaderAttributes(style => "width: 100px;");
-		col.For(m => m.ParentProcessId)
-			.HeaderAttributes(style => "width: 40px;")
-			.Attributes(@class => "center");
 		col.For(m => "<abbr title=\"" + m.Date + "\">" + m.Date.ToTimeSpanStringFromNow() + "</abbr>")
 			.Named("Age")
 			.HeaderAttributes(style => "width: 100px;")
@@ -28,10 +28,7 @@
 			.Named("Process duration")
 			.HeaderAttributes(style => "width: 60px;")
 			.Attributes(@class => "center");
-		col.For(m => m.SourceId)
-			.HeaderAttributes(style => "width: 40px;")
-			.Attributes(@class => "center");
-		col.For(m => "<pre class='malsys collapsable noMargin'>" + m.Source + "</pre>")
+		col.For(m => "<pre class=\"malsys collapsable noMargin\">" + m.Source + "</pre>")
 			.Named("Source")
 			.Encode(false);
 	}).Attributes(@class => "w100")
