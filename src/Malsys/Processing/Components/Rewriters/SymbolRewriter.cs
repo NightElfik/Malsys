@@ -15,6 +15,8 @@ namespace Malsys.Processing.Components.Rewriters {
 		private LsystemEvaled lsystem;
 		private IExpressionEvaluator exprEvaluator;
 
+		private SymbolRewriterEnumerator enumerator;
+
 		private Dictionary<string, RewriteRule[]> rewriteRules;
 		private HashSet<string> contextIgnoredSymbolNames;
 
@@ -37,7 +39,7 @@ namespace Malsys.Processing.Components.Rewriters {
 		}
 
 
-		[UserConnectable]
+		[UserConnectable(IsOptional=true)]
 		public IRandomGeneratorProvider RandomGeneratorProvider { get; set; }
 
 
@@ -47,11 +49,13 @@ namespace Malsys.Processing.Components.Rewriters {
 		public ISymbolProvider SymbolProvider { get; set; }
 
 		public IEnumerator<Symbol> GetEnumerator() {
-			return new SymbolRewriterEnumerator(this);
+			enumerator.Reset();
+			return enumerator;
 		}
 
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
-			return new SymbolRewriterEnumerator(this);
+			enumerator.Reset();
+			return enumerator;
 		}
 
 		public bool RequiresMeasure {
@@ -91,10 +95,16 @@ namespace Malsys.Processing.Components.Rewriters {
 		}
 
 		public void BeginProcessing(bool measuring) {
+
+			enumerator = new SymbolRewriterEnumerator(this);
+
 			SymbolProvider.BeginProcessing(measuring);
 		}
 
 		public void EndProcessing() {
+
+			enumerator = null;
+
 			SymbolProvider.EndProcessing();
 		}
 

@@ -30,7 +30,7 @@ namespace Malsys.Compilers {
 			InternalError,
 			[Message(MessageType.Error, "Unexpected end of expression.")]
 			UnexcpectedEndOfExpression,
-			[Message(MessageType.Error, "Unexpected operand `{0}`, expecting operator.")]
+			[Message(MessageType.Error, "Unexpected operand `{0}`, expecting binary operator.")]
 			UnexcpectedOperand,
 			[Message(MessageType.Error, "Unexpected `{0}` operator, expecting operand.")]
 			UnexcpectedOperator,

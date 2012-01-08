@@ -2,16 +2,19 @@
 namespace Malsys.Ast {
 	public class SymbolsInterpretDef : ILsystemStatement {
 
-		public readonly ImmutableListPos<LsystemSymbol> Symbols;
+		public readonly ImmutableListPos<Identificator> Symbols;
+		public readonly ImmutableListPos<OptionalParameter> Parameters;
 		public readonly Identificator Instruction;
-		public readonly ImmutableListPos<Expression> DefaultParameters;
+		public readonly ImmutableListPos<Expression> InstructionParameters;
 
 
-		public SymbolsInterpretDef(ImmutableListPos<LsystemSymbol> symbols, Identificator instr, ImmutableListPos<Expression> defParams , Position pos) {
+		public SymbolsInterpretDef(ImmutableListPos<Identificator> symbols, ImmutableListPos<OptionalParameter> prms,
+				Identificator instr, ImmutableListPos<Expression> instrParams , Position pos) {
 
 			Symbols = symbols;
+			Parameters = prms;
 			Instruction = instr;
-			DefaultParameters = defParams;
+			InstructionParameters = instrParams;
 		}
 
 

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Web.Mvc;
-using Malsys.Processing;
+using Malsys.Processing.Output;
 
 namespace Malsys.Web.Models {
 	public class ProcessLsystemResultModel {

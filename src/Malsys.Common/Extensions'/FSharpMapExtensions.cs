@@ -42,5 +42,17 @@ namespace Malsys {
 			return map;
 		}
 
+		public static bool ContainsValue<TKey, TValue>(this FSharpMap<TKey, TValue> map, TKey key, TValue value) {
+
+			var maybeValue = map.TryFind(key);
+			if (OptionModule.IsSome(maybeValue)) {
+				return maybeValue.Value.Equals(value);
+			}
+			else {
+				return false;
+			}
+
+		}
+
 	}
 }

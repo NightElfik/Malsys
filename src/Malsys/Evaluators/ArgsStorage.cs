@@ -36,6 +36,19 @@ namespace Malsys.Evaluators {
 		}
 
 		/// <summary>
+		/// Clears all previously stored arguments and copies all arguments from given first list.
+		/// </summary>
+		public void AddArgs(ImmutableList<IValue> arguments) {
+
+			ArgsCount = arguments.Length;
+			ensureCapacity(ArgsCount);
+
+			for (int i = 0; i < arguments.Length; i++) {
+				args[i] = arguments[i];
+			}
+		}
+
+		/// <summary>
 		/// Clears all previously stored arguments and copies all arguments from first list and if second is longer,
 		/// rest from second.
 		/// </summary>

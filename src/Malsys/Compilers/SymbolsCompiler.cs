@@ -12,17 +12,6 @@ namespace Malsys.Compilers {
 		}
 
 
-		Symbol<VoidStruct> ICompiler<Ast.LsystemSymbol, Symbol<VoidStruct>>.Compile(Ast.LsystemSymbol symbol, IMessageLogger logger) {
-
-			for (int i = 0; i < symbol.Arguments.Length; i++) {
-				if (symbol.Arguments[i].Members.Length != 0) {
-					logger.LogMessage(Message.SymbolsParamsNotAllowed, symbol.Arguments[i].Position, symbol.Name);
-				}
-			}
-
-			return new Symbol<VoidStruct>(symbol.Name, ImmutableList<VoidStruct>.Empty, symbol);
-		}
-
 		Symbol<string> ICompiler<Ast.LsystemSymbol, Symbol<string>>.Compile(Ast.LsystemSymbol symbol, IMessageLogger logger) {
 
 			string[] names = new string[symbol.Arguments.Length];
@@ -50,8 +39,6 @@ namespace Malsys.Compilers {
 
 			[Message(MessageType.Error, "Parameters of symbol pattern can be only identifiers.")]
 			PatternParamCanBeOnlyId,
-			[Message(MessageType.Error, "Parameters of symbol are not allowed in this context.")]
-			SymbolsParamsNotAllowed,
 
 		}
 

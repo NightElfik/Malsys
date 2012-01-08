@@ -51,6 +51,7 @@
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DocumentationFile>bin\Debug\Malsys.XML</DocumentationFile>
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -147,6 +148,7 @@
     <Compile Include="Media\ColorGradient.cs" />
     <Compile Include="Media\ColorGradientFactory.cs" />
     <Compile Include="Media\ColorGradients.cs" />
+    <Compile Include="Processing\CommonAdditionalDataKeys.cs" />
     <Compile Include="Processing\ComponentInitializationException.cs" />
     <Compile Include="Processing\ComponentResolver.cs" />
     <Compile Include="Processing\Components\Common\AxiomProvider.cs" />
@@ -158,6 +160,7 @@
     <Compile Include="Processing\Components\ComponentGroupNames.cs" />
     <Compile Include="Processing\Components\Interfaces%27\IRandomGeneratorProvider.cs" />
     <Compile Include="Media\Polygon2D.cs" />
+    <Compile Include="Processing\Components\Interpreters\InterpreterCallerDebugger.cs" />
     <Compile Include="Processing\Components\Interpreters\TwoD\HexaAsciiInterpreter.cs" />
     <Compile Include="Processing\Components\Renderers\ITextRenderer.cs" />
     <Compile Include="Processing\Components\Renderers\TwoD\TextRenderer.cs" />
@@ -168,10 +171,11 @@
     <Compile Include="Processing\Components\Interfaces%27\IComponent.cs" />
     <Compile Include="Processing\Components\Interfaces%27\IProcessStarter.cs" />
     <Compile Include="Processing\IComponentResolver.cs" />
+    <Compile Include="Processing\Output\InMemoryOutputProvider.cs" />
     <Compile Include="Processing\InterpretationException.cs" />
-    <Compile Include="Processing\IOutputProvider.cs" />
-    <Compile Include="Processing\IFilesManager.cs" />
-    <Compile Include="Processing\OutputFile.cs" />
+    <Compile Include="Processing\Output\IOutputProvider.cs" />
+    <Compile Include="Processing\Output\OutputFile.cs" />
+    <Compile Include="Processing\Output\InMemoryOutput.cs" />
     <Compile Include="Processing\ProcessManager.cs" />
     <Compile Include="Resources\ResourcesReader.cs" />
     <Compile Include="Resources\StdConstants.cs" />
@@ -196,6 +200,7 @@
     <Compile Include="SemanticModel\Evaluated\LsystemEvaled.cs" />
     <Compile Include="SemanticModel\Evaluated\InputBlock.cs" />
     <Compile Include="SemanticModel\Compiled\LsystemEvaledParams.cs" />
+    <Compile Include="SemanticModel\Evaluated\SymbolsInterpretationEvaled.cs" />
     <Compile Include="SemanticModel\Symbol.cs" />
     <Compile Include="SemanticModel\Compiled\Function.cs" />
     <Compile Include="SemanticModel\SymbolsList.cs" />
@@ -213,7 +218,7 @@
     <Compile Include="Compilers\Interfaces%27\IKnownOperatorsProvider.cs" />
     <Compile Include="Compilers\Expressions\OperatorCore.cs" />
     <Compile Include="SemanticModel\Compiled\FunctionEvaledParams.cs" />
-    <Compile Include="SemanticModel\Compiled\OptionalParameterEvaled.cs" />
+    <Compile Include="SemanticModel\Evaluated\OptionalParameterEvaled.cs" />
     <Compile Include="SemanticModel\Evaluated\ValuesArray.cs" />
     <Compile Include="SemanticModel\Constant.cs" />
     <Compile Include="Evaluators\EvalException.cs" />
@@ -224,7 +229,7 @@
     <Compile Include="SemanticModel\Compiled\Expressions\ExprVariable.cs" />
     <Compile Include="Evaluators\ExpressionEvaluator.cs" />
     <Compile Include="Processing\Components\Interpreters\TwoD\State2D.cs" />
-    <Compile Include="Processing\FilesManager.cs" />
+    <Compile Include="Processing\Output\FileOutputProvider.cs" />
     <Compile Include="Processing\Components\Interpreters\TwoD\Interpreter2D.cs" />
     <Compile Include="Processing\Components\Interfaces%27\IInterpreterCaller.cs" />
     <Compile Include="Processing\Components\Interpreters\InterpreterCaller.cs" />

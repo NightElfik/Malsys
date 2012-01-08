@@ -6,7 +6,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using Malsys.IO;
-using Malsys.Processing;
+using Malsys.Processing.Output;
 using Malsys.SemanticModel.Evaluated;
 using Malsys.SourceCode.Printers;
 using Malsys.Web.Entities;

@@ -31,13 +31,17 @@ namespace Malsys {
 			AddMessage(new Message(msgId, type, message, pos, DateTime.Now));
 		}
 
-
-		public override string ToString() {
+		public string AllMessagesToFullString() {
 			var sb = new StringBuilder();
 			foreach (var msg in messages) {
 				sb.AppendLine(msg.GetFullMessage());
 			}
 			return sb.ToString();
+		}
+
+
+		public override string ToString() {
+			return AllMessagesToFullString();
 		}
 
 

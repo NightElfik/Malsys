@@ -12,6 +12,7 @@ using Malsys.SemanticModel.Evaluated;
 using Malsys.SourceCode.Printers;
 using Microsoft.FSharp.Collections;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Malsys.Processing.Output;
 
 namespace Malsys.Tests.Rewriters {
 	public static class GenericRewriterTests {
@@ -219,7 +220,7 @@ namespace Malsys.Tests.Rewriters {
 			var lsystem = lsysEvaluator.Evaluate(inBlockEvaled.Lsystems["l"], ImmutableList<IValue>.Empty,
 				MapModule.Empty<string, IValue>(), MapModule.Empty<string, FunctionEvaledParams>());
 
-			var fm = new FilesManager("./");
+			var fm = new FileOutputProvider("./");
 			var context = new ProcessContext(lsystem, fm, inBlockEvaled, evaluator, msgs);
 
 			var symBuff = new SymbolsMemoryBuffer();

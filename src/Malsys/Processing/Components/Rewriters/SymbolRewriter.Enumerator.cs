@@ -26,7 +26,7 @@ namespace Malsys.Processing.Components.Rewriters {
 			private readonly HashSet<string> contextIgnoredSymbolNames;
 			private readonly IRandomGenerator rndGenerator;
 
-			private readonly IEnumerator<Symbol> symbolsSource;
+			private IEnumerator<Symbol> symbolsSource;
 
 			private readonly IndexableQueue<Symbol> inputBuffer;
 
@@ -58,8 +58,6 @@ namespace Malsys.Processing.Components.Rewriters {
 
 				parent = parentSr;
 
-				symbolsSource = parent.SymbolProvider.GetEnumerator();
-
 				exprEvaluator = parent.exprEvaluator;
 
 				rewriteRules = parent.rewriteRules;
@@ -67,6 +65,7 @@ namespace Malsys.Processing.Components.Rewriters {
 				functions = parent.lsystem.Functions;
 
 				contextIgnoredSymbolNames = parent.contextIgnoredSymbolNames;
+
 				if (parent.stochasticRules) {
 					if (parent.RandomGeneratorProvider == null) {
 						rndGenerator = new PseudoRandomGenerator();
@@ -75,6 +74,7 @@ namespace Malsys.Processing.Components.Rewriters {
 						rndGenerator = parent.RandomGeneratorProvider.GetRandomGenerator();
 					}
 				}
+
 				leftCtxtMaxLen = parent.leftCtxtMaxLen;
 				rightCtxtMaxLen = parent.rightCtxtMaxLen;
 
@@ -85,6 +85,8 @@ namespace Malsys.Processing.Components.Rewriters {
 				// optimal history length + 1 to be able add before delete
 				leftContext = new IndexableQueue<Symbol>(leftCtxtMaxLen + 1);
 				rightContext = new IndexableQueue<Symbol>(rightCtxtMaxLen + 1);
+
+				//Reset();
 			}
 
 
@@ -126,12 +128,20 @@ namespace Malsys.Processing.Components.Rewriters {
 				get { return Current; }
 			}
 
+			/// <summary>
+			/// Have to be called before any usage, even before first usage.
+			/// </summary>
 			public void Reset() {
-				throw new NotImplementedException();
+
+				symbolsSource = parent.SymbolProvider.GetEnumerator();
+				inputBuffer.Clear();
+				outputBuffer.Clear();
+				leftContext.Clear();
+				rightContext.Clear();
 			}
 
 			public void Dispose() {
-
+				// do not dispose anything since enumerator is reused
 			}
 
 			#endregion

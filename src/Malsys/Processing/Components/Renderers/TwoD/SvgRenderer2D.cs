@@ -3,6 +3,7 @@ using System.IO.Compression;
 using Malsys.Media;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Evaluated;
+using Microsoft.FSharp.Collections;
 
 namespace Malsys.Processing.Components.Renderers.TwoD {
 	[Component("2D SVG renderer", ComponentGroupNames.Renderers)]
@@ -13,9 +14,12 @@ namespace Malsys.Processing.Components.Renderers.TwoD {
 		public const string SvgzFileExtension = ".svgz";
 
 		private ProcessContext context;
+		private FSharpMap<string, object> globalAdditionalData = MapModule.Empty<string, object>();
+		private FSharpMap<string, object> localAdditionalData;
 
 		private bool measuring;
 
+		private Stream outputStream;
 		private TextWriter writer;
 
 		private float lastX, lastY;
@@ -95,19 +99,26 @@ namespace Malsys.Processing.Components.Renderers.TwoD {
 		public void BeginProcessing(bool measuring) {
 
 			this.measuring = measuring;
+			localAdditionalData = globalAdditionalData;
+			if (compress) {
+				localAdditionalData = localAdditionalData.Add(CommonAdditionalDataKeys.OutputIsGZipped, true);
+			}
 
 			if (measuring) {
 				writer = null;
 			}
 			else {
+
+				outputStream = context.OutputProvider.GetOutputStream<SvgRenderer2D>(
+					"SVG result from `{0}`".Fmt(context.Lsystem.Name),
+					MimeType.Image_SvgXml, false, localAdditionalData);
+
 				if (compress) {
-					var stream = context.OutputProvider.GetOutputStream<SvgRenderer2D>(SvgzFileExtension);
-					var gzipStream = new GZipStream(stream, CompressionMode.Compress);
+					var gzipStream = new GZipStream(outputStream, CompressionMode.Compress);
 					writer = new StreamWriter(gzipStream);
 				}
 				else {
-					var stream = context.OutputProvider.GetOutputStream<SvgRenderer2D>(SvgFileExtension);
-					writer = new StreamWriter(stream);
+					writer = new StreamWriter(outputStream);
 				}
 
 				writer.WriteLine(FileHeader);
@@ -138,6 +149,14 @@ namespace Malsys.Processing.Components.Renderers.TwoD {
 		#endregion
 
 		#region IRenderer2D Members
+
+		public void AddGlobalOutputData(string key, object value) {
+			globalAdditionalData = globalAdditionalData.Add(key, value);
+		}
+
+		public void AddCurrentOutputData(string key, object value) {
+			localAdditionalData = localAdditionalData.Add(key, value);
+		}
 
 		public void InitializeState(PointF point, float width, ColorF color) {
 

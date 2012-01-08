@@ -1,0 +1,45 @@
+﻿@model Malsys.Web.Models.SimpleLsystemProcessor
+
+@{
+	ViewBag.Title = "Constant definition";
+	var exampleModel = new LsystemExampleViewModel() {
+		LsystemProcessor = Model,
+		SourceCodeTemplate = string.Join(Environment.NewLine,
+			"// constant example {0:00}",
+			"{1}"),
+		UnimportantLines = new int[] { 1 }
+
+	};
+	int exampleId = 1;
+}
+
+<h2>Constant definition</h2>
+
+<h3>Formal grammar</h3>
+
+<pre class="grammar box">
+constant_def = 'let' ID '=' expression ';'
+</pre>
+
+<p>
+	Binds value of <code>expression</code> to name represented by <code>ID</code>.
+	If binding on same name already exists in current scope, it is hidden by new binding until end of the scope.
+	It means, that global constants can be temporally hidden by local constants.
+</p>
+
+@* ================================================================================================================== *@
+<h3>Examples</h3>
+
+@Html.Partial(MVC.Help.SyntaxReference.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, string.Join(Environment.NewLine,
+		"let a = 3;",
+		"let b = (2 + 2) * 2 ^ 2;",
+		"let c = sqrt(a * b);",
+		"let a = 0;"
+	)))
+
+
+
+
+
+
+

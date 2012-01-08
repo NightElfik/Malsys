@@ -7,7 +7,8 @@
 
 <p>
 	Syntax is described using formal grammar with regular expressions on right side.
-	Regular expressions are explained on the @Html.ActionLink("separate page", MVC.Help.Syntax.GrammarRegexps()) as well as @Html.ActionLink("grammar syntax", MVC.Help.Syntax.Grammar()).
+	Regular expressions are explained on the @Html.ActionLink("separate page", MVC.Help.SyntaxReference.GrammarRegexps())
+		as well as @Html.ActionLink("grammar syntax", MVC.Help.SyntaxReference.Grammar()).
 </p>
 
 <p>
@@ -21,7 +22,7 @@
 <h3>Tokens</h3>
 
 <p>
-	More about tokens syntax can be found on @Html.ActionLink("grammar syntax page", MVC.Help.Syntax.Grammar()).
+	More about tokens syntax can be found on @Html.ActionLink("grammar syntax page", MVC.Help.SyntaxReference.Grammar()).
 </p>
 
 
@@ -115,17 +116,7 @@ empty_statement = ';'
 <p>To <i>eat</i> redundant semicolons.</p>
 
 
-<h4 id="grammar-constant_def">Constant definition</h4>
 
-<pre class="grammar">
-constant_def = 'let' ID '=' expression ';'
-</pre>
-
-<p>
-	Binds value of <code class="grammar">expression</code> to name represented by <code class="grammar">ID</code>.
-	If binding on same name already exists in current scope, it is hidden by new binding until end of the scope.
-	It means, that global constants can be temporally hidden by local constants.
-</p>
 
 <p>Examples:</p>
 <pre class="malsys">
@@ -213,58 +204,8 @@ symbols_list_def = 'set' ID '=' symbol ';'
 </pre>
 
 
-<h4 id="grammar-symbols_interpretation_def">Symbols interpretation definition</h4>
-
-<pre class="grammar">
-symbols_interpretation_def = 'interpret' symbol_no_params+ 'as' ID ('(' params_expr_list? ')')? ';'
-
-params_expr_list = expression  (',' params_expr_list)?
-</pre>
 
 
-<h4 id="grammar-rewrite_rule">Rewrite rule</h4>
-
-<pre class="grammar">
-rewrite_rule = 'rewrite' rr_pattern rr_consts? rr_condition? 'to' (rr_replacements | 'nothing') ';'
-</pre>
-
-
-<h5 id="grammar-rr_pattern">Rewrite rule pattern</h5>
-
-<pre class="grammar">
-rr_pattern = rr_context? symbol_pattern ('(' params_pattern_list? ')')? rr_context?
-
-params_pattern_list = symbol_pattern  (',' params_pattern_list)?
-
-rr_context = '{' symbol_pattern* '}'
-</pre>
-
-
-<h5 id="grammar-rr_consts">Rewrite rule constants definition</h5>
-
-<pre class="grammar">
-rr_consts = 'with' rr_cost_defs_list?
-
-rr_cost_defs_list = ID '=' expression  (',' rr_cost_defs_list)?
-</pre>
-
-Definition of local constants for rewrite rule.
-
-
-<h5 id="grammar-rr_condition">Rewrite rule condition</h5>
-
-<pre class="grammar">
-rr_condition = 'where' expression
-</pre>
-
-
-<h5 id="grammar-rr_replacements">Rewrite rule replacement</h5>
-
-<pre class="grammar">
-rr_replacements = symbol* rr_weight? ('or' 'to' rr_replacements)?
-
-rr_weight = 'weight' expression
-</pre>
 
 
 <h4 id="grammar-symbol">L-system symbol</h4>

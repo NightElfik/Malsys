@@ -267,16 +267,16 @@ namespace Malsys.SourceCode.Printers {
 		public void Visit(SymbolsInterpretDef symIntDef) {
 
 			Print(Keyword.Interpret);
-			PrintSeparated(symIntDef.Symbols, s => Print(s), " ");
+			PrintSeparated(symIntDef.Symbols, s => writer.Write(s.Name), " ");
 
 			writer.Write(" ");
 			Print(Keyword.As);
 
 			writer.Write(symIntDef.Instruction.Name);
 
-			if (!symIntDef.DefaultParameters.IsEmpty) {
+			if (!symIntDef.InstructionParameters.IsEmpty) {
 				writer.Write("(");
-				PrintSeparated(symIntDef.DefaultParameters, e => Print(e));
+				PrintSeparated(symIntDef.InstructionParameters, e => Print(e));
 				writer.Write(")");
 			}
 
@@ -294,6 +294,10 @@ namespace Malsys.SourceCode.Printers {
 		#endregion
 
 		#region IExpressionVisitor Members
+
+		public void Visit(EmptyExpression emptyExpr) {
+
+		}
 
 		public void Visit(ExpressionBracketed bracketedExpr) {
 			writer.Write("(");

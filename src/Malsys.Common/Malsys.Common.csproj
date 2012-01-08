@@ -95,11 +95,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions%27\FSharpOptionExtensions.cs" />
+    <Compile Include="Helpers%27\AnonymousObjectHelper.cs" />
     <Compile Include="Extensions%27\TimeExtensions.cs" />
     <Compile Include="Helpers%27\AttributeHelper.cs" />
     <Compile Include="Helpers%27\DataSizeHelper.cs" />
+    <Compile Include="Helpers%27\StringHelper.cs" />
     <Compile Include="IDateTimeProvider.cs" />
     <Compile Include="IMessageLogger.cs" />
+    <Compile Include="MimeType.cs" />
     <Compile Include="Random%27\CryptographicRandomGenerator.cs" />
     <Compile Include="Random%27\IRandomGenerator.cs" />
     <Compile Include="MessageAttribute.cs" />

@@ -5,8 +5,6 @@ using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Collections;
 using ConstsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.IValue>;
 using FunsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Compiled.FunctionEvaledParams>;
-using SymIntMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Symbol<Malsys.SemanticModel.Evaluated.IValue>>;
-using SymListMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.ImmutableList<Malsys.SemanticModel.Symbol<Malsys.SemanticModel.Evaluated.IValue>>>;
 
 namespace Malsys.Evaluators {
 	internal class LsystemEvaluator : ILsystemEvaluator {
@@ -51,7 +49,7 @@ namespace Malsys.Evaluators {
 			}
 
 			var symDefs = MapModule.Empty<string, ImmutableList<Symbol<IValue>>>();
-			var symsInt = MapModule.Empty<string, Symbol<IValue>>();
+			var symsInt = MapModule.Empty<string, SymbolInterpretationEvaled>();
 
 			// statements evaluation
 			var rRules = new List<RewriteRule>();
@@ -81,9 +79,14 @@ namespace Malsys.Evaluators {
 
 					case LsystemStatementType.SymbolsInterpretation:
 						var symInt = (SymbolsInterpretation)stat;
-						var prms = exprEvaluator.EvaluateList(symInt.DefaultParameters, consts, funs);
+						var symIntPrms = paramsEvaluator.Evaluate(symInt.Parameters, consts, funs);
 						foreach (var sym in symInt.Symbols) {
-							symsInt = symsInt.Add(sym.Name, new Symbol<IValue>(symInt.InstructionName, prms));
+							if (symsInt.ContainsKey(sym.Name)) {
+								throw new EvalException("More than one interpretation method defined for symbol `{0}` (`{1}` and `{2}`)."
+									.Fmt(sym.Name, symInt.InstructionName, symsInt[sym.Name].InstructionName));
+							}
+							symsInt = symsInt.Add(sym.Name, new SymbolInterpretationEvaled(sym.Name, symIntPrms,
+								symInt.InstructionName, symInt.InstructionParameters, symInt.AstNode));
 						}
 						break;
 

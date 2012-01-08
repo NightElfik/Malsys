@@ -19,6 +19,18 @@ namespace Malsys.SourceCode.Printers {
 		}
 
 
+		public void Write(string str) {
+			writer.Write(str);
+		}
+
+		public void WriteLine(string str) {
+			writer.WriteLine(str);
+		}
+
+		public void NewLine() {
+			writer.NewLine();
+		}
+
 		public void PrintSeparated<T>(IEnumerable<T> values, Action<T> printFunc, string separator = ", ") {
 
 			bool first = true;
@@ -33,6 +45,10 @@ namespace Malsys.SourceCode.Printers {
 
 				printFunc(val);
 			}
+		}
+
+		public void Print(IEnumerable<IValue> values) {
+			PrintSeparated(values, s => Print(s));
 		}
 
 		public void Print(Ast.Keyword kw, bool includeSpace = true) {
@@ -281,9 +297,9 @@ namespace Malsys.SourceCode.Printers {
 
 			writer.Write(symInt.InstructionName);
 
-			if (!symInt.DefaultParameters.IsEmpty) {
+			if (!symInt.InstructionParameters.IsEmpty) {
 				writer.Write("(");
-				PrintSeparated(symInt.DefaultParameters, e => Print(e));
+				PrintSeparated(symInt.InstructionParameters, e => Print(e));
 				writer.Write(")");
 			}
 

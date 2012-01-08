@@ -19,7 +19,8 @@ namespace Malsys.Evaluators {
 
 		public SemanticModel.Evaluated.InputBlock Evaluate(InputBlock input) {
 
-			var consts = MapModule.Empty<string, Malsys.SemanticModel.Evaluated.IValue>();
+			var consts = MapModule.Empty<string, SemanticModel.Evaluated.IValue>();
+			var constsAst = MapModule.Empty<string, Ast.ConstantDefinition>();
 			var funs = MapModule.Empty<string, FunctionEvaledParams>();
 			var lsys = MapModule.Empty<string, LsystemEvaledParams>();
 			var procConfs = MapModule.Empty<string, ProcessConfiguration>();
@@ -29,7 +30,9 @@ namespace Malsys.Evaluators {
 				switch (stat.StatementType) {
 					case InputStatementType.Constant:
 						var cst = (ConstantDefinition)stat;
-						consts = consts.Add(cst.Name, exprEvaluator.Evaluate(cst.Value, consts, funs));
+						var constValue = exprEvaluator.Evaluate(cst.Value, consts, funs);
+						consts = consts.Add(cst.Name, constValue);
+						constsAst = constsAst.Add(cst.Name, cst.AstNode);
 						break;
 
 					case InputStatementType.Function:
@@ -58,7 +61,7 @@ namespace Malsys.Evaluators {
 				}
 			}
 
-			return new SemanticModel.Evaluated.InputBlock(consts, funs, lsys, procConfs, procStats.ToImmutableList());
+			return new SemanticModel.Evaluated.InputBlock(consts, constsAst, funs, lsys, procConfs, procStats.ToImmutableList(), input.SourceName);
 		}
 
 	}

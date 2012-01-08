@@ -6,6 +6,7 @@ using Malsys.Processing;
 using Malsys.SemanticModel.Evaluated;
 using Malsys.Web.Infrastructure;
 using Malsys.Web.Models;
+using Malsys.Processing.Output;
 
 namespace Malsys.Web.Controllers {
 	public partial class ProcessController : Controller {
@@ -64,7 +65,7 @@ namespace Malsys.Web.Controllers {
 			string workDirFullPath = Server.MapPath(Url.Content(workDir));
 			malsysInputRepository.CleanProcessOutputs(workDirFullPath, maxWorkDirFiles);
 
-			var fileMgr = new FilesManager(workDirFullPath);
+			var fileMgr = new FileOutputProvider(workDirFullPath);
 			var logger = new MessageLogger();
 
 			var resultModel = new ProcessLsystemResultModel() {
@@ -93,11 +94,11 @@ namespace Malsys.Web.Controllers {
 
 			sw.Stop();
 
-			var outputs = fileMgr.GetOutputFilePaths();
+			var outputs = fileMgr.GetOutputFiles();
 
 			var ip = malsysInputRepository.AddInputProcess(evaledInput, referenceId, outputs, User.Identity.Name, sw.Elapsed);
 			resultModel.ReferenceId = ip.InputProcessId;
-			resultModel.OutputFiles = fileMgr.GetOutputFilePaths();
+			resultModel.OutputFiles = outputs;
 
 			if (save != null) {
 				if (User.Identity.IsAuthenticated) {

@@ -12,13 +12,13 @@ namespace Malsys.Processing.Components.RewriterIterators {
 
 		private ISymbolProvider symbolProvider;
 
-		private ProcessContext context;
+		//private ProcessContext context;
 		private ISymbolProcessor outProcessor;
 
 		private List<Symbol<IValue>> inBuffer = new List<Symbol<IValue>>();
 		private List<Symbol<IValue>> outBuffer = new List<Symbol<IValue>>();
 
-		private int[] iterationsArray;
+		private int[] iterationsArray = new int[] { 0 };
 
 		private Stopwatch swDuration = new Stopwatch();
 		private TimeSpan timeout;
@@ -27,7 +27,7 @@ namespace Malsys.Processing.Components.RewriterIterators {
 
 
 
-		[UserSettable(IsMandatory = true)]
+		[UserSettable]
 		public IValue Iterations {
 			set {
 				if (value.IsConstant && !((Constant)value).IsNaN && ((Constant)value).Value >= 0) {
@@ -140,9 +140,9 @@ namespace Malsys.Processing.Components.RewriterIterators {
 
 		private void rewrite(int iterations) {
 
-			for (int i = 0; i < iterations; i++) {
+			symbolProvider.BeginProcessing(true);
 
-				symbolProvider.BeginProcessing(true);
+			for (int i = 0; i < iterations; i++) {
 
 				foreach (var symbol in symbolProvider) {
 
@@ -157,11 +157,11 @@ namespace Malsys.Processing.Components.RewriterIterators {
 
 				}
 
-				symbolProvider.EndProcessing();
-
 				inBuffer.Clear();
 				Swap.Them(ref inBuffer, ref outBuffer);
 			}
+
+			symbolProvider.EndProcessing();
 		}
 
 		private void interpret(bool measuring) {

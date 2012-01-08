@@ -40,6 +40,15 @@
 	-moz-border-radius: @radius 0 @radius 0;
 }
 
+.malsysBox () {
+	border: 1px solid #aaa;
+	padding: 0.3em;
+	margin: 0;
+	background: #ddd;
+	.border-radius-malsys;
+	.box-shadow(2px, 2px, 5px, 0, #AAA);
+}
+
 
 /* Derived from HTML5 ✰ Boilerplate http://html5boilerplate.com/ ========================= */
 
@@ -336,9 +345,18 @@ footer {
 /* General styles =========================================================== */
 
 .center { text-align: center; }
+.block { display: block; }
 .right { text-align: right; }
 .w100 { width: 100%; }
+.w60 { width: 60%; }
+.w30 { width: 30%; }
 .noMargin { margin: 0; }
+.left { float: left; }
+.right { float: right; text-align: left; }
+
+.box {
+	.malsysBox();
+}
 
 
 /* Lists general styles ===================================================== */
@@ -367,16 +385,12 @@ ol.lAlpha { list-style-type: lower-alpha; }
 @srcKeywordColor: #7F0055;
 @srcStringColor: #800000;
 @srcCommentColor: #007700;
+@srcUnimportantColor: #AAA;
 
 pre {
-	border: 1px solid #aaa;
-	padding: 0.3em;
+	margin: 0;
+	position: relative; /* for button placement */
 	color: @srcColor;
-	background: #ddd;
-	position: relative;
-	.border-radius-malsys;
-	.box-shadow(2px, 2px, 5px, 0, #AAA);
-
 	a:hover { text-decoration: underline; color: @srcColor; }
 	.lsysTryMe { right: 8px; border-bottom: none; }
 	.collapseSwitch { right: 96px; }
@@ -389,6 +403,7 @@ code {
 	padding: 0 0.2em;
 }
 
+pre .unimportant { color: @srcUnimportantColor; }
 
 pre .grTerminal, code .grTerminal { color: @srcStringColor; }
 

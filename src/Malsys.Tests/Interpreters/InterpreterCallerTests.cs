@@ -28,6 +28,11 @@ namespace Malsys.Tests.Interpreters {
 		}
 
 		[TestMethod]
+		public void ParametersFromSymbolTests() {
+			GenericInterpreterCallerTests.ParametersFromSymbolTests(new InterpreterCaller());
+		}
+
+		[TestMethod]
 		public void ParametersTests() {
 			GenericInterpreterCallerTests.ParametersTests(new InterpreterCaller());
 		}
@@ -35,6 +40,11 @@ namespace Malsys.Tests.Interpreters {
 		[TestMethod]
 		public void OptionalParametersTests() {
 			GenericInterpreterCallerTests.OptionalParametersTests(new InterpreterCaller());
+		}
+
+		[TestMethod]
+		public void NativelyOptionalParametersTests() {
+			GenericInterpreterCallerTests.NativelyOptionalParametersTests(new InterpreterCaller());
 		}
 	}
 }

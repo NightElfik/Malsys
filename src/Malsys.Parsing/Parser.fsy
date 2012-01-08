@@ -42,7 +42,7 @@ let getPosRange (parserState : IParseState) fromI toI =
     new Position((fst (parserState.InputRange(fromI)), snd (parserState.InputRange(toI))))
 
 let getPosFromTo (fromPos : Position) (toPos : Position) =
-    new Position(fromPos.BeginLine, fromPos.BeginColumn, toPos.EndLine, toPos.EndColumn)
+    new Position(fromPos.BeginLine, fromPos.BeginColumn, toPos.EndLine, toPos.EndColumn, fromPos.SourceName)
 
 let getPosBetween (parserState : IParseState) fromI toI =
     new Position((snd (parserState.InputRange(fromI)), fst (parserState.InputRange(toI))))
@@ -245,8 +245,9 @@ SymbolsConstDef:
         new EmptyStatement(getPos parseState) :> ILsystemStatement }
 
 SymbolsInterpretDef:
-    | INTERPRET LsystemSymbolList AS id OptExpressionsListParen SEMI
-      { new SymbolsInterpretDef($2, $4, $5, getPos parseState) :> ILsystemStatement }
+    | INTERPRET LsystemSymbolNoParamsList OptParams AS id OptExpressionsListParen SEMI
+      { let symbolsImm = new ImmutableListPos<Identificator>($2 :> ResizeArray<Identificator>, getPosI parseState 2) in
+        new SymbolsInterpretDef(symbolsImm, $3, $5, $6, getPos parseState) :> ILsystemStatement }
     | INTERPRET error SEMI
       { logMsgPos ParsserMessage.SymbolsInterpretationInvalid (getPosBetween parseState 1 3);
         new EmptyStatement(getPos parseState) :> ILsystemStatement }
@@ -309,6 +310,8 @@ RrReplacList:
 RrReplacListNonEmpty:
     | RrReplac
       { let mutable x = new ResizeArray<RewriteRuleReplacement>() in x.Add($1); x }
+    | RrReplacListNonEmpty TO RrReplac
+      { $1.Add($3); $1 }
     | RrReplacListNonEmpty OR TO RrReplac
       { $1.Add($4); $1 }
 
@@ -372,6 +375,13 @@ LsystemSymbolListNonEmpty:
       { let mutable x = new ResizeArray<LsystemSymbol>() in x.Add($1); x }
     | LsystemSymbolListNonEmpty LsystemSymbol
       { $1.Add($2); $1 }
+
+LsystemSymbolNoParamsList:
+    | Symbol
+      { let sym = new Identificator($1, getPos parseState) in
+        let mutable x = new ResizeArray<Identificator>() in x.Add(sym); x }
+    | LsystemSymbolNoParamsList Symbol
+      { $1.Add(new Identificator($2, getPosI parseState 1)); $1 }
 
 Symbol:
     | ID
@@ -445,8 +455,8 @@ ExpressionMembersNonEmpty:
 
 ExprMember:
     | FLOAT
-      { let (value, fmt) = $1 in
-        new FloatConstant(value, fmt, getPos parseState) :> IExpressionMember }
+      { let (value, format) = $1 in
+        new FloatConstant(value, format, getPos parseState) :> IExpressionMember }
     | id
       { $1 :> IExpressionMember }
     | ExpressionsArray

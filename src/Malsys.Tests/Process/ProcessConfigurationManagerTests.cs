@@ -4,6 +4,7 @@ using Malsys.Processing;
 using Malsys.Processing.Components;
 using Microsoft.FSharp.Core;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Malsys.Processing.Output;
 
 namespace Malsys.Tests.Process {
 	[TestClass]
@@ -62,7 +63,7 @@ namespace Malsys.Tests.Process {
 			resolver.RegisterComponent(typeof(IDummyContainer));
 
 			var logger = new MessageLogger();
-			var ctxt = new ProcessContext(null, new FilesManager("./"), input, null, logger);
+			var ctxt = new ProcessContext(null, new FileOutputProvider("./"), input, null, logger);
 			var manager = new ProcessConfigurationManager();
 			if (!manager.TryBuildConfiguration(procConfig, procStat.ComponentAssignments, resolver, ctxt, new MessageLogger())) {
 				Console.WriteLine(logger.ToString());

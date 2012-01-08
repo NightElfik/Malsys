@@ -5,7 +5,6 @@ namespace Malsys.SemanticModel.Compiled {
 	/// </summary>
 	public class Lsystem : IInputStatement {
 
-
 		public readonly string Name;
 		public readonly ImmutableList<OptionalParameter> Parameters;
 		public readonly ImmutableList<ILsystemStatement> Statements;

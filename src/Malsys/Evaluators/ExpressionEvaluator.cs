@@ -44,17 +44,13 @@ namespace Malsys.Evaluators {
 		public IValue Evaluate(IExpression expr, ConstsMap consts, FunsMap funs) {
 
 			Debug.Assert(!evaluating, "Forbidden recursion call!");
+			constants = consts;
+			functions = funs;
 
 			try {
 				evaluating = true;
 
-				constants = consts;
-				functions = funs;
-
 				expr.Accept(this);
-
-				constants = null;
-				functions = null;
 
 				if (valuesStack.Count != 1) {
 					throw new EvalException("Failed to evaluate expression. Not all values were processed.");
@@ -63,9 +59,11 @@ namespace Malsys.Evaluators {
 				return valuesStack.Pop();
 			}
 			finally {
+				evaluating = false;
 				// cleanup
 				valuesStack.Clear();
-				evaluating = false;
+				constants = null;
+				functions = null;
 			}
 		}
 

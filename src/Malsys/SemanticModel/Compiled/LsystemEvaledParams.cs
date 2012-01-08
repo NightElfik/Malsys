@@ -1,4 +1,5 @@
-﻿
+﻿using Malsys.SemanticModel.Evaluated;
+
 namespace Malsys.SemanticModel.Compiled {
 	public class LsystemEvaledParams {
 

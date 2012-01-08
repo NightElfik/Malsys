@@ -1,0 +1,188 @@
+﻿@model Malsys.Web.Models.SimpleLsystemProcessor
+
+@{
+	ViewBag.Title = "Rewrite rule";
+
+	var exampleModel = new LsystemExampleViewModel() {
+		LsystemProcessor = Model,
+		SourceCodeTemplate = string.Join(Environment.NewLine,
+			"lsystem RewriteRuleExample{0:00} {{",
+			"{1}",
+			"process with SymbolPrinter;",
+			"}}"),
+		UnimportantLines = new int[] { 1, -1, -2 }
+
+	};
+	int exampleId = 1;
+}
+
+<h2>Rewrite rule definition</h2>
+
+
+@* ================================================================================================================== *@
+<h3>Formal grammar</h3>
+
+<h4>Rewrite rule</h4>
+
+<pre class="grammar box">
+rewrite_rule = 'rewrite' rr_pattern rr_consts? rr_condition? 'to' rr_replacement ';'
+</pre>
+
+
+<h4>Rewrite rule pattern</h4>
+
+<pre class="grammar box">
+rr_pattern = rr_context? symbol_opt_params rr_context?
+
+symbol_opt_params = SYMBOL symbol_params?
+symbol_params = '(' params_list? ')'
+params_list = ID (',' ID)*
+
+rr_context = '{' symbol_opt_params* '}'
+</pre>
+
+
+<h4>Rewrite rule constants definition</h4>
+
+<pre class="grammar box">
+rr_consts = 'with' rr_cost_defs_list?
+
+rr_cost_defs_list = ID '=' expression  (',' rr_cost_defs_list)?
+</pre>
+
+
+<h4>Rewrite rule condition</h4>
+
+<pre class="grammar box">
+rr_condition = 'where' expression
+</pre>
+
+
+<h4>Rewrite rule replacement</h4>
+
+<pre class="grammar box">
+rr_replacements =
+	| symbol_expr_params* rr_weight? ('or'? 'to' rr_replacements)?
+	| 'nothing'
+
+rr_weight = 'weight' expression
+</pre>
+
+
+@* ================================================================================================================== *@
+<h3>Examples</h3>
+
+@Html.Partial(MVC.Help.SyntaxReference.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, string.Join(Environment.NewLine,
+		"let iterations = 1;",
+		"set axiom = A A;",
+		"rewrite A to B;"
+	)))
+
+<hr />
+
+@Html.Partial(MVC.Help.SyntaxReference.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, string.Join(Environment.NewLine,
+		"let iterations = {1, 2, 3, 4};",
+		"set axiom = A;",
+		"rewrite A to B A;"
+	)))
+
+@* ================================================================================================================== *@
+<h4>Rewrite rule pattern</h4>
+
+@Html.Partial(MVC.Help.SyntaxReference.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, string.Join(Environment.NewLine,
+		"let iterations = {0, 1, 2, 3, 4};",
+		"set axiom = A(1);",
+		"rewrite A(x) to B(x) A(x + 1);"
+	)))
+
+<hr />
+
+@Html.Partial(MVC.Help.SyntaxReference.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, string.Join(Environment.NewLine,
+		"let iterations = {0, 1, 2, 3, 4, 5};",
+		"set axiom = B A A A A;",
+		"rewrite {B} A to B;",
+		"rewrite B to A;"
+	)))
+
+<hr />
+
+@Html.Partial(MVC.Help.SyntaxReference.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, string.Join(Environment.NewLine,
+		"let iterations = {0, 1, 2, 3, 4, 5, 6};",
+		"set axiom = A(0) B(1);",
+		"rewrite          A(a) { B(b) } to A(b);",
+		"rewrite { A(a) } B(b)          to B(a + b);"
+	)))
+
+
+@* ================================================================================================================== *@
+<h4>Rewrite rule constants definition</h4>
+
+@Html.Partial(MVC.Help.SyntaxReference.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, string.Join(Environment.NewLine,
+		"let iterations = {0, 1, 2, 3, 4};",
+		"set axiom = A(2);",
+		"rewrite A(x) with z = x*(x-1) to B(z) A(z+1);"
+	)))
+
+<hr />
+
+@Html.Partial(MVC.Help.SyntaxReference.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, string.Join(Environment.NewLine,
+		"let iterations = {0, 1, 2, 3, 4};",
+		"set axiom = A(1);",
+		"rewrite A(x) with a = 2x, b = a + 1 to A(b / a);"
+	)))
+
+
+@* ================================================================================================================== *@
+<h4>Rewrite rule condition</h4>
+
+@Html.Partial(MVC.Help.SyntaxReference.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, string.Join(Environment.NewLine,
+		"let iterations = {0, 1, 2, 3};",
+		"set axiom = A(1) A(2) A(3) A(4) A(5);",
+		"rewrite A(x) where x % 3 == 0 to X;",
+		"rewrite A(x) to A(x + 1);"
+	)))
+
+<hr />
+
+@Html.Partial(MVC.Help.SyntaxReference.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, string.Join(Environment.NewLine,
+		"let iterations = 1;",
+		"set axiom = A(1) A(2) A(-1) A(3) A(1);",
+		"rewrite A(x) with a = x*x where a == abs(x) to X;"
+	)))
+
+<hr />
+
+@Html.Partial(MVC.Help.SyntaxReference.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, string.Join(Environment.NewLine,
+		"let iterations = 1;",
+		"set axiom = A(1, -1) A(1, 0) A(-1, -2) A(3, -2);",
+		"rewrite A(x, y) where x+y > 0 to X;"
+	)))
+
+
+@* ================================================================================================================== *@
+<h4>Rewrite rule replacement</h4>
+
+@Html.Partial(MVC.Help.SyntaxReference.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, string.Join(Environment.NewLine,
+		"let iterations = 1;",
+		"set axiom = A B B A B;",
+		"rewrite A to nothing;"
+	)))
+
+<hr />
+
+@Html.Partial(MVC.Help.SyntaxReference.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, string.Join(Environment.NewLine,
+		"let iterations = {0, 1, 2, 3, 4, 5, 6};",
+		"let randomSeed = 1;",
+		"set axiom = A;",
+		"rewrite A to B A or to C A;"
+	)))
+
+<hr />
+
+@Html.Partial(MVC.Help.SyntaxReference.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, string.Join(Environment.NewLine,
+		"let iterations = {0, 1, 2, 3, 4, 5, 6, 7};",
+		"let randomSeed = 1;",
+		"set axiom = I I I I I I I I;",
+		"rewrite I to I weight 4",
+		"    or to X weight 1;"
+	)))

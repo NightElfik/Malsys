@@ -1,0 +1,36 @@
+﻿@model LsystemExampleViewModel
+
+@{
+	HtmlString unimportantLinesAttr;
+	if (Model.UnimportantLines.Length > 0) {
+		unimportantLinesAttr = new HtmlString("data-unimportant-lines=\"" + string.Join(" ", Model.UnimportantLines.Select(x => x.ToString())) + "\"");
+	}
+	else {
+		unimportantLinesAttr = new HtmlString("");
+	}
+
+	string input = Model.SourceCodeWithArgsAutoIndented();
+	var output = Model.LsystemProcessor.Process(input).ToList();
+}
+
+<table class="w100">
+	<tr><th class="w60">Input</th><th>Output</th></tr>
+	<tr><td>
+<pre class="malsys" @unimportantLinesAttr>
+@input
+</pre>
+	</td><td>
+	@if (output.Count == 1) {
+<pre>
+@output[0].Trim()
+</pre>
+	}
+	else {
+		<ol>
+		@foreach (var str in output) {
+			<li><pre>@str.Trim()</pre></li>
+		}
+		</ol>
+	}
+	</td></tr>
+</table>

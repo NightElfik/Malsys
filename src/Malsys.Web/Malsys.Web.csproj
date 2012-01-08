@@ -112,6 +112,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\EntityFramework.4.2.0.0\lib\net40\EntityFramework.dll</HintPath>
     </Reference>
+    <Reference Include="FSharp.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="FSharp.PowerPack, Version=2.0.0.0, Culture=neutral, PublicKeyToken=a19089b1c74d0809, processorArchitecture=MSIL">
       <HintPath>C:\Program Files (x86)\FSharpPowerPack-2.0.0.0\bin\FSharp.PowerPack.dll</HintPath>
     </Reference>
@@ -178,9 +179,10 @@
     <Compile Include="Areas\Administration\Models\SavedInputModel.cs" />
     <Compile Include="Areas\Help\Controllers\HomeController.cs" />
     <Compile Include="Areas\Help\Controllers\PredefinedController.cs" />
-    <Compile Include="Areas\Help\Controllers\SyntaxController.cs" />
+    <Compile Include="Areas\Help\Controllers\SyntaxReferenceController.cs" />
     <Compile Include="Areas\Help\HelpAreaRegistration.cs" />
     <Compile Include="Areas\Help\Models\ComponentModel.cs" />
+    <Compile Include="Areas\Help\Models\LsystemExampleViewModel.cs" />
     <Compile Include="AuthenticationController.generated.cs">
       <DependentUpon>T4MVC.tt</DependentUpon>
     </Compile>
@@ -223,7 +225,7 @@
     <Compile Include="Help.SharedController.generated.cs">
       <DependentUpon>T4MVC.tt</DependentUpon>
     </Compile>
-    <Compile Include="Help.SyntaxController.generated.cs">
+    <Compile Include="Help.SyntaxReferenceController.generated.cs">
       <DependentUpon>T4MVC.tt</DependentUpon>
     </Compile>
     <Compile Include="HomeController.generated.cs">
@@ -239,6 +241,7 @@
     <Compile Include="Models\Repositories\MalsysInputRepository.cs" />
     <Compile Include="Models\Repositories\UsersRepository.cs" />
     <Compile Include="Models\NewRoleModel.cs" />
+    <Compile Include="Models\SimpleLsystemProcessor.cs" />
     <Compile Include="Models\ViewModels%27\FeedbackModel.cs" />
     <Compile Include="Areas\Administration\Models\InputProcessesHistoryItem.cs" />
     <Compile Include="Areas\Administration\Models\RoleDetailModel.cs" />
@@ -286,6 +289,10 @@
     <Content Include="Areas\Help\Views\Shared\ComponentPartial.cshtml" />
     <Content Include="Areas\Administration\Views\Stats\Index.cshtml" />
     <Content Include="Areas\Administration\Views\Stats\SavedInputs.cshtml" />
+    <Content Include="Areas\Help\Views\SyntaxReference\SymbolInterpretation.cshtml" />
+    <Content Include="Areas\Help\Views\SyntaxReference\RewriteRule.cshtml" />
+    <Content Include="Areas\Help\Views\SyntaxReference\LsystemExamplePartial.cshtml" />
+    <Content Include="Areas\Help\Views\SyntaxReference\Constant.cshtml" />
     <None Include="Css\style.less.css" />
     <Content Include="Css\style.css">
       <DependentUpon>T4CSS.tt</DependentUpon>
@@ -338,9 +345,9 @@
     <Content Include="Areas\Administration\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Help\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Help\Views\Home\BasicRewriting.cshtml" />
-    <Content Include="Areas\Help\Views\Syntax\Index.cshtml" />
-    <Content Include="Areas\Help\Views\Syntax\Grammar.cshtml" />
-    <Content Include="Areas\Help\Views\Syntax\GrammarRegexps.cshtml" />
+    <Content Include="Areas\Help\Views\SyntaxReference\Index.cshtml" />
+    <Content Include="Areas\Help\Views\SyntaxReference\Grammar.cshtml" />
+    <Content Include="Areas\Help\Views\SyntaxReference\GrammarRegexps.cshtml" />
     <Content Include="Areas\Help\Views\Predefined\Constants.cshtml" />
     <Content Include="Areas\Help\Views\Predefined\Functions.cshtml" />
     <None Include="Css\T4CSS.log">

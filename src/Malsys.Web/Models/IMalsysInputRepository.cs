@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Malsys.Processing;
+using Malsys.Processing.Output;
 using Malsys.SemanticModel.Evaluated;
 using Malsys.Web.Entities;
 

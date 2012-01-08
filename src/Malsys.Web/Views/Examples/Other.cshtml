@@ -121,4 +121,78 @@ lsystem BrokenSierpinski {
 </pre>
 </div>
 
+<div class="floating_box">
+<pre class="malsys">
+/**
+ * http://en.wikipedia.org/wiki/Sierpinski_triangle
+ */
+lsystem InverseSierpinski {
+
+	set axiom = < . F - . F . > - F;
+	let iterations = 5;
+	// normalize line length (result image will have always same size)
+	let lineLength = 2 ^ -iterations * 256;
+
+	interpret F f as MoveForward(lineLength);
+	interpret + as TurnLeft(120);
+	interpret - as TurnLeft(-120);
+	interpret < as StartPolygon(0, 0);
+	interpret . as RecordPolygonVertex;
+	interpret > as EndPolygon;
+
+	rewrite F to f + < . F - . F . > - F + f;
+	rewrite f to f f;
+
+	process with SvgRenderer;
+
+}
+</pre>
+</div>
+
+<div class="floating_box">
+<pre class="malsys">
+/**
+ * McWorter's Pentigree
+ */
+lsystem Pentigree {
+
+	set axiom = F;
+	let iterations = 4;
+
+	interpret F as DrawLine(8);
+	interpret + as TurnLeft(36);
+	interpret - as TurnLeft(-36);
+
+	rewrite F to + F + + F - - - - F - - F + + F + + F -;
+
+	process with SvgRenderer;
+
+}
+</pre>
+</div>
+
+<div class="floating_box">
+<pre class="malsys">
+/**
+ * McWorter's Pentigree
+ */
+lsystem PentigreeFiveTimes {
+
+	set axiom = F + + F + + F + + F + + F;
+	let iterations = 4;
+	let continousColoring = true;
+
+	interpret F as DrawLine(6);
+	interpret + as TurnLeft(36);
+	interpret - as TurnLeft(-36);
+
+	rewrite F to + F + + F - - - - F - - F + + F + + F -;
+
+	process with SvgRenderer;
+
+}
+</pre>
+</div>
+
+
 </div>

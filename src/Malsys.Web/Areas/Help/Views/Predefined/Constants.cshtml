@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Malsys.Compilers.Expressions.KnownConstant>
+﻿@model Tuple<IEnumerable<Malsys.Compilers.Expressions.KnownConstant>, Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.IValue>>
 
 @{
 	ViewBag.Title = "Predefined constants";
@@ -7,14 +7,21 @@
 <h2>Predefined constants</h2>
 
 <p>
-	Following constants are recognized in the compiler though it is not possible to change their value.
-	They also can not be redefined in code.
+	In Malsys are two types of predefined constants.
+</p>
+
+
+@* ================================================================================================================== *@
+<h3>Built-in compiler constants</h3>
+
+<p>
+	Following constants are recognized by the compiler though it is not possible to change their value at run time.
 	Their names are case-insensitive to be independent on user's naming conventions.
 </p>
 
 <table class="center">
 	<tr><th style="width: 128px;">Name</th><th style="width: 192px;">Value</th></tr>
-@foreach (var constGroup in  Model.GroupBy(x => x.Group)) {
+@foreach (var constGroup in Model.Item1.GroupBy(x => x.Group)) {
 
 	<tr class="th"><th colspan="2">@constGroup.Key</th></tr>
 	foreach (var valGroup in constGroup.GroupBy(x => x.Value)) {
@@ -23,7 +30,7 @@
 		foreach (var c in valGroup) {
 		<tr>
 			<td class="monospace">@c.Name</td>
-			@if(first) {
+			@if (first) {
 				first = false;
 				<td rowspan="@count">@c.Value</td>
 			}
@@ -33,3 +40,31 @@
 
 }
 </table>
+
+
+@* ================================================================================================================== *@
+<h3>Constants from standard library</h3>
+
+<p>
+	This group of constants is defined in the same way how user can define global constants.
+	They are case-sensitive and they can be redefined (overlaid) by user-defined constants.
+</p>
+
+<table class="center">
+	<tr><th style="width: 128px;">Name</th><th style="width: 192px;">Value</th></tr>
+@foreach (var constKvpGroup in Model.Item2.GroupBy(x => x.Value)) {
+	var count = constKvpGroup.Count();
+	bool first = true;
+	foreach (var constKvp in constKvpGroup) {
+	<tr>
+		<td class="monospace">@constKvp.Key</td>
+		@if (first) {
+			first = false;
+			<td rowspan="@count">@constKvp.Value</td>
+		}
+	</tr>
+	}
+}
+</table>
+
+

@@ -25,15 +25,25 @@ namespace Malsys.Web.Controllers {
 
 
 		public virtual ActionResult Show(string fileName) {
-			return download(fileName, false);
+
+			string mimeType = MimeType.Text_Plain;
+			if (fileName.EndsWith(".svg")) {
+				mimeType = MimeType.Image_SvgXml;
+			}
+			else if (fileName.EndsWith(".svgz")) {
+				Response.AppendHeader("Content-Encoding", "gzip");
+				mimeType = MimeType.Image_SvgXml;
+			}
+
+			return download(fileName, mimeType, false);
 		}
 
 		public virtual ActionResult Download(string fileName) {
-			return download(fileName, true);
+			return download(fileName, "application/octet-stream", true);
 		}
 
 
-		private ActionResult download(string fileName, bool download) {
+		private ActionResult download(string fileName, string mimeType, bool download) {
 
 			var procOutput = inputProcessesRepository.InputDb.ProcessOutputs.Where(po => po.FileName == fileName).SingleOrDefault();
 
@@ -47,24 +57,11 @@ namespace Malsys.Web.Controllers {
 			string realPath = Server.MapPath(Url.Content(workDir));
 			string filePath = Path.Combine(realPath, fileName);
 
-
 			if (download) {
 				return File(filePath, "application/octet-stream", fileName);
 			}
 			else {
-				string mime;
-				switch (Path.GetExtension(filePath)) {
-					case ".txt": mime = "text/plain"; break;
-					case ".svg":
-						mime = "image/svg+xml";
-						break;
-					case ".svgz":
-						Response.AppendHeader("Content-Encoding", "gzip");
-						mime = "image/svg+xml";
-						break;
-					default: mime = "application/octet-stream"; break;
-				}
-				return File(filePath, mime);
+				return File(filePath, mimeType);
 			}
 		}
 

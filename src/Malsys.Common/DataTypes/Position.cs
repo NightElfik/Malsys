@@ -5,21 +5,26 @@ namespace Malsys {
 	/// <summary>
 	/// Immutable.
 	/// </summary>
+	// TODO: rename to something better like range
 	public class Position {
 
 		public static readonly Position Unknown = new Position(-1, -1, -1, -1);
+
 
 		public readonly int BeginLine;
 		public readonly int BeginColumn;
 		public readonly int EndLine;
 		public readonly int EndColumn;
 
+		public readonly string SourceName;
 
-		public Position(int beginLine, int beginColumn, int endLine, int endColumn) {
+
+		public Position(int beginLine, int beginColumn, int endLine, int endColumn, string sourceName = "") {
 			BeginLine = beginLine;
 			BeginColumn = beginColumn;
 			EndLine = endLine;
 			EndColumn = endColumn;
+			SourceName = sourceName;
 		}
 
 		public Position(LexPos begin, LexPos end) {
@@ -27,6 +32,7 @@ namespace Malsys {
 			BeginColumn = begin.Column;
 			EndLine = end.Line;
 			EndColumn = end.Column;
+			SourceName = begin.FileName;
 		}
 
 		public Position(Tuple<LexPos, LexPos> range) {
@@ -34,6 +40,7 @@ namespace Malsys {
 			BeginColumn = range.Item1.Column;
 			EndLine = range.Item2.Line;
 			EndColumn = range.Item2.Column;
+			SourceName = range.Item1.FileName;
 		}
 
 
@@ -59,11 +66,11 @@ namespace Malsys {
 
 
 		public Position GetBeginPos() {
-			return new Position(BeginLine, BeginColumn, BeginLine, BeginColumn);
+			return new Position(BeginLine, BeginColumn, BeginLine, BeginColumn, SourceName);
 		}
 
 		public Position GetEndPos() {
-			return new Position(EndLine, EndColumn, EndLine, EndColumn);
+			return new Position(EndLine, EndColumn, EndLine, EndColumn, SourceName);
 		}
 
 		public override string ToString() {

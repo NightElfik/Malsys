@@ -31,7 +31,7 @@
 	}
 
 	function highlightLsystemKeywords(code) {
-		return (' '+code).replace(/(\s)(as|component|configuration|connect|consider|container|default|fun|interpret|let|lsystem|nothing|or|process|return|rewrite|set|this|to|typeof|use|weight|with|where)(?=\s)/g, '$1<span class="keyword">$2</span>').trim();
+		return (' ' + code).replace(/(\s)(as|component|configuration|connect|consider|container|default|fun|interpret|let|lsystem|nothing|or|process|return|rewrite|set|this|to|typeof|use|weight|with|where)(?=\s)/g, '$1<span class="keyword">$2</span>').trim();
 	}
 
 	function urlEncode(str) {
@@ -101,9 +101,27 @@
 		$(this).append(tryMeHtml);
 
 		// format code
-		var newHtml = highlightLsystemKeywords(lsystemCode);
-		newHtml = highlightComments(newHtml);
-		newHtml = replaceTabs(newHtml);
+		var code = highlightLsystemKeywords(lsystemCode);
+		code = highlightComments(code);
+		code = replaceTabs(code);
+
+		if ($(this).attr("data-unimportant-lines")) {
+			var lines = code.split(/\n/);
+			var indices = $(this).attr("data-unimportant-lines").split(/[ ]+/);
+			for (var i = 0; i < indices.length; i++) {
+				var index = indices[i] * 1;
+				if (index > 0) {
+					index--;
+				}
+				else {
+					index += lines.length;
+				}
+				if (index >= 0 || index < lines.length) {
+					lines[index] = '<span class="unimportant">' + lines[index] + '</span>';
+				}
+			}
+			code = lines.join("\n");
+		}
 
 
 		if ($(this).hasClass("collapsable")) {
@@ -111,10 +129,13 @@
 			$(this).append(colapseHtml);
 		}
 
-		$(this).append(newHtml);
+		$(this).append(code);
 
-		// clean tags from comments
+		// clean tags from comments and unimportant code
 		$(this).find("span.comment").each(function (i) {
+			$(this).text($(this).text());
+		});
+		$(this).find("span.unimportant").each(function (i) {
 			$(this).text($(this).text());
 		});
 

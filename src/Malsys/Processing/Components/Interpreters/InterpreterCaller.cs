@@ -1,60 +1,70 @@
 ﻿using System.Collections.Generic;
-using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Malsys.Evaluators;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Evaluated;
-using Microsoft.FSharp.Core;
+using ConstsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.IValue>;
+using FunsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Compiled.FunctionEvaledParams>;
 using InterpretAction = System.Action<Malsys.Evaluators.ArgsStorage>;
 using InterpretActionParams = System.Tuple<System.Action<Malsys.Evaluators.ArgsStorage>, int>;
-using SymIntMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Symbol<Malsys.SemanticModel.Evaluated.IValue>>;
 
 
 namespace Malsys.Processing.Components.Interpreters {
 	[Component("Interpreter caller", ComponentGroupNames.Interpreters)]
 	public class InterpreterCaller : IInterpreterCaller {
 
-		private IInterpreter interpreter;
-		private IMessageLogger logger;
+		protected IInterpreter interpreter;
+		protected IExpressionEvaluator exprEvaluator;
+		protected ConstsMap globalConsts;
+		protected FunsMap globalFuns;
 
-		private Dictionary<string, Symbol<IValue>> symbolToInstr;
+		protected Dictionary<string, SymbolInterpretationEvaled> symbolToInstr;
 
-		private Dictionary<string, InterpretActionParams> instrToDel;
+		protected Dictionary<string, InterpretActionParams> instrToDel;
 
-		private ArgsStorage args = new ArgsStorage();
+		protected ArgsStorage args = new ArgsStorage();
 
 
 
 		#region IInterpreterCaller Members
 
 		[UserConnectable]
-		public IInterpreter Interpreter {
+		public virtual IInterpreter Interpreter {
 			set {
 				interpreter = value;
 			}
 		}
 
-		public void ProcessSymbol(Symbol<IValue> symbol) {
+		public virtual void ProcessSymbol(Symbol<IValue> symbol) {
 
-			Symbol<IValue> instr;
+			SymbolInterpretationEvaled instr;
 			if (!symbolToInstr.TryGetValue(symbol.Name, out instr)) {
-				// TODO: handle missing interpret method for symbol
-				return;
+				return;  // symbol with missing interpret method is ignored
 			}
+
+			if (instr.Parameters.IsEmpty) {
+				// use instruction argument as default values if no explicit arguments are defined
+				args.AddArgs(symbol.Arguments, exprEvaluator.EvaluateList(instr.InstructionParameters, globalConsts, globalFuns));
+			}
+			else {
+				var consts = globalConsts;  // create a working copy of constants
+				mapSybolArgs(symbol, instr, ref consts);
+				args.AddArgs(exprEvaluator.EvaluateList(instr.InstructionParameters, consts, globalFuns));
+			}
+
 
 			InterpretActionParams iActionParams;
-			if (!instrToDel.TryGetValue(instr.Name.ToLowerInvariant(), out iActionParams)) {
+			if (!instrToDel.TryGetValue(instr.InstructionName.ToLowerInvariant(), out iActionParams)) {
 				throw new InterpretationException("Unknown interpreter action `{0}` of symbol `{1}` of interpreter `{2}`."
-					.Fmt(instr.Name, symbol.Name, interpreter.GetType().FullName));
+					.Fmt(instr.InstructionName, symbol.Name, interpreter.GetType().FullName));
 			}
 
-			args.AddArgs(symbol.Arguments, instr.Arguments);
 			if (args.ArgsCount < iActionParams.Item2) {
-				throw new InterpretationException("Not enough arguments supplied. "
-					+ "Symbol `{0}` needs {1} arguments for invoking `{2}` but only {3} were given."
-					.Fmt(symbol.Name, iActionParams.Item2, instr.Name, args.ArgsCount));
+				throw new InterpretationException("Not enough arguments supplied for interpretation of "
+					+ "symbol `{0}` which needs {1} arguments for invoking `{2}` but only {3} were given."
+					.Fmt(symbol.Name, iActionParams.Item2, instr.InstructionName, args.ArgsCount));
 			}
 
 			iActionParams.Item1.Invoke(args);
@@ -62,30 +72,61 @@ namespace Malsys.Processing.Components.Interpreters {
 
 		public bool RequiresMeasure { get { return false; } }
 
-		public void Initialize(ProcessContext ctxt) {
+		public virtual void Initialize(ProcessContext ctxt) {
 
-			logger = ctxt.Logger;
+			exprEvaluator = ctxt.Evaluator.ResolveExpressionEvaluator();
+			globalConsts = ctxt.Lsystem.Constants;
+			globalFuns = ctxt.Lsystem.Functions;
+
 			symbolToInstr = ctxt.Lsystem.SymbolsInterpretation.ToDictionary(x => x.Key, x => x.Value);
 
 			createInstrToDelCahce();
 		}
 
-		public void Cleanup() { }
+		public virtual void Cleanup() { }
 
-		public void BeginProcessing(bool measuring) {
+		public virtual void BeginProcessing(bool measuring) {
+
 			interpreter.BeginProcessing(measuring);
 		}
 
-		public void EndProcessing() {
+		public virtual void EndProcessing() {
 			interpreter.EndProcessing();
 		}
 
 		#endregion
 
 
+		protected void mapSybolArgs(Symbol<IValue> symbol, SymbolInterpretationEvaled instr, ref ConstsMap consts) {
+
+			var prms = instr.Parameters;
+
+			for (int i = 0; i < prms.Length; i++) {
+				IValue val;
+				if (i < symbol.Arguments.Length) {
+					val = symbol.Arguments[i];
+				}
+				else {
+					if (prms[i].IsOptional) {
+						val = prms[i].DefaultValue;
+					}
+					else {
+						throw new EvalException("Not enough custom arguments supplied by symbol `{0}` to interpretation of `{1}`."
+							.Fmt(symbol.Name, instr.InstructionName));
+					}
+				}
+
+				consts = consts.Add(prms[i].Name, val);
+			}
+		}
+
 		private void createInstrToDelCahce() {
 
 			instrToDel = new Dictionary<string, InterpretActionParams>();
+
+			if (interpreter == null) {
+				return;
+			}
 
 			foreach (var methodInfo in interpreter.GetType().GetMethods()) {
 

@@ -1,0 +1,11 @@
+
+==== SQL 2008 express problems =================================================
+Quck fix to wide variety of problems, delete directory:
+C:\Users\{user}\AppData\Local\Microsoft\Microsoft SQL Server Data\SQLEXPRESS
+If file/dir is in use, kill appropriate taks using task manager.
+
+Sometimes two SQL servers are installed, first SQL 2008 installed with Visual
+Web Developer and second by Web Platform Installer with R2. VS will incorrectly
+use the older (2008) instead of 2008 R2 and error woth incopatible versions
+661/655 will occur. Uninstall SQL 2008 and install 2008 R2 with Web Platform
+Installer. Then delete SQLEXPRESS dir from AppData (qucik fix).

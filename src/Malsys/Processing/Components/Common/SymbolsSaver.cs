@@ -9,6 +9,7 @@ namespace Malsys.Processing.Components.Common {
 	public class SymbolsSaver : ISymbolProcessor {
 
 		private IOutputProvider outProvider;
+		private string outputName;
 
 		private IndentTextWriter writer;
 		private CanonicPrinter printer;
@@ -29,6 +30,7 @@ namespace Malsys.Processing.Components.Common {
 
 		public void Initialize(ProcessContext ctxt) {
 			outProvider = ctxt.OutputProvider;
+			outputName = "Symbols from `{0}`".Fmt(ctxt.Lsystem.Name);
 		}
 
 		public void Cleanup() { }
@@ -37,7 +39,7 @@ namespace Malsys.Processing.Components.Common {
 			notMeasuring = !measuring;
 
 			if (notMeasuring) {
-				writer = new IndentTextWriter(new StreamWriter(outProvider.GetOutputStream<SymbolsSaver>(".txt")));
+				writer = new IndentTextWriter(new StreamWriter(outProvider.GetOutputStream<SymbolsSaver>(outputName, MimeType.Text_Plain)));
 				printer = new CanonicPrinter(writer);
 			}
 		}

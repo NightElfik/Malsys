@@ -1,15 +1,16 @@
 ﻿using System.IO;
-using System.IO.Compression;
 using Malsys.SemanticModel;
-using System;
+using Microsoft.FSharp.Collections;
 
 namespace Malsys.Processing.Components.Renderers.TwoD {
 	public class TextRenderer : ITextRenderer {
 
 
 		private ProcessContext context;
+		private FSharpMap<string, object> globalAdditionalData = MapModule.Empty<string, object>();
+		private FSharpMap<string, object> localAdditionalData;
 
-		private bool compress = false;
+		//private bool compress = false;
 
 		private bool measuring;
 
@@ -20,12 +21,12 @@ namespace Malsys.Processing.Components.Renderers.TwoD {
 		private char[][] resultBuffer;
 
 
-		[UserSettable]
-		public Constant Compress {
-			set {
-				compress = !value.IsZero;
-			}
-		}
+		//[UserSettable]
+		//public Constant Compress {
+		//    set {
+		//        compress = !value.IsZero;
+		//    }
+		//}
 
 
 		#region IComponent Members
@@ -41,6 +42,7 @@ namespace Malsys.Processing.Components.Renderers.TwoD {
 		public void BeginProcessing(bool measuring) {
 
 			this.measuring = measuring;
+			localAdditionalData = globalAdditionalData;
 
 			if (measuring) {
 				resultBuffer = null;
@@ -69,20 +71,10 @@ namespace Malsys.Processing.Components.Renderers.TwoD {
 				measuredHeight = maxY - minY + 1;
 			}
 			else {
+				var stream = context.OutputProvider.GetOutputStream<SvgRenderer2D>(
+					"Text result from `{0}`".Fmt(context.Lsystem.Name), MimeType.Text_Plain, false, localAdditionalData);
 
-				TextWriter writer;
-
-				if (compress) {
-					var stream = context.OutputProvider.GetOutputStream<SvgRenderer2D>(".ascii.txt.zip");
-					var gzipStream = new GZipStream(stream, CompressionMode.Compress);
-					writer = new StreamWriter(gzipStream);
-				}
-				else {
-					var stream = context.OutputProvider.GetOutputStream<SvgRenderer2D>(".ascii.txt");
-					writer = new StreamWriter(stream);
-				}
-
-				using (writer) {
+				using (var writer = new StreamWriter(stream)) {
 					foreach (var row in resultBuffer) {
 						writer.WriteLine(new string(row));
 					}
@@ -93,7 +85,17 @@ namespace Malsys.Processing.Components.Renderers.TwoD {
 
 		#endregion
 
+
 		#region ITextRenderer
+
+		public void AddGlobalOutputData(string key, object value) {
+			globalAdditionalData = globalAdditionalData.Add(key, value);
+		}
+
+		public void AddCurrentOutputData(string key, object value) {
+			localAdditionalData = localAdditionalData.Add(key, value);
+		}
+
 
 		public void PutCharAt(char c, int x, int y) {
 
@@ -110,6 +112,7 @@ namespace Malsys.Processing.Components.Renderers.TwoD {
 
 		#endregion
 
+
 		private void measure(int x, int y) {
 			if (x < minX) {
 				minX = x;
@@ -125,5 +128,6 @@ namespace Malsys.Processing.Components.Renderers.TwoD {
 				maxY = y;
 			}
 		}
+
 	}
 }

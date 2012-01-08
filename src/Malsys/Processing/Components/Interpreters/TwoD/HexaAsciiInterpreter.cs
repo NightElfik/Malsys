@@ -61,7 +61,7 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 
 		public void Initialize(ProcessContext ctxt) {
 			logger = ctxt.Logger;
-
+			renderer.AddGlobalOutputData(CommonAdditionalDataKeys.OutputIsAsciiArt, true);
 		}
 
 		public void Cleanup() { }

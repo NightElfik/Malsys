@@ -1,6 +1,5 @@
-﻿using Malsys.SemanticModel.Evaluated;
-
-namespace Malsys.SemanticModel.Compiled {
+﻿
+namespace Malsys.SemanticModel.Evaluated {
 	/// <summary>
 	/// Immutable.
 	/// </summary>

@@ -23,21 +23,5 @@ namespace Malsys.Resources {
 		public static readonly KnownConstant InfinityUnicode = Infinity.ChangeNameTo(CharHelper.Infinity.ToString());
 
 
-
-		private const string wellKnownGroup = "Well known constants";
-
-		public static readonly KnownConstant Pi = new KnownConstant("Pi", wellKnownGroup, "pi", Math.PI);
-		public static readonly KnownConstant PiUnicode = Pi.ChangeNameTo(CharHelper.Pi.ToString());
-
-		public static readonly KnownConstant Tau = new KnownConstant("Tau (2 pi)", wellKnownGroup, "tau", 2 * Math.PI);
-		public static readonly KnownConstant TauUnicode = Tau.ChangeNameTo(CharHelper.Tau.ToString());
-
-		public static readonly KnownConstant E = new KnownConstant("Euler's number", wellKnownGroup, "e", Math.E);
-
-		public static readonly KnownConstant GoldenRatio
-			= new KnownConstant("Golden ratio", wellKnownGroup, "golden_ratio", (1 + Math.Sqrt(5)) / 2);
-		public static readonly KnownConstant GoldenRatioCamel = GoldenRatio.ChangeNameTo("goldenRatio");
-
-
 	}
 }

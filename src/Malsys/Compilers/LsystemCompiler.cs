@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Linq;
+using System.Collections.Generic;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Compiled;
 
@@ -64,9 +65,10 @@ namespace Malsys.Compilers {
 
 		private SymbolsInterpretation compileSymbolsInterpretation(Ast.SymbolsInterpretDef symbolsInterpretAst) {
 
-			var symbols = symbolCompiler.CompileList<Ast.LsystemSymbol, Symbol<VoidStruct>>(symbolsInterpretAst.Symbols, logger);
-			var defVals = exprCompiler.CompileList(symbolsInterpretAst.DefaultParameters, logger);
-			return new SymbolsInterpretation(symbolsInterpretAst.Instruction.Name, defVals, symbols);
+			var symbols = symbolsInterpretAst.Symbols.Select(x => new Symbol<VoidStruct>(x.Name)).ToImmutableList();
+			var prms = paramsCompiler.CompileList(symbolsInterpretAst.Parameters, logger);
+			var defVals = exprCompiler.CompileList(symbolsInterpretAst.InstructionParameters, logger);
+			return new SymbolsInterpretation(symbols, prms, symbolsInterpretAst.Instruction.Name, defVals, symbolsInterpretAst);
 		}
 
 

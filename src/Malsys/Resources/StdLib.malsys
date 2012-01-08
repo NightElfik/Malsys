@@ -3,6 +3,30 @@
  */
 
 //------------------------------------------------------------------------------
+// Constants.
+//------------------------------------------------------------------------------
+
+let pi = 3.14159265358979323846;
+let Pi = pi;
+let π = pi;
+
+let tau = 2 * pi;
+let Tau = tau;
+let τ = tau;
+
+let piHalf = pi / 2;
+let PiHalf = piHalf;
+let pi_half = piHalf;
+
+let e = 2.7182818284590452354;
+let E = e;
+
+let goldenRatio = (1 + sqrt(5)) / 2;
+let GoldenRatio = goldenRatio;
+let golden_ratio = goldenRatio;
+
+
+//------------------------------------------------------------------------------
 // Process configurations.
 //------------------------------------------------------------------------------
 
@@ -62,6 +86,18 @@ configuration HexAsciiRenderer {
 	connect InterpreterCaller to Iterator.OutputProcessor;
 	connect Interpreter to InterpreterCaller.Interpreter;
 	connect Renderer to Interpreter.Renderer;
+
+}
+
+configuration InterpretationDebugger {
+
+	component AxiomProvider typeof AxiomProvider;
+	container Iterator typeof IIterator default MemoryBufferedIterator;
+	container InterpreterCaller typeof IInterpreterCaller default InterpreterCallerDebugger;
+
+	connect AxiomProvider to Iterator.AxiomProvider;
+	connect AxiomProvider to Iterator.SymbolProvider;
+	connect InterpreterCaller to Iterator.OutputProcessor;
 
 }
 

@@ -11,7 +11,61 @@
 	Every symbol can be associated with some action.
 	The set of actions you can use is given by the Interpreter component.
 	Default interpretation of symbols is printing them to string.
-	More interesting interpretation is drawing an image.
+	More interesting interpretation is for example drawing an image.
+</p>
+
+
+<h3>Basic interpretation syntax</h3>
+
+<p>
+	Interpret action can be associated to symbol by following syntax: <code class="malsys">interpret symbol as action;</code>.
+	All arguments from symbol will be sent to interpret action.
+	Symbols with no defined action are ignored.
+	For example symbols <code class="lsysSymbols">F(1, 2) G(3)</code> with interpretation definition <code class="malsys">interpret F as DrawLine;</code>
+		will interpret as <code class="lsysSymbols">DrawLine(1, 2)</code>.
+</p>
+
+<p>
+	There can be specified more than one symbol to interpret with single action using syntax:
+		<code class="malsys"> interpret symbol1 symbol2 symbol3 … as action;</code>.
+	For example symbols <code class="lsysSymbols">C A B</code> with interpretation definition <code class="malsys">interpret A B C as DrawLine;</code>
+		will interpret as <code class="lsysSymbols">DrawLine DrawLine DrawLine</code>.
+</p>
+
+
+<h3>Default parameters of action</h3>
+
+<p>
+	Default parameters of interpretation action can be specified by following syntax: <code class="malsys">interpret symbol as action(x, y, …);</code>
+		where <code class="lsysSymbols">x</code> and <code class="lsysSymbols">y</code> are expressions.
+	Arguments from symbol have greater priority than default parameters.
+	For example symbols <code class="lsysSymbols">F F(5) F(5, 5)</code> with interpretation definition <code class="malsys">interpret F as DrawLine(0, 1 + 1);</code>
+		will interpret as <code class="lsysSymbols">DrawLine(0, 2) DrawLine(5, 2) DrawLine(5, 5)</code>.
+</p>
+
+
+<h3>Custom parameters of action</h3>
+
+<p>
+	Arguments from symbols can be mapped on names and used as variables in action parameters.
+	<code class="malsys">interpret symbol (a, b, …) as action(x, y, …);</code> where <code class="lsysSymbols">a</code> and <code class="lsysSymbols">b</code>
+	are parameter names whereas <code class="lsysSymbols">x</code> and <code class="lsysSymbols">y</code> are expressions.
+	For example symbols <code class="lsysSymbols">F(2, 1) F(5, 7) F(2, 2, 2, 2)</code> with interpretation definition <code class="malsys">interpret F(a, b) as DrawLine(a + b);</code>
+		will interpret as <code class="lsysSymbols">DrawLine(3) DrawLine(12) DrawLine(4)</code>.
+</p>
+
+<p>
+	Mapping symbol with less actual arguments than required in interpretation definition will throw an exception and process will be terminated.
+	Symbol's unmapped arguments are ignored (and lost), there is no automatic forwarding of arguments as in interpretation without argument mapping.
+	See the difference on following example.
+	Symbols <code class="lsysSymbols">F F(1) F(1, 2) G(1) G(1, 2)</code> with interpretation definition
+		<code class="malsys">interpret F as DrawLine(0); interpret G(x) as MoveForward(0);</code>
+		will interpret as <code class="lsysSymbols">DrawLine(0) DrawLine(1) DrawLine(1, 2) MoveForward(0) MoveForward(0)</code>
+		(symbol <code class="lsysSymbols">G</code> would cause an exception).
+</p>
+
+<p>
+	Optional parameters ...
 </p>
 
 
@@ -25,6 +79,7 @@
 	Following list shows all actions of 2D interpreter (withdrawn from
 		<a href="@Url.Action(MVC.Help.Predefined.Components())#@Model.Type.FullName">components list</a>).
 </p>
+
 
 <ul>
 @foreach (var intMethod in Model.InterpretationMethods) {
@@ -40,28 +95,6 @@
 }
 </ul>
 
-<p>
-	Interpret action can be associated to symbol by following syntax: <code class="malsys"> interpret symbol as action;</code>.
-	All parameters from symbol will be send to interpret action.
-	Symbols with no defined action are ignored.
-	For example symbols <code class="lsysSymbols">F(1, 2) G(3)</code> with interpretation definition <code class="malsys"> interpret F as DrawLine;</code>
-		will interpret as <code class="lsysSymbols">DrawLine(1, 2)</code>.
-</p>
-
-<p>
-	There can be specified more than one symbol to interpret with single action using syntax:
-		<code class="malsys"> interpret symbol1 symbol2 symbol3 … as action;</code>.
-	For example symbols <code class="lsysSymbols">C A B</code> with interpretation definition <code class="malsys"> interpret A B C as DrawLine;</code>
-		will interpret as <code class="lsysSymbols">DrawLine DrawLine DrawLine</code>.
-</p>
-
-<p>
-	Default parameters of interpretation can be also specified by following syntax: <code class="malsys"> interpret symbol as action(x, y, …);</code>
-		where <code class="lsysSymbols">x</code> and <code class="lsysSymbols">y</code> are parameters.
-	Parameters from symbol have greater priority than default parameters.
-	For example symbols <code class="lsysSymbols">G F(5) G(5, 5)</code> with interpretation definition <code class="malsys"> interpret F G as DrawLine(0, 2);</code>
-		will interpret as <code class="lsysSymbols">DrawLine(0, 2) DrawLine(5, 2) DrawLine(5, 5)</code>.
-</p>
 
 
 <h3>2D renderer</h3>

@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Linq;
 using Malsys.Compilers;
 using Malsys.Evaluators;
 using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Core;
+using Malsys.Processing.Output;
+using System.Text;
 
 namespace Malsys.Processing {
 	public class ProcessManager {
@@ -21,9 +24,9 @@ namespace Malsys.Processing {
 		}
 
 
-		public InputBlock CompileAndEvaluateInput(string src, MessageLogger logger) {
+		public InputBlock CompileAndEvaluateInput(string src, IMessageLogger logger) {
 
-			var inCompiled = compiler.CompileInput(src, "webInput", logger);
+			var inCompiled = compiler.CompileInput(src, "unknownSource", logger);
 
 			if (logger.ErrorOcured) {
 				return null;
@@ -33,13 +36,13 @@ namespace Malsys.Processing {
 		}
 
 
-		public void ProcessLsystems(InputBlock inBlockEvaled, IFilesManager storageManager, MessageLogger logger,
+		public void ProcessLsystems(InputBlock inBlockEvaled, IOutputProvider outputProvider, IMessageLogger logger,
 			TimeSpan timeout, bool dumpConstantsIfNoLsystems = true) {
 
 			if (dumpConstantsIfNoLsystems && inBlockEvaled.Lsystems.Count == 0) {
 				logger.LogMessage(Message.NoLsysFoundDumpingConstants);
 
-				new Malsys.Processing.Components.Common.ConstantsDumper().DumpConstants(inBlockEvaled.GlobalConstants, storageManager, logger);
+				new Malsys.Processing.Components.Common.ConstantsDumper().DumpConstants(inBlockEvaled, outputProvider, logger, inBlockEvaled.SourceName);
 				return;
 			}
 
@@ -55,28 +58,15 @@ namespace Malsys.Processing {
 					continue;
 				}
 
-				var context = new ProcessContext(lsysEvaled, storageManager, inBlockEvaled, evaluator, logger);
+				var context = new ProcessContext(lsysEvaled, outputProvider, inBlockEvaled, evaluator, logger);
 
-				const string defaultConfigName = "SymbolPrinter";
-				var procStats = lsysEvaled.ProcessStatements;
-				if (procStats.Count == 0 && inBlockEvaled.ProcessConfigurations.ContainsKey(defaultConfigName)) {
-					var stat = new Malsys.SemanticModel.Compiled.ProcessStatement(
-						null,
-						defaultConfigName,
-						ImmutableList<Malsys.SemanticModel.Compiled.ProcessComponentAssignment>.Empty);
-					procStats = new ImmutableList<SemanticModel.Compiled.ProcessStatement>(stat);
-				}
+				var procStats = getProcessStatements(lsysEvaled, inBlockEvaled, logger);
 
 				foreach (var processStat in procStats) {
 
-					var maybeConfig = inBlockEvaled.ProcessConfigurations.TryFind(processStat.ProcessConfiName);
-					if (OptionModule.IsNone(maybeConfig)) {
-						logger.LogMessage(Message.UndefinedProcessConfig, processStat.AstNode.ProcessConfiNameId.Position, processStat.ProcessConfiName);
-						continue;
-					}
-					var configMgr = new ProcessConfigurationManager();
+					var configMgr = buildProcessConfig(processStat, inBlockEvaled, context, logger);
 
-					if (!configMgr.TryBuildConfiguration(maybeConfig.Value, processStat.ComponentAssignments, componentResolver, context, context.Logger)) {
+					if (configMgr == null) {
 						continue;
 					}
 
@@ -95,11 +85,50 @@ namespace Malsys.Processing {
 					configMgr.ClearComponents();
 				}
 
-				storageManager.Cleanup();
 			}
 
 		}
 
+
+		private ImmutableList<SemanticModel.Compiled.ProcessStatement> getProcessStatements(
+				LsystemEvaled lsysEvaled, InputBlock inBlockEvaled, IMessageLogger logger) {
+
+			const string defaultConfigName = "SymbolPrinter";
+			if (lsysEvaled.ProcessStatements.Count > 0) {
+				return lsysEvaled.ProcessStatements;
+			}
+
+			if (inBlockEvaled.ProcessConfigurations.ContainsKey(defaultConfigName)) {
+				var stat = new Malsys.SemanticModel.Compiled.ProcessStatement(
+					null,
+					defaultConfigName,
+					ImmutableList<Malsys.SemanticModel.Compiled.ProcessComponentAssignment>.Empty);
+				return new ImmutableList<SemanticModel.Compiled.ProcessStatement>(stat);
+			}
+			else {
+				logger.LogMessage(Message.NoProcessStatementsForLsystem, lsysEvaled.Name);
+				return ImmutableList<SemanticModel.Compiled.ProcessStatement>.Empty;
+			}
+
+		}
+
+		private ProcessConfigurationManager buildProcessConfig(SemanticModel.Compiled.ProcessStatement processStat,
+				InputBlock inBlockEvaled, ProcessContext context, IMessageLogger logger) {
+
+			var maybeConfig = inBlockEvaled.ProcessConfigurations.TryFind(processStat.ProcessConfiName);
+			if (OptionModule.IsNone(maybeConfig)) {
+				logger.LogMessage(Message.UndefinedProcessConfig, processStat.AstNode.ProcessConfiNameId.Position, processStat.ProcessConfiName);
+				return null;
+			}
+
+			var configMgr = new ProcessConfigurationManager();
+
+			if (!configMgr.TryBuildConfiguration(maybeConfig.Value, processStat.ComponentAssignments, componentResolver, context, logger)) {
+				return null;
+			}
+
+			return configMgr;
+		}
 
 
 		public enum Message {
@@ -109,6 +138,8 @@ namespace Malsys.Processing {
 
 			[Message(MessageType.Warning, "No L-systems found, dumping constants.")]
 			NoLsysFoundDumpingConstants,
+			[Message(MessageType.Warning, "No process statements found to process L-system `{0}`.")]
+			NoProcessStatementsForLsystem,
 
 		}
 
