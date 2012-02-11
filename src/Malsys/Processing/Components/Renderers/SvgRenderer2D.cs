@@ -5,7 +5,7 @@ using Malsys.SemanticModel;
 using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Collections;
 
-namespace Malsys.Processing.Components.Renderers.TwoD {
+namespace Malsys.Processing.Components.Renderers {
 	[Component("2D SVG renderer", ComponentGroupNames.Renderers)]
 	public class SvgRenderer2D : IRenderer2D {
 
@@ -15,7 +15,6 @@ namespace Malsys.Processing.Components.Renderers.TwoD {
 
 		private ProcessContext context;
 		private FSharpMap<string, object> globalAdditionalData = MapModule.Empty<string, object>();
-		private FSharpMap<string, object> localAdditionalData;
 
 		private bool measuring;
 
@@ -99,7 +98,7 @@ namespace Malsys.Processing.Components.Renderers.TwoD {
 		public void BeginProcessing(bool measuring) {
 
 			this.measuring = measuring;
-			localAdditionalData = globalAdditionalData;
+			var localAdditionalData = globalAdditionalData;
 			if (compress) {
 				localAdditionalData = localAdditionalData.Add(CommonAdditionalDataKeys.OutputIsGZipped, true);
 			}
@@ -155,7 +154,9 @@ namespace Malsys.Processing.Components.Renderers.TwoD {
 		}
 
 		public void AddCurrentOutputData(string key, object value) {
-			localAdditionalData = localAdditionalData.Add(key, value);
+			if (outputStream != null) {
+				context.OutputProvider.AddAdditionalData(outputStream, key, value);
+			}
 		}
 
 		public void InitializeState(PointF point, float width, ColorF color) {

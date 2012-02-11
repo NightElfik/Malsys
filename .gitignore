@@ -11,7 +11,6 @@ obj/
 
 /src/TestResults
 /src/Malsys.Web/App_Data
-/src/Malsys.Web/Entities/MalsysDbModel.Designer.cs
 /src/Malsys.Web/WorkDir
 /src/Malsys.Web/Publish
 /src/Malsys.Web/ErrorLogs
@@ -29,6 +28,7 @@ obj/
 *.generated.cs
 /src/Malsys.Web/Css/style.css
 /src/Malsys.Web/T4MVC.cs
+/src/Malsys.Web/T4MVC1.cs
 
 # LaTeX rubbish
 *.aux

@@ -22,15 +22,14 @@ constant_def = 'let' ID '=' expression ';'
 </pre>
 
 <p>
-	Binds value of <code>expression</code> to name represented by <code>ID</code>.
-	If binding on same name already exists in current scope, it is hidden by new binding until end of the scope.
-	It means, that global constants can be temporally hidden by local constants.
+	Defines constant with name represented by token <code>ID</code> as value of <code>expression</code>.
+	If constant with same name already exists, it is redefined by new definition.
 </p>
 
 @* ================================================================================================================== *@
 <h3>Examples</h3>
 
-@Html.Partial(MVC.Help.SyntaxReference.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, string.Join(Environment.NewLine,
+@Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, string.Join(Environment.NewLine,
 		"let a = 3;",
 		"let b = (2 + 2) * 2 ^ 2;",
 		"let c = sqrt(a * b);",

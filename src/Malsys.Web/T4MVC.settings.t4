@@ -58,7 +58,7 @@ static bool AddTimestampToStaticLinks = true;
 readonly string[] StaticFilesFolders = new string[] {
     "Content",
     "Css",
-    "Scripts",
+    "Js"
 };
 
 // Static files to exclude from the generated links

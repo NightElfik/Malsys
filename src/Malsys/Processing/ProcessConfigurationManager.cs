@@ -250,7 +250,15 @@ namespace Malsys.Processing {
 			bool error = false;
 
 			var symbolsCanonicDict = lsystem.SymbolsConstants.ToDictionary(x => x.Key.ToLower(), x => x.Value);
-			var constantsCanonicDict = lsystem.Constants.ToDictionary(x => x.Key.ToLower(), x => x.Value);
+			var constantsCanonicDict = lsystem.Constants.Aggregate(
+				new Dictionary<string, IValue>(),
+				(dict, constKvP) => {
+					string key = constKvP.Key.ToLower();
+					if(!dict.ContainsKey(key)) {
+						dict.Add(key, constKvP.Value);
+					}
+					return dict;
+				});
 
 			foreach (var propInfoAttr in component.GetType().GetPropertiesHavingAttr<UserSettableAttribute>()) {
 

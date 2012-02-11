@@ -21,65 +21,7 @@
 
 <h3>Tokens</h3>
 
-<p>
-	More about tokens syntax can be found on @Html.ActionLink("grammar syntax page", MVC.Help.SyntaxReference.Grammar()).
-</p>
 
-
-<h4 id="grammar-ID">Identificator</h4>
-
-<pre class="grammar">
-ID = (ALPHABETIC_CHAR | '_') (ALPHABETIC_CHAR | DIGIT | '_' | ''')*
-</pre>
-
-<p>
-	Identificator regular expression is simplified, to avoid using characters groups in unicode.
-	<code class="grammar">ALPHABETIC_CHAR</code> matches any letter and <code class="grammar">DIGIT</code> matches any digit.
-	From regular expression is obvious, that identificator can not start with digit.
-</p>
-
-
-<h4 id="grammar-NUMBER">Number</h4>
-
-<pre class="grammar">
-NUMBER =
-	| [0-9]+ ('.' [0-9]+)? ([eE] ('+'|'-')? [0-9]+)?
-	| '0'[bB] [01]+
-	| '0'[oO] [0-7]+
-	| '0'[xX] ([0-9] | [a-f] | [A-F])+
-	| '#' ([0-9] | [a-f] | [A-F])+
-</pre>
-
-<p>
-	Malsys supports 5 different formats of number literal.
-</p>
-
-<ul>
-	<li>Floating-point format</li>
-	<li>Binary format with prefix <code class="match">0b</code></li>
-	<li>Octal format with prefix <code class="match">0o</code></li>
-	<li>Hexadecimal format with prefix <code class="match">0x</code></li>
-	<li>Hexadecimal format with prefix <code class="match">#</code></li>
-</ul>
-
-<p>
-	Each of format is useful in some context, it is up to user to choose one.
-</p>
-
-
-<h4 id="grammar-OPERATOR">Operator</h4>
-
-<pre class="grammar">
-OPERATOR = (first_op_char op_char*) | '==' | '/'
-
-first_op_char = '!'|'$'|'%'|'&'|'*'|'+'|'\'|'<'|'>'|'@@'|'^'|'|'|'~'|'?'|':'|'-'
-
-op_char = first_op_char | '=' | '/'
-</pre>
-
-<p>
-	Not all combinations of characters are defined as operator in Malsys, see list of predefined operators.
-</p>
 
 
 
@@ -115,17 +57,6 @@ empty_statement = ';'
 
 <p>To <i>eat</i> redundant semicolons.</p>
 
-
-
-
-<p>Examples:</p>
-<pre class="malsys">
-let x = 42;
-
-let x' = sqrt(2) + 1;
-
-let var = min(x, x');
-</pre>
 
 
 <h4 id="grammar-function_def">Function definition</h4>

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Malsys.Processing.Components.Renderers;
 using Malsys.SemanticModel;
 
-namespace Malsys.Processing.Components.Interpreters.TwoD {
+namespace Malsys.Processing.Components.Interpreters {
 	[Component("Hexagonal ASCII interpreter", ComponentGroupNames.Interpreters)]
 	public class HexaAsciiInterpreter : IInterpreter {
 

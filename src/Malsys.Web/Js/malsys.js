@@ -1,4 +1,4 @@
-﻿/// <reference path="~/Scripts/jquery-1.7.1-vsdoc.js" />
+﻿/// <reference path="~/Js/jquery.js" />
 
 (function ($) {
 
@@ -166,7 +166,6 @@
 	});
 
 	$(".collapseSwitch").trigger('click');
-
 
 } (jQuery));
 

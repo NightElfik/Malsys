@@ -1,7 +1,7 @@
 ﻿using System;
 using Malsys.Media;
 
-namespace Malsys.Processing.Components.Interpreters.TwoD {
+namespace Malsys.Processing.Components.Interpreters {
 	public class State2D {
 
 		public double X;

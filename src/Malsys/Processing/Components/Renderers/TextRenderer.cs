@@ -2,7 +2,7 @@
 using Malsys.SemanticModel;
 using Microsoft.FSharp.Collections;
 
-namespace Malsys.Processing.Components.Renderers.TwoD {
+namespace Malsys.Processing.Components.Renderers {
 	public class TextRenderer : ITextRenderer {
 
 

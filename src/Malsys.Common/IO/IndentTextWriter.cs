@@ -20,6 +20,10 @@ namespace Malsys.IO {
 			writer.WriteLine();
 		}
 
+		public void Close() {
+			writer.Close();
+		}
+
 		public void Dispose() {
 			writer.Dispose();
 		}

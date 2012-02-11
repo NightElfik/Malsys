@@ -1,15 +1,14 @@
-﻿<#@ template language="C#" hostspecific="True" #>
+﻿<#@ template language="C#v3.5" hostspecific="True" #>
 <#@ Output Extension=".log" #>
-<#@ assembly name="$(SolutionDir)\dotless.Core.dll" #>
+<#@ assembly name="$(ProjectDir)$(OutDir)Yahoo.Yui.Compressor.dll" #>
 <#@ assembly name="System.Core" #>
 <#@ assembly name="System.Data.Linq" #>
-<#@ assembly name="Microsoft.VisualStudio.Shell.Interop.8.0" #>
 <#@ assembly name="EnvDTE" #>
-<#@ assembly name="EnvDTE80" #>
 <#@ assembly name="System.Xml" #>
-<#@ assembly name="System.Xml.Linq" #><#@ import namespace="System" #>
-<#@ import namespace="dotless.Core" #>
-<#@ import namespace="dotless.Core.configuration" #>
+<#@ assembly name="System.Xml.Linq" #>
+<#@ assembly name="$(ProjectDir)$(OutDir)EcmaScript.NET.modified.dll" #>
+<#@ import namespace="System" #>
+<#@ import namespace="Yahoo.Yui.Compressor" #>
 <#@ import namespace="System.CodeDom" #>
 <#@ import namespace="System.CodeDom.Compiler" #>
 <#@ import namespace="System.Collections.Generic" #>
@@ -21,138 +20,65 @@
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Xml.Linq" #>
 <#@ import namespace="Microsoft.VisualStudio.TextTemplating" #>
-<#@ import namespace="Microsoft.VisualStudio.Shell.Interop" #>
 
-<#@ import namespace="EnvDTE" #>
-<#@ import namespace="EnvDTE80" #>
 <#
-/*-------------------------------------------------*/
-// Settings
-/*-------------------------------------------------*/
-
-// If _autoMinimize is set to true, the optimize code flag on the project will determine whether the css is minified
-// by default, this will output normal CSS on Debug builds and minified CSS on Release builds
-_autoMinimize = false;
-
-// If you'd like to manage this in your application, instead, set _autoMinimize to false, _bothOutputs to true,
-// and set the postfix variables as ncessary
-_bothOutputs = false;
-_debugPostfix = "_d";  // output_d.css
-_minifiedPostfix = ""; // output.css
-
-// If both _autoMinimize and _bothOutputs are false, you can use _minimize to control what type of output you'd like
-_minimize = true;
-_runOnBuild = false;
-_useCssExtension = true;
-
-
-
+/// Confiuration
+string jsExt = ".js";
+string minExt = ".min.js";
 #>
 
-T4.Less Log
+T4. Js Log
 ---------------
 <#
-var currentDirectory = Path.GetDirectoryName(Host.TemplateFile);
-var filespec = _useCssExtension ? "*.less.css" : "*.less";
-var cssFiles = Directory.GetFiles(currentDirectory, filespec);
-Configuration config = null;
-
-if (_autoMinimize){
-	var serviceProvider = Host as IServiceProvider;
-	var dte = serviceProvider.GetService(typeof(SDTE)) as DTE;
-	config = dte.Solution.FindProjectItem(Host.TemplateFile).ContainingProject.ConfigurationManager.ActiveConfiguration;
-	foreach(Property prop in config.Properties)
-		if (prop.Name == "Optimize"){
-			_minimize = (bool)prop.Value;
-			break;
-		}
-}
+string currentDirectory = Path.GetDirectoryName(Host.TemplateFile);
+string[] files = Directory.GetFiles(currentDirectory);
 #>
-Converted at: <#= DateTime.Now.ToShortDateString() #> <#= DateTime.Now.ToShortTimeString() #>
-Template File: <#=Host.TemplateFile #>
+
+Template File: <#= Host.TemplateFile #>
 Template Directory: <#= currentDirectory #>
-<# if(_autoMinimize) {#>
-Minimizing content: <#=_minimize #> (auto)
-<# }else if (_bothOutputs){ #>
-Minimizing content: Both outputs will be generated
-<# }else{ #>
-Minimizing content: <#=_minimize #>
-<# } #>
-.Less Files Found: <#= cssFiles.Length #>
+
 Converting:
-<# foreach(var cssFile in cssFiles) { #>
-  * <#= cssFile #>
-<# }
+<#
 
 var manager = Manager.Create(Host, GenerationEnvironment);
-var configuration = new DotlessConfiguration();
-var postfix = _bothOutputs ?
-              (_minimize ? _minifiedPostfix : _debugPostfix) :
-			  "";
-configuration.MinifyOutput = _minimize;
-foreach(var cssFile in cssFiles)
-{
-	ProcessFile(cssFile, postfix, manager, configuration);
-	if (_bothOutputs){
-		configuration.MinifyOutput = !_minimize;
-		postfix = configuration.MinifyOutput ? _minifiedPostfix : _debugPostfix;
-		ProcessFile(cssFile, postfix, manager, configuration);
+
+foreach (string fileName in files) {
+	
+	if (!fileName.EndsWith(jsExt)) {
+		continue;  // not Js file
 	}
-}
-manager.Process(true);
+	
+	if (fileName.EndsWith(minExt)) {
+		continue;  // ignore minified files
+	}
+	
+	if (fileName.StartsWith("Three")) {
+		continue;  // ignore ThreeJs files, they are minified by default
+	}
+	
+	#> * <#= fileName + Environment.NewLine #> <#
+	
+	string newName = Path.GetFileNameWithoutExtension(fileName) + ".min.js";
+	newName = Path.Combine(currentDirectory, newName);
+	
+	manager.StartNewFile(newName);
 
-if(_runOnBuild)
-{
-	//Mark the t4 template as unsaved so it will run on every build
-	MarkDirty();
-}
-#>
-
-<#+
-
-bool _minimize, _runOnBuild, _useCssExtension, _autoMinimize, _bothOutputs;
-string _debugPostfix, _minifiedPostfix;
-
-void ProcessFile(string cssFile, string postfix, Manager manager, DotlessConfiguration configuration){
-    manager.StartNewFile(GetCssFileName(cssFile, postfix));
-    try
-    {
-
-
-        string css = Less.Parse(File.ReadAllText(cssFile), configuration);
-        Write(css);
-    }
-    catch(Exception e)
-    {
-        Write(e.ToString());
-    }
+	try {
+		string compressed = JavaScriptCompressor.Compress(File.ReadAllText(fileName));
+		Write(compressed);
+	}
+	catch (Exception e) { 
+		Write(e.ToString());
+	}
+		
     manager.EndBlock();
 }
 
-/*
-    This MarkDirty code is based on T4MVC by David Ebbo. Concept explained here: http://blogs.msdn.com/davidebb/archive/2009/06/26/the-mvc-t4-template-is-now-up-on-codeplex-and-it-does-change-your-code-a-bit.aspx
-*/
-void MarkDirty() {
-    // Get the DTE service from the host
-    var serviceProvider = Host as IServiceProvider;
-	EnvDTE.DTE dte;
-    if (serviceProvider == null)
-        return;
+manager.Process(true);
 
-	dte = serviceProvider.GetService(typeof(SDTE)) as DTE;
+#>
 
-    // Find the .tt file's ProjectItem
-    ProjectItem projectItem = dte.Solution.FindProjectItem(Host.TemplateFile);
-
-    // If the .tt file is not opened, open it
-    if (projectItem.Document == null)
-        projectItem.Open(Constants.vsViewKindCode);
-
-    // Mark the .tt file as unsaved. This way it will be saved and update itself next time the
-    // project is built. Basically, it keeps marking itself as unsaved to make the next build work.
-    // Note: this is certainly hacky, but is the best I could come up with so far.
-    projectItem.Document.Saved = false;
-}
+<#+ 
 
 /*
     Manager.tt from Damien Guard: http://damieng.com/blog/2009/11/06/multiple-outputs-from-t4-made-easy-revisited
@@ -350,8 +276,6 @@ class Manager
     End of Manager.tt
 */
 
-public string GetCssFileName(string dotLessFileName, string postfix) {
-	return (_useCssExtension) ? Path.GetFileNameWithoutExtension(dotLessFileName.Replace(".less","")) + postfix + ".css"
-							  : Path.GetFileNameWithoutExtension(dotLessFileName) + postfix + ".css";
-}
 #>
+
+

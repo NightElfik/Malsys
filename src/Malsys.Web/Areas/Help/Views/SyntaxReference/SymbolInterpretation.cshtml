@@ -52,7 +52,7 @@ params_expr_list = expression  (',' params_expr_list)?
 	Symbol with no defined interpretation is ignored.
 </p>
 
-@Html.Partial(MVC.Help.SyntaxReference.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, string.Join(Environment.NewLine,
+@Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, string.Join(Environment.NewLine,
 		"set axiom = F(2.5) + F(5, 0) G H;",
 		"interpret F as DrawLine;"
 	)))
@@ -63,7 +63,7 @@ params_expr_list = expression  (',' params_expr_list)?
 	More than one symbol can be specified for one action.
 </p>
 
-@Html.Partial(MVC.Help.SyntaxReference.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, string.Join(Environment.NewLine,
+@Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, string.Join(Environment.NewLine,
 		"set axiom = B A A C;",
 		"interpret A B C as DrawLine;"
 	)))
@@ -76,7 +76,7 @@ params_expr_list = expression  (',' params_expr_list)?
 	Arguments that are not supplied by symbol are taken from action's defaults.
 </p>
 
-@Html.Partial(MVC.Help.SyntaxReference.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, string.Join(Environment.NewLine,
+@Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, string.Join(Environment.NewLine,
 		"set axiom = F  F(5)  F(5, 6, 7);",
 		"interpret F as DrawLine(0, 1 + 1);"
 	)))
@@ -90,7 +90,7 @@ params_expr_list = expression  (',' params_expr_list)?
 	Unmapped symbol's arguments are ignored.
 </p>
 
-@Html.Partial(MVC.Help.SyntaxReference.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, string.Join(Environment.NewLine,
+@Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, string.Join(Environment.NewLine,
 			"set axiom = F(1, 2)  F(2, 2, 2);",
 		"interpret F(a, b) as DrawLine(a + b);"
 	)))
@@ -101,7 +101,7 @@ params_expr_list = expression  (',' params_expr_list)?
 	Not enough custom arguments supplied by symbol to map all parameters causes an error.
 </p>
 
-@Html.Partial(MVC.Help.SyntaxReference.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, string.Join(Environment.NewLine,
+@Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, string.Join(Environment.NewLine,
 		"set axiom = F  F(5);",
 		"interpret F(a, b) as DrawLine(a + b);"
 	)))
@@ -112,7 +112,7 @@ params_expr_list = expression  (',' params_expr_list)?
 	When custom parameters are specified, no automatic argument forwarding is done.
 </p>
 
-@Html.Partial(MVC.Help.SyntaxReference.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, string.Join(Environment.NewLine,
+@Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, string.Join(Environment.NewLine,
 		"set axiom = F(5)  F(2,4);",
 		"interpret F(a) as DrawLine(0);"
 	)))
@@ -123,7 +123,7 @@ params_expr_list = expression  (',' params_expr_list)?
 	More symbols can be specified, custom parameters are after last.
 </p>
 
-@Html.Partial(MVC.Help.SyntaxReference.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, string.Join(Environment.NewLine,
+@Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, string.Join(Environment.NewLine,
 		"set axiom = A(1)  B(2)  C(3)  B(4);",
 		"interpret A B C (a) as DrawLine(a * a);"
 	)))
@@ -135,7 +135,7 @@ params_expr_list = expression  (',' params_expr_list)?
 	Default values of custom parameters can be also specified.
 </p>
 
-@Html.Partial(MVC.Help.SyntaxReference.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, string.Join(Environment.NewLine,
+@Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, string.Join(Environment.NewLine,
 		"set axiom = F  F(2)  F(2,4);",
 		"interpret F(a = 5) as DrawLine(a);"
 	)))
@@ -146,7 +146,7 @@ params_expr_list = expression  (',' params_expr_list)?
 	All parameters with default values have to be after parameters without default value.
 </p>
 
-@Html.Partial(MVC.Help.SyntaxReference.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, string.Join(Environment.NewLine,
+@Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, string.Join(Environment.NewLine,
 				"set axiom = F(1, 2)  F(1, 2, 3);",
 		"interpret F(a, b, c = 5) as DrawLine(a, b, c);"
 	)))
@@ -157,7 +157,7 @@ params_expr_list = expression  (',' params_expr_list)?
 	More symbols can be specified, custom parameters are after last.
 </p>
 
-@Html.Partial(MVC.Help.SyntaxReference.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, string.Join(Environment.NewLine,
+@Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, string.Join(Environment.NewLine,
 				"set axiom = A(2)  C(8, 8, 8)  B(2, 2);",
 		"interpret A B C (a, b = 5) as DrawLine(a, b);"
 	)))

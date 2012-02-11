@@ -19,6 +19,10 @@ namespace Malsys.Web.Areas.Help.Controllers {
 			return View();
 		}
 
+		public virtual ActionResult Tokens() {
+			return View();
+		}
+
 		public virtual ActionResult Constant() {
 			return View(simpleLsystemProcessor);
 		}

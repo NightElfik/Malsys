@@ -120,6 +120,7 @@
     <Compile Include="Evaluators\InputEvalTests.cs" />
     <Compile Include="Expressions\GeneralExpressionsTests.cs" />
     <Compile Include="Interpreters\GenericInterpreterCallerTests.cs" />
+    <Compile Include="Interpreters\Interpreter3DTests.cs" />
     <Compile Include="Interpreters\InterpreterCallerTests.cs" />
     <Compile Include="Parsing\ExpressionTests.cs" />
     <Compile Include="Parsing\LsystemTests.cs" />

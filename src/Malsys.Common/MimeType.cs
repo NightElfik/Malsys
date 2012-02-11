@@ -28,6 +28,11 @@ namespace Malsys {
 		/// </summary>
 		public const string Application_XGzip = "application/x-gzip";
 
+		/// <summary>
+		/// Json (JavaScript Object Notation).
+		/// </summary>
+		public const string Application_Json = "application/json";
+
 		#endregion
 
 		#region Type image

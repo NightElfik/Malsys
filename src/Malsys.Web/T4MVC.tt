@@ -276,12 +276,12 @@ namespace System.Web.Mvc {
             routeValues.Add(name, value);
             return result;
         }
-        
+
         public static void InitMVCT4Result(this <#=ActionResultInterfaceName #> result, string area, string controller, string action) {
             result.Controller = controller;
             result.Action = action;
             result.RouteValueDictionary = new RouteValueDictionary();
-            <# if (Areas.Count > 1) { #>result.RouteValueDictionary.Add("Area", area ?? "");<# } #> 
+            <# if (Areas.Count > 1) { #>result.RouteValueDictionary.Add("Area", area ?? "");<# } #>
             result.RouteValueDictionary.Add("Controller", controller);
             result.RouteValueDictionary.Add("Action", action);
         }
@@ -296,19 +296,19 @@ namespace System.Web.Mvc {
         public static string TimestampString(string virtualPath) {
             if (!HostingEnvironment.IsHosted) return string.Empty;
             string filePath = HostingEnvironment.MapPath(virtualPath);
-            return Convert.ToString((System.IO.File.GetLastWriteTimeUtc(filePath).Ticks-CenturyBegin.Ticks)/1000000000,16);            
+            return Convert.ToString((System.IO.File.GetLastWriteTimeUtc(filePath).Ticks-CenturyBegin.Ticks)/1000000000,16);
         }
     }
 }
 
-<#if (GenerateActionResultInterface) { #>   
-[<#= GeneratedCode #>]   
-public interface <#=ActionResultInterfaceName #> {   
-    string Action { get; set; }   
-    string Controller { get; set; }   
-    RouteValueDictionary RouteValueDictionary { get; set; }   
-}   
-<#} #>  
+<#if (GenerateActionResultInterface) { #>
+[<#= GeneratedCode #>]
+public interface <#=ActionResultInterfaceName #> {
+    string Action { get; set; }
+    string Controller { get; set; }
+    RouteValueDictionary RouteValueDictionary { get; set; }
+}
+<#} #>
 
 <#foreach (var resultType in ResultTypes.Values) { #>
 [<#= GeneratedCode #>, DebuggerNonUserCode]
@@ -316,7 +316,7 @@ public class T4MVC_<#=resultType.Name #> : <#=resultType.FullName #>, <#=ActionR
     public T4MVC_<#=resultType.Name #>(string area, string controller, string action): base(<#resultType.Constructor.WriteNonEmptyParameterValues(true); #>)  {
         this.InitMVCT4Result(area, controller, action);
     }
-    <#foreach (var method in resultType.AbstractMethods) { #> 
+    <#foreach (var method in resultType.AbstractMethods) { #>
     <#=method.IsPublic ? "public" : "protected" #> override void <#=method.Name #>(<#method.WriteFormalParameters(true); #>) { }
     <#} #>
 
@@ -453,36 +453,36 @@ namespace <#=T4MVCNamespace #> {
     }
 }
 
-<# if (ExplicitHtmlHelpersForPartials) {	
-        manager.StartNewFile("T4MVC.ExplicitExtensions.cs"); #>	
+<# if (ExplicitHtmlHelpersForPartials) {
+        manager.StartNewFile("T4MVC.ExplicitExtensions.cs"); #>
 
 namespace System.Web.Mvc {
     [<#= GeneratedCode #>]
     public static class HtmlHelpersForExplicitPartials {
-    <#  
+    <#
         foreach(var partial in GetPartials()) {
             string partialName = partial.Key;
             string partialPath = partial.Value;
             string partialRenderMethod = string.Format(ExplicitHtmlHelpersForPartialsFormat, partialName);
-    #>		 
+    #>
         ///<summary>
         ///Render the <b><#= partialName #></b> partial.
         ///</summary>
         public static void <#= partialRenderMethod #>(this HtmlHelper html) {
             html.RenderPartial("<#= partialPath #>");
         }
-        
+
         ///<summary>
         ///Render the <b><#= partialName #></b> partial.
-        ///</summary>		
+        ///</summary>
         public static void <#= partialRenderMethod #>(this HtmlHelper html, object model) {
             html.RenderPartial("<#= partialPath #>", model);
         }
-    <# } #>	 
+    <# } #>
     }
 }
-<#	manager.EndBlock(); #>	
-<#	}	#>	
+<#	manager.EndBlock(); #>
+<#	}	#>
 
 <#manager.StartFooter(); #>
 #endregion T4MVC
@@ -492,7 +492,7 @@ namespace System.Web.Mvc {
 
 <#@ Include File="T4MVC.settings.t4" #>
 
-<#+ 
+<#+
 const string T4MVCNamespace = "T4MVC";
 const string ControllerSuffix = "Controller";
 
@@ -934,12 +934,12 @@ PopIndent();
 <#+
 if (!ExcludedStaticFileExtensions.Any(extension => projectItem.Name.EndsWith(extension, StringComparison.OrdinalIgnoreCase))) {
     // if it's a non-minified javascript file
-    if (projectItem.Name.EndsWith(".js") && !projectItem.Name.EndsWith(".min.js")) { 
+    if (projectItem.Name.EndsWith(".js") && !projectItem.Name.EndsWith(".min.js")) {
         if (AddTimestampToStaticLinks) { #>
     public static readonly string <#=Sanitize(projectItem.Name)#> = T4MVCHelpers.IsProduction() && T4Extensions.FileExists(URLPATH + "/<#=projectItem.Name.Replace(".js", ".min.js")#>") ? Url("<#=projectItem.Name.Replace(".js", ".min.js")#>")+"?"+T4Extensions.TimestampString(URLPATH + "/<#=projectItem.Name#>") : Url("<#=projectItem.Name#>")+"?"+T4Extensions.TimestampString(URLPATH + "/<#=projectItem.Name#>");
         <#+} else {#>
     public static readonly string <#=Sanitize(projectItem.Name)#> = T4MVCHelpers.IsProduction() && T4Extensions.FileExists(URLPATH + "/<#=projectItem.Name.Replace(".js", ".min.js")#>") ? Url("<#=projectItem.Name.Replace(".js", ".min.js")#>") : Url("<#=projectItem.Name#>");
-        <#+}  #>          
+        <#+}  #>
 <#+}
     else if (AddTimestampToStaticLinks) { #>
     public static readonly string <#=Sanitize(projectItem.Name)#> = Url("<#=projectItem.Name#>")+"?"+T4Extensions.TimestampString(URLPATH + "/<#=projectItem.Name#>");
@@ -1227,11 +1227,11 @@ class ViewsFolderInfo {
     public void AddView(ProjectItem item, bool useNonQualifiedViewName) {
         string viewName = Path.GetFileName(item.Name);
         string viewFieldName = Path.GetFileNameWithoutExtension(viewName);
- 
+
         // If the simple view name is already in use, include the extension (e.g. foo_ascx instead of just foo)
         if (Views.ContainsKey(viewFieldName))
             viewFieldName = Sanitize(viewName);
- 
+
         Views[viewFieldName] = useNonQualifiedViewName ? Path.GetFileNameWithoutExtension(viewName) : GetVirtualPath(item);
     }
 
@@ -1277,7 +1277,7 @@ class FunctionInfo {
                         routeNameExpression = arg.Value;
                 }
             }
-            
+
             Parameters.Add(
                 new MethodParamInfo() {
                     Name = p.Name,
@@ -1414,7 +1414,7 @@ class Manager {
         name = Path.Combine(Path.GetDirectoryName(host.TemplateFile), name);
         generatedFileNames.Add(name);
     }
-    
+
     public void StartNewFile(String name) {
         if (name == null)
             throw new ArgumentNullException("name");

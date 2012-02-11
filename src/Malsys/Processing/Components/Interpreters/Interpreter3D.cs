@@ -1,23 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
+using System.Windows.Media.Media3D;
 using Malsys.Evaluators;
 using Malsys.Media;
 using Malsys.Processing.Components.Renderers;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Evaluated;
 
-namespace Malsys.Processing.Components.Interpreters.TwoD {
-	[Component("2D interpreter", ComponentGroupNames.Interpreters)]
-	public class Interpreter2D : IInterpreter {
+namespace Malsys.Processing.Components.Interpreters {
+	[Component("3D interpreter", ComponentGroupNames.Interpreters)]
+	public class Interpreter3D : IInterpreter {
 
 		private readonly ColorFactory colorFactory = new ColorFactory();
 
 
-		private IRenderer2D renderer;
+		private IRenderer3D renderer;
 		private IMessageLogger logger;
 
-		private State2D currState;
+		private State3D currState;
+
+		private QuaternionRotation3D quatRotation;
+		private RotateTransform3D tranform;
 
 		private bool measuring;
 
@@ -31,16 +33,26 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 		private bool interpretLines = true;
 		private bool interpretPloygons = true;
 
-		private double initX = 0, initY = 0;
-		private double initAngle = 0;
-		private double initWdth = 2;
-		private ColorF initColor = ColorF.Black;
-		private Stack<State2D> statesStack = new Stack<State2D>();
+		private Vector3D fwdVector = new Vector3D(1, 0, 0);
+		private Vector3D upVector = new Vector3D(0, 0, 1);
+		private Vector3D rightVector;  // counted from forward and up vectors by cross product
 
-		private bool reversePolygonOrder = false;
-		private Polygon2D currPolygon;
-		private Stack<Polygon2D> polygonStack = new Stack<Polygon2D>();
-		private List<Polygon2D> polygonReverseHistory = new List<Polygon2D>();
+		private Point3D initPosition = new Point3D(0, 0, 0);
+		private Quaternion initOrientation = Quaternion.Identity;
+		private double initWidth = 2;
+		private ColorF initColor = ColorF.Black;
+
+		private Stack<State3D> statesStack = new Stack<State3D>();
+
+		private Polygon3D currPolygon;
+		private Stack<Polygon3D> polygonStack = new Stack<Polygon3D>();
+
+
+		public Interpreter3D() {
+
+			quatRotation = new QuaternionRotation3D();
+			tranform = new RotateTransform3D(quatRotation, 0, 0, 0);
+		}
 
 
 		#region User settable variables
@@ -56,30 +68,31 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 		}
 
 		[UserSettable]
-		public Constant ReversePolygonOrder {
-			set { reversePolygonOrder = !value.IsZero; }
-		}
-
-		[UserSettable]
 		public ValuesArray Origin {
 			set {
-				if (!value.IsConstArrayOfLength(2)) {
-					throw new InvalidUserValueException("Origin have to be array of 2 constants representing x and y coordination, like `{-1, 3}`.");
+				if (!value.IsConstArrayOfLength(3)) {
+					throw new InvalidUserValueException("Origin have to be array of 3 constants representing x, y and z coordinate.");
 				}
 
-				initX = ((Constant)value[0]).Value;
-				initY = ((Constant)value[1]).Value;
+				initPosition.X = ((Constant)value[0]).Value;
+				initPosition.Y = ((Constant)value[1]).Value;
+				initPosition.Z = ((Constant)value[2]).Value;
 			}
 		}
 
-		[UserSettable]
-		public Constant InitialAngle {
-			set { initAngle = value.Value % 360; }
-		}
+		//[UserSettable]
+		//public ValuesArray InitialDirection {
+		//    set {
+		//        if (!value.IsConstArrayOfLength(3)) {
+		//            throw new InvalidUserValueException("Direction have to be array of 3 constants representing direction vector.");
+		//        }
+
+		//    }
+		//}
 
 		[UserSettable]
 		public Constant InitialLineWidth {
-			set { initWdth = value.Value; }
+			set { initWidth = value.Value; }
 		}
 
 		[UserSettable]
@@ -98,15 +111,15 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 		public IRenderer Renderer {
 			set {
 				if (!IsRendererCompatible(value)) {
-					throw new InvalidUserValueException("Renderer do not implement `{0}`.".Fmt(typeof(IRenderer2D).FullName));
+					throw new InvalidUserValueException("Renderer do not implement `{0}`.".Fmt(typeof(IRenderer3D).FullName));
 				}
-				renderer = (IRenderer2D)value;
+				renderer = (IRenderer3D)value;
 			}
 		}
 
 
 		public bool IsRendererCompatible(IRenderer renderer) {
-			return typeof(IRenderer2D).IsAssignableFrom(renderer.GetType());
+			return typeof(IRenderer3D).IsAssignableFrom(renderer.GetType());
 		}
 
 		public bool RequiresMeasure { get { return continousColoring; } }
@@ -114,6 +127,15 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 		public void Initialize(ProcessContext ctxt) {
 
 			logger = ctxt.Logger;
+
+			rightVector = Vector3D.CrossProduct(fwdVector, upVector);
+
+			var test = new Vector3D(0, 0, 0);
+			test.Normalize();
+
+			fwdVector.Normalize();
+			upVector.Normalize();
+			rightVector.Normalize();
 
 			if (ContinousColoring != null) {
 				if (ContinousColoring.IsConstant) {
@@ -143,7 +165,6 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 			statesStack.Clear();
 			currPolygon = null;
 			polygonStack.Clear();
-			polygonReverseHistory.Clear();
 
 			if (measuring) {
 				colorEventsMeasured = 0;
@@ -154,15 +175,14 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 			}
 
 			colorEvents = 0;
-			currState = new State2D() {
-				X = initX,
-				Y = initY,
-				LineWidth = initWdth,
-				CurrentAngle = initAngle,
+			currState = new State3D() {
+				Position = initPosition,
+				Orientation = initOrientation,
+				Width = initWidth,
 				Color = initColor
 			};
 
-			renderer.InitializeState(new PointF((float)currState.X, (float)currState.Y), (float)currState.LineWidth, currState.Color);
+			renderer.InitializeState(currState.Position, currState.Width, currState.Color);
 			renderer.BeginProcessing(measuring);
 		}
 
@@ -181,7 +201,6 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 				logger.LogMessage(Message.PolygonNotClosedAtEnd);
 				currPolygon = null;
 				polygonStack.Clear();
-				polygonReverseHistory.Clear();
 			}
 
 			renderer.EndProcessing();
@@ -208,12 +227,12 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 
 			double length = getArgumentAsDouble(args, 0);
 
-			currState.X += length * Math.Cos(currState.CurrentAngle * MathHelper.PiOver180);
-			currState.Y += length * Math.Sin(currState.CurrentAngle * MathHelper.PiOver180);
+			quatRotation.Quaternion = currState.Orientation;
+			currState.Position += tranform.Transform(fwdVector * length);
 
 			if (interpretLines) {
 				ColorF color = colorContinously ? colorGradient[(float)colorEvents / colorEventsMeasured] : currState.Color;
-				renderer.MoveTo(new PointF((float)currState.X, (float)currState.Y), (float)currState.LineWidth, color);
+				renderer.MoveTo(currState.Position, currState.Width, color);
 			}
 		}
 
@@ -225,11 +244,11 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 
 			double length = getArgumentAsDouble(args, 0);
 
-			currState.X += length * Math.Cos(currState.CurrentAngle * MathHelper.PiOver180);
-			currState.Y += length * Math.Sin(currState.CurrentAngle * MathHelper.PiOver180);
+			quatRotation.Quaternion = currState.Orientation;
+			currState.Position += tranform.Transform(fwdVector * length);
 
 			if (interpretLines) {
-				double width = getArgumentAsDouble(args, 1, currState.LineWidth);
+				double width = getArgumentAsDouble(args, 1, currState.Width);
 
 				ColorF color = currState.Color;
 
@@ -241,19 +260,41 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 				}
 
 				colorEvents++;
-				renderer.LineTo(new PointF((float)currState.X, (float)currState.Y), (float)width, color);
+				renderer.LineTo(currState.Position, currState.Orientation.Angle, width, color);
 			}
 		}
 
 		/// <summary>
-		/// Adds value of first parameter (in degrees) to current direction angle.
+		/// Turns left around up vector axis by value given in the first parameter (in degrees).
 		/// </summary>
 		[SymbolInterpretation(1)]
-		public void TurnLeft(ArgsStorage args) {
+		public void Yaw(ArgsStorage args) {
 
 			double angle = getArgumentAsDouble(args, 0);
 
-			currState.CurrentAngle += angle;
+			currState.Orientation *= new Quaternion(upVector, angle);
+		}
+
+		/// <summary>
+		/// Turns up around right vector axis by value given in the first parameter (in degrees).
+		/// </summary>
+		[SymbolInterpretation(1)]
+		public void Pitch(ArgsStorage args) {
+
+			double angle = getArgumentAsDouble(args, 0);
+
+			currState.Orientation *= new Quaternion(rightVector, angle);
+		}
+
+		/// <summary>
+		/// Turns left around forward vector axis by value given in the first parameter (in degrees).
+		/// </summary>
+		[SymbolInterpretation(1)]
+		public void Roll(ArgsStorage args) {
+
+			double angle = getArgumentAsDouble(args, 0);
+
+			currState.Orientation *= new Quaternion(fwdVector, angle);
 		}
 
 		/// <summary>
@@ -271,7 +312,7 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 		public void EndBranch(ArgsStorage args) {
 			if (statesStack.Count > 0) {
 				currState = statesStack.Pop();
-				renderer.MoveTo(new PointF((float)currState.X, (float)currState.Y), (float)currState.LineWidth, currState.Color);
+				renderer.MoveTo(currState.Position, currState.Width, currState.Color);
 			}
 			else {
 				throw new InterpretationException("Failed to complete branch. No branch is opened.");
@@ -295,7 +336,7 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 
 			ColorF color = currState.Color,
 				strokeColor = currState.Color;
-			float strokeWidth = (float)currState.LineWidth;
+			float strokeWidth = (float)currState.Width;
 
 
 
@@ -318,10 +359,7 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 			}
 
 
-			currPolygon = new Polygon2D(color, strokeWidth, strokeColor);
-			if (reversePolygonOrder) {
-				polygonReverseHistory.Add(currPolygon);
-			}
+			currPolygon = new Polygon3D(color, strokeWidth, strokeColor);
 
 		}
 
@@ -339,7 +377,7 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 				throw new InterpretationException("Failed to record polygon vertex. No polygon is opened.");
 			}
 
-			currPolygon.Ponits.Add(new PointF((float)currState.X, (float)currState.Y));
+			currPolygon.Ponits.Add(currState.Position);
 		}
 
 		/// <summary>
@@ -356,18 +394,7 @@ namespace Malsys.Processing.Components.Interpreters.TwoD {
 				throw new InterpretationException("Failed to end polygon. No polygon is opened.");
 			}
 
-			if (reversePolygonOrder) {
-				if (polygonStack.Count == 0) {
-					foreach (var p in polygonReverseHistory) {
-						renderer.DrawPolygon(p);
-					}
-					polygonReverseHistory.Clear();
-				}
-
-			}
-			else {
-				renderer.DrawPolygon(currPolygon);
-			}
+			renderer.DrawPolygon(currPolygon);
 
 			currPolygon = polygonStack.Count > 0 ? polygonStack.Pop() : null;
 		}

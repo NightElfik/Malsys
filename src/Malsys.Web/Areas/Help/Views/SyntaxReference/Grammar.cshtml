@@ -6,7 +6,7 @@
 <h2>Formal grammar</h2>
 
 <p>
-	@Html.ActionLink("Malsys syntax", MVC.Help.Syntax.Index()) is described using formal grammar rules.
+	@Html.ActionLink("Malsys syntax", MVC.Help.SyntaxReference.Index()) is described using formal grammar rules.
 	Instead of describing what exactly formal grammar is (you can read it on @Html.Link("wiki", "http://en.wikipedia.org/wiki/Formal_grammar")),
 		this page will explain grammar rules on examples.
 </p>
@@ -16,7 +16,7 @@
 <p>
 	Each grammar rule describes one part of Malsys input, name of rule is often connected with its actual semantic meaning.
 	The simplest form of rule is <code class="grammar">name = regular_expression</code>.
-	The <code class="grammar">name</code> is name of the rule and with @Html.ActionLink("regular expression", MVC.Help.Syntax.GrammarRegexps())
+	The <code class="grammar">name</code> is name of the rule and with @Html.ActionLink("regular expression", MVC.Help.SyntaxReference.GrammarRegexps())
 		<code class="grammar">regular_expression</code> is described what is should match.
 	It is just named regular expression.
 	Rule can match more different regular using boolean operator <i>OR</i> represented as vertical bar <code class="grammar">|</code>.
@@ -36,10 +36,10 @@ more_regexps =
 <h3>Tokens</h3>
 
 <p>
-	A token is a string of characters described by one or more @Html.ActionLink("regular expressions", MVC.Help.Syntax.GrammarRegexps()).
+	A token is a string of characters described by one or more @Html.ActionLink("regular expressions", MVC.Help.SyntaxReference.GrammarRegexps()).
 	Token names are upper-case to separate them from grammar rule names.
-	The following example is token for number literal which is taken from actual @Html.ActionLink("Malsys syntax", MVC.Help.Syntax.Index()).
-	Please note, that in token can not be any whitespace character, tokens are atomic.
+	The following example is token for number literal which is taken from actual @Html.ActionLink("Malsys syntax", MVC.Help.SyntaxReference.Index()).
+	Please note that in token can not be any whitespace character, tokens are atomic.
 </p>
 
 <pre class="grammar">

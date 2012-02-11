@@ -148,6 +148,8 @@
     <Compile Include="Media\ColorGradient.cs" />
     <Compile Include="Media\ColorGradientFactory.cs" />
     <Compile Include="Media\ColorGradients.cs" />
+    <Compile Include="Media\Math3D.cs" />
+    <Compile Include="Media\Polygon3D.cs" />
     <Compile Include="Processing\CommonAdditionalDataKeys.cs" />
     <Compile Include="Processing\ComponentInitializationException.cs" />
     <Compile Include="Processing\ComponentResolver.cs" />
@@ -160,10 +162,15 @@
     <Compile Include="Processing\Components\ComponentGroupNames.cs" />
     <Compile Include="Processing\Components\Interfaces%27\IRandomGeneratorProvider.cs" />
     <Compile Include="Media\Polygon2D.cs" />
+    <Compile Include="Processing\Components\Interpreters\State3D.cs" />
+    <Compile Include="Processing\Components\Interpreters\Interpreter3D.cs" />
     <Compile Include="Processing\Components\Interpreters\InterpreterCallerDebugger.cs" />
-    <Compile Include="Processing\Components\Interpreters\TwoD\HexaAsciiInterpreter.cs" />
+    <Compile Include="Processing\Components\Interpreters\HexaAsciiInterpreter.cs" />
+    <Compile Include="Processing\Components\Renderers\BaseRenderer3D.cs" />
+    <Compile Include="Processing\Components\Renderers\IRenderer3D.cs" />
     <Compile Include="Processing\Components\Renderers\ITextRenderer.cs" />
-    <Compile Include="Processing\Components\Renderers\TwoD\TextRenderer.cs" />
+    <Compile Include="Processing\Components\Renderers\ThreeJsSceneRenderer3D.cs" />
+    <Compile Include="Processing\Components\Renderers\TextRenderer.cs" />
     <Compile Include="Processing\Components\UserConnectableAttribute.cs" />
     <Compile Include="Processing\Components\Interfaces%27\ISymbolProvider.cs" />
     <Compile Include="Processing\Components\Rewriters\SymbolRewriter.Enumerator.cs" />
@@ -228,9 +235,9 @@
     <Compile Include="Compilers\Expressions\KnownConstant.cs" />
     <Compile Include="SemanticModel\Compiled\Expressions\ExprVariable.cs" />
     <Compile Include="Evaluators\ExpressionEvaluator.cs" />
-    <Compile Include="Processing\Components\Interpreters\TwoD\State2D.cs" />
+    <Compile Include="Processing\Components\Interpreters\State2D.cs" />
     <Compile Include="Processing\Output\FileOutputProvider.cs" />
-    <Compile Include="Processing\Components\Interpreters\TwoD\Interpreter2D.cs" />
+    <Compile Include="Processing\Components\Interpreters\Interpreter2D.cs" />
     <Compile Include="Processing\Components\Interfaces%27\IInterpreterCaller.cs" />
     <Compile Include="Processing\Components\Interpreters\InterpreterCaller.cs" />
     <Compile Include="Processing\Components\Interpreters\SymbolInterpretation.cs" />
@@ -244,7 +251,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Processing\Components\Renderers\IRenderer2D.cs" />
     <Compile Include="Processing\Components\Interfaces%27\IRenderer.cs" />
-    <Compile Include="Processing\Components\Renderers\TwoD\SvgRenderer2D.cs" />
+    <Compile Include="Processing\Components\Renderers\SvgRenderer2D.cs" />
     <Compile Include="Processing\Components\Interfaces%27\IIterator.cs" />
     <Compile Include="Processing\Components\Iterators\MemoryBufferedIterator.cs" />
     <Compile Include="Processing\Components\Rewriters\SymbolRewriter.cs" />

@@ -12,6 +12,12 @@ namespace Malsys.Web.Areas.Help.Models {
 		public object[] Args { get; set; }
 
 
+		public LsystemExampleViewModel() {
+			UnimportantLines = new int[0];
+			Args = new object[0];
+		}
+
+
 		public string SourceCodeWithArgsAutoIndented() {
 
 			var lines = SourceCodeTemplate.FmtInvariant(Args).SplitToLines();

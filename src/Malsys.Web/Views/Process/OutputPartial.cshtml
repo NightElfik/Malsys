@@ -3,11 +3,14 @@
 @using Malsys
 @using Malsys.Processing
 
+
 @{
 var fi = new FileInfo(Model.FilePath);
 if (!fi.Exists) {
 	return;
 }
+
+bool loadThreeJs = false;
 
 <p>
 	<b>@Model.Name</b> (by <abbr title="@Model.SourceType.FullName">@Model.SourceType.Name</abbr>)
@@ -48,9 +51,22 @@ switch (Model.MimeType) {
 		}
 		break;
 
+	case MimeType.Application_Json:
+		loadThreeJs = true;  // load ThreeJs libraries
+		<div class="threeJsScene" data-scene="@Url.Action(MVC.ProcessOutput.Download(fi.Name))" style="width:800px; height:600px;"></div>
+		using (var sr = fi.OpenText()) {
+			<pre class="box">@sr.ReadToEnd()</pre>
+		}
+		break;
+
 	default:
 		<p class="outputTruncated">Unknown output type. Please download the file to see the result.</p>
 		break;
+}
+
+if (loadThreeJs) {
+	@Content.Js(Links.Js.ThreeJs.Three_js)
+	@Content.Js(Links.Js.ThreeJs.Detector_js)
 }
 
 }

@@ -1,11 +1,14 @@
-﻿
+﻿using System;
+
 namespace Malsys {
 	public static class MathHelper {
 
 		/// <summary>
 		/// Constant for converting degrees to radians.
 		/// </summary>
-		public const double PiOver180 = 3.1415926535897932384626433832795028841971693993 / 180.0;  // this is my knowledge of π :)
+		public const double PiOver180 = Math.PI / 180.0;
+
+		public const double PiHalf = Math.PI / 2;
 
 
 		public static float Clamp(float value, float min, float max) {
@@ -31,6 +34,8 @@ namespace Malsys {
 				return value;
 			}
 		}
+
+
 
 	}
 }

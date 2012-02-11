@@ -5,19 +5,18 @@
 <!--[if IE 8]>    <html class="no-js ie8 oldie" lang="en"> <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
 <head>
-	<meta charset="utf-8">
+	<meta charset="utf-8" />
 	<title>@ViewBag.Title</title>
-	<meta name="description" content="L-system processor and gallery">
-	<meta name="author" content="Marek Fišer">
+	<meta name="description" content="L-system processor and gallery" />
+	<meta name="author" content="Marek Fišer" />
 
 	@* Mobile viewport optimized *@
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 	@Content.Css(Links.Css.style_css)
 
-	@* All JavaScript at the bottom, except for Modernizr and Respond *@
-	@Content.Js(Links.Scripts.modernizr_js)
-	@*Content.Js("respond-1.0.1.min.js", Url)*@
+	@* All JavaScript at the bottom, except for Modernizr *@
+	@Content.Js(Links.Js.modernizr_js)
 
 	@* More ideas for your <head> here: h5bp.com/docs/#head-Tips *@
 </head>
@@ -54,20 +53,23 @@
 		</footer>
 	</div>
 
-	@* JavaScript at the bottom for fast page loading *@
-	@* Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if necessary *@
+
+	@* JavaScript at the bottom for fast page loading
+	   Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if necessary *@
 	@Content.Js("//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js")
-	<script type="text/javascript">window.jQuery || document.write('@Links.Scripts.jquery_js')</script>
-	@Content.Js(Links.Scripts.malsys_js)
+	<script type="text/javascript">window.jQuery || document.write('@Links.Js.jquery_js')</script>
+
+	@Content.Js(Links.Js.malsys_js)
+	@Content.Js(Links.Js.ThreeJs.malsys_three_js)
+	@Content.Js(Links.Js.ThreeJs.threex_dragpancontrols_js)
 	@RenderSection("scripts", false)
 
 	@Analytics.GetGoogleAsyncHtml("UA-27861319-1")
 
-	@* Prompt IE 6 users to install Chrome Frame. Remove this if you want to support IE 6.
-		chromium.org/developers/how-tos/chrome-frame-getting-started *@
+	@* Prompt IE 6 users to install Chrome Frame. chromium.org/developers/how-tos/chrome-frame-getting-started *@
 	<!--[if lt IE 7 ]>
 	@Content.Js("//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js")
-	<script>window.attachEvent('onload', function () { CFInstall.check({ mode: 'overlay' }) })</script>
+	<script type="text/javascript">window.attachEvent('onload', function () { CFInstall.check({ mode: 'overlay' }) })</script>
 	<![endif]-->
 
 </body>
