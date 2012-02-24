@@ -63,12 +63,11 @@ audio:not([controls]) { display: none; }
 
 /*
  * 1. Correct text resizing oddly in IE6/7 when body font-size is set using em units
- * 2. Force vertical scrollbar in non-IE
- * 3. Prevent iOS text size adjust on device orientation change, without disabling user zoom: h5bp.com/g
+ * 2. Prevent iOS text size adjust on device orientation change, without disabling user zoom: h5bp.com/g
  */
-html { font-size: 100%; overflow-y: scroll; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
-body { margin: 0; font-size: 13px; line-height: 1.4; }
+html { font-size: 100%; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
 body, button, input, select, textarea { font-family: sans-serif; color: #222; }
+body { margin: 0; font-size: 1em; line-height: 1.4; }
 
 /*
  * Remove text-shadow in selection highlight: h5bp.com/i
@@ -125,6 +124,7 @@ sub { bottom: -0.25em; }
 /* Lists ==================================================================== */
 
 ul, ol { margin: 1em 0; padding: 0 0 0 40px; }
+ul, ol { ul, ol { margin: 0; } }
 dd { margin: 0 0 0 40px; }
 nav ul, nav ol { list-style: none; list-style-image: none; margin: 0; padding: 0; }
 ul.clean { list-style: none; list-style-image: none; }
@@ -161,7 +161,7 @@ label { cursor: pointer; }
  * 1. Correct color not inheriting in IE6/7/8/9
  * 2. Correct alignment displayed oddly in IE6/7
  */
-legend { border: 0; *margin-left: -7px; padding: 0; }
+legend { border: 0; *margin-left: -7px; padding: 0; white-space: normal; }
 
 /*
  * 1. Correct font-size not inheriting in all browsers
@@ -171,28 +171,30 @@ legend { border: 0; *margin-left: -7px; padding: 0; }
 button, input, select, textarea { font-size: 100%; margin: 0; vertical-align: baseline; *vertical-align: middle; }
 
 /*
- * 1. Define line-height as normal to match FF3/4 (set using !important in the UA stylesheet)
- * 2. Correct inner spacing displayed oddly in IE6/7
+ * Define line-height as normal to match FF3/4 (set using !important in the UA stylesheet)
  */
-button, input { line-height: normal; *overflow: visible; }
-
-/*
- * Reintroduce inner spacing in 'table' to avoid overlap and whitespace issues in IE6/7
- */
-table button, table input { *overflow: auto; }
+button, input { line-height: normal; }
 
 /*
  * 1. Display hand cursor for clickable form elements
  * 2. Allow styling of clickable form elements in iOS
+ * 3. Correct inner spacing displayed oddly in IE7 (doesn't effect IE6)
  */
-button, input[type="button"], input[type="reset"], input[type="submit"] { cursor: pointer; -webkit-appearance: button; }
+button, input[type="button"], input[type="reset"], input[type="submit"] {
+	cursor: pointer; -webkit-appearance: button; *overflow: visible;
+}
+
+/*
+ * Re-set default cursor for disabled elements
+ */
+button[disabled], input[disabled] { cursor: default; }
 
 /*
  * Consistent box sizing and appearance
  */
-input[type="checkbox"], input[type="radio"] { box-sizing: border-box; }
+input[type="checkbox"], input[type="radio"] { box-sizing: border-box; padding: 0; *width: 13px; *height: 13px; }
 input[type="search"] { -webkit-appearance: textfield; -moz-box-sizing: content-box; -webkit-box-sizing: content-box; box-sizing: content-box; }
-input[type="search"]::-webkit-search-decoration { -webkit-appearance: none; }
+input[type="search"]::-webkit-search-decoration, input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; }
 
 /*
  * Remove inner padding and border in FF3/4: h5bp.com/l
@@ -212,7 +214,7 @@ input:invalid, textarea:invalid { background-color: #F0DDDD; }
 
 /* Tables =================================================================== */
 
-table { border-collapse: collapse; border-spacing: 0;border: solid 1px #DDD; }
+table { border-collapse: collapse; border-spacing: 0; border: solid 1px #DDD; }
 
 table td { padding: 5px; border: solid 1px #AAA; }
 
@@ -224,6 +226,9 @@ table th {
 	text-align: center;
 }
 
+/* Chrome Frame Prompt ====================================================== */
+
+.chromeframe { margin: 0.2em 0; background: #CCC; color: black; padding: 0.2em 1em; }
 
 
 /* Primary styles =============================================================
@@ -286,7 +291,7 @@ header {
 		ul { float: right; }
 		li { display: inline; font-weight: bolder; }
 		a {
-			font-size: 1.3em;
+			font-size: 1.25em;
 			padding: 0.3em;
 			margin: 0.1em;
 			text-decoration: none;
@@ -345,6 +350,12 @@ h2, h3 {
 footer {
 	&.wrapper { padding: 20px; }
 	p { font-size: 0.8em; }
+	a {
+		color: #000;
+		&:hover { text-shadow: 0px 0px 3px #FFF; }
+		&:link { color: #000; }
+		&:visited { color: #000; }
+	}
 }
 
 
@@ -362,6 +373,7 @@ footer {
 
 .box {
 	.malsysBox();
+	margin-bottom: 0.5em;
 }
 
 
@@ -456,6 +468,13 @@ pre.asciiArt {
 	word-wrap: normal;
 }
 
+.threeJsScene {
+	border: solid 1px #000000;
+	width: 800px;
+	height: 600px;
+	.box-shadow(0px, 0px, 5px, 0, #000);
+}
+
 /* Components ============================================================== */
 .componentBox {
 	border: 1px solid #aaa;
@@ -522,6 +541,26 @@ p.malsysMsg {
 .monospace { font-family: @monospaceFonts; }
 
 
+
+/* Media queries ============================================================ */
+
+@media only screen and (min-width: 480px) {
+
+}
+
+@media only screen and (min-width: 768px) {
+
+}
+
+@media only screen and (min-width: 1550px) {
+	#main.twoColumns {
+		.wrapper { width: 1520px; }
+		.floating_box { display: inline; float: left; text-align: left; width: 740px; padding-right: 8px; }
+		.floating_container { text-align: center; }
+	}
+}
+
+
 /* Non-semantic helper classes ============================================== */
 
 /* For image replacement */
@@ -546,31 +585,7 @@ p.malsysMsg {
 .clearfix { zoom: 1; }
 
 
-
-/* Media queries ============================================================ */
-
-@media only screen and (min-width: 480px) {
-
-}
-
-@media only screen and (min-width: 768px) {
-
-}
-
-@media only screen and (min-width: 1550px) {
-	#main.twoColumns {
-		.wrapper { width: 1520px; }
-		.floating_box { display: inline; float: left; text-align: left; width: 740px; padding-right: 8px; }
-		.floating_container { text-align: center; }
-	}
-}
-
-
-
-/* ==|== print styles =======================================================
-   Print styles.
-   Inlined to avoid required HTTP connection: h5bp.com/r
-   ========================================================================== */
+/* Print styles. Inlined to avoid required HTTP connection: h5bp.com/r ====== */
 
 @media print {
 	* { background: transparent !important; color: black !important; text-shadow: none !important; filter:none !important; -ms-filter: none !important; } /* Black prints faster: h5bp.com/s */

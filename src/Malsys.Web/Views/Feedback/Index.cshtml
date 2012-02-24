@@ -5,10 +5,13 @@
 }
 
 @section scripts {
-	@Content.Js(Links.Scripts.jquery_validate_js)
-	@Content.Js(Links.Scripts.jquery_validate_unobtrusive_js)
+	@Content.Js(Links.Js.jquery_validate_js)
+	@Content.Js(Links.Js.jquery_validate_unobtrusive_js)
 }
 
+@if (Request.IsAuthenticated && User.IsInRole(UserRoles.ViewFeedbacks)) {
+	@Html.ActionLink("List of sent feedbacks", MVC.Feedback.List())
+}
 
 <h2>Send a feedback</h2>
 

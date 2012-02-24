@@ -1,7 +1,7 @@
 ﻿
 namespace Malsys.Processing.Components {
 	[Component("Generic renderer", ComponentGroupNames.Renderers)]
-	public interface IRenderer : IComponent {
+	public interface IRenderer : IProcessComponent {
 
 		/// <summary>
 		/// Adds data entry which will be associated with all following outputs.

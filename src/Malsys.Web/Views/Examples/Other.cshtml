@@ -7,9 +7,43 @@
 
 <div class="floating_container clearfix">
 
+<div class="floating_box">
+<pre class="malsys box">
+/**
+ * http://en.wikipedia.org/wiki/Pythagoras_tree_(fractal)
+ */
+lsystem PythagorasTree {
+
+	let iterations = 6;
+	set axiom = F(100);
+	let initialAngle = 90;
+	let color = {0,0,0}; // black
+
+	// angle should be between 0 and 90 (exclusive)
+	let angle = 40;
+	let angleComp = 90 - angle;  // complement
+	let sinAngle = sin(deg2rad(angle));
+	let sinAngleComp = sin(deg2rad(angleComp));
+
+	interpret E(x) as DrawLine(x, x, color);
+	interpret m as MoveForward;
+	interpret + as TurnLeft(angle);
+	interpret - as TurnLeft(-angleComp);
+	interpret [ as StartBranch;
+	interpret ] as EndBranch;
+
+	rewrite F(x)
+		with left = x * sinAngle, right = x * sinAngleComp
+		to E(x) [ + m(left / 2) F(right) ] - m(right / 2) F(left);
+
+	process with SvgRenderer;
+
+}
+</pre>
+</div>
 
 <div class="floating_box">
-<pre class="malsys">
+<pre class="malsys box">
 /**
  * William McWorter
  */
@@ -37,7 +71,7 @@ lsystem XBorder {
 </div>
 
 <div class="floating_box">
-<pre class="malsys">
+<pre class="malsys box">
 /**
  * http://en.wikipedia.org/wiki/Sierpinski_triangle
  */
@@ -68,7 +102,7 @@ lsystem SierpinskiTrangle {
 </div>
 
 <div class="floating_box">
-<pre class="malsys">
+<pre class="malsys box">
 /**
  * http://en.wikipedia.org/wiki/Sierpinski_triangle
  */
@@ -91,7 +125,7 @@ lsystem SierpinskiTrangle {
 </div>
 
 <div class="floating_box">
-<pre class="malsys">
+<pre class="malsys box">
 /**
  * Accidentally created while building Sierpinski Trangle.
  * Marek Fišer
@@ -122,7 +156,7 @@ lsystem BrokenSierpinski {
 </div>
 
 <div class="floating_box">
-<pre class="malsys">
+<pre class="malsys box">
 /**
  * http://en.wikipedia.org/wiki/Sierpinski_triangle
  */
@@ -150,7 +184,7 @@ lsystem InverseSierpinski {
 </div>
 
 <div class="floating_box">
-<pre class="malsys">
+<pre class="malsys box">
 /**
  * McWorter's Pentigree
  */
@@ -172,7 +206,7 @@ lsystem Pentigree {
 </div>
 
 <div class="floating_box">
-<pre class="malsys">
+<pre class="malsys box">
 /**
  * McWorter's Pentigree
  */

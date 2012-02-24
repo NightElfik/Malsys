@@ -1,17 +1,50 @@
 ﻿using System;
 using Malsys.Compilers;
+using Malsys.Evaluators;
 using Malsys.IO;
 using Malsys.Parsing;
 using Malsys.SemanticModel.Compiled;
 using Malsys.SourceCode.Printers;
 using Microsoft.FSharp.Text.Lexing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Malsys.Evaluators;
 using ConstsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.IValue>;
 using FunsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Compiled.FunctionEvaledParams>;
 
 namespace Malsys.Tests {
-	internal static class CompilerUtils {
+	internal static class TestUtils {
+
+		public static ImmutableList<Ast.LsystemSymbol> ParseSymbols(string input) {
+
+			var lexBuff = LexBuffer<char>.FromString(input);
+			var logger = new MessageLogger();
+			var symbolsAst = ParserUtils.ParseSymbols(lexBuff, logger, "testInput");
+
+			if (logger.ErrorOcured) {
+				Console.WriteLine("in: " + input);
+				Assert.Fail("Failed to parse symbols. " + logger.ToString());
+			}
+
+			return symbolsAst;
+		}
+
+		public static ImmutableList<Malsys.SemanticModel.Symbol<IExpression>> CompileSymbols(ImmutableList<Ast.LsystemSymbol> symbolsAst) {
+
+			var compiler = new CompilersContainer().Resolve<ISymbolCompiler>();
+			var logger = new MessageLogger();
+			var symbols = compiler.CompileList<Ast.LsystemSymbol, Malsys.SemanticModel.Symbol<IExpression>>(symbolsAst, logger);
+
+			if (logger.ErrorOcured) {
+				Assert.Fail("Failed to compile symbols. " + logger.ToString());
+			}
+
+			return symbols;
+		}
+
+		public static ImmutableList<Malsys.SemanticModel.Symbol<IExpression>> CompileSymbols(string input) {
+			var parsed = ParseSymbols(input);
+			return CompileSymbols(parsed);
+		}
+
 
 		public static Ast.Expression ParseExpression(string input) {
 
@@ -32,19 +65,6 @@ namespace Malsys.Tests {
 			return CompileExpression(parsedExpr);
 		}
 
-		public static Ast.InputBlock ParseLsystem(string input) {
-
-			var lexBuff = LexBuffer<char>.FromString(input);
-			var logger = new MessageLogger();
-			var result = ParserUtils.ParseInputNoComents(lexBuff, logger, "testInput");
-			if (logger.ErrorOcured) {
-				Console.WriteLine(logger.ToString());
-				Assert.Fail("Failed to parse L-system: " + input);
-			}
-
-			return result;
-		}
-
 		public static IExpression CompileExpression(Ast.Expression input) {
 
 			var logger = new MessageLogger();
@@ -56,6 +76,35 @@ namespace Malsys.Tests {
 			}
 
 			return compiledExpr;
+		}
+
+		public static Malsys.SemanticModel.Evaluated.IValue EvaluateExpression(IExpression input, ConstsMap consts, FunsMap funs) {
+
+			return new ExpressionEvaluator().Evaluate(input, consts, funs);
+		}
+
+		public static Malsys.SemanticModel.Evaluated.IValue EvaluateExpression(string input) {
+
+			return new ExpressionEvaluator().Evaluate(CompileExpression(input));
+		}
+
+		public static Malsys.SemanticModel.Evaluated.IValue EvaluateExpression(string input, ConstsMap consts, FunsMap funs) {
+
+			return new ExpressionEvaluator().Evaluate(CompileExpression(input), consts, funs);
+		}
+
+
+		public static Ast.InputBlock ParseLsystem(string input) {
+
+			var lexBuff = LexBuffer<char>.FromString(input);
+			var logger = new MessageLogger();
+			var result = ParserUtils.ParseInputNoComents(lexBuff, logger, "testInput");
+			if (logger.ErrorOcured) {
+				Console.WriteLine(logger.ToString());
+				Assert.Fail("Failed to parse L-system: " + input);
+			}
+
+			return result;
 		}
 
 		public static InputBlock CompileLsystem(string input) {
@@ -75,20 +124,6 @@ namespace Malsys.Tests {
 			return compiled;
 		}
 
-		public static Malsys.SemanticModel.Evaluated.IValue EvaluateExpression(IExpression input, ConstsMap consts, FunsMap funs) {
-
-			return new ExpressionEvaluator().Evaluate(input, consts, funs);
-		}
-
-		public static Malsys.SemanticModel.Evaluated.IValue EvaluateExpression(string input) {
-
-			return new ExpressionEvaluator().Evaluate(CompileExpression(input));
-		}
-
-		public static Malsys.SemanticModel.Evaluated.IValue EvaluateExpression(string input, ConstsMap consts, FunsMap funs) {
-
-			return new ExpressionEvaluator().Evaluate(CompileExpression(input), consts, funs);
-		}
 
 		public static SemanticModel.Evaluated.InputBlock EvaluateLsystem(InputBlock input) {
 

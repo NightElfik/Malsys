@@ -1,11 +1,20 @@
 ﻿/// <reference path="~/Js/jquery.js" />
 
-
 var scene, renderer, camera, cameraControls;
 
 (function ($) {
 
+	var firstScene = true;
+
 	$(".threeJsScene").each(function (i) {
+
+		if (firstScene){
+			firstScene = false;
+		}
+		else {
+			$(this).text("Only one scene per page is supported in beta.");
+			return;
+		}
 
 		var sceneUrl = $(this).attr("data-scene");
 		if (!sceneUrl) {
@@ -17,14 +26,15 @@ var scene, renderer, camera, cameraControls;
 				antialias: true,
 				preserveDrawingBuffer: true  // to allow screenshot
 			});
-			renderer.setClearColorHex(0x000000, 1);
 		}
 		else {
 			renderer = new THREE.CanvasRenderer();
+			renderer.sortObjects = true;
 		}
 
 		renderer.setSize($(this).width(), $(this).height());
-		$(this).append(renderer.domElement);
+		var rendererDomElement = renderer.domElement;
+		$(this).append(rendererDomElement);
 
 		// load the scene
 		var loader = new THREE.SceneLoader();
@@ -33,14 +43,12 @@ var scene, renderer, camera, cameraControls;
 		loader.load(sceneUrl, function (result) {
 			scene = result.scene;
 			camera = result.currentCamera;
-			cameraControls	= new THREEx.DragPanControls(camera)
+			cameraControls = new THREEx.DragPanControls(camera, camera.target, rendererDomElement);
+			cameraControls.update();
 
 			scene.add(camera);
 
-			camera.aspect = window.innerWidth / window.innerHeight;
-			camera.updateProjectionMatrix();
-
-			renderer.setClearColor(result.bgColor, result.bgAlpha);
+			renderer.setClearColor(result.bgColor, result.bgColorAlpha);
 
 			animate();
 		});
@@ -48,6 +56,7 @@ var scene, renderer, camera, cameraControls;
 	});
 
 } (jQuery));
+
 
 
 
@@ -70,5 +79,6 @@ function render() {
 	cameraControls.update();
 
 	// actually render the scene
+	//renderer.clear();
 	renderer.render(scene, camera);
 }

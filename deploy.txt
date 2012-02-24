@@ -1,5 +1,4 @@
 
-
 Database deploy:
 http://support.microsoft.com/kb/2002980
 
@@ -17,3 +16,16 @@ http://support.microsoft.com/kb/2002980
 12) At this point the changes to the application pool identity will have been saved to IIS 7.5's configuration store.
 
 + set acces rights to DB dir for user "NETWORK SERVICE"
+
+================================================================================
+
+HTTP Error 500.19 - Internal Server Error
+
+The requested page cannot be accessed because the related configuration data for the page is invalid.
+
+http://stackoverflow.com/questions/1808680/web-application-problems-web-config-errors-http-500-19-with-iis7-5-and-asp-net
+
+Worked after deletion of rewrite section in web.config.
+
+Installed Rewrite module from http://learn.iis.net/page.aspx/460/using-the-url-rewrite-module/ ( http://go.microsoft.com/?linkid=9722532 ).
+

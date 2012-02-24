@@ -15,7 +15,7 @@ namespace Malsys.Processing {
 		public bool RequiresMeasure { get; private set; }
 		public IProcessStarter StarterComponent { get; private set; }
 
-		private Dictionary<string, IComponent> components = new Dictionary<string, IComponent>();
+		private Dictionary<string, IProcessComponent> components = new Dictionary<string, IProcessComponent>();
 
 
 
@@ -124,7 +124,7 @@ namespace Malsys.Processing {
 		}
 
 
-		private IComponent createComponent(string compTypeName, IComponentResolver typeResolver, IMessageLogger logger) {
+		private IProcessComponent createComponent(string compTypeName, IComponentResolver typeResolver, IMessageLogger logger) {
 
 			var compType = typeResolver.ResolveComponent(compTypeName);
 			if (compType == null) {
@@ -132,8 +132,8 @@ namespace Malsys.Processing {
 				return null;
 			}
 
-			if (!typeof(IComponent).IsAssignableFrom(compType)) {
-				logger.LogMessage(Message.ComponentDontImplementInterface, compType.FullName, typeof(IComponent).FullName);
+			if (!typeof(IProcessComponent).IsAssignableFrom(compType)) {
+				logger.LogMessage(Message.ComponentDontImplementInterface, compType.FullName, typeof(IProcessComponent).FullName);
 				return null;
 			}
 
@@ -143,10 +143,10 @@ namespace Malsys.Processing {
 				return null;
 			}
 
-			return (IComponent)ctorInfo.Invoke(null);
+			return (IProcessComponent)ctorInfo.Invoke(null);
 		}
 
-		private IComponent createContaineredComponent(string contTypeName, string compTypeName, IComponentResolver typeResolver, IMessageLogger logger) {
+		private IProcessComponent createContaineredComponent(string contTypeName, string compTypeName, IComponentResolver typeResolver, IMessageLogger logger) {
 
 			var contType = typeResolver.ResolveComponent(contTypeName);
 			if (contType == null) {
@@ -207,13 +207,13 @@ namespace Malsys.Processing {
 
 		private bool tryConnect(ProcessComponentsConnection conn, IMessageLogger logger) {
 
-			IComponent srcComp;
+			IProcessComponent srcComp;
 			if (!components.TryGetValue(conn.SourceName, out srcComp)) {
 				logger.LogMessage(Message.FailedToConnect, conn.SourceName, conn.TargetName, conn.TargetInputName, conn.TargetName);
 				return false;
 			}
 
-			IComponent destComp;
+			IProcessComponent destComp;
 			if (!components.TryGetValue(conn.TargetName, out destComp)) {
 				logger.LogMessage(Message.FailedToConnect, conn.SourceName, conn.TargetName, conn.TargetInputName, conn.TargetInputName);
 				return false;
@@ -245,7 +245,7 @@ namespace Malsys.Processing {
 		}
 
 
-		private bool trySetAndCheckUserSettableProperties(IComponent component, string componentConfigName, LsystemEvaled lsystem, IMessageLogger logger) {
+		private bool trySetAndCheckUserSettableProperties(IProcessComponent component, string componentConfigName, LsystemEvaled lsystem, IMessageLogger logger) {
 
 			bool error = false;
 
@@ -317,7 +317,7 @@ namespace Malsys.Processing {
 			return !error;
 		}
 
-		bool trySetPropertyValue(PropertyInfo pi, object obj, object value, IComponent component, string configName, IMessageLogger logger) {
+		bool trySetPropertyValue(PropertyInfo pi, object obj, object value, IProcessComponent component, string configName, IMessageLogger logger) {
 
 			try {
 				pi.SetValue(obj, value, null);

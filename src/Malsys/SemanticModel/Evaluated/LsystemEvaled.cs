@@ -1,4 +1,5 @@
 ﻿using Malsys.SemanticModel.Compiled;
+using Microsoft.FSharp.Collections;
 using ConstsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.IValue>;
 using FunsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Compiled.FunctionEvaledParams>;
 using SymIntMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.SymbolInterpretationEvaled>;
@@ -31,6 +32,21 @@ namespace Malsys.SemanticModel.Evaluated {
 
 		public readonly Ast.LsystemDefinition AstNode;
 
+
+		/// <summary>
+		/// Creates new empty L-system.
+		/// </summary>
+		public LsystemEvaled(string name) {
+
+			Name = name;
+			Constants = MapModule.Empty<string, IValue>();
+			Functions = MapModule.Empty<string, FunctionEvaledParams>();
+			SymbolsConstants = MapModule.Empty<string, ImmutableList<Symbol<IValue>>>();
+			SymbolsInterpretation = MapModule.Empty<string, SymbolInterpretationEvaled>();
+			RewriteRules = ImmutableList<RewriteRule>.Empty;
+			ProcessStatements = ImmutableList<ProcessStatement>.Empty;
+			AstNode = null;
+		}
 
 		public LsystemEvaled(string name, ConstsMap consts, FunsMap funs, SymListMap symbolsConsts, SymIntMap symsInt,
 				ImmutableList<RewriteRule> rRules, ImmutableList<ProcessStatement> processStatements, Ast.LsystemDefinition astNode = null) {

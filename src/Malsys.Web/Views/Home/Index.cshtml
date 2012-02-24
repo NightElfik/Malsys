@@ -4,7 +4,9 @@
 
 <h3>What is Malsys?</h3>
 <p>
-	Malsys is online L-system processor (interpreter).
+	Malsys is online L-system processing system.
+	Please note that this is beta version, some parts are not finished yet.
+	Feel free to try anything you want (and send me a @Html.ActionLink("feedback", MVC.Feedback.Index()) if you (dis)like it :).
 </p>
 
 
@@ -18,7 +20,28 @@
 
 <h3>How can i use it?</h3>
 <p>
-	Look at @Html.ActionLink("help page", MVC.Help.Home.Index()) to learn syntax of Malsys input.
-	You can also look at some @Html.ActionLink("examples", MVC.Examples.Index()).
+	The best way to start is looking at some  @Html.ActionLink("examples", MVC.Examples.Index()).
+	Then you can check @Html.ActionLink("help page", MVC.Help.Home.Index()) for more details.
 </p>
 
+
+<h3>Features</h3>
+
+<ul>
+	<li>Readable L-system syntax</li>
+	<li>Variables and functions definitions</li>
+	<li>Saving of L-systems for registered users (with permalink)</li>
+	<li>Rendering
+		<ul>
+			<li>SVG</li>
+			<li>ASCII art (only on hexagonal grid)</li>
+		</ul>
+	</li>
+	<li>L-system capabilities
+		<ul>
+			<li>Context sensitive rewrite rules</li>
+			<li>Conditional rewrite rules</li>
+			<li>Stochastic (randomized) rewriting</li>
+		</ul>
+	</li>
+</ul>

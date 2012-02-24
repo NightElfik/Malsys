@@ -173,8 +173,8 @@ namespace Malsys.Tests.Evaluators {
 
 		private void doTest(string input, string excepted) {
 
-			var inputEvaled = CompilerUtils.EvaluateLsystem(input);
-			var actual = CompilerUtils.Print(inputEvaled).TrimEnd();
+			var inputEvaled = TestUtils.EvaluateLsystem(input);
+			var actual = TestUtils.Print(inputEvaled).TrimEnd();
 			Assert.AreEqual(excepted, actual);
 		}
 

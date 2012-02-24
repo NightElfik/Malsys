@@ -6,7 +6,7 @@ namespace Malsys.Processing.Components.Interpreters {
 
 		public Point3D Position;
 
-		public Quaternion Orientation;
+		public Quaternion Rotation;
 
 		public double Width;
 

@@ -177,6 +177,7 @@
     <Compile Include="Areas\Administration\AdministrationAreaRegistration.cs" />
     <Compile Include="Areas\Administration\Controllers\HomeController.cs" />
     <Compile Include="Areas\Administration\Models\SavedInputModel.cs" />
+    <Compile Include="Areas\Administration\Models\MailModel.cs" />
     <Compile Include="Areas\Help\Controllers\HomeController.cs" />
     <Compile Include="Areas\Help\Controllers\PredefinedController.cs" />
     <Compile Include="Areas\Help\Controllers\SyntaxReferenceController.cs" />
@@ -294,36 +295,57 @@
     <Content Include="Areas\Help\Views\Shared\LsystemExamplePartial.cshtml" />
     <Content Include="Areas\Help\Views\SyntaxReference\Constant.cshtml" />
     <Content Include="Areas\Help\Views\SyntaxReference\Tokens.cshtml" />
+    <Content Include="Areas\Administration\Views\Home\TrySendMail.cshtml" />
     <None Include="Css\style.less.css" />
     <Content Include="Css\style.css">
       <DependentUpon>T4CSS.tt</DependentUpon>
     </Content>
     <Content Include="Error.html" />
     <Content Include="Global.asax" />
-    <Content Include="Js\jquery.min.js">
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
     <None Include="Js\jquery.textarea.js" />
-    <Content Include="Js\jquery.textarea.min.js">
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
     <None Include="Js\jquery.validate.js" />
     <None Include="Js\jquery.js" />
     <None Include="Js\malsys.js" />
+    <None Include="Js\MinifyJs.log">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </None>
+    <None Include="Js\modernizr.js" />
+    <Content Include="Js\jquery.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\jquery.textarea.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\jquery.unobtrusive-ajax.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
     <Content Include="Js\jquery.validate.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\jquery.validate.unobtrusive.min.js">
       <DependentUpon>MinifyJs.tt</DependentUpon>
     </Content>
     <Content Include="Js\malsys.min.js">
       <DependentUpon>MinifyJs.tt</DependentUpon>
     </Content>
-    <None Include="Js\modernizr.js" />
     <Content Include="Js\modernizr.min.js">
       <DependentUpon>MinifyJs.tt</DependentUpon>
     </Content>
-    <Content Include="Js\ThreeJs\Detector.js" />
-    <Content Include="Js\ThreeJs\malsys.three.js" />
+    <None Include="Js\ThreeJs\Detector.js" />
+    <None Include="Js\ThreeJs\malsys.three.js" />
+    <Content Include="Js\ThreeJs\Detector.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\ThreeJs\malsys.three.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
     <Content Include="Js\ThreeJs\Three.js" />
-    <Content Include="Js\ThreeJs\threex.dragpancontrols.js" />
+    <None Include="Js\ThreeJs\threex.dragpancontrols.js" />
+    <Content Include="Js\ThreeJs\threex.dragpancontrols.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -335,18 +357,12 @@
       <SubType>Designer</SubType>
     </Content>
     <None Include="Js\jquery.unobtrusive-ajax.js" />
-    <Content Include="Js\jquery.unobtrusive-ajax.min.js">
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
     <None Include="Js\jquery.validate.unobtrusive.js" />
-    <Content Include="Js\jquery.validate.unobtrusive.min.js">
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
     <Content Include="Views\_ViewStart.cshtml" />
-    <Content Include="Views\Account\ChangePassword.cshtml" />
-    <Content Include="Views\Account\ChangePasswordSuccess.cshtml" />
+    <Content Include="Views\Authentication\Account\ChangePassword.cshtml" />
+    <Content Include="Views\Authentication\Account\ChangePasswordSuccess.cshtml" />
     <Content Include="Views\Authentication\LogOn.cshtml" />
-    <Content Include="Views\Account\Register.cshtml" />
+    <Content Include="Views\Authentication\Account\Register.cshtml" />
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
@@ -376,11 +392,6 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>T4CSS.log</LastGenOutput>
     </None>
-    <None Include="Js\MinifyJs.log">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </None>
     <None Include="Js\MinifyJs.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>MinifyJs.log</LastGenOutput>
@@ -400,6 +411,8 @@
     <Content Include="Views\Examples\Tilings.cshtml" />
     <Content Include="Views\Examples\Other.cshtml" />
     <Content Include="Views\Examples\Ascii.cshtml" />
+    <Content Include="Views\Examples\ThreeD.cshtml" />
+    <Content Include="Views\User\DeleteInput.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Areas\Administration\Views\Shared\" />

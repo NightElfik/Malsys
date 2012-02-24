@@ -60,6 +60,10 @@ namespace Malsys.Web.Entities {
 			SavedInputs.AddObject(savedInput);
 		}
 
+		public void DeleteSavedInput(SavedInput savedInput) {
+			SavedInputs.DeleteObject(savedInput);
+		}
+
 		#endregion
 
 

@@ -30,8 +30,17 @@ string minExt = ".min.js";
 T4. Js Log
 ---------------
 <#
+// VERY VERY VERY VERY VERY IMPORTANT (otherwise all doubles will be malformed in different culture)
+System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
+
 string currentDirectory = Path.GetDirectoryName(Host.TemplateFile);
-string[] files = Directory.GetFiles(currentDirectory);
+List<string> files = new List<string>(Directory.GetFiles(currentDirectory));
+
+// load files from subdirectories
+foreach (string subdir in Directory.GetDirectories(currentDirectory)) {
+	files.AddRange(Directory.GetFiles(subdir));
+}
+
 #>
 
 Template File: <#= Host.TemplateFile #>
@@ -42,29 +51,30 @@ Converting:
 
 var manager = Manager.Create(Host, GenerationEnvironment);
 
-foreach (string fileName in files) {
+foreach (string filePath in files) {
 	
-	if (!fileName.EndsWith(jsExt)) {
+	if (!filePath.EndsWith(jsExt)) {
 		continue;  // not Js file
 	}
 	
-	if (fileName.EndsWith(minExt)) {
+	if (filePath.EndsWith(minExt)) {
 		continue;  // ignore minified files
 	}
 	
+	string fileName = Path.GetFileNameWithoutExtension(filePath);
+	string newName = fileName + ".min.js";
+	newName = Path.Combine(Path.GetDirectoryName(filePath), newName);
+	
 	if (fileName.StartsWith("Three")) {
-		continue;  // ignore ThreeJs files, they are minified by default
+		continue;  // ignore ThreeJs file, they are minified by default
 	}
 	
-	#> * <#= fileName + Environment.NewLine #> <#
-	
-	string newName = Path.GetFileNameWithoutExtension(fileName) + ".min.js";
-	newName = Path.Combine(currentDirectory, newName);
+	#> * <#= filePath + Environment.NewLine #> <#
 	
 	manager.StartNewFile(newName);
 
 	try {
-		string compressed = JavaScriptCompressor.Compress(File.ReadAllText(fileName));
+		string compressed = JavaScriptCompressor.Compress(File.ReadAllText(filePath));
 		Write(compressed);
 	}
 	catch (Exception e) { 

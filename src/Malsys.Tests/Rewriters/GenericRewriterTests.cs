@@ -209,7 +209,7 @@ namespace Malsys.Tests.Rewriters {
 			string input = "lsystem l {{ set axiom = {0}; {1} }}".Fmt(inputSymbols, rewriteRules);
 
 			var msgs = new MessageLogger();
-			var inBlockEvaled = CompilerUtils.EvaluateLsystem(input);
+			var inBlockEvaled = TestUtils.EvaluateLsystem(input);
 
 			if (inBlockEvaled.Lsystems.Count != 1) {
 				Assert.Fail("L-system not defined.");

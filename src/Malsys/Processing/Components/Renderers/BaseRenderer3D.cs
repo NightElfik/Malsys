@@ -15,16 +15,50 @@ namespace Malsys.Processing.Components.Renderers {
 
 		protected FSharpMap<string, object> globalAdditionalData = MapModule.Empty<string, object>();
 
+		protected bool measuring;
 
 		protected Point3D lastPoint;
+		protected Quaternion lastRotation;
 		protected double lastWidth;
 		protected ColorF lastColor;
+
+		protected Point3D measuredMin, currentMeasuredMin;
+		protected Point3D measuredMax, currentMeasuredMax;
+
+
+
+		protected virtual void measure(Point3D pt) {
+
+			if (pt.X < currentMeasuredMin.X) {
+				currentMeasuredMin.X = pt.X;
+			}
+			else if (pt.X > currentMeasuredMax.X) {
+				currentMeasuredMax.X = pt.X;
+			}
+
+			if (pt.Y < currentMeasuredMin.Y) {
+				currentMeasuredMin.Y = pt.Y;
+			}
+			else if (pt.Y > currentMeasuredMax.Y) {
+				currentMeasuredMax.Y = pt.Y;
+			}
+
+			if (pt.Z < currentMeasuredMin.Z) {
+				currentMeasuredMin.Z = pt.Z;
+			}
+			else if (pt.Z > currentMeasuredMax.Z) {
+				currentMeasuredMax.Z = pt.Z;
+			}
+		}
 
 
 		#region IComponent Members
 
 		public abstract bool RequiresMeasure { get; }
 
+		/// <summary>
+		/// Saves the context to variable.
+		/// </summary>
 		public virtual void Initialize(ProcessContext ctxt) {
 			context = ctxt;
 		}
@@ -33,9 +67,20 @@ namespace Malsys.Processing.Components.Renderers {
 			context = null;
 		}
 
-		public abstract void BeginProcessing(bool measuring);
+		public virtual void BeginProcessing(bool measuring) {
 
-		public abstract void EndProcessing();
+			this.measuring = measuring;
+
+		}
+
+		public virtual void EndProcessing() {
+
+			if (measuring) {
+				measuredMin = currentMeasuredMin;
+				measuredMax = currentMeasuredMax;
+			}
+
+		}
 
 		#endregion
 
@@ -56,17 +101,23 @@ namespace Malsys.Processing.Components.Renderers {
 		/// <summary>
 		/// Initializes last point, width and color.
 		/// </summary>
-		public virtual void InitializeState(Point3D startPoint, double width, ColorF color) {
+		public virtual void InitializeState(Point3D startPoint, Quaternion rotation, double width, ColorF color) {
+
 			lastPoint = startPoint;
+			lastRotation = rotation;
 			lastWidth = width;
 			lastColor = color;
+
+			measuredMin = startPoint;
+			measuredMax = startPoint;
 		}
 
 		/// <summary>
 		/// Saves last point, width and color.
 		/// </summary>
-		public virtual void MoveTo(Point3D endPoint, double width, ColorF color) {
+		public virtual void MoveTo(Point3D endPoint, Quaternion rotation, double width, ColorF color) {
 			lastPoint = endPoint;
+			lastRotation = rotation;
 			lastWidth = width;
 			lastColor = color;
 		}
@@ -74,8 +125,9 @@ namespace Malsys.Processing.Components.Renderers {
 		/// <summary>
 		/// Saves last point, width and color. Should be called at the end of derived class implementation.
 		/// </summary>
-		public virtual void LineTo(Point3D endPoint, double forwardAxisRotation, double width, ColorF color) {
+		public virtual void DrawTo(Point3D endPoint, Quaternion rotation, double width, ColorF color) {
 			lastPoint = endPoint;
+			lastRotation = rotation;
 			lastWidth = width;
 			lastColor = color;
 		}

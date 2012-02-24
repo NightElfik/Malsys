@@ -122,6 +122,7 @@
     <Compile Include="Interpreters\GenericInterpreterCallerTests.cs" />
     <Compile Include="Interpreters\Interpreter3DTests.cs" />
     <Compile Include="Interpreters\InterpreterCallerTests.cs" />
+    <Compile Include="Math3DTests.cs" />
     <Compile Include="Parsing\ExpressionTests.cs" />
     <Compile Include="Parsing\LsystemTests.cs" />
     <Compile Include="Parsing\FunctionDefinitionTests.cs" />
@@ -136,7 +137,7 @@
     <Compile Include="Rewriters\SymbolRewriterTests.cs" />
     <Compile Include="Rewriters\GenericRewriterTests.cs" />
     <Compile Include="TestUtils\AssertEx.cs" />
-    <Compile Include="TestUtils\CompilerUtils.cs" />
+    <Compile Include="TestUtils\TestUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Malsys.Ast\Malsys.Ast.csproj">

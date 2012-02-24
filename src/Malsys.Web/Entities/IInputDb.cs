@@ -25,6 +25,8 @@ namespace Malsys.Web.Entities {
 
 		void AddSavedInput(SavedInput savedInput);
 
+		void DeleteSavedInput(SavedInput savedInput);
+
 
 		int SaveChanges();
 

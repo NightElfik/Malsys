@@ -1,0 +1,86 @@
+﻿@{
+	ViewBag.Title = "3D L-systems";
+	ViewBag.MainClass = "twoColumns";
+}
+
+<h2>3D L-systems</h2>
+
+<div class="floating_container clearfix">
+
+
+<div class="floating_box">
+<pre class="malsys box">
+/**
+ * http://en.wikipedia.org/wiki/Dragon_curve
+ */
+lsystem DragonCurve3D {
+
+	set axiom = L;
+	let iterations = 10;
+
+	rewrite L to L + R +;
+	rewrite R to - L - R;
+
+	interpret R L as DrawForward(8);
+	interpret + as Pitch(90);
+	interpret - as Pitch(-90);
+
+	process with ThreeJsRenderer;
+
+}
+</pre>
+</div>
+
+<div class="floating_box">
+<pre class="malsys box">
+lsystem GimbalLockTest{
+
+	set axiom =  + F;
+	let iterations = 5;
+
+	rewrite F to F . F;
+
+	interpret F as DrawForward(8);
+	interpret + as Pitch(90);
+	interpret . as Yaw(11);
+
+	process with ThreeJsRenderer;
+
+}
+</pre>
+</div>
+
+<div class="floating_box">
+<pre class="malsys box">
+/**
+ * http://en.wikipedia.org/wiki/Pythagoras_tree_(fractal)
+ */
+lsystem PythagorasTree3D {
+
+	let iterations = 7;
+	set axiom = +(90) F(40);
+
+	// angle should be between 0 and 90 (exclusive)
+	let angle = 40;
+	let angleComp = 90 - angle;  // complement
+	let sinAngle = sin(deg2rad(angle));
+	let sinAngleComp = sin(deg2rad(angleComp));
+
+	interpret E(x) as DrawForward(x, x);
+	interpret m as MoveForward;
+	interpret + as Pitch(angle);
+	interpret - as Pitch(-angleComp);
+	interpret [ as StartBranch;
+	interpret ] as EndBranch;
+
+	rewrite F(x)
+		with left = x * sinAngle, right = x * sinAngleComp
+		to E(x) [ + m(left / 2) F(right) ] - m(right / 2) F(left);
+
+	process with ThreeJsRenderer;
+
+}
+</pre>
+</div>
+
+</div>

@@ -288,7 +288,7 @@ namespace Malsys.Resources {
 			1,
 			new ExpressionValueType[] { ExpressionValueType.Array },
 			(a) => {
-				return a.Aggregate(0.0, (acc, val) => acc + (Constant)val).ToConst();
+				return ((ValuesArray)a[0]).Aggregate(0.0, (acc, val) => acc + (Constant)val).ToConst();
 			});
 
 		public static readonly FunctionCore ProductArr = new FunctionCore("product",
@@ -297,7 +297,7 @@ namespace Malsys.Resources {
 			1,
 			new ExpressionValueType[] { ExpressionValueType.Array },
 			(a) => {
-				return a.Aggregate(1.0, (acc, val) => acc * (Constant)val).ToConst();
+				return ((ValuesArray)a[0]).Aggregate(1.0, (acc, val) => acc * (Constant)val).ToConst();
 			});
 
 		public static readonly FunctionCore ProdArr = ProductArr.ChangeNameTo("prod");
@@ -308,7 +308,8 @@ namespace Malsys.Resources {
 			1,
 			new ExpressionValueType[] { ExpressionValueType.Array },
 			(a) => {
-				return (a.Aggregate(0.0, (acc, val) => acc + (Constant)val) / a.ArgsCount).ToConst();
+				var arr = ((ValuesArray)a[0]);
+				return (arr.Aggregate(0.0, (acc, val) => acc + (Constant)val) / arr.Length).ToConst();
 			});
 
 		public static readonly FunctionCore AvgArr = AverageArr.ChangeNameTo("avg");

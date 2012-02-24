@@ -1,5 +1,7 @@
 ﻿
 @if (Request.IsAuthenticated) {
+	@Html.ActionLink("Saved inputs", MVC.User.SavedInputs())
+	@:|
 	<b>@Html.ActionLink(User.Identity.Name, MVC.User.Index())</b>
 	@:[ @Html.ActionLink("Log Off", MVC.Authentication.LogOff()) ]
 }

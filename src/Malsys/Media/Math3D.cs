@@ -15,6 +15,13 @@ namespace Malsys.Media {
 	/// be the same on both (to avoid casting on to another).
 	/// </remarks>
 	public static class Math3D {
+
+		public static readonly Vector3D ZeroVector = new Vector3D(0, 0, 0);
+		public static readonly Vector3D UnitX = new Vector3D(1, 0, 0);
+		public static readonly Vector3D UnitY = new Vector3D(0, 1, 0);
+		public static readonly Vector3D UnitZ = new Vector3D(0, 0, 1);
+
+
 		/// <summary>
 		/// Adds two Point3D to Point3D.
 		/// </summary>
@@ -49,31 +56,123 @@ namespace Malsys.Media {
 			return Math.Sqrt(dx * dx + dy * dy + dz * dz);
 		}
 
-		public static Vector3D CountRotation(Vector3D forward, double forwardAxisRotation) {
-
-			Vector3D result = new Vector3D();
-
-			result.X = forwardAxisRotation * MathHelper.PiOver180;
-			// dot product of (0,1) and (fwd.x, fwd.z)
-			double dotY = forward.X * forward.X + forward.Z * forward.Z;
-			if (dotY != 0) {
-				result.Y = Math.Acos(forward.Z / Math.Sqrt(forward.X * forward.X + forward.Z * forward.Z));
-			}
-			else {
-				result.Y = 0;
-			}
-			// dot product of (1,0) and (fwd.x, fwd.y)
-			double dotZ = forward.X * forward.X + forward.Y * forward.Y;
-			if (dotZ != 0) {
-				result.Z = Math.Acos(forward.X / Math.Sqrt(forward.X * forward.X + forward.Y * forward.Y));
-			}
-			else {
-				result.Z = 0;
-			}
-
-			return result;
+		public static bool IsEpsilonEqualTo(this Vector3D vector, Vector3D another) {
+			return vector.X.EpsilonCompareTo(another.X) == 0
+				&& vector.Y.EpsilonCompareTo(another.Y) == 0
+				&& vector.Z.EpsilonCompareTo(another.Z) == 0;
 		}
 
+		public static bool IsEpsilonEqualTo(this Point3D vector, Point3D another) {
+			return vector.X.EpsilonCompareTo(another.X) == 0
+				&& vector.Y.EpsilonCompareTo(another.Y) == 0
+				&& vector.Z.EpsilonCompareTo(another.Z) == 0;
+		}
+
+		/// <summary>
+		/// Counts vector of Euler rotation from given quaternion.
+		/// Works even if given quaternion is not normalized.
+		/// </summary>
+		/// <remarks>
+		/// The cutoff point for singularities is set to 0.4995 which corresponds to 87.4 degrees.
+		/// http://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
+		/// http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToEuler/
+		/// </remarks>
+		public static Vector3D ToEuclidRotation(this Quaternion q) {
+
+			// Math.Asin(2 * 0.4995) = 87.4 degrees
+			const double gimbalLockTreshold = 0.4995;
+
+			if (!q.IsNormalized) {
+				q.Normalize();
+			}
+
+			double test = q.X * q.Y + q.Z * q.W;
+			//// singularity at north pole
+			//if (test > gimbalLockTreshold) {
+			//    return new Vector3D(0, 2 * Math.Atan2(q.X, q.W), MathHelper.PiHalf);
+			//}
+			//// singularity at south pole
+			//if (test < -gimbalLockTreshold) {
+			//    return new Vector3D(0, -2 * Math.Atan2(q.X, q.W), -MathHelper.PiHalf);
+			//}
+
+			double sqx = q.X * q.X;
+			double sqy = q.Y * q.Y;
+			double sqz = q.Z * q.Z;
+
+			double roll = Math.Atan2(2 * q.X * q.W - 2 * q.Y * q.Z, 1 - 2 * sqx - 2 * sqz);
+			double yaw = Math.Atan2(2 * q.Y * q.W - 2 * q.X * q.Z, 1 - 2 * sqy - 2 * sqz);
+			double pitch = Math.Asin(2 * test);
+			return new Vector3D(roll, yaw, pitch);
+
+
+
+
+			/******************************************************************/
+
+			//double test = q.W * q.Y - q.X * q.Z;
+
+			////// test singularities (gimbal lock) http://en.wikipedia.org/wiki/Gimbal_lock
+			//// singularity at north pole
+			////if (test > gimbalLockTreshold) {
+			////    return new Vector3D(MathHelper.PiHalf, MathHelper.PiHalf, MathHelper.PiHalf);
+			////}
+
+			////// singularity at south pole
+			////if (test < -gimbalLockTreshold) {
+			////    return new Vector3D(-2 * Math.Atan2(q.X, q.W), -MathHelper.PiHalf, 0);
+			////}
+
+			//return new Vector3D(
+			//    Math.Atan2(2 * (q.W * q.X + q.Y * q.Z), 1 - 2 * (q.X * q.X + q.Y * q.Y)),
+			//    Math.Asin(2 * test),
+			//    Math.Atan2(2 * (q.W * q.Z + q.X * q.Y), 1 - 2 * (q.Y * q.Y + q.Z * q.Z))
+			//);
+
+			/******************************************************************/
+
+			//Vector3D rotationaxes = new Vector3D();
+
+			//QuaternionRotation3D quatRotation = new QuaternionRotation3D(q);
+			//RotateTransform3D tranform = new RotateTransform3D(quatRotation);
+
+			//Vector3D forward = tranform.Transform(new Vector3D(1, 0, 0));
+			//Vector3D up = tranform.Transform(new Vector3D(0, 1, 0));
+			//rotationaxes = AngleTo(new Vector3D(), forward);
+
+			//if (rotationaxes.X.EpsilonCompareTo(MathHelper.PiHalf) == 0) {
+			//    rotationaxes.Y = Math.Atan2(up.Z, up.X);
+			//    rotationaxes.Z = 0;
+			//}
+			//else if (rotationaxes.X.EpsilonCompareTo(-MathHelper.PiHalf) == 0) {
+			//    rotationaxes.Y = Math.Atan2(-up.Z, -up.X);
+			//    rotationaxes.Z = 0;
+			//}
+			//else {
+			//    AxisAngleRotation3D r = new AxisAngleRotation3D();
+			//    r.Axis = new Vector3D(0, 1, 0);
+			//    r.Angle = -rotationaxes.Y;
+			//    tranform.Rotation = r;
+			//    tranform.Transform(up);
+
+			//    r.Axis = new Vector3D(1, 0, 0);
+			//    r.Angle = -rotationaxes.X;
+			//    tranform.Transform(up);
+
+			//    rotationaxes.Z = Math.Atan2(up.Y, -up.X);
+			//}
+
+			//return new Vector3D(rotationaxes.Z, rotationaxes.Y, rotationaxes.X);
+		}
+
+		//public static Vector3D AngleTo(Vector3D from, Vector3D location) {
+		//    Vector3D angle = new Vector3D();
+		//    Vector3D v3 = location - from;
+		//    v3.Normalize();
+		//    angle.X = Math.Asin(v3.Y);
+		//    angle.Y = Math.Atan2(-v3.Z, -v3.X);
+		//    return angle;
+		//}
 
 	}
 }

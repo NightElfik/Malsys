@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 namespace Malsys.Processing.Components {
-	public interface IRandomGeneratorProvider : IComponent {
+	public interface IRandomGeneratorProvider : IProcessComponent {
 
 		IRandomGenerator GetRandomGenerator();
 

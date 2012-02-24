@@ -166,7 +166,7 @@ namespace Malsys {
 			Contract.Requires<ArgumentOutOfRangeException>(count >= 0);
 			Contract.Ensures(Contract.Result<string>() != null);
 
-			return new StringBuilder().Insert(0, pattern, count).ToString();
+			return new StringBuilder(pattern.Length * count).Insert(0, pattern, count).ToString();
 		}
 	}
 }

@@ -107,7 +107,7 @@ namespace Malsys.Tests.Parsing {
 				excpected = input;
 			}
 
-			var actual = CompilerUtils.Print(CompilerUtils.ParseExpression(input)).TrimEnd();
+			var actual = TestUtils.Print(TestUtils.ParseExpression(input)).TrimEnd();
 
 			Assert.AreEqual(excpected, actual);
 		}

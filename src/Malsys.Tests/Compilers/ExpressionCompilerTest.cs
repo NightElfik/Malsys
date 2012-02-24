@@ -44,8 +44,8 @@ namespace Malsys.Tests {
 				excpected = input;
 			}
 
-			var compiledExpr = CompilerUtils.CompileExpression(input);
-			string actual = CompilerUtils.Print(compiledExpr);
+			var compiledExpr = TestUtils.CompileExpression(input);
+			string actual = TestUtils.Print(compiledExpr);
 
 			Assert.AreEqual(excpected, actual);
 		}

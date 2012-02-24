@@ -45,6 +45,7 @@ _minimize = true;
 _runOnBuild = false;
 _useCssExtension = true;
 
+System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
 
 
 #>

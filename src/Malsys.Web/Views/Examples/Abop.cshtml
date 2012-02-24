@@ -14,7 +14,7 @@
 
 
 <div class="floating_box">
-<pre class="malsys">
+<pre class="malsys box">
 /**
  * The Algorithmic Beauty of Plants (figure 1.7b)
  */
@@ -37,7 +37,7 @@ lsystem QuadraticKochCurve {
 </div>
 
 <div class="floating_box">
-<pre class="malsys">
+<pre class="malsys box">
 /**
  * The Algorithmic Beauty of Plants (figure 1.7a)
  */
@@ -61,7 +61,7 @@ lsystem QuadraticKochIsland {
 </div>
 
 <div class="floating_box">
-<pre class="malsys">
+<pre class="malsys box">
 /**
  * The Algorithmic Beauty of Plants (figure 1.8)
  */
@@ -85,7 +85,7 @@ lsystem IslandsAndLakes {
 </pre>
 </div>
 <div class="floating_box">
-<pre class="malsys">
+<pre class="malsys box">
 /**
  * The Algorithmic Beauty of Plants (figure 1.8)
  */
@@ -116,7 +116,7 @@ lsystem IslandsAndLakesColored {
 </div>
 
 <div class="floating_box">
-<pre class="malsys">
+<pre class="malsys box">
 
 /**
  * The Algorithmic Beauty of Plants (figure 1.11a)
@@ -141,7 +141,7 @@ lsystem HexagonalGosperCurve {
 </div>
 
 <div class="floating_box">
-<pre class="malsys">
+<pre class="malsys box">
 /**
  * The Algorithmic Beauty of Plants (figure 1.11b)
  */
@@ -166,7 +166,7 @@ lsystem QuadraticGosperCurve {
 </div>
 
 <div class="floating_box">
-<pre class="malsys">
+<pre class="malsys box">
 /**
  * The Algorithmic Beauty of Plants (figure 1.10b)
  */
@@ -189,7 +189,7 @@ lsystem SierpinskiGasket {
 </div>
 
 <div class="floating_box">
-<pre class="malsys">
+<pre class="malsys box">
 /**
  * The Algorithmic Beauty of Plants (figure 1.24c)
  */
@@ -214,7 +214,7 @@ lsystem Plant3 {
 </div>
 
 <div class="floating_box">
-<pre class="malsys">
+<pre class="malsys box">
 /**
  * The Algorithmic Beauty of Plants (figure 1.24d)
  */
@@ -240,7 +240,7 @@ lsystem Plant4 {
 </div>
 
 <div class="floating_box">
-<pre class="malsys">
+<pre class="malsys box">
 /**
  * The Algorithmic Beauty of Plants (figure 1.24e)
  */
@@ -267,7 +267,7 @@ lsystem Plant5 {
 
 
 <div class="floating_box">
-<pre class="malsys">
+<pre class="malsys box">
 /**
  * The Algorithmic Beauty of Plants (figure 5.5)
  */
@@ -337,7 +337,7 @@ lsystem MycelisMuralis {
 
 
 <div class="floating_box">
-<pre class="malsys">
+<pre class="malsys box">
 /**
  * The Algorithmic Beauty of Plants (figure 5.8)
  */
@@ -353,7 +353,7 @@ lsystem RoseLeaf {
 	let LC = 3; // initial length - marginal notch
 	let RC = 1.19; // growth rate - marginal notch
 
-	interpret G as DrawLine(4);
+	interpret G as DrawLine;
 	interpret + as TurnLeft(60);
 	interpret - as TurnLeft(-60);
 	interpret [ as StartBranch;

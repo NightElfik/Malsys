@@ -1,0 +1,4 @@
+When DB will be modifying, do not forget to:
+
+SavedInputs: change name of RandomId (omg)
+add column deleted, to be able to just mark as deleted instead of deleting

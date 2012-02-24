@@ -84,6 +84,7 @@ namespace Malsys {
 			switch (mimeType) {
 				case Application_Zip: return ".zip";
 				case Application_XGzip: return ".gz";
+				case Application_Json: return ".js";
 				case Image_Gif: return ".gif";
 				case Image_Jpeg: return ".jpg";
 				case Image_Png: return ".png";

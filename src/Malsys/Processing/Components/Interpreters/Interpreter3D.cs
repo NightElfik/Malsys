@@ -8,7 +8,7 @@ using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Processing.Components.Interpreters {
 	[Component("3D interpreter", ComponentGroupNames.Interpreters)]
-	public class Interpreter3D : IInterpreter {
+	public class Interpreter3D : IInterpreter3D {
 
 		private readonly ColorFactory colorFactory = new ColorFactory();
 
@@ -34,11 +34,11 @@ namespace Malsys.Processing.Components.Interpreters {
 		private bool interpretPloygons = true;
 
 		private Vector3D fwdVector = new Vector3D(1, 0, 0);
-		private Vector3D upVector = new Vector3D(0, 0, 1);
+		private Vector3D upVector = new Vector3D(0, 1, 0);
 		private Vector3D rightVector;  // counted from forward and up vectors by cross product
 
 		private Point3D initPosition = new Point3D(0, 0, 0);
-		private Quaternion initOrientation = Quaternion.Identity;
+		private Quaternion initRotation = Quaternion.Identity;
 		private double initWidth = 2;
 		private ColorF initColor = ColorF.Black;
 
@@ -80,15 +80,19 @@ namespace Malsys.Processing.Components.Interpreters {
 			}
 		}
 
-		//[UserSettable]
-		//public ValuesArray InitialDirection {
-		//    set {
-		//        if (!value.IsConstArrayOfLength(3)) {
-		//            throw new InvalidUserValueException("Direction have to be array of 3 constants representing direction vector.");
-		//        }
+		[UserSettable]
+		public ValuesArray RotationQuaternion {
+			set {
+				if (!value.IsConstArrayOfLength(4)) {
+					throw new InvalidUserValueException("Rotation quaternion have to be array of 4 constants representing direction quaternion.");
+				}
 
-		//    }
-		//}
+				initRotation.W = ((Constant)value[0]).Value;
+				initRotation.X = ((Constant)value[1]).Value;
+				initRotation.Y = ((Constant)value[2]).Value;
+				initRotation.Z = ((Constant)value[3]).Value;
+			}
+		}
 
 		[UserSettable]
 		public Constant InitialLineWidth {
@@ -130,8 +134,8 @@ namespace Malsys.Processing.Components.Interpreters {
 
 			rightVector = Vector3D.CrossProduct(fwdVector, upVector);
 
-			var test = new Vector3D(0, 0, 0);
-			test.Normalize();
+			//var test = new Vector3D(0, 0, 0);
+			//test.Normalize();
 
 			fwdVector.Normalize();
 			upVector.Normalize();
@@ -177,13 +181,13 @@ namespace Malsys.Processing.Components.Interpreters {
 			colorEvents = 0;
 			currState = new State3D() {
 				Position = initPosition,
-				Orientation = initOrientation,
+				Rotation = initRotation,
 				Width = initWidth,
 				Color = initColor
 			};
 
-			renderer.InitializeState(currState.Position, currState.Width, currState.Color);
 			renderer.BeginProcessing(measuring);
+			renderer.InitializeState(currState.Position, currState.Rotation, currState.Width, currState.Color);
 		}
 
 		public void EndProcessing() {
@@ -209,7 +213,8 @@ namespace Malsys.Processing.Components.Interpreters {
 		#endregion
 
 
-		#region Symbols interpretation methods
+		#region IInterpreter3D Members
+
 
 		/// <summary>
 		/// Symbol is ignored.
@@ -227,12 +232,12 @@ namespace Malsys.Processing.Components.Interpreters {
 
 			double length = getArgumentAsDouble(args, 0);
 
-			quatRotation.Quaternion = currState.Orientation;
+			quatRotation.Quaternion = currState.Rotation;
 			currState.Position += tranform.Transform(fwdVector * length);
 
 			if (interpretLines) {
 				ColorF color = colorContinously ? colorGradient[(float)colorEvents / colorEventsMeasured] : currState.Color;
-				renderer.MoveTo(currState.Position, currState.Width, color);
+				renderer.MoveTo(currState.Position, currState.Rotation, currState.Width, color);
 			}
 		}
 
@@ -240,11 +245,11 @@ namespace Malsys.Processing.Components.Interpreters {
 		/// Draws line in current direction with length equal to value of first parameter.
 		/// </summary>
 		[SymbolInterpretation(1)]
-		public void DrawLine(ArgsStorage args) {
+		public void DrawForward(ArgsStorage args) {
 
 			double length = getArgumentAsDouble(args, 0);
 
-			quatRotation.Quaternion = currState.Orientation;
+			quatRotation.Quaternion = currState.Rotation;
 			currState.Position += tranform.Transform(fwdVector * length);
 
 			if (interpretLines) {
@@ -260,7 +265,7 @@ namespace Malsys.Processing.Components.Interpreters {
 				}
 
 				colorEvents++;
-				renderer.LineTo(currState.Position, currState.Orientation.Angle, width, color);
+				renderer.DrawTo(currState.Position, currState.Rotation, width, color);
 			}
 		}
 
@@ -272,7 +277,7 @@ namespace Malsys.Processing.Components.Interpreters {
 
 			double angle = getArgumentAsDouble(args, 0);
 
-			currState.Orientation *= new Quaternion(upVector, angle);
+			currState.Rotation *= new Quaternion(upVector, angle);
 		}
 
 		/// <summary>
@@ -283,7 +288,7 @@ namespace Malsys.Processing.Components.Interpreters {
 
 			double angle = getArgumentAsDouble(args, 0);
 
-			currState.Orientation *= new Quaternion(rightVector, angle);
+			currState.Rotation *= new Quaternion(rightVector, angle);
 		}
 
 		/// <summary>
@@ -294,7 +299,7 @@ namespace Malsys.Processing.Components.Interpreters {
 
 			double angle = getArgumentAsDouble(args, 0);
 
-			currState.Orientation *= new Quaternion(fwdVector, angle);
+			currState.Rotation *= new Quaternion(fwdVector, angle);
 		}
 
 		/// <summary>
@@ -312,7 +317,7 @@ namespace Malsys.Processing.Components.Interpreters {
 		public void EndBranch(ArgsStorage args) {
 			if (statesStack.Count > 0) {
 				currState = statesStack.Pop();
-				renderer.MoveTo(currState.Position, currState.Width, currState.Color);
+				renderer.MoveTo(currState.Position, currState.Rotation, currState.Width, currState.Color);
 			}
 			else {
 				throw new InterpretationException("Failed to complete branch. No branch is opened.");

@@ -12,7 +12,7 @@
 </div>
 
 @Html.Grid(Model).Columns(col => {
-	col.For(m => Html.Link(m.RandomId, Request.Url.Scheme + System.Uri.SchemeDelimiter + Request.Url.Host +
+		col.For(m => Html.Link(m.RandomId, Request.Url.Scheme + System.Uri.SchemeDelimiter + Request.Url.Host +
 				(Request.Url.IsDefaultPort ? "" : ":" + Request.Url.Port) + Url.Action(MVC.Process.Load(m.RandomId))))
 			.Named("ID")
 			.HeaderAttributes(style => "width: 80px;")
@@ -28,6 +28,9 @@
 		col.For(m => "<pre class='malsys collapsable noMargin'>" + m.Source + "</pre>")
 			.Named("Source")
 			.Encode(false);
+		col.For(m => "<form action=\"{0}\" method=\"post\"><input name=\"submit\" type=\"submit\" value=\"Delete\" /></form>"
+				.Fmt(Url.Action(MVC.User.DeleteInput(m.RandomId, false))))
+			.Named("Delete")
+			.Encode(false);
 	}).Attributes(@class => "w100")
-
 

@@ -162,8 +162,8 @@ namespace Malsys.Processing.Components.Interpreters {
 				Color = initColor
 			};
 
-			renderer.InitializeState(new PointF((float)currState.X, (float)currState.Y), (float)currState.LineWidth, currState.Color);
 			renderer.BeginProcessing(measuring);
+			renderer.InitializeState(new PointF((float)currState.X, (float)currState.Y), (float)currState.LineWidth, currState.Color);
 		}
 
 		public void EndProcessing() {

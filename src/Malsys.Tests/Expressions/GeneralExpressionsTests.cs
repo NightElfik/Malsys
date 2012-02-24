@@ -41,9 +41,6 @@ namespace Malsys.Tests.Expressions {
 			evalAndCompareD(tn, "true", 1.0);
 			evalAndCompareD(tn, "false", 0.0);
 
-			evalAndCompareD(tn, "tau", Math.PI * 2);
-			evalAndCompareD(tn, "goldenRatio", (1 + Math.Sqrt(5)) / 2);
-
 		}
 
 		[TestMethod]
@@ -139,10 +136,10 @@ namespace Malsys.Tests.Expressions {
 			evalAndCompareD(tn, "ceil(4.00)", 4.0);
 			evalAndCompareD(tn, "ceiling(4.01)", 5.0);
 
-			evalAndCompareD(tn, "min(9)", 9.0);
+			evalAndCompareD(tn, "min({1,2,3,4,5,6,7,8,9})", 1.0);
 			evalAndCompareD(tn, "min(1,2,3,4,5,6,7,8,9)", 1.0);
 
-			evalAndCompareD(tn, "max(9)", 9.0);
+			evalAndCompareD(tn, "max({1,2,3,4,5,6,7,8,9})", 9.0);
 			evalAndCompareD(tn, "max(1,2,3,4,5,6,7,8,9)", 9.0);
 
 			evalAndCompareD(tn, "sqrt(81)", 9.0);
@@ -152,8 +149,8 @@ namespace Malsys.Tests.Expressions {
 			evalAndCompareD(tn, "factorial(4)", 24.0);
 
 			evalAndCompareD(tn, "log(1)", 0.0);
-			evalAndCompareD(tn, "log(e)", 1.0);
-			evalAndCompareD(tn, "log(e^6)", 6.0);
+			evalAndCompareD(tn, "log(2.7182818284590452354)", 1.0);
+			evalAndCompareD(tn, "log(2.7182818284590452354^6)", 6.0);
 			evalAndCompareD(tn, "log(64, 8)", 2.0);
 
 			evalAndCompareD(tn, "log10(1)", 0.0);
@@ -165,7 +162,8 @@ namespace Malsys.Tests.Expressions {
 			evalAndCompareD(tn, "prod()", 1.0);
 			evalAndCompareD(tn, "product(1,2,3,4)", 24);
 
-			evalAndCompareD(tn, "avg(7.7)", 7.7);
+			evalAndCompareD(tn, "avg({7.2})", 7.2);
+			evalAndCompareD(tn, "avg({0,1,2,3,4,5,6,7,8,9})", 4.5);
 			evalAndCompareD(tn, "average(0,1,2,3,4,5,6,7,8,9)", 4.5);
 
 			evalAndCompareD(tn, "deg2rad(0)", 0.0);
@@ -173,20 +171,20 @@ namespace Malsys.Tests.Expressions {
 			evalAndCompareD(tn, "deg2rad(180)", Math.PI);
 
 			evalAndCompareD(tn, "rad2deg(0)", 0.0);
-			evalAndCompareD(tn, "rad2deg(pi/2)", 90.0);
-			evalAndCompareD(tn, "rad2deg(pi)", 180.0);
+			evalAndCompareD(tn, "rad2deg(3.14159265358979323846/2)", 90.0);
+			evalAndCompareD(tn, "rad2deg(3.14159265358979323846)", 180.0);
 
 			evalAndCompareD(tn, "sin(0)", 0.0);
-			evalAndCompareD(tn, "sin(pi/2)", 1.0);
-			evalAndCompareD(tn, "sin(pi/6)", 0.5);
+			evalAndCompareD(tn, "sin(3.14159265358979323846/2)", 1.0);
+			evalAndCompareD(tn, "sin(3.14159265358979323846/6)", 0.5);
 
 			evalAndCompareD(tn, "cos(0)", 1.0);
-			evalAndCompareD(tn, "cos(pi/2)", 0.0);
-			evalAndCompareD(tn, "cos(pi/3)", 0.5);
+			evalAndCompareD(tn, "cos(3.14159265358979323846/2)", 0.0);
+			evalAndCompareD(tn, "cos(3.14159265358979323846/3)", 0.5);
 
 			evalAndCompareD(tn, "tan(0)", 0.0);
-			evalAndCompareD(tn, "tan(pi/4)", 1.0);
-			evalAndCompareD(tn, "tan(3 * pi / 4)", -1.0);
+			evalAndCompareD(tn, "tan(3.14159265358979323846 / 4)", 1.0);
+			evalAndCompareD(tn, "tan(3 * 3.14159265358979323846 / 4)", -1.0);
 
 			evalAndCompareD(tn, "asin(0)", 0.0);
 			evalAndCompareD(tn, "asin(1)", Math.PI / 2);
@@ -257,7 +255,7 @@ namespace Malsys.Tests.Expressions {
 
 		private void evalAndCompare(string testName, string exprStr, IValue exceptedValue) {
 
-			var actual = CompilerUtils.EvaluateExpression(exprStr);
+			var actual = TestUtils.EvaluateExpression(exprStr);
 
 			Assert.IsTrue((actual.CompareTo(exceptedValue) == 0) || (actual.IsNaN && exceptedValue.IsNaN),
 				"Expression `{0}` evaluated to `{1}`, but excepted value was `{2}`.",

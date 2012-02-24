@@ -28,7 +28,8 @@ namespace Malsys.Web.Entities {
 
 		/// <param name="name">Case insensitive name of desired user.</param>
 		public static User GetUserByName(this IUsersDb db, string name) {
-			return db.Users.Single(u => u.NameLowercase == name.ToLower());
+			string userNameLower = name.ToLowerInvariant();
+			return db.Users.Single(u => u.NameLowercase == userNameLower);
 		}
 
 		/// <summary>
@@ -41,7 +42,9 @@ namespace Malsys.Web.Entities {
 				return null;
 			}
 
-			return db.Users.SingleOrDefault(u => u.NameLowercase == name.ToLower());
+			string userNameLower = name.ToLowerInvariant();
+
+			return db.Users.SingleOrDefault(u => u.NameLowercase == userNameLower);
 		}
 
 	}

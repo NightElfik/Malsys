@@ -37,9 +37,9 @@ namespace Malsys.Tests.Evaluators {
 
 		private void doTest(string inputDefinitions, string inputExpression, string excpected) {
 
-			var inBlockEvaled = CompilerUtils.EvaluateLsystem(inputDefinitions);
-			var result = CompilerUtils.EvaluateExpression(inputExpression, inBlockEvaled.GlobalConstants, inBlockEvaled.GlobalFunctions);
-			string actual = CompilerUtils.Print(result);
+			var inBlockEvaled = TestUtils.EvaluateLsystem(inputDefinitions);
+			var result = TestUtils.EvaluateExpression(inputExpression, inBlockEvaled.GlobalConstants, inBlockEvaled.GlobalFunctions);
+			string actual = TestUtils.Print(result);
 
 			Assert.AreEqual(excpected, actual);
 

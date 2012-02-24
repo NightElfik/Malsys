@@ -2,7 +2,7 @@
 namespace Malsys.Processing.Components {
 
 	[Component("Interpreter container", ComponentGroupNames.Interpreters)]
-	public interface IInterpreter : IComponent {
+	public interface IInterpreter : IProcessComponent {
 
 		IRenderer Renderer { set; }
 

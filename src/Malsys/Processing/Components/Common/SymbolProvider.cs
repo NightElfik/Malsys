@@ -18,6 +18,10 @@ namespace Malsys.Processing.Components.Common {
 			Symbols = symbols.ToImmutableList();
 		}
 
+		public SymbolProvider(ImmutableList<Symbol<IValue>> symbols) {
+			Symbols = symbols;
+		}
+
 
 		public IEnumerator<Symbol<IValue>> GetEnumerator() {
 			return Symbols.GetEnumerator();

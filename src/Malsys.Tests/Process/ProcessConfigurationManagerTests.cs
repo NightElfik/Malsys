@@ -5,6 +5,7 @@ using Malsys.Processing.Components;
 using Microsoft.FSharp.Core;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Malsys.Processing.Output;
+using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Tests.Process {
 	[TestClass]
@@ -41,7 +42,7 @@ namespace Malsys.Tests.Process {
 
 		private void doTest(string configDefinition, string configStatement, string[] exceptedMessages) {
 
-			var input = CompilerUtils.EvaluateLsystem(configDefinition + configStatement);
+			var input = TestUtils.EvaluateLsystem(configDefinition + configStatement);
 
 			if (input.ProcessStatements.Length != 1) {
 				Assert.Fail("Expected 1 process statement.");
@@ -63,7 +64,7 @@ namespace Malsys.Tests.Process {
 			resolver.RegisterComponent(typeof(IDummyContainer));
 
 			var logger = new MessageLogger();
-			var ctxt = new ProcessContext(null, new FileOutputProvider("./"), input, null, logger);
+			var ctxt = new ProcessContext(new LsystemEvaled("EmptyLsystem"), new FileOutputProvider("./"), input, null, logger);
 			var manager = new ProcessConfigurationManager();
 			if (!manager.TryBuildConfiguration(procConfig, procStat.ComponentAssignments, resolver, ctxt, new MessageLogger())) {
 				Console.WriteLine(logger.ToString());
@@ -83,14 +84,14 @@ namespace Malsys.Tests.Process {
 		private interface IDummyContainer {
 
 			[UserConnectable]
-			IComponent Component { set; }
+			IProcessComponent Component { set; }
 
 		}
 
-		private class DummyContaineredBoy : IDummyContainer, IComponent {
+		private class DummyContaineredBoy : IDummyContainer, IProcessComponent {
 
 			[UserConnectable]
-			public IComponent Component { get; set; }
+			public IProcessComponent Component { get; set; }
 
 
 			#region IComponent Members
@@ -110,10 +111,10 @@ namespace Malsys.Tests.Process {
 			#endregion
 		}
 
-		private class DummyContaineredGirl : IDummyContainer, IComponent {
+		private class DummyContaineredGirl : IDummyContainer, IProcessComponent {
 
 			[UserConnectable]
-			public IComponent Component { get; set; }
+			public IProcessComponent Component { get; set; }
 
 
 			#region IComponent Members
@@ -133,10 +134,10 @@ namespace Malsys.Tests.Process {
 			#endregion
 		}
 
-		private class DummyRewriter : IComponent {
+		private class DummyRewriter : IProcessComponent {
 
 			[UserConnectable]
-			public IComponent SymbolProcessor { get; set; }
+			public IProcessComponent SymbolProcessor { get; set; }
 
 
 			#region IComponent Members
@@ -156,7 +157,7 @@ namespace Malsys.Tests.Process {
 			#endregion
 		}
 
-		private class DummySymbolProcessor : IComponent {
+		private class DummySymbolProcessor : IProcessComponent {
 
 			#region IComponent Members
 

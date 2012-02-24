@@ -89,5 +89,9 @@ namespace Malsys.Media {
 			return new string(result);
 		}
 
+		public override string ToString() {
+			return "{0},{1},{2},{3}".FmtInvariant(A, R, G, B);
+		}
+
 	}
 }

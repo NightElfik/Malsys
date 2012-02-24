@@ -21,7 +21,7 @@ namespace Malsys.Web.Areas.Help.Models {
 				AccessibleNames = accessibleNames,
 				IsContainer = type.IsInterface,
 				BaseTypes = (type.BaseType != null ? type.GetInterfaces().Concat(new Type[] { type.BaseType }) : type.GetInterfaces())
-					.Where(x => typeof(IComponent).IsAssignableFrom(x)).OrderBy(x => x.FullName),
+					.Where(x => typeof(IProcessComponent).IsAssignableFrom(x)).OrderBy(x => x.FullName),
 				DerivedTypes = allComponentsTypes.Where(x => !type.Equals(x) && type.IsAssignableFrom(x)).OrderBy(x => x.FullName),
 				Documentation = xmlDocReader.GetXmlDocumentation(type)
 			};

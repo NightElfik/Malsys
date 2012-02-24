@@ -28,5 +28,9 @@ namespace Malsys.Web.Controllers {
 			return View();
 		}
 
+		public virtual ActionResult ThreeD() {
+			return View();
+		}
+
 	}
 }

@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Windows.Media.Media3D;
-using Malsys.Media;
-using Microsoft.FSharp.Collections;
 using System.IO;
+using System.Windows.Media.Media3D;
 using Malsys.IO;
+using Malsys.Media;
 
 namespace Malsys.Processing.Components.Renderers {
 	[Component("3D WebGl renderer", ComponentGroupNames.Renderers)]
 	public class ThreeJsSceneRenderer3D : BaseRenderer3D {
 
-		protected bool measuring;
 		private IndentTextWriter writer;
 
 		private int objCounetr;
@@ -18,13 +16,20 @@ namespace Malsys.Processing.Components.Renderers {
 		private const string lineGeometryName = "line";
 		private const string lineMaterialName = "basic";
 
+		public override void Initialize(ProcessContext ctxt) {
+			base.Initialize(ctxt);
+
+			ctxt.Logger.LogMessage("beta", MessageType.Warning, Position.Unknown,
+				"3D renderer is not working properly.");
+		}
 
 
 		public override bool RequiresMeasure { get { return false; } }
 
 		public override void BeginProcessing(bool measuring) {
 
-			this.measuring = measuring;
+			base.BeginProcessing(measuring);
+
 			objCounetr = 0;
 
 			if (measuring) {
@@ -44,32 +49,44 @@ namespace Malsys.Processing.Components.Renderers {
 
 		public override void EndProcessing() {
 
+			base.EndProcessing();
+
 			if (!measuring) {
+				// we don't require measuring, so save even if there was no measure (while measuring, base method do this)
+				measuredMin = currentMeasuredMin;
+				measuredMax = currentMeasuredMax;
+
 				endFile();
 				writer.Close();
 				writer = null;
+
 			}
 		}
 
 
-		public override void LineTo(Point3D endPoint, double forwardAxisRotation, double width, ColorF color) {
+		public override void DrawTo(Point3D endPoint, Quaternion rotation, double width, ColorF color) {
 
 			if (!measuring) {
-				Vector3D rotation = Math3D.CountRotation(Point3D.Subtract(lastPoint, endPoint), forwardAxisRotation);
-				rotation.Z -= MathHelper.PiHalf;
+				var euclidRotation = rotation.ToEuclidRotation();
+				//euclidRotation.Z -= MathHelper.PiHalf;
 
 				startJsonObject("obj" + objCounetr++);
 				{
 					writeJsonValue("geometry", lineGeometryName);
 					writeJson("\"materials\": [\"" + lineMaterialName + "\"]");
 					writeJsonValue("position", Math3D.CountMiddlePoint(endPoint, lastPoint));
-					writeJsonValue("rotation", rotation);
-					writeJsonValue("scale", new Vector3D(width, Math3D.Distance(endPoint, lastPoint), width));
+					writeJsonValue("rotation", euclidRotation);
+					//writeJsonValue("quaternion", rotation);
+					//writeJsonValue("useQuaternion", true);
+					writeJsonValue("scale", new Vector3D(Math3D.Distance(endPoint, lastPoint), width , width));
+					writeJsonValue("doubleSided", false);
 					writeJsonValue("visible", true, false);
 				}
 				endJsonObject();
 
-				base.LineTo(endPoint, forwardAxisRotation, width, color);
+				base.DrawTo(endPoint, rotation, width, color);
+
+				measure(endPoint);
 			}
 		}
 
@@ -78,6 +95,7 @@ namespace Malsys.Processing.Components.Renderers {
 		}
 
 
+		#region Json output methods
 
 		private void startJsonObject(string name) {
 			writer.WriteLine("\"" + name + "\": {");
@@ -89,7 +107,7 @@ namespace Malsys.Processing.Components.Renderers {
 		}
 
 		private void writeJsonValue(string name, bool value, bool comma = true) {
-			writer.WriteLine("\"{0}\": \"{1}\"{2}".Fmt(name, value ? "true" : "false", comma ? "," : ""));
+			writer.WriteLine("\"{0}\": {1}{2}".Fmt(name, value ? "true" : "false", comma ? "," : ""));
 		}
 
 		private void writeJsonValue(string name, string value, bool comma = true) {
@@ -108,12 +126,17 @@ namespace Malsys.Processing.Components.Renderers {
 			writer.WriteLine("\"{0}\": [{1},{2},{3}]{4}".FmtInvariant(name, value.X, value.Y, value.Z, comma ? "," : ""));
 		}
 
+		private void writeJsonValue(string name, Quaternion value, bool comma = true) {
+			writer.WriteLine("\"{0}\": [{1},{2},{3},{4}]{5}".FmtInvariant(name, value.W, value.X, value.Y, value.Z, comma ? "," : ""));
+		}
+
 		private void endJsonObject(bool comma = true) {
 			writer.Unindent();
 			writer.WriteLine("}" + (comma ? "," : ""));
 		}
 
 		private void startFile() {
+
 			writer.WriteLine("{");
 
 			startJsonObject("metadata");
@@ -128,12 +151,20 @@ namespace Malsys.Processing.Components.Renderers {
 			{
 				startJsonObject(lineGeometryName);
 				{
-					writeJsonValue("type", "cylinder");
-					writeJsonValue("topRad", 0.5);
-					writeJsonValue("botRad", 0.5);
+					//writeJsonValue("type", "cylinder");
+					//writeJsonValue("topRad", 0.5);
+					//writeJsonValue("botRad", 0.5);
+					//writeJsonValue("height", 1);
+					//writeJsonValue("radSegs", 7);
+					//writeJsonValue("heightSegs", 1, false);
+					writeJsonValue("type", "cube");
+					writeJsonValue("width", 1);
 					writeJsonValue("height", 1);
-					writeJsonValue("radSegs", 7);
-					writeJsonValue("heightSegs", 1, false);
+					writeJsonValue("depth", 1);
+					writeJsonValue("segmentsWidth", 1);
+					writeJsonValue("segmentsHeight", 1);
+					writeJsonValue("segmentsDepth", 1);
+					writeJsonValue("flipped", false, false);
 				}
 				endJsonObject(false);
 			}
@@ -148,6 +179,42 @@ namespace Malsys.Processing.Components.Renderers {
 					startJsonObject("parameters");
 					{
 						writeJsonValue("color", 16777215);
+						writeJsonValue("shading", "flat", false);
+					}
+					endJsonObject(false);
+				}
+				endJsonObject();
+
+				startJsonObject("red");
+				{
+					writeJsonValue("type", "MeshLambertMaterial");
+					startJsonObject("parameters");
+					{
+						writeJsonValue("color", 16711680);
+						writeJsonValue("shading", "flat", false);
+					}
+					endJsonObject(false);
+				}
+				endJsonObject();
+
+				startJsonObject("green");
+				{
+					writeJsonValue("type", "MeshLambertMaterial");
+					startJsonObject("parameters");
+					{
+						writeJsonValue("color", 65280);
+						writeJsonValue("shading", "flat", false);
+					}
+					endJsonObject(false);
+				}
+				endJsonObject();
+
+				startJsonObject("blue");
+				{
+					writeJsonValue("type", "MeshLambertMaterial");
+					startJsonObject("parameters");
+					{
+						writeJsonValue("color", 255);
 						writeJsonValue("shading", "flat", false);
 					}
 					endJsonObject(false);
@@ -185,13 +252,35 @@ namespace Malsys.Processing.Components.Renderers {
 
 		private void endFile() {
 
-			startJsonObject("obj" + objCounetr++);
+			startJsonObject("x");
 			{
 				writeJsonValue("geometry", lineGeometryName);
-				writeJson("\"materials\": [\"" + lineMaterialName + "\"]");
-				writeJsonValue("position", new Point3D(0, 0, 0));
+				writeJson("\"materials\": [\"red\"]");
+				writeJsonValue("position", new Point3D(10, 0, 0));
+				writeJsonValue("rotation", new Vector3D(0, 0, MathHelper.PiHalf));
+				writeJsonValue("scale", new Vector3D(1, 20, 1));
+				writeJsonValue("visible", true, false);
+			}
+			endJsonObject();
+
+			startJsonObject("y");
+			{
+				writeJsonValue("geometry", lineGeometryName);
+				writeJson("\"materials\": [\"green\"]");
+				writeJsonValue("position", new Point3D(0, 10, 0));
 				writeJsonValue("rotation", new Vector3D(0, 0, 0));
-				writeJsonValue("scale", new Vector3D(1, 10, 1));
+				writeJsonValue("scale", new Vector3D(1, 20, 1));
+				writeJsonValue("visible", true, false);
+			}
+			endJsonObject();
+
+			startJsonObject("z");
+			{
+				writeJsonValue("geometry", lineGeometryName);
+				writeJson("\"materials\": [\"blue\"]");
+				writeJsonValue("position", new Point3D(0, 0, 10));
+				writeJsonValue("rotation", new Vector3D(MathHelper.PiHalf, 0, 0));
+				writeJsonValue("scale", new Vector3D(1, 20, 1));
 				writeJsonValue("visible", true, false);
 			}
 			endJsonObject(false);
@@ -207,9 +296,9 @@ namespace Malsys.Processing.Components.Renderers {
 					writeJsonValue("fov", 60);
 					writeJsonValue("aspect", 1.33333);
 					writeJsonValue("near", 1);
-					writeJsonValue("far", 1000);
-					writeJsonValue("position", new Point3D(50, 0, 100));
-					writeJsonValue("target", new Point3D(50, 0, 0), false);
+					writeJsonValue("far", 1e7);
+					writeJsonValue("position", measuredMax);
+					writeJsonValue("target", Math3D.CountMiddlePoint(measuredMin, measuredMax), false);
 				}
 				endJsonObject(false);
 			}
@@ -219,7 +308,7 @@ namespace Malsys.Processing.Components.Renderers {
 			writer.WriteLine("}");
 		}
 
-
+		#endregion
 
 
 	}

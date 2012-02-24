@@ -1,0 +1,42 @@
+﻿@model MailModel
+
+@{
+	ViewBag.Title = "Try send mail";
+}
+
+@using (Html.BeginForm()) {
+	@Html.ValidationSummary(true)
+
+	<fieldset>
+		<legend>Try send mail</legend>
+
+		<div class="editor-label">
+			@Html.LabelFor(m => m.Address)
+		</div>
+		<div class="editor-field">
+			@Html.EditorFor(m => m.Address)
+			@Html.ValidationMessageFor(m => m.Address)
+		</div>
+
+		<div class="editor-label">
+			@Html.LabelFor(m => m.Subject)
+		</div>
+		<div class="editor-field">
+			@Html.EditorFor(m => m.Subject)
+			@Html.ValidationMessageFor(m => m.Subject)
+		</div>
+
+		<div class="editor-label">
+			@Html.LabelFor(m => m.Body)
+		</div>
+		<div class="editor-field">
+			@Html.EditorFor(m => m.Body)
+			@Html.ValidationMessageFor(m => m.Body)
+		</div>
+
+		<p>
+			<input type="submit" value="Send" />
+		</p>
+	</fieldset>
+}
+
