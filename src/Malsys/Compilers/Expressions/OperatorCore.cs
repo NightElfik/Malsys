@@ -36,16 +36,16 @@ namespace Malsys.Compilers.Expressions {
 		/// Types of parameters of operator.
 		/// Length of the array is equal to operator's arity.
 		/// </summary>
-		public readonly ImmutableList<ExpressionValueType> ParamsTypes;
+		public readonly ImmutableList<ExpressionValueTypeFlags> ParamsTypes;
 
 		public readonly Func<ArgsStorage, IValue> EvalFunction;
 
 
-		internal OperatorCore(string syntax, byte prec, byte activePrec, ExpressionValueType[] paramsTypes, Func<ArgsStorage, IValue> evalFunc)
-			: this(syntax, prec, activePrec, new ImmutableList<ExpressionValueType>(paramsTypes, true), evalFunc) {
+		internal OperatorCore(string syntax, byte prec, byte activePrec, ExpressionValueTypeFlags[] paramsTypes, Func<ArgsStorage, IValue> evalFunc)
+			: this(syntax, prec, activePrec, new ImmutableList<ExpressionValueTypeFlags>(paramsTypes, true), evalFunc) {
 		}
 
-		public OperatorCore(string syntax, byte prec, byte activePrec, ImmutableList<ExpressionValueType> paramsTypes, Func<ArgsStorage, IValue> evalFunc) {
+		public OperatorCore(string syntax, byte prec, byte activePrec, ImmutableList<ExpressionValueTypeFlags> paramsTypes, Func<ArgsStorage, IValue> evalFunc) {
 
 			Contract.Requires<ArgumentNullException>(syntax != null);
 			Contract.Requires<ArgumentNullException>(paramsTypes != null);

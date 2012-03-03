@@ -12,7 +12,7 @@ namespace Malsys.Processing.Components.Common {
 				return;
 			}
 
-			using (TextWriter writer = new StreamWriter(outputProvider.GetOutputStream<ConstantsDumper>("Variables dump", MimeType.Text_Plain))) {
+			using (TextWriter writer = new StreamWriter(outputProvider.GetOutputStream<ConstantsDumper>("Variables dump", MimeType.Text.Plain))) {
 
 				foreach (var c in inBlock.GlobalConstants) {
 

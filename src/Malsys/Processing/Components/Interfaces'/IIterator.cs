@@ -1,5 +1,6 @@
 ﻿
 using Malsys.SemanticModel.Evaluated;
+using Malsys.SemanticModel;
 namespace Malsys.Processing.Components {
 	[Component("Generic iterator", ComponentGroupNames.Iterators)]
 	public interface IIterator : ISymbolProvider, IProcessStarter {
@@ -13,7 +14,7 @@ namespace Malsys.Processing.Components {
 		[UserConnectable]
 		ISymbolProcessor OutputProcessor { set; }
 
-		[UserSettable(IsMandatory = true)]
-		IValue Iterations { set; }
+		[UserSettable]
+		Constant Iterations { set; }
 	}
 }

@@ -24,7 +24,7 @@ namespace Malsys.Web.Models {
 			var logger = new MessageLogger();
 
 			var inEvaled = processManager.CompileAndEvaluateInput(input, logger);
-			if (logger.ErrorOcured) {
+			if (logger.ErrorOccurred) {
 				return new string[] { logger.AllMessagesToFullString() };
 			}
 
@@ -32,7 +32,7 @@ namespace Malsys.Web.Models {
 			var outputProvider = new InMemoryOutputProvider();
 
 			processManager.ProcessLsystems(inEvaled, outputProvider, logger, new TimeSpan(0, 0, 1));
-			if (logger.ErrorOcured) {
+			if (logger.ErrorOccurred) {
 				return new string[] { logger.AllMessagesToFullString() };
 			}
 

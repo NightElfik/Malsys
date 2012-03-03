@@ -1,6 +1,5 @@
 ﻿using Malsys.Evaluators;
 using Malsys.SemanticModel.Evaluated;
-using Malsys.Processing.Output;
 
 namespace Malsys.Processing {
 	public class ProcessContext {
@@ -11,13 +10,13 @@ namespace Malsys.Processing {
 
 		public InputBlock InputData { get; private set; }
 
-		public EvaluatorsContainer Evaluator { get; private set; }
+		public IEvaluatorsContainer Evaluator { get; private set; }
 
 		public IMessageLogger Logger { get; private set; }
 
 
 		public ProcessContext(LsystemEvaled lsystem, IOutputProvider outputProvider,
-				InputBlock data, EvaluatorsContainer evaluator, IMessageLogger logger) {
+				InputBlock data, IEvaluatorsContainer evaluator, IMessageLogger logger) {
 
 			Lsystem = lsystem;
 			OutputProvider = outputProvider;

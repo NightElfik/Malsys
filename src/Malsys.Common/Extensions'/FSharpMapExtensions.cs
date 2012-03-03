@@ -9,12 +9,28 @@ namespace Malsys {
 
 			oldValue = map.TryFind(key);
 			return map.Add(key, value);
+
 		}
 
 		public static FSharpMap<TKey, TValue> Add<TKey, TValue>(this FSharpMap<TKey, TValue> map, TKey key, TValue value, out bool oldValueWasSet) {
 
 			oldValueWasSet = OptionModule.IsSome(map.TryFind(key));
 			return map.Add(key, value);
+
+		}
+
+		public static bool TryGetValue<TKey, TValue>(this FSharpMap<TKey, TValue> map, TKey key, out TValue value) {
+
+			var maybeValue = map.TryFind(key);
+			if (OptionModule.IsSome(maybeValue)) {
+				value = maybeValue.Value;
+				return true;
+			}
+			else {
+				value = default(TValue);
+				return false;
+			}
+
 		}
 
 		public static FSharpMap<TKey, TValue> AddRange<TKey, TValue>(this FSharpMap<TKey, TValue> map, IEnumerable<KeyValuePair<TKey, TValue>> values) {

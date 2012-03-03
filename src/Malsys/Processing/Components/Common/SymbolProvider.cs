@@ -6,7 +6,7 @@ namespace Malsys.Processing.Components.Common {
 	[Component("Symbol provider", ComponentGroupNames.Common)]
 	public class SymbolProvider : ISymbolProvider {
 
-		[UserSettable]
+		[UserSettableSybols]
 		public ImmutableList<Symbol<IValue>> Symbols { get; set; }
 
 
@@ -33,15 +33,21 @@ namespace Malsys.Processing.Components.Common {
 		}
 
 
-		public bool RequiresMeasure { get { return false; } }
-
 		public void Initialize(ProcessContext ctxt) { }
 
 		public void Cleanup() { }
+
+
+		#region IProcessComponent Members
+
+		public bool RequiresMeasure {
+			get { return false; }
+		}
 
 		public void BeginProcessing(bool measuring) { }
 
 		public void EndProcessing() { }
 
+		#endregion
 	}
 }

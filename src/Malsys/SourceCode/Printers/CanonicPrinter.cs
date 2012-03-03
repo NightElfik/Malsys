@@ -124,7 +124,7 @@ namespace Malsys.SourceCode.Printers {
 			writer.WriteLine("}");
 		}
 
-		public void Print(ProcessConfiguration processConf) {
+		public void Print(ProcessConfigurationStatement processConf) {
 
 			Print(Ast.Keyword.Configuration);
 			writer.Write(processConf.Name);

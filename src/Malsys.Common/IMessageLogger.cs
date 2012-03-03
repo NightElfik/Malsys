@@ -4,14 +4,27 @@ using System.Diagnostics.Contracts;
 namespace Malsys {
 	public interface IMessageLogger {
 
-		bool ErrorOcured { get; }
+		bool ErrorOccurred { get; }
 
 		void LogMessage(string msgId, MessageType type, Position pos, string message);
+
+
+		IMessageLoggerBlock StartErrorLoggingBlock();
+
+	}
+
+	public interface IMessageLoggerBlock : IDisposable {
+
+		bool ErrorOccurred { get; }
 
 	}
 
 
 	public static class IMessageLoggerExtensions {
+
+		public static void LogInfo(this IMessageLogger logger, string msgId, string message, params object[] args) {
+			logger.LogMessage(msgId, MessageType.Info, Position.Unknown, message.Fmt(args));
+		}
 
 		public static void LogError(this IMessageLogger logger, string msgId, string message, params object[] args) {
 			logger.LogMessage(msgId, MessageType.Error, Position.Unknown, message.Fmt(args));
@@ -29,7 +42,7 @@ namespace Malsys {
 
 			Contract.Requires<ArgumentException>(typeof(TEnum).IsEnum, "T must be an enumerated type.");
 
-			string msgId = typeof(TEnum).FullName;
+			string msgId = EnumToMessageId(msgIdEnum);
 			string message;
 			MessageType msgType;
 
@@ -46,5 +59,8 @@ namespace Malsys {
 			logger.LogMessage(msgId, msgType, pos, message);
 		}
 
+		public static string EnumToMessageId<TEnum>(TEnum msgIdEnum) {
+			return typeof(TEnum).FullName + "#" + msgIdEnum.ToString();
+		}
 	}
 }

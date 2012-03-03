@@ -18,13 +18,13 @@ namespace Malsys.Compilers {
 		public void LoadFromType(Type t, bool ignoreDuplicities = false) {
 
 			foreach (FieldInfo fi in t.GetFields(BindingFlags.Public | BindingFlags.Static)) {
-				if (fi.FieldType.Equals(typeof(KnownConstant))) {
+				if (fi.FieldType == typeof(KnownConstant)) {
 					load((KnownConstant)fi.GetValue(null), ignoreDuplicities);
 				}
-				else if (fi.FieldType.Equals(typeof(FunctionCore))) {
+				else if (fi.FieldType == typeof(FunctionCore)) {
 					load((FunctionCore)fi.GetValue(null), ignoreDuplicities);
 				}
-				else if (fi.FieldType.Equals(typeof(OperatorCore))) {
+				else if (fi.FieldType == typeof(OperatorCore)) {
 					load((OperatorCore)fi.GetValue(null), ignoreDuplicities);
 				}
 			}

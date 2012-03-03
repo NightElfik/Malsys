@@ -110,7 +110,7 @@ namespace Malsys.Processing.Components.Renderers {
 
 				outputStream = context.OutputProvider.GetOutputStream<SvgRenderer2D>(
 					"SVG result from `{0}`".Fmt(context.Lsystem.Name),
-					MimeType.Image_SvgXml, false, localAdditionalData);
+					MimeType.Image.SvgXml, false, localAdditionalData);
 
 				if (compress) {
 					var gzipStream = new GZipStream(outputStream, CompressionMode.Compress);

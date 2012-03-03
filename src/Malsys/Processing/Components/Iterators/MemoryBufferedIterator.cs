@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Malsys.SemanticModel;
@@ -18,7 +19,9 @@ namespace Malsys.Processing.Components.RewriterIterators {
 		private List<Symbol<IValue>> inBuffer = new List<Symbol<IValue>>();
 		private List<Symbol<IValue>> outBuffer = new List<Symbol<IValue>>();
 
-		private int[] iterationsArray = new int[] { 0 };
+		private bool interpretEachIteration;
+		private int iterations;
+		private int currIteration;
 
 		private Stopwatch swDuration = new Stopwatch();
 		private TimeSpan timeout;
@@ -26,27 +29,31 @@ namespace Malsys.Processing.Components.RewriterIterators {
 		private bool aborted = false;
 
 
+		/// <summary>
+		/// Number of current iteration. Zero-based, first iteration is 0, last is Iterations - 1.
+		/// </summary>
+		[UserGettable]
+		public Constant CurrentIteration {
+			get { return currIteration.ToConst(); }
+		}
 
+		[Alias("i")]
 		[UserSettable]
-		public IValue Iterations {
+		public Constant Iterations {
 			set {
-				if (value.IsConstant && !((Constant)value).IsNaN && ((Constant)value).Value >= 0) {
-					iterationsArray = new int[] { ((Constant)value).RoundedIntValue };
-				}
-				else if (value.IsConstArray()) {
-					ValuesArray arr = (ValuesArray)value;
-					iterationsArray = new int[arr.Length];
-					for (int i = 0; i < arr.Length; i++) {
-						if (((Constant)arr[i]).IsNaN || ((Constant)arr[i]).Value < 0) {
-							throw new InvalidUserValueException("Iterations value `{0}` in given array is invalid (at index {1})."
-								.Fmt(arr[i].ToString(), i));
-						}
-						iterationsArray[i] = ((Constant)arr[i]).RoundedIntValue;
-					}
+				if (!value.IsNaN && value.Value >= 0) {
+					iterations = value.RoundedIntValue;
 				}
 				else {
 					throw new InvalidUserValueException("Iterations value is invalid.");
 				}
+			}
+		}
+
+		[UserSettable]
+		public Constant InterpretEachIteration {
+			set {
+				interpretEachIteration = !value.IsZero;
 			}
 		}
 
@@ -70,9 +77,11 @@ namespace Malsys.Processing.Components.RewriterIterators {
 			return inBuffer.GetEnumerator();
 		}
 
-		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
+		IEnumerator IEnumerable.GetEnumerator() {
 			return inBuffer.GetEnumerator();
 		}
+
+
 		public bool RequiresMeasure {
 			get { return false; }
 		}
@@ -98,13 +107,11 @@ namespace Malsys.Processing.Components.RewriterIterators {
 			this.timeout = timeout;
 			swDuration.Restart();
 
-			foreach (var iter in iterationsArray) {
-				start(doMeasure, iter);
+			symbolProvider.BeginProcessing(true);
 
-				if (aborted) {
-					break;
-				}
-			}
+			start(doMeasure);
+
+			symbolProvider.EndProcessing();
 
 			swDuration.Stop();
 		}
@@ -116,75 +123,72 @@ namespace Malsys.Processing.Components.RewriterIterators {
 		#endregion
 
 
-		private void start(bool doMeasure, int iterations) {
+		private void start(bool doMeasure) {
 
 			inBuffer.Clear();
 			inBuffer.AddRange(AxiomProvider);
 
-			rewrite(iterations);
+			for (currIteration = 0; currIteration < iterations; currIteration++) {
 
-			if (aborted) {
-				return;
-			}
+				rewriteIteration();
+				if (aborted) { return; }
 
-			if (doMeasure) {
-				interpret(true);
-			}
-
-			if (aborted) {
-				return;
-			}
-
-			interpret(false);
-		}
-
-		private void rewrite(int iterations) {
-
-			symbolProvider.BeginProcessing(true);
-
-			for (int i = 0; i < iterations; i++) {
-
-				foreach (var symbol in symbolProvider) {
-
-					outBuffer.Add(symbol);
-
-					if (swDuration.Elapsed > timeout || aborting) {
-						symbolProvider.EndProcessing();
-						logger.LogMessage(aborting ? Message.Abort : Message.Timeout, "rewriting iteration {0} of {1}".Fmt(i, iterations));
-						aborted = true;
-						return;
+				if (interpretEachIteration || currIteration + 1 == iterations) {
+					if (doMeasure) {
+						interpret(true);
+						if (aborted) { return; }
 					}
 
+					interpret(false);
+					if (aborted) { return; }
 				}
-
-				inBuffer.Clear();
-				Swap.Them(ref inBuffer, ref outBuffer);
 			}
 
-			symbolProvider.EndProcessing();
+		}
+
+		private void rewriteIteration() {
+
+			foreach (var symbol in symbolProvider) {
+
+				if (swDuration.Elapsed > timeout || aborting) {
+					logger.LogMessage(aborting ? Message.Abort : Message.Timeout, "rewriting iteration {0} of {1}".Fmt(currIteration, iterations));
+					aborted = true;
+					return;
+				}
+
+				outBuffer.Add(symbol);
+
+			}
+
+			inBuffer.Clear();
+			Swap.Them(ref inBuffer, ref outBuffer);
+
 		}
 
 		private void interpret(bool measuring) {
 
 			outProcessor.BeginProcessing(measuring);
+
 			foreach (var s in inBuffer) {
 
 				if (swDuration.Elapsed > timeout || aborting) {
-					outProcessor.EndProcessing();
 					logger.LogMessage(aborting ? Message.Abort : Message.Timeout, measuring ? "measuring" : "interpreting");
 					aborted = true;
+
+					outProcessor.EndProcessing();
 					return;
 				}
 
 				outProcessor.ProcessSymbol(s);
 			}
+
 			outProcessor.EndProcessing();
 		}
 
 
 		public enum Message {
 
-			[Message(MessageType.Error, "Iterator aborted while {0}.")]
+			[Message(MessageType.Error, "Time ran out while iterator was {0}.")]
 			Timeout,
 			[Message(MessageType.Error, "Iterator aborted while {0}.")]
 			Abort,

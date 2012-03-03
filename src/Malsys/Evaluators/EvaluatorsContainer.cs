@@ -8,7 +8,7 @@ namespace Malsys.Evaluators {
 	/// <summary>
 	/// All evaluators in this container have single-instance lifetime.
 	/// </summary>
-	public class EvaluatorsContainer {
+	public class EvaluatorsContainer : IEvaluatorsContainer {
 
 		protected IContainer container;
 
@@ -30,7 +30,7 @@ namespace Malsys.Evaluators {
 		/// <summary>
 		/// Can be used to resolve other evaluators.
 		/// </summary>
-		public virtual T Resolve<T>() {
+		public T Resolve<T>() {
 			return container.Resolve<T>();
 		}
 
@@ -49,37 +49,4 @@ namespace Malsys.Evaluators {
 	}
 
 
-	public static class EvaluatorsContainerExtensions {
-
-		public static InputBlock EvaluateInput(this EvaluatorsContainer container, SemanticModel.Compiled.InputBlock input) {
-			return container.ResolveInputEvaluator().Evaluate(input);
-		}
-
-		public static InputBlock TryEvaluateInput(this EvaluatorsContainer container, SemanticModel.Compiled.InputBlock input, IMessageLogger logger) {
-			try {
-				return container.ResolveInputEvaluator().Evaluate(input);
-			}
-			catch (EvalException ex) {
-				logger.LogMessage(Message.EvalFailed, ex.GetFullMessage());
-				return null;
-			}
-		}
-
-		public static LsystemEvaled EvaluateLsystem(this EvaluatorsContainer container, SemanticModel.Compiled.LsystemEvaledParams input,
-				IList<IValue> arguments, ConstsMap consts, FunsMap funs) {
-			return container.ResolveLsystemEvaluator().Evaluate(input, arguments, consts, funs);
-		}
-
-		public static IValue EvaluateExpression(this EvaluatorsContainer container, SemanticModel.Compiled.IExpression input) {
-			return container.ResolveExpressionEvaluator().Evaluate(input);
-		}
-
-		public enum Message {
-
-			[Message(MessageType.Error, "Evaluation failed. {0}")]
-			EvalFailed,
-
-		}
-
-	}
 }

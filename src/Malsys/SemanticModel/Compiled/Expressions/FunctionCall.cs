@@ -18,7 +18,7 @@ namespace Malsys.SemanticModel.Compiled.Expressions {
 		/// Can have different length than Arguments list.
 		/// Use function <c>GetValueType</c> to get right type for argument.
 		/// </summary>
-		public readonly ImmutableList<ExpressionValueType> ParamsTypes;
+		public readonly ImmutableList<ExpressionValueTypeFlags> ParamsTypes;
 
 		public readonly Func<ArgsStorage, IValue> Evaluate;
 
@@ -26,7 +26,7 @@ namespace Malsys.SemanticModel.Compiled.Expressions {
 
 
 		public FunctionCall(string name, Func<ArgsStorage, IValue> evalFunc, ImmutableList<IExpression> args,
-				ImmutableList<ExpressionValueType> prmsTypes, Ast.ExpressionFunction astNode) {
+				ImmutableList<ExpressionValueTypeFlags> prmsTypes, Ast.ExpressionFunction astNode) {
 
 			Name = name;
 			Evaluate = evalFunc;
@@ -36,7 +36,7 @@ namespace Malsys.SemanticModel.Compiled.Expressions {
 			AstNode = astNode;
 		}
 
-		public ExpressionValueType GetValueType(int argIndex) {
+		public ExpressionValueTypeFlags GetValueType(int argIndex) {
 			return ParamsTypes[argIndex % ParamsTypes.Length];
 		}
 

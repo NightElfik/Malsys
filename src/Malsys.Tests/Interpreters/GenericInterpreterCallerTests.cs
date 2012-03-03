@@ -59,15 +59,14 @@ namespace Malsys.Tests.Interpreters {
 		}
 
 		public static void UnknownActionsTests(IInterpreterCaller caller) {
-			// FIXME
-			//var sym2Instr = new SymbolInterpretationEvaled[] {
-			//    new SymbolInterpretationEvaled("A", emptyParams, "ActionA", emptyInstrParams),
-			//    new SymbolInterpretationEvaled("C", emptyParams, "??", emptyInstrParams)
-			//};
+			var sym2Instr = new SymbolInterpretationEvaled[] {
+			    new SymbolInterpretationEvaled("A", emptyParams, "ActionA", emptyInstrParams),
+			    new SymbolInterpretationEvaled("C", emptyParams, "??", emptyInstrParams)
+			};
 
-			//doTest(caller, sym2Instr,
-			//    "A C A C C",
-			//    new string[] { "ActionA", "ActionA" });
+			doTest(caller, sym2Instr,
+				"A C A C C",
+				new string[] { "ActionA", "ActionA" });
 		}
 
 		public static void ParametersFromSymbolTests(IInterpreterCaller caller) {

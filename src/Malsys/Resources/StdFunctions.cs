@@ -16,7 +16,7 @@ namespace Malsys.Resources {
 			mathFunsGroup,
 			"Returns the square root of a given number.",
 			1,
-			new ExpressionValueType[] { ExpressionValueType.Constant },
+			new ExpressionValueTypeFlags[] { ExpressionValueTypeFlags.Constant },
 			(a) => {
 				return Math.Sqrt((Constant)a[0]).ToConst();
 			});
@@ -25,7 +25,7 @@ namespace Malsys.Resources {
 			mathFunsGroup,
 			"Returns the product of all positive integers less than or equal to given number.",
 			1,
-			new ExpressionValueType[] { ExpressionValueType.Constant },
+			new ExpressionValueTypeFlags[] { ExpressionValueTypeFlags.Constant },
 			(a) => {
 				if (a[0].IsNaN) { return Constant.NaN; }
 				double result = 1.0;
@@ -42,7 +42,7 @@ namespace Malsys.Resources {
 			mathFunsGroup,
 			"Returns the natural (base e) logarithm of a given number.",
 			1,
-			new ExpressionValueType[] { ExpressionValueType.Constant },
+			new ExpressionValueTypeFlags[] { ExpressionValueTypeFlags.Constant },
 			(a) => {
 				return Math.Log((Constant)a[0]).ToConst();
 			});
@@ -51,7 +51,7 @@ namespace Malsys.Resources {
 			mathFunsGroup,
 			" Returns the logarithm of a given number in a given base.",
 			2,
-			new ExpressionValueType[] { ExpressionValueType.Constant, ExpressionValueType.Constant },
+			new ExpressionValueTypeFlags[] { ExpressionValueTypeFlags.Constant, ExpressionValueTypeFlags.Constant },
 			(a) => {
 				return Math.Log((Constant)a[0], (Constant)a[1]).ToConst();
 			});
@@ -60,7 +60,7 @@ namespace Malsys.Resources {
 			mathFunsGroup,
 			"Returns the base 10 logarithm of a given number.",
 			1,
-			new ExpressionValueType[] { ExpressionValueType.Constant },
+			new ExpressionValueTypeFlags[] { ExpressionValueTypeFlags.Constant },
 			(a) => {
 				return Math.Log10((Constant)a[0]).ToConst();
 			});
@@ -77,7 +77,7 @@ namespace Malsys.Resources {
 			"Rounds given number to the nearest integral value. If the fractional component of a is halfway between two integers, "
 				+ "one of which is even and the other odd, then the even number is returned.",
 			1,
-			new ExpressionValueType[] { ExpressionValueType.Constant },
+			new ExpressionValueTypeFlags[] { ExpressionValueTypeFlags.Constant },
 			(a) => {
 				return Math.Round((Constant)a[0]).ToConst();
 			});
@@ -86,7 +86,7 @@ namespace Malsys.Resources {
 			roundFunsGroup,
 			"Returns the largest integer less than or equal to the given number.",
 			1,
-			new ExpressionValueType[] { ExpressionValueType.Constant },
+			new ExpressionValueTypeFlags[] { ExpressionValueTypeFlags.Constant },
 			(a) => {
 				return Math.Floor((Constant)a[0]).ToConst();
 			});
@@ -95,7 +95,7 @@ namespace Malsys.Resources {
 			roundFunsGroup,
 			"Returns the smallest integer greater than or equal to the given number.",
 			1,
-			new ExpressionValueType[] { ExpressionValueType.Constant },
+			new ExpressionValueTypeFlags[] { ExpressionValueTypeFlags.Constant },
 			(a) => {
 				return Math.Ceiling((Constant)a[0]).ToConst();
 			});
@@ -113,7 +113,7 @@ namespace Malsys.Resources {
 			multiFunsGroup,
 			"Returns the minimum from all given arguments. Returns NaN (not a number) if no argument is given.",
 			FunctionCore.AnyParamsCount,
-			new ExpressionValueType[] { ExpressionValueType.Any },
+			new ExpressionValueTypeFlags[] { ExpressionValueTypeFlags.Any },
 			(a) => {
 				if (a.ArgsCount == 0) {
 					return Constant.NaN;
@@ -127,7 +127,7 @@ namespace Malsys.Resources {
 			multiFunsGroup,
 			"Returns the average from all given arguments. Returns NaN (not a number) if no argument is given.",
 			FunctionCore.AnyParamsCount,
-			new ExpressionValueType[] { ExpressionValueType.Any },
+			new ExpressionValueTypeFlags[] { ExpressionValueTypeFlags.Any },
 			(a) => {
 				if (a.ArgsCount == 0) {
 					return Constant.NaN;
@@ -141,7 +141,7 @@ namespace Malsys.Resources {
 			multiFunsGroup,
 			"Returns the sum of all given arguments. Returns 0 if no argument is given.",
 			FunctionCore.AnyParamsCount,
-			new ExpressionValueType[] { ExpressionValueType.Constant },
+			new ExpressionValueTypeFlags[] { ExpressionValueTypeFlags.Constant },
 			(a) => {
 				return a.Aggregate(0.0, (acc, val) => acc + (Constant)val).ToConst();
 			});
@@ -150,7 +150,7 @@ namespace Malsys.Resources {
 			multiFunsGroup,
 			"Returns the product of all given arguments. Returns 1 if no argument is given.",
 			FunctionCore.AnyParamsCount,
-			new ExpressionValueType[] { ExpressionValueType.Constant },
+			new ExpressionValueTypeFlags[] { ExpressionValueTypeFlags.Constant },
 			(a) => {
 				return a.Aggregate(1.0, (acc, val) => acc * (Constant)val).ToConst();
 			});
@@ -161,7 +161,7 @@ namespace Malsys.Resources {
 			multiFunsGroup,
 			"Returns the average of all given arguments. Returns NaN (not a number) if no argument is given.",
 			FunctionCore.AnyParamsCount,
-			new ExpressionValueType[] { ExpressionValueType.Constant },
+			new ExpressionValueTypeFlags[] { ExpressionValueTypeFlags.Constant },
 			(a) => {
 				if (a.ArgsCount == 0) {
 					return Constant.NaN;
@@ -185,7 +185,7 @@ namespace Malsys.Resources {
 			trigFunsGroup,
 			"Returns the sine of the specified angle in radians.",
 			1,
-			new ExpressionValueType[] { ExpressionValueType.Constant },
+			new ExpressionValueTypeFlags[] { ExpressionValueTypeFlags.Constant },
 			(a) => {
 				return Math.Sin((Constant)a[0]).ToConst();
 			});
@@ -194,7 +194,7 @@ namespace Malsys.Resources {
 			trigFunsGroup,
 			"Returns the cosine of the specified angle in radians.",
 			1,
-			new ExpressionValueType[] { ExpressionValueType.Constant },
+			new ExpressionValueTypeFlags[] { ExpressionValueTypeFlags.Constant },
 			(a) => {
 				return Math.Cos((Constant)a[0]).ToConst();
 			});
@@ -203,7 +203,7 @@ namespace Malsys.Resources {
 			trigFunsGroup,
 			"Returns the tangent of the specified angle in radians.",
 			1,
-			new ExpressionValueType[] { ExpressionValueType.Constant },
+			new ExpressionValueTypeFlags[] { ExpressionValueTypeFlags.Constant },
 			(a) => {
 				return Math.Tan((Constant)a[0]).ToConst();
 			});
@@ -212,7 +212,7 @@ namespace Malsys.Resources {
 			trigFunsGroup,
 			"Returns the angle in radians whose sine is the given number.",
 			1,
-			new ExpressionValueType[] { ExpressionValueType.Constant },
+			new ExpressionValueTypeFlags[] { ExpressionValueTypeFlags.Constant },
 			(a) => {
 				return Math.Asin((Constant)a[0]).ToConst();
 			});
@@ -221,7 +221,7 @@ namespace Malsys.Resources {
 			trigFunsGroup,
 			"Returns the angle in radians whose cosine is the given number.",
 			1,
-			new ExpressionValueType[] { ExpressionValueType.Constant },
+			new ExpressionValueTypeFlags[] { ExpressionValueTypeFlags.Constant },
 			(a) => {
 				return Math.Acos((Constant)a[0]).ToConst();
 			});
@@ -230,7 +230,7 @@ namespace Malsys.Resources {
 			trigFunsGroup,
 			"Returns the angle in radians whose tangent is the given number.",
 			1,
-			new ExpressionValueType[] { ExpressionValueType.Constant },
+			new ExpressionValueTypeFlags[] { ExpressionValueTypeFlags.Constant },
 			(a) => {
 				return Math.Atan((Constant)a[0]).ToConst();
 			});
@@ -239,7 +239,7 @@ namespace Malsys.Resources {
 			trigFunsGroup,
 			"Returns the angle in radians whose tangent is the quotient of two given numbers.",
 			2,
-			new ExpressionValueType[] { ExpressionValueType.Constant, ExpressionValueType.Constant },
+			new ExpressionValueTypeFlags[] { ExpressionValueTypeFlags.Constant, ExpressionValueTypeFlags.Constant },
 			(a) => {
 				return Math.Atan2((Constant)a[0], (Constant)a[1]).ToConst();
 			});
@@ -255,7 +255,7 @@ namespace Malsys.Resources {
 			arrFunsGroup,
 			"Returns a value that represents the total number of elements in given array. Returns -1 if argument is not an array.",
 			1,
-			new ExpressionValueType[] { ExpressionValueType.Any },
+			new ExpressionValueTypeFlags[] { ExpressionValueTypeFlags.Any },
 			(a) => {
 				if (a[0].IsArray) {
 					return ((ValuesArray)a[0]).Length.ToConst();
@@ -269,14 +269,14 @@ namespace Malsys.Resources {
 			arrFunsGroup,
 			"Returns the minimum value from given array.",
 			1,
-			new ExpressionValueType[] { ExpressionValueType.Array },
+			new ExpressionValueTypeFlags[] { ExpressionValueTypeFlags.Array },
 			(a) => { return ((ValuesArray)a[0]).Min(); });
 
 		public static readonly FunctionCore MaxArr = new FunctionCore("max",
 			arrFunsGroup,
 			"Returns the maximum value from given array",
 			1,
-			new ExpressionValueType[] { ExpressionValueType.Array },
+			new ExpressionValueTypeFlags[] { ExpressionValueTypeFlags.Array },
 			(a) => { return ((ValuesArray)a[0]).Max(); });
 
 
@@ -286,7 +286,7 @@ namespace Malsys.Resources {
 			arrFunsGroup,
 			"Returns the sum of all numbers in given array. Sum of an empty array is 0.",
 			1,
-			new ExpressionValueType[] { ExpressionValueType.Array },
+			new ExpressionValueTypeFlags[] { ExpressionValueTypeFlags.Array },
 			(a) => {
 				return ((ValuesArray)a[0]).Aggregate(0.0, (acc, val) => acc + (Constant)val).ToConst();
 			});
@@ -295,7 +295,7 @@ namespace Malsys.Resources {
 			arrFunsGroup,
 			"Returns the product of all numbers in given array. Product of an empty array is 1.",
 			1,
-			new ExpressionValueType[] { ExpressionValueType.Array },
+			new ExpressionValueTypeFlags[] { ExpressionValueTypeFlags.Array },
 			(a) => {
 				return ((ValuesArray)a[0]).Aggregate(1.0, (acc, val) => acc * (Constant)val).ToConst();
 			});
@@ -306,7 +306,7 @@ namespace Malsys.Resources {
 			arrFunsGroup,
 			"Returns the average value from all numbers in given array.",
 			1,
-			new ExpressionValueType[] { ExpressionValueType.Array },
+			new ExpressionValueTypeFlags[] { ExpressionValueTypeFlags.Array },
 			(a) => {
 				var arr = ((ValuesArray)a[0]);
 				return (arr.Aggregate(0.0, (acc, val) => acc + (Constant)val) / arr.Length).ToConst();
@@ -325,7 +325,7 @@ namespace Malsys.Resources {
 			specFunsGroup,
 			"Returns a value indicating whether the given number is NaN (not a number).",
 			1,
-			new ExpressionValueType[] { ExpressionValueType.Any },
+			new ExpressionValueTypeFlags[] { ExpressionValueTypeFlags.Any },
 			(a) => {
 				return a[0].IsNaN ? Constant.True : Constant.False;
 			});
@@ -334,7 +334,7 @@ namespace Malsys.Resources {
 			specFunsGroup,
 			"Returns a value indicating whether the specified number is negative or positive infinity.",
 			1,
-			new ExpressionValueType[] { ExpressionValueType.Any },
+			new ExpressionValueTypeFlags[] { ExpressionValueTypeFlags.Any },
 			(a) => {
 				if (a[0].IsConstant) {
 					return ((Constant)a[0]).IsInfinity ? Constant.True : Constant.False;
@@ -358,7 +358,7 @@ namespace Malsys.Resources {
 			specFunsGroup,
 			"If the first given value is non-zero, returns second value, otherwise returns third value.",
 			3,
-			new ExpressionValueType[] { ExpressionValueType.Constant, ExpressionValueType.Any, ExpressionValueType.Any },
+			new ExpressionValueTypeFlags[] { ExpressionValueTypeFlags.Constant, ExpressionValueTypeFlags.Any, ExpressionValueTypeFlags.Any },
 			(a) => { throw new InvalidOperationException(); });
 
 		#endregion
@@ -372,7 +372,7 @@ namespace Malsys.Resources {
 			othFunsGroup,
 			"Returns the absolute value of given number.",
 			1,
-			new ExpressionValueType[] { ExpressionValueType.Constant },
+			new ExpressionValueTypeFlags[] { ExpressionValueTypeFlags.Constant },
 			(a) => {
 				return Math.Abs((Constant)a[0]).ToConst();
 			});
@@ -382,7 +382,7 @@ namespace Malsys.Resources {
 			"Returns a value indicating the sign of given number. Returns value -1 if given number is less than zero, "
 				+ "0 if is equal to zero and 1 if number is greater than zero.",
 			1,
-			new ExpressionValueType[] { ExpressionValueType.Constant },
+			new ExpressionValueTypeFlags[] { ExpressionValueTypeFlags.Constant },
 			(a) => {
 				if (a[0].IsNaN) { return Constant.NaN; }
 				return Math.Sign((Constant)a[0]).ToConst();
@@ -392,7 +392,7 @@ namespace Malsys.Resources {
 			othFunsGroup,
 			"Converts degrees to radians.",
 			1,
-			new ExpressionValueType[] { ExpressionValueType.Constant },
+			new ExpressionValueTypeFlags[] { ExpressionValueTypeFlags.Constant },
 			(a) => {
 				return ((Constant)a[0] * (Math.PI / 180)).ToConst();
 			});
@@ -401,7 +401,7 @@ namespace Malsys.Resources {
 			othFunsGroup,
 			"Converts radians to degrees.",
 			1,
-			new ExpressionValueType[] { ExpressionValueType.Constant },
+			new ExpressionValueTypeFlags[] { ExpressionValueTypeFlags.Constant },
 			(a) => {
 				return ((Constant)a[0] * (180 / Math.PI)).ToConst();
 			});
@@ -410,7 +410,7 @@ namespace Malsys.Resources {
 			othFunsGroup,
 			"Converts array represented as color gradient to array of colors.",
 			1,
-			new ExpressionValueType[] { ExpressionValueType.Array },
+			new ExpressionValueTypeFlags[] { ExpressionValueTypeFlags.Array },
 			(a) => {
 				var logger = new MessageLogger();  // TODO: use dummy logger
 				var gFac = new Malsys.Media.ColorGradientFactory();

@@ -1,12 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Web.Mvc;
 using Malsys.Processing;
+using Malsys.Processing.Output;
 using Malsys.SemanticModel.Evaluated;
 using Malsys.Web.Infrastructure;
 using Malsys.Web.Models;
-using Malsys.Processing.Output;
 
 namespace Malsys.Web.Controllers {
 	public partial class ProcessController : Controller {
@@ -61,6 +62,9 @@ namespace Malsys.Web.Controllers {
 			else {
 				timeout = new TimeSpan(0, 0, 4);
 			}
+#if DEBUG
+			timeout = TimeSpan.MaxValue;  // for debugging purposes
+#endif
 
 			string workDirFullPath = Server.MapPath(Url.Content(workDir));
 			malsysInputRepository.CleanProcessOutputs(workDirFullPath, maxWorkDirFiles);
@@ -79,7 +83,7 @@ namespace Malsys.Web.Controllers {
 
 			var evaledInput = processManager.CompileAndEvaluateInput(sourceCode, logger);
 
-			if (logger.ErrorOcured || compile != null) {
+			if (logger.ErrorOccurred || compile != null) {
 				return View(Views.Index, resultModel);
 			}
 
@@ -88,13 +92,20 @@ namespace Malsys.Web.Controllers {
 
 			processManager.ProcessLsystems(inAndStdlib, fileMgr, logger, timeout);
 
-			if (logger.ErrorOcured) {
+			if (logger.ErrorOccurred) {
 				return View(Views.Index, resultModel);
 			}
 
 			sw.Stop();
 
-			var outputs = fileMgr.GetOutputFiles();
+			IEnumerable<OutputFile> outputs;
+
+			if (fileMgr.OutputFilesCount > 8) {
+				outputs = fileMgr.GetOutputFilesAsZipArchive();
+			}
+			else {
+				outputs = fileMgr.GetOutputFiles();
+			}
 
 			var ip = malsysInputRepository.AddInputProcess(evaledInput, referenceId, outputs, User.Identity.Name, sw.Elapsed);
 			resultModel.ReferenceId = ip.InputProcessId;

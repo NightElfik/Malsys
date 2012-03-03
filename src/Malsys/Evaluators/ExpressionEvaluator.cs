@@ -74,14 +74,14 @@ namespace Malsys.Evaluators {
 
 			binaryOperator.LeftOperand.Accept(this);
 
-			if ((int)(valuesStack.Peek().Type & binaryOperator.LeftOperandType) == 0) {
+			if (!valuesStack.Peek().Type.IsCompatibleWith(binaryOperator.LeftOperandType)) {
 				throw new EvalException("Failed to evaluate binary operator `{0}`. As left operand excepted {1}, but {2} was given."
 					.Fmt(binaryOperator.Syntax, binaryOperator.LeftOperandType.ToTypeString(), valuesStack.Peek().Type.ToTypeString()));
 			}
 
 			binaryOperator.RightOperand.Accept(this);
 
-			if ((int)(valuesStack.Peek().Type & binaryOperator.LeftOperandType) == 0) {
+			if (!valuesStack.Peek().Type.IsCompatibleWith(binaryOperator.LeftOperandType)) {
 				throw new EvalException("Failed to evaluate binary operator `{0}`. As right operand excepted {1}, but {2} was given."
 					.Fmt(binaryOperator.Syntax, binaryOperator.LeftOperandType.ToTypeString(), valuesStack.Peek().Type.ToTypeString()));
 			}
@@ -136,7 +136,7 @@ namespace Malsys.Evaluators {
 
 				functionCall.Arguments[i].Accept(this);
 
-				if ((int)(valuesStack.Peek().Type & functionCall.GetValueType(i)) == 0) {
+				if (!valuesStack.Peek().Type.IsCompatibleWith(functionCall.GetValueType(i))) {
 					throw new EvalException("Failed to evaluate function `{0}`. As {1}. argument excepted {2}, but {3} was given."
 						.Fmt(functionCall.Name, i, functionCall.GetValueType(i).ToTypeString(), valuesStack.Peek().Type.ToTypeString()));
 				}
@@ -188,7 +188,7 @@ namespace Malsys.Evaluators {
 
 			unaryOperator.Operand.Accept(this);
 
-			if ((int)(valuesStack.Peek().Type & unaryOperator.OperandType) == 0) {
+			if (!valuesStack.Peek().Type.IsCompatibleWith(unaryOperator.OperandType)) {
 				throw new EvalException("Failed to evaluate unary operator `{0}`. As operand excepted {1}, but {2} was given."
 					.Fmt(unaryOperator.Syntax, unaryOperator.OperandType.ToTypeString(), valuesStack.Peek().Type.ToTypeString()));
 			}

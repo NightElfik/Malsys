@@ -138,7 +138,7 @@ namespace Malsys.Processing.Components.Interpreters {
 				var attr = (SymbolInterpretationAttribute)attrs[0];
 
 				var prms = methodInfo.GetParameters();
-				if (prms.Length != 1 || !prms[0].ParameterType.Equals(typeof(ArgsStorage))) {
+				if (prms.Length != 1 || prms[0].ParameterType != typeof(ArgsStorage)) {
 					throw new ComponentInitializationException("Interpreter method marked by `{0}` have invalid parameters."
 						.Fmt(typeof(SymbolInterpretationAttribute).Name));
 				}

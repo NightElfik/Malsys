@@ -47,7 +47,7 @@ namespace Malsys.Processing.Components.Renderers {
 
 		public virtual void BeginProcessing(bool measuring) {
 			outputStream = context.OutputProvider.GetOutputStream<DebugRendererBase>(
-				"debug renderer output", MimeType.Text_Plain);
+				"debug renderer output", MimeType.Text.Plain);
 			writer = new StreamWriter(outputStream);
 		}
 

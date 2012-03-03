@@ -95,7 +95,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions%27\DictionaryExtensions.cs" />
     <Compile Include="Extensions%27\FSharpOptionExtensions.cs" />
+    <Compile Include="Extensions%27\TypeExtensions.cs" />
     <Compile Include="Helpers%27\AnonymousObjectHelper.cs" />
     <Compile Include="Extensions%27\TimeExtensions.cs" />
     <Compile Include="Helpers%27\AttributeHelper.cs" />

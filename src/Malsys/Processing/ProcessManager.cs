@@ -14,6 +14,7 @@ namespace Malsys.Processing {
 		private readonly EvaluatorsContainer evaluator;
 		private readonly IComponentResolver componentResolver;
 
+		ProcessConfigurationBuilder processConfigurationBuilder = new ProcessConfigurationBuilder();
 
 
 		public ProcessManager(CompilersContainer compilersContainer, EvaluatorsContainer evaluatorsContainer, IComponentResolver componentResolver) {
@@ -28,7 +29,7 @@ namespace Malsys.Processing {
 
 			var inCompiled = compiler.CompileInput(src, "unknownSource", logger);
 
-			if (logger.ErrorOcured) {
+			if (logger.ErrorOccurred) {
 				return null;
 			}
 
@@ -54,7 +55,7 @@ namespace Malsys.Processing {
 						inBlockEvaled.GlobalConstants, inBlockEvaled.GlobalFunctions);
 				}
 				catch (EvalException ex) {
-					logger.LogMessage(EvaluatorsContainerExtensions.Message.EvalFailed, ex.GetFullMessage());
+					logger.LogMessage(IEvaluatorsContainerExtensions.Message.EvalFailed, ex.GetFullMessage());
 					continue;
 				}
 
@@ -64,25 +65,24 @@ namespace Malsys.Processing {
 
 				foreach (var processStat in procStats) {
 
-					var configMgr = buildProcessConfig(processStat, inBlockEvaled, context, logger);
+					var procConfig = buildProcessConfig(processStat, inBlockEvaled, context, logger);
 
-					if (configMgr == null) {
+					if (procConfig == null) {
 						continue;
 					}
 
 					try {
-						configMgr.StarterComponent.Start(configMgr.RequiresMeasure, timeout);
+						procConfig.StarterComponent.Start(procConfig.RequiresMeasure, timeout);
 					}
 					catch (EvalException ex) {
-						logger.LogMessage(EvaluatorsContainerExtensions.Message.EvalFailed, ex.GetFullMessage());
+						logger.LogMessage(IEvaluatorsContainerExtensions.Message.EvalFailed, ex.GetFullMessage());
 						continue;
 					}
 					catch (InterpretationException ex) {
-						logger.LogMessage(EvaluatorsContainerExtensions.Message.EvalFailed, ex.Message);
+						logger.LogMessage(IEvaluatorsContainerExtensions.Message.EvalFailed, ex.Message);
 						continue;
 					}
 
-					configMgr.ClearComponents();
 				}
 
 			}
@@ -112,7 +112,7 @@ namespace Malsys.Processing {
 
 		}
 
-		private ProcessConfigurationManager buildProcessConfig(SemanticModel.Compiled.ProcessStatement processStat,
+		private ProcessConfiguration buildProcessConfig(SemanticModel.Compiled.ProcessStatement processStat,
 				InputBlock inBlockEvaled, ProcessContext context, IMessageLogger logger) {
 
 			var maybeConfig = inBlockEvaled.ProcessConfigurations.TryFind(processStat.ProcessConfiName);
@@ -121,13 +121,9 @@ namespace Malsys.Processing {
 				return null;
 			}
 
-			var configMgr = new ProcessConfigurationManager();
+			var config = processConfigurationBuilder.BuildConfiguration(maybeConfig.Value, processStat.ComponentAssignments, componentResolver, context, logger);
 
-			if (!configMgr.TryBuildConfiguration(maybeConfig.Value, processStat.ComponentAssignments, componentResolver, context, logger)) {
-				return null;
-			}
-
-			return configMgr;
+			return config;
 		}
 
 

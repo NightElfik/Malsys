@@ -39,7 +39,7 @@ namespace Malsys.Processing.Components.Common {
 			notMeasuring = !measuring;
 
 			if (notMeasuring) {
-				writer = new IndentTextWriter(new StreamWriter(outProvider.GetOutputStream<SymbolsSaver>(outputName, MimeType.Text_Plain)));
+				writer = new IndentTextWriter(new StreamWriter(outProvider.GetOutputStream<SymbolsSaver>(outputName, MimeType.Text.Plain)));
 				printer = new CanonicPrinter(writer);
 			}
 		}

@@ -39,7 +39,7 @@ namespace Malsys.Processing.Components.Renderers {
 
 				outputStream = context.OutputProvider.GetOutputStream<ThreeJsSceneRenderer3D>(
 					"3D result from `{0}`".Fmt(context.Lsystem.Name),
-					MimeType.Application_Json, false, globalAdditionalData);
+					MimeType.Application.Json, false, globalAdditionalData);
 
 				writer = new IndentTextWriter(new StreamWriter(outputStream));
 

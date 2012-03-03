@@ -3,7 +3,7 @@ using ConstsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.Semantic
 using ConstsMapAst = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.Ast.ConstantDefinition>;
 using FunsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Compiled.FunctionEvaledParams>;
 using LsysMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Compiled.LsystemEvaledParams>;
-using ProcConfsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Compiled.ProcessConfiguration>;
+using ProcConfsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Compiled.ProcessConfigurationStatement>;
 
 namespace Malsys.SemanticModel.Evaluated {
 	public class InputBlock {

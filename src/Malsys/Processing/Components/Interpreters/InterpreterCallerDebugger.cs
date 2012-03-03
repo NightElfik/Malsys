@@ -86,7 +86,7 @@ namespace Malsys.Processing.Components.Interpreters {
 		override public void BeginProcessing(bool measuring) {
 
 			itWriter = new IndentTextWriter(new StreamWriter(
-				outProvider.GetOutputStream<InterpreterCaller>("interpret calls debugger", MimeType.Text_Plain)));
+				outProvider.GetOutputStream<InterpreterCaller>("interpret calls debugger", MimeType.Text.Plain)));
 			debugPrinter = new CanonicPrinter(itWriter);
 
 			if (interpreter != null) {

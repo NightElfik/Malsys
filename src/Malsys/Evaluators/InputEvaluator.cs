@@ -23,7 +23,7 @@ namespace Malsys.Evaluators {
 			var constsAst = MapModule.Empty<string, Ast.ConstantDefinition>();
 			var funs = MapModule.Empty<string, FunctionEvaledParams>();
 			var lsys = MapModule.Empty<string, LsystemEvaledParams>();
-			var procConfs = MapModule.Empty<string, ProcessConfiguration>();
+			var procConfs = MapModule.Empty<string, ProcessConfigurationStatement>();
 			var procStats = new List<ProcessStatement>();
 
 			foreach (var stat in input.Statements) {
@@ -48,7 +48,7 @@ namespace Malsys.Evaluators {
 						break;
 
 					case InputStatementType.ProcessConfiguration:
-						var config = (ProcessConfiguration)stat;
+						var config = (ProcessConfigurationStatement)stat;
 						procConfs = procConfs.Add(config.Name, config);
 						break;
 

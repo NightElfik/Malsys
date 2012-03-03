@@ -29,17 +29,17 @@ namespace Malsys.Compilers.Expressions {
 		/// Length of the array do not have to be same length as function's arity.
 		/// If function have more params than length of this array, modulo is used to cycle in it.
 		/// </summary>
-		public readonly ImmutableList<ExpressionValueType> ParamsTypes;
+		public readonly ImmutableList<ExpressionValueTypeFlags> ParamsTypes;
 
 		public readonly Func<ArgsStorage, IValue> EvalFunction;
 
 
-		internal FunctionCore(string name, string group, string doc, int paramsCount, ExpressionValueType[] paramsTypes,
+		internal FunctionCore(string name, string group, string doc, int paramsCount, ExpressionValueTypeFlags[] paramsTypes,
 				Func<ArgsStorage, IValue> evalFunc)
-			: this(name, group, doc, paramsCount, new ImmutableList<ExpressionValueType>(paramsTypes, true), evalFunc) {
+			: this(name, group, doc, paramsCount, new ImmutableList<ExpressionValueTypeFlags>(paramsTypes, true), evalFunc) {
 		}
 
-		public FunctionCore(string name, string group, string doc, int paramsCount, ImmutableList<ExpressionValueType> paramsTypes,
+		public FunctionCore(string name, string group, string doc, int paramsCount, ImmutableList<ExpressionValueTypeFlags> paramsTypes,
 				Func<ArgsStorage, IValue> evalFunc) {
 
 			Contract.Requires<ArgumentNullException>(name != null);

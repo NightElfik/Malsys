@@ -2,11 +2,12 @@
 
 namespace Malsys.Processing.Components {
 	/// <summary>
-	/// Attribute for marking properties on IComponent connectable with user defined configuration.
+	/// Indicates that another component can be connected to marked property.
 	/// </summary>
 	/// <remarks>
-	/// Attribute inherence do not work on properties in interface,
-	/// do not forget to add it to derived types too.
+	/// Marked property must have public setter.
+	/// Property type must be assignable to IComponent.
+	/// Attribute inherence do not work on properties in interface, do not forget to add it to derived types too.
 	/// </remarks>
 	[AttributeUsage(AttributeTargets.Property, Inherited = true, AllowMultiple = false)]
 	public sealed class UserConnectableAttribute : Attribute {

@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
+using Malsys.Evaluators;
 using Malsys.SemanticModel;
+using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Processing.Components.Common {
 	public class RandomGeneratorProvider : IRandomGeneratorProvider {
@@ -10,15 +13,41 @@ namespace Malsys.Processing.Components.Common {
 
 		private IMessageLogger logger;
 
+		private IRandomGenerator localRandomGenerator;
 
+
+		[UserGettable]
 		[UserSettable]
-		public Constant TrueRandom { set { trueRandom = !value.IsZero; } }
+		public Constant TrueRandom {
+			get { return trueRandom ? Constant.One : Constant.Zero; }
+			set { trueRandom = !value.IsZero; }
+		}
 
+		[UserGettable]
 		[UserSettable]
 		public Constant RandomSeed { get; set; }
 
 
+
+		public void Initialize(ProcessContext ctxt) {
+
+			logger = ctxt.Logger;
+
+			if (trueRandom) {
+				cryptoRandomInstance = new CryptographicRandomGenerator();
+			}
+		}
+
+		public void Cleanup() {
+			if (cryptoRandomInstance != null) {
+				cryptoRandomInstance.Dispose();
+			}
+		}
+
+
 		public IRandomGenerator GetRandomGenerator() {
+
+			Contract.Ensures(Contract.Result<IRandomGenerator>() != null);
 
 			if (trueRandom) {
 				if (RandomSeed != null) {
@@ -41,38 +70,27 @@ namespace Malsys.Processing.Components.Common {
 			}
 		}
 
+		[Alias("Rand", "Random")]
+		[UserCallableFunction]
+		public IValue GetRandomValue(ArgsStorage args) {
 
-		public bool RequiresMeasure {
-			get { return false; }
-		}
+			Contract.Ensures(Contract.Result<IValue>() != null);
 
-		public void Initialize(ProcessContext ctxt) {
-
-			logger = ctxt.Logger;
-
-			if (trueRandom) {
-				cryptoRandomInstance = new CryptographicRandomGenerator();
+			if (localRandomGenerator == null) {
+				localRandomGenerator = GetRandomGenerator();
 			}
+
+			return localRandomGenerator.Next().ToConst();
+
 		}
 
-		public void Cleanup() {
-			if (cryptoRandomInstance != null) {
-				cryptoRandomInstance.Dispose();
-			}
-		}
-
-		public void BeginProcessing(bool measuring) {
-		}
-
-		public void EndProcessing() {
-		}
 
 		public enum Message {
 
 			[Message(MessageType.Info, "No random seed given, using value {0}.")]
 			NoSeed,
 			[Message(MessageType.Warning, "Random seed was set among with true random option. "
-				+"True random can not use the seed and it will generate always random unpredictable result.")]
+				+ "True random can not use the seed and it will generate always random unpredictable result.")]
 			SeedWhileTrueRandom,
 
 		}

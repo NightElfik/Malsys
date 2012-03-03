@@ -11,67 +11,67 @@ namespace Malsys {
 	/// </remarks>
 	public static class MimeType {
 
-		#region Type application
+		public static class Application {
 
-		/// <summary>
-		/// Arbitrary binary data.
-		/// </summary>
-		public const string Application_OctetStream = "application/octet-stream";
+			/// <summary>
+			/// Arbitrary binary data.
+			/// </summary>
+			public const string OctetStream = "application/octet-stream";
 
-		/// <summary>
-		/// ZIP archive files.
-		/// </summary>
-		public const string Application_Zip = "application/zip";
+			/// <summary>
+			/// ZIP archive files.
+			/// </summary>
+			public const string Zip = "application/zip";
 
-		/// <summary>
-		/// GZip.
-		/// </summary>
-		public const string Application_XGzip = "application/x-gzip";
+			/// <summary>
+			/// GZip.
+			/// </summary>
+			public const string XGzip = "application/x-gzip";
 
-		/// <summary>
-		/// Json (JavaScript Object Notation).
-		/// </summary>
-		public const string Application_Json = "application/json";
+			/// <summary>
+			/// Json (JavaScript Object Notation).
+			/// </summary>
+			public const string Json = "application/json";
 
-		#endregion
+		}
 
-		#region Type image
+		public static class Image {
 
-		/// <summary>
-		/// GIF image.
-		/// </summary>
-		public const string Image_Gif = "image/gif";
+			/// <summary>
+			/// GIF image.
+			/// </summary>
+			public const string Gif = "image/gif";
 
-		/// <summary>
-		/// JPEG image.
-		/// </summary>
-		public const string Image_Jpeg = "image/jpeg";
+			/// <summary>
+			/// JPEG image.
+			/// </summary>
+			public const string Jpeg = "image/jpeg";
 
-		/// <summary>
-		/// PNG image.
-		/// </summary>
-		public const string Image_Png = "image/png";
+			/// <summary>
+			/// PNG image.
+			/// </summary>
+			public const string Png = "image/png";
 
-		/// <summary>
-		/// SVG vector image.
-		/// </summary>
-		public const string Image_SvgXml = "image/svg+xml";
+			/// <summary>
+			/// SVG vector image.
+			/// </summary>
+			public const string SvgXml = "image/svg+xml";
 
-		#endregion
+		}
 
-		#region Type text
+		public static class Text {
 
-		/// <summary>
-		/// Textual data.
-		/// </summary>
-		public const string Text_Plain = "text/plain";
+			/// <summary>
+			/// Textual data.
+			/// </summary>
+			public const string Plain = "text/plain";
 
-		/// <summary>
-		/// XML data.
-		/// </summary>
-		public const string Text_Xml = "text/xml";
+			/// <summary>
+			/// XML data.
+			/// </summary>
+			public const string Xml = "text/xml";
 
-		#endregion
+		}
 
 
 		public static string ToFileExtension(string mimeType) {
@@ -82,15 +82,15 @@ namespace Malsys {
 			Contract.Ensures(Contract.Result<string>().StartsWith("."));
 
 			switch (mimeType) {
-				case Application_Zip: return ".zip";
-				case Application_XGzip: return ".gz";
-				case Application_Json: return ".js";
-				case Image_Gif: return ".gif";
-				case Image_Jpeg: return ".jpg";
-				case Image_Png: return ".png";
-				case Image_SvgXml: return ".svg";
-				case Text_Plain: return ".txt";
-				case Text_Xml: return ".xml";
+				case Application.Zip: return ".zip";
+				case Application.XGzip: return ".gz";
+				case Application.Json: return ".js";
+				case Image.Gif: return ".gif";
+				case Image.Jpeg: return ".jpg";
+				case Image.Png: return ".png";
+				case Image.SvgXml: return ".svg";
+				case Text.Plain: return ".txt";
+				case Text.Xml: return ".xml";
 				default: return ".bin";
 			}
 		}

@@ -16,32 +16,70 @@ namespace Malsys.SemanticModel.Evaluated {
 
 	}
 
-	[Flags]
+	/// <remarks>
+	/// ExpressionValueType must be subset of ExpressionValueTypeFlags.
+	/// </remarks>
 	public enum ExpressionValueType {
+
+		Constant = 0x1,
+		Array = 0x2,
+
+	}
+
+	[Flags]
+	public enum ExpressionValueTypeFlags {
+
 		Unknown = 0x0,
 		Constant = 0x1,
 		Array = 0x2,
 		Any = Constant | Array,
+
 	}
 
 	public static class ExpressionValueTypeExtensions {
+
 		public static string ToTypeString(this ExpressionValueType type) {
 			switch (type) {
 				case ExpressionValueType.Constant: return "value";
 				case ExpressionValueType.Array: return "array";
-				case ExpressionValueType.Any: return "value or array";
 				default: return "unknown";
 			}
 		}
 
-		public static string ToTypeStringOneWord(this ExpressionValueType type) {
+		public static bool IsCompatibleWith(this ExpressionValueType type1, ExpressionValueType type2) {
+			return type1 == type2;
+		}
+
+		public static bool IsCompatibleWith(this ExpressionValueType type1, ExpressionValueTypeFlags type2) {
+			return ((int)type1 & (int)type2) != 0;
+		}
+
+		public static ExpressionValueTypeFlags ToFlags(this ExpressionValueType type) {
 			switch (type) {
-				case ExpressionValueType.Constant: return "value";
-				case ExpressionValueType.Array: return "array";
-				case ExpressionValueType.Any: return "valueOrArray";
+				case ExpressionValueType.Constant: return ExpressionValueTypeFlags.Constant;
+				case ExpressionValueType.Array: return ExpressionValueTypeFlags.Array;
+				default: return ExpressionValueTypeFlags.Unknown;
+			}
+		}
+
+		public static string ToTypeString(this ExpressionValueTypeFlags type) {
+			switch (type) {
+				case ExpressionValueTypeFlags.Constant: return "value";
+				case ExpressionValueTypeFlags.Array: return "array";
+				case ExpressionValueTypeFlags.Any: return "value or array";
 				default: return "unknown";
 			}
 		}
+
+		public static string ToTypeStringOneWord(this ExpressionValueTypeFlags type) {
+			switch (type) {
+				case ExpressionValueTypeFlags.Constant: return "value";
+				case ExpressionValueTypeFlags.Array: return "array";
+				case ExpressionValueTypeFlags.Any: return "valueOrArray";
+				default: return "unknown";
+			}
+		}
+
 	}
 
 
@@ -95,6 +133,25 @@ namespace Malsys.SemanticModel.Evaluated {
 			return true;
 
 		}
+
+
+		public static ExpressionValueTypeFlags IValueTypeToEnum(Type t) {
+
+			if (t.Equals(typeof(Constant))) {
+				return ExpressionValueTypeFlags.Constant;
+			}
+			else if (t.Equals(typeof(ValuesArray))) {
+				return ExpressionValueTypeFlags.Array;
+			}
+			else if (t.Equals(typeof(IValue))) {
+				return ExpressionValueTypeFlags.Any;
+			}
+			else {
+				return ExpressionValueTypeFlags.Unknown;
+			}
+
+		}
+
 
 	}
 

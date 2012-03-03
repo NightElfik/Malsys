@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Malsys.SemanticModel.Evaluated;
+﻿using Malsys.SemanticModel;
 using Malsys.SemanticModel.Compiled;
+using Malsys.SemanticModel.Evaluated;
+using Microsoft.FSharp.Collections;
 using ConstsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.IValue>;
 using FunsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Compiled.FunctionEvaledParams>;
-using Malsys.SemanticModel;
-using Microsoft.FSharp.Collections;
 
 namespace Malsys.Evaluators {
 
@@ -17,6 +13,8 @@ namespace Malsys.Evaluators {
 		/// Evaluates given expression with given constants and functions.
 		/// </summary>
 		IValue Evaluate(IExpression expr, ConstsMap consts, FunsMap funs);
+
+		//IValue Evaluate(IExpression expr, IExpressionMemberProvider exprMemberPprovider);
 
 	}
 

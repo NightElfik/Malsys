@@ -19,7 +19,7 @@ namespace Malsys.Tests {
 			var logger = new MessageLogger();
 			var symbolsAst = ParserUtils.ParseSymbols(lexBuff, logger, "testInput");
 
-			if (logger.ErrorOcured) {
+			if (logger.ErrorOccurred) {
 				Console.WriteLine("in: " + input);
 				Assert.Fail("Failed to parse symbols. " + logger.ToString());
 			}
@@ -33,7 +33,7 @@ namespace Malsys.Tests {
 			var logger = new MessageLogger();
 			var symbols = compiler.CompileList<Ast.LsystemSymbol, Malsys.SemanticModel.Symbol<IExpression>>(symbolsAst, logger);
 
-			if (logger.ErrorOcured) {
+			if (logger.ErrorOccurred) {
 				Assert.Fail("Failed to compile symbols. " + logger.ToString());
 			}
 
@@ -51,7 +51,7 @@ namespace Malsys.Tests {
 			var lexBuff = LexBuffer<char>.FromString(input);
 			var logger = new MessageLogger();
 			var result = ParserUtils.ParseExpression(lexBuff, logger, "testInput");
-			if (logger.ErrorOcured) {
+			if (logger.ErrorOccurred) {
 				Console.WriteLine(logger.ToString());
 				Assert.Fail("Failed to parse expression: " + input);
 			}
@@ -70,7 +70,7 @@ namespace Malsys.Tests {
 			var logger = new MessageLogger();
 			var compiledExpr = new CompilersContainer().ResolveExpressionCompiler().Compile(input, logger);
 
-			if (logger.ErrorOcured) {
+			if (logger.ErrorOccurred) {
 				Console.WriteLine(logger.ToString());
 				Assert.Fail("Failed to compile expression");
 			}
@@ -99,7 +99,7 @@ namespace Malsys.Tests {
 			var lexBuff = LexBuffer<char>.FromString(input);
 			var logger = new MessageLogger();
 			var result = ParserUtils.ParseInputNoComents(lexBuff, logger, "testInput");
-			if (logger.ErrorOcured) {
+			if (logger.ErrorOccurred) {
 				Console.WriteLine(logger.ToString());
 				Assert.Fail("Failed to parse L-system: " + input);
 			}
@@ -116,7 +116,7 @@ namespace Malsys.Tests {
 			var logger = new MessageLogger();
 			var compiled = new CompilersContainer().ResolveInputCompiler().Compile(input, logger);
 
-			if (logger.ErrorOcured) {
+			if (logger.ErrorOccurred) {
 				Console.WriteLine(logger.ToString());
 				Assert.Fail("Failed to compile L-system");
 			}

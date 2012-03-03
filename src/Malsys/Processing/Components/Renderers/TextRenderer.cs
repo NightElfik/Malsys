@@ -72,7 +72,7 @@ namespace Malsys.Processing.Components.Renderers {
 			}
 			else {
 				var stream = context.OutputProvider.GetOutputStream<SvgRenderer2D>(
-					"Text result from `{0}`".Fmt(context.Lsystem.Name), MimeType.Text_Plain, false, localAdditionalData);
+					"Text result from `{0}`".Fmt(context.Lsystem.Name), MimeType.Text.Plain, false, localAdditionalData);
 
 				using (var writer = new StreamWriter(stream)) {
 					foreach (var row in resultBuffer) {

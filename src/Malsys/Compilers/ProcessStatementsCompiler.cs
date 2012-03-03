@@ -20,7 +20,7 @@ namespace Malsys.Compilers {
 		}
 
 
-		public ProcessConfiguration Compile(Ast.ProcessConfigurationDefinition processConfig, IMessageLogger logger) {
+		public ProcessConfigurationStatement Compile(Ast.ProcessConfigurationDefinition processConfig, IMessageLogger logger) {
 
 			this.logger = logger;
 			components = new List<ProcessComponent>();
@@ -32,7 +32,7 @@ namespace Malsys.Compilers {
 				stat.Accept(this);
 			}
 
-			var result = new ProcessConfiguration(processConfig.NameId.Name, components.ToImmutableList(),
+			var result = new ProcessConfigurationStatement(processConfig.NameId.Name, components.ToImmutableList(),
 				containers.ToImmutableList(), connections.ToImmutableList(), processConfig);
 
 			//  cleanup

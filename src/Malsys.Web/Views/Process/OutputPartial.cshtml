@@ -20,7 +20,7 @@
 
 @switch (Model.MimeType) {
 
-	case MimeType.Text_Plain:
+	case MimeType.Text.Plain:
 		using (var sr = fi.OpenText()) {
 			bool asciiArt = Model.AdditionalData.ContainsValue(CommonAdditionalDataKeys.OutputIsAsciiArt, true);
 			int readChars = 1000;
@@ -39,7 +39,7 @@
 		}
 		break;
 
-	case MimeType.Image_SvgXml:
+	case MimeType.Image.SvgXml:
 		if (fi.Length > 1024 * 512) {
 			<p class="outputTruncated">SVG image is not shown directly (it is greater than 0.5 MB). Please download the file to see the result.</p>
 		}
@@ -50,8 +50,17 @@
 		}
 		break;
 
-	case MimeType.Application_Json:
+	case MimeType.Application.Json:
 		<div class="threeJsScene" data-scene="@Url.Action(MVC.ProcessOutput.Download(fi.Name))"></div>
+		break;
+
+	case MimeType.Application.Zip:
+		if (Model.AdditionalData.ContainsValue(CommonAdditionalDataKeys.PackedOutputs, true)) {
+			<p class="outputTruncated">Too many outputs to display. All outputs were packed. Please download the package to see the results.</p>
+		}
+		else {
+			<p class="outputTruncated">Please download the file to see the result.</p>
+		}
 		break;
 
 	default:

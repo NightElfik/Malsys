@@ -153,9 +153,11 @@
 
 	$("p.malsysMsg").each(function (i) {
 
-		var newHtml = $(this).text();
+		var newHtml = $(this).text().replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
 		newHtml = newHtml.replace(/`(([a-zA-Z0-9\+]+\.)+([a-zA-Z0-9\+]+))`/g, '`<abbr title="$1">$3</abbr>`');
 		newHtml = newHtml.replace(/`(.+?)`/g, '`<span class="quoted">$1</span>`');
+
 
 		$(this).text("");
 		$(this).append(newHtml);

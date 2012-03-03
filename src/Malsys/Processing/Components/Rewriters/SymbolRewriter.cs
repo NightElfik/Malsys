@@ -26,7 +26,7 @@ namespace Malsys.Processing.Components.Rewriters {
 		private bool stochasticRules;
 
 
-		[UserSettable]
+		[UserSettableSybols]
 		public ImmutableList<Symbol<IValue>> ContextIgnore {
 			set {
 				contextIgnoredSymbolNames = new HashSet<string>();

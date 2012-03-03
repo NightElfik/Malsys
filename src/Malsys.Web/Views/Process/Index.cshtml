@@ -62,7 +62,7 @@
 	bool loadThreeJs = false;
 	if (Model.OutputFiles != null) {
 		foreach (var result in Model.OutputFiles) {
-			if (result.MimeType == Malsys.MimeType.Application_Json) {
+			if (result.MimeType == Malsys.MimeType.Application.Json) {
 				// TODO: this should be returned from partial view somehow
 				// the condition is on two places => place for mistakes
 				loadThreeJs = true;

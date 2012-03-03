@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.IO;
+using System.IO.Packaging;
 using System.Linq;
 using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Collections;
@@ -34,6 +35,9 @@ namespace Malsys.Processing.Output {
 			}
 		}
 
+
+		#region IOutputProvider Members
+
 		/// <summary>
 		///
 		/// </summary>
@@ -50,7 +54,7 @@ namespace Malsys.Processing.Output {
 
 			string ext = MimeType.ToFileExtension(mimeType);
 			if (additionalData.ContainsValue(CommonAdditionalDataKeys.OutputIsGZipped, true)) {
-				if (mimeType == MimeType.Image_SvgXml) {
+				if (mimeType == MimeType.Image.SvgXml) {
 					ext = ".svgz";
 				}
 				else {
@@ -81,11 +85,22 @@ namespace Malsys.Processing.Output {
 		public void AddAdditionalData(Stream outputStream, string key, object value) {
 			var managedFile = managedFiles.Where(x => x.Stream == outputStream).Single();
 			managedFile.AdditionalData = managedFile.AdditionalData.Add(key, value);
+
+
 		}
+
+		#endregion
+
+
+		public int OutputFilesCount {
+			get { return managedFiles.Where(x => !x.IsTemporary).Count(); }
+		}
+
 
 		/// <summary>
 		/// Closes all opened output streams and deletes all temporary outputs.
 		/// </summary>
+		/// <returns>Number of output files.</returns>
 		public void CloseAllOutputStreams() {
 
 			if (allStreamsClosed) {
@@ -116,15 +131,49 @@ namespace Malsys.Processing.Output {
 		/// Returns all output files.
 		/// </summary>
 		public IEnumerable<OutputFile> GetOutputFiles() {
+
 			CloseAllOutputStreams();
+
 			return managedFiles
-				.Where(x => !x.IsTemporary)
 				.Select(x => new OutputFile(
 					x.Name,
 					x.FilePath,
 					x.MimeType,
 					x.Caller,
 					x.AdditionalData));
+		}
+
+		/// <summary>
+		/// Adds all output files into zip archive and returns it as single output.
+		/// Output files are deleted from file system.
+		/// </summary>
+		public IEnumerable<OutputFile> GetOutputFilesAsZipArchive() {
+
+			CloseAllOutputStreams();
+
+
+			string packagePath = getNewFilePath(".zip");
+			using (Package package = Package.Open(packagePath, FileMode.Create)) {
+
+				foreach (var file in managedFiles) {
+
+					Uri fileUri = PackUriHelper.CreatePartUri(new Uri(Path.GetFileName(file.FilePath), UriKind.Relative));
+
+					PackagePart packagePart = package.CreatePart(fileUri, file.MimeType, CompressionOption.Normal);
+					using (var fs = new FileStream(file.FilePath, FileMode.Open, FileAccess.Read)) {
+						fs.CopyTo(packagePart.GetStream());
+					}
+
+					File.Delete(file.FilePath);
+
+				}
+			}
+
+			managedFiles.Clear();
+			FSharpMap<string, object> additionalData = MapModule.Empty<string, object>();
+			additionalData = additionalData.Add(CommonAdditionalDataKeys.PackedOutputs, true);
+			return new OutputFile[] { new OutputFile("Packed output files", packagePath, MimeType.Application.Zip, typeof(FileOutputProvider), additionalData) };
+
 		}
 
 
@@ -165,5 +214,6 @@ namespace Malsys.Processing.Output {
 		public void Dispose() {
 			CloseAllOutputStreams();
 		}
+
 	}
 }

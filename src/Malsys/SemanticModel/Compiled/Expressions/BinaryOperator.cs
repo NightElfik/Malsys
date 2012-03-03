@@ -14,7 +14,7 @@ namespace Malsys.SemanticModel.Compiled.Expressions {
 		public readonly int ActivePrecedence;
 
 		public readonly IExpression LeftOperand, RightOperand;
-		public readonly ExpressionValueType LeftOperandType, RightOperandType;
+		public readonly ExpressionValueTypeFlags LeftOperandType, RightOperandType;
 
 		public readonly Func<ArgsStorage, IValue> Evaluate;
 
@@ -22,7 +22,7 @@ namespace Malsys.SemanticModel.Compiled.Expressions {
 
 
 		public BinaryOperator(string syntax, int prec, int activePrec, Func<ArgsStorage, IValue> evalFunc, IExpression leftOperand,
-				ExpressionValueType leftOperandType, IExpression rightOperand, ExpressionValueType rightOperandType, Ast.Operator astNode) {
+				ExpressionValueTypeFlags leftOperandType, IExpression rightOperand, ExpressionValueTypeFlags rightOperandType, Ast.Operator astNode) {
 
 			Syntax = syntax;
 			Evaluate = evalFunc;

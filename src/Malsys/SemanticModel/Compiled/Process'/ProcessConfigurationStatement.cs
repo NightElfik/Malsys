@@ -3,7 +3,7 @@ namespace Malsys.SemanticModel.Compiled {
 	/// <summary>
 	/// Immutable.
 	/// </summary>
-	public class ProcessConfiguration : IInputStatement {
+	public class ProcessConfigurationStatement : IInputStatement {
 
 		public readonly string Name;
 		public readonly ImmutableList<ProcessComponent> Components;
@@ -13,7 +13,7 @@ namespace Malsys.SemanticModel.Compiled {
 		public readonly Ast.ProcessConfigurationDefinition AstNode;
 
 
-		public ProcessConfiguration(string name, ImmutableList<ProcessComponent> components, ImmutableList<ProcessContainer> containers,
+		public ProcessConfigurationStatement(string name, ImmutableList<ProcessComponent> components, ImmutableList<ProcessContainer> containers,
 				ImmutableList<ProcessComponentsConnection> connections, Ast.ProcessConfigurationDefinition astNode) {
 
 			Name = name;

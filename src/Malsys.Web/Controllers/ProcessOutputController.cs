@@ -26,13 +26,13 @@ namespace Malsys.Web.Controllers {
 
 		public virtual ActionResult Show(string fileName) {
 
-			string mimeType = MimeType.Text_Plain;
+			string mimeType = MimeType.Text.Plain;
 			if (fileName.EndsWith(".svg")) {
-				mimeType = MimeType.Image_SvgXml;
+				mimeType = MimeType.Image.SvgXml;
 			}
 			else if (fileName.EndsWith(".svgz")) {
 				Response.AppendHeader("Content-Encoding", "gzip");
-				mimeType = MimeType.Image_SvgXml;
+				mimeType = MimeType.Image.SvgXml;
 			}
 
 			return download(fileName, mimeType, false);

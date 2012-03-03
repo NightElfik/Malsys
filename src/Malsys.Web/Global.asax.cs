@@ -96,7 +96,7 @@ namespace Malsys.Web {
 
 			var componentResolver = new ComponentResolver();
 			var componentsTypes = Assembly.GetAssembly(typeof(ComponentResolver)).GetTypes()
-				.Where(t => (t.IsClass || t.IsInterface) && (typeof(IProcessComponent)).IsAssignableFrom(t));
+				.Where(t => (t.IsClass || t.IsInterface) && (typeof(IComponent)).IsAssignableFrom(t));
 			foreach (var type in componentsTypes) {
 				componentResolver.RegisterComponentNameAndFullName(type, false);
 			}
@@ -122,7 +122,7 @@ namespace Malsys.Web {
 					var inCompiled = new CompilersContainer(knownStuffProvider, knownStuffProvider, knownStuffProvider)
 						.CompileInput(reader, resName, logger);
 					var stdLib = new EvaluatorsContainer().EvaluateInput(inCompiled);
-					if (!logger.ErrorOcured) {
+					if (!logger.ErrorOccurred) {
 						return stdLib;
 					}
 				}

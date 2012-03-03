@@ -2,6 +2,6 @@
 
 namespace Malsys.Compilers {
 	interface IProcessStatementsCompiler : ICompiler<Ast.ProcessStatement, ProcessStatement>,
-			ICompiler<Ast.ProcessConfigurationDefinition, ProcessConfiguration> {
+			ICompiler<Ast.ProcessConfigurationDefinition, ProcessConfigurationStatement> {
 	}
 }
