@@ -1,20 +1,11 @@
 ﻿using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Evaluated;
-using ConstsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.IValue>;
-using FunsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Compiled.FunctionEvaledParams>;
 
 namespace Malsys.Evaluators {
 	internal class ParametersEvaluator : IParametersEvaluator {
 
-		private IExpressionEvaluator exprEvaluator;
 
-
-		public ParametersEvaluator(IExpressionEvaluator expressionEvaluator) {
-			exprEvaluator = expressionEvaluator;
-		}
-
-
-		public ImmutableList<OptionalParameterEvaled> Evaluate(ImmutableList<OptionalParameter> optPrms, ConstsMap consts, FunsMap funs) {
+		public ImmutableList<OptionalParameterEvaled> Evaluate(ImmutableList<OptionalParameter> optPrms, IExpressionEvaluatorContext exprEvalCtxt) {
 
 			var result = new OptionalParameterEvaled[optPrms.Length];
 
@@ -22,10 +13,10 @@ namespace Malsys.Evaluators {
 				var currParam = optPrms[i];
 
 				if (currParam.IsOptional) {
-					result[i] = new OptionalParameterEvaled(currParam.Name, exprEvaluator.Evaluate(currParam.DefaultValue, consts, funs));
+					result[i] = new OptionalParameterEvaled(currParam.Name, exprEvalCtxt.Evaluate(currParam.DefaultValue), currParam.AstNode);
 				}
 				else {
-					result[i] = new OptionalParameterEvaled(currParam.Name);
+					result[i] = new OptionalParameterEvaled(currParam.Name, currParam.AstNode);
 				}
 			}
 

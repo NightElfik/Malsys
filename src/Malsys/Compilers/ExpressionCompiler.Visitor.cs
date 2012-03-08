@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
-//using Malsys.Ast;
-using Malsys.Compilers.Expressions;
 using Malsys.Resources;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Compiled.Expressions;
-using OperatorCoreAst = System.Tuple<Malsys.Compilers.Expressions.OperatorCore, Malsys.Ast.Operator>;
+using OperatorCoreAst = System.Tuple<Malsys.Resources.OperatorCore, Malsys.Ast.Operator>;
 
 namespace Malsys.Compilers {
 	internal partial class ExpressionCompiler {
@@ -76,9 +74,7 @@ namespace Malsys.Compilers {
 
 			#region IExpressionVisitor Members
 
-			public void Visit(Ast.EmptyExpression emptyExpr) {
-
-			}
+			public void Visit(Ast.EmptyExpression emptyExpr) { }
 
 			public void Visit(Ast.ExpressionBracketed bracketedExpr) {
 
@@ -93,7 +89,6 @@ namespace Malsys.Compilers {
 							// implicit multiplication
 							operandsStack.Push(parentExprCompiler.Compile(bracketedExpr.Expression, logger));
 							optorsStack.Push(new OperatorCoreAst(StdOperators.Multiply, new Ast.Operator(null, bracketedExpr.Position.GetBeginPos())));
-							//state = State.ExcpectingOperator;
 						}
 						else {
 							logger.LogMessage(Message.UnexcpectedOperand, bracketedExpr.Position, "bracketed expression");
@@ -111,14 +106,14 @@ namespace Malsys.Compilers {
 
 				switch (state) {
 					case State.ExcpectingOperand:
-						compileFunctionCall(funExpr);
+						pushFunctionCall(funExpr.NameId.Name, funExpr.Arguments, funExpr);
 						state = State.ExcpectingOperator;
 						break;
 
 					case State.ExcpectingOperator:
 						if (previousMember is Ast.FloatConstant) {
 							// implicit multiplication
-							compileFunctionCall(funExpr);
+							pushFunctionCall(funExpr.NameId.Name, funExpr.Arguments, funExpr);
 							optorsStack.Push(new OperatorCoreAst(StdOperators.Multiply, new Ast.Operator(null, funExpr.Position.GetBeginPos())));
 							// state = State.ExcpectingOperator;
 						}
@@ -234,7 +229,7 @@ namespace Malsys.Compilers {
 					case State.ExcpectingOperand:
 						// operator while expecting operand? It must be unary!
 						OperatorCore opUnary;
-						if (parentExprCompiler.knownOperators.TryGet(optor.Syntax, 1, out opUnary)) {
+						if (parentExprCompiler.knownOperators.TryGet(optor.Syntax, true, out opUnary)) {
 							state = tryPushOperator(new OperatorCoreAst(opUnary, optor)) ? State.ExcpectingOperand : State.Error;
 						}
 						else {
@@ -246,7 +241,7 @@ namespace Malsys.Compilers {
 					case State.ExcpectingOperator:
 						// operator must be binary
 						OperatorCore opBinary;
-						if (parentExprCompiler.knownOperators.TryGet(optor.Syntax, 2, out opBinary)) {
+						if (parentExprCompiler.knownOperators.TryGet(optor.Syntax, false, out opBinary)) {
 							state = tryPushOperator(new OperatorCoreAst(opBinary, optor)) ? State.ExcpectingOperand : State.Error;
 						}
 						else {
@@ -280,10 +275,10 @@ namespace Malsys.Compilers {
 
 			private void compileVariable(Ast.Identificator variable) {
 
-				KnownConstant cnst;
+				double cnst;
 				if (parentExprCompiler.knownConstants.TryGet(variable.Name, out cnst)) {
 					// known constant
-					operandsStack.Push(new Constant(cnst.Value, new Ast.FloatConstant(cnst.Value, Ast.ConstantFormat.Float, variable.Position)));
+					operandsStack.Push(new Constant(cnst, new Ast.FloatConstant(cnst, Ast.ConstantFormat.Float, variable.Position)));
 				}
 				else {
 					// variable
@@ -291,17 +286,10 @@ namespace Malsys.Compilers {
 				}
 			}
 
-			private void compileFunctionCall(Ast.ExpressionFunction funCall) {
+			private void pushFunctionCall(string name, ImmutableList<Ast.Expression> args, Ast.IExpressionMember astNode) {
 
-				var rsltArgs = parentExprCompiler.CompileList(funCall.Arguments, logger);
+				operandsStack.Push(new FunctionCall(name, parentExprCompiler.CompileList(args, logger), astNode));
 
-				FunctionCore knownFun;
-				if (parentExprCompiler.knownFunctions.TryGet(funCall.NameId.Name, funCall.Arguments.Length, out knownFun)) {
-					operandsStack.Push(new FunctionCall(funCall.NameId.Name, knownFun.EvalFunction, rsltArgs, knownFun.ParamsTypes, funCall));
-				}
-				else {
-					operandsStack.Push(new UserFunctionCall(funCall.NameId.Name, rsltArgs, funCall));
-				}
 			}
 
 
@@ -337,17 +325,16 @@ namespace Malsys.Compilers {
 				var opTopAst = optorsStack.Pop();
 				var opTop = opTopAst.Item1;
 
-				if (opTop.Arity == 1) {
+				if (opTop.IsUnary) {
 					if (operandsStack.Count < 1) {
 						logger.LogMessage(Message.TooFewOperands, opTopAst.Item2.Position);
 						return false;
 					}
 
 					operandsStack.Push(new UnaryOperator(opTop.Syntax, opTop.Precedence, opTop.ActivePrecedence,
-						opTop.EvalFunction, operandsStack.Pop(), opTop.ParamsTypes[0], opTopAst.Item2));
+						opTop.UnaryEvalFunction, operandsStack.Pop(), opTop.FirstParamType, opTopAst.Item2));
 				}
-
-				else if (opTop.Arity == 2) {
+				else {
 					if (operandsStack.Count < 2) {
 						logger.LogMessage(Message.TooFewOperands, opTopAst.Item2.Position);
 						return false;
@@ -356,12 +343,7 @@ namespace Malsys.Compilers {
 					var left = operandsStack.Pop();
 
 					operandsStack.Push(new BinaryOperator(opTop.Syntax, opTop.Precedence, opTop.ActivePrecedence,
-						opTop.EvalFunction, left, opTop.ParamsTypes[0], right, opTop.ParamsTypes[1], opTopAst.Item2));
-				}
-
-				else {
-					logger.LogMessage(Message.InternalError, opTopAst.Item2.Position, "Operator with unexpected arity {0}.".Fmt(opTop.Arity));
-					return false;
+						opTop.BinaryEvalFunction, left, opTop.FirstParamType, right, opTop.SecondParamType, opTopAst.Item2));
 				}
 
 				return true;

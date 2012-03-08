@@ -206,7 +206,7 @@ namespace Malsys.Tests.Rewriters {
 
 		private static void doTest(IRewriter rewriter, string rewriteRules, string inputSymbols, params string[] excpectedIterations) {
 
-			string input = "lsystem l {{ set axiom = {0}; {1} }}".Fmt(inputSymbols, rewriteRules);
+			string input = "lsystem l {{ set symbols axiom = {0}; {1} }}".Fmt(inputSymbols, rewriteRules);
 
 			var msgs = new MessageLogger();
 			var inBlockEvaled = TestUtils.EvaluateLsystem(input);
@@ -215,17 +215,17 @@ namespace Malsys.Tests.Rewriters {
 				Assert.Fail("L-system not defined.");
 			}
 
-			var evaluator = new EvaluatorsContainer();
-			var lsysEvaluator = evaluator.Resolve<ILsystemEvaluator>();
+			var evaluator = new EvaluatorsContainer(TestUtils.ExpressionEvaluatorContext);
+			var lsysEvaluator = evaluator.ResolveLsystemEvaluator();
 			var lsystem = lsysEvaluator.Evaluate(inBlockEvaled.Lsystems["l"], ImmutableList<IValue>.Empty,
-				MapModule.Empty<string, IValue>(), MapModule.Empty<string, FunctionEvaledParams>());
+				TestUtils.ExpressionEvaluatorContext);
 
 			var fm = new FileOutputProvider("./");
-			var context = new ProcessContext(lsystem, fm, inBlockEvaled, evaluator, msgs);
+			var context = new ProcessContext(lsystem, fm, inBlockEvaled, TestUtils.ExpressionEvaluatorContext, msgs);
 
 			var symBuff = new SymbolsMemoryBuffer();
 			rewriter.Initialize(context);
-			rewriter.SymbolProvider = new SymbolProvider(lsystem.SymbolsConstants["axiom"]);
+			rewriter.SymbolProvider = new SymbolProvider(lsystem.ComponentSymbolsAssigns["axiom"]);
 
 			int iterations = excpectedIterations.Length;
 

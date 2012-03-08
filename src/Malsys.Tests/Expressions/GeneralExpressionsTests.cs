@@ -97,7 +97,7 @@ namespace Malsys.Tests.Expressions {
 			evalAndCompareD(tn, "{} == {}", 1.0);
 			evalAndCompareD(tn, "{} == {{}}", 0.0);
 			evalAndCompareD(tn, "nan == nan", double.NaN);
-			evalAndCompareD(tn, "infty == infty", 1.0);
+			evalAndCompareD(tn, "infinity == infinity", 1.0);
 
 			evalAndCompareD(tn, "0 && 0", 0.0);
 			evalAndCompareD(tn, "1 && 0", 0.0);
@@ -133,7 +133,7 @@ namespace Malsys.Tests.Expressions {
 			evalAndCompareD(tn, "floor(4.99)", 4.0);
 			evalAndCompareD(tn, "floor(5.00)", 5.0);
 
-			evalAndCompareD(tn, "ceil(4.00)", 4.0);
+			evalAndCompareD(tn, "ceiling(4.00)", 4.0);
 			evalAndCompareD(tn, "ceiling(4.01)", 5.0);
 
 			evalAndCompareD(tn, "min({1,2,3,4,5,6,7,8,9})", 1.0);
@@ -145,7 +145,7 @@ namespace Malsys.Tests.Expressions {
 			evalAndCompareD(tn, "sqrt(81)", 9.0);
 			evalAndCompareD(tn, "sqrt(1)", 1.0);
 
-			evalAndCompareD(tn, "fact(0)", 1.0);
+			evalAndCompareD(tn, "factorial(0)", 1.0);
 			evalAndCompareD(tn, "factorial(4)", 24.0);
 
 			evalAndCompareD(tn, "log(1)", 0.0);
@@ -159,11 +159,11 @@ namespace Malsys.Tests.Expressions {
 			evalAndCompareD(tn, "sum()", 0.0);
 			evalAndCompareD(tn, "sum(0,1,2,3,4,5,6,7,8,9)", 45);
 
-			evalAndCompareD(tn, "prod()", 1.0);
+			evalAndCompareD(tn, "product()", 1.0);
 			evalAndCompareD(tn, "product(1,2,3,4)", 24);
 
-			evalAndCompareD(tn, "avg({7.2})", 7.2);
-			evalAndCompareD(tn, "avg({0,1,2,3,4,5,6,7,8,9})", 4.5);
+			evalAndCompareD(tn, "average({7.2})", 7.2);
+			evalAndCompareD(tn, "average({0,1,2,3,4,5,6,7,8,9})", 4.5);
 			evalAndCompareD(tn, "average(0,1,2,3,4,5,6,7,8,9)", 4.5);
 
 			evalAndCompareD(tn, "deg2rad(0)", 0.0);
@@ -203,7 +203,7 @@ namespace Malsys.Tests.Expressions {
 			evalAndCompareD(tn, "if(0, 2, 3)", 3.0);
 			evalAndCompareD(tn, "if(false, 2, 3)", 3.0);
 
-			evalAndCompareD(tn, "len({})", 0.0);
+			evalAndCompareD(tn, "length({})", 0.0);
 			evalAndCompareD(tn, "length({3,3,3})", 3.0);
 			evalAndCompareD(tn, "length({{},{}})", 2.0);
 
@@ -211,8 +211,7 @@ namespace Malsys.Tests.Expressions {
 			evalAndCompareD(tn, "isNan(nan)", 1.0);
 			evalAndCompareD(tn, "isNan(0/0)", 1.0);
 
-			evalAndCompareD(tn, "isInfty(7)", 0.0);
-			evalAndCompareD(tn, "isInfty(infty)", 1.0);
+			evalAndCompareD(tn, "isInfinity(7)", 0.0);
 			evalAndCompareD(tn, "isInfinity(infinity)", 1.0);
 			evalAndCompareD(tn, "isInfinity(2/0)", 1.0);
 
@@ -233,7 +232,6 @@ namespace Malsys.Tests.Expressions {
 
 			evalAndCompareD(tn, "2+3 > 2*2", 1.0);
 			evalAndCompareD(tn, "8 < 8 || 8 > 8", 0.0);
-			evalAndCompareD(tn, "2 * abs(-1)^5 == 2", 1.0);
 
 			evalAndCompareD(tn, "1 && 1 || 1 && 0", 1.0);
 			evalAndCompareD(tn, "1 && 1 ^^ 1 && 0", 1.0);

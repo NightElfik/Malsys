@@ -58,9 +58,7 @@ namespace Malsys.Reflection.Components {
 					continue;
 				}
 
-				var names = getAliases(propInfo).ToList();
-				names.Add(propInfo.Name);
-				yield return new ComponentGettablePropertyMetadata(names.ToImmutableList(), propInfo);
+				yield return new ComponentGettablePropertyMetadata(propInfo.GetAliases().ToImmutableList(), propInfoAndAttr.Item2.GettableBeforeInitialiation, propInfo);
 			}
 		}
 
@@ -79,9 +77,7 @@ namespace Malsys.Reflection.Components {
 					continue;
 				}
 
-				var names = getAliases(propInfo).ToList();
-				names.Add(propInfo.Name);
-				yield return new ComponentSettablePropertyMetadata(names.ToImmutableList(), propInfo, propInfoAndAttr.Item2.IsMandatory);
+				yield return new ComponentSettablePropertyMetadata(propInfo.GetAliases().ToImmutableList(), propInfo, propInfoAndAttr.Item2.IsMandatory);
 			}
 		}
 
@@ -100,9 +96,7 @@ namespace Malsys.Reflection.Components {
 					continue;
 				}
 
-				var names = getAliases(propInfo).ToList();
-				names.Add(propInfo.Name);
-				yield return new ComponentSettableSybolsPropertyMetadata(names.ToImmutableList(), propInfo, propInfoAndAttr.Item2.IsMandatory);
+				yield return new ComponentSettableSybolsPropertyMetadata(propInfo.GetAliases().ToImmutableList(), propInfo, propInfoAndAttr.Item2.IsMandatory);
 			}
 		}
 
@@ -121,20 +115,20 @@ namespace Malsys.Reflection.Components {
 					continue;
 				}
 
-				var names = getAliases(propInfo).ToList();
-				names.Add(propInfo.Name);
-				yield return new ComponentConnectablePropertyMetadata(names.ToImmutableList(), propInfo, propInfoAndAttr.Item2.IsOptional, propInfoAndAttr.Item2.AllowMultiple);
+				yield return new ComponentConnectablePropertyMetadata(propInfo.GetAliases().ToImmutableList(), propInfo, propInfoAndAttr.Item2.IsOptional, propInfoAndAttr.Item2.AllowMultiple);
 			}
 		}
 
 		private IEnumerable<ComponentCallableFunctionMetadata> getCallableFunctions(Type type, IMessageLogger logger) {
 
 			foreach (var propInfoAndAttr in type.GetMethodsHavingAttr<UserCallableFunctionAttribute>()) {
+
 				MethodInfo methodInfo = propInfoAndAttr.Item1;
+				var attr = propInfoAndAttr.Item2;
 
 				var prms = methodInfo.GetParameters();
-				if (prms.Length != 1 || prms[0].ParameterType != typeof(ArgsStorage)) {
-					logger.LogMessage(Message.InvalidParamsOfCallableFun, methodInfo.Name, type.ToString(), typeof(ArgsStorage).FullName);
+				if (prms.Length != 2 || prms[0].ParameterType != typeof(IValue[]) || prms[1].ParameterType != typeof(IExpressionEvaluatorContext)) {
+					logger.LogMessage(Message.InvalidParamsOfCallableFun, methodInfo.Name, type.ToString(), typeof(IValue[]).FullName, typeof(IExpressionEvaluatorContext).FullName);
 					continue;
 				}
 
@@ -143,9 +137,7 @@ namespace Malsys.Reflection.Components {
 					continue;
 				}
 
-				var names = getAliases(methodInfo).ToList();
-				names.Add(methodInfo.Name);
-				yield return new ComponentCallableFunctionMetadata(names.ToImmutableList(), methodInfo);
+				yield return new ComponentCallableFunctionMetadata(methodInfo.GetAliases().ToImmutableList(), methodInfo, attr.ParamsCount, attr.ParamsTypesCyclicPattern.ToImmutableList());
 			}
 		}
 
@@ -159,16 +151,6 @@ namespace Malsys.Reflection.Components {
 			}
 
 			return ctorInfo;
-
-		}
-
-		private IEnumerable<string> getAliases(MemberInfo memberInfo, bool inherit = true) {
-
-			foreach (AliasAttribute aliasAttr in memberInfo.GetCustomAttributes(typeof(AliasAttribute), inherit)) {
-				foreach (var alias in aliasAttr.Aliases) {
-					yield return alias;
-				}
-			}
 
 		}
 
@@ -195,7 +177,8 @@ namespace Malsys.Reflection.Components {
 			[Message(MessageType.Error, "Type of Property `{0}` on component `{1}` marked as connectable is not assignable to `{2}`.")]
 			ConnectablePropTypeError,
 
-			[Message(MessageType.Error, "Method `{0}` on component `{1}` marked as callable function has invalid parameters. Callable function can have only one parameter of type `{2}`.")]
+			[Message(MessageType.Error, "Method `{0}` on component `{1}` marked as callable function has invalid parameters. "+
+				"Callable function must have two parameters with types `{2}` and `{3}` respectively.")]
 			InvalidParamsOfCallableFun,
 			[Message(MessageType.Error, "Method `{0}` on component `{1}` marked as callable function has invalid return type. Return type has to be assignable to `{2}`.")]
 			InvalidReturnTypeOfCallableFun,

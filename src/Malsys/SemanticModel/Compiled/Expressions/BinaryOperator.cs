@@ -16,12 +16,12 @@ namespace Malsys.SemanticModel.Compiled.Expressions {
 		public readonly IExpression LeftOperand, RightOperand;
 		public readonly ExpressionValueTypeFlags LeftOperandType, RightOperandType;
 
-		public readonly Func<ArgsStorage, IValue> Evaluate;
+		public readonly Func<IValue, IValue, IValue> Evaluate;
 
 		public readonly Ast.Operator AstNode;
 
 
-		public BinaryOperator(string syntax, int prec, int activePrec, Func<ArgsStorage, IValue> evalFunc, IExpression leftOperand,
+		public BinaryOperator(string syntax, int prec, int activePrec, Func<IValue, IValue, IValue> evalFunc, IExpression leftOperand,
 				ExpressionValueTypeFlags leftOperandType, IExpression rightOperand, ExpressionValueTypeFlags rightOperandType, Ast.Operator astNode) {
 
 			Syntax = syntax;
@@ -39,13 +39,7 @@ namespace Malsys.SemanticModel.Compiled.Expressions {
 		}
 
 
-
-		public bool IsEmptyExpression { get { return false; } }
-
-
-		public void Accept(IExpressionVisitor visitor) {
-			visitor.Visit(this);
-		}
+		public ExpressionType ExpressionType { get { return ExpressionType.BinaryOperator; } }
 
 	}
 }

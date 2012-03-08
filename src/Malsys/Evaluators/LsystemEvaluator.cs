@@ -3,26 +3,21 @@ using Malsys.SemanticModel;
 using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Collections;
-using ConstsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.IValue>;
-using FunsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Compiled.FunctionEvaledParams>;
 
 namespace Malsys.Evaluators {
 	internal class LsystemEvaluator : ILsystemEvaluator {
 
-		private IExpressionEvaluator exprEvaluator;
 		private IParametersEvaluator paramsEvaluator;
 		private ISymbolEvaluator symbolEvaluator;
 
 
-		public LsystemEvaluator(IExpressionEvaluator exprEval, IParametersEvaluator parametersEvaluator, ISymbolEvaluator iSymbolEvaluator) {
-
-			exprEvaluator = exprEval;
+		public LsystemEvaluator(IParametersEvaluator parametersEvaluator, ISymbolEvaluator iSymbolEvaluator) {
 			paramsEvaluator = parametersEvaluator;
 			symbolEvaluator = iSymbolEvaluator;
 		}
 
 
-		public LsystemEvaled Evaluate(LsystemEvaledParams lsystem, IList<IValue> arguments, ConstsMap consts, FunsMap funs) {
+		public LsystemEvaled Evaluate(LsystemEvaledParams lsystem, IList<IValue> arguments, IExpressionEvaluatorContext exprEvalCtxt) {
 
 			if (lsystem.Parameters.Length < arguments.Count) {
 				throw new EvalException("Failed to evaluate L-system `{0}`. It takes only {1} parameters but {2} arguments were given."
@@ -45,10 +40,11 @@ namespace Malsys.Evaluators {
 					}
 				}
 
-				consts = consts.Add(lsystem.Parameters[i].Name, value);
+				exprEvalCtxt = exprEvalCtxt.AddVariable(lsystem.Parameters[i].Name, value, lsystem.Parameters[i].AstNode);
 			}
 
-			var symDefs = MapModule.Empty<string, ImmutableList<Symbol<IValue>>>();
+			var valAssigns = MapModule.Empty<string, IValue>();
+			var symAssigns = MapModule.Empty<string, ImmutableList<Symbol<IValue>>>();
 			var symsInt = MapModule.Empty<string, SymbolInterpretationEvaled>();
 
 			// statements evaluation
@@ -59,18 +55,24 @@ namespace Malsys.Evaluators {
 				switch (stat.StatementType) {
 					case LsystemStatementType.Constant:
 						var cst = (ConstantDefinition)stat;
-						consts = consts.Add(cst.Name, exprEvaluator.Evaluate(cst.Value, consts, funs));
+						if (cst.IsComponentAssign) {
+							valAssigns = valAssigns.Add(cst.Name, exprEvalCtxt.Evaluate(cst.Value));
+						}
+						else {
+							exprEvalCtxt = exprEvalCtxt.AddVariable(cst.Name, cst.Value, cst.AstNode);
+						}
 						break;
 
 					case LsystemStatementType.Function:
 						var fun = (Function)stat;
-						var funPrms = paramsEvaluator.Evaluate(fun.Parameters, consts, funs);
-						funs = funs.Add(fun.Name, new FunctionEvaledParams(fun.Name, funPrms, fun.Statements, fun.AstNode));
+						var funPrms = paramsEvaluator.Evaluate(fun.Parameters, exprEvalCtxt);
+						var funData = new FunctionData(fun.Name, funPrms, fun.Statements);
+						exprEvalCtxt = exprEvalCtxt.AddFunction(funData);
 						break;
 
 					case LsystemStatementType.SymbolsConstant:
 						var symDef = (SymbolsConstDefinition)stat;
-						symDefs = symDefs.Add(symDef.Name, symbolEvaluator.EvaluateList(symDef.Symbols, consts, funs));
+						symAssigns = symAssigns.Add(symDef.Name, symbolEvaluator.EvaluateList(symDef.Symbols, exprEvalCtxt));
 						break;
 
 					case LsystemStatementType.RewriteRule:
@@ -79,7 +81,7 @@ namespace Malsys.Evaluators {
 
 					case LsystemStatementType.SymbolsInterpretation:
 						var symInt = (SymbolsInterpretation)stat;
-						var symIntPrms = paramsEvaluator.Evaluate(symInt.Parameters, consts, funs);
+						var symIntPrms = paramsEvaluator.Evaluate(symInt.Parameters, exprEvalCtxt);
 						foreach (var sym in symInt.Symbols) {
 							if (symsInt.ContainsKey(sym.Name)) {
 								throw new EvalException("More than one interpretation method defined for symbol `{0}` (`{1}` and `{2}`)."
@@ -99,7 +101,7 @@ namespace Malsys.Evaluators {
 				}
 			}
 
-			return new LsystemEvaled(lsystem.Name, consts, funs, symDefs, symsInt,
+			return new LsystemEvaled(lsystem.Name, exprEvalCtxt, valAssigns, symAssigns, symsInt,
 				rRules.ToImmutableList(), processStats.ToImmutableList(), lsystem.AstNode);
 		}
 

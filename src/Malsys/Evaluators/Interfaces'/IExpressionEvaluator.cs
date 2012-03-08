@@ -1,81 +1,23 @@
 ﻿using Malsys.SemanticModel;
 using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Evaluated;
-using Microsoft.FSharp.Collections;
-using ConstsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.IValue>;
-using FunsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Compiled.FunctionEvaledParams>;
 
 namespace Malsys.Evaluators {
 
 	public interface IExpressionEvaluator {
 
 		/// <summary>
-		/// Evaluates given expression with given constants and functions.
+		/// Evaluates given expression.
 		/// </summary>
-		IValue Evaluate(IExpression expr, ConstsMap consts, FunsMap funs);
-
-		//IValue Evaluate(IExpression expr, IExpressionMemberProvider exprMemberPprovider);
+		/// <remarks>
+		/// If this method is using given IExpressionEvaluatorContext for variables and functions evaluation,
+		/// these functions will likely call Evaluate method on expression evaluator from IExpressionEvaluatorContext
+		/// which can be the same instance as this. So this method must be able to handle its recursive calls.
+		/// The best way how to avoid any problems is to do the method pure (state-less, no usage of global variables).
+		/// This will also causes thread safety of the method.
+		/// </remarks>
+		IValue Evaluate(IExpression expr, IExpressionEvaluatorContext exprEvalCtxt);
 
 	}
-
-
-	public static class IExpressionEvaluatorExtensions {
-
-		private static readonly ConstsMap emptyConstsMap = MapModule.Empty<string, IValue>();
-		private static readonly FunsMap emptyFunsMap = MapModule.Empty<string, FunctionEvaledParams>();
-
-
-		/// <summary>
-		/// Evaluates given expression with no defined constants nor functions.
-		/// </summary>
-		public static IValue Evaluate(this IExpressionEvaluator evaluator, IExpression expr) {
-			return evaluator.Evaluate(expr, emptyConstsMap, emptyFunsMap);
-		}
-
-		/// <summary>
-		/// Evaluates given list of expressions with no defined constants nor functions.
-		/// </summary>
-		public static ImmutableList<IValue> EvaluateList(this IExpressionEvaluator evaluator, ImmutableList<IExpression> exprs) {
-
-			var result = new IValue[exprs.Length];
-
-			for (int i = 0; i < exprs.Length; i++) {
-				result[i] = evaluator.Evaluate(exprs[i], emptyConstsMap, emptyFunsMap);
-			}
-
-			return new ImmutableList<IValue>(result, true);
-		}
-
-		/// <summary>
-		/// Evaluates immutable list of expressions with given constants and functions.
-		/// </summary>
-		public static ImmutableList<IValue> EvaluateList(this IExpressionEvaluator evaluator, ImmutableList<IExpression> exprs, ConstsMap consts, FunsMap funs) {
-
-			var result = new IValue[exprs.Length];
-
-			for (int i = 0; i < exprs.Length; i++) {
-				result[i] = evaluator.Evaluate(exprs[i], consts, funs);
-			}
-
-			return new ImmutableList<IValue>(result, true);
-		}
-
-		/// <summary>
-		/// Evaluates expression with given constants and functions as Constant.
-		/// If result is not Constant, EvalException is thrown.
-		/// </summary>
-		public static Constant EvaluateAsConst(this IExpressionEvaluator evaluator, IExpression expr, ConstsMap consts, FunsMap funs) {
-
-			var e = evaluator.Evaluate(expr, consts, funs);
-			if (e.IsConstant) {
-				return (Constant)e;
-			}
-			else {
-				throw new EvalException("Excepted constant after evaluation.");
-			}
-		}
-
-	}
-
 
 }

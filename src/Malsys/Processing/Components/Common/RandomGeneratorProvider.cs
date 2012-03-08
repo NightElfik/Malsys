@@ -16,6 +16,7 @@ namespace Malsys.Processing.Components.Common {
 		private IRandomGenerator localRandomGenerator;
 
 
+		[Alias("trueRandom")]
 		[UserGettable]
 		[UserSettable]
 		public Constant TrueRandom {
@@ -23,6 +24,7 @@ namespace Malsys.Processing.Components.Common {
 			set { trueRandom = !value.IsZero; }
 		}
 
+		[Alias("randomSeed")]
 		[UserGettable]
 		[UserSettable]
 		public Constant RandomSeed { get; set; }
@@ -70,9 +72,9 @@ namespace Malsys.Processing.Components.Common {
 			}
 		}
 
-		[Alias("Rand", "Random")]
+		[Alias("getRandomValue", "Rand", "rand", "Random", "random")]
 		[UserCallableFunction]
-		public IValue GetRandomValue(ArgsStorage args) {
+		public IValue GetRandomValue(IValue[] args, IExpressionEvaluatorContext eec) {
 
 			Contract.Ensures(Contract.Result<IValue>() != null);
 

@@ -13,7 +13,7 @@ namespace Malsys.Processing.Components.Rewriters {
 
 
 		private LsystemEvaled lsystem;
-		private IExpressionEvaluator exprEvaluator;
+		private IExpressionEvaluatorContext exprEvalCtxt;
 
 		private SymbolRewriterEnumerator enumerator;
 
@@ -26,6 +26,7 @@ namespace Malsys.Processing.Components.Rewriters {
 		private bool stochasticRules;
 
 
+		[Alias("contextIgnore")]
 		[UserSettableSybols]
 		public ImmutableList<Symbol<IValue>> ContextIgnore {
 			set {
@@ -65,7 +66,7 @@ namespace Malsys.Processing.Components.Rewriters {
 		public void Initialize(ProcessContext ctxt) {
 
 			lsystem = ctxt.Lsystem;
-			exprEvaluator = ctxt.Evaluator.ResolveExpressionEvaluator();
+			exprEvalCtxt = ctxt.ExpressionEvaluatorContext;
 
 			rewriteRules = lsystem.RewriteRules
 				.GroupBy(rr => rr.SymbolPattern.Name)

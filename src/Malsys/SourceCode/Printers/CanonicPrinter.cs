@@ -6,9 +6,11 @@ using Malsys.SemanticModel;
 using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Compiled.Expressions;
 using Malsys.SemanticModel.Evaluated;
+using System.Diagnostics;
+using Malsys.Evaluators;
 
 namespace Malsys.SourceCode.Printers {
-	public class CanonicPrinter : IExpressionVisitor {
+	public class CanonicPrinter {
 
 
 		private IndentWriter writer;
@@ -59,18 +61,29 @@ namespace Malsys.SourceCode.Printers {
 		}
 
 
-		public void Print(Malsys.SemanticModel.Evaluated.InputBlock evaledInput) {
+		public void Print(InputBlockEvaled evaledInput) {
 
-			foreach (var kvp in evaledInput.GlobalConstants.OrderBy(kvp => kvp.Key)) {
+			var variables = evaledInput.ExpressionEvaluatorContext.GetAllStoredVariables()
+				.Where(x => x.Metadata != null & x.Metadata is Ast.ConstantDefinition)
+				.OrderBy(x => x.Name);
+
+			foreach (var var in variables) {
 				Print(Ast.Keyword.Let);
-				writer.Write(kvp.Key);
+				writer.Write(var.Name);
 				writer.Write(" = ");
-				Print(kvp.Value);
+				Print(var.ValueFunc());
 				writer.WriteLine(";");
 			}
 
-			foreach (var f in evaledInput.GlobalFunctions.Select(kvp => kvp.Value).OrderBy(f => f.Name)) {
-				Print(f);
+			var functions = evaledInput.ExpressionEvaluatorContext.GetAllStoredFunctions()
+				.Where(x => x.Metadata != null & x.Metadata is FunctionData)
+				.Select(x => (FunctionData)x.Metadata)
+				.GroupBy(x => x)
+				.Select(x => x.Key)
+				.OrderBy(x => x.Name);
+
+			foreach (var fun in functions) {
+				Print(fun);
 			}
 
 			foreach (var l in evaledInput.Lsystems.Select(kvp => kvp.Value).OrderBy(l => l.Name)) {
@@ -244,7 +257,7 @@ namespace Malsys.SourceCode.Printers {
 					});
 			}
 
-			if (!rewriteRule.Condition.IsEmptyExpression) {
+			if (rewriteRule.Condition.ExpressionType != ExpressionType.EmptyExpression) {
 				writer.NewLine();
 				Print(Ast.Keyword.Where);
 				Print(rewriteRule.Condition);
@@ -280,7 +293,7 @@ namespace Malsys.SourceCode.Printers {
 				PrintSeparated(rrReplacment.Replacement, s => Print(s), " ");
 			}
 
-			if (!rrReplacment.Weight.IsEmptyExpression) {
+			if (rrReplacment.Weight.ExpressionType != ExpressionType.EmptyExpression) {
 				writer.Write(" ");
 				Print(Ast.Keyword.Weight);
 				Print(rrReplacment.Weight);
@@ -306,8 +319,15 @@ namespace Malsys.SourceCode.Printers {
 			writer.WriteLine(";");
 		}
 
+		public void Print(ImmutableList<Symbol<IValue>> symbols) {
+
+			PrintSeparated(symbols, s => Print(s), " ");
+
+		}
+
 		public void Print(SymbolsConstDefinition symbolsDef) {
 			Print(Ast.Keyword.Set);
+			Print(Ast.Keyword.Symbols);
 			writer.Write(symbolsDef.Name);
 			writer.Write(" = ");
 			PrintSeparated(symbolsDef.Symbols, s => Print(s), " ");
@@ -348,15 +368,15 @@ namespace Malsys.SourceCode.Printers {
 			}
 		}
 
-		public void Print(FunctionEvaledParams funEvaledParams) {
+		internal void Print(FunctionData funData) {
 
 			Print(Ast.Keyword.Fun);
-			writer.Write(funEvaledParams.Name);
-			Print(funEvaledParams.Parameters, true);
+			writer.Write(funData.Name);
+			Print(funData.Parameters, true);
 			writer.WriteLine(" {");
 			writer.Indent();
 
-			Print(funEvaledParams.Statements);
+			Print(funData.Statements);
 
 			writer.Unindent();
 			writer.WriteLine("}");
@@ -395,7 +415,12 @@ namespace Malsys.SourceCode.Printers {
 		}
 
 		public void Print(ConstantDefinition constDef) {
-			Print(Ast.Keyword.Let);
+			if (constDef.IsComponentAssign) {
+				Print(Ast.Keyword.Set);
+			}
+			else {
+				Print(Ast.Keyword.Let);
+			}
 			writer.Write(constDef.Name);
 			writer.Write(" = ");
 			Print(constDef.Value);
@@ -442,7 +467,19 @@ namespace Malsys.SourceCode.Printers {
 
 
 		public void Print(IExpression expr) {
-			expr.Accept(this);
+			switch (expr.ExpressionType) {
+				case ExpressionType.BinaryOperator: Visit((BinaryOperator)expr); break;
+				case ExpressionType.Constant: Visit((Constant)expr); break;
+				case ExpressionType.EmptyExpression: Visit((EmptyExpression)expr); break;
+				case ExpressionType.ExpressionValuesArray: Visit((ExpressionValuesArray)expr); break;
+				case ExpressionType.ExprVariable: Visit((ExprVariable)expr); break;
+				case ExpressionType.FunctionCall: Visit((FunctionCall)expr); break;
+				case ExpressionType.Indexer: Visit((Indexer)expr); break;
+				case ExpressionType.UnaryOperator: Visit((UnaryOperator)expr); break;
+				default:
+					Debug.Fail("Unknown expression type `{0}`".Fmt(expr.ExpressionType.ToString()));
+					break;
+			}
 		}
 
 		public void Print(IValue value) {
@@ -510,24 +547,24 @@ namespace Malsys.SourceCode.Printers {
 		public void Visit(UnaryOperator unaryOperator) {
 			writer.Write("(");
 			writer.Write(unaryOperator.Syntax);
-			unaryOperator.Operand.Accept(this);
+			Print(unaryOperator.Operand);
 			writer.Write(")");
 		}
 
 		public void Visit(BinaryOperator binaryOperator) {
 			writer.Write("(");
-			binaryOperator.LeftOperand.Accept(this);
+			Print(binaryOperator.LeftOperand);
 			writer.Write(" ");
 			writer.Write(binaryOperator.Syntax);
 			writer.Write(" ");
-			binaryOperator.RightOperand.Accept(this);
+			Print(binaryOperator.RightOperand);
 			writer.Write(")");
 		}
 
 		public void Visit(Indexer indexer) {
-			indexer.Array.Accept(this);
+			Print(indexer.Array);
 			writer.Write("[");
-			indexer.Index.Accept(this);
+			Print(indexer.Index);
 			writer.Write("]");
 		}
 
@@ -535,13 +572,6 @@ namespace Malsys.SourceCode.Printers {
 			writer.Write(functionCall.Name);
 			writer.Write("(");
 			PrintSeparated(functionCall.Arguments, e => Print(e));
-			writer.Write(")");
-		}
-
-		public void Visit(UserFunctionCall userFunction) {
-			writer.Write(userFunction.Name);
-			writer.Write("(");
-			PrintSeparated(userFunction.Arguments, e => Print(e));
 			writer.Write(")");
 		}
 

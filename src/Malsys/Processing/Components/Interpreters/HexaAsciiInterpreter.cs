@@ -31,11 +31,13 @@ namespace Malsys.Processing.Components.Interpreters {
 		private float horizontalScaleMult = 2;
 
 
+		[Alias("scale")]
 		[UserSettable]
 		public Constant Scale {
 			set { scale = value.RoundedIntValue; }
 		}
 
+		[Alias("horizontalScaleMultiplier")]
 		[UserSettable]
 		public Constant HorizontalScaleMultiplier {
 			set { horizontalScaleMult = (float)value.Value; }

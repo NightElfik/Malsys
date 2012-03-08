@@ -6,7 +6,7 @@ namespace Malsys.SemanticModel {
 	/// <summary>
 	/// Immutable.
 	/// </summary>
-	public class Constant : IExpression, IExpressionVisitable, IValue {
+	public class Constant : IExpression, IValue {
 
 		public static readonly Constant NaN = new Constant(double.NaN);
 
@@ -40,9 +40,9 @@ namespace Malsys.SemanticModel {
 
 		public bool IsArray { get { return false; } }
 
-		public ExpressionValueType Type { get { return ExpressionValueType.Constant; } }
+		public ExpressionType ExpressionType { get { return ExpressionType.Constant; } }
 
-		public bool IsEmptyExpression { get { return false; } }
+		public ExpressionValueType Type { get { return ExpressionValueType.Constant; } }
 
 		public int RoundedIntValue { get { return (int)Math.Round(Value); } }
 
@@ -58,11 +58,6 @@ namespace Malsys.SemanticModel {
 
 		public override string ToString() {
 			return Value.ToStringInvariant();
-		}
-
-
-		public void Accept(IExpressionVisitor visitor) {
-			visitor.Visit(this);
 		}
 
 

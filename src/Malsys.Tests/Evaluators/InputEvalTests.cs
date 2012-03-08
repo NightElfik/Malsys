@@ -42,12 +42,24 @@ namespace Malsys.Tests.Evaluators {
 		}
 
 		[TestMethod]
-		public void FunRedefinitionTests() {
+		public void FunOverloadingTests() {
 			doTestAutoidentOutput(
-				"fun a() { return 2; } let a = a(); fun a(x) { return x; }",
-				"let a = 2;",
+				"fun a() { return 2; } fun a(x) { return x; }",
+				"fun a() {",
+				"return 2;",
+				"}",
 				"fun a(x) {",
 				"return x;",
+				"}");
+		}
+
+		[TestMethod]
+		public void FunRedefinitionTests() {
+			doTestAutoidentOutput(
+				"fun a() { return 2; } let a = a(); fun a() { return 3; }",
+				"let a = 2;",
+				"fun a() {",
+				"return 3;",
 				"}");
 		}
 
@@ -71,11 +83,11 @@ namespace Malsys.Tests.Evaluators {
 				"lsystem l(q, p = 5) {",
 				"}");
 			doTestAutoidentOutput(
-				"lsystem l { let x = 0; set c = a; set a = c; }",
+				"lsystem l { let x = 0; set symbols c = a; set symbols a = c; }",
 				"lsystem l {",
 				"let x = 0;",
-				"set c = a;",
-				"set a = c;",
+				"set symbols c = a;",
+				"set symbols a = c;",
 				"}");
 		}
 

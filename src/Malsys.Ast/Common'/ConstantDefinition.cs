@@ -6,12 +6,23 @@ namespace Malsys.Ast {
 	public class ConstantDefinition : IInputStatement, ILsystemStatement, IFunctionStatement {
 
 		public readonly Identificator NameId;
+
 		public readonly Expression ValueExpr;
+
+		public readonly bool IsComponentAssign;
 
 
 		public ConstantDefinition(Identificator name, Expression value, Position pos) {
 			NameId = name;
 			ValueExpr = value;
+			IsComponentAssign = false;
+			Position = pos;
+		}
+
+		public ConstantDefinition(Identificator name, Expression value, bool isComponentAssign, Position pos) {
+			NameId = name;
+			ValueExpr = value;
+			IsComponentAssign = isComponentAssign;
 			Position = pos;
 		}
 

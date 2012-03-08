@@ -1,45 +1,52 @@
-﻿@model IEnumerable<Malsys.Compilers.Expressions.FunctionCore>
+﻿@model IEnumerable<Malsys.Web.Areas.Help.Models.Predefined.Function>
 
 
 @{
 	ViewBag.Title = "Functions";
-	var anyParams = Malsys.Compilers.Expressions.FunctionCore.AnyParamsCount;
+	var anyParams = Malsys.Evaluators.FunctionInfo.AnyParamsCount;
 }
 
 <h2>Functions</h2>
 
+<p>
+	Functions listed on this page can be used anywhere in code.
+	This means that they can be used in global scope as well as in lsystem or in symbol parameter.
+	Names of functions are case-sensitive but all usual case variants are defined.
+</p>
+
+@foreach (var funGroup in Model.GroupBy(x => x.Group).OrderBy(x => x.Key)) {
+
+<h3>@funGroup.Key</h3>
 
 <table class="w100">
-@foreach (var funGroup in  Model.GroupBy(x => x.Group)) {
-
 	<tr>
-		<th style="width: 128px;">Name</th>
-		<th style="width: 64px;">Number of parameters</th>
+		<th style="width: 150px;">Name</th>
+		<th style="width: 80px;">Num of params</th>
 		<th style="width: 128px;">Parameters type pattern</th>
 		<th>Description</th>
 	</tr>
-	<tr class="th"><th colspan="4">@funGroup.Key</th></tr>
 
-	foreach (var equalFunGroup in funGroup.GroupBy(x => x.EvalFunction)) {
-		var count = equalFunGroup.Count();
-		bool first = true;
-		foreach (var fun in equalFunGroup) {
+@foreach (var equalFunGroup in funGroup.GroupBy(x => x.FunctionInfo.FunctionBody)) {
+	 var count = equalFunGroup.Count();
+	 bool first = true;
+	 foreach (var fun in equalFunGroup) {
 		<tr>
-			<td class="monospace">@fun.Name</td>
+			<td class="monospace">@fun.FunctionInfo.Name</td>
 			@if (first) {
 				first = false;
-				<td rowspan="@count" class="center">@(fun.ParametersCount == anyParams ? "any" : fun.ParametersCount.ToString())</td>
+				<td rowspan="@count" class="center">@(fun.FunctionInfo.ParamsCount == anyParams ? "any" : fun.FunctionInfo.ParamsCount.ToString())</td>
 				<td rowspan="@count" class="center">
-					@for (int i = 0; i < fun.ParamsTypes.Length; i++) {
-						@(i == 0 ? "" : ", ")
-						@Malsys.SemanticModel.Evaluated.ExpressionValueTypeExtensions.ToTypeString(fun.ParamsTypes[i])
+					@for (int i = 0; i < fun.FunctionInfo.ParamsTypesCyclicPattern.Length; i++) {
+						if (i != 0) { <br /> }
+						@Malsys.SemanticModel.Evaluated.ExpressionValueTypeExtensions.ToTypeString(fun.FunctionInfo.ParamsTypesCyclicPattern[i])
 					}
 				</td>
 				<td rowspan="@count">@fun.Documentation</td>
 			}
 		</tr>
-		}
 	}
+}
+
+</table>
 
 }
-</table>

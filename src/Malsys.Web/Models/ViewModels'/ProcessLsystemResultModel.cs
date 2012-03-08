@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
 using Malsys.Processing.Output;
+using System;
 
 namespace Malsys.Web.Models {
 	public class ProcessLsystemResultModel {
+
+		public bool NoProcessStatement { get; set; }
 
 		public string SourceCode { get; set; }
 
@@ -10,9 +13,11 @@ namespace Malsys.Web.Models {
 
 		public MessageLogger Logger { get; set; }
 
-		public IEnumerable<OutputFile> OutputFiles { get; set; }
+		public List<OutputFile> OutputFiles { get; set; }
 
 		public string SavedInputId { get; set; }
+
+		public TimeSpan ProcessDuration { get; set; }
 
 	}
 }

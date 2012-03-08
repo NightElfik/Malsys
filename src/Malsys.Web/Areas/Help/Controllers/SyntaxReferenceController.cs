@@ -9,7 +9,7 @@ namespace Malsys.Web.Areas.Help.Controllers {
 		private readonly SimpleLsystemProcessor simpleLsystemProcessor;
 
 
-		public SyntaxReferenceController(ProcessManager processManager, InputBlock stdLib) {
+		public SyntaxReferenceController(ProcessManager processManager, InputBlockEvaled stdLib) {
 
 			simpleLsystemProcessor = new SimpleLsystemProcessor(processManager, stdLib);
 		}

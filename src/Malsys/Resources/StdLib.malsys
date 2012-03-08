@@ -123,6 +123,3 @@ configuration InterpretationDebugger {
 }
 
 
-// default process
-process with SymbolPrinter;
-

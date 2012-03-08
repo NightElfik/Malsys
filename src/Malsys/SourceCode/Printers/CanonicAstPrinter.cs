@@ -115,7 +115,12 @@ namespace Malsys.SourceCode.Printers {
 
 		public void Visit(ConstantDefinition constDef) {
 
-			Print(Keyword.Let);
+			if (constDef.IsComponentAssign) {
+				Print(Keyword.Set);
+			}
+			else {
+				Print(Keyword.Let);
+			}
 			writer.Write(constDef.NameId.Name);
 			writer.Write(" = ");
 			Print(constDef.ValueExpr);
@@ -285,6 +290,7 @@ namespace Malsys.SourceCode.Printers {
 
 		public void Visit(SymbolsConstDefinition symbolsDef) {
 			Print(Keyword.Set);
+			Print(Keyword.Symbols);
 			writer.Write(symbolsDef.NameId.Name);
 			writer.Write(" = ");
 			PrintSeparated(symbolsDef.SymbolsList, s => Print(s), " ");

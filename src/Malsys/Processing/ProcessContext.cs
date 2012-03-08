@@ -8,20 +8,20 @@ namespace Malsys.Processing {
 
 		public IOutputProvider OutputProvider { get; private set; }
 
-		public InputBlock InputData { get; private set; }
+		public InputBlockEvaled InputData { get; private set; }
 
-		public IEvaluatorsContainer Evaluator { get; private set; }
+		public IExpressionEvaluatorContext ExpressionEvaluatorContext { get; private set; }
 
 		public IMessageLogger Logger { get; private set; }
 
 
 		public ProcessContext(LsystemEvaled lsystem, IOutputProvider outputProvider,
-				InputBlock data, IEvaluatorsContainer evaluator, IMessageLogger logger) {
+				InputBlockEvaled data, IExpressionEvaluatorContext exprEvalCtxt, IMessageLogger logger) {
 
 			Lsystem = lsystem;
 			OutputProvider = outputProvider;
 			InputData = data;
-			Evaluator = evaluator;
+			ExpressionEvaluatorContext = exprEvalCtxt;
 			Logger = logger;
 
 		}

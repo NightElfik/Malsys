@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Linq;
 using Malsys.Processing;
-using Malsys.Processing.Components;
 using Malsys.Processing.Output;
 using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Core;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Malsys.SemanticModel.Compiled;
+using Malsys.Reflection.Components;
 
 namespace Malsys.Tests.Process {
 	[TestClass]
@@ -14,47 +15,88 @@ namespace Malsys.Tests.Process {
 		[TestMethod]
 		public void ComponentsOnlyTests() {
 			doTest(string.Join("\n", "configuration Config {",
-					"component Starter typeof DummyStarter;",
-					"component Rewriter typeof DummyRewriter;",
-					"component Processor typeof DummySymbolProcessor;",
-					"connect Processor to Rewriter.SymbolProcessor;",
-					" }"),
+					"component Starter typeof StarterComponent;",
+					"component ConnProp typeof ConnectablePropertyComponent;",
+					"component Empty typeof EmptyComponent;",
+					"connect Empty to ConnProp.Component;",
+					"}"),
 				"process this with Config;",
-				new string[]{
-					"DummyStarter",
-					"DummySymbolProcessor",
-					"DummyRewriter:DummySymbolProcessor" });
+				new string[] {
+					"StarterComponent",
+					"EmptyComponent",
+					"ConnectablePropertyComponent:EmptyComponent" });
 		}
 
 		[TestMethod]
 		public void ContainerTests() {
 			doTest(string.Join("\n", "configuration Config {",
-					"component Starter typeof DummyStarter;",
-					"container Boy typeof IDummyContainer default DummyContaineredBoy;",
-					"container Girl typeof IDummyContainer default DummyContaineredBoy;",
-					"connect Girl to Boy.Component;",
-					"connect Boy to Girl.Component;",
-					" }"),
-				"process this with Config use DummyContaineredGirl as Girl;",
+					"component Starter typeof StarterComponent;",
+					"container Alpha typeof IContainer default ContaineredAlphaComponent;",
+					"container Beta typeof IContainer default ContaineredAlphaComponent;",
+					"connect Beta to Alpha.Component;",
+					"connect Alpha to Beta.Component;",
+					"}"),
+				"process this with Config use ContaineredBetaComponent as Beta;",
 				new string[] {
-					"DummyStarter",
-					"DummyContaineredBoy:DummyContaineredGirl",
-					"DummyContaineredGirl:DummyContaineredBoy"});
+					"StarterComponent",
+					"ContaineredAlphaComponent:ContaineredBetaComponent",
+					"ContaineredBetaComponent:ContaineredAlphaComponent" });
+		}
+
+		// this is checked already by compiler
+		//[TestMethod]
+		//public void InvalidConnectionSourceTests() {
+		//    doTest(string.Join("\n", "configuration Config {",
+		//            "component Starter typeof StarterComponent;",
+		//            "component ConnProp typeof ConnectablePropertyComponent;",
+		//            "component Empty typeof EmptyComponent;",
+		//            "connect XXXX to ConnProp.Component;",
+		//            "}"),
+		//        "process this with Config;",
+		//        new string[] {
+		//            toId(ProcessConfigurationBuilder.Message.FailedToConnect)});
+		//}
+
+		// this is checked already by compiler
+		//[TestMethod]
+		//public void InvalidConnectionDestinationTests() {
+		//    doTest(string.Join("\n", "configuration Config {",
+		//            "component Starter typeof StarterComponent;",
+		//            "component ConnProp typeof ConnectablePropertyComponent;",
+		//            "component Empty typeof EmptyComponent;",
+		//            "connect Empty to XXX.Component;",
+		//            "}"),
+		//        "process this with Config;",
+		//        new string[] {
+		//            toId(ProcessConfigurationBuilder.Message.FailedToConnect)});
+		//}
+
+		[TestMethod]
+		public void InvalidConnectionPropertyTests() {
+			doTest(string.Join("\n", "configuration Config {",
+					"component Starter typeof StarterComponent;",
+					"component ConnProp typeof ContaineredBetaComponent;",
+					"component Empty typeof EmptyComponent;",
+					"connect Empty to ConnProp.XXXX;",
+					"}"),
+				"process this with Config;",
+				new string[] {
+					toId(ProcessConfigurationBuilder.Message.InvalidConnection)});
 		}
 
 		[TestMethod]
 		public void ComponentDoNotFitContainerTests() {
 			doTest(string.Join("\n", "configuration Config {",
-					"container Starter typeof IDummyContainer default DummyStarter;",
-					" }"),
+					"container Starter typeof IContainer default StarterComponent;",
+					"}"),
 				"process this with Config;",
 				new string[] {
-					toId(ProcessConfigurationBuilder.Message.ComponentDontFitContainer)});
+					toId(ProcessConfigurationBuilder.Message.ComponentDontFitContainer) });
 
 			doTest(string.Join("\n", "configuration Config {",
-					"container Girl typeof IDummyContainer default DummyContaineredGirl;",
-					" }"),
-				"process this with Config use DummyStarter as Girl;",
+					"container Beta typeof IContainer default ContaineredBetaComponent;",
+					"}"),
+				"process this with Config use StarterComponent as Beta;",
 				new string[] {
 					toId(ProcessConfigurationBuilder.Message.ComponentDontFitContainer) });
 		}
@@ -62,11 +104,11 @@ namespace Malsys.Tests.Process {
 		[TestMethod]
 		public void UnusedContainerAssocNameTests() {
 			doTest(string.Join("\n", "configuration Config {",
-					"container Starter typeof DummyStarter default DummyStarter;",
-					" }"),
-				"process this with Config use DummyStarter as InvalidName;",
+					"container Starter typeof StarterComponent default StarterComponent;",
+					"}"),
+				"process this with Config use StarterComponent as InvalidName;",
 				new string[] {
-					"DummyStarter",
+					"StarterComponent",
 					toId(ProcessConfigurationBuilder.Message.ComponentAssignNotUsed) });
 		}
 
@@ -74,7 +116,7 @@ namespace Malsys.Tests.Process {
 		public void UnknownComponentTests() {
 			doTest(string.Join("\n", "configuration Config {",
 					"component Unknown typeof UnknownType;",
-					" }"),
+					"}"),
 				"process this with Config;",
 				new string[] {
 					toId(ProcessConfigurationBuilder.Message.ComponentResolveError) });
@@ -83,8 +125,8 @@ namespace Malsys.Tests.Process {
 		[TestMethod]
 		public void UnknownContainerTests() {
 			doTest(string.Join("\n", "configuration Config {",
-					"container Unknown typeof Unknown default DummyContaineredBoy;",
-					" }"),
+					"container Unknown typeof Unknown default ContaineredAlphaComponent;",
+					"}"),
 				"process this with Config;",
 				new string[] {
 					toId(ProcessConfigurationBuilder.Message.ContainerResolveError) });
@@ -93,56 +135,77 @@ namespace Malsys.Tests.Process {
 		[TestMethod]
 		public void NoStarterComponentTests() {
 			doTest(string.Join("\n", "configuration Config {",
-					"component Processor typeof DummySymbolProcessor;",
-					" }"),
+					"component Empty typeof EmptyComponent;",
+					"}"),
 				"process this with Config;",
 				new string[] {
-					"DummySymbolProcessor",
+					"EmptyComponent",
 					toId(ProcessConfigurationBuilder.Message.NoStartComponent) });
 		}
 
 		[TestMethod]
 		public void MoreStarterComponentTests() {
 			doTest(string.Join("\n", "configuration Config {",
-					"component Starter1 typeof DummyStarter;",
-					"component Starter2 typeof DummyStarter;",
-					" }"),
+					"component Starter1 typeof StarterComponent;",
+					"component Starter2 typeof StarterComponent;",
+					"}"),
 				"process this with Config;",
 				new string[] {
-					"DummyStarter",
-					"DummyStarter",
+					"StarterComponent",
+					"StarterComponent",
 					toId(ProcessConfigurationBuilder.Message.MoreStartComponents) });
 		}
 
 		[TestMethod]
 		public void OptionalConnectionTests() {
 			doTest(string.Join("\n", "configuration Config {",
-					"component GirlNoConn typeof DummyContaineredGirl;",
-					"component Starter typeof DummyStarter;",
-					" }"),
+					"component BetaNoConn typeof ContaineredBetaComponent;",
+					"component Starter typeof StarterComponent;",
+					"}"),
 				"process this with Config;",
 				new string[] {
-					"DummyStarter",
-					"DummyContaineredGirl:"});
+					"StarterComponent",
+					"ContaineredBetaComponent:" });
 		}
 
 		[TestMethod]
 		public void MandatoryConnectionTests() {
 			doTest(string.Join("\n", "configuration Config {",
-					"component BoyNoConn typeof DummyContaineredBoy;",
-					"component Starter typeof DummyStarter;",
-					" }"),
+					"component AlphaNoConn typeof ContaineredAlphaComponent;",
+					"component Starter typeof StarterComponent;",
+					"}"),
 				"process this with Config;",
 				new string[] {
 					toId(ProcessConfigurationBuilder.Message.UnsetMandatoryConnection) });
 		}
 
 		[TestMethod]
+		public void NoCtorTests() {
+
+			doTest(string.Join("\n", "configuration Config {",
+					"component Devil typeof NoParamlessCtorComponent;",
+					"component Starter typeof StarterComponent;",
+					"}"),
+				"process this with Config;",
+				new string[] {
+					toId(ComponentMetadataDumper.Message.ComponentParamlessCtorMissing) });
+
+			doTest(string.Join("\n", "configuration Config {",
+					"container Devil typeof NoParamlessCtorComponent default XXX;",
+					"component Starter typeof StarterComponent;",
+					"}"),
+				"process this with Config use NoParamlessCtorComponent as Devil;",
+				new string[] {
+					toId(ComponentMetadataDumper.Message.ComponentParamlessCtorMissing) });
+
+		}
+
+		[TestMethod]
 		public void ExceptionInCtorTests() {
 			doTest(string.Join("\n", "configuration Config {",
-					"component Devil typeof ExceptionInCtor;",
-					"component Starter typeof DummyStarter;",
-					" }"),
+					"component Devil typeof ExceptionInCtorComponent;",
+					"component Starter typeof StarterComponent;",
+					"}"),
 				"process this with Config;",
 				new string[] {
 					toId(ProcessConfigurationBuilder.Message.ComponentCtorException) });
@@ -151,24 +214,261 @@ namespace Malsys.Tests.Process {
 		[TestMethod]
 		public void ExceptionInInitTests() {
 			doTest(string.Join("\n", "configuration Config {",
-					"component GoodDevil typeof GoodExceptionInInit;",
-					"component Starter typeof DummyStarter;",
-					" }"),
+					"component GoodDevil typeof ErrorInInitComponent;",
+					"component Starter typeof StarterComponent;",
+					"}"),
 				"process this with Config;",
 				new string[] {
-					"DummyStarter",
+					"StarterComponent",
 					toId(ProcessConfigurationBuilder.Message.ComponentInitializationError) });
 
 			doTest(string.Join("\n", "configuration Config {",
-					"component BadDevil typeof BadExceptionInInit;",
-					"component Starter typeof DummyStarter;",
-					" }"),
+					"component BadDevil typeof ExceptionInInitComponent;",
+					"component Starter typeof StarterComponent;",
+					"}"),
 				"process this with Config;",
 				new string[] {
-					"DummyStarter",
+					"StarterComponent",
 					toId(ProcessConfigurationBuilder.Message.ComponentInitializationException) });
 		}
 
+		[TestMethod]
+		public void SettableVariableTests() {
+
+			doTest(string.Join("\n", "lsystem l {",
+					"set Constant = 8;",
+					"}",
+					"configuration Config {",
+					"component Sett typeof SettablePropertiesComponent;",
+					"component Starter typeof StarterComponent;",
+					"}"),
+				"process this with Config;",
+				new string[] {
+					"StarterComponent",
+					"SettablePropertiesComponent:Constant=8,ValuesArray=,IValue=" });
+
+			doTest(string.Join("\n", "lsystem l {",
+					"set ValuesArray = {0,1,2,3};",
+					"}",
+					"configuration Config {",
+					"component Sett typeof SettablePropertiesComponent;",
+					"component Starter typeof StarterComponent;",
+					"}"),
+				"process this with Config;",
+				new string[] {
+					"StarterComponent",
+					"SettablePropertiesComponent:Constant=,ValuesArray={0, 1, 2, 3},IValue=" });
+
+			doTest(string.Join("\n", "lsystem l {",
+					"set IValue = 27;",
+					"}",
+					"configuration Config {",
+					"component Sett typeof SettablePropertiesComponent;",
+					"component Starter typeof StarterComponent;",
+					"}"),
+				"process this with Config;",
+				new string[] {
+					"StarterComponent",
+					"SettablePropertiesComponent:Constant=,ValuesArray=,IValue=27" });
+
+			doTest(string.Join("\n", "lsystem l {",
+					"set IValue = {2,7};",
+					"}",
+					"configuration Config {",
+					"component Sett typeof SettablePropertiesComponent;",
+					"component Starter typeof StarterComponent;",
+					"}"),
+				"process this with Config;",
+				new string[] {
+					"StarterComponent",
+					"SettablePropertiesComponent:Constant=,ValuesArray=,IValue={2, 7}" });
+
+		}
+
+		[TestMethod]
+		public void SettableVariableWrongTypesTests() {
+
+			doTest(string.Join("\n", "lsystem l {",
+					"set Constant = {0};",
+					"}",
+					"configuration Config {",
+					"component Sett typeof SettablePropertiesComponent;",
+					"component Starter typeof StarterComponent;",
+					"}"),
+				"process this with Config;",
+				new string[] {
+					"StarterComponent",
+					"SettablePropertiesComponent:Constant=,ValuesArray=,IValue=",
+					toId(ProcessConfigurationBuilder.Message.FailedToSetPropertyValueIncompatibleTypes)});
+
+			doTest(string.Join("\n", "lsystem l {",
+					 "set ValuesArray = 0;",
+					 "}",
+					 "configuration Config {",
+					 "component Sett typeof SettablePropertiesComponent;",
+					 "component Starter typeof StarterComponent;",
+					 "}"),
+				 "process this with Config;",
+				 new string[] {
+					"StarterComponent",
+					"SettablePropertiesComponent:Constant=,ValuesArray=,IValue=",
+					toId(ProcessConfigurationBuilder.Message.FailedToSetPropertyValueIncompatibleTypes)});
+
+		}
+
+		[TestMethod]
+		public void SettableVariableAliasesTests() {
+
+			doTest(string.Join("\n", "lsystem l {",
+					"set IValue = 1;",
+					"}",
+					"configuration Config {",
+					"component Sett typeof SettablePropertyAliasesComponent;",
+					"component Starter typeof StarterComponent;",
+					"}"),
+				"process this with Config;",
+				new string[] {
+					"StarterComponent",
+					"SettablePropertyAliasesComponent:1" });
+
+			doTest(string.Join("\n", "lsystem l {",
+					"set iValue = 1;",
+					"}",
+					"configuration Config {",
+					"component Sett typeof SettablePropertyAliasesComponent;",
+					"component Starter typeof StarterComponent;",
+					"}"),
+				"process this with Config;",
+				new string[] {
+					"StarterComponent",
+					"SettablePropertyAliasesComponent:1" });
+
+			doTest(string.Join("\n", "lsystem l {",
+					"set A = 1;",
+					"}",
+					"configuration Config {",
+					"component Sett typeof SettablePropertyAliasesComponent;",
+					"component Starter typeof StarterComponent;",
+					"}"),
+				"process this with Config;",
+				new string[] {
+					"StarterComponent",
+					"SettablePropertyAliasesComponent:1" });
+
+			doTest(string.Join("\n", "lsystem l {",
+					"set b = 1;",
+					"}",
+					"configuration Config {",
+					"component Sett typeof SettablePropertyAliasesComponent;",
+					"component Starter typeof StarterComponent;",
+					"}"),
+				"process this with Config;",
+				new string[] {
+					"StarterComponent",
+					"SettablePropertyAliasesComponent:1" });
+
+		}
+
+		[TestMethod]
+		public void MandatorySettableVariableTests() {
+
+			doTest(string.Join("\n", "lsystem l {",
+					"set Mandatory = 7;",
+					"}",
+					"configuration Config {",
+					"component Sett typeof MandatorySettablePropertyComponent;",
+					"component Starter typeof StarterComponent;",
+					"}"),
+				"process this with Config;",
+				new string[] {
+					"StarterComponent",
+					"MandatorySettablePropertyComponent:7" });
+
+			doTest(string.Join("\n", "lsystem l {",
+					"}",
+					"configuration Config {",
+					"component Sett typeof MandatorySettablePropertyComponent;",
+					"component Starter typeof StarterComponent;",
+					"}"),
+				"process this with Config;",
+				new string[] {
+					toId(ProcessConfigurationBuilder.Message.UnsetMandatoryProperty) });
+
+		}
+
+		[TestMethod]
+		public void SettableVariableInvalidValueTests() {
+
+			doTest(string.Join("\n", "lsystem l {",
+					"set IValue = 7;",
+					"}",
+					"configuration Config {",
+					"component Sett typeof SettablePropertyInvalidValueComponent;",
+					"component Starter typeof StarterComponent;",
+					"}"),
+				"process this with Config;",
+				new string[] {
+					"StarterComponent",
+					"SettablePropertyInvalidValueComponent",
+					toId(ProcessConfigurationBuilder.Message.FailedToSetPropertyValue) });
+
+		}
+
+		[TestMethod]
+		public void SettableSymbolsTests() {
+
+			doTest(string.Join("\n", "lsystem l {",
+				"set symbols Symbols = A B C;",
+				"}",
+				"configuration Config {",
+				"component Sett typeof SettableSymbolPropertiesComponent;",
+				"component Starter typeof StarterComponent;",
+				"}"),
+				"process this with Config;",
+				new string[] {
+					"StarterComponent",
+					"SettableSymbolPropertiesComponent:A B C"} );
+
+			doTest(string.Join("\n", "lsystem l {",
+				 "set symbols Symbols = X(8,{1,2}) Y();",
+				 "}",
+				 "configuration Config {",
+				 "component Sett typeof SettableSymbolPropertiesComponent;",
+				 "component Starter typeof StarterComponent;",
+				 "}"),
+				 "process this with Config;",
+				 new string[] {
+					"StarterComponent",
+					"SettableSymbolPropertiesComponent:X(8, {1, 2}) Y"} );
+
+		}
+
+		[TestMethod]
+		public void MandatorySettableSymbolsTests() {
+
+			doTest(string.Join("\n", "lsystem l {",
+					"set symbols Mandatory = A B;",
+					"}",
+					"configuration Config {",
+					"component Sett typeof MndatorySettableSymbolPropertiesComponent;",
+					"component Starter typeof StarterComponent;",
+					"}"),
+				"process this with Config;",
+				new string[] {
+					"StarterComponent",
+					"MndatorySettableSymbolPropertiesComponent:A B" });
+
+			doTest(string.Join("\n", "lsystem l {",
+					"}",
+					"configuration Config {",
+					"component Sett typeof MndatorySettableSymbolPropertiesComponent;",
+					"component Starter typeof StarterComponent;",
+					"}"),
+				"process this with Config;",
+				new string[] {
+					toId(ProcessConfigurationBuilder.Message.UnsetMandatoryProperty)});
+
+		}
 
 
 		private string toId<TEnum>(TEnum enumValue) {
@@ -186,27 +486,46 @@ namespace Malsys.Tests.Process {
 			}
 
 			var procStat = input.ProcessStatements[0];
-			var maybeConfig = input.ProcessConfigurations.TryFind(procStat.ProcessConfiName);
-			if (OptionModule.IsNone(maybeConfig)) {
+
+			ProcessConfigurationStatement procConfig;
+			if (!input.ProcessConfigurations.TryGetValue(procStat.ProcessConfiName, out procConfig)) {
 				Assert.Fail("Configuration `{0}` not found.".Fmt(procStat.ProcessConfiName));
 			}
 
-			var procConfig = maybeConfig.Value;
+			LsystemEvaled lsystem;
+			if (input.Lsystems.Count == 1) {
+				lsystem = TestUtils.EvaluateLsystem(input.Lsystems.First().Value);
+			}
+			else {
+				lsystem = new LsystemEvaled("EmptyLsystem");
+			}
+
 
 			var resolver = new ComponentResolver();
-			resolver.RegisterComponent(typeof(DummyRewriter));
-			resolver.RegisterComponent(typeof(DummySymbolProcessor));
-			resolver.RegisterComponent(typeof(DummyContaineredBoy));
-			resolver.RegisterComponent(typeof(DummyContaineredGirl));
-			resolver.RegisterComponent(typeof(IDummyContainer));
-			resolver.RegisterComponent(typeof(DummyStarter));
-			resolver.RegisterComponent(typeof(ExceptionInCtor));
-			resolver.RegisterComponent(typeof(GoodExceptionInInit));
-			resolver.RegisterComponent(typeof(BadExceptionInInit));
+			Components.RegisterAllComponents(resolver);
 
 			var logger = new MessageLogger();
-			var ctxt = new ProcessContext(new LsystemEvaled("EmptyLsystem"), new FileOutputProvider("./"), input, null, logger);
-			var processConfig = new ProcessConfigurationBuilder().BuildConfiguration(procConfig, procStat.ComponentAssignments, resolver, ctxt, logger);
+
+			var procCompBuilder = new ProcessConfigurationBuilder();
+			var compGraph = procCompBuilder.BuildConfigurationComponentsGraph(procConfig, procStat.ComponentAssignments, resolver, logger);
+
+			if (logger.ErrorOccurred) {
+				goto results;
+			}
+
+			procCompBuilder.SetAndCheckUserSettableProperties(compGraph, lsystem.ComponentValuesAssigns, lsystem.ComponentSymbolsAssigns, logger);
+
+			var ctxt = new ProcessContext(lsystem, new InMemoryOutputProvider(), input, lsystem.ExpressionEvaluatorContext, logger);
+
+			if (logger.ErrorOccurred) {
+				goto results;
+			}
+
+			// we don't need to check output, components are logging state to logger
+			procCompBuilder.CreateConfiguration(compGraph, ctxt, logger);
+
+
+		results:
 
 			Console.WriteLine(logger.ToString());
 
@@ -215,124 +534,7 @@ namespace Malsys.Tests.Process {
 			CollectionAssert.AreEquivalent(exceptedMessagesIds, actualMsgsIds);
 		}
 
-		#region Components for tests
 
-		private interface IDummyContainer {
-
-			[UserConnectable]
-			IComponent Component { set; }
-
-		}
-
-		private class DummyContaineredBoy : IDummyContainer, IComponent {
-
-			[UserConnectable]
-			public IComponent Component { get; set; }
-
-
-			public void Initialize(ProcessContext context) {
-				context.Logger.LogInfo(typeof(DummyContaineredBoy).Name + ":" + Component.GetType().Name, "");
-			}
-
-			public void Cleanup() { }
-
-		}
-
-		private class DummyContaineredGirl : IDummyContainer, IComponent {
-
-			[UserConnectable(IsOptional = true)]
-			public IComponent Component { get; set; }
-
-
-			public void Initialize(ProcessContext context) {
-				context.Logger.LogInfo(typeof(DummyContaineredGirl).Name + ":" + (Component != null ? Component.GetType().Name : ""), "");
-			}
-
-			public void Cleanup() { }
-
-		}
-
-		private class DummyRewriter : IComponent {
-
-			[UserConnectable]
-			public IComponent SymbolProcessor { get; set; }
-
-
-			public void Initialize(ProcessContext context) {
-				context.Logger.LogInfo(typeof(DummyRewriter).Name + ":" + SymbolProcessor.GetType().Name, "");
-			}
-
-			public void Cleanup() { }
-
-		}
-
-		private class DummySymbolProcessor : IComponent {
-
-
-			public void Initialize(ProcessContext context) {
-				context.Logger.LogInfo(typeof(DummySymbolProcessor).Name, "");
-			}
-
-			public void Cleanup() { }
-
-		}
-
-		private class DummyStarter : IProcessStarter {
-
-			public void Initialize(ProcessContext context) {
-				context.Logger.LogInfo(typeof(DummyStarter).Name, "");
-			}
-
-			public void Cleanup() { }
-
-
-			#region IProcessStarter Members
-
-			public void Start(bool doMeasure, TimeSpan timeout) {
-				throw new NotImplementedException();
-			}
-
-			public void Abort() {
-				throw new NotImplementedException();
-			}
-
-			#endregion
-		}
-
-		private class ExceptionInCtor : IComponent {
-
-			public ExceptionInCtor() {
-				throw new Exception("Something went wrong.");
-			}
-
-
-			public void Initialize(ProcessContext context) { }
-
-			public void Cleanup() { }
-
-		}
-
-		private class GoodExceptionInInit : IComponent {
-
-			public void Initialize(ProcessContext context) {
-				throw new ComponentInitializationException("Something went wrong.");
-			}
-
-			public void Cleanup() { }
-
-		}
-
-		private class BadExceptionInInit : IComponent {
-
-			public void Initialize(ProcessContext context) {
-				throw new Exception("Something went wrong.");
-			}
-
-			public void Cleanup() { }
-
-		}
-
-		#endregion
 
 
 	}

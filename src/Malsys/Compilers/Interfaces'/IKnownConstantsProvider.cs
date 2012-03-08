@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Malsys.Compilers.Expressions;
 
 namespace Malsys.Compilers {
 	public interface IKnownConstantsProvider {
@@ -7,9 +6,9 @@ namespace Malsys.Compilers {
 		/// <summary>
 		/// Tries to get constant with name equal to given string.
 		/// </summary>
-		bool TryGet(string name, out KnownConstant result);
+		bool TryGet(string name, out double result);
 
-		IEnumerable<KnownConstant> GetAllConstants();
+		IEnumerable<double> GetAllConstants();
 
 	}
 }

@@ -4,6 +4,10 @@ namespace Malsys.Parsing {
 
 		[Message(MessageType.Error, "Constant definition is invalid.")]
 		ConstDefInvalid,
+		[Message(MessageType.Error, "Component value assignment definition is invalid.")]
+		CompValueAssignDefInvalid,
+		[Message(MessageType.Error, "Component symbols assignment definition is invalid.")]
+		CompSymbolsAssignDefInvalid,
 		[Message(MessageType.Error, "Parameters excepted.")]
 		ExcpectedParams,
 		[Message(MessageType.Error, "Function body is invalid.")]
@@ -12,8 +16,6 @@ namespace Malsys.Parsing {
 		LsystemHeaderInvalid,
 		[Message(MessageType.Error, "L-system body is invalid.")]
 		LsystemStatementsInvalid,
-		[Message(MessageType.Error, "Symbols constant definition is invalid.")]
-		SymbolsConstDefInvalid,
 		[Message(MessageType.Error, "Symbols interpretation is invalid.")]
 		SymbolsInterpretationInvalid,
 		[Message(MessageType.Error, "Rewrite rule is invalid.")]

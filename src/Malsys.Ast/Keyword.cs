@@ -39,6 +39,8 @@ namespace Malsys.Ast {
 		Rewrite,
 		[StringValue("set")]
 		Set,
+		[StringValue("symbols")]
+		Symbols,
 		[StringValue("this")]
 		This,
 		[StringValue("to")]

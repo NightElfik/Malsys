@@ -111,6 +111,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Compilers\CompilerConstantAttribute.cs" />
     <Compile Include="Compilers\CompilerResult.cs" />
     <Compile Include="Compilers\ConstantDefCompiler.cs" />
     <Compile Include="Compilers\ExpressionCompiler.cs" />
@@ -118,6 +119,7 @@
     <Compile Include="Compilers\FunctionDefCompiler.cs" />
     <Compile Include="Compilers\Interfaces%27\ICompiler.cs" />
     <Compile Include="Compilers\InputCompiler.cs" />
+    <Compile Include="Compilers\Interfaces%27\ICompilersContainer.cs" />
     <Compile Include="Compilers\Interfaces%27\IConstantDefinitionCompiler.cs" />
     <Compile Include="Compilers\Interfaces%27\IExpressionCompiler.cs" />
     <Compile Include="Compilers\Interfaces%27\IFunctionDefinitionCompiler.cs" />
@@ -133,10 +135,13 @@
     <Compile Include="Compilers\ProcessStatementsCompiler.cs" />
     <Compile Include="Compilers\RewriteRuleCompiler.cs" />
     <Compile Include="Compilers\SymbolsCompiler.cs" />
+    <Compile Include="Evaluators\ExpressionEvaluatorContext.cs" />
+    <Compile Include="Evaluators\FunctionData.cs" />
+    <Compile Include="Evaluators\FunctionInfo.cs" />
     <Compile Include="Evaluators\Interfaces%27\IEvaluatorsContainer.cs" />
     <Compile Include="Evaluators\Interfaces%27\IExpressionEvaluator.cs" />
     <Compile Include="Evaluators\InputEvaluator.cs" />
-    <Compile Include="Evaluators\Interfaces%27\IExpressionMemberProvider.cs" />
+    <Compile Include="Evaluators\Interfaces%27\IExpressionEvaluatorContext.cs" />
     <Compile Include="Evaluators\Interfaces%27\IInputEvaluator.cs" />
     <Compile Include="Evaluators\Interfaces%27\ILsystemEvaluator.cs" />
     <Compile Include="Evaluators\Interfaces%27\IParametersEvaluator.cs" />
@@ -145,6 +150,7 @@
     <Compile Include="Evaluators\EvaluatorsContainer.cs" />
     <Compile Include="Evaluators\ParametersEvaluator.cs" />
     <Compile Include="Evaluators\SymbolEvaluator.cs" />
+    <Compile Include="Evaluators\VariableInfo.cs" />
     <Compile Include="Helpers%27\FloatArithmeticHelper.cs" />
     <Compile Include="Media\ColorFactory.cs" />
     <Compile Include="Media\ColorGradient.cs" />
@@ -165,7 +171,6 @@
     <Compile Include="Processing\Components\Common\SymbolsSaver.cs" />
     <Compile Include="Processing\Components\ComponentAttribute.cs" />
     <Compile Include="Processing\Components\ComponentGroupNames.cs" />
-    <Compile Include="Processing\Components\AliasAttribute.cs" />
     <Compile Include="Processing\Components\UserGettableAttribute.cs" />
     <Compile Include="Processing\Components\Interfaces%27\IComponent.cs" />
     <Compile Include="Processing\Components\UserCallableFunctionAttribute.cs" />
@@ -199,6 +204,8 @@
     <Compile Include="Reflection\Components\ComponentGettablePropertyMetadata.cs" />
     <Compile Include="Reflection\Components\ComponentCallableFunctionMetadata.cs" />
     <Compile Include="Reflection\Components\ComponentSettablePropertyMetadata.cs" />
+    <Compile Include="Reflection\FunctionDumper.cs" />
+    <Compile Include="Resources\FunctionCore.cs" />
     <Compile Include="Resources\ResourcesReader.cs" />
     <Compile Include="Resources\StdConstants.cs" />
     <Compile Include="Resources\StdFunctions.cs" />
@@ -220,13 +227,12 @@
     <Compile Include="SemanticModel\Compiled\SymbolsConstDefinition.cs" />
     <Compile Include="SemanticModel\Compiled\SymbolsInterpretation.cs" />
     <Compile Include="SemanticModel\Evaluated\LsystemEvaled.cs" />
-    <Compile Include="SemanticModel\Evaluated\InputBlock.cs" />
+    <Compile Include="SemanticModel\Evaluated\InputBlockEvaled.cs" />
     <Compile Include="SemanticModel\Compiled\LsystemEvaledParams.cs" />
     <Compile Include="SemanticModel\Evaluated\SymbolsInterpretationEvaled.cs" />
     <Compile Include="SemanticModel\Symbol.cs" />
     <Compile Include="SemanticModel\Compiled\Function.cs" />
     <Compile Include="SemanticModel\SymbolsList.cs" />
-    <Compile Include="SemanticModel\Compiled\Expressions\UserFunctionCall.cs" />
     <Compile Include="SemanticModel\Compiled\Expressions\FunctionCall.cs" />
     <Compile Include="SemanticModel\Compiled\Expressions\UnaryOperator.cs" />
     <Compile Include="SemanticModel\Compiled\IExpression.cs" />
@@ -235,19 +241,15 @@
     <Compile Include="Evaluators\ArgsStorage.cs" />
     <Compile Include="SemanticModel\Compiled\Expressions\Indexer.cs" />
     <Compile Include="Compilers\Interfaces%27\IKnownConstantsProvider.cs" />
-    <Compile Include="Compilers\KnownConstFunOpProvider.cs" />
-    <Compile Include="Compilers\Interfaces%27\IKnownFunctionsProvider.cs" />
+    <Compile Include="Compilers\KnownConstOpProvider.cs" />
     <Compile Include="Compilers\Interfaces%27\IKnownOperatorsProvider.cs" />
-    <Compile Include="Compilers\Expressions\OperatorCore.cs" />
-    <Compile Include="SemanticModel\Compiled\FunctionEvaledParams.cs" />
+    <Compile Include="Resources\OperatorCore.cs" />
     <Compile Include="SemanticModel\Evaluated\OptionalParameterEvaled.cs" />
     <Compile Include="SemanticModel\Evaluated\ValuesArray.cs" />
     <Compile Include="SemanticModel\Constant.cs" />
     <Compile Include="Evaluators\EvalException.cs" />
     <Compile Include="SemanticModel\Evaluated\IValue.cs" />
     <Compile Include="SemanticModel\Compiled\Expressions\BinaryOperator.cs" />
-    <Compile Include="Compilers\Expressions\FunctionCore.cs" />
-    <Compile Include="Compilers\Expressions\KnownConstant.cs" />
     <Compile Include="SemanticModel\Compiled\Expressions\ExprVariable.cs" />
     <Compile Include="Evaluators\ExpressionEvaluator.cs" />
     <Compile Include="Processing\Components\Interpreters\State2D.cs" />
@@ -296,7 +298,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Extensions%27\" />
     <Folder Include="SourceCode\Formatters\" />
   </ItemGroup>
   <ItemGroup>

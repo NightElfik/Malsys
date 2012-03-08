@@ -9,7 +9,7 @@ namespace Malsys.Web.Models {
 
 		IInputDb InputDb { get; }
 
-		InputProcess AddInputProcess(InputBlock input, int? parentId, IEnumerable<OutputFile> outputs, string userName, TimeSpan duration);
+		InputProcess AddInputProcess(InputBlockEvaled input, int? parentId, IEnumerable<OutputFile> outputs, string userName, TimeSpan duration);
 
 		SavedInput SaveInput(string source, int? parentId, IEnumerable<OutputFile> outputs, string userName, TimeSpan duration);
 

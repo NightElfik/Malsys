@@ -1,11 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Reflection;
 
 namespace Malsys.Reflection {
 	public static class TypeExtensions {
+
+		public static IEnumerable<Tuple<FieldInfo, TAttr>> GetFieldsHavingAttr<TAttr>(this Type type, bool inherit = true) where TAttr : class {
+
+			foreach (var fi in type.GetFields()) {
+				var attrs = fi.GetCustomAttributes(typeof(TAttr), inherit);
+				if (attrs.Length != 1) {
+					continue;
+				}
+
+				yield return new Tuple<FieldInfo, TAttr>(fi, (TAttr)attrs[0]);
+			}
+		}
 
 		public static IEnumerable<Tuple<PropertyInfo, TAttr>> GetPropertiesHavingAttr<TAttr>(this Type type, bool inherit = true) where TAttr : class {
 

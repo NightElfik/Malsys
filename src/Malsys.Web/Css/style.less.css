@@ -536,6 +536,7 @@ p.malsysMsg {
 }
 
 .error { background-color: #FFDDDD; }
+.errorBlock { background-color: #FFDDDD; padding: 0.5em; border: 1px solid #FF0000; }
 .warning { background-color: #FBEC5D; }
 
 .monospace { font-family: @monospaceFonts; }
@@ -552,10 +553,10 @@ p.malsysMsg {
 
 }
 
-@media only screen and (min-width: 1550px) {
+@media (min-width: 1900px) {
 	#main.twoColumns {
-		.wrapper { width: 1520px; }
-		.floating_box { display: inline; float: left; text-align: left; width: 740px; padding-right: 8px; }
+		.wrapper { width: 1840px; }
+		.floating_box { display: inline; float: left; text-align: left; width: 900px; padding-right: 8px; }
 		.floating_container { text-align: center; }
 	}
 }

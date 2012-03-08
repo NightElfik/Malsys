@@ -16,12 +16,12 @@ namespace Malsys.SemanticModel.Compiled.Expressions {
 		public readonly IExpression Operand;
 		public readonly ExpressionValueTypeFlags OperandType;
 
-		public readonly Func<ArgsStorage, IValue> Evaluate;
+		public readonly Func<IValue, IValue> Evaluate;
 
 		public readonly Ast.Operator AstNode;
 
 
-		public UnaryOperator(string syntax, int prec, int activePrec, Func<ArgsStorage, IValue> evalFunc,
+		public UnaryOperator(string syntax, int prec, int activePrec, Func<IValue, IValue> evalFunc,
 				IExpression operand, ExpressionValueTypeFlags operandType, Ast.Operator astNode) {
 
 			Syntax = syntax;
@@ -36,13 +36,7 @@ namespace Malsys.SemanticModel.Compiled.Expressions {
 		}
 
 
-
-		public bool IsEmptyExpression { get { return false; } }
-
-
-		public void Accept(IExpressionVisitor visitor) {
-			visitor.Visit(this);
-		}
+		public ExpressionType ExpressionType { get { return ExpressionType.UnaryOperator; } }
 
 	}
 }

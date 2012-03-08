@@ -33,18 +33,18 @@ namespace Malsys.Processing.Components.Interpreters {
 			}
 
 			if (instr.Parameters.IsEmpty) {
-				args.AddArgs(symbol.Arguments, exprEvaluator.EvaluateList(instr.InstructionParameters));
+				args.AddArgs(symbol.Arguments, exprEvalCtxt.EvaluateList(instr.InstructionParameters));
 			}
 			else {
-				var consts = globalConsts;  // create a working copy of constants
+				var eec = exprEvalCtxt;  // create a working copy of constants
 				try {
-					mapSybolArgs(symbol, instr, ref consts);
+					mapSybolArgs(symbol, instr, ref eec);
 				}
 				catch (EvalException ex) {
 					debugPrinter.WriteLine("ERROR ({0})".Fmt(ex.Message));
 					return;
 				}
-				args.AddArgs(exprEvaluator.EvaluateList(instr.InstructionParameters, consts, globalFuns));
+				args.AddArgs(eec.EvaluateList(instr.InstructionParameters));
 			}
 
 			debugPrinter.Write(instr.InstructionName);

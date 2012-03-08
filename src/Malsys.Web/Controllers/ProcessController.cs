@@ -19,11 +19,11 @@ namespace Malsys.Web.Controllers {
 		private readonly IMalsysInputRepository malsysInputRepository;
 		private readonly IUsersRepository usersRepository;
 		private readonly ProcessManager processManager;
-		private readonly InputBlock stdLib;
+		private readonly InputBlockEvaled stdLib;
 
 
 		public ProcessController(IMalsysInputRepository malsysInputRepository, IAppSettingsProvider appSettingsProvider,
-				IUsersRepository usersRepository, ProcessManager processManager, InputBlock stdLib) {
+				IUsersRepository usersRepository, ProcessManager processManager, InputBlockEvaled stdLib) {
 
 			this.malsysInputRepository = malsysInputRepository;
 			this.usersRepository = usersRepository;
@@ -81,7 +81,7 @@ namespace Malsys.Web.Controllers {
 			var sw = new Stopwatch();
 			sw.Start();
 
-			var evaledInput = processManager.CompileAndEvaluateInput(sourceCode, logger);
+			var evaledInput = processManager.CompileAndEvaluateInput(sourceCode, "webInput", logger);
 
 			if (logger.ErrorOccurred || compile != null) {
 				return View(Views.Index, resultModel);
@@ -90,7 +90,16 @@ namespace Malsys.Web.Controllers {
 
 			var inAndStdlib = stdLib.JoinWith(evaledInput);
 
-			processManager.ProcessLsystems(inAndStdlib, fileMgr, logger, timeout);
+			if (inAndStdlib.Lsystems.Count == 0) {
+				logger.LogMessage(Message.NoLsysFoundDumpingConstants);
+				processManager.DumpConstants(inAndStdlib, fileMgr, logger);
+			}
+			else if (inAndStdlib.ProcessStatements.Count == 0) {
+				resultModel.NoProcessStatement = true;
+			}
+			else {
+				processManager.ProcessInput(inAndStdlib, fileMgr, logger, timeout);
+			}
 
 			if (logger.ErrorOccurred) {
 				return View(Views.Index, resultModel);
@@ -98,18 +107,22 @@ namespace Malsys.Web.Controllers {
 
 			sw.Stop();
 
-			IEnumerable<OutputFile> outputs;
+			resultModel.ProcessDuration = sw.Elapsed;
+
+			List<OutputFile> outputs;
 
 			if (fileMgr.OutputFilesCount > 8) {
-				outputs = fileMgr.GetOutputFilesAsZipArchive();
+				outputs = fileMgr.GetOutputFilesAsZipArchive().ToList();
 			}
 			else {
-				outputs = fileMgr.GetOutputFiles();
+				outputs = fileMgr.GetOutputFiles().ToList();
 			}
 
-			var ip = malsysInputRepository.AddInputProcess(evaledInput, referenceId, outputs, User.Identity.Name, sw.Elapsed);
-			resultModel.ReferenceId = ip.InputProcessId;
-			resultModel.OutputFiles = outputs;
+			if (outputs.Count > 0) {
+				var ip = malsysInputRepository.AddInputProcess(evaledInput, referenceId, outputs, User.Identity.Name, sw.Elapsed);
+				resultModel.ReferenceId = ip.InputProcessId;
+				resultModel.OutputFiles = outputs;
+			}
 
 			if (save != null) {
 				if (User.Identity.IsAuthenticated) {
@@ -151,6 +164,11 @@ namespace Malsys.Web.Controllers {
 			return RedirectToAction(MVC.Home.Index());
 		}
 
+		public enum Message {
 
+			[Message(MessageType.Info, "No L-systems found, dumping constants.")]
+			NoLsysFoundDumpingConstants,
+
+		}
 	}
 }

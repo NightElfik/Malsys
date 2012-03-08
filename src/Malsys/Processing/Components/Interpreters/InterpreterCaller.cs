@@ -5,10 +5,8 @@ using System.Reflection;
 using Malsys.Evaluators;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Evaluated;
-using ConstsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.IValue>;
-using FunsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Compiled.FunctionEvaledParams>;
-using InterpretAction = System.Action<Malsys.Evaluators.ArgsStorage>;
 using InterpretActionParams = System.Tuple<System.Action<Malsys.Evaluators.ArgsStorage>, int>;
+using System;
 
 
 namespace Malsys.Processing.Components.Interpreters {
@@ -16,9 +14,7 @@ namespace Malsys.Processing.Components.Interpreters {
 	public class InterpreterCaller : IInterpreterCaller {
 
 		protected IInterpreter interpreter;
-		protected IExpressionEvaluator exprEvaluator;
-		protected ConstsMap globalConsts;
-		protected FunsMap globalFuns;
+		protected IExpressionEvaluatorContext exprEvalCtxt;
 
 		protected Dictionary<string, SymbolInterpretationEvaled> symbolToInstr;
 
@@ -46,12 +42,12 @@ namespace Malsys.Processing.Components.Interpreters {
 
 			if (instr.Parameters.IsEmpty) {
 				// use instruction argument as default values if no explicit arguments are defined
-				args.AddArgs(symbol.Arguments, exprEvaluator.EvaluateList(instr.InstructionParameters, globalConsts, globalFuns));
+				args.AddArgs(symbol.Arguments, exprEvalCtxt.EvaluateList(instr.InstructionParameters));
 			}
 			else {
-				var consts = globalConsts;  // create a working copy of constants
-				mapSybolArgs(symbol, instr, ref consts);
-				args.AddArgs(exprEvaluator.EvaluateList(instr.InstructionParameters, consts, globalFuns));
+				var eec = exprEvalCtxt;  // create a working copy of constants
+				mapSybolArgs(symbol, instr, ref eec);
+				args.AddArgs(eec.EvaluateList(instr.InstructionParameters));
 			}
 
 
@@ -67,16 +63,14 @@ namespace Malsys.Processing.Components.Interpreters {
 					.Fmt(symbol.Name, iActionParams.Item2, instr.InstructionName, args.ArgsCount));
 			}
 
-			iActionParams.Item1.Invoke(args);
+			iActionParams.Item1(args);
 		}
 
 		public bool RequiresMeasure { get { return false; } }
 
 		public virtual void Initialize(ProcessContext ctxt) {
 
-			exprEvaluator = ctxt.Evaluator.ResolveExpressionEvaluator();
-			globalConsts = ctxt.Lsystem.Constants;
-			globalFuns = ctxt.Lsystem.Functions;
+			exprEvalCtxt = ctxt.ExpressionEvaluatorContext;
 
 			symbolToInstr = ctxt.Lsystem.SymbolsInterpretation.ToDictionary(x => x.Key, x => x.Value);
 
@@ -97,7 +91,7 @@ namespace Malsys.Processing.Components.Interpreters {
 		#endregion
 
 
-		protected void mapSybolArgs(Symbol<IValue> symbol, SymbolInterpretationEvaled instr, ref ConstsMap consts) {
+		protected void mapSybolArgs(Symbol<IValue> symbol, SymbolInterpretationEvaled instr, ref IExpressionEvaluatorContext eec) {
 
 			var prms = instr.Parameters;
 
@@ -116,7 +110,7 @@ namespace Malsys.Processing.Components.Interpreters {
 					}
 				}
 
-				consts = consts.Add(prms[i].Name, val);
+				eec = eec.AddVariable(prms[i].Name, val);
 			}
 		}
 
@@ -148,11 +142,11 @@ namespace Malsys.Processing.Components.Interpreters {
 			}
 		}
 
-		private InterpretAction createInterpretAction(MethodInfo mi) {
+		private Action<ArgsStorage> createInterpretAction(MethodInfo mi) {
 			var instance = Expression.Constant(interpreter, interpreter.GetType());
 			var argument = Expression.Parameter(typeof(ArgsStorage), "arguments");
 			var call = Expression.Call(instance, mi, argument);
-			return Expression.Lambda<InterpretAction>(call, argument).Compile();
+			return Expression.Lambda<Action<ArgsStorage>>(call, argument).Compile();
 		}
 
 	}

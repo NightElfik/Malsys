@@ -17,6 +17,26 @@
 	</p>
 }
 
+@if (Model.NoProcessStatement) {
+	<p class="errorBlock">
+		No process statements found.
+		Please look at help to learn how to write process statements or use one from list below (put it at the very end of the input).
+	</p>
+	<ul>
+		<li><code>process with SymbolPrinter;</code></li>
+		<li><code>process with SvgRenderer;</code></li>
+		<li><code>process with HexAsciiRenderer;</code></li>
+		<li><code>process with ThreeJsRenderer;</code></li>
+	</ul>
+}
+
+@if (Model.OutputFiles.Count > 0) {
+	<p class="">
+		Processing of input created @Model.OutputFiles.Count result(s) in @Math.Round(Model.ProcessDuration.TotalSeconds, 2) second(s).
+		See them below.
+	</p>
+}
+
 @if (Model.Logger != null && Model.Logger.Count > 0) {
 	<table class="w100">
 	<tr>

@@ -13,7 +13,7 @@ namespace Malsys.Compilers {
 
 
 		public OptionalParameter Compile(Ast.OptionalParameter optParam, IMessageLogger logger) {
-			return new OptionalParameter(optParam.NameId.Name, exprCompiler.Compile(optParam.DefaultValue, logger));
+			return new OptionalParameter(optParam.NameId.Name, exprCompiler.Compile(optParam.DefaultValue, logger), optParam);
 		}
 
 		public ImmutableList<OptionalParameter> CompileList(IList<Ast.OptionalParameter> parameters, IMessageLogger logger) {

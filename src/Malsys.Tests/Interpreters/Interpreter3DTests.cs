@@ -263,14 +263,14 @@ namespace Malsys.Tests.Interpreters {
 
 			var symbols = TestUtils.CompileSymbols(inputSymbols);
 
-			var lsystem = new LsystemEvaled("", MapModule.Empty<string, IValue>(), MapModule.Empty<string, FunctionEvaledParams>(),
-				null, symToInstr, null, null, null);
+			var lsystem = new LsystemEvaled("", TestUtils.ExpressionEvaluatorContext,
+				null, null, symToInstr, null, null, null);
 
 			var logger = new MessageLogger();
-			var evaluator = new EvaluatorsContainer();
+			var evaluator = new EvaluatorsContainer(TestUtils.ExpressionEvaluatorContext);
 			var symbolEvaluator = evaluator.Resolve<ISymbolEvaluator>();
 			var outProvider = new InMemoryOutputProvider();
-			var context = new ProcessContext(lsystem, outProvider, null, evaluator, logger);
+			var context = new ProcessContext(lsystem, outProvider, null, TestUtils.ExpressionEvaluatorContext, logger);
 
 			var caller = new InterpreterCaller();
 			caller.Interpreter = testedInterpreter;
@@ -290,7 +290,7 @@ namespace Malsys.Tests.Interpreters {
 			caller.BeginProcessing(false);
 
 			foreach (var sym in symbols) {
-				caller.ProcessSymbol(symbolEvaluator.Evaluate(sym, null, null));
+				caller.ProcessSymbol(symbolEvaluator.Evaluate(sym, TestUtils.ExpressionEvaluatorContext));
 			}
 
 			caller.EndProcessing();

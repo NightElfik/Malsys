@@ -1,27 +1,49 @@
 ﻿using System;
-using Malsys.Compilers.Expressions;
+using Malsys.Compilers;
 
 namespace Malsys.Resources {
 	public static class StdConstants {
 
+		/// <summary>
+		/// True
+		/// </summary>
+		/// <docGroup>
+		/// Boolean constants
+		/// </docGroup>
+		[Alias("true")]
+		[CompilerConstant]
+		public static readonly double True = 1.0;
 
-		private const string boolGroup = "Boolean constants";
+		/// <summary>
+		/// False
+		/// </summary>
+		/// <docGroup>
+		/// Boolean constants
+		/// </docGroup>
+		[Alias("false")]
+		[CompilerConstant]
+		public static readonly double False = 0.0;
 
-		public static readonly KnownConstant True = new KnownConstant("True", boolGroup, "true", 1.0);
 
-		public static readonly KnownConstant False = new KnownConstant("False", boolGroup, "false", 0.0);
+		/// <summary>
+		/// Not a number
+		/// </summary>
+		/// <docGroup>
+		/// Special constants
+		/// </docGroup>
+		[Alias("Nan", "nan")]
+		[CompilerConstant]
+		public static readonly double NaN = double.NaN;
 
-
-
-		private const string specGroup = "Special constants";
-
-		public static readonly KnownConstant Nan = new KnownConstant("not a number", specGroup, "nan", double.NaN);
-
-		public static readonly KnownConstant Infinity
-			= new KnownConstant("Infinity", specGroup, "infinity", double.PositiveInfinity);
-		public static readonly KnownConstant Infty = Infinity.ChangeNameTo("infty");
-		public static readonly KnownConstant InfinityUnicode = Infinity.ChangeNameTo(CharHelper.Infinity.ToString());
-
+		/// <summary>
+		/// Not a number
+		/// </summary>
+		/// <docGroup>
+		/// Special constants
+		/// </docGroup>
+		[Alias("infinity", "\u221E")]
+		[CompilerConstant]
+		public static readonly double Infinity = double.PositiveInfinity;
 
 	}
 }

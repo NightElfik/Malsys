@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using Autofac;
-using Malsys.SemanticModel.Evaluated;
-using ConstsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.IValue>;
-using FunsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Compiled.FunctionEvaledParams>;
+﻿using Autofac;
 
 namespace Malsys.Evaluators {
 	/// <summary>
@@ -10,21 +6,28 @@ namespace Malsys.Evaluators {
 	/// </summary>
 	public class EvaluatorsContainer : IEvaluatorsContainer {
 
+
 		protected IContainer container;
 
 
-		public EvaluatorsContainer() {
+		public EvaluatorsContainer(IExpressionEvaluatorContext exprEvalCtxt) {
+
+			ExpressionEvaluatorContext = exprEvalCtxt;
 
 			var builder = new ContainerBuilder();
+
+			builder.Register(x => exprEvalCtxt).As<IExpressionEvaluatorContext>().SingleInstance();
 
 			builder.RegisterType<InputEvaluator>().As<IInputEvaluator>().SingleInstance();
 			builder.RegisterType<LsystemEvaluator>().As<ILsystemEvaluator>().SingleInstance();
 			builder.RegisterType<SymbolEvaluator>().As<ISymbolEvaluator>().SingleInstance();
 			builder.RegisterType<ParametersEvaluator>().As<IParametersEvaluator>().SingleInstance();
-			builder.RegisterType<ExpressionEvaluator>().As<IExpressionEvaluator>().SingleInstance();
 
 			container = builder.Build();
 		}
+
+
+		public IExpressionEvaluatorContext ExpressionEvaluatorContext { get; private set; }
 
 
 		/// <summary>
@@ -40,10 +43,6 @@ namespace Malsys.Evaluators {
 
 		public ILsystemEvaluator ResolveLsystemEvaluator() {
 			return container.Resolve<ILsystemEvaluator>();
-		}
-
-		public IExpressionEvaluator ResolveExpressionEvaluator() {
-			return container.Resolve<IExpressionEvaluator>();
 		}
 
 	}

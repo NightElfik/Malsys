@@ -61,6 +61,7 @@ let kw =
         (Keyword.Return, RETURN Keyword.Return);
         (Keyword.Rewrite, REWRITE Keyword.Rewrite);
         (Keyword.Set, SET Keyword.Set);
+        (Keyword.Symbols, SYMBOLS Keyword.Symbols);
         (Keyword.This, THIS Keyword.This);
         (Keyword.To, TO Keyword.To);
         (Keyword.Typeof, TYPEOF Keyword.Typeof);

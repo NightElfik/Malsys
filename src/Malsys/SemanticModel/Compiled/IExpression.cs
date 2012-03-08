@@ -2,31 +2,23 @@
 
 namespace Malsys.SemanticModel.Compiled {
 
-	public interface IExpression : IExpressionVisitable {
+	public interface IExpression {
 
-		bool IsEmptyExpression { get; }
-
-	}
-
-
-	public interface IExpressionVisitable {
-
-		void Accept(IExpressionVisitor visitor);
+		ExpressionType ExpressionType { get; }
 
 	}
 
 
-	public interface IExpressionVisitor {
+	public enum ExpressionType {
 
-		void Visit(BinaryOperator binaryOperator);
-		void Visit(Constant constant);
-		void Visit(EmptyExpression emptyExpression);
-		void Visit(ExpressionValuesArray expressionValuesArray);
-		void Visit(ExprVariable variable);
-		void Visit(FunctionCall functionCall);
-		void Visit(Indexer indexer);
-		void Visit(UnaryOperator unaryOperator);
-		void Visit(UserFunctionCall userFunction);
+		BinaryOperator,
+		Constant,
+		EmptyExpression,
+		ExpressionValuesArray,
+		ExprVariable,
+		FunctionCall,
+		Indexer,
+		UnaryOperator,
 
 	}
 

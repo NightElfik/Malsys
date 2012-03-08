@@ -21,13 +21,7 @@ namespace Malsys.SemanticModel.Compiled.Expressions {
 		}
 
 
-
-		public bool IsEmptyExpression { get { return false; } }
-
-
-		public void Accept(IExpressionVisitor visitor) {
-			visitor.Visit(this);
-		}
+		public ExpressionType ExpressionType { get { return ExpressionType.ExpressionValuesArray; } }
 
 	}
 }

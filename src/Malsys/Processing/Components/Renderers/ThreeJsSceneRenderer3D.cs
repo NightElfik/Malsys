@@ -76,8 +76,8 @@ namespace Malsys.Processing.Components.Renderers {
 					writeJson("\"materials\": [\"" + lineMaterialName + "\"]");
 					writeJsonValue("position", Math3D.CountMiddlePoint(endPoint, lastPoint));
 					writeJsonValue("rotation", euclidRotation);
-					//writeJsonValue("quaternion", rotation);
-					//writeJsonValue("useQuaternion", true);
+					writeJsonValue("quaternion", rotation);
+					writeJsonValue("useQuaternion", true);
 					writeJsonValue("scale", new Vector3D(Math3D.Distance(endPoint, lastPoint), width , width));
 					writeJsonValue("doubleSided", false);
 					writeJsonValue("visible", true, false);

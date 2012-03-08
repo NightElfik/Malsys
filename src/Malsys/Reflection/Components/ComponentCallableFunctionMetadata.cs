@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Reflection.Components {
 	/// <summary>
@@ -10,10 +11,18 @@ namespace Malsys.Reflection.Components {
 
 		public readonly MethodInfo MethodInfo;
 
+		public readonly int ParamsCount;
 
-		public ComponentCallableFunctionMetadata(ImmutableList<string> names, MethodInfo methodInfo) {
+		public readonly ImmutableList<ExpressionValueTypeFlags> ParamsTypesCyclicPattern;
+
+
+
+		public ComponentCallableFunctionMetadata(ImmutableList<string> names, MethodInfo methodInfo, int paramsCount,
+				ImmutableList<ExpressionValueTypeFlags> paramsTypesCyclicPattern) {
 
 			Names = names;
+			ParamsCount = paramsCount;
+			ParamsTypesCyclicPattern = paramsTypesCyclicPattern;
 			MethodInfo = methodInfo;
 
 		}

@@ -1,41 +1,48 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
+using System.Reflection;
 using System.Web.Mvc;
 using Malsys.Compilers;
-using Malsys.Compilers.Expressions;
+using Malsys.Evaluators;
 using Malsys.Processing;
 using Malsys.Reflection;
 using Malsys.SemanticModel.Evaluated;
 using Malsys.Web.Areas.Help.Models;
-using Microsoft.FSharp.Collections;
+using Malsys.Web.Areas.Help.Models.Predefined;
 
 namespace Malsys.Web.Areas.Help.Controllers {
 	public partial class PredefinedController : Controller {
 
-		private readonly InputBlock stdLib;
+		private readonly InputBlockEvaled stdLib;
 		private readonly IComponentContainer componentContainer;
 		private readonly IKnownConstantsProvider knownConstantsProvider;
-		private readonly IKnownFunctionsProvider knownFunctionsProvider;
+		private readonly IExpressionEvaluatorContext expressionEvaluatorContext;
 		private readonly XmlDocReader xmlDocReader;
 
 
 		public PredefinedController(IComponentContainer componentContainer, IKnownConstantsProvider knownConstantsProvider,
-				IKnownFunctionsProvider knownFunctionsProvider, XmlDocReader xmlDocReader, InputBlock stdLib) {
+			IExpressionEvaluatorContext expressionEvaluatorContext, XmlDocReader xmlDocReader, InputBlockEvaled stdLib) {
 
 			this.componentContainer = componentContainer;
 			this.knownConstantsProvider = knownConstantsProvider;
-			this.knownFunctionsProvider = knownFunctionsProvider;
+			this.expressionEvaluatorContext = expressionEvaluatorContext;
 			this.xmlDocReader = xmlDocReader;
 			this.stdLib = stdLib;
 		}
 
 		public virtual ActionResult Constants() {
-			return View(new Tuple<IEnumerable<KnownConstant>, FSharpMap<string, IValue>>(knownConstantsProvider.GetAllConstants(), stdLib.GlobalConstants));
+			return View();
 		}
 
 		public virtual ActionResult Functions() {
-			return View(knownFunctionsProvider.GetAllFunctions());
+
+			var model = expressionEvaluatorContext.GetAllStoredFunctions()
+				.Select(x => new Function() {
+					FunctionInfo = x,
+					Documentation = xmlDocReader.TryGetXmlDocumentation(x.Metadata as FieldInfo),
+					Group = xmlDocReader.TryGetXmlDocumentation(x.Metadata as FieldInfo, "docGroup"),
+				});
+
+			return View(model);
 		}
 
 		public virtual ActionResult Operators() {

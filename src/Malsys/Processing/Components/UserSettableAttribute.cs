@@ -43,7 +43,7 @@ namespace Malsys.Processing.Components {
 	}
 
 	/// <summary>
-	/// Thrown by properties with UserSettableAttribute when value is invalid.
+	/// Thrown by properties marked with UserSettableAttribute when value is invalid.
 	/// </summary>
 	[Serializable]
 	public class InvalidUserValueException : Exception {

@@ -10,9 +10,9 @@ namespace Malsys.Web.Models {
 	public class SimpleLsystemProcessor {
 
 		private readonly ProcessManager processManager;
-		private readonly InputBlock stdLib;
+		private readonly InputBlockEvaled stdLib;
 
-		public SimpleLsystemProcessor(ProcessManager processManager, InputBlock stdLib) {
+		public SimpleLsystemProcessor(ProcessManager processManager, InputBlockEvaled stdLib) {
 
 			this.processManager = processManager;
 			this.stdLib = stdLib;
@@ -23,7 +23,7 @@ namespace Malsys.Web.Models {
 
 			var logger = new MessageLogger();
 
-			var inEvaled = processManager.CompileAndEvaluateInput(input, logger);
+			var inEvaled = processManager.CompileAndEvaluateInput(input, "simpleWebInput", logger);
 			if (logger.ErrorOccurred) {
 				return new string[] { logger.AllMessagesToFullString() };
 			}
@@ -31,7 +31,7 @@ namespace Malsys.Web.Models {
 			inEvaled = stdLib.JoinWith(inEvaled);
 			var outputProvider = new InMemoryOutputProvider();
 
-			processManager.ProcessLsystems(inEvaled, outputProvider, logger, new TimeSpan(0, 0, 1));
+			processManager.ProcessInput(inEvaled, outputProvider, logger, new TimeSpan(0, 0, 1));
 			if (logger.ErrorOccurred) {
 				return new string[] { logger.AllMessagesToFullString() };
 			}

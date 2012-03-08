@@ -13,7 +13,7 @@ namespace Malsys.Web.Areas.Help.Controllers {
 		private readonly SimpleLsystemProcessor simpleLsystemProcessor;
 
 
-		public HomeController(XmlDocReader xmlDocReader, ProcessManager processManager, InputBlock stdLib) {
+		public HomeController(XmlDocReader xmlDocReader, ProcessManager processManager, InputBlockEvaled stdLib) {
 			this.xmlDocReader = xmlDocReader;
 			simpleLsystemProcessor = new SimpleLsystemProcessor(processManager, stdLib);
 		}

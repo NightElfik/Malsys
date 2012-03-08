@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
 namespace Malsys.Processing.Components {
 	/// <summary>
@@ -26,4 +27,19 @@ namespace Malsys.Processing.Components {
 
 
 	}
+
+	/// <summary>
+	/// Thrown by properties marked with UserConnectableAttribute when value is invalid.
+	/// </summary>
+	[Serializable]
+	public class InvalidConnectedComponentException : Exception {
+
+		public InvalidConnectedComponentException() { }
+		public InvalidConnectedComponentException(string message) : base(message) { }
+		public InvalidConnectedComponentException(string message, Exception inner) : base(message, inner) { }
+
+		protected InvalidConnectedComponentException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+
+	}
+
 }

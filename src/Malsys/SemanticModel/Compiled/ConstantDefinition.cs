@@ -6,39 +6,36 @@ namespace Malsys.SemanticModel.Compiled {
 	public class ConstantDefinition : IInputStatement, ILsystemStatement, IFunctionStatement {
 
 		public readonly string Name;
+
 		public readonly IExpression Value;
+
+		public readonly bool IsComponentAssign;
 
 		public readonly Ast.ConstantDefinition AstNode;
 
 
-		public ConstantDefinition(string name, IExpression value, Ast.ConstantDefinition astNode) {
+		public ConstantDefinition(string name, IExpression value, bool isComponentAssign, Ast.ConstantDefinition astNode) {
 			Name = name;
 			Value = value;
+			IsComponentAssign = isComponentAssign;
 			AstNode = astNode;
 		}
 
-		#region IInputStatement Members
 
+		// IInputStatement
 		InputStatementType IInputStatement.StatementType {
 			get { return InputStatementType.Constant; }
 		}
 
-		#endregion
-
-		#region ILsystemStatement Members
-
+		// ILsystemStatement
 		LsystemStatementType ILsystemStatement.StatementType {
 			get { return LsystemStatementType.Constant; }
 		}
 
-		#endregion
-
-		#region IFunctionStatement Members
-
+		// IFunctionStatement
 		FunctionStatementType IFunctionStatement.StatementType {
 			get { return FunctionStatementType.ConstantDefinition; }
 		}
 
-		#endregion
 	}
 }

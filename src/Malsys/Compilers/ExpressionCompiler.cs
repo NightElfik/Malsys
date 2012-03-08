@@ -1,19 +1,16 @@
-﻿using Malsys.Compilers.Expressions;
-using Malsys.SemanticModel.Compiled;
+﻿using Malsys.SemanticModel.Compiled;
 
 namespace Malsys.Compilers {
 	internal partial class ExpressionCompiler : IExpressionCompiler {
 
 		// used by visitor
 		private IKnownConstantsProvider knownConstants;
-		private IKnownFunctionsProvider knownFunctions;
 		private IKnownOperatorsProvider knownOperators;
 
 
-		public ExpressionCompiler(IKnownConstantsProvider constants, IKnownFunctionsProvider functions, IKnownOperatorsProvider operators) {
+		public ExpressionCompiler(IKnownConstantsProvider constants, IKnownOperatorsProvider operators) {
 
 			knownConstants = constants;
-			knownFunctions = functions;
 			knownOperators = operators;
 		}
 

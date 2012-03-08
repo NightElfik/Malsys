@@ -30,6 +30,20 @@ namespace Malsys.Reflection {
 		}
 
 		/// <summary>
+		/// Returns the XML documentation for given member and tag path.
+		/// Empty string is returned if member is null.
+		/// </summary>
+		public string TryGetXmlDocumentation(MemberInfo member, string tagPath = defaultTagPath) {
+
+			if (member == null) {
+				return "";
+			}
+
+			AssemblyName assemblyName = member.Module.Assembly.GetName();
+			return getXmlDocumentation(member, tagPath);
+		}
+
+		/// <summary>
 		/// Returns the expected name for a member element in the XML documentation file.
 		/// </summary>
 		private string getMemberElementName(MemberInfo member) {

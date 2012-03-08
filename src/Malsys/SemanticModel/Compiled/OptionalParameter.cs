@@ -9,19 +9,27 @@ namespace Malsys.SemanticModel.Compiled {
 		public readonly string Name;
 		public readonly IExpression DefaultValue;
 
+		public readonly Ast.OptionalParameter AstNode;
 
-		public OptionalParameter(string name) {
+
+		public OptionalParameter(string name, Ast.OptionalParameter astNode = null) {
+
 			Name = name;
 			DefaultValue = EmptyExpression.Instance;
+
+			AstNode = astNode;
 		}
 
-		public OptionalParameter(string name, IExpression defaultValue) {
+		public OptionalParameter(string name, IExpression defaultValue, Ast.OptionalParameter astNode = null) {
+
 			Name = name;
 			DefaultValue = defaultValue;
+
+			AstNode = astNode;
 		}
 
 
-		public bool IsOptional { get { return !DefaultValue.IsEmptyExpression; } }
+		public bool IsOptional { get { return DefaultValue.ExpressionType != ExpressionType.EmptyExpression; } }
 
 	}
 }

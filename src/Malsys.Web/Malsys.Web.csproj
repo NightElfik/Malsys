@@ -184,6 +184,7 @@
     <Compile Include="Areas\Help\HelpAreaRegistration.cs" />
     <Compile Include="Areas\Help\Models\ComponentModel.cs" />
     <Compile Include="Areas\Help\Models\LsystemExampleViewModel.cs" />
+    <Compile Include="Areas\Help\Models\Predefined\Function.cs" />
     <Compile Include="AuthenticationController.generated.cs">
       <DependentUpon>T4MVC.tt</DependentUpon>
     </Compile>

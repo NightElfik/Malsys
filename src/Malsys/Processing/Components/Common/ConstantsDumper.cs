@@ -1,33 +1,31 @@
 ﻿using System.IO;
+using System.Linq;
 using Malsys.SemanticModel.Evaluated;
-using ConstsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.IValue>;
-using Microsoft.FSharp.Core;
 
 namespace Malsys.Processing.Components.Common {
 	public class ConstantsDumper {
 
-		public void DumpConstants(InputBlock inBlock, IOutputProvider outputProvider, IMessageLogger logger, string onlyFromInput = null) {
+		public void DumpConstants(InputBlockEvaled inBlock, IOutputProvider outputProvider, IMessageLogger logger, string onlyFromInput = null) {
 
-			if (inBlock.GlobalConstants.Count == 0) {
+			var constants = inBlock.ExpressionEvaluatorContext.GetAllStoredVariables().ToList();
+
+			if (constants.Count == 0) {
 				return;
 			}
 
 			using (TextWriter writer = new StreamWriter(outputProvider.GetOutputStream<ConstantsDumper>("Variables dump", MimeType.Text.Plain))) {
 
-				foreach (var c in inBlock.GlobalConstants) {
+				foreach (var c in constants) {
 
-					if (onlyFromInput != null) {
-						var maybeConstAst = inBlock.GlobalConstantsAstNodes.TryFind(c.Key);
-						if (OptionModule.IsSome(maybeConstAst)) {
-							if (maybeConstAst.Value.Position.SourceName != onlyFromInput) {
-								continue;
-							}
+					if (onlyFromInput != null && c.Metadata != null && c.Metadata is Ast.ConstantDefinition) {
+						if (((Ast.ConstantDefinition)c.Metadata).Position.SourceName != onlyFromInput) {
+							continue;
 						}
 					}
 
-					writer.Write(c.Key);
+					writer.Write(c.Name);
 					writer.Write(" = ");
-					writer.Write(c.Value);
+					writer.Write(c.ValueFunc());
 					writer.WriteLine(";");
 				}
 			}

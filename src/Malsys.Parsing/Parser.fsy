@@ -74,8 +74,8 @@ type ImmutableListPos_LsystemSymbol = ImmutableListPos<LsystemSymbol>
 //------------------------------------------------------------------------------
 
 %token <string> ID
-%token <Keyword> AS COMPONENT CONFIGURATION CONNECT CONSIDER CONTAINER DEFAULT FUN INTERPRET LET
-%token <Keyword> LSYSTEM NOTHING OR PROCESS RETURN REWRITE SET THIS TO TYPEOF USE WEIGHT WITH WHERE
+%token <Keyword> AS COMPONENT CONFIGURATION CONNECT CONSIDER CONTAINER DEFAULT FUN INTERPRET LET LSYSTEM
+%token <Keyword> NOTHING OR PROCESS RETURN REWRITE SET SYMBOLS THIS TO TYPEOF USE WEIGHT WITH WHERE
 %token EQUALS SEMI COMMA QMARK COLON
 %token LPAREN RPAREN LBRACE RBRACE
 %token <float * ConstantFormat> FLOAT
@@ -224,11 +224,13 @@ LsysStatementsList:
 LsysStatement:
     | ConstDef
       { $1 :?> ILsystemStatement }
+    | ComponentValueAssignDef
+      { $1 :> ILsystemStatement }
+    | ComponentSymbolsAssignDef
+      { $1 :> ILsystemStatement }
     | FunDef
       { $1 :?> ILsystemStatement }
     | RewriteRule
-      { $1 :> ILsystemStatement }
-    | SymbolsConstDef
       { $1 :> ILsystemStatement }
     | SymbolsInterpretDef
       { $1 :> ILsystemStatement }
@@ -237,11 +239,18 @@ LsysStatement:
     | SEMI
       { new EmptyStatement(getPos parseState) :> ILsystemStatement }
 
-SymbolsConstDef:
-    | SET id EQUALS LsystemSymbolList SEMI
-      { new SymbolsConstDefinition($2, $4, getPos parseState) :> ILsystemStatement }
+ComponentValueAssignDef:
+    | SET id EQUALS Expression SEMI
+      { new ConstantDefinition($2, $4, true, getPos parseState) :> ILsystemStatement }
     | SET error SEMI
-      { logMsgPos ParsserMessage.SymbolsConstDefInvalid (getPosBetween parseState 1 3);
+      { logMsgPos ParsserMessage.CompValueAssignDefInvalid (getPosBetween parseState 1 3);
+        new EmptyStatement(getPos parseState) :> ILsystemStatement }
+
+ComponentSymbolsAssignDef:
+    | SET SYMBOLS id EQUALS LsystemSymbolList SEMI
+      { new SymbolsConstDefinition($3, $5, getPos parseState) :> ILsystemStatement }
+    | SET SYMBOLS error SEMI
+      { logMsgPos ParsserMessage.CompSymbolsAssignDefInvalid (getPosBetween parseState 1 4);
         new EmptyStatement(getPos parseState) :> ILsystemStatement }
 
 SymbolsInterpretDef:

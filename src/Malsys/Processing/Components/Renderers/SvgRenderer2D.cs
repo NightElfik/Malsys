@@ -49,6 +49,7 @@ namespace Malsys.Processing.Components.Renderers {
 		public string SvgFooter { get; set; }
 
 
+		[Alias("margin")]
 		[UserSettable]
 		public IValue Margin {
 			set {
@@ -77,6 +78,7 @@ namespace Malsys.Processing.Components.Renderers {
 			}
 		}
 
+		[Alias("compressSvg")]
 		[UserSettable]
 		public Constant CompressSvg {
 			set {

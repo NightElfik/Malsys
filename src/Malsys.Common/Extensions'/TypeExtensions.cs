@@ -10,7 +10,7 @@ namespace Malsys {
 		/// <remarks>
 		/// Property FullName should return name of the Type, including the namespace of the Type but not the assembly.
 		/// http://msdn.microsoft.com/en-us/library/system.type.aspx
-		/// BUT <code>typeof(List<string>)</code> returns unreadable type with assembly.
+		/// BUT <code>typeof(List<string>)</code> returns type with assembly.
 		/// This is probably BUG in .NET because documentation and behavior is not the same.
 		/// </remarks>
 		public static string GetPrettyGenericName(this Type type) {

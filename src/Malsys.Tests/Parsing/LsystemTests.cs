@@ -29,9 +29,15 @@ namespace Malsys.Tests.Parsing {
 		}
 
 		[TestMethod]
-		public void SymbolsDefTests() {
-			doTestAutoident("lsystem l {", "set x = x;", "}");
-			doTestAutoident("lsystem l {", "set abcd' = +(a + 0) X( - 1) *(1 * 1);", "}");
+		public void CompValAssignTests() {
+			doTestAutoident("lsystem l {", "set x = 20;", "}");
+			doTestAutoident("lsystem l {", "set abcd' = {1, 2};", "}");
+		}
+
+		[TestMethod]
+		public void CompSymAssignTests() {
+			doTestAutoident("lsystem l {", "set symbols x = x;", "}");
+			doTestAutoident("lsystem l {", "set symbols abcd' = +(a + 0) X( - 1) *(1 * 1);", "}");
 		}
 
 		[TestMethod]

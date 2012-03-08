@@ -1,23 +1,26 @@
 ﻿
 namespace Malsys.Compilers {
+	/// <summary>
+	/// Class holding result and information about success.
+	/// </summary>
 	internal class CompilerResult<TData> where TData : class {
 
 		public static readonly CompilerResult<TData> Error = new CompilerResult<TData>(null, true);
 
 
-		public bool ErrorOcured { get; private set; }
+		public bool ErrorOccurred { get; private set; }
 
 		public TData Result { get; private set; }
 
 
 		public CompilerResult(TData rslt) {
 			Result = rslt;
-			ErrorOcured = false;
+			ErrorOccurred = false;
 		}
 
 		public CompilerResult(TData rslt, bool err) {
 			Result = rslt;
-			ErrorOcured = err;
+			ErrorOccurred = err;
 		}
 
 
@@ -25,7 +28,7 @@ namespace Malsys.Compilers {
 		/// Returns true if no error occurred.
 		/// </summary>
 		public static implicit operator bool(CompilerResult<TData> cr) {
-			return !cr.ErrorOcured;
+			return !cr.ErrorOccurred;
 		}
 
 		/// <summary>

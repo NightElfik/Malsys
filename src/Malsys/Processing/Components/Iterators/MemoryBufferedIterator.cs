@@ -19,7 +19,8 @@ namespace Malsys.Processing.Components.RewriterIterators {
 		private List<Symbol<IValue>> inBuffer = new List<Symbol<IValue>>();
 		private List<Symbol<IValue>> outBuffer = new List<Symbol<IValue>>();
 
-		private bool interpretEachIteration;
+		private bool interpretEveryIteration;
+		private int interpretEveryIterationFrom;
 		private int iterations;
 		private int currIteration;
 
@@ -32,12 +33,13 @@ namespace Malsys.Processing.Components.RewriterIterators {
 		/// <summary>
 		/// Number of current iteration. Zero-based, first iteration is 0, last is Iterations - 1.
 		/// </summary>
+		[Alias("currentIteration")]
 		[UserGettable]
 		public Constant CurrentIteration {
 			get { return currIteration.ToConst(); }
 		}
 
-		[Alias("i")]
+		[Alias("iterations", "i")]
 		[UserSettable]
 		public Constant Iterations {
 			set {
@@ -50,10 +52,21 @@ namespace Malsys.Processing.Components.RewriterIterators {
 			}
 		}
 
+		[Alias("interpretEveryIteration")]
 		[UserSettable]
-		public Constant InterpretEachIteration {
+		public Constant InterpretEveryIteration {
 			set {
-				interpretEachIteration = !value.IsZero;
+				interpretEveryIteration = !value.IsZero;
+				interpretEveryIterationFrom = 0;
+			}
+		}
+
+		[Alias("interpretEveryIterationFrom")]
+		[UserSettable]
+		public Constant InterpretEveryIterationFrom {
+			set {
+				interpretEveryIteration = true;
+				interpretEveryIterationFrom = Math.Max(0, value.RoundedIntValue);
 			}
 		}
 
@@ -128,12 +141,14 @@ namespace Malsys.Processing.Components.RewriterIterators {
 			inBuffer.Clear();
 			inBuffer.AddRange(AxiomProvider);
 
-			for (currIteration = 0; currIteration < iterations; currIteration++) {
+			for (currIteration = 0; currIteration <= iterations; currIteration++) {
 
-				rewriteIteration();
-				if (aborted) { return; }
+				if (currIteration != 0) {
+					rewriteIteration();
+					if (aborted) { return; }
+				}
 
-				if (interpretEachIteration || currIteration + 1 == iterations) {
+				if ((interpretEveryIteration && currIteration >= interpretEveryIterationFrom) || currIteration == iterations) {
 					if (doMeasure) {
 						interpret(true);
 						if (aborted) { return; }

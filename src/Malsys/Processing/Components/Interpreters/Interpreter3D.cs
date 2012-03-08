@@ -57,16 +57,19 @@ namespace Malsys.Processing.Components.Interpreters {
 
 		#region User settable variables
 
+		[Alias("interpretLines")]
 		[UserSettable]
 		public Constant InterpretLines {
 			set { interpretLines = !value.IsZero; }
 		}
 
+		[Alias("interpretPolygons")]
 		[UserSettable]
 		public Constant InterpretPolygons {
 			set { interpretPloygons = !value.IsZero; }
 		}
 
+		[Alias("origin")]
 		[UserSettable]
 		public ValuesArray Origin {
 			set {
@@ -80,6 +83,7 @@ namespace Malsys.Processing.Components.Interpreters {
 			}
 		}
 
+		[Alias("rotationQuaternion")]
 		[UserSettable]
 		public ValuesArray RotationQuaternion {
 			set {
@@ -94,15 +98,18 @@ namespace Malsys.Processing.Components.Interpreters {
 			}
 		}
 
+		[Alias("initialLineWidth")]
 		[UserSettable]
 		public Constant InitialLineWidth {
 			set { initWidth = value.Value; }
 		}
 
+		[Alias("initialColor")]
 		[UserSettable]
 		public ValuesArray InitialColor { get; set; }
 
 
+		[Alias("continousColoring")]
 		[UserSettable]
 		public IValue ContinousColoring { get; set; }
 

@@ -159,15 +159,14 @@ namespace Malsys.Tests.Interpreters {
 
 			var symbols = TestUtils.CompileSymbols(inputSymbols);
 
-			var evaluator = new EvaluatorsContainer();
+			var evaluator = new EvaluatorsContainer(TestUtils.ExpressionEvaluatorContext);
 			var symToInstr = MapModule.Empty<string, SymbolInterpretationEvaled>();
 			foreach (var item in symbolToInstr) {
 				symToInstr = symToInstr.Add(item.Symbol, item);
 			}
-			var lsystem = new LsystemEvaled("", MapModule.Empty<string, IValue>(), MapModule.Empty<string, FunctionEvaledParams>(),
-				null, symToInstr, null, null, null);
+			var lsystem = new LsystemEvaled("", TestUtils.ExpressionEvaluatorContext, null, null, symToInstr, null, null, null);
 			var logger = new MessageLogger();
-			var context = new ProcessContext(lsystem, new InMemoryOutputProvider(), null, evaluator, logger);
+			var context = new ProcessContext(lsystem, new InMemoryOutputProvider(), null, TestUtils.ExpressionEvaluatorContext, logger);
 
 			var dummy = new DummyInterpreter();
 			caller.Interpreter = dummy;
@@ -176,7 +175,7 @@ namespace Malsys.Tests.Interpreters {
 			var symbolEvaluator = evaluator.Resolve<ISymbolEvaluator>();
 
 			foreach (var sym in symbols) {
-				caller.ProcessSymbol(symbolEvaluator.Evaluate(sym, null, null));
+				caller.ProcessSymbol(symbolEvaluator.Evaluate(sym, TestUtils.ExpressionEvaluatorContext));
 			}
 
 			var actual = dummy.Actions.ToArray();
@@ -205,7 +204,7 @@ namespace Malsys.Tests.Interpreters {
 			}
 
 
-			 #region IInterpreter Members
+			#region IInterpreter Members
 
 			public IRenderer Renderer {
 				set { throw new NotImplementedException(); }

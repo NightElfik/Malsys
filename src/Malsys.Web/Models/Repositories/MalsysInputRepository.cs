@@ -30,7 +30,7 @@ namespace Malsys.Web.Models.Repositories {
 		public IInputDb InputDb { get { return inputDb; } }
 
 
-		public InputProcess AddInputProcess(InputBlock input, int? parentId, IEnumerable<OutputFile> outputs, string userName, TimeSpan duration) {
+		public InputProcess AddInputProcess(InputBlockEvaled input, int? parentId, IEnumerable<OutputFile> outputs, string userName, TimeSpan duration) {
 
 			var user = usersDb.TryGetUserByName(userName);
 

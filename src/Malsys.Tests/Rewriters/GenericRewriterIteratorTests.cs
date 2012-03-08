@@ -41,7 +41,7 @@ namespace Malsys.Tests.Rewriters {
 		private static void doTest(IIterator rewIt, int iterations, string rewriteRules,
 				string inputSymbols, string excpected) {
 
-			string input = "lsystem l {{ set axiom = {0}; {1} }}".Fmt(inputSymbols, rewriteRules);
+			string input = "lsystem l {{ set symbols axiom = {0}; {1} }}".Fmt(inputSymbols, rewriteRules);
 
 			var msgs = new MessageLogger();
 			var inBlockEvaled = TestUtils.EvaluateLsystem(input);
@@ -50,13 +50,12 @@ namespace Malsys.Tests.Rewriters {
 				Assert.Fail("L-system not defined.");
 			}
 
-			var evaluator = new EvaluatorsContainer();
-			var lsysEvaluator = evaluator.Resolve<ILsystemEvaluator>();
-			var lsystem = lsysEvaluator.Evaluate(inBlockEvaled.Lsystems["l"], ImmutableList<IValue>.Empty,
-				MapModule.Empty<string, IValue>(), MapModule.Empty<string, FunctionEvaledParams>());
+			var evaluator = new EvaluatorsContainer(TestUtils.ExpressionEvaluatorContext);
+			var lsysEvaluator = evaluator.ResolveLsystemEvaluator();
+			var lsystem = lsysEvaluator.Evaluate(inBlockEvaled.Lsystems["l"], ImmutableList<IValue>.Empty, TestUtils.ExpressionEvaluatorContext);
 
 			var fm = new FileOutputProvider("./");
-			var context = new ProcessContext(lsystem, fm, inBlockEvaled, evaluator, msgs);
+			var context = new ProcessContext(lsystem, fm, inBlockEvaled, inBlockEvaled.ExpressionEvaluatorContext, msgs);
 
 			var symBuff = new SymbolsMemoryBuffer();
 
@@ -66,11 +65,11 @@ namespace Malsys.Tests.Rewriters {
 
 			rewIt.SymbolProvider = rewriter;
 			rewIt.OutputProcessor = symBuff;
-			rewIt.AxiomProvider = new SymbolProvider(lsystem.SymbolsConstants["axiom"]);
+			rewIt.AxiomProvider = new SymbolProvider(lsystem.ComponentSymbolsAssigns["axiom"]);
 			rewIt.Iterations = iterations.ToConst();
 			rewIt.Initialize(context);
 
-			rewIt.Start(false, new TimeSpan(1, 0, 0));
+			rewIt.Start(false, TimeSpan.MaxValue);
 
 			var result = symBuff.GetAndClear();
 			var writer = new IndentStringWriter();

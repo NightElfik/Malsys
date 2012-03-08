@@ -81,18 +81,19 @@ namespace Malsys.Web {
 
 		private void registerMalsysStuff(ContainerBuilder builder) {
 
-			var knownStuffProvider = new KnownConstFunOpProvider();
-			knownStuffProvider.LoadFromType(typeof(StdConstants));
-			knownStuffProvider.LoadFromType(typeof(StdFunctions));
-			knownStuffProvider.LoadFromType(typeof(StdOperators));
+			var eec = new FunctionDumper().RegiterAllFunctions(typeof(StdFunctions), new ExpressionEvaluatorContext());
+			builder.Register(x => eec).As<IExpressionEvaluatorContext>().SingleInstance();
+
+			var knownStuffProvider = new KnownConstOpProvider();
+			knownStuffProvider.LoadConstants(typeof(StdConstants));
+			knownStuffProvider.LoadOperators(typeof(StdOperators));
 			builder.Register(x => knownStuffProvider)
 				.As<IKnownConstantsProvider>()
-				.As<IKnownFunctionsProvider>()
 				.As<IKnownOperatorsProvider>()
 				.SingleInstance();
 
-			builder.RegisterType<CompilersContainer>().InstancePerHttpRequest();
-			builder.RegisterType<EvaluatorsContainer>().InstancePerHttpRequest();
+			builder.RegisterType<CompilersContainer>().As<ICompilersContainer>().InstancePerHttpRequest();
+			builder.RegisterType<EvaluatorsContainer>().As<IEvaluatorsContainer>().InstancePerHttpRequest();
 
 			var componentResolver = new ComponentResolver();
 			var componentsTypes = Assembly.GetAssembly(typeof(ComponentResolver)).GetTypes()
@@ -107,11 +108,11 @@ namespace Malsys.Web {
 
 			builder.RegisterType<ProcessManager>().InstancePerHttpRequest();
 
-			builder.Register(x => buildStdLib(knownStuffProvider)).SingleInstance();
+			builder.Register(x => buildStdLib(knownStuffProvider, eec)).SingleInstance();
 
 		}
 
-		private InputBlock buildStdLib(KnownConstFunOpProvider knownStuffProvider) {
+		private InputBlockEvaled buildStdLib(KnownConstOpProvider knownStuffProvider, IExpressionEvaluatorContext eec) {
 
 			const string resName = "StdLib.malsys";
 
@@ -119,9 +120,9 @@ namespace Malsys.Web {
 
 			using (Stream stream = new ResourcesReader().GetResourceStream(resName)) {
 				using (TextReader reader = new StreamReader(stream)) {
-					var inCompiled = new CompilersContainer(knownStuffProvider, knownStuffProvider, knownStuffProvider)
+					var inCompiled = new CompilersContainer(knownStuffProvider, knownStuffProvider)
 						.CompileInput(reader, resName, logger);
-					var stdLib = new EvaluatorsContainer().EvaluateInput(inCompiled);
+					var stdLib = new EvaluatorsContainer(eec).EvaluateInput(inCompiled);
 					if (!logger.ErrorOccurred) {
 						return stdLib;
 					}

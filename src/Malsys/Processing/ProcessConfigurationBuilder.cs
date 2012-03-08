@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Malsys.Evaluators;
 using Malsys.Processing.Components;
 using Malsys.Reflection.Components;
 using Malsys.SemanticModel;
@@ -10,14 +11,33 @@ using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Collections;
 
 namespace Malsys.Processing {
+	/// <summary>
+	/// Class for building process configuration.
+	/// </summary>
+	/// <remarks>
+	/// In order to build process configuration correctly you should call these methods:
+	/// <c>BuildConfigurationComponentsGraph</c>, <c>SetAndCheckUserSettableProperties</c> and <c>CreateConfiguration</c> respectively.
+	/// These methods are separated to enable following features:
+	/// <list type="bullet">
+	/// <item><description>To evaluate L-system with respect to gettable variables on components.</description></item>
+	/// <item><description>To get variables or call functions on other components during initialization.</description></item>
+	/// </list>
+	/// </remarks>
 	public class ProcessConfigurationBuilder {
 
 
 		private ComponentMetadataDumper metadataDumper = new ComponentMetadataDumper();
 
-
-		public ProcessConfiguration BuildConfiguration(ProcessConfigurationStatement processConfigStat, IEnumerable<ProcessComponentAssignment> componentsAssigns,
-				IComponentResolver typeResolver, ProcessContext ctxt, IMessageLogger logger) {
+		/// <summary>
+		/// Crates instances of all needed components and connects all connections.
+		/// </summary>
+		/// <param name="processConfigStat">The "build" plan.</param>
+		/// <param name="componentsAssigns">Assignments of components to containers. Can be empty list because every container has default value.</param>
+		/// <param name="typeResolver">Component (Container) type resolver. Used to resolve string types from Process Configuration to .NET types.</param>
+		/// <param name="logger">Logger for logging any failures during process.</param>
+		/// <returns>F# map of connected components or null if error occurred.</returns>
+		public FSharpMap<string, ConfigurationComponent> BuildConfigurationComponentsGraph(ProcessConfigurationStatement processConfigStat,
+				IEnumerable<ProcessComponentAssignment> componentsAssigns, IComponentResolver typeResolver, IMessageLogger logger) {
 
 			using (var errBlock = logger.StartErrorLoggingBlock()) {
 
@@ -61,41 +81,115 @@ namespace Malsys.Processing {
 					return null;
 				}
 
-				setAndCheckUserSettableProperties(components, ctxt.Lsystem, logger);
-				setAndCheckUserSettableSymbolsProperties(components, ctxt.Lsystem, logger);
-				if (errBlock.ErrorOccurred) {
-					return null;
-				}
-
-
-				var starterComponent = initializeComponents(components, ctxt, logger);
-
-				if (errBlock.ErrorOccurred) {
-					return null;
-				}
-
-
-				bool requiresMeasure = false;
-				foreach (var kvp in components) {
-					if (kvp.Value.Component is IProcessComponent) {
-						requiresMeasure |= ((IProcessComponent)kvp.Value.Component).RequiresMeasure;
-					}
-				}
-
+				// check if all component assignments were used or log warning if not
 				foreach (var compAssignKvp in compAssignsDict) {
 					if (!usedCompAssigns.Contains(compAssignKvp.Key)) {
 						logger.LogMessage(Message.ComponentAssignNotUsed, compAssignKvp.Value, compAssignKvp.Key);
 					}
 				}
 
-				return new ProcessConfiguration(components, requiresMeasure, starterComponent);
+				return components;
 			}
 		}
 
+		/// <summary>
+		/// Sets and checks all settable properties in all given components. The values are obtained from given L-system.
+		/// </summary>
+		/// <param name="components">F# list of components to process.</param>
+		/// <param name="lsystem">Used to get variables which are set to components.</param>
+		/// <param name="logger">Logger for logging any failures during process.</param>
+		public void SetAndCheckUserSettableProperties(FSharpMap<string, ConfigurationComponent> components,
+				FSharpMap<string, IValue> valueAssigns, FSharpMap<string, ImmutableList<Symbol<IValue>>> symbolsAssigns, IMessageLogger logger) {
 
-		private IProcessStarter initializeComponents(FSharpMap<string, ConfigurationComponent> components, ProcessContext ctxt, IMessageLogger logger) {
+			var setValues = new System.Collections.Generic.HashSet<string>();
+			var setSymbols = new System.Collections.Generic.HashSet<string>();
+
+			foreach (var kvp in components) {
+
+				var comp = kvp.Value;
+
+				// settable properties
+				foreach (var settPropMeta in comp.Metadata.SettableProperties) {
+					string name = trySetSettableProperty(comp, settPropMeta, valueAssigns, logger);
+					if (name != null) {
+						setValues.Add(name);
+					}
+				}
+
+				// settable symbol properties
+				foreach (var settSymPropMeta in comp.Metadata.SettableSymbolsProperties) {
+					string name = trySetSettableSymbolProperty(comp, settSymPropMeta, symbolsAssigns, logger);
+					if (name != null) {
+						setSymbols.Add(name);
+					}
+				}
+
+			}
+
+			foreach (var valAssign in valueAssigns) {
+				if (!setValues.Contains(valAssign.Key)) {
+					logger.LogMessage(Message.ComponentValueAssignNotUsed, valAssign.Key);
+				}
+			}
+
+			foreach (var symAssign in symbolsAssigns) {
+				if (!setSymbols.Contains(symAssign.Key)) {
+					logger.LogMessage(Message.ComponentSymbolAssignNotUsed, symAssign.Key);
+				}
+			}
+
+		}
+
+
+		/// <summary>
+		/// Initializes all components and checks if measuring pass is required by any component.
+		/// From these information returns ProcessConfiguration.
+		/// </summary>
+		/// <param name="configurationComponents">Component graph from BuildConfigurationComponentsGraph method.</param>
+		/// <param name="ctxt">Process context with which will be components initialized.</param>
+		/// <param name="logger">Logger for logging any failures during process.</param>
+		/// <returns>Valid ProcessConfiguration or null if error occurred.</returns>
+		public ProcessConfiguration CreateConfiguration(FSharpMap<string, ConfigurationComponent> configurationComponents, ProcessContext ctxt, IMessageLogger logger) {
+
+			initializeComponents(configurationComponents, ctxt, logger);
+
+			bool requiresMeasure = false;
+			foreach (var kvp in configurationComponents) {
+				if (kvp.Value.Component is IProcessComponent) {
+					requiresMeasure |= ((IProcessComponent)kvp.Value.Component).RequiresMeasure;
+				}
+			}
+
+			var starter = getStarterComponent(configurationComponents, logger);
+			if (starter == null) {
+				return null;
+			}
+
+			return new ProcessConfiguration(configurationComponents, requiresMeasure, starter);
+		}
+
+
+		private IProcessStarter getStarterComponent(FSharpMap<string, ConfigurationComponent> components, IMessageLogger logger) {
 
 			IProcessStarter starterComponent = null;
+
+			foreach (var kvp in components) {
+				if (kvp.Value.Component is IProcessStarter) {
+					if (starterComponent != null) {
+						logger.LogMessage(Message.MoreStartComponents, typeof(IProcessStarter).Name);
+					}
+					starterComponent = (IProcessStarter)kvp.Value.Component;
+				}
+			}
+
+			if (starterComponent == null) {
+				logger.LogMessage(Message.NoStartComponent, typeof(IProcessStarter).Name);
+			}
+
+			return starterComponent;
+		}
+
+		private void initializeComponents(FSharpMap<string, ConfigurationComponent> components, ProcessContext ctxt, IMessageLogger logger) {
 
 			foreach (var kvp in components) {
 
@@ -113,21 +207,8 @@ namespace Malsys.Processing {
 					continue;
 				}
 
-				if (comp.Component is IProcessStarter) {
-					if (starterComponent != null) {
-						ctxt.Logger.LogMessage(Message.MoreStartComponents, typeof(IProcessStarter).Name);
-					}
-					starterComponent = (IProcessStarter)comp.Component;
-				}
 			}
-
-			if (starterComponent == null) {
-				logger.LogMessage(Message.NoStartComponent, typeof(IProcessStarter).Name);
-			}
-
-			return starterComponent;
 		}
-
 
 		private ConfigurationComponent createComponent(string compName, string compTypeName, IComponentResolver typeResolver, IMessageLogger logger) {
 
@@ -178,14 +259,14 @@ namespace Malsys.Processing {
 			return comp;
 		}
 
-		/// <summary>
-		///
-		/// </summary>
 		/// <remarks>
 		/// Now it is possible to connect a connection, that is not visible (illegal) from configuration:
 		/// Component in container can use properties, that are not declared in its container.
 		/// </remarks>
 		private void connectAndCheck(FSharpMap<string, ConfigurationComponent> components, IEnumerable<ProcessComponentsConnection> connections, IMessageLogger logger) {
+
+
+			var usedConnections = new System.Collections.Generic.HashSet<ProcessComponentsConnection>();
 
 			foreach (var compKvp in components) {
 
@@ -208,8 +289,15 @@ namespace Malsys.Processing {
 
 					foreach (var c in conn) {
 						connectComponents(components, c, logger);
+						usedConnections.Add(c);
 					}
 
+				}
+			}
+
+			foreach (var conn in connections) {
+				if (!usedConnections.Contains(conn)) {
+					logger.LogMessage(Message.InvalidConnection, conn.SourceName, conn.TargetName, conn.TargetInputName);
 				}
 			}
 
@@ -219,18 +307,21 @@ namespace Malsys.Processing {
 
 			ConfigurationComponent srcComp;
 			if (!components.TryGetValue(conn.SourceName, out srcComp)) {
+				// this is checked by compiler but configuration can be created another way
 				logger.LogMessage(Message.FailedToConnect, conn.SourceName, conn.TargetName, conn.TargetInputName, conn.TargetName);
 				return;
 			}
 
 			ConfigurationComponent destComp;
 			if (!components.TryGetValue(conn.TargetName, out destComp)) {
+				// this is checked by compiler but configuration can be created another way
 				logger.LogMessage(Message.FailedToConnect, conn.SourceName, conn.TargetName, conn.TargetInputName, conn.TargetInputName);
 				return;
 			}
 
 			ComponentConnectablePropertyMetadata connProp;
 			if (!destComp.Metadata.TryGetConnectableProperty(conn.TargetInputName, out connProp)) {
+				// method calling this method is iterating over existing properties so this should not happen
 				logger.LogMessage(Message.FailedToConnectPropertyDontExist, conn.SourceName, conn.TargetName, conn.TargetInputName);
 				return;
 			}
@@ -244,7 +335,7 @@ namespace Malsys.Processing {
 				connProp.PropertyInfo.SetValue(destComp.Component, srcComp.Component, null);
 			}
 			catch (TargetInvocationException ex) {
-				if (ex.InnerException is InvalidUserValueException) {
+				if (ex.InnerException is InvalidConnectedComponentException) {
 					logger.LogMessage(Message.FailedToConnectInvalidValue, conn.SourceName, conn.TargetName, conn.TargetInputName, ex.InnerException.Message);
 				}
 				else {
@@ -254,74 +345,27 @@ namespace Malsys.Processing {
 		}
 
 
-		private void setAndCheckUserSettableProperties(FSharpMap<string, ConfigurationComponent> components, LsystemEvaled lsystem, IMessageLogger logger) {
+		/// <returns>The name of successfully set variable or null.</returns>
+		private string trySetSettableProperty(ConfigurationComponent comp, ComponentSettablePropertyMetadata settPropMeta,
+				FSharpMap<string, IValue> valueAssigns, IMessageLogger logger) {
 
-			var constantsCanonicDict = lsystem.Constants.Aggregate(
-				new Dictionary<string, IValue>(),
-				(dict, kvp) => {
-					dict[kvp.Key.ToLowerInvariant()] = kvp.Value;
-					return dict;
-				});
-
-			foreach (var kvp in components) {
-
-				var comp = kvp.Value;
-
-				foreach (var settPropMeta in comp.Metadata.SettableProperties) {
-					setSettableProperty(comp, settPropMeta, constantsCanonicDict, logger);
-				}
-			}
-
-		}
-
-		private void setAndCheckUserSettableSymbolsProperties(FSharpMap<string, ConfigurationComponent> components, LsystemEvaled lsystem, IMessageLogger logger) {
-
-			var symbolsCanonicDict = lsystem.SymbolsConstants.Aggregate(
-				new Dictionary<string, ImmutableList<Symbol<IValue>>>(),
-				(dict, kvp) => {
-					dict[kvp.Key.ToLowerInvariant()] = kvp.Value;
-					return dict;
-				});
-
-			foreach (var kvp in components) {
-
-				var comp = kvp.Value;
-
-				foreach (var settSymPropMeta in comp.Metadata.SettableSymbolsProperties) {
-
-					bool valueSet = false;
-
-					foreach (var name in settSymPropMeta.Names) {
-						ImmutableList<Symbol<IValue>> symbolsVal;
-						if (symbolsCanonicDict.TryGetValue(name.ToLowerInvariant(), out symbolsVal)) {
-							valueSet |= trySetPropertyValue(settSymPropMeta.PropertyInfo, comp, symbolsVal, name, null);
-						}
-					}
-
-					if (settSymPropMeta.IsMandatory && !valueSet) {
-						logger.LogMessage(Message.UnsetMandatoryProperty, settSymPropMeta.Names[0], comp.Name, comp.ComponentType.FullName);
-					}
-				}
-
-			}
-		}
-
-
-		private void setSettableProperty(ConfigurationComponent comp, ComponentSettablePropertyMetadata settPropMeta, Dictionary<string, IValue> constants, IMessageLogger logger) {
-
+			string setName = null;
 			bool valueSet = false;
 
 			foreach (var name in settPropMeta.Names) {
 				IValue constVal;
-				if (constants.TryGetValue(name.ToLowerInvariant(), out constVal)) {
+				if (valueAssigns.TryGetValue(name, out constVal)) {
 
 					if (settPropMeta.PropertyType.IsAssignableFrom(constVal.GetType())) {
-						valueSet |= trySetPropertyValue(settPropMeta.PropertyInfo, comp, constVal, name, null);
+						valueSet = trySetPropertyValue(settPropMeta.PropertyInfo, comp, constVal, name, logger);
 					}
 					else {
 						logger.LogMessage(Message.FailedToSetPropertyValueIncompatibleTypes,
 							name, comp.Name, comp.ComponentType.FullName, constVal.Type.ToTypeString(), settPropMeta.ExpressionValueType.ToTypeString());
 					}
+
+					setName = name;
+					break;
 
 				}
 			}
@@ -329,6 +373,32 @@ namespace Malsys.Processing {
 			if (settPropMeta.IsMandatory && !valueSet) {
 				logger.LogMessage(Message.UnsetMandatoryProperty, settPropMeta.Names[0], comp.Name, comp.ComponentType.FullName);
 			}
+
+			return setName;
+		}
+
+		/// <returns>The name of successfully set variable or null.</returns>
+		private string trySetSettableSymbolProperty(ConfigurationComponent comp, ComponentSettableSybolsPropertyMetadata settSymPropMeta,
+				FSharpMap<string, ImmutableList<Symbol<IValue>>> symbolsAssigns, IMessageLogger logger) {
+
+			string setName = null;
+			bool valueSet = false;
+
+			foreach (var name in settSymPropMeta.Names) {
+				ImmutableList<Symbol<IValue>> symbolsVal;
+				if (symbolsAssigns.TryGetValue(name, out symbolsVal)) {
+					valueSet = trySetPropertyValue(settSymPropMeta.PropertyInfo, comp, symbolsVal, name, logger);
+					setName = name;
+					break;
+
+				}
+			}
+
+			if (settSymPropMeta.IsMandatory && !valueSet) {
+				logger.LogMessage(Message.UnsetMandatoryProperty, settSymPropMeta.Names[0], comp.Name, comp.ComponentType.FullName);
+			}
+
+			return setName;
 		}
 
 		private bool trySetPropertyValue(PropertyInfo pi, ConfigurationComponent comp, object value, string propName, IMessageLogger logger) {
@@ -382,6 +452,8 @@ namespace Malsys.Processing {
 			ComponentInitializationError,
 			[Message(MessageType.Error, "`{0}` thrown on initialization of component `{1}` (`{2}`).")]
 			ComponentInitializationException,
+			[Message(MessageType.Error, "Invalid connection rule connecting `{0}` to `{1}`.`{2}`.")]
+			InvalidConnection,
 
 
 			[Message(MessageType.Warning, "Expected constant as value of property `{0}` of `{1}` (`{2}`).")]
@@ -398,6 +470,10 @@ namespace Malsys.Processing {
 			FailedToSetPropertyValueIncompatibleTypes,
 			[Message(MessageType.Warning, "Component assign of component `{0}` to container `{1}` is not used.")]
 			ComponentAssignNotUsed,
+			[Message(MessageType.Warning, "Component value assignment `{0}` not used. No component to assign to.")]
+			ComponentValueAssignNotUsed,
+			[Message(MessageType.Warning, "Component symbol assignment `{0}` not used. No component to assign to.")]
+			ComponentSymbolAssignNotUsed,
 
 
 		}

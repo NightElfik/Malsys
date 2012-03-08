@@ -7,11 +7,21 @@ using Malsys.SemanticModel.Compiled;
 using Malsys.SourceCode.Printers;
 using Microsoft.FSharp.Text.Lexing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ConstsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.IValue>;
-using FunsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Compiled.FunctionEvaledParams>;
+using Malsys.Reflection;
+using Malsys.Resources;
+using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Tests {
 	internal static class TestUtils {
+
+		public static readonly IExpressionEvaluatorContext ExpressionEvaluatorContext;
+
+		static TestUtils() {
+
+			ExpressionEvaluatorContext = new FunctionDumper().RegiterAllFunctions(typeof(StdFunctions), new ExpressionEvaluatorContext());
+
+		}
+
 
 		public static ImmutableList<Ast.LsystemSymbol> ParseSymbols(string input) {
 
@@ -27,7 +37,7 @@ namespace Malsys.Tests {
 			return symbolsAst;
 		}
 
-		public static ImmutableList<Malsys.SemanticModel.Symbol<IExpression>> CompileSymbols(ImmutableList<Ast.LsystemSymbol> symbolsAst) {
+		public static ImmutableList<SemanticModel.Symbol<IExpression>> CompileSymbols(ImmutableList<Ast.LsystemSymbol> symbolsAst) {
 
 			var compiler = new CompilersContainer().Resolve<ISymbolCompiler>();
 			var logger = new MessageLogger();
@@ -40,7 +50,7 @@ namespace Malsys.Tests {
 			return symbols;
 		}
 
-		public static ImmutableList<Malsys.SemanticModel.Symbol<IExpression>> CompileSymbols(string input) {
+		public static ImmutableList<SemanticModel.Symbol<IExpression>> CompileSymbols(string input) {
 			var parsed = ParseSymbols(input);
 			return CompileSymbols(parsed);
 		}
@@ -78,19 +88,14 @@ namespace Malsys.Tests {
 			return compiledExpr;
 		}
 
-		public static Malsys.SemanticModel.Evaluated.IValue EvaluateExpression(IExpression input, ConstsMap consts, FunsMap funs) {
+		public static IValue EvaluateExpression(string input) {
 
-			return new ExpressionEvaluator().Evaluate(input, consts, funs);
+			return ExpressionEvaluatorContext.Evaluate(CompileExpression(input));
 		}
 
-		public static Malsys.SemanticModel.Evaluated.IValue EvaluateExpression(string input) {
+		public static IValue EvaluateExpression(string input, IExpressionEvaluatorContext eec) {
 
-			return new ExpressionEvaluator().Evaluate(CompileExpression(input));
-		}
-
-		public static Malsys.SemanticModel.Evaluated.IValue EvaluateExpression(string input, ConstsMap consts, FunsMap funs) {
-
-			return new ExpressionEvaluator().Evaluate(CompileExpression(input), consts, funs);
+			return eec.Evaluate(CompileExpression(input));
 		}
 
 
@@ -101,46 +106,58 @@ namespace Malsys.Tests {
 			var result = ParserUtils.ParseInputNoComents(lexBuff, logger, "testInput");
 			if (logger.ErrorOccurred) {
 				Console.WriteLine(logger.ToString());
-				Assert.Fail("Failed to parse L-system: " + input);
+				Assert.Fail("Failed to parse input: " + input);
 			}
 
 			return result;
 		}
 
-		public static InputBlock CompileLsystem(string input) {
-			return CompileLsystem(ParseLsystem(input));
+		public static InputBlock CompileInput(string input) {
+			return CompileInput(ParseLsystem(input));
 		}
 
-		public static InputBlock CompileLsystem(Ast.InputBlock input) {
+		public static InputBlock CompileInput(Ast.InputBlock input) {
 
 			var logger = new MessageLogger();
 			var compiled = new CompilersContainer().ResolveInputCompiler().Compile(input, logger);
 
 			if (logger.ErrorOccurred) {
 				Console.WriteLine(logger.ToString());
-				Assert.Fail("Failed to compile L-system");
+				Assert.Fail("Failed to compile input");
 			}
 
 			return compiled;
 		}
 
 
-		public static SemanticModel.Evaluated.InputBlock EvaluateLsystem(InputBlock input) {
+		public static InputBlockEvaled EvaluateLsystem(InputBlock input) {
 
-			return new EvaluatorsContainer().EvaluateInput(input);
+			return new EvaluatorsContainer(ExpressionEvaluatorContext).EvaluateInput(input, ExpressionEvaluatorContext);
 		}
 
-		public static SemanticModel.Evaluated.InputBlock EvaluateLsystem(string input) {
+		public static InputBlockEvaled EvaluateLsystem(string input) {
 
-			return new EvaluatorsContainer().EvaluateInput(CompileLsystem(input));
+			return new EvaluatorsContainer(ExpressionEvaluatorContext).EvaluateInput(CompileInput(input), ExpressionEvaluatorContext);
 		}
 
 
-		public static string Print(Malsys.SemanticModel.Evaluated.IValue val) {
+		public static LsystemEvaled EvaluateLsystem(LsystemEvaledParams lsystem) {
+
+			return new EvaluatorsContainer(ExpressionEvaluatorContext).EvaluateLsystem(lsystem, ImmutableList<IValue>.Empty, ExpressionEvaluatorContext);
+		}
+
+		public static string Print(IValue val) {
 
 			var writer = new IndentStringWriter();
 			new CanonicPrinter(writer).Print(val);
 			return writer.GetResult();
+
+		}
+
+		public static string Print(SemanticModel.Constant c) {
+
+			return Print((IValue)c);
+
 		}
 
 		public static string Print(IExpression expr) {
@@ -148,6 +165,7 @@ namespace Malsys.Tests {
 			var writer = new IndentStringWriter();
 			new CanonicPrinter(writer).Print(expr);
 			return writer.GetResult();
+
 		}
 
 		public static string Print(Ast.InputBlock val) {
@@ -155,6 +173,7 @@ namespace Malsys.Tests {
 			var writer = new IndentStringWriter();
 			new CanonicAstPrinter(writer).Print(val);
 			return writer.GetResult();
+
 		}
 
 		public static string Print(Ast.Expression expr) {
@@ -164,11 +183,20 @@ namespace Malsys.Tests {
 			return writer.GetResult();
 		}
 
-		public static string Print(Malsys.SemanticModel.Evaluated.InputBlock input) {
+		public static string Print(InputBlockEvaled input) {
 
 			var writer = new IndentStringWriter();
 			new CanonicPrinter(writer).Print(input);
 			return writer.GetResult();
+
+		}
+
+		public static string Print(ImmutableList<SemanticModel.Symbol<IValue>> symbols) {
+
+			var writer = new IndentStringWriter();
+			new CanonicPrinter(writer).Print(symbols);
+			return writer.GetResult();
+
 		}
 
 	}

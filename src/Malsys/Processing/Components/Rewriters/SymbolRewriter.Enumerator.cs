@@ -7,8 +7,6 @@ using Malsys.Evaluators;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Evaluated;
-using ConstsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.IValue>;
-using FunsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Compiled.FunctionEvaledParams>;
 using Symbol = Malsys.SemanticModel.Symbol<Malsys.SemanticModel.Evaluated.IValue>;
 using SymbolPatern = Malsys.SemanticModel.Symbol<string>;
 using SymbolPaternsList = Malsys.SemanticModel.SymbolsList<string>;
@@ -19,9 +17,7 @@ namespace Malsys.Processing.Components.Rewriters {
 		private class SymbolRewriterEnumerator : IEnumerator<Symbol> {
 
 			private readonly SymbolRewriter parent;
-			private readonly IExpressionEvaluator exprEvaluator;
-			private readonly ConstsMap constants;
-			private readonly FunsMap functions;
+			private readonly IExpressionEvaluatorContext exprEvalCtxt;
 			private readonly Dictionary<string, RewriteRule[]> rewriteRules;
 			private readonly HashSet<string> contextIgnoredSymbolNames;
 			private readonly IRandomGenerator rndGenerator;
@@ -58,11 +54,8 @@ namespace Malsys.Processing.Components.Rewriters {
 
 				parent = parentSr;
 
-				exprEvaluator = parent.exprEvaluator;
-
 				rewriteRules = parent.rewriteRules;
-				constants = parent.lsystem.Constants;
-				functions = parent.lsystem.Functions;
+				exprEvalCtxt = parent.exprEvalCtxt;
 
 				contextIgnoredSymbolNames = parent.contextIgnoredSymbolNames;
 
@@ -199,15 +192,15 @@ namespace Malsys.Processing.Components.Rewriters {
 			/// </summary>
 			private void rewrite(Symbol symbol) {
 
-				ConstsMap consts;
+				IExpressionEvaluatorContext eec;
 				RewriteRule rrule;
 
-				if (tryFindRewriteRule(symbol, out rrule, out consts)) {
+				if (tryFindRewriteRule(symbol, out rrule, out eec)) {
 
-					var replac = chooseReplacement(rrule, consts, functions);
+					var replac = chooseReplacement(rrule, eec);
 
 					foreach (var replacSymbol in replac.Replacement) {
-						var evaledSymbol = new Symbol<IValue>(replacSymbol.Name, exprEvaluator.EvaluateList(replacSymbol.Arguments, consts, functions));
+						var evaledSymbol = new Symbol<IValue>(replacSymbol.Name, eec.EvaluateList(replacSymbol.Arguments));
 						outputBuffer.Enqueue(evaledSymbol);
 					}
 				}
@@ -217,7 +210,7 @@ namespace Malsys.Processing.Components.Rewriters {
 				}
 			}
 
-			private bool tryFindRewriteRule(Symbol symbol, out RewriteRule rruleResult, out ConstsMap constsResult) {
+			private bool tryFindRewriteRule(Symbol symbol, out RewriteRule rruleResult, out IExpressionEvaluatorContext empResult) {
 
 				RewriteRule[] rrules;
 				if (rewriteRules.TryGetValue(symbol.Name, out rrules)) {
@@ -226,27 +219,27 @@ namespace Malsys.Processing.Components.Rewriters {
 						Debug.Assert(rr.SymbolPattern.Name == symbol.Name, "Bad rewrite rule Dictionary.");
 
 						// get work copy of variables
-						var actualConsts = constants;
+						var eec = exprEvalCtxt;
 
 						// left context check first, it is simpler (do not invoke input reading as right context check)
-						if (rr.LeftContext.Length > 0 && !checkContext(leftContext, rr.LeftContext, ref actualConsts)) {
+						if (rr.LeftContext.Length > 0 && !checkContext(leftContext, rr.LeftContext, ref eec)) {
 							continue;
 						}
 
-						if (rr.RightContext.Length > 0 && !checkRightContext(rr.RightContext, ref actualConsts)) {
+						if (rr.RightContext.Length > 0 && !checkRightContext(rr.RightContext, ref eec)) {
 							continue;
 						}
 
 						// map pattern
-						mapPatternConsts(rr.SymbolPattern, symbol, ref actualConsts);
+						mapPatternConsts(rr.SymbolPattern, symbol, ref eec);
 
 						// map local constant definitions
 						foreach (var cd in rr.LocalConstantDefs) {
-							actualConsts = actualConsts.Add(cd.Name, exprEvaluator.Evaluate(cd.Value, actualConsts, functions));
+							eec = eec.AddVariable(cd.Name, eec.Evaluate(cd.Value));
 						}
 
 						// check condition
-						var condValue = exprEvaluator.Evaluate(rr.Condition, actualConsts, functions);
+						var condValue = eec.Evaluate(rr.Condition);
 						if (!condValue.IsConstant) {
 							continue;
 						}
@@ -257,7 +250,7 @@ namespace Malsys.Processing.Components.Rewriters {
 						}
 
 						rruleResult = rr;
-						constsResult = actualConsts;
+						empResult = eec;
 
 
 						return true;
@@ -266,14 +259,14 @@ namespace Malsys.Processing.Components.Rewriters {
 				}
 
 				rruleResult = null;
-				constsResult = null;
+				empResult = null;
 				return false;
 			}
 
 
 
 
-			private bool checkContext(IndexableQueue<Symbol> contextSymbols, SymbolPaternsList ctxtPattern, ref ConstsMap consts) {
+			private bool checkContext(IndexableQueue<Symbol> contextSymbols, SymbolPaternsList ctxtPattern, ref IExpressionEvaluatorContext eec) {
 
 				if (contextSymbols.Count < ctxtPattern.Length) {
 					return false;
@@ -281,7 +274,7 @@ namespace Malsys.Processing.Components.Rewriters {
 
 				for (int i = 0; i < ctxtPattern.Length; i++) {
 					if (ctxtPattern[i].Name == contextSymbols[i].Name) {
-						mapPatternConsts(ctxtPattern[i], contextSymbols[i], ref consts);
+						mapPatternConsts(ctxtPattern[i], contextSymbols[i], ref eec);
 					}
 					else {
 						return false;
@@ -291,7 +284,7 @@ namespace Malsys.Processing.Components.Rewriters {
 				return true;
 			}
 
-			private bool checkRightContext(SymbolPaternsList ctxt, ref ConstsMap consts) {
+			private bool checkRightContext(SymbolPaternsList ctxt, ref IExpressionEvaluatorContext eec) {
 
 				while (rightContext.Count < ctxt.Length) {
 					// load as much symbols as needed to match context if non of newly loaded will be ignored
@@ -303,10 +296,10 @@ namespace Malsys.Processing.Components.Rewriters {
 					}
 				}
 
-				return checkContext(rightContext, ctxt, ref consts);
+				return checkContext(rightContext, ctxt, ref eec);
 			}
 
-			private void mapPatternConsts(SymbolPatern pattern, Symbol symbol, ref ConstsMap consts) {
+			private void mapPatternConsts(SymbolPatern pattern, Symbol symbol, ref IExpressionEvaluatorContext eec) {
 
 				int paramsLen = symbol.Arguments.Length;
 				int patternLen = pattern.Arguments.Length;
@@ -314,12 +307,12 @@ namespace Malsys.Processing.Components.Rewriters {
 				for (int i = 0; i < patternLen; i++) {
 					// set value to NaN if symbol has not enough actual parameters to match pattern
 					var value = i < paramsLen ? symbol.Arguments[i] : Constant.NaN;
-					consts = consts.Add(pattern.Arguments[i], value);
+					eec = eec.AddVariable(pattern.Arguments[i], value);
 				}
 
 			}
 
-			private RewriteRuleReplacement chooseReplacement(RewriteRule rr, ConstsMap consts, FunsMap funs) {
+			private RewriteRuleReplacement chooseReplacement(RewriteRule rr, IExpressionEvaluatorContext eec) {
 
 				int rrrLen = rr.Replacements.Length;
 
@@ -330,7 +323,7 @@ namespace Malsys.Processing.Components.Rewriters {
 					return rr.Replacements[0];
 				}
 
-				var weights = rr.Replacements.Select(replac => (double)exprEvaluator.EvaluateAsConst(replac.Weight, consts, funs)).ToArray();
+				var weights = rr.Replacements.Select(replac => (double)eec.EvaluateAsConst(replac.Weight)).ToArray();
 				double sumWeights = weights.Sum();
 				double rand = rndGenerator.NextDouble() * sumWeights;
 				double acc = 0d;

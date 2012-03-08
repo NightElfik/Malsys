@@ -24,7 +24,7 @@ namespace Malsys.Processing.Components.Interpreters {
 		private uint colorEvents;
 		private uint colorEventsMeasured;
 
-		private bool continousColoring = false;
+		private bool continuousColoring = false;
 		private bool colorContinously = false;
 		private ColorGradient colorGradient;
 
@@ -45,21 +45,25 @@ namespace Malsys.Processing.Components.Interpreters {
 
 		#region User settable variables
 
+		[Alias("interpretLines")]
 		[UserSettable]
 		public Constant InterpretLines {
 			set { interpretLines = !value.IsZero; }
 		}
 
+		[Alias("interpretPolygons")]
 		[UserSettable]
 		public Constant InterpretPolygons {
 			set { interpretPloygons = !value.IsZero; }
 		}
 
+		[Alias("reversePolygonOrder")]
 		[UserSettable]
 		public Constant ReversePolygonOrder {
 			set { reversePolygonOrder = !value.IsZero; }
 		}
 
+		[Alias("origin")]
 		[UserSettable]
 		public ValuesArray Origin {
 			set {
@@ -72,22 +76,26 @@ namespace Malsys.Processing.Components.Interpreters {
 			}
 		}
 
+		[Alias("initialAngle")]
 		[UserSettable]
 		public Constant InitialAngle {
 			set { initAngle = value.Value % 360; }
 		}
 
+		[Alias("initialLineWidth")]
 		[UserSettable]
 		public Constant InitialLineWidth {
 			set { initWdth = value.Value; }
 		}
 
+		[Alias("initialColor")]
 		[UserSettable]
 		public ValuesArray InitialColor { get; set; }
 
 
+		[Alias("continuousColoring")]
 		[UserSettable]
-		public IValue ContinousColoring { get; set; }
+		public IValue ContinuousColoring { get; set; }
 
 		#endregion
 
@@ -109,22 +117,22 @@ namespace Malsys.Processing.Components.Interpreters {
 			return typeof(IRenderer2D).IsAssignableFrom(renderer.GetType());
 		}
 
-		public bool RequiresMeasure { get { return continousColoring; } }
+		public bool RequiresMeasure { get { return continuousColoring; } }
 
 		public void Initialize(ProcessContext ctxt) {
 
 			logger = ctxt.Logger;
 
-			if (ContinousColoring != null) {
-				if (ContinousColoring.IsConstant) {
-					if (!((Constant)ContinousColoring).IsZero) {
-						continousColoring = true;
+			if (ContinuousColoring != null) {
+				if (ContinuousColoring.IsConstant) {
+					if (!((Constant)ContinuousColoring).IsZero) {
+						continuousColoring = true;
 						colorGradient = ColorGradients.Rainbow;
 					}
 				}
 				else {
-					continousColoring = true;
-					colorGradient = new ColorGradientFactory().CreateFromValuesArray((ValuesArray)ContinousColoring, logger);
+					continuousColoring = true;
+					colorGradient = new ColorGradientFactory().CreateFromValuesArray((ValuesArray)ContinuousColoring, logger);
 				}
 			}
 
@@ -150,7 +158,7 @@ namespace Malsys.Processing.Components.Interpreters {
 				colorContinously = false;
 			}
 			else {
-				colorContinously = continousColoring;
+				colorContinously = continuousColoring;
 			}
 
 			colorEvents = 0;

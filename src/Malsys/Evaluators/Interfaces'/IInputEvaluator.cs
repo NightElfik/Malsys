@@ -3,7 +3,7 @@
 namespace Malsys.Evaluators {
 	public interface IInputEvaluator {
 
-		InputBlock Evaluate(SemanticModel.Compiled.InputBlock input);
+		InputBlockEvaled Evaluate(SemanticModel.Compiled.InputBlock input, IExpressionEvaluatorContext exprEvalCtxt);
 
 	}
 }

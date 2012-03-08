@@ -8,12 +8,15 @@ namespace Malsys.Reflection.Components {
 
 		public readonly ImmutableList<string> Names;
 
+		public readonly bool GettableBeforeInitialiation;
+
 		public readonly PropertyInfo PropertyInfo;
 
 
-		public ComponentGettablePropertyMetadata(ImmutableList<string> names, PropertyInfo propertyInfo) {
+		public ComponentGettablePropertyMetadata(ImmutableList<string> names, bool gettableBeforeInitialiation, PropertyInfo propertyInfo) {
 
 			Names = names;
+			GettableBeforeInitialiation = gettableBeforeInitialiation;
 			PropertyInfo = propertyInfo;
 
 		}
