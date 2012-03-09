@@ -1,21 +1,24 @@
 ﻿
 namespace Malsys.Ast {
-	/// <summary>
+	/// <remarks>
 	/// Immutable.
-	/// </summary>
-	public class ProcessStatement : IInputStatement, ILsystemStatement {
+	/// </remarks>
+	public class ProcessStatement : IInputStatement {
 
 		public readonly Identificator TargetLsystemNameId;
+
+		public readonly ImmutableListPos<Expression> Arguments;
 
 		public readonly Identificator ProcessConfiNameId;
 
 		public readonly ImmutableListPos<ProcessComponentAssignment> ComponentAssignments;
 
 
-		public ProcessStatement(Identificator targetLsystemName, Identificator processConfiNameId,
+		public ProcessStatement(Identificator targetLsystemName, ImmutableListPos<Expression> arguments, Identificator processConfiNameId,
 				ImmutableListPos<ProcessComponentAssignment> componentAssignments, Position pos) {
 
 			TargetLsystemNameId = targetLsystemName;
+			Arguments = arguments;
 			ProcessConfiNameId = processConfiNameId;
 			ComponentAssignments = componentAssignments;
 
@@ -25,12 +28,9 @@ namespace Malsys.Ast {
 
 		public Position Position { get; private set; }
 
-		public void Accept(IInputVisitor visitor) {
-			visitor.Visit(this);
+		public InputStatementType StatementType {
+			get { return InputStatementType.ProcessStatement; }
 		}
 
-		public void Accept(ILsystemVisitor visitor) {
-			visitor.Visit(this);
-		}
 	}
 }

@@ -1,8 +1,8 @@
 ﻿
 namespace Malsys.SemanticModel.Compiled {
-	/// <summary>
+	/// <remarks>
 	/// Immutable.
-	/// </summary>
+	/// </remarks>
 	public class ProcessComponentsConnection {
 
 		public readonly string SourceName;

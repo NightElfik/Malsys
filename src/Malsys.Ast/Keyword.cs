@@ -5,6 +5,8 @@ namespace Malsys.Ast {
 		[StringValue("?unknown?keyword?")]
 		Unknown,
 
+		[StringValue("all")]
+		All,
 		[StringValue("as")]
 		As,
 		[StringValue("component")]

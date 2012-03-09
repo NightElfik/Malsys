@@ -5,9 +5,9 @@ using Microsoft.FSharp.Collections;
 using System.Collections.Generic;
 
 namespace Malsys.Reflection.Components {
-	/// <summary>
+	/// <remarks>
 	/// Immutable.
-	/// </summary>
+	/// </remarks>
 	public class ComponentMetadata {
 
 		public readonly Type ComponentType;

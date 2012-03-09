@@ -74,8 +74,8 @@ type ImmutableListPos_LsystemSymbol = ImmutableListPos<LsystemSymbol>
 //------------------------------------------------------------------------------
 
 %token <string> ID
-%token <Keyword> AS COMPONENT CONFIGURATION CONNECT CONSIDER CONTAINER DEFAULT FUN INTERPRET LET LSYSTEM
-%token <Keyword> NOTHING OR PROCESS RETURN REWRITE SET SYMBOLS THIS TO TYPEOF USE WEIGHT WITH WHERE
+%token <Keyword> ALL AS COMPONENT CONFIGURATION CONNECT CONSIDER CONTAINER DEFAULT FUN INTERPRET LET
+%token <Keyword> LSYSTEM NOTHING OR PROCESS RETURN REWRITE SET SYMBOLS THIS TO TYPEOF USE WEIGHT WITH WHERE
 %token EQUALS SEMI COMMA QMARK COLON
 %token LPAREN RPAREN LBRACE RBRACE
 %token <float * ConstantFormat> FLOAT
@@ -150,7 +150,7 @@ InputStatement:
     | ProcessConfig
       { $1 :> IInputStatement }
     | ProcessStatement
-      { ($1 :> IStatement) :?> IInputStatement }
+      { $1 :> IInputStatement }
     | SEMI
       { new EmptyStatement(getPos parseState) :> IInputStatement }
 
@@ -234,8 +234,6 @@ LsysStatement:
       { $1 :> ILsystemStatement }
     | SymbolsInterpretDef
       { $1 :> ILsystemStatement }
-    | ProcessStatement
-      { ($1 :> IStatement) :?> ILsystemStatement }
     | SEMI
       { new EmptyStatement(getPos parseState) :> ILsystemStatement }
 
@@ -576,14 +574,12 @@ FullyQualifiedTypeId:
 //------------------------------------------------------------------------------
 
 ProcessStatement:
-    | PROCESS IdOrThisOpt WITH id ProcessComponentAssignmentList SEMI
-      { let statements = new ImmutableListPos<ProcessComponentAssignment>($5 :> ResizeArray<ProcessComponentAssignment>, getPos parseState)
-        new ProcessStatement($2, $4, statements, getPos parseState) :> IStatement }
+    | PROCESS OptId OptExpressionsListParen WITH id ProcessComponentAssignmentList SEMI
+      { let statements = new ImmutableListPos<ProcessComponentAssignment>($6 :> ResizeArray<ProcessComponentAssignment>, getPos parseState)
+        new ProcessStatement($2, $3, $5, statements, getPos parseState) :> IInputStatement }
 
-IdOrThisOpt:
-    |
-      { Identificator.Empty }
-    | THIS
+OptId:
+    | ALL
       { Identificator.Empty }
     | id
       { $1 }

@@ -1,22 +1,17 @@
 ﻿
 namespace Malsys.Ast {
 
-	public interface IFunctionStatement : IStatement, IFunctionVisitable {
+	public interface IFunctionStatement : IStatement {
+
+		FunctionStatementType StatementType { get; }
 
 	}
 
 
-	public interface IFunctionVisitable {
+	public enum FunctionStatementType {
 
-		void Accept(IFunctionVisitor visitor);
-
-	}
-
-
-	public interface IFunctionVisitor {
-
-		void Visit(ConstantDefinition constDef);
-		void Visit(Expression expr);
+		ConstantDefinition,
+		Expression,
 
 	}
 

@@ -1,9 +1,9 @@
 ﻿using System;
 
 namespace Malsys {
-	/// <summary>
+	/// <remarks>
 	/// Immutable.
-	/// </summary>
+	/// </remarks>
 	public class Message {
 
 		public readonly string Id;

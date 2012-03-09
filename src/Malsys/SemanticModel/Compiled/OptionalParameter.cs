@@ -1,9 +1,9 @@
 ﻿using Malsys.SemanticModel.Compiled.Expressions;
 
 namespace Malsys.SemanticModel.Compiled {
-	/// <summary>
+	/// <remarks>
 	/// Immutable.
-	/// </summary>
+	/// </remarks>
 	public class OptionalParameter {
 
 		public readonly string Name;

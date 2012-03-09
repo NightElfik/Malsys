@@ -2,9 +2,9 @@
 using System.Text;
 
 namespace Malsys.SemanticModel.Evaluated {
-	/// <summary>
+	/// <remarks>
 	/// Immutable.
-	/// </summary>
+	/// </remarks>
 	public class ValuesArray : ImmutableList<IValue>, IValue {
 
 		new public static readonly ValuesArray Empty = new ValuesArray(null);

@@ -1,9 +1,9 @@
 ﻿using System;
 
 namespace Malsys.Ast {
-	/// <summary>
+	/// <remarks>
 	/// Immutable.
-	/// </summary>
+	/// </remarks>
 	public class EmptyExpression : IExpressionMember {
 
 		public static readonly EmptyExpression Instance = new EmptyExpression(Position.Unknown);
@@ -17,8 +17,8 @@ namespace Malsys.Ast {
 		public Position Position { get; private set; }
 
 
-		public void Accept(IExpressionVisitor visitor) {
-			visitor.Visit(this);
+		public ExpressionMemberType MemberType {
+			get { return ExpressionMemberType.EmptyExpression; }
 		}
 
 	}

@@ -2,9 +2,9 @@
 using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Reflection.Components {
-	/// <summary>
+	/// <remarks>
 	/// Immutable.
-	/// </summary>
+	/// </remarks>
 	public class ComponentCallableFunctionMetadata {
 
 		public readonly ImmutableList<string> Names;

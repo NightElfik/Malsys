@@ -164,7 +164,7 @@ namespace Malsys.Tests.Interpreters {
 			foreach (var item in symbolToInstr) {
 				symToInstr = symToInstr.Add(item.Symbol, item);
 			}
-			var lsystem = new LsystemEvaled("", TestUtils.ExpressionEvaluatorContext, null, null, symToInstr, null, null, null);
+			var lsystem = new LsystemEvaled("", TestUtils.ExpressionEvaluatorContext, null, null, symToInstr, null, null);
 			var logger = new MessageLogger();
 			var context = new ProcessContext(lsystem, new InMemoryOutputProvider(), null, TestUtils.ExpressionEvaluatorContext, logger);
 

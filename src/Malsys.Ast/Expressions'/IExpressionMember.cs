@@ -1,31 +1,26 @@
 ﻿
 namespace Malsys.Ast {
 
-	/// <summary>
+	/// <remarks>
 	/// All expression members should be immutable.
-	/// </summary>
-	public interface IExpressionMember : IToken, IExpressionVisitable {
+	/// </remarks>
+	public interface IExpressionMember : IToken {
+
+		ExpressionMemberType MemberType { get; }
 
 	}
 
 
-	public interface IExpressionVisitable {
+	public enum ExpressionMemberType{
 
-		void Accept(IExpressionVisitor visitor);
-
-	}
-
-
-	public interface IExpressionVisitor {
-
-		void Visit(EmptyExpression emptyExpr);
-		void Visit(ExpressionBracketed bracketedExpr);
-		void Visit(ExpressionFunction funExpr);
-		void Visit(ExpressionIndexer indexerExpr);
-		void Visit(ExpressionsArray arrExpr);
-		void Visit(FloatConstant floatConstant);
-		void Visit(Identificator variable);
-		void Visit(Operator optor);
+		EmptyExpression,
+		ExpressionBracketed,
+		ExpressionFunction,
+		ExpressionIndexer,
+		ExpressionsArray,
+		FloatConstant,
+		Identificator,
+		Operator,
 
 	}
 

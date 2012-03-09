@@ -1,26 +1,21 @@
 ﻿
 namespace Malsys.Ast {
 
-	public interface IInputStatement : IStatement, IInputVisitable {
+	public interface IInputStatement : IStatement {
+
+		InputStatementType StatementType { get; }
 
 	}
 
 
-	public interface IInputVisitable {
+	public enum InputStatementType {
 
-		void Accept(IInputVisitor visitor);
-
-	}
-
-
-	public interface IInputVisitor {
-
-		void Visit(ConstantDefinition constDef);
-		void Visit(EmptyStatement emptyStat);
-		void Visit(FunctionDefinition funDef);
-		void Visit(LsystemDefinition lsysDef);
-		void Visit(ProcessConfigurationDefinition processConfDef);
-		void Visit(ProcessStatement processStat);
+		EmptyStatement,
+		ConstantDefinition,
+		FunctionDefinition,
+		LsystemDefinition,
+		ProcessStatement,
+		ProcessConfigurationDefinition,
 
 	}
 

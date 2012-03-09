@@ -1,8 +1,8 @@
 ﻿
 namespace Malsys.Ast {
-	/// <summary>
+	/// <remarks>
 	/// Immutable.
-	/// </summary>
+	/// </remarks>
 	public class ExpressionsArray : ImmutableListPos<Expression>, IExpressionMember {
 
 
@@ -17,9 +17,8 @@ namespace Malsys.Ast {
 		}
 
 
-
-		public void Accept(IExpressionVisitor visitor) {
-			visitor.Visit(this);
+		public ExpressionMemberType MemberType {
+			get { return ExpressionMemberType.ExpressionsArray; }
 		}
 
 	}

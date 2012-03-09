@@ -3,9 +3,9 @@ using Malsys.Evaluators;
 using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.SemanticModel.Compiled.Expressions {
-	/// <summary>
+	/// <remarks>
 	/// Immutable.
-	/// </summary>
+	/// </remarks>
 	public class UnaryOperator : IExpression {
 
 		public readonly string Syntax;

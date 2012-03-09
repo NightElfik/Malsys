@@ -2,47 +2,89 @@
 using Malsys.SemanticModel.Compiled;
 
 namespace Malsys.Compilers {
-	internal class ProcessStatementsCompiler : IProcessStatementsCompiler, Ast.IProcessConfigVisitor {
+	/// <remarks>
+	/// All public members are thread safe if supplied compilers are thread safe.
+	/// </remarks>
+	internal class ProcessStatementsCompiler : IProcessStatementsCompiler {
+
+		private readonly IExpressionCompiler exprCompiler;
 
 
-		private IMessageLogger logger;
-		private List<ProcessComponent> components;
-		private List<ProcessContainer> containers;
-		private List<ProcessComponentsConnection> connections;
-		private HashSet<string> usedNames;
+		public ProcessStatementsCompiler(IExpressionCompiler expressionCompiler) {
+			exprCompiler = expressionCompiler;
+		}
 
 
 		public ProcessStatement Compile(Ast.ProcessStatement statement, IMessageLogger logger) {
 
 			var assigns = statement.ComponentAssignments.Convert(a => new ProcessComponentAssignment(a.ComponentTypeNameId.Name, a.ContainerNameId.Name));
+			var args = exprCompiler.CompileList(statement.Arguments, logger);
 
-			return new ProcessStatement(statement.TargetLsystemNameId.Name, statement.ProcessConfiNameId.Name, assigns, statement);
+			return new ProcessStatement(statement.TargetLsystemNameId.Name, args, statement.ProcessConfiNameId.Name, assigns, statement);
 		}
 
 
 		public ProcessConfigurationStatement Compile(Ast.ProcessConfigurationDefinition processConfig, IMessageLogger logger) {
 
-			this.logger = logger;
-			components = new List<ProcessComponent>();
-			containers = new List<ProcessContainer>();
-			connections = new List<ProcessComponentsConnection>();
-			usedNames = new HashSet<string>();
+			var components = new List<ProcessComponent>();
+			var containers = new List<ProcessContainer>();
+			var connections = new List<ProcessComponentsConnection>();
+			var usedNames = new HashSet<string>();
 
 			foreach (var stat in processConfig.Statements) {
-				stat.Accept(this);
+
+				switch (stat.StatementType) {
+
+					case Ast.ProcessConfigStatementType.EmptyStatement:
+						break;
+
+					case Ast.ProcessConfigStatementType.ProcessComponent:
+						var component = (Ast.ProcessComponent)stat;
+						if (usedNames.Contains(component.NameId.Name)) {
+							logger.LogMessage(Messages.ComponentNameNotUnique, component.NameId.Position, component.NameId.Name);
+							break;
+						}
+
+						usedNames.Add(component.NameId.Name);
+						components.Add(new ProcessComponent(component.NameId.Name, component.TypeNameId.Name));
+						break;
+
+					case Ast.ProcessConfigStatementType.ProcessContainer:
+						var container = (Ast.ProcessContainer)stat;
+						if (usedNames.Contains(container.NameId.Name)) {
+							logger.LogMessage(Messages.ContainerNameNotUnique, container.NameId.Position, container.NameId.Name);
+							break;
+						}
+
+						usedNames.Add(container.NameId.Name);
+						containers.Add(new ProcessContainer(container.NameId.Name, container.TypeNameId.Name, container.DefaultTypeNameId.Name));
+						break;
+
+					case Ast.ProcessConfigStatementType.ProcessConfigConnection:
+						var connection = (Ast.ProcessConfigConnection)stat;
+						if (!usedNames.Contains(connection.SourceNameId.Name)) {
+							logger.LogMessage(Messages.ConnectionUnknownName, connection.SourceNameId.Position, connection.SourceNameId.Name);
+							break;
+						}
+
+						if (!usedNames.Contains(connection.TargetNameId.Name)) {
+							logger.LogMessage(Messages.ConnectionUnknownName, connection.TargetNameId.Position, connection.TargetNameId.Name);
+							break;
+						}
+
+						connections.Add(new ProcessComponentsConnection(connection.SourceNameId.Name, connection.TargetNameId.Name, connection.TargetInputNameId.Name));
+						break;
+
+					default:
+						break;
+
+				}
+
 			}
 
-			var result = new ProcessConfigurationStatement(processConfig.NameId.Name, components.ToImmutableList(),
+			return new ProcessConfigurationStatement(processConfig.NameId.Name, components.ToImmutableList(),
 				containers.ToImmutableList(), connections.ToImmutableList(), processConfig);
 
-			//  cleanup
-			logger = null;
-			components = null;
-			containers = null;
-			connections = null;
-			usedNames = null;
-
-			return result;
 		}
 
 
@@ -54,39 +96,16 @@ namespace Malsys.Compilers {
 
 		public void Visit(Ast.ProcessComponent component) {
 
-			if (usedNames.Contains(component.NameId.Name)) {
-				logger.LogMessage(Messages.ComponentNameNotUnique, component.NameId.Position, component.NameId.Name);
-				return;
-			}
 
-			usedNames.Add(component.NameId.Name);
-			components.Add(new ProcessComponent(component.NameId.Name, component.TypeNameId.Name));
 		}
 
 		public void Visit(Ast.ProcessContainer container) {
 
-			if (usedNames.Contains(container.NameId.Name)) {
-				logger.LogMessage(Messages.ContainerNameNotUnique, container.NameId.Position, container.NameId.Name);
-				return;
-			}
 
-			usedNames.Add(container.NameId.Name);
-			containers.Add(new ProcessContainer(container.NameId.Name, container.TypeNameId.Name, container.DefaultTypeNameId.Name));
 		}
 
 		public void Visit(Ast.ProcessConfigConnection connection) {
 
-			if (!usedNames.Contains(connection.SourceNameId.Name)) {
-				logger.LogMessage(Messages.ConnectionUnknownName, connection.SourceNameId.Position, connection.SourceNameId.Name);
-				return;
-			}
-
-			if (!usedNames.Contains(connection.TargetNameId.Name)) {
-				logger.LogMessage(Messages.ConnectionUnknownName, connection.TargetNameId.Position, connection.TargetNameId.Name);
-				return;
-			}
-
-			connections.Add(new ProcessComponentsConnection(connection.SourceNameId.Name, connection.TargetNameId.Name, connection.TargetInputNameId.Name));
 		}
 
 		#endregion

@@ -150,7 +150,7 @@ namespace Malsys.Evaluators {
 					return unOp.Evaluate(operand);
 
 				default:
-					Debug.Fail("Unknown expression type `{0}`".Fmt(expr.ExpressionType.ToString()));
+					Debug.Fail("Unknown expression member type `{0}`.".Fmt(expr.ExpressionType.ToString()));
 					return Constant.NaN;
 			}
 

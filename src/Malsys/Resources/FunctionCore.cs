@@ -4,9 +4,9 @@ using Malsys.Evaluators;
 using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Resources {
-	/// <summary>
+	/// <remarks>
 	/// Immutable.
-	/// </summary>
+	/// </remarks>
 	public class FunctionCore {
 
 		/// <summary>

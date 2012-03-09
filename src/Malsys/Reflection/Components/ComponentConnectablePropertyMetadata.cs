@@ -3,9 +3,9 @@ using Malsys.SemanticModel.Evaluated;
 using System;
 
 namespace Malsys.Reflection.Components {
-	/// <summary>
+	/// <remarks>
 	/// Immutable.
-	/// </summary>
+	/// </remarks>
 	public class ComponentConnectablePropertyMetadata {
 
 		public readonly ImmutableList<string> Names;

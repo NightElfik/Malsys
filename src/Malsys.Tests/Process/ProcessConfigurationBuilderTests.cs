@@ -20,7 +20,7 @@ namespace Malsys.Tests.Process {
 					"component Empty typeof EmptyComponent;",
 					"connect Empty to ConnProp.Component;",
 					"}"),
-				"process this with Config;",
+				"process all with Config;",
 				new string[] {
 					"StarterComponent",
 					"EmptyComponent",
@@ -36,7 +36,7 @@ namespace Malsys.Tests.Process {
 					"connect Beta to Alpha.Component;",
 					"connect Alpha to Beta.Component;",
 					"}"),
-				"process this with Config use ContaineredBetaComponent as Beta;",
+				"process all with Config use ContaineredBetaComponent as Beta;",
 				new string[] {
 					"StarterComponent",
 					"ContaineredAlphaComponent:ContaineredBetaComponent",
@@ -52,7 +52,7 @@ namespace Malsys.Tests.Process {
 		//            "component Empty typeof EmptyComponent;",
 		//            "connect XXXX to ConnProp.Component;",
 		//            "}"),
-		//        "process this with Config;",
+		//        "process all with Config;",
 		//        new string[] {
 		//            toId(ProcessConfigurationBuilder.Message.FailedToConnect)});
 		//}
@@ -66,7 +66,7 @@ namespace Malsys.Tests.Process {
 		//            "component Empty typeof EmptyComponent;",
 		//            "connect Empty to XXX.Component;",
 		//            "}"),
-		//        "process this with Config;",
+		//        "process all with Config;",
 		//        new string[] {
 		//            toId(ProcessConfigurationBuilder.Message.FailedToConnect)});
 		//}
@@ -79,7 +79,7 @@ namespace Malsys.Tests.Process {
 					"component Empty typeof EmptyComponent;",
 					"connect Empty to ConnProp.XXXX;",
 					"}"),
-				"process this with Config;",
+				"process all with Config;",
 				new string[] {
 					toId(ProcessConfigurationBuilder.Message.InvalidConnection)});
 		}
@@ -89,14 +89,14 @@ namespace Malsys.Tests.Process {
 			doTest(string.Join("\n", "configuration Config {",
 					"container Starter typeof IContainer default StarterComponent;",
 					"}"),
-				"process this with Config;",
+				"process all with Config;",
 				new string[] {
 					toId(ProcessConfigurationBuilder.Message.ComponentDontFitContainer) });
 
 			doTest(string.Join("\n", "configuration Config {",
 					"container Beta typeof IContainer default ContaineredBetaComponent;",
 					"}"),
-				"process this with Config use StarterComponent as Beta;",
+				"process all with Config use StarterComponent as Beta;",
 				new string[] {
 					toId(ProcessConfigurationBuilder.Message.ComponentDontFitContainer) });
 		}
@@ -106,7 +106,7 @@ namespace Malsys.Tests.Process {
 			doTest(string.Join("\n", "configuration Config {",
 					"container Starter typeof StarterComponent default StarterComponent;",
 					"}"),
-				"process this with Config use StarterComponent as InvalidName;",
+				"process all with Config use StarterComponent as InvalidName;",
 				new string[] {
 					"StarterComponent",
 					toId(ProcessConfigurationBuilder.Message.ComponentAssignNotUsed) });
@@ -117,7 +117,7 @@ namespace Malsys.Tests.Process {
 			doTest(string.Join("\n", "configuration Config {",
 					"component Unknown typeof UnknownType;",
 					"}"),
-				"process this with Config;",
+				"process all with Config;",
 				new string[] {
 					toId(ProcessConfigurationBuilder.Message.ComponentResolveError) });
 		}
@@ -127,7 +127,7 @@ namespace Malsys.Tests.Process {
 			doTest(string.Join("\n", "configuration Config {",
 					"container Unknown typeof Unknown default ContaineredAlphaComponent;",
 					"}"),
-				"process this with Config;",
+				"process all with Config;",
 				new string[] {
 					toId(ProcessConfigurationBuilder.Message.ContainerResolveError) });
 		}
@@ -137,7 +137,7 @@ namespace Malsys.Tests.Process {
 			doTest(string.Join("\n", "configuration Config {",
 					"component Empty typeof EmptyComponent;",
 					"}"),
-				"process this with Config;",
+				"process all with Config;",
 				new string[] {
 					"EmptyComponent",
 					toId(ProcessConfigurationBuilder.Message.NoStartComponent) });
@@ -149,7 +149,7 @@ namespace Malsys.Tests.Process {
 					"component Starter1 typeof StarterComponent;",
 					"component Starter2 typeof StarterComponent;",
 					"}"),
-				"process this with Config;",
+				"process all with Config;",
 				new string[] {
 					"StarterComponent",
 					"StarterComponent",
@@ -162,7 +162,7 @@ namespace Malsys.Tests.Process {
 					"component BetaNoConn typeof ContaineredBetaComponent;",
 					"component Starter typeof StarterComponent;",
 					"}"),
-				"process this with Config;",
+				"process all with Config;",
 				new string[] {
 					"StarterComponent",
 					"ContaineredBetaComponent:" });
@@ -174,7 +174,7 @@ namespace Malsys.Tests.Process {
 					"component AlphaNoConn typeof ContaineredAlphaComponent;",
 					"component Starter typeof StarterComponent;",
 					"}"),
-				"process this with Config;",
+				"process all with Config;",
 				new string[] {
 					toId(ProcessConfigurationBuilder.Message.UnsetMandatoryConnection) });
 		}
@@ -186,7 +186,7 @@ namespace Malsys.Tests.Process {
 					"component Devil typeof NoParamlessCtorComponent;",
 					"component Starter typeof StarterComponent;",
 					"}"),
-				"process this with Config;",
+				"process all with Config;",
 				new string[] {
 					toId(ComponentMetadataDumper.Message.ComponentParamlessCtorMissing) });
 
@@ -194,7 +194,7 @@ namespace Malsys.Tests.Process {
 					"container Devil typeof NoParamlessCtorComponent default XXX;",
 					"component Starter typeof StarterComponent;",
 					"}"),
-				"process this with Config use NoParamlessCtorComponent as Devil;",
+				"process all with Config use NoParamlessCtorComponent as Devil;",
 				new string[] {
 					toId(ComponentMetadataDumper.Message.ComponentParamlessCtorMissing) });
 
@@ -206,7 +206,7 @@ namespace Malsys.Tests.Process {
 					"component Devil typeof ExceptionInCtorComponent;",
 					"component Starter typeof StarterComponent;",
 					"}"),
-				"process this with Config;",
+				"process all with Config;",
 				new string[] {
 					toId(ProcessConfigurationBuilder.Message.ComponentCtorException) });
 		}
@@ -217,7 +217,7 @@ namespace Malsys.Tests.Process {
 					"component GoodDevil typeof ErrorInInitComponent;",
 					"component Starter typeof StarterComponent;",
 					"}"),
-				"process this with Config;",
+				"process all with Config;",
 				new string[] {
 					"StarterComponent",
 					toId(ProcessConfigurationBuilder.Message.ComponentInitializationError) });
@@ -226,7 +226,7 @@ namespace Malsys.Tests.Process {
 					"component BadDevil typeof ExceptionInInitComponent;",
 					"component Starter typeof StarterComponent;",
 					"}"),
-				"process this with Config;",
+				"process all with Config;",
 				new string[] {
 					"StarterComponent",
 					toId(ProcessConfigurationBuilder.Message.ComponentInitializationException) });
@@ -242,7 +242,7 @@ namespace Malsys.Tests.Process {
 					"component Sett typeof SettablePropertiesComponent;",
 					"component Starter typeof StarterComponent;",
 					"}"),
-				"process this with Config;",
+				"process all with Config;",
 				new string[] {
 					"StarterComponent",
 					"SettablePropertiesComponent:Constant=8,ValuesArray=,IValue=" });
@@ -254,7 +254,7 @@ namespace Malsys.Tests.Process {
 					"component Sett typeof SettablePropertiesComponent;",
 					"component Starter typeof StarterComponent;",
 					"}"),
-				"process this with Config;",
+				"process all with Config;",
 				new string[] {
 					"StarterComponent",
 					"SettablePropertiesComponent:Constant=,ValuesArray={0, 1, 2, 3},IValue=" });
@@ -266,7 +266,7 @@ namespace Malsys.Tests.Process {
 					"component Sett typeof SettablePropertiesComponent;",
 					"component Starter typeof StarterComponent;",
 					"}"),
-				"process this with Config;",
+				"process all with Config;",
 				new string[] {
 					"StarterComponent",
 					"SettablePropertiesComponent:Constant=,ValuesArray=,IValue=27" });
@@ -278,7 +278,7 @@ namespace Malsys.Tests.Process {
 					"component Sett typeof SettablePropertiesComponent;",
 					"component Starter typeof StarterComponent;",
 					"}"),
-				"process this with Config;",
+				"process all with Config;",
 				new string[] {
 					"StarterComponent",
 					"SettablePropertiesComponent:Constant=,ValuesArray=,IValue={2, 7}" });
@@ -295,7 +295,7 @@ namespace Malsys.Tests.Process {
 					"component Sett typeof SettablePropertiesComponent;",
 					"component Starter typeof StarterComponent;",
 					"}"),
-				"process this with Config;",
+				"process all with Config;",
 				new string[] {
 					"StarterComponent",
 					"SettablePropertiesComponent:Constant=,ValuesArray=,IValue=",
@@ -308,7 +308,7 @@ namespace Malsys.Tests.Process {
 					 "component Sett typeof SettablePropertiesComponent;",
 					 "component Starter typeof StarterComponent;",
 					 "}"),
-				 "process this with Config;",
+				 "process all with Config;",
 				 new string[] {
 					"StarterComponent",
 					"SettablePropertiesComponent:Constant=,ValuesArray=,IValue=",
@@ -326,7 +326,7 @@ namespace Malsys.Tests.Process {
 					"component Sett typeof SettablePropertyAliasesComponent;",
 					"component Starter typeof StarterComponent;",
 					"}"),
-				"process this with Config;",
+				"process all with Config;",
 				new string[] {
 					"StarterComponent",
 					"SettablePropertyAliasesComponent:1" });
@@ -338,7 +338,7 @@ namespace Malsys.Tests.Process {
 					"component Sett typeof SettablePropertyAliasesComponent;",
 					"component Starter typeof StarterComponent;",
 					"}"),
-				"process this with Config;",
+				"process all with Config;",
 				new string[] {
 					"StarterComponent",
 					"SettablePropertyAliasesComponent:1" });
@@ -350,7 +350,7 @@ namespace Malsys.Tests.Process {
 					"component Sett typeof SettablePropertyAliasesComponent;",
 					"component Starter typeof StarterComponent;",
 					"}"),
-				"process this with Config;",
+				"process all with Config;",
 				new string[] {
 					"StarterComponent",
 					"SettablePropertyAliasesComponent:1" });
@@ -362,7 +362,7 @@ namespace Malsys.Tests.Process {
 					"component Sett typeof SettablePropertyAliasesComponent;",
 					"component Starter typeof StarterComponent;",
 					"}"),
-				"process this with Config;",
+				"process all with Config;",
 				new string[] {
 					"StarterComponent",
 					"SettablePropertyAliasesComponent:1" });
@@ -379,7 +379,7 @@ namespace Malsys.Tests.Process {
 					"component Sett typeof MandatorySettablePropertyComponent;",
 					"component Starter typeof StarterComponent;",
 					"}"),
-				"process this with Config;",
+				"process all with Config;",
 				new string[] {
 					"StarterComponent",
 					"MandatorySettablePropertyComponent:7" });
@@ -390,7 +390,7 @@ namespace Malsys.Tests.Process {
 					"component Sett typeof MandatorySettablePropertyComponent;",
 					"component Starter typeof StarterComponent;",
 					"}"),
-				"process this with Config;",
+				"process all with Config;",
 				new string[] {
 					toId(ProcessConfigurationBuilder.Message.UnsetMandatoryProperty) });
 
@@ -406,7 +406,7 @@ namespace Malsys.Tests.Process {
 					"component Sett typeof SettablePropertyInvalidValueComponent;",
 					"component Starter typeof StarterComponent;",
 					"}"),
-				"process this with Config;",
+				"process all with Config;",
 				new string[] {
 					"StarterComponent",
 					"SettablePropertyInvalidValueComponent",
@@ -424,7 +424,7 @@ namespace Malsys.Tests.Process {
 				"component Sett typeof SettableSymbolPropertiesComponent;",
 				"component Starter typeof StarterComponent;",
 				"}"),
-				"process this with Config;",
+				"process all with Config;",
 				new string[] {
 					"StarterComponent",
 					"SettableSymbolPropertiesComponent:A B C"} );
@@ -436,7 +436,7 @@ namespace Malsys.Tests.Process {
 				 "component Sett typeof SettableSymbolPropertiesComponent;",
 				 "component Starter typeof StarterComponent;",
 				 "}"),
-				 "process this with Config;",
+				 "process all with Config;",
 				 new string[] {
 					"StarterComponent",
 					"SettableSymbolPropertiesComponent:X(8, {1, 2}) Y"} );
@@ -453,7 +453,7 @@ namespace Malsys.Tests.Process {
 					"component Sett typeof MndatorySettableSymbolPropertiesComponent;",
 					"component Starter typeof StarterComponent;",
 					"}"),
-				"process this with Config;",
+				"process all with Config;",
 				new string[] {
 					"StarterComponent",
 					"MndatorySettableSymbolPropertiesComponent:A B" });
@@ -464,7 +464,7 @@ namespace Malsys.Tests.Process {
 					"component Sett typeof MndatorySettableSymbolPropertiesComponent;",
 					"component Starter typeof StarterComponent;",
 					"}"),
-				"process this with Config;",
+				"process all with Config;",
 				new string[] {
 					toId(ProcessConfigurationBuilder.Message.UnsetMandatoryProperty)});
 

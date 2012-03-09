@@ -1,8 +1,8 @@
 ﻿
 namespace Malsys.Ast {
-	/// <summary>
+	/// <remarks>
 	/// Immutable.
-	/// </summary>
+	/// </remarks>
 	public class RewriteRule : ILsystemStatement {
 
 		public readonly LsystemSymbol Pattern;
@@ -34,8 +34,8 @@ namespace Malsys.Ast {
 		public Position Position { get; private set; }
 
 
-		public void Accept(ILsystemVisitor visitor) {
-			visitor.Visit(this);
+		public LsystemStatementType StatementType {
+			get { return LsystemStatementType.RewriteRule; }
 		}
 
 	}

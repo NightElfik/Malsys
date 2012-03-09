@@ -1,8 +1,8 @@
 ﻿
 namespace Malsys.SemanticModel.Compiled {
-	/// <summary>
+	/// <remarks>
 	/// Immutable.
-	/// </summary>
+	/// </remarks>
 	public class ProcessConfigurationStatement : IInputStatement {
 
 		public readonly string Name;

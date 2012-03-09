@@ -1,5 +1,8 @@
 ﻿
 namespace Malsys.Ast {
+	/// <remarks>
+	/// Immutable.
+	/// </remarks>
 	public class SymbolsInterpretDef : ILsystemStatement {
 
 		public readonly ImmutableListPos<Identificator> Symbols;
@@ -21,8 +24,8 @@ namespace Malsys.Ast {
 		public Position Position { get; private set; }
 
 
-		public void Accept(ILsystemVisitor visitor) {
-			visitor.Visit(this);
+		public LsystemStatementType StatementType {
+			get { return LsystemStatementType.SymbolsInterpretDef; }
 		}
 
 	}

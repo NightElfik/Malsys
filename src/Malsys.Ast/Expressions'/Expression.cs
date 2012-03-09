@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 
 namespace Malsys.Ast {
-	/// <summary>
+	/// <remarks>
 	/// Immutable.
-	/// </summary>
+	/// </remarks>
 	public class Expression : IEnumerable<IExpressionMember>, IFunctionStatement {
 
 		public static readonly Expression Empty = new Expression(Position.Unknown);
@@ -45,8 +45,9 @@ namespace Malsys.Ast {
 			return ((IEnumerable<IExpressionMember>)Members).GetEnumerator();
 		}
 
-		public void Accept(IFunctionVisitor visitor) {
-			visitor.Visit(this);
+
+		public FunctionStatementType StatementType {
+			get { return FunctionStatementType.Expression; }
 		}
 
 	}

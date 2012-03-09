@@ -1,8 +1,8 @@
 ﻿
 namespace Malsys.Ast {
-	/// <summary>
+	/// <remarks>
 	/// Immutable.
-	/// </summary>
+	/// </remarks>
 	public class ExpressionBracketed : IExpressionMember {
 
 		public readonly Expression Expression;
@@ -16,8 +16,8 @@ namespace Malsys.Ast {
 		public Position Position { get; private set; }
 
 
-		public void Accept(IExpressionVisitor visitor) {
-			visitor.Visit(this);
+		public ExpressionMemberType MemberType {
+			get { return ExpressionMemberType.ExpressionBracketed; }
 		}
 
 	}

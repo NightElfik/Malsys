@@ -8,12 +8,13 @@ namespace Malsys.SemanticModel.Compiled {
 	}
 
 	public enum LsystemStatementType {
+
 		Constant,
 		Function,
 		SymbolsConstant,
 		RewriteRule,
 		SymbolsInterpretation,
-		ProcessStatement,
+
 	}
 
 }

@@ -1,5 +1,8 @@
 ﻿
 namespace Malsys.Ast {
+	/// <remarks>
+	/// Immutable.
+	/// </remarks>
 	public class SymbolsConstDefinition : ILsystemStatement {
 
 		public readonly Identificator NameId;
@@ -16,8 +19,8 @@ namespace Malsys.Ast {
 		public Position Position { get; private set; }
 
 
-		public void Accept(ILsystemVisitor visitor) {
-			visitor.Visit(this);
+		public LsystemStatementType StatementType {
+			get { return LsystemStatementType.SymbolsConstDefinition; }
 		}
 
 	}

@@ -1,12 +1,5 @@
 ﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.FSharp.Text.Lexing;
-using Malsys.Parsing;
-using Malsys.IO;
-using Malsys.SourceCode.Printers;
 
 namespace Malsys.Tests.Parsing {
 	[TestClass]
@@ -14,8 +7,7 @@ namespace Malsys.Tests.Parsing {
 
 		[TestMethod]
 		public void BasicStatementTests() {
-			doTest("process with ConfigName;", "process this with ConfigName;");
-			doTestAutoident("process this with ConfigName;");
+			doTestAutoident("process all with ConfigName;");
 			doTestAutoident("process LsystemName with ConfigName;");
 		}
 
@@ -24,6 +16,12 @@ namespace Malsys.Tests.Parsing {
 			doTestAutoident("process LsystemName with ConfigName", "use SvgRewriter as Rewriter;");
 			doTestAutoident("process LsystemName with ConfigName", "use SvgRewriter as Rewriter", "use NextComponent as AnotherContainerName;");
 			doTestAutoident("process LsystemName with ConfigName", "use Fully.Qualified.Type as Rewriter;");
+		}
+
+		[TestMethod]
+		public void LsystemArgsTests() {
+			doTestAutoident("process all(a, r, g, s) with ConfigName;");
+			doTestAutoident("process LsystemName(0, 1, {2}) with ConfigName;");
 		}
 
 

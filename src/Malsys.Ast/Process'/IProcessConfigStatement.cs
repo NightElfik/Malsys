@@ -1,24 +1,20 @@
 ﻿
 namespace Malsys.Ast {
 
-	public interface IProcessConfigStatement : IStatement, IProcessConfigVisitable {
+	public interface IProcessConfigStatement : IStatement {
+
+		ProcessConfigStatementType StatementType { get; }
 
 	}
 
 
-	public interface IProcessConfigVisitable {
+	public enum ProcessConfigStatementType {
 
-		void Accept(IProcessConfigVisitor visitor);
-
-	}
-
-
-	public interface IProcessConfigVisitor {
-
-		void Visit(EmptyStatement emptyStatement);
-		void Visit(ProcessComponent component);
-		void Visit(ProcessContainer container);
-		void Visit(ProcessConfigConnection connection);
+		EmptyStatement,
+		ProcessComponent,
+		ProcessContainer,
+		ProcessConfigConnection,
 
 	}
+
 }

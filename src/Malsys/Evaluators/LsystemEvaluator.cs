@@ -1,14 +1,18 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Collections;
 
 namespace Malsys.Evaluators {
+	/// <remarks>
+	/// All public members are thread safe if supplied evaluators are thread safe.
+	/// </remarks>
 	internal class LsystemEvaluator : ILsystemEvaluator {
 
-		private IParametersEvaluator paramsEvaluator;
-		private ISymbolEvaluator symbolEvaluator;
+		private readonly IParametersEvaluator paramsEvaluator;
+		private readonly ISymbolEvaluator symbolEvaluator;
 
 
 		public LsystemEvaluator(IParametersEvaluator parametersEvaluator, ISymbolEvaluator iSymbolEvaluator) {
@@ -46,13 +50,12 @@ namespace Malsys.Evaluators {
 			var valAssigns = MapModule.Empty<string, IValue>();
 			var symAssigns = MapModule.Empty<string, ImmutableList<Symbol<IValue>>>();
 			var symsInt = MapModule.Empty<string, SymbolInterpretationEvaled>();
+			var rRules = new List<RewriteRule>();
 
 			// statements evaluation
-			var rRules = new List<RewriteRule>();
-			var processStats = new List<ProcessStatement>();
-
 			foreach (var stat in lsystem.Statements) {
 				switch (stat.StatementType) {
+
 					case LsystemStatementType.Constant:
 						var cst = (ConstantDefinition)stat;
 						if (cst.IsComponentAssign) {
@@ -92,17 +95,14 @@ namespace Malsys.Evaluators {
 						}
 						break;
 
-					case LsystemStatementType.ProcessStatement:
-						processStats.Add((ProcessStatement)stat);
+					default:
+						Debug.Fail("Unknown L-system statement type value `{1}`.".Fmt(stat.StatementType.ToString()));
 						break;
 
-					default:
-						break;
 				}
 			}
 
-			return new LsystemEvaled(lsystem.Name, exprEvalCtxt, valAssigns, symAssigns, symsInt,
-				rRules.ToImmutableList(), processStats.ToImmutableList(), lsystem.AstNode);
+			return new LsystemEvaled(lsystem.Name, exprEvalCtxt, valAssigns, symAssigns, symsInt, rRules.ToImmutableList(), lsystem.AstNode);
 		}
 
 	}

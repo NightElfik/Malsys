@@ -1,8 +1,8 @@
 ﻿
 namespace Malsys.SemanticModel.Compiled.Expressions {
-	/// <summary>
+	/// <remarks>
 	/// Immutable.
-	/// </summary>
+	/// </remarks>
 	public class FunctionCall : IExpression {
 
 

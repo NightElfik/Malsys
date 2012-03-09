@@ -1,8 +1,8 @@
 ﻿
 namespace Malsys.SemanticModel.Evaluated {
-	/// <summary>
+	/// <remarks>
 	/// Immutable.
-	/// </summary>
+	/// </remarks>
 	public class OptionalParameterEvaled {
 
 		public readonly string Name;

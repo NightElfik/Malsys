@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 
 namespace Malsys.Compilers {
+	/// <remarks>
+	/// All public members are thread safe if supplied compilers are thread safe.
+	/// </remarks>
 	internal class ParametersCompiler : IParametersCompiler {
 
-		private IExpressionCompiler exprCompiler;
+		private readonly IExpressionCompiler exprCompiler;
 
 
 		public ParametersCompiler(IExpressionCompiler expressionCompiler) {
@@ -51,5 +54,6 @@ namespace Malsys.Compilers {
 			ParamNameNotUnique,
 
 		}
+
 	}
 }

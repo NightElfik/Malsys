@@ -2,10 +2,10 @@
 using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Evaluators {
-	/// <summary>
+	/// <remarks>
 	/// Immutable.
-	/// </summary>
-	internal class FunctionData {
+	/// </remarks>
+	public class FunctionData {
 
 
 		public readonly string Name;

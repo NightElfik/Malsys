@@ -1,17 +1,16 @@
 ﻿
 namespace Malsys.Ast {
-	/// <summary>
+	/// <remarks>
 	/// Immutable.
-	/// </summary>
+	/// </remarks>
 	public class LsystemDefinition : NameParamsStatements<ILsystemStatement>, IInputStatement {
 
 		public LsystemDefinition(Identificator name, ImmutableListPos<OptionalParameter> prms,
 			ImmutableListPos<ILsystemStatement> statements, Position pos) : base(name, prms, statements, pos) {		}
 
 
-
-		public void Accept(IInputVisitor visitor) {
-			visitor.Visit(this);
+		public InputStatementType StatementType {
+			get { return InputStatementType.LsystemDefinition; }
 		}
 
 	}

@@ -33,6 +33,14 @@ namespace Malsys.SourceCode.Printers {
 			writer.NewLine();
 		}
 
+
+		public void Print(Ast.Keyword kw, bool includeSpace = true) {
+			writer.Write(EnumHelper.GetStringVal(kw));
+			if (includeSpace) {
+				writer.Write(" ");
+			}
+		}
+
 		public void PrintSeparated<T>(IEnumerable<T> values, Action<T> printFunc, string separator = ", ") {
 
 			bool first = true;
@@ -52,14 +60,6 @@ namespace Malsys.SourceCode.Printers {
 		public void Print(IEnumerable<IValue> values) {
 			PrintSeparated(values, s => Print(s));
 		}
-
-		public void Print(Ast.Keyword kw, bool includeSpace = true) {
-			writer.Write(EnumHelper.GetStringVal(kw));
-			if (includeSpace) {
-				writer.Write(" ");
-			}
-		}
-
 
 		public void Print(InputBlockEvaled evaledInput) {
 
@@ -100,6 +100,120 @@ namespace Malsys.SourceCode.Printers {
 
 		}
 
+
+		public void Print(ImmutableList<Symbol<IValue>> symbols) {
+
+			PrintSeparated(symbols, s => Print(s), " ");
+
+		}
+
+		public void Print(Symbol<VoidStruct> symbol) {
+			writer.Write(symbol.Name);
+		}
+
+		public void Print(Symbol<string> symbol) {
+			writer.Write(symbol.Name);
+
+			if (!symbol.Arguments.IsEmpty) {
+				writer.Write("(");
+				writer.Write(string.Join(", ", symbol.Arguments));
+				writer.Write(")");
+			}
+		}
+
+		public void Print(Symbol<IExpression> symbol) {
+			writer.Write(symbol.Name);
+
+			if (!symbol.Arguments.IsEmpty) {
+				writer.Write("(");
+				PrintSeparated(symbol.Arguments, s => Print(s));
+				writer.Write(")");
+			}
+		}
+
+		public void Print(Symbol<IValue> symbol) {
+			writer.Write(symbol.Name);
+
+			if (!symbol.Arguments.IsEmpty) {
+				writer.Write("(");
+				PrintSeparated(symbol.Arguments, s => Print(s));
+				writer.Write(")");
+			}
+		}
+
+
+		public void Print(FunctionData funData) {
+
+			Print(Ast.Keyword.Fun);
+			writer.Write(funData.Name);
+			Print(funData.Parameters, true);
+			writer.WriteLine(" {");
+			writer.Indent();
+
+			Print(funData.Statements);
+
+			writer.Unindent();
+			writer.WriteLine("}");
+		}
+
+
+		public void Print(ImmutableList<OptionalParameterEvaled> optParamsEvaled, bool forceParens = false) {
+
+			if (forceParens || !optParamsEvaled.IsEmpty) {
+				writer.Write("(");
+				PrintSeparated(optParamsEvaled, op => Print(op));
+				writer.Write(")");
+			}
+
+		}
+
+		public void Print(OptionalParameterEvaled optParamEvaled) {
+
+			writer.Write(optParamEvaled.Name);
+
+			if (optParamEvaled.IsOptional) {
+				writer.Write(" = ");
+				Print(optParamEvaled.DefaultValue);
+			}
+		}
+
+		public void Print(ImmutableList<OptionalParameter> optParams) {
+
+			writer.Write("(");
+			PrintSeparated(optParams, op => Print(op));
+			writer.Write(")");
+
+		}
+
+		public void Print(OptionalParameter optParam) {
+
+			writer.Write(optParam.Name);
+
+			if (optParam.IsOptional) {
+				writer.Write(" = ");
+				Print(optParam.DefaultValue);
+			}
+		}
+
+
+		public void Print(IValue value) {
+			if (value.IsConstant) {
+				Print((Constant)value);
+			}
+			else {
+				Print((ValuesArray)value);
+			}
+		}
+
+		public void Print(ValuesArray arr) {
+			writer.Write("{");
+			PrintSeparated(arr, v => Print(v));
+			writer.Write("}");
+		}
+
+
+		#region L-system statements
+
 		public void Print(LsystemEvaledParams lsysEvaledParams) {
 
 			Print(Ast.Keyword.Lsystem);
@@ -110,26 +224,12 @@ namespace Malsys.SourceCode.Printers {
 
 			foreach (var stat in lsysEvaledParams.Statements) {
 				switch (stat.StatementType) {
-					case LsystemStatementType.Constant:
-						Print((ConstantDefinition)stat);
-						break;
-					case LsystemStatementType.Function:
-						Print((Function)stat);
-						break;
-					case LsystemStatementType.SymbolsConstant:
-						Print((SymbolsConstDefinition)stat);
-						break;
-					case LsystemStatementType.RewriteRule:
-						Print((RewriteRule)stat);
-						break;
-					case LsystemStatementType.SymbolsInterpretation:
-						Print((SymbolsInterpretation)stat);
-						break;
-					case LsystemStatementType.ProcessStatement:
-						Print((ProcessStatement)stat);
-						break;
-					default:
-						break;
+					case LsystemStatementType.Constant: Print((ConstantDefinition)stat); break;
+					case LsystemStatementType.Function: Print((Function)stat); break;
+					case LsystemStatementType.SymbolsConstant: Print((SymbolsConstDefinition)stat); break;
+					case LsystemStatementType.RewriteRule: Print((RewriteRule)stat); break;
+					case LsystemStatementType.SymbolsInterpretation: Print((SymbolsInterpretation)stat); break;
+					default: Debug.Fail("Unknown L-system statement type `{0}`.".Fmt(stat.StatementType.ToString())); break;
 				}
 			}
 
@@ -137,94 +237,40 @@ namespace Malsys.SourceCode.Printers {
 			writer.WriteLine("}");
 		}
 
-		public void Print(ProcessConfigurationStatement processConf) {
-
-			Print(Ast.Keyword.Configuration);
-			writer.Write(processConf.Name);
-
-			writer.Write(" {");
-			writer.Indent();
-
-			foreach (var comp in processConf.Components.OrderBy(c => c.Name)) {
-				writer.NewLine();
-				Print(comp);
-			}
-
-			foreach (var cont in processConf.Containers.OrderBy(c => c.Name)) {
-				writer.NewLine();
-				Print(cont);
-			}
-
-			foreach (var conn in processConf.Connections.OrderBy(c => c.SourceName)) {
-				writer.NewLine();
-				Print(conn);
-			}
-
-			writer.Unindent();
-			writer.NewLine();
-			writer.WriteLine("}");
-		}
-
-		public void Print(ProcessStatement procStat) {
-
-			Print(Ast.Keyword.Process);
-			if (string.IsNullOrEmpty(procStat.TargetLsystemName)) {
-				Print(Ast.Keyword.This);
+		public void Print(ConstantDefinition constDef) {
+			if (constDef.IsComponentAssign) {
+				Print(Ast.Keyword.Set);
 			}
 			else {
-				writer.Write(procStat.TargetLsystemName);
-				writer.Write(" ");
+				Print(Ast.Keyword.Let);
 			}
-			Print(Ast.Keyword.With);
-			writer.Write(procStat.ProcessConfiName);
-
-			writer.Indent();
-			foreach (var assign in procStat.ComponentAssignments) {
-				writer.NewLine();
-				Print(Ast.Keyword.Use);
-				writer.Write(assign.ComponentTypeName);
-				writer.Write(" ");
-				Print(Ast.Keyword.As);
-				writer.Write(assign.ContainerName);
-			}
-			writer.Unindent();
-
+			writer.Write(constDef.Name);
+			writer.Write(" = ");
+			Print(constDef.Value);
 			writer.WriteLine(";");
 		}
 
-		public void Print(ProcessComponent component) {
+		public void Print(Function fun) {
 
-			Print(Ast.Keyword.Component);
-			writer.Write(component.Name);
-			writer.Write(" ");
-			Print(Ast.Keyword.Typeof);
-			writer.Write(component.TypeName);
-			writer.Write(";");
+			Print(Ast.Keyword.Fun);
+			writer.Write(fun.Name);
+			Print(fun.Parameters);
+			writer.WriteLine(" {");
+			writer.Indent();
+
+			Print(fun.Statements);
+
+			writer.Unindent();
+			writer.WriteLine("}");
 		}
 
-		public void Print(ProcessContainer container) {
-
-			Print(Ast.Keyword.Container);
-			writer.Write(container.Name);
-			writer.Write(" ");
-			Print(Ast.Keyword.Typeof);
-			writer.Write(container.TypeName);
-			writer.Write(" ");
-			Print(Ast.Keyword.Default);
-			writer.Write(container.DefaultTypeName);
-			writer.Write(";");
-		}
-
-		public void Print(ProcessComponentsConnection connection) {
-
-			Print(Ast.Keyword.Connect);
-			writer.Write(connection.SourceName);
-			writer.Write(" ");
-			Print(Ast.Keyword.To);
-			writer.Write(connection.TargetName);
-			writer.Write(".");
-			writer.Write(connection.TargetInputName);
-			writer.Write(";");
+		public void Print(SymbolsConstDefinition symbolsDef) {
+			Print(Ast.Keyword.Set);
+			Print(Ast.Keyword.Symbols);
+			writer.Write(symbolsDef.Name);
+			writer.Write(" = ");
+			PrintSeparated(symbolsDef.Symbols, s => Print(s), " ");
+			writer.WriteLine(";");
 		}
 
 		public void Print(RewriteRule rewriteRule) {
@@ -319,239 +365,29 @@ namespace Malsys.SourceCode.Printers {
 			writer.WriteLine(";");
 		}
 
-		public void Print(ImmutableList<Symbol<IValue>> symbols) {
 
-			PrintSeparated(symbols, s => Print(s), " ");
+		#endregion
 
-		}
 
-		public void Print(SymbolsConstDefinition symbolsDef) {
-			Print(Ast.Keyword.Set);
-			Print(Ast.Keyword.Symbols);
-			writer.Write(symbolsDef.Name);
-			writer.Write(" = ");
-			PrintSeparated(symbolsDef.Symbols, s => Print(s), " ");
-			writer.WriteLine(";");
-		}
-
-		public void Print(Symbol<VoidStruct> symbol) {
-			writer.Write(symbol.Name);
-		}
-
-		public void Print(Symbol<string> symbol) {
-			writer.Write(symbol.Name);
-
-			if (!symbol.Arguments.IsEmpty) {
-				writer.Write("(");
-				writer.Write(string.Join(", ", symbol.Arguments));
-				writer.Write(")");
-			}
-		}
-
-		public void Print(Symbol<IExpression> symbol) {
-			writer.Write(symbol.Name);
-
-			if (!symbol.Arguments.IsEmpty) {
-				writer.Write("(");
-				PrintSeparated(symbol.Arguments, s => Print(s));
-				writer.Write(")");
-			}
-		}
-
-		public void Print(Symbol<IValue> symbol) {
-			writer.Write(symbol.Name);
-
-			if (!symbol.Arguments.IsEmpty) {
-				writer.Write("(");
-				PrintSeparated(symbol.Arguments, s => Print(s));
-				writer.Write(")");
-			}
-		}
-
-		internal void Print(FunctionData funData) {
-
-			Print(Ast.Keyword.Fun);
-			writer.Write(funData.Name);
-			Print(funData.Parameters, true);
-			writer.WriteLine(" {");
-			writer.Indent();
-
-			Print(funData.Statements);
-
-			writer.Unindent();
-			writer.WriteLine("}");
-		}
-
-		public void Print(Function fun) {
-
-			Print(Ast.Keyword.Fun);
-			writer.Write(fun.Name);
-			Print(fun.Parameters);
-			writer.WriteLine(" {");
-			writer.Indent();
-
-			Print(fun.Statements);
-
-			writer.Unindent();
-			writer.WriteLine("}");
-		}
-
-		public void Print(ImmutableList<IFunctionStatement> funStats) {
-
-			foreach (var stat in funStats) {
-				switch (stat.StatementType) {
-					case FunctionStatementType.ConstantDefinition:
-						Print((ConstantDefinition)stat);
-						break;
-					case FunctionStatementType.ReturnExpression:
-						Print(Ast.Keyword.Return);
-						Print(((FunctionReturnExpr)stat).ReturnValue);
-						writer.WriteLine(";");
-						break;
-					default:
-						break;
-				}
-			}
-		}
-
-		public void Print(ConstantDefinition constDef) {
-			if (constDef.IsComponentAssign) {
-				Print(Ast.Keyword.Set);
-			}
-			else {
-				Print(Ast.Keyword.Let);
-			}
-			writer.Write(constDef.Name);
-			writer.Write(" = ");
-			Print(constDef.Value);
-			writer.WriteLine(";");
-		}
-
-		public void Print(ImmutableList<OptionalParameterEvaled> optParamsEvaled, bool forceParens = false) {
-
-			if (forceParens || !optParamsEvaled.IsEmpty) {
-				writer.Write("(");
-				PrintSeparated(optParamsEvaled, op => Print(op));
-				writer.Write(")");
-			}
-
-		}
-
-		public void Print(OptionalParameterEvaled optParamEvaled) {
-
-			writer.Write(optParamEvaled.Name);
-
-			if (optParamEvaled.IsOptional) {
-				writer.Write(" = ");
-				Print(optParamEvaled.DefaultValue);
-			}
-		}
-
-		public void Print(ImmutableList<OptionalParameter> optParams) {
-
-			writer.Write("(");
-			PrintSeparated(optParams, op => Print(op));
-			writer.Write(")");
-
-		}
-
-		public void Print(OptionalParameter optParam) {
-
-			writer.Write(optParam.Name);
-
-			if (optParam.IsOptional) {
-				writer.Write(" = ");
-				Print(optParam.DefaultValue);
-			}
-		}
-
+		#region Expression members
 
 		public void Print(IExpression expr) {
+
 			switch (expr.ExpressionType) {
-				case ExpressionType.BinaryOperator: Visit((BinaryOperator)expr); break;
-				case ExpressionType.Constant: Visit((Constant)expr); break;
-				case ExpressionType.EmptyExpression: Visit((EmptyExpression)expr); break;
-				case ExpressionType.ExpressionValuesArray: Visit((ExpressionValuesArray)expr); break;
-				case ExpressionType.ExprVariable: Visit((ExprVariable)expr); break;
-				case ExpressionType.FunctionCall: Visit((FunctionCall)expr); break;
-				case ExpressionType.Indexer: Visit((Indexer)expr); break;
-				case ExpressionType.UnaryOperator: Visit((UnaryOperator)expr); break;
-				default:
-					Debug.Fail("Unknown expression type `{0}`".Fmt(expr.ExpressionType.ToString()));
-					break;
-			}
-		}
-
-		public void Print(IValue value) {
-			if (value.IsConstant) {
-				Visit((Constant)value);
-			}
-			else {
-				Print((ValuesArray)value);
-			}
-		}
-
-		public void Print(ValuesArray arr) {
-			writer.Write("{");
-			PrintSeparated(arr, v => Print(v));
-			writer.Write("}");
-		}
-
-
-		#region IExpressionVisitor Members
-
-		public void Visit(Constant constant) {
-
-			Ast.ConstantFormat fmt = Ast.ConstantFormat.Float;
-			if (constant.AstNode != null) {
-				fmt = constant.AstNode.Format;
+				case ExpressionType.BinaryOperator: Print((BinaryOperator)expr); break;
+				case ExpressionType.Constant: Print((Constant)expr); break;
+				case ExpressionType.EmptyExpression: Print((EmptyExpression)expr); break;
+				case ExpressionType.ExpressionValuesArray: Print((ExpressionValuesArray)expr); break;
+				case ExpressionType.ExprVariable: Print((ExprVariable)expr); break;
+				case ExpressionType.FunctionCall: Print((FunctionCall)expr); break;
+				case ExpressionType.Indexer: Print((Indexer)expr); break;
+				case ExpressionType.UnaryOperator: Print((UnaryOperator)expr); break;
+				default: Debug.Fail("Unknown expression member type `{0}`.".Fmt(expr.ExpressionType.ToString())); break;
 			}
 
-			switch (fmt) {
-				case Ast.ConstantFormat.Binary:
-					long valBin = (long)Math.Round(constant.Value);
-					writer.Write("0b");
-					writer.Write(Convert.ToString(valBin, 2));
-					break;
-				case Ast.ConstantFormat.Octal:
-					long valOct = (long)Math.Round(constant.Value);
-					writer.Write("0o");
-					writer.Write(Convert.ToString(valOct, 8));
-					break;
-				case Ast.ConstantFormat.Hexadecimal:
-					long valHex = (long)Math.Round(constant.Value);
-					writer.Write("0x");
-					writer.Write(Convert.ToString(valHex, 16).ToUpper());
-					break;
-				case Ast.ConstantFormat.HashHexadecimal:
-					long valHash = (long)Math.Round(constant.Value);
-					writer.Write("#");
-					writer.Write(Convert.ToString(valHash, 16).ToUpper());
-					break;
-				default:
-					writer.Write(constant.Value.ToStringInvariant());
-					break;
-			}
 		}
 
-		public void Visit(ExprVariable variable) {
-			writer.Write(variable.Name);
-		}
-
-		public void Visit(ExpressionValuesArray expressionValuesArray) {
-			writer.Write("{");
-			PrintSeparated(expressionValuesArray, e => Print(e));
-			writer.Write("}");
-		}
-
-		public void Visit(UnaryOperator unaryOperator) {
-			writer.Write("(");
-			writer.Write(unaryOperator.Syntax);
-			Print(unaryOperator.Operand);
-			writer.Write(")");
-		}
-
-		public void Visit(BinaryOperator binaryOperator) {
+		public void Print(BinaryOperator binaryOperator) {
 			writer.Write("(");
 			Print(binaryOperator.LeftOperand);
 			writer.Write(" ");
@@ -561,24 +397,200 @@ namespace Malsys.SourceCode.Printers {
 			writer.Write(")");
 		}
 
-		public void Visit(Indexer indexer) {
-			Print(indexer.Array);
-			writer.Write("[");
-			Print(indexer.Index);
-			writer.Write("]");
+		public void Print(Constant constant) {
+
+			Ast.ConstantFormat fmt = Ast.ConstantFormat.Float;
+			if (constant.AstNode != null) {
+				fmt = constant.AstNode.Format;
+			}
+
+			switch (fmt) {
+
+				case Ast.ConstantFormat.Binary:
+					long valBin = (long)Math.Round(constant.Value);
+					writer.Write("0b");
+					writer.Write(Convert.ToString(valBin, 2));
+					break;
+
+				case Ast.ConstantFormat.Octal:
+					long valOct = (long)Math.Round(constant.Value);
+					writer.Write("0o");
+					writer.Write(Convert.ToString(valOct, 8));
+					break;
+
+				case Ast.ConstantFormat.Hexadecimal:
+					long valHex = (long)Math.Round(constant.Value);
+					writer.Write("0x");
+					writer.Write(Convert.ToString(valHex, 16).ToUpper());
+					break;
+
+				case Ast.ConstantFormat.HashHexadecimal:
+					long valHash = (long)Math.Round(constant.Value);
+					writer.Write("#");
+					writer.Write(Convert.ToString(valHash, 16).ToUpper());
+					break;
+
+				default:
+					writer.Write(constant.Value.ToStringInvariant());
+					break;
+
+			}
 		}
 
-		public void Visit(FunctionCall functionCall) {
+		public void Print(EmptyExpression emptyExpression) { }
+
+		public void Print(ExpressionValuesArray expressionValuesArray) {
+			writer.Write("{");
+			PrintSeparated(expressionValuesArray, e => Print(e));
+			writer.Write("}");
+		}
+
+		public void Print(ExprVariable variable) {
+			writer.Write(variable.Name);
+		}
+
+		public void Print(FunctionCall functionCall) {
 			writer.Write(functionCall.Name);
 			writer.Write("(");
 			PrintSeparated(functionCall.Arguments, e => Print(e));
 			writer.Write(")");
 		}
 
-		public void Visit(EmptyExpression emptyExpression) {
-			writer.WriteLine(";");
+		public void Print(Indexer indexer) {
+			Print(indexer.Array);
+			writer.Write("[");
+			Print(indexer.Index);
+			writer.Write("]");
+		}
+
+		public void Print(UnaryOperator unaryOperator) {
+			writer.Write("(");
+			writer.Write(unaryOperator.Syntax);
+			Print(unaryOperator.Operand);
+			writer.Write(")");
 		}
 
 		#endregion
+
+
+		#region Function statements
+
+		public void Print(ImmutableList<IFunctionStatement> funStats) {
+
+			foreach (var stat in funStats) {
+				switch (stat.StatementType) {
+					case FunctionStatementType.ConstantDefinition: Print((ConstantDefinition)stat); break;
+					case FunctionStatementType.ReturnExpression:
+						Print(Ast.Keyword.Return);
+						Print(((FunctionReturnExpr)stat).ReturnValue);
+						writer.WriteLine(";");
+						break;
+					default: Debug.Fail("Unknown function statement type `{0}`.".Fmt(stat.StatementType.ToString())); break;
+				}
+			}
+		}
+
+		#endregion
+
+
+		#region Process configuration statements
+
+		public void Print(ProcessConfigurationStatement processConf) {
+
+			Print(Ast.Keyword.Configuration);
+			writer.Write(processConf.Name);
+
+			writer.Write(" {");
+			writer.Indent();
+
+			foreach (var comp in processConf.Components.OrderBy(c => c.Name)) {
+				writer.NewLine();
+				Print(comp);
+			}
+
+			foreach (var cont in processConf.Containers.OrderBy(c => c.Name)) {
+				writer.NewLine();
+				Print(cont);
+			}
+
+			foreach (var conn in processConf.Connections.OrderBy(c => c.SourceName)) {
+				writer.NewLine();
+				Print(conn);
+			}
+
+			writer.Unindent();
+			writer.NewLine();
+			writer.WriteLine("}");
+		}
+
+		public void Print(ProcessStatement procStat) {
+
+			Print(Ast.Keyword.Process);
+			if (string.IsNullOrEmpty(procStat.TargetLsystemName)) {
+				Print(Ast.Keyword.All, false);
+			}
+			else {
+				writer.Write(procStat.TargetLsystemName);
+			}
+
+			if (!procStat.Arguments.IsEmpty) {
+				writer.Write("(");
+				PrintSeparated(procStat.Arguments, x => Print(x));
+				writer.Write(")");
+			}
+
+			writer.Write(" ");
+
+			Print(Ast.Keyword.With);
+			writer.Write(procStat.ProcessConfiName);
+
+			writer.Indent();
+			foreach (var assign in procStat.ComponentAssignments) {
+				writer.NewLine();
+				Print(Ast.Keyword.Use);
+				writer.Write(assign.ComponentTypeName);
+				writer.Write(" ");
+				Print(Ast.Keyword.As);
+				writer.Write(assign.ContainerName);
+			}
+			writer.Unindent();
+
+			writer.WriteLine(";");
+		}
+
+		public void Print(ProcessComponent component) {
+			Print(Ast.Keyword.Component);
+			writer.Write(component.Name);
+			writer.Write(" ");
+			Print(Ast.Keyword.Typeof);
+			writer.Write(component.TypeName);
+			writer.Write(";");
+		}
+
+		public void Print(ProcessContainer container) {
+			Print(Ast.Keyword.Container);
+			writer.Write(container.Name);
+			writer.Write(" ");
+			Print(Ast.Keyword.Typeof);
+			writer.Write(container.TypeName);
+			writer.Write(" ");
+			Print(Ast.Keyword.Default);
+			writer.Write(container.DefaultTypeName);
+			writer.Write(";");
+		}
+
+		public void Print(ProcessComponentsConnection connection) {
+			Print(Ast.Keyword.Connect);
+			writer.Write(connection.SourceName);
+			writer.Write(" ");
+			Print(Ast.Keyword.To);
+			writer.Write(connection.TargetName);
+			writer.Write(".");
+			writer.Write(connection.TargetInputName);
+			writer.Write(";");
+		}
+
+		#endregion
+
 	}
 }

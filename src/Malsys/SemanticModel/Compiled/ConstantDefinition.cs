@@ -1,8 +1,8 @@
 ﻿
 namespace Malsys.SemanticModel.Compiled {
-	/// <summary>
+	/// <remarks>
 	/// Immutable.
-	/// </summary>
+	/// </remarks>
 	public class ConstantDefinition : IInputStatement, ILsystemStatement, IFunctionStatement {
 
 		public readonly string Name;
@@ -22,17 +22,14 @@ namespace Malsys.SemanticModel.Compiled {
 		}
 
 
-		// IInputStatement
 		InputStatementType IInputStatement.StatementType {
 			get { return InputStatementType.Constant; }
 		}
 
-		// ILsystemStatement
 		LsystemStatementType ILsystemStatement.StatementType {
 			get { return LsystemStatementType.Constant; }
 		}
 
-		// IFunctionStatement
 		FunctionStatementType IFunctionStatement.StatementType {
 			get { return FunctionStatementType.ConstantDefinition; }
 		}

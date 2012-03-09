@@ -263,8 +263,7 @@ namespace Malsys.Tests.Interpreters {
 
 			var symbols = TestUtils.CompileSymbols(inputSymbols);
 
-			var lsystem = new LsystemEvaled("", TestUtils.ExpressionEvaluatorContext,
-				null, null, symToInstr, null, null, null);
+			var lsystem = new LsystemEvaled("", TestUtils.ExpressionEvaluatorContext, null, null, symToInstr, null, null);
 
 			var logger = new MessageLogger();
 			var evaluator = new EvaluatorsContainer(TestUtils.ExpressionEvaluatorContext);

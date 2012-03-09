@@ -1,8 +1,8 @@
 ﻿
 namespace Malsys.Ast {
-	/// <summary>
+	/// <remarks>
 	/// Immutable.
-	/// </summary>
+	/// </remarks>
 	public class ProcessConfigurationDefinition : IInputStatement {
 
 		public readonly Identificator NameId;
@@ -22,8 +22,8 @@ namespace Malsys.Ast {
 		public Position Position { get; private set; }
 
 
-		public void Accept(IInputVisitor visitor) {
-			visitor.Visit(this);
+		public InputStatementType StatementType {
+			get { return InputStatementType.ProcessConfigurationDefinition; }
 		}
 
 	}

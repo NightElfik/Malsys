@@ -1,12 +1,16 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using Malsys.SemanticModel.Compiled;
-using Microsoft.FSharp.Collections;
 using Malsys.SemanticModel.Evaluated;
+using Microsoft.FSharp.Collections;
 
 namespace Malsys.Evaluators {
+	/// <remarks>
+	/// All public members are thread safe if supplied evaluators are thread safe.
+	/// </remarks>
 	internal class InputEvaluator : IInputEvaluator {
 
-		private IParametersEvaluator paramsEvaluator;
+		private readonly IParametersEvaluator paramsEvaluator;
 
 
 		public InputEvaluator(IParametersEvaluator parametersEvaluator) {
@@ -50,7 +54,8 @@ namespace Malsys.Evaluators {
 						break;
 
 					default:
-						throw new EvalException("Unknown input statement type `{0}`.".Fmt(stat.StatementType));
+						Debug.Fail("Unknown input statement type value `{1}`.".Fmt(stat.StatementType.ToString()));
+						break;
 				}
 			}
 

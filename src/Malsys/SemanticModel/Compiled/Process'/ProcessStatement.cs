@@ -1,11 +1,13 @@
 ﻿
 namespace Malsys.SemanticModel.Compiled {
-	/// <summary>
+	/// <remarks>
 	/// Immutable.
-	/// </summary>
-	public class ProcessStatement : IInputStatement, ILsystemStatement {
+	/// </remarks>
+	public class ProcessStatement : IInputStatement {
 
 		public readonly string TargetLsystemName;
+
+		public readonly ImmutableList<IExpression> Arguments;
 
 		public readonly string ProcessConfiName;
 
@@ -15,10 +17,11 @@ namespace Malsys.SemanticModel.Compiled {
 		public readonly Ast.ProcessStatement AstNode;
 
 
-		public ProcessStatement(string targetLsystemName, string processConfiName, ImmutableList<ProcessComponentAssignment> componentAssignments,
-				Ast.ProcessStatement astNode = null) {
+		public ProcessStatement(string targetLsystemName, ImmutableList<IExpression> arguments, string processConfiName,
+				ImmutableList<ProcessComponentAssignment> componentAssignments, Ast.ProcessStatement astNode = null) {
 
 			TargetLsystemName = targetLsystemName;
+			Arguments = arguments;
 			ProcessConfiName = processConfiName;
 			ComponentAssignments = componentAssignments;
 
@@ -29,10 +32,6 @@ namespace Malsys.SemanticModel.Compiled {
 
 		InputStatementType IInputStatement.StatementType {
 			get { return InputStatementType.ProcessStatement; }
-		}
-
-		LsystemStatementType ILsystemStatement.StatementType {
-			get { return LsystemStatementType.ProcessStatement; }
 		}
 
 	}

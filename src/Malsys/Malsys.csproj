@@ -115,7 +115,6 @@
     <Compile Include="Compilers\CompilerResult.cs" />
     <Compile Include="Compilers\ConstantDefCompiler.cs" />
     <Compile Include="Compilers\ExpressionCompiler.cs" />
-    <Compile Include="Compilers\ExpressionCompiler.Visitor.cs" />
     <Compile Include="Compilers\FunctionDefCompiler.cs" />
     <Compile Include="Compilers\Interfaces%27\ICompiler.cs" />
     <Compile Include="Compilers\InputCompiler.cs" />

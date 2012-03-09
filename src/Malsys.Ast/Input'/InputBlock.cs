@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 
 namespace Malsys.Ast {
+	/// <remarks>
+	/// Immutable.
+	/// </remarks>
 	public class InputBlock {
 
 		public string SourceName;
@@ -12,6 +15,8 @@ namespace Malsys.Ast {
 
 			SourceName = sourceName;
 			Statements = statements;
+
 		}
+
 	}
 }

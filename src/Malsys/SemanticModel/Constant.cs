@@ -3,9 +3,9 @@ using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.SemanticModel {
-	/// <summary>
+	/// <remarks>
 	/// Immutable.
-	/// </summary>
+	/// </remarks>
 	public class Constant : IExpression, IValue {
 
 		public static readonly Constant NaN = new Constant(double.NaN);

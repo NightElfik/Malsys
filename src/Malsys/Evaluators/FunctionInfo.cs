@@ -2,6 +2,9 @@
 using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Evaluators {
+	/// <remarks>
+	/// Immutable.
+	/// </remarks>
 	public class FunctionInfo {
 
 		/// <summary>

@@ -2,25 +2,25 @@
 using System.Collections.Generic;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Compiled;
+using System.Diagnostics;
 
 namespace Malsys.Compilers {
-	internal class LsystemCompiler : ILsystemCompiler, Ast.ILsystemVisitor {
+	/// <remarks>
+	/// All public members are thread safe if supplied compilers are thread safe.
+	/// </remarks>
+	internal class LsystemCompiler : ILsystemCompiler {
 
-		private IConstantDefinitionCompiler constDefCompiler;
-		private IFunctionDefinitionCompiler funDefCompiler;
-		private IExpressionCompiler exprCompiler;
-		private IParametersCompiler paramsCompiler;
-		private IRewriteRuleCompiler rrCompiler;
-		private ISymbolCompiler symbolCompiler;
-		private IProcessStatementsCompiler processStatsCompiler;
-
-		private IMessageLogger logger;
-		private CompilerResult<ILsystemStatement> visitResult;
+		private readonly IConstantDefinitionCompiler constDefCompiler;
+		private readonly IFunctionDefinitionCompiler funDefCompiler;
+		private readonly IExpressionCompiler exprCompiler;
+		private readonly IParametersCompiler paramsCompiler;
+		private readonly IRewriteRuleCompiler rrCompiler;
+		private readonly ISymbolCompiler symbolCompiler;
 
 
 		public LsystemCompiler(IConstantDefinitionCompiler constantDefCompiler, IFunctionDefinitionCompiler functionDefCompiler,
 				IExpressionCompiler expressionCompiler, IParametersCompiler parametersCompiler, ISymbolCompiler symbolCompiler,
-				IRewriteRuleCompiler rewriteRuleCompiler, IProcessStatementsCompiler processStatementsCompiler) {
+				IRewriteRuleCompiler rewriteRuleCompiler) {
 
 			constDefCompiler = constantDefCompiler;
 			funDefCompiler = functionDefCompiler;
@@ -28,7 +28,6 @@ namespace Malsys.Compilers {
 			paramsCompiler = parametersCompiler;
 			rrCompiler = rewriteRuleCompiler;
 			this.symbolCompiler = symbolCompiler;
-			processStatsCompiler = processStatementsCompiler;
 		}
 
 
@@ -44,65 +43,48 @@ namespace Malsys.Compilers {
 		private ImmutableList<ILsystemStatement> compileLsystemStatements(ImmutableList<Ast.ILsystemStatement> statements, IMessageLogger logger) {
 
 			var compStats = new List<ILsystemStatement>(statements.Count);
-			this.logger = logger;
 
 			foreach (var stat in statements) {
-				stat.Accept(this);
-				if (visitResult) {
-					compStats.Add(visitResult.Result);
+
+				switch (stat.StatementType) {
+
+					case Ast.LsystemStatementType.EmptyStatement:
+						break;
+
+					case Ast.LsystemStatementType.ConstantDefinition:
+						compStats.Add(constDefCompiler.Compile((Ast.ConstantDefinition)stat, logger));
+						break;
+
+					case Ast.LsystemStatementType.SymbolsConstDefinition:
+						var symbolConstAst = (Ast.SymbolsConstDefinition)stat;
+						var symbolsConst = symbolCompiler.CompileList<Ast.LsystemSymbol, Symbol<IExpression>>(symbolConstAst.SymbolsList, logger);
+						compStats.Add(new SymbolsConstDefinition(symbolConstAst.NameId.Name, symbolsConst));
+						break;
+
+					case Ast.LsystemStatementType.SymbolsInterpretDef:
+						var symbolsInterpretAst = ((Ast.SymbolsInterpretDef)stat);
+						var symbolsInterpret = symbolsInterpretAst.Symbols.Select(x => new Symbol<VoidStruct>(x.Name)).ToImmutableList();
+						var prms = paramsCompiler.CompileList(symbolsInterpretAst.Parameters, logger);
+						var defVals = exprCompiler.CompileList(symbolsInterpretAst.InstructionParameters, logger);
+						compStats.Add(new SymbolsInterpretation(symbolsInterpret, prms, symbolsInterpretAst.Instruction.Name, defVals, symbolsInterpretAst));
+						break;
+
+					case Ast.LsystemStatementType.FunctionDefinition:
+						compStats.Add(funDefCompiler.Compile((Ast.FunctionDefinition)stat, logger));
+						break;
+
+					case Ast.LsystemStatementType.RewriteRule:
+						compStats.Add(rrCompiler.Compile((Ast.RewriteRule)stat, logger));
+						break;
+
+					default:
+						Debug.Fail("Unknown L-system statement type `{0}`.".Fmt(stat.StatementType.ToString()));
+						break;
 				}
 			}
 
-			logger = null;
 			return new ImmutableList<ILsystemStatement>(compStats);
 		}
-
-		private SymbolsConstDefinition compileSymbolConstant(Ast.SymbolsConstDefinition symbolConstAst) {
-
-			var symbols = symbolCompiler.CompileList<Ast.LsystemSymbol, Symbol<IExpression>>(symbolConstAst.SymbolsList, logger);
-			return new SymbolsConstDefinition(symbolConstAst.NameId.Name, symbols);
-		}
-
-		private SymbolsInterpretation compileSymbolsInterpretation(Ast.SymbolsInterpretDef symbolsInterpretAst) {
-
-			var symbols = symbolsInterpretAst.Symbols.Select(x => new Symbol<VoidStruct>(x.Name)).ToImmutableList();
-			var prms = paramsCompiler.CompileList(symbolsInterpretAst.Parameters, logger);
-			var defVals = exprCompiler.CompileList(symbolsInterpretAst.InstructionParameters, logger);
-			return new SymbolsInterpretation(symbols, prms, symbolsInterpretAst.Instruction.Name, defVals, symbolsInterpretAst);
-		}
-
-
-		#region ILsystemVisitor Members
-
-		public void Visit(Ast.ConstantDefinition constDef) {
-			visitResult = constDefCompiler.Compile(constDef, logger);
-		}
-
-		public void Visit(Ast.EmptyStatement emptyStat) {
-			visitResult = CompilerResult<ILsystemStatement>.Error;
-		}
-
-		public void Visit(Ast.FunctionDefinition funDef) {
-			visitResult = funDefCompiler.Compile(funDef, logger);
-		}
-
-		public void Visit(Ast.RewriteRule rewriteRule) {
-			visitResult = rrCompiler.Compile(rewriteRule, logger);
-		}
-
-		public void Visit(Ast.SymbolsInterpretDef symbolInterpretDef) {
-			visitResult = compileSymbolsInterpretation(symbolInterpretDef);
-		}
-
-		public void Visit(Ast.SymbolsConstDefinition symbolsDef) {
-			visitResult = compileSymbolConstant(symbolsDef);
-		}
-
-		public void Visit(Ast.ProcessStatement processStat) {
-			visitResult = processStatsCompiler.Compile(processStat, logger);
-		}
-
-		#endregion
 
 	}
 

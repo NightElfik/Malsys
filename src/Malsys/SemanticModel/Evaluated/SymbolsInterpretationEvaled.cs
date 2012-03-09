@@ -1,9 +1,9 @@
 ﻿using Malsys.SemanticModel.Compiled;
 
 namespace Malsys.SemanticModel.Evaluated {
-	/// <summary>
+	/// <remarks>
 	/// Immutable.
-	/// </summary>
+	/// </remarks>
 	public class SymbolInterpretationEvaled {
 
 		public readonly string Symbol;

@@ -3,9 +3,9 @@ using System.Reflection;
 using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Reflection.Components {
-	/// <summary>
+	/// <remarks>
 	/// Immutable.
-	/// </summary>
+	/// </remarks>
 	public class ComponentSettablePropertyMetadata {
 
 		public readonly ImmutableList<string> Names;
@@ -34,9 +34,9 @@ namespace Malsys.Reflection.Components {
 
 	}
 
-	/// <summary>
+	/// <remarks>
 	/// Immutable.
-	/// </summary>
+	/// </remarks>
 	/// <remarks>
 	/// Property type is equal to ImmutableList<Symbol<IValue>>.
 	/// </remarks>

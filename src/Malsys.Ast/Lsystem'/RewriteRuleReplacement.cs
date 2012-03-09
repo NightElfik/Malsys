@@ -1,5 +1,8 @@
 ﻿
 namespace Malsys.Ast {
+	/// <remarks>
+	/// Immutable.
+	/// </remarks>
 	public class RewriteRuleReplacement : IToken {
 
 		public readonly ImmutableListPos<LsystemSymbol> Replacement;

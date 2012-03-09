@@ -7,9 +7,12 @@ namespace Malsys.SemanticModel.Compiled {
 
 	}
 
+
 	public enum FunctionStatementType {
+
 		ConstantDefinition,
 		ReturnExpression,
+
 	}
 
 }

@@ -1,21 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using Malsys.SemanticModel;
+using Malsys.SemanticModel.Compiled;
 using PatternCompiler = Malsys.Compilers.ICompiler<Malsys.Ast.LsystemSymbol, Malsys.SemanticModel.Symbol<string>>;
 using ReplacementCompiler = Malsys.Compilers.ICompiler<Malsys.Ast.LsystemSymbol, Malsys.SemanticModel.Symbol<Malsys.SemanticModel.Compiled.IExpression>>;
-using Malsys.SemanticModel.Compiled;
 
 namespace Malsys.Compilers {
+	/// <remarks>
+	/// All public members are thread safe if supplied compilers are thread safe.
+	/// </remarks>
 	internal class RewriteRuleCompiler : IRewriteRuleCompiler {
 
-		private IConstantDefinitionCompiler constDefCompiler;
-		private IExpressionCompiler exprCompiler;
+		private readonly IConstantDefinitionCompiler constDefCompiler;
+		private readonly IExpressionCompiler exprCompiler;
 
 		// to be able separate the interfaces on ISymbolCompiler
-		private PatternCompiler patternCompiler;
-		private ReplacementCompiler symbolCompiler;
+		private readonly PatternCompiler patternCompiler;
+		private readonly ReplacementCompiler symbolCompiler;
 
 
 		public RewriteRuleCompiler(IConstantDefinitionCompiler constantDefCompiler, ISymbolCompiler iSymbolCompiler,
@@ -54,6 +54,7 @@ namespace Malsys.Compilers {
 
 			return new RewriteRule(ptrn, new SymbolsList<string>(lCtxt), new SymbolsList<string>(rCtxt), locConstDefs, cond, replacs);
 		}
+
 
 		private bool checkPatternParams(Symbol<string> symbol, Dictionary<string, Position> usedNames, IMessageLogger logger) {
 

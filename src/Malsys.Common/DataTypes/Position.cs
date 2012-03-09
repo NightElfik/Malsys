@@ -2,9 +2,9 @@
 using LexPos = Microsoft.FSharp.Text.Lexing.Position;
 
 namespace Malsys {
-	/// <summary>
+	/// <remarks>
 	/// Immutable.
-	/// </summary>
+	/// </remarks>
 	// TODO: rename to something better like range
 	public class Position {
 

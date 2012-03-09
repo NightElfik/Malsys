@@ -2,6 +2,9 @@
 using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Evaluators {
+	/// <remarks>
+	/// All public members are thread safe.
+	/// </remarks>
 	internal class ParametersEvaluator : IParametersEvaluator {
 
 
@@ -22,5 +25,7 @@ namespace Malsys.Evaluators {
 
 			return new ImmutableList<OptionalParameterEvaled>(result, true);
 		}
+
+
 	}
 }

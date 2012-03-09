@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 
 namespace Malsys.SemanticModel {
-	/// <summary>
+	/// <remarks>
 	/// Immutable.
-	/// </summary>
+	/// </remarks>
 	public class Symbol<T> {
 
 

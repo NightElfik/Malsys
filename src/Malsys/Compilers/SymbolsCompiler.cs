@@ -2,9 +2,12 @@
 using Malsys.SemanticModel.Compiled;
 
 namespace Malsys.Compilers {
+	/// <remarks>
+	/// All public members are thread safe if supplied compilers are thread safe.
+	/// </remarks>
 	internal class SymbolsCompiler : ISymbolCompiler {
 
-		private IExpressionCompiler exprCompiler;
+		private readonly IExpressionCompiler exprCompiler;
 
 
 		public SymbolsCompiler(IExpressionCompiler expressionCompiler) {

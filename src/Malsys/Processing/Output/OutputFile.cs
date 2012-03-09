@@ -2,9 +2,9 @@
 using Microsoft.FSharp.Collections;
 
 namespace Malsys.Processing.Output {
-	/// <summary>
+	/// <remarks>
 	/// Immutable.
-	/// </summary>
+	/// </remarks>
 	public class OutputFile {
 
 		public readonly string Name;

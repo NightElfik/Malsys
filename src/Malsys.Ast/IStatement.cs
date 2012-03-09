@@ -1,8 +1,10 @@
 ﻿
 namespace Malsys.Ast {
-	/// <summary>
+
+	/// <remarks>
 	/// For easier implementation of parser.
-	/// </summary>
-	public interface IStatement : IToken {
-	}
+	/// Rules returning various statement types can return this type.
+	/// </remarks>
+	public interface IStatement : IToken { }
+
 }

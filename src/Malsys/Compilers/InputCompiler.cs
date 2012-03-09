@@ -1,18 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using Malsys.SemanticModel.Compiled;
 
 namespace Malsys.Compilers {
-	internal class InputCompiler : IInputCompiler, Ast.IInputVisitor {
+	/// <remarks>
+	/// All public members are thread safe if supplied compilers are thread safe.
+	/// </remarks>
+	internal class InputCompiler : IInputCompiler {
 
-		private IConstantDefinitionCompiler constDefCompiler;
-		private IFunctionDefinitionCompiler funDefCompiler;
-		private ILsystemCompiler lsysCompiler;
-		private IExpressionCompiler exprCompiler;
-		private IProcessStatementsCompiler processStatsCompiler;
-
-		private IMessageLogger logger;
-		private CompilerResult<IInputStatement> visitResult;
+		private readonly IConstantDefinitionCompiler constDefCompiler;
+		private readonly IFunctionDefinitionCompiler funDefCompiler;
+		private readonly ILsystemCompiler lsysCompiler;
+		private readonly IExpressionCompiler exprCompiler;
+		private readonly IProcessStatementsCompiler processStatsCompiler;
 
 
 		public InputCompiler(IConstantDefinitionCompiler constantDefCompiler, IFunctionDefinitionCompiler functionDefCompiler,
@@ -30,47 +30,43 @@ namespace Malsys.Compilers {
 		public InputBlock Compile(Ast.InputBlock parsedInput, IMessageLogger logger) {
 
 			var statements = new List<IInputStatement>(parsedInput.Statements.Length);
-			this.logger = logger;
 
-			for (int i = 0; i < parsedInput.Statements.Length; i++) {
-				parsedInput.Statements[i].Accept(this);
-				if (visitResult) {
-					statements.Add(visitResult.Result);
+			foreach (var stat in parsedInput.Statements) {
+				switch (stat.StatementType) {
+
+					case Ast.InputStatementType.EmptyStatement:
+						break;
+
+					case Ast.InputStatementType.ConstantDefinition:
+						statements.Add(constDefCompiler.Compile((Ast.ConstantDefinition)stat, logger));
+						break;
+
+					case Ast.InputStatementType.FunctionDefinition:
+						statements.Add(funDefCompiler.Compile((Ast.FunctionDefinition)stat, logger));
+						break;
+
+					case Ast.InputStatementType.LsystemDefinition:
+						statements.Add(lsysCompiler.Compile((Ast.LsystemDefinition)stat, logger));
+						break;
+
+					case Ast.InputStatementType.ProcessStatement:
+						statements.Add(processStatsCompiler.Compile((Ast.ProcessStatement)stat, logger));
+						break;
+
+					case Ast.InputStatementType.ProcessConfigurationDefinition:
+						statements.Add(processStatsCompiler.Compile((Ast.ProcessConfigurationDefinition)stat, logger));
+						break;
+
+					default:
+						Debug.Fail("Unknown input statement type `{0}`.".Fmt(stat.StatementType.ToString()));
+						break;
+
 				}
 			}
 
-			logger = null;
 			return new InputBlock(parsedInput.SourceName, statements.ToImmutableList());
 		}
 
-
-		#region IInputVisitor Members
-
-		public void Visit(Ast.ConstantDefinition constDef) {
-			visitResult = constDefCompiler.Compile(constDef, logger);
-		}
-
-		public void Visit(Ast.EmptyStatement emptyStat) {
-			visitResult = CompilerResult<IInputStatement>.Error;
-		}
-
-		public void Visit(Ast.FunctionDefinition funDef) {
-			visitResult = funDefCompiler.Compile(funDef, logger);
-		}
-
-		public void Visit(Ast.LsystemDefinition lsysDef) {
-			visitResult = lsysCompiler.Compile(lsysDef, logger);
-		}
-
-		public void Visit(Ast.ProcessConfigurationDefinition processConfDef) {
-			visitResult = processStatsCompiler.Compile(processConfDef, logger);
-		}
-
-		public void Visit(Ast.ProcessStatement processStat) {
-			visitResult = processStatsCompiler.Compile(processStat, logger);
-		}
-
-		#endregion
 	}
 
 }

@@ -1,8 +1,8 @@
 ﻿
 namespace Malsys.Ast {
-	/// <summary>
+	/// <remarks>
 	/// Immutable.
-	/// </summary>
+	/// </remarks>
 	public class ConstantDefinition : IInputStatement, ILsystemStatement, IFunctionStatement {
 
 		public readonly Identificator NameId;
@@ -30,16 +30,18 @@ namespace Malsys.Ast {
 		public Position Position { get; private set; }
 
 
-		public void Accept(IInputVisitor visitor) {
-			visitor.Visit(this);
+		InputStatementType IInputStatement.StatementType {
+			get { return InputStatementType.ConstantDefinition; }
 		}
 
-		public void Accept(ILsystemVisitor visitor) {
-			visitor.Visit(this);
+
+		LsystemStatementType ILsystemStatement.StatementType {
+			get { return LsystemStatementType.ConstantDefinition; }
 		}
 
-		public void Accept(IFunctionVisitor visitor) {
-			visitor.Visit(this);
+
+		FunctionStatementType IFunctionStatement.StatementType {
+			get { return FunctionStatementType.ConstantDefinition; }
 		}
 
 	}

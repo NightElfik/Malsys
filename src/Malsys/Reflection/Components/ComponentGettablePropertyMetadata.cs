@@ -1,9 +1,9 @@
 ﻿using System.Reflection;
 
 namespace Malsys.Reflection.Components {
-	/// <summary>
+	/// <remarks>
 	/// Immutable.
-	/// </summary>
+	/// </remarks>
 	public class ComponentGettablePropertyMetadata {
 
 		public readonly ImmutableList<string> Names;

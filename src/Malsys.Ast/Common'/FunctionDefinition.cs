@@ -1,8 +1,8 @@
 ﻿
 namespace Malsys.Ast {
-	/// <summary>
+	/// <remarks>
 	/// Immutable.
-	/// </summary>
+	/// </remarks>
 	public class FunctionDefinition : NameParamsStatements<IFunctionStatement>, IInputStatement, ILsystemStatement {
 
 		public FunctionDefinition(Identificator name, ImmutableListPos<OptionalParameter> prms,
@@ -13,13 +13,12 @@ namespace Malsys.Ast {
 		public int ParametersCount { get { return Parameters.Length; } }
 
 
-
-		public void Accept(IInputVisitor visitor) {
-			visitor.Visit(this);
+		InputStatementType IInputStatement.StatementType {
+			get { return InputStatementType.FunctionDefinition; }
 		}
 
-		public void Accept(ILsystemVisitor visitor) {
-			visitor.Visit(this);
+		LsystemStatementType ILsystemStatement.StatementType {
+			get { return LsystemStatementType.FunctionDefinition; }
 		}
 
 	}

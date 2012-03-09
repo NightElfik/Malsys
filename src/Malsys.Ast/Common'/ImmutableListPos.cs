@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 
 namespace Malsys.Ast {
+	/// <remarks>
+	/// Immutable.
+	/// </remarks>
 	public class ImmutableListPos<T> : ImmutableList<T>, IToken where T : IToken {
 
 		new public static readonly ImmutableListPos<T> Empty = new ImmutableListPos<T>(Position.Unknown);
@@ -62,7 +65,6 @@ namespace Malsys.Ast {
 		public ImmutableListPos<T> AddSeparators(Position beginSep, Position endSep, Position pos) {
 			return new ImmutableListPos<T>(this, beginSep, endSep, pos);
 		}
-
 
 
 		public Position Position { get; private set; }

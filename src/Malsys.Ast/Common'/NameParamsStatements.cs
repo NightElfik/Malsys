@@ -1,8 +1,8 @@
 ﻿
 namespace Malsys.Ast {
-	/// <summary>
+	/// <remarks>
 	/// Immutable.
-	/// </summary>
+	/// </remarks>
 	public abstract class NameParamsStatements<TStatement> : IToken where TStatement : IToken {
 
 		public readonly Identificator NameId;

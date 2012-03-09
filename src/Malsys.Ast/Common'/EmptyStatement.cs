@@ -1,8 +1,8 @@
 ﻿
 namespace Malsys.Ast {
-	/// <summary>
+	/// <remarks>
 	/// Immutable.
-	/// </summary>
+	/// </remarks>
 	public class EmptyStatement : IStatement, IInputStatement, ILsystemStatement, IProcessConfigStatement {
 
 
@@ -14,16 +14,18 @@ namespace Malsys.Ast {
 		public Position Position { get; private set; }
 
 
-		public void Accept(IInputVisitor visitor) {
-			visitor.Visit(this);
+
+		InputStatementType IInputStatement.StatementType {
+			get { return InputStatementType.EmptyStatement; }
 		}
 
-		public void Accept(ILsystemVisitor visitor) {
-			visitor.Visit(this);
+		LsystemStatementType ILsystemStatement.StatementType {
+			get { return LsystemStatementType.EmptyStatement; }
 		}
 
-		public void Accept(IProcessConfigVisitor visitor) {
-			visitor.Visit(this);
+		ProcessConfigStatementType IProcessConfigStatement.StatementType {
+			get { return ProcessConfigStatementType.EmptyStatement; }
 		}
+
 	}
 }

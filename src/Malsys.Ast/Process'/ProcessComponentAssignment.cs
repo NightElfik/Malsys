@@ -1,8 +1,8 @@
 ﻿
 namespace Malsys.Ast {
-	/// <summary>
+	/// <remarks>
 	/// Immutable.
-	/// </summary>
+	/// </remarks>
 	public class ProcessComponentAssignment : IToken {
 
 		public readonly Identificator ComponentTypeNameId;

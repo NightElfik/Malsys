@@ -2,9 +2,9 @@
 using System.Diagnostics.Contracts;
 
 namespace Malsys.Ast {
-	/// <summary>
+	/// <remarks>
 	/// Immutable.
-	/// </summary>
+	/// </remarks>
 	public class Identificator : IToken, IExpressionMember {
 
 		public static readonly Identificator Empty = new Identificator("", Position.Unknown);
@@ -20,10 +20,12 @@ namespace Malsys.Ast {
 			Position = pos;
 		}
 
+
 		[ContractInvariantMethod]
 		private void objectInvariant() {
 			Contract.Invariant(Name != null);
 		}
+
 
 		public bool IsEmpty { get { return Name.Length == 0; } }
 
@@ -35,8 +37,9 @@ namespace Malsys.Ast {
 
 		public Position Position { get; private set; }
 
-		public void Accept(IExpressionVisitor visitor) {
-			visitor.Visit(this);
+
+		public ExpressionMemberType MemberType {
+			get { return ExpressionMemberType.Identificator; }
 		}
 
 	}
