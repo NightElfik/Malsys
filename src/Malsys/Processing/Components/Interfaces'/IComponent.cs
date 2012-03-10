@@ -7,15 +7,20 @@ namespace Malsys.Processing.Components {
 	public interface IComponent {
 
 		/// <remarks>
-		/// ComponentInitializationException can be thrown when component can not be initialized.
+		/// ComponentException can be thrown when component can not be initialized correctly.
 		/// Message from this exception will be shown to user in error message.
-		/// Other exceptions are also caught but only name is shown to user.
+		/// Other exceptions are also caught but only name of thrown exception is shown to user.
 		///
-		/// In Initialize method can be called user defined gettable variables and callable functions on components.
+		/// In this method can be called user defined gettable variables and callable functions on other components.
 		/// However these calls could occur on non-initialized components so caller have to be careful.
 		/// </remarks>
 		void Initialize(ProcessContext context);
 
+		/// <remarks>
+		/// ComponentException can be thrown when component can not be cleaned up correctly.
+		/// Message from this exception will be shown to user in error message.
+		/// Other exceptions are also caught but only name of thrown exception is shown to user.
+		/// </remarks>
 		void Cleanup();
 
 	}
@@ -23,13 +28,13 @@ namespace Malsys.Processing.Components {
 
 
 	[Serializable]
-	public class ComponentInitializationException : Exception {
+	public class ComponentException : Exception {
 
-		public ComponentInitializationException() { }
-		public ComponentInitializationException(string message) : base(message) { }
-		public ComponentInitializationException(string message, Exception inner) : base(message, inner) { }
+		public ComponentException() { }
+		public ComponentException(string message) : base(message) { }
+		public ComponentException(string message, Exception inner) : base(message, inner) { }
 
-		protected ComponentInitializationException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+		protected ComponentException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 
 	}
 

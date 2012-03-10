@@ -1,12 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using Malsys.Reflection;
 using Malsys.Evaluators;
+using Malsys.Processing.Components.Common;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Evaluated;
 using InterpretActionParams = System.Tuple<System.Action<Malsys.Evaluators.ArgsStorage>, int>;
-using System;
 
 
 namespace Malsys.Processing.Components.Interpreters {
@@ -14,6 +16,7 @@ namespace Malsys.Processing.Components.Interpreters {
 	public class InterpreterCaller : IInterpreterCaller {
 
 		protected IInterpreter interpreter;
+		protected ILsystemInLsystemProcessor lsystemInLsystemProcessor;
 		protected IExpressionEvaluatorContext exprEvalCtxt;
 
 		protected Dictionary<string, SymbolInterpretationEvaled> symbolToInstr;
@@ -33,6 +36,13 @@ namespace Malsys.Processing.Components.Interpreters {
 			}
 		}
 
+		[UserConnectable(IsOptional=true)]
+		public virtual ILsystemInLsystemProcessor LsystemInLsystemProcessor {
+			set {
+				lsystemInLsystemProcessor = value;
+			}
+		}
+
 		public virtual void ProcessSymbol(Symbol<IValue> symbol) {
 
 			SymbolInterpretationEvaled instr;
@@ -48,6 +58,15 @@ namespace Malsys.Processing.Components.Interpreters {
 				var eec = exprEvalCtxt;  // create a working copy of constants
 				mapSybolArgs(symbol, instr, ref eec);
 				args.AddArgs(eec.EvaluateList(instr.InstructionParameters));
+			}
+
+			if (instr.InstructionIsLsystemName) {
+				if (lsystemInLsystemProcessor == null) {
+					throw new InterpretationException("Failed to interpret symbol `{0}` as L-system `{1}`. Component of type `{2}` is not connected."
+						.Fmt(symbol.Name, instr.InstructionName, typeof(ILsystemInLsystemProcessor).FullName));
+				}
+				lsystemInLsystemProcessor.ProcessLsystem(instr.InstructionName, instr.LsystemConfigName, args.ToArray());
+				return;
 			}
 
 
@@ -122,18 +141,14 @@ namespace Malsys.Processing.Components.Interpreters {
 				return;
 			}
 
-			foreach (var methodInfo in interpreter.GetType().GetMethods()) {
+			foreach (var miAtrKvp in interpreter.GetType().GetMethodsHavingAttr<SymbolInterpretationAttribute>()) {
 
-				var attrs = methodInfo.GetCustomAttributes(typeof(SymbolInterpretationAttribute), true);
-				if (attrs.Length != 1) {
-					continue;
-				}
-
-				var attr = (SymbolInterpretationAttribute)attrs[0];
+				var methodInfo = miAtrKvp.Item1;
+				var attr = miAtrKvp.Item2;
 
 				var prms = methodInfo.GetParameters();
 				if (prms.Length != 1 || prms[0].ParameterType != typeof(ArgsStorage)) {
-					throw new ComponentInitializationException("Interpreter method marked by `{0}` have invalid parameters."
+					throw new ComponentException("Interpreter method marked by `{0}` have invalid parameters."
 						.Fmt(typeof(SymbolInterpretationAttribute).Name));
 				}
 

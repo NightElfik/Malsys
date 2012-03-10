@@ -51,6 +51,8 @@ namespace Malsys.Ast {
 		Typeof,
 		[StringValue("use")]
 		Use,
+		[StringValue("virtual")]
+		Virtual,
 		[StringValue("weight")]
 		Weight,
 		[StringValue("with")]

@@ -55,7 +55,8 @@ namespace Malsys.Tests.Rewriters {
 			var lsystem = lsysEvaluator.Evaluate(inBlockEvaled.Lsystems["l"], ImmutableList<IValue>.Empty, TestUtils.ExpressionEvaluatorContext);
 
 			var fm = new FileOutputProvider("./");
-			var context = new ProcessContext(lsystem, fm, inBlockEvaled, inBlockEvaled.ExpressionEvaluatorContext, msgs);
+			var context = new ProcessContext(lsystem, fm, inBlockEvaled, evaluator, inBlockEvaled.ExpressionEvaluatorContext,
+				null, TimeSpan.MaxValue, null, msgs);
 
 			var symBuff = new SymbolsMemoryBuffer();
 
@@ -69,7 +70,7 @@ namespace Malsys.Tests.Rewriters {
 			rewIt.Iterations = iterations.ToConst();
 			rewIt.Initialize(context);
 
-			rewIt.Start(false, TimeSpan.MaxValue);
+			rewIt.Start(false);
 
 			var result = symBuff.GetAndClear();
 			var writer = new IndentStringWriter();

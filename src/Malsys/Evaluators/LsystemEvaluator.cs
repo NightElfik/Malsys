@@ -90,8 +90,8 @@ namespace Malsys.Evaluators {
 								throw new EvalException("More than one interpretation method defined for symbol `{0}` (`{1}` and `{2}`)."
 									.Fmt(sym.Name, symInt.InstructionName, symsInt[sym.Name].InstructionName));
 							}
-							symsInt = symsInt.Add(sym.Name, new SymbolInterpretationEvaled(sym.Name, symIntPrms,
-								symInt.InstructionName, symInt.InstructionParameters, symInt.AstNode));
+							symsInt = symsInt.Add(sym.Name, new SymbolInterpretationEvaled(sym.Name, symIntPrms, symInt.InstructionName,
+								symInt.InstructionParameters, symInt.InstructionIsLsystemName, symInt.LsystemConfigName, symInt.AstNode));
 						}
 						break;
 

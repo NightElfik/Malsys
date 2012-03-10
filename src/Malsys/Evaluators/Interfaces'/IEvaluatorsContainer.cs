@@ -45,6 +45,19 @@ namespace Malsys.Evaluators {
 			return container.ResolveLsystemEvaluator().Evaluate(input, arguments, exprEvalCtxt);
 		}
 
+		public static LsystemEvaled TryEvaluateLsystem(this IEvaluatorsContainer container, SemanticModel.Compiled.LsystemEvaledParams input,
+				IList<IValue> arguments, IExpressionEvaluatorContext exprEvalCtxt, IMessageLogger logger) {
+
+			try {
+				return container.ResolveLsystemEvaluator().Evaluate(input, arguments, exprEvalCtxt);
+			}
+			catch (EvalException ex) {
+				logger.LogMessage(Message.EvalFailed, ex.GetFullMessage());
+				return null;
+			}
+
+		}
+
 
 		public enum Message {
 

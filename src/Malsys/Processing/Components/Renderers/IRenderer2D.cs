@@ -13,9 +13,15 @@ namespace Malsys.Processing.Components.Renderers {
 		/// </remarks>
 		void InitializeState(PointF point, float width, ColorF color);
 
+		/// <summary>
+		/// Moves to given point with given width and color.
+		/// </summary>
 		void MoveTo(PointF point, float width, ColorF color);
 
-		void LineTo(PointF point, float width, ColorF color);
+		/// <summary>
+		/// Draws to given point with given width and color.
+		/// </summary>
+		void DrawTo(PointF point, float width, ColorF color);
 
 		void DrawPolygon(Polygon2D polygon);
 

@@ -30,7 +30,7 @@
 	</ul>
 }
 
-@if (Model.OutputFiles.Count > 0) {
+@if (Model.OutputFiles != null && Model.OutputFiles.Count > 0) {
 	<p class="">
 		Processing of input created @Model.OutputFiles.Count result(s) in @Math.Round(Model.ProcessDuration.TotalSeconds, 2) second(s).
 		See them below.

@@ -11,6 +11,9 @@ namespace Malsys.SemanticModel.Evaluated {
 		public readonly string InstructionName;
 		public readonly ImmutableList<IExpression> InstructionParameters;
 
+		public readonly bool InstructionIsLsystemName;
+		public readonly string LsystemConfigName;
+
 		public readonly Ast.SymbolsInterpretDef AstNode;
 
 
@@ -21,6 +24,22 @@ namespace Malsys.SemanticModel.Evaluated {
 			Parameters = parameters;
 			InstructionName = instrName;
 			InstructionParameters = instrParams;
+			InstructionIsLsystemName = false;
+			LsystemConfigName = "";
+
+			AstNode = astNode;
+		}
+
+		public SymbolInterpretationEvaled(string symbol, ImmutableList<OptionalParameterEvaled> parameters,
+				string instrName, ImmutableList<IExpression> instrParams, bool instructionIsLsystemName,
+				string lsystemConfigName, Ast.SymbolsInterpretDef astNode = null) {
+
+			Symbol = symbol;
+			Parameters = parameters;
+			InstructionName = instrName;
+			InstructionParameters = instrParams;
+			InstructionIsLsystemName = instructionIsLsystemName;
+			LsystemConfigName = lsystemConfigName;
 
 			AstNode = astNode;
 		}

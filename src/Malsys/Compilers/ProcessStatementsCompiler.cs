@@ -62,17 +62,18 @@ namespace Malsys.Compilers {
 
 					case Ast.ProcessConfigStatementType.ProcessConfigConnection:
 						var connection = (Ast.ProcessConfigConnection)stat;
-						if (!usedNames.Contains(connection.SourceNameId.Name)) {
+						if (!connection.IsVirtual && !usedNames.Contains(connection.SourceNameId.Name)) {
 							logger.LogMessage(Messages.ConnectionUnknownName, connection.SourceNameId.Position, connection.SourceNameId.Name);
 							break;
 						}
 
-						if (!usedNames.Contains(connection.TargetNameId.Name)) {
+						if (!connection.IsVirtual && !usedNames.Contains(connection.TargetNameId.Name)) {
 							logger.LogMessage(Messages.ConnectionUnknownName, connection.TargetNameId.Position, connection.TargetNameId.Name);
 							break;
 						}
 
-						connections.Add(new ProcessComponentsConnection(connection.SourceNameId.Name, connection.TargetNameId.Name, connection.TargetInputNameId.Name));
+						connections.Add(new ProcessComponentsConnection(connection.IsVirtual, connection.SourceNameId.Name,
+							connection.TargetNameId.Name, connection.TargetInputNameId.Name));
 						break;
 
 					default:

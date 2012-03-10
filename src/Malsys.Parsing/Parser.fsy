@@ -74,8 +74,8 @@ type ImmutableListPos_LsystemSymbol = ImmutableListPos<LsystemSymbol>
 //------------------------------------------------------------------------------
 
 %token <string> ID
-%token <Keyword> ALL AS COMPONENT CONFIGURATION CONNECT CONSIDER CONTAINER DEFAULT FUN INTERPRET LET
-%token <Keyword> LSYSTEM NOTHING OR PROCESS RETURN REWRITE SET SYMBOLS THIS TO TYPEOF USE WEIGHT WITH WHERE
+%token <Keyword> ALL AS COMPONENT CONFIGURATION CONNECT CONSIDER CONTAINER DEFAULT FUN INTERPRET LET LSYSTEM
+%token <Keyword> NOTHING OR PROCESS RETURN REWRITE SET SYMBOLS THIS TO TYPEOF USE VIRTUAL WEIGHT WITH WHERE
 %token EQUALS SEMI COMMA QMARK COLON
 %token LPAREN RPAREN LBRACE RBRACE
 %token <float * ConstantFormat> FLOAT
@@ -255,10 +255,18 @@ SymbolsInterpretDef:
     | INTERPRET LsystemSymbolNoParamsList OptParams AS id OptExpressionsListParen SEMI
       { let symbolsImm = new ImmutableListPos<Identificator>($2 :> ResizeArray<Identificator>, getPosI parseState 2) in
         new SymbolsInterpretDef(symbolsImm, $3, $5, $6, getPos parseState) :> ILsystemStatement }
+    | INTERPRET LsystemSymbolNoParamsList OptParams AS LSYSTEM id OptExpressionsListParen OptWithId SEMI
+      { let symbolsImm = new ImmutableListPos<Identificator>($2 :> ResizeArray<Identificator>, getPosI parseState 2) in
+        new SymbolsInterpretDef(symbolsImm, $3, $6, $7, true, $8, getPos parseState) :> ILsystemStatement }
     | INTERPRET error SEMI
       { logMsgPos ParsserMessage.SymbolsInterpretationInvalid (getPosBetween parseState 1 3);
         new EmptyStatement(getPos parseState) :> ILsystemStatement }
 
+OptWithId:
+    |
+      { Identificator.Empty }
+    | WITH id
+      { $2 }
 
 //------------------------------------------------------------------------------
 // L-system's rewrite rule.
@@ -558,8 +566,14 @@ ProcessContainerDef:
         new EmptyStatement(getPos parseState) :> IProcessConfigStatement }
 
 ProcessConfigConnection:
-    | CONNECT id TO id DOT id SEMI
-      { new ProcessConfigConnection($2, $4, $6, getPos parseState) }
+    | OptVirtual CONNECT id TO id DOT id SEMI
+      { new ProcessConfigConnection($1, $3, $5, $7, getPos parseState) }
+
+OptVirtual:
+    |
+      { false }
+    | VIRTUAL
+      { true }
 
 
 FullyQualifiedTypeId:
@@ -574,11 +588,11 @@ FullyQualifiedTypeId:
 //------------------------------------------------------------------------------
 
 ProcessStatement:
-    | PROCESS OptId OptExpressionsListParen WITH id ProcessComponentAssignmentList SEMI
+    | PROCESS AllOrId OptExpressionsListParen WITH id ProcessComponentAssignmentList SEMI
       { let statements = new ImmutableListPos<ProcessComponentAssignment>($6 :> ResizeArray<ProcessComponentAssignment>, getPos parseState)
         new ProcessStatement($2, $3, $5, statements, getPos parseState) :> IInputStatement }
 
-OptId:
+AllOrId:
     | ALL
       { Identificator.Empty }
     | id

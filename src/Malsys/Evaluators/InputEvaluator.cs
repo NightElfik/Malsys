@@ -22,7 +22,7 @@ namespace Malsys.Evaluators {
 
 			var lsys = MapModule.Empty<string, LsystemEvaledParams>();
 			var procConfs = MapModule.Empty<string, ProcessConfigurationStatement>();
-			var procStats = new List<ProcessStatement>();
+			var procStats = new List<ProcessStatementEvaled>();
 
 			foreach (var stat in input.Statements) {
 				switch (stat.StatementType) {
@@ -50,7 +50,9 @@ namespace Malsys.Evaluators {
 						break;
 
 					case InputStatementType.ProcessStatement:
-						procStats.Add((ProcessStatement)stat);
+						var procStat = (ProcessStatement)stat;
+						procStats.Add(new ProcessStatementEvaled(procStat.TargetLsystemName, exprEvalCtxt.EvaluateList(procStat.Arguments),
+							procStat.ProcessConfiName, procStat.ComponentAssignments, procStat.AstNode));
 						break;
 
 					default:

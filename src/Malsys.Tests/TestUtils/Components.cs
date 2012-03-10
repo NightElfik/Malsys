@@ -72,7 +72,7 @@ namespace Malsys.Tests {
 
 			#region IProcessStarter Members
 
-			public void Start(bool doMeasure, TimeSpan timeout) { }
+			public void Start(bool doMeasure) { }
 
 			public void Abort() { }
 
@@ -153,7 +153,7 @@ namespace Malsys.Tests {
 		public class ErrorInInitComponent : IComponent {
 
 			public void Initialize(ProcessContext context) {
-				throw new ComponentInitializationException("Something went wrong.");
+				throw new ComponentException("Something went wrong.");
 			}
 
 			public void Cleanup() { }

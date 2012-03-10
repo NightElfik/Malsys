@@ -41,7 +41,6 @@ configuration SymbolPrinter {
 
 	connect AxiomProvider to Iterator.AxiomProvider;
 	connect Iterator to Rewriter.SymbolProvider;
-	connect RandomGeneratorProvider to Rewriter.RandomGeneratorProvider;
 	connect Rewriter to Iterator.SymbolProvider;
 	connect SymbolProcessor to Iterator.OutputProcessor;
 
@@ -51,6 +50,7 @@ configuration SvgRenderer {
 
 	component AxiomProvider typeof AxiomProvider;
 	component RandomGeneratorProvider typeof RandomGeneratorProvider;
+	component LsystemInLsystemProcessor typeof LsystemInLsystemProcessor;
 
 	container Rewriter typeof IRewriter default SymbolRewriter;
 	container Iterator typeof IIterator default MemoryBufferedIterator;
@@ -60,10 +60,11 @@ configuration SvgRenderer {
 
 	connect AxiomProvider to Iterator.AxiomProvider;
 	connect Iterator to Rewriter.SymbolProvider;
-	connect RandomGeneratorProvider to Rewriter.RandomGeneratorProvider;
 	connect Rewriter to Iterator.SymbolProvider;
 	connect InterpreterCaller to Iterator.OutputProcessor;
 	connect Interpreter to InterpreterCaller.Interpreter;
+	connect Interpreter to LsystemInLsystemProcessor.Interpreter;
+	connect LsystemInLsystemProcessor to InterpreterCaller.LsystemInLsystemProcessor;
 	connect Renderer to Interpreter.Renderer;
 
 }
@@ -72,6 +73,7 @@ configuration HexAsciiRenderer {
 
 	component AxiomProvider typeof AxiomProvider;
 	component RandomGeneratorProvider typeof RandomGeneratorProvider;
+	component LsystemInLsystemProcessor typeof LsystemInLsystemProcessor;
 
 	container Rewriter typeof IRewriter default SymbolRewriter;
 	container Iterator typeof IIterator default MemoryBufferedIterator;
@@ -81,10 +83,11 @@ configuration HexAsciiRenderer {
 
 	connect AxiomProvider to Iterator.AxiomProvider;
 	connect Iterator to Rewriter.SymbolProvider;
-	connect RandomGeneratorProvider to Rewriter.RandomGeneratorProvider;
 	connect Rewriter to Iterator.SymbolProvider;
 	connect InterpreterCaller to Iterator.OutputProcessor;
 	connect Interpreter to InterpreterCaller.Interpreter;
+	connect Interpreter to LsystemInLsystemProcessor.Interpreter;
+	connect LsystemInLsystemProcessor to InterpreterCaller.LsystemInLsystemProcessor;
 	connect Renderer to Interpreter.Renderer;
 
 }
@@ -93,6 +96,7 @@ configuration ThreeJsRenderer {
 
 	component AxiomProvider typeof AxiomProvider;
 	component RandomGeneratorProvider typeof RandomGeneratorProvider;
+	component LsystemInLsystemProcessor typeof LsystemInLsystemProcessor;
 
 	container Rewriter typeof IRewriter default SymbolRewriter;
 	container Iterator typeof IIterator default MemoryBufferedIterator;
@@ -102,10 +106,11 @@ configuration ThreeJsRenderer {
 
 	connect AxiomProvider to Iterator.AxiomProvider;
 	connect Iterator to Rewriter.SymbolProvider;
-	connect RandomGeneratorProvider to Rewriter.RandomGeneratorProvider;
 	connect Rewriter to Iterator.SymbolProvider;
 	connect InterpreterCaller to Iterator.OutputProcessor;
 	connect Interpreter to InterpreterCaller.Interpreter;
+	connect Interpreter to LsystemInLsystemProcessor.Interpreter;
+	connect LsystemInLsystemProcessor to InterpreterCaller.LsystemInLsystemProcessor;
 	connect Renderer to Interpreter.Renderer;
 
 }
@@ -122,4 +127,21 @@ configuration InterpretationDebugger {
 
 }
 
+/**
+ * Special process configuration for processing inner L-systems.
+ */
+configuration InnerLsystemConfig {
+
+	component Rewriter typeof SymbolRewriter;
+	component Iterator typeof InnerLsystemIterator;
+	component InterpreterCaller typeof InterpreterCaller;
+
+	connect Iterator to Rewriter.SymbolProvider;
+	connect Rewriter to Iterator.SymbolProvider;
+	connect InterpreterCaller to Iterator.OutputProcessor;
+
+	virtual connect Interpreter to InterpreterCaller.Interpreter;
+	virtual connect LsystemInLsystemProcessor to InterpreterCaller.LsystemInLsystemProcessor;
+
+}
 

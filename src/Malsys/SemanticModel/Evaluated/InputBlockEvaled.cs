@@ -1,5 +1,4 @@
 ﻿using Malsys.Evaluators;
-using Malsys.SemanticModel.Compiled;
 using LsysMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Compiled.LsystemEvaledParams>;
 using ProcConfsMap = Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Compiled.ProcessConfigurationStatement>;
 
@@ -9,13 +8,13 @@ namespace Malsys.SemanticModel.Evaluated {
 		public readonly IExpressionEvaluatorContext ExpressionEvaluatorContext;
 		public readonly LsysMap Lsystems;
 		public readonly ProcConfsMap ProcessConfigurations;
-		public readonly ImmutableList<ProcessStatement> ProcessStatements;
+		public readonly ImmutableList<ProcessStatementEvaled> ProcessStatements;
 
 		public string SourceName;
 
 
 		public InputBlockEvaled(IExpressionEvaluatorContext exprEvalCtxt, LsysMap lsystems,
-				ProcConfsMap procConfigs, ImmutableList<ProcessStatement> procStats, string sourceName) {
+				ProcConfsMap procConfigs, ImmutableList<ProcessStatementEvaled> procStats, string sourceName) {
 
 			ExpressionEvaluatorContext = exprEvalCtxt;
 			Lsystems = lsystems;

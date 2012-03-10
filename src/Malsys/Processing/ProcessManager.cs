@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
 using Malsys.Compilers;
 using Malsys.Evaluators;
 using Malsys.Processing.Components.Common;
@@ -18,7 +16,7 @@ namespace Malsys.Processing {
 		private readonly IEvaluatorsContainer evaluator;
 		private readonly IComponentResolver componentResolver;
 
-		ProcessConfigurationBuilder processConfigurationBuilder = new ProcessConfigurationBuilder();
+		private readonly ProcessConfigurationBuilder configBuilder = new ProcessConfigurationBuilder();
 
 
 		public ProcessManager(ICompilersContainer compilersContainer, IEvaluatorsContainer evaluatorsContainer, IComponentResolver componentResolver) {
@@ -67,46 +65,49 @@ namespace Malsys.Processing {
 
 				// add variables and functions from components to ExpressionEvaluatorContext
 				var eec = inBlockEvaled.ExpressionEvaluatorContext;
-				eec = addComponentsGettableVariables(compGraph, eec, true);
-				eec = addComponentsCallableFunctions(compGraph, eec);
+				eec = configBuilder.AddComponentsGettableVariables(compGraph, eec, true);
+				eec = configBuilder.AddComponentsCallableFunctions(compGraph, eec);
 
 
 				foreach (var lsystem in lsystemsToProcess) {
 
-					LsystemEvaled lsysEvaled;
+					ProcessConfiguration procConfig;
+					using (var errBlock = logger.StartErrorLoggingBlock()) {
+
+						var lsysEvaled = evaluator.TryEvaluateLsystem(lsystem, processStat.Arguments, eec, logger);
+						if (errBlock.ErrorOccurred) {
+							continue;
+						}
+
+						// set settable properties on components
+						configBuilder.SetAndCheckUserSettableProperties(compGraph, lsysEvaled.ComponentValuesAssigns, lsysEvaled.ComponentSymbolsAssigns, logger);
+
+						// add gettable variables which can not be get before initialization
+						var newEec = configBuilder.AddComponentsGettableVariables(compGraph, lsysEvaled.ExpressionEvaluatorContext, false);
+
+						var context = new ProcessContext(lsysEvaled, outputProvider, inBlockEvaled, evaluator,
+							newEec, componentResolver, timeout, compGraph, logger);
+
+						// initialize components with ExpressionEvaluatorContext -- components can call themselves
+						configBuilder.InitializeComponents(compGraph, context, logger);
+
+						procConfig = configBuilder.CreateConfiguration(compGraph, logger);
+						if (errBlock.ErrorOccurred) {
+							continue;
+						}
+					}
+
 					try {
-						lsysEvaled = evaluator.EvaluateLsystem(lsystem, ImmutableList<IValue>.Empty, eec);
+						procConfig.StarterComponent.Start(procConfig.RequiresMeasure);
 					}
 					catch (EvalException ex) {
 						logger.LogMessage(IEvaluatorsContainerExtensions.Message.EvalFailed, ex.GetFullMessage());
-						continue;
-					}
-
-					// set settable properties on components
-					processConfigurationBuilder.SetAndCheckUserSettableProperties(compGraph, lsysEvaled.ComponentValuesAssigns, lsysEvaled.ComponentSymbolsAssigns, logger);
-
-					// add gettable variables which can not be get before initialization
-					var newEec = addComponentsGettableVariables(compGraph, lsysEvaled.ExpressionEvaluatorContext, false);
-
-					var context = new ProcessContext(lsysEvaled, outputProvider, inBlockEvaled, newEec, logger);
-
-					// initialize components with ExpressionEvaluatorContext -- components can call themselves
-					var procConfig = processConfigurationBuilder.CreateConfiguration(compGraph, context, logger);
-					if (procConfig == null) {
-						continue;
-					}
-
-					try {
-						procConfig.StarterComponent.Start(procConfig.RequiresMeasure, timeout);
-					}
-					catch (EvalException ex) {
-						logger.LogMessage(IEvaluatorsContainerExtensions.Message.EvalFailed, ex.GetFullMessage());
-						continue;
 					}
 					catch (InterpretationException ex) {
 						logger.LogMessage(IEvaluatorsContainerExtensions.Message.EvalFailed, ex.Message);
-						continue;
 					}
+
+					configBuilder.CleanupComponents(compGraph, logger);
 
 				}
 
@@ -115,7 +116,7 @@ namespace Malsys.Processing {
 		}
 
 
-		private IEnumerable<LsystemEvaledParams> getLsystemsToProcess(ProcessStatement processStat, InputBlockEvaled inBlockEvaled, IMessageLogger logger) {
+		private IEnumerable<LsystemEvaledParams> getLsystemsToProcess(ProcessStatementEvaled processStat, InputBlockEvaled inBlockEvaled, IMessageLogger logger) {
 
 			if (processStat.TargetLsystemName.Length == 0) {
 				return inBlockEvaled.Lsystems.Select(x => x.Value);
@@ -131,7 +132,7 @@ namespace Malsys.Processing {
 
 		}
 
-		private FSharpMap<string, ConfigurationComponent> buildComponentsGraph(ProcessStatement processStat,
+		private FSharpMap<string, ConfigurationComponent> buildComponentsGraph(ProcessStatementEvaled processStat,
 				InputBlockEvaled inBlockEvaled, IMessageLogger logger) {
 
 			var maybeConfig = inBlockEvaled.ProcessConfigurations.TryFind(processStat.ProcessConfiName);
@@ -140,70 +141,7 @@ namespace Malsys.Processing {
 				return null;
 			}
 
-			return processConfigurationBuilder.BuildConfigurationComponentsGraph(maybeConfig.Value, processStat.ComponentAssignments, componentResolver, logger);
-
-		}
-
-		private IExpressionEvaluatorContext addComponentsGettableVariables(FSharpMap<string, ConfigurationComponent> componenets, IExpressionEvaluatorContext eec, bool beforeInit) {
-
-			foreach (var componentKvp in componenets) {
-
-				var component = componentKvp.Value.Component;
-				var metadata = componentKvp.Value.Metadata;
-
-				foreach (var gettProp in metadata.GettableProperties.Where(x => x.GettableBeforeInitialiation == beforeInit)) {
-
-					var getFunction = buildComponentVariableCall(gettProp.PropertyInfo, component);
-
-					foreach (var name in gettProp.Names) {
-						eec = eec.AddVariable(new VariableInfo(name, getFunction, componentKvp.Value), false);
-					}
-				}
-
-			}
-
-			return eec;
-
-		}
-
-		private IExpressionEvaluatorContext addComponentsCallableFunctions(FSharpMap<string, ConfigurationComponent> componenets, IExpressionEvaluatorContext eec) {
-
-			foreach (var componentKvp in componenets) {
-
-				var component = componentKvp.Value.Component;
-				var metadata = componentKvp.Value.Metadata;
-
-				foreach (var callableFun in metadata.CallableFunctions) {
-
-					var getFunction = buildCallableFunctionCall(callableFun.MethodInfo, component);
-
-					foreach (var name in callableFun.Names) {
-						eec = eec.AddFunction(new FunctionInfo(name, callableFun.ParamsCount, getFunction, callableFun.ParamsTypesCyclicPattern, componentKvp.Value), false);
-					}
-				}
-
-			}
-
-			return eec;
-
-		}
-
-		private Func<IValue> buildComponentVariableCall(PropertyInfo pi, object componentInstance) {
-
-			var instance = Expression.Constant(componentInstance, componentInstance.GetType());
-			var call = Expression.Call(instance, pi.GetGetMethod());
-			var x = pi.GetGetMethod().GetParameters();
-			return Expression.Lambda<Func<IValue>>(call).Compile();
-
-		}
-
-		private Func<IValue[], IExpressionEvaluatorContext, IValue> buildCallableFunctionCall(MethodInfo mi, object componentInstance) {
-
-			var instance = Expression.Constant(componentInstance, componentInstance.GetType());
-			var argumentArgs = Expression.Parameter(typeof(IValue[]), "arguments");
-			var argumentEec = Expression.Parameter(typeof(IExpressionEvaluatorContext), "expressionEvaluatorContext");
-			var call = Expression.Call(instance, mi, argumentArgs, argumentEec);
-			return Expression.Lambda<Func<IValue[], IExpressionEvaluatorContext, IValue>>(call, argumentArgs, argumentEec).Compile();
+			return configBuilder.BuildConfigurationComponentsGraph(maybeConfig.Value, processStat.ComponentAssignments, componentResolver, logger);
 
 		}
 

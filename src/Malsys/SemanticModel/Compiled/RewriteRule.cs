@@ -30,11 +30,11 @@ namespace Malsys.SemanticModel.Compiled {
 			Replacements = replacs;
 		}
 
-		#region ILsystemStatement Members
 
-		public LsystemStatementType StatementType { get { return LsystemStatementType.RewriteRule; } }
+		public LsystemStatementType StatementType {
+			get { return LsystemStatementType.RewriteRule; }
+		}
 
-		#endregion
 	}
 
 }

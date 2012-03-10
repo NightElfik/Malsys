@@ -558,6 +558,41 @@ namespace Malsys.SourceCode.Printers {
 			writer.WriteLine(";");
 		}
 
+		public void Print(ProcessStatementEvaled procStat) {
+
+			Print(Ast.Keyword.Process);
+			if (string.IsNullOrEmpty(procStat.TargetLsystemName)) {
+				Print(Ast.Keyword.All, false);
+			}
+			else {
+				writer.Write(procStat.TargetLsystemName);
+			}
+
+			if (!procStat.Arguments.IsEmpty) {
+				writer.Write("(");
+				PrintSeparated(procStat.Arguments, x => Print(x));
+				writer.Write(")");
+			}
+
+			writer.Write(" ");
+
+			Print(Ast.Keyword.With);
+			writer.Write(procStat.ProcessConfiName);
+
+			writer.Indent();
+			foreach (var assign in procStat.ComponentAssignments) {
+				writer.NewLine();
+				Print(Ast.Keyword.Use);
+				writer.Write(assign.ComponentTypeName);
+				writer.Write(" ");
+				Print(Ast.Keyword.As);
+				writer.Write(assign.ContainerName);
+			}
+			writer.Unindent();
+
+			writer.WriteLine(";");
+		}
+
 		public void Print(ProcessComponent component) {
 			Print(Ast.Keyword.Component);
 			writer.Write(component.Name);

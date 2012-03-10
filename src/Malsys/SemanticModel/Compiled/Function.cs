@@ -25,7 +25,6 @@ namespace Malsys.SemanticModel.Compiled {
 			get { return InputStatementType.Function; }
 		}
 
-
 		LsystemStatementType ILsystemStatement.StatementType {
 			get { return LsystemStatementType.Function; }
 		}

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Malsys.Evaluators;
+﻿using Malsys.Evaluators;
 
 namespace Malsys.Processing.Components.Interpreters {
 	public interface IInterpreter3D : IInterpreter {

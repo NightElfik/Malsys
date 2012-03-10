@@ -3,6 +3,7 @@ using System.Linq;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Evaluated;
 using Malsys.Evaluators;
+using Malsys.Media;
 
 namespace Malsys.Resources {
 	public static class StdFunctions {
@@ -409,6 +410,60 @@ namespace Malsys.Resources {
 
 
 		#endregion
+
+
+		#region Color functions -- lighten, darken
+
+		/// <summary>
+		/// Lightens given color by given amount of percent.
+		/// </summary>
+		/// <docGroup>Color function</docGroup>
+		[Alias("lighten")]
+		public static readonly FunctionCore Lighten = new FunctionCore(2,
+			new ImmutableList<ExpressionValueTypeFlags>(ExpressionValueTypeFlags.Any, ExpressionValueTypeFlags.Constant),
+			(a, e) => {
+				ColorF clr;
+				if(!ColorHelper.TryParseColor(a[0], out clr)){
+					throw new EvalException("Failed to convert first argument to color.");
+				}
+
+				double h, s, l;
+				ColorHelper.ColorToHsl(clr, out h, out s, out l);
+				l += ((Constant)a[1]).Value;
+				MathHelper.Clamp01(l);
+				ColorF resultColor = ColorHelper.HslToColor(h, s, l);
+				resultColor.A = clr.A;
+
+				return ColorHelper.ToIValue(resultColor);
+			}
+		);
+
+		/// <summary>
+		/// Darkens given color by given amount of percent.
+		/// </summary>
+		/// <docGroup>Color function</docGroup>
+		[Alias("darken")]
+		public static readonly FunctionCore Darken = new FunctionCore(2,
+			new ImmutableList<ExpressionValueTypeFlags>(ExpressionValueTypeFlags.Any, ExpressionValueTypeFlags.Constant),
+			(a, e) => {
+				ColorF clr;
+				if (!ColorHelper.TryParseColor(a[0], out clr)) {
+					throw new EvalException("Failed to convert first argument to color.");
+				}
+
+				double h, s, l;
+				ColorHelper.ColorToHsl(clr, out h, out s, out l);
+				l -= ((Constant)a[1]).Value;
+				MathHelper.Clamp01(l);
+				ColorF resultColor = ColorHelper.HslToColor(h, s, l);
+				resultColor.A = clr.A;
+
+				return ColorHelper.ToIValue(resultColor);
+			}
+		);
+
+		#endregion
+
 
 	}
 }

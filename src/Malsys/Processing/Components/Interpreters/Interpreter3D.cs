@@ -10,8 +10,6 @@ namespace Malsys.Processing.Components.Interpreters {
 	[Component("3D interpreter", ComponentGroupNames.Interpreters)]
 	public class Interpreter3D : IInterpreter3D {
 
-		private readonly ColorFactory colorFactory = new ColorFactory();
-
 
 		private IRenderer3D renderer;
 		private IMessageLogger logger;
@@ -121,17 +119,13 @@ namespace Malsys.Processing.Components.Interpreters {
 		[UserConnectable]
 		public IRenderer Renderer {
 			set {
-				if (!IsRendererCompatible(value)) {
-					throw new InvalidUserValueException("Renderer do not implement `{0}`.".Fmt(typeof(IRenderer3D).FullName));
+				if (!typeof(IRenderer3D).IsAssignableFrom(value.GetType())) {
+					throw new InvalidConnectedComponentException("Renderer do not implement `{0}`.".Fmt(typeof(IRenderer3D).FullName));
 				}
 				renderer = (IRenderer3D)value;
 			}
 		}
 
-
-		public bool IsRendererCompatible(IRenderer renderer) {
-			return typeof(IRenderer3D).IsAssignableFrom(renderer.GetType());
-		}
 
 		public bool RequiresMeasure { get { return continousColoring; } }
 
@@ -162,7 +156,7 @@ namespace Malsys.Processing.Components.Interpreters {
 			}
 
 			if (InitialColor != null) {
-				initColor = colorFactory.FromIValue(InitialColor, logger);
+				initColor = ColorHelper.FromIValue(InitialColor, logger);
 			}
 
 		}
@@ -268,7 +262,7 @@ namespace Malsys.Processing.Components.Interpreters {
 					color = colorGradient[(float)colorEvents / colorEventsMeasured];
 				}
 				else if (args.ArgsCount >= 3) {
-					colorFactory.ParseColor(args[2], ref color);
+					ColorHelper.ParseColor(args[2], ref color);
 				}
 
 				colorEvents++;
@@ -357,10 +351,10 @@ namespace Malsys.Processing.Components.Interpreters {
 			}
 			else {
 				if (args.ArgsCount >= 1) {
-					colorFactory.ParseColor(args[0], ref color);
+					ColorHelper.ParseColor(args[0], ref color);
 				}
 				if (args.ArgsCount >= 3) {
-					colorFactory.ParseColor(args[2], ref strokeColor);
+					ColorHelper.ParseColor(args[2], ref strokeColor);
 				}
 			}
 

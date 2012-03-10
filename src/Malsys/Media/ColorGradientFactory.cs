@@ -7,8 +7,6 @@ namespace Malsys.Media {
 
 	public class ColorGradientFactory {
 
-		private readonly ColorFactory colorFactory = new ColorFactory();
-
 
 		public ColorGradient CreateFromValuesArray(ValuesArray array, IMessageLogger logger) {
 
@@ -19,7 +17,7 @@ namespace Malsys.Media {
 
 			foreach (var item in array) {
 				if (nextColor) {
-					colors.Add(colorFactory.FromIValue(item, logger));
+					colors.Add(ColorHelper.FromIValue(item, logger));
 					nextColor = false;
 				}
 				else {
@@ -34,7 +32,7 @@ namespace Malsys.Media {
 					}
 					else {
 						dists.Add(0);
-						colors.Add(colorFactory.FromIValue(item, logger));
+						colors.Add(ColorHelper.FromIValue(item, logger));
 						// still nextColor = false;
 					}
 				}

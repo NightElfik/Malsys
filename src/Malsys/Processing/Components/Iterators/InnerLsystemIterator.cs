@@ -7,20 +7,17 @@ using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Processing.Components.RewriterIterators {
 	[Component("Memory buffered iterator", ComponentGroupNames.Iterators)]
-	public class MemoryBufferedIterator : IIterator {
+	public class InnerLsystemIterator : ISymbolProvider, IProcessStarter {
 
 		private IMessageLogger logger;
 
 		private ISymbolProvider symbolProvider;
 
-		//private ProcessContext context;
 		private ISymbolProcessor outProcessor;
 
 		private List<Symbol<IValue>> inBuffer = new List<Symbol<IValue>>();
 		private List<Symbol<IValue>> outBuffer = new List<Symbol<IValue>>();
 
-		private bool interpretEveryIteration;
-		private int interpretEveryIterationFrom;
 		private int iterations;
 		private int currIteration;
 
@@ -29,6 +26,10 @@ namespace Malsys.Processing.Components.RewriterIterators {
 		private bool aborting = false;
 		private bool aborted = false;
 
+
+		[Alias("axiom")]
+		[UserSettableSybols(IsMandatory = true)]
+		public ImmutableList<Symbol<IValue>> Axiom { private get; set; }
 
 		/// <summary>
 		/// Number of current iteration. Zero-based, first iteration is 0, last is Iterations - 1.
@@ -52,24 +53,6 @@ namespace Malsys.Processing.Components.RewriterIterators {
 			}
 		}
 
-		[Alias("interpretEveryIteration")]
-		[UserSettable]
-		public Constant InterpretEveryIteration {
-			set {
-				interpretEveryIteration = !value.IsZero;
-				interpretEveryIterationFrom = 0;
-			}
-		}
-
-		[Alias("interpretEveryIterationFrom")]
-		[UserSettable]
-		public Constant InterpretEveryIterationFrom {
-			set {
-				interpretEveryIteration = true;
-				interpretEveryIterationFrom = Math.Max(0, value.RoundedIntValue);
-			}
-		}
-
 
 		#region IIterator Members
 
@@ -77,9 +60,6 @@ namespace Malsys.Processing.Components.RewriterIterators {
 		public ISymbolProvider SymbolProvider {
 			set { symbolProvider = value; }
 		}
-
-		[UserConnectable]
-		public ISymbolProvider AxiomProvider { get; set; }
 
 		[UserConnectable]
 		public ISymbolProcessor OutputProcessor {
@@ -122,7 +102,7 @@ namespace Malsys.Processing.Components.RewriterIterators {
 
 			symbolProvider.BeginProcessing(true);
 
-			start(doMeasure);
+			start();  // never do measure
 
 			symbolProvider.EndProcessing();
 
@@ -136,28 +116,19 @@ namespace Malsys.Processing.Components.RewriterIterators {
 		#endregion
 
 
-		private void start(bool doMeasure) {
+		private void start() {
 
 			inBuffer.Clear();
-			inBuffer.AddRange(AxiomProvider);
+			inBuffer.AddRange(Axiom);
 
-			for (currIteration = 0; currIteration <= iterations; currIteration++) {
+			for (currIteration = 0; currIteration < iterations; currIteration++) {
 
-				if (currIteration != 0) {
-					rewriteIteration();
-					if (aborted) { return; }
-				}
+				rewriteIteration();
+				if (aborted) { return; }
 
-				if ((interpretEveryIteration && currIteration >= interpretEveryIterationFrom) || currIteration == iterations) {
-					if (doMeasure) {
-						interpret(true);
-						if (aborted) { return; }
-					}
-
-					interpret(false);
-					if (aborted) { return; }
-				}
 			}
+
+			interpret(false);
 
 		}
 
@@ -182,22 +153,19 @@ namespace Malsys.Processing.Components.RewriterIterators {
 
 		private void interpret(bool measuring) {
 
-			outProcessor.BeginProcessing(measuring);
+			// do not begin processing of output processor -- we are inner L-system
 
 			foreach (var s in inBuffer) {
 
 				if (swDuration.Elapsed > timeout || aborting) {
 					logger.LogMessage(aborting ? Message.Abort : Message.Timeout, measuring ? "measuring" : "interpreting");
 					aborted = true;
-
-					outProcessor.EndProcessing();
 					return;
 				}
 
 				outProcessor.ProcessSymbol(s);
 			}
 
-			outProcessor.EndProcessing();
 		}
 
 

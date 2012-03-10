@@ -67,6 +67,7 @@ let kw =
         (Keyword.To, TO Keyword.To);
         (Keyword.Typeof, TYPEOF Keyword.Typeof);
         (Keyword.Use, USE Keyword.Use);
+        (Keyword.Virtual, VIRTUAL Keyword.Virtual);
         (Keyword.Weight, WEIGHT Keyword.Weight);
         (Keyword.With, WITH Keyword.With);
         (Keyword.Where, WHERE Keyword.Where);

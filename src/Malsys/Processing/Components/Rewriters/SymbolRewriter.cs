@@ -13,6 +13,7 @@ namespace Malsys.Processing.Components.Rewriters {
 
 
 		private LsystemEvaled lsystem;
+		private ProcessContext context;
 		private IExpressionEvaluatorContext exprEvalCtxt;
 
 		private SymbolRewriterEnumerator enumerator;
@@ -40,10 +41,6 @@ namespace Malsys.Processing.Components.Rewriters {
 		}
 
 
-		[UserConnectable(IsOptional=true)]
-		public IRandomGeneratorProvider RandomGeneratorProvider { get; set; }
-
-
 		#region IRewriter Members
 
 		[UserConnectable]
@@ -65,6 +62,7 @@ namespace Malsys.Processing.Components.Rewriters {
 
 		public void Initialize(ProcessContext ctxt) {
 
+			context = ctxt;
 			lsystem = ctxt.Lsystem;
 			exprEvalCtxt = ctxt.ExpressionEvaluatorContext;
 
@@ -80,9 +78,6 @@ namespace Malsys.Processing.Components.Rewriters {
 
 			stochasticRules = lsystem.RewriteRules.Any(rr => rr.Replacements.Length > 1);
 
-			if (RandomGeneratorProvider == null) {
-				ctxt.Logger.LogMessage(Message.NoRandomGenerator);
-			}
 
 			if (contextIgnoredSymbolNames == null) {
 				// no symbols ignored
@@ -114,8 +109,8 @@ namespace Malsys.Processing.Components.Rewriters {
 
 		public enum Message {
 
-			[Message(MessageType.Warning, "No random generator was set. Local instance will be created.")]
-			NoRandomGenerator,
+			[Message(MessageType.Warning, "Function `{0}` does not exist or do not return a value. Emergency local random generator is used.")]
+			NoRandomFunc,
 
 		}
 

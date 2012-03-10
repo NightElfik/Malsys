@@ -193,7 +193,7 @@ namespace Malsys.Processing.Components.Renderers {
 			}
 		}
 
-		public void LineTo(PointF point, float width, ColorF color) {
+		public void DrawTo(PointF point, float width, ColorF color) {
 
 			point.Y *= invertY;
 

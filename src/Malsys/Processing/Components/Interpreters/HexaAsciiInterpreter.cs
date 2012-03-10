@@ -48,16 +48,13 @@ namespace Malsys.Processing.Components.Interpreters {
 		[UserConnectable]
 		public IRenderer Renderer {
 			set {
-				if (!IsRendererCompatible(value)) {
-					throw new InvalidUserValueException("Renderer do not implement `{0}`.".Fmt(typeof(ITextRenderer).FullName));
+				if (!typeof(ITextRenderer).IsAssignableFrom(value.GetType())) {
+					throw new InvalidConnectedComponentException("Renderer do not implement `{0}`.".Fmt(typeof(ITextRenderer).FullName));
 				}
 				renderer = (ITextRenderer)value;
 			}
 		}
 
-		public bool IsRendererCompatible(IRenderer renderer) {
-			return typeof(ITextRenderer).IsAssignableFrom(renderer.GetType());
-		}
 
 		public bool RequiresMeasure { get { return false; } }
 

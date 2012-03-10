@@ -62,11 +62,12 @@ namespace Malsys.Compilers {
 						break;
 
 					case Ast.LsystemStatementType.SymbolsInterpretDef:
-						var symbolsInterpretAst = ((Ast.SymbolsInterpretDef)stat);
-						var symbolsInterpret = symbolsInterpretAst.Symbols.Select(x => new Symbol<VoidStruct>(x.Name)).ToImmutableList();
-						var prms = paramsCompiler.CompileList(symbolsInterpretAst.Parameters, logger);
-						var defVals = exprCompiler.CompileList(symbolsInterpretAst.InstructionParameters, logger);
-						compStats.Add(new SymbolsInterpretation(symbolsInterpret, prms, symbolsInterpretAst.Instruction.Name, defVals, symbolsInterpretAst));
+						var symIntDefAst = ((Ast.SymbolsInterpretDef)stat);
+						var symbolsInterpret = symIntDefAst.Symbols.Select(x => new Symbol<VoidStruct>(x.Name)).ToImmutableList();
+						var prms = paramsCompiler.CompileList(symIntDefAst.Parameters, logger);
+						var defVals = exprCompiler.CompileList(symIntDefAst.InstructionParameters, logger);
+						compStats.Add(new SymbolsInterpretation(symbolsInterpret, prms, symIntDefAst.Instruction.Name,
+							defVals, symIntDefAst.InstructionIsLsystemName, symIntDefAst.LsystemConfigName.Name, symIntDefAst));
 						break;
 
 					case Ast.LsystemStatementType.FunctionDefinition:

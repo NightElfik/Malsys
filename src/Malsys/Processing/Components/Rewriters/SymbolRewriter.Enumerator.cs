@@ -20,7 +20,6 @@ namespace Malsys.Processing.Components.Rewriters {
 			private readonly IExpressionEvaluatorContext exprEvalCtxt;
 			private readonly Dictionary<string, RewriteRule[]> rewriteRules;
 			private readonly HashSet<string> contextIgnoredSymbolNames;
-			private readonly IRandomGenerator rndGenerator;
 
 			private IEnumerator<Symbol> symbolsSource;
 
@@ -49,6 +48,11 @@ namespace Malsys.Processing.Components.Rewriters {
 			/// </summary>
 			private readonly IndexableQueue<Symbol> rightContext;
 
+			private const string randomFuncName = "random";
+			private Random emergencyRandomGenerator = null;
+			private readonly IValue[] emptyArgs = new IValue[0];
+
+
 
 			public SymbolRewriterEnumerator(SymbolRewriter parentSr) {
 
@@ -58,15 +62,6 @@ namespace Malsys.Processing.Components.Rewriters {
 				exprEvalCtxt = parent.exprEvalCtxt;
 
 				contextIgnoredSymbolNames = parent.contextIgnoredSymbolNames;
-
-				if (parent.stochasticRules) {
-					if (parent.RandomGeneratorProvider == null) {
-						rndGenerator = new PseudoRandomGenerator();
-					}
-					else {
-						rndGenerator = parent.RandomGeneratorProvider.GetRandomGenerator();
-					}
-				}
 
 				leftCtxtMaxLen = parent.leftCtxtMaxLen;
 				rightCtxtMaxLen = parent.rightCtxtMaxLen;
@@ -325,7 +320,7 @@ namespace Malsys.Processing.Components.Rewriters {
 
 				var weights = rr.Replacements.Select(replac => (double)eec.EvaluateAsConst(replac.Weight)).ToArray();
 				double sumWeights = weights.Sum();
-				double rand = rndGenerator.NextDouble() * sumWeights;
+				double rand = nextRandom() * sumWeights;
 				double acc = 0d;
 
 				for (int i = 0; i < rrrLen; i++) {
@@ -346,6 +341,26 @@ namespace Malsys.Processing.Components.Rewriters {
 
 			private bool isIgnoredInContext(Symbol symbol) {
 				return contextIgnoredSymbolNames.Contains(symbol.Name);
+			}
+
+			private double nextRandom() {
+
+				if (emergencyRandomGenerator != null) {
+					return emergencyRandomGenerator.NextDouble();
+				}
+
+				IValue result;
+				if (parent.context.ExpressionEvaluatorContext.TryEvaluateFunction(randomFuncName, emptyArgs, out result)) {
+					if (result.IsConstant) {
+						return ((Constant)result).Value;
+					}
+				}
+
+				parent.context.Logger.LogMessage(Message.NoRandomFunc, randomFuncName);
+
+				emergencyRandomGenerator = new Random();
+				return emergencyRandomGenerator.NextDouble();
+
 			}
 
 		}

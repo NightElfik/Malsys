@@ -5,13 +5,15 @@ namespace Malsys.Ast {
 	/// </remarks>
 	public class ProcessConfigConnection : IProcessConfigStatement {
 
+		public readonly bool IsVirtual;
 		public readonly Identificator SourceNameId;
 		public readonly Identificator TargetNameId;
 		public readonly Identificator TargetInputNameId;
 
 
-		public ProcessConfigConnection(Identificator sourceName, Identificator targetName, Identificator targetInputName, Position pos) {
+		public ProcessConfigConnection(bool isVirtual, Identificator sourceName, Identificator targetName, Identificator targetInputName, Position pos) {
 
+			IsVirtual = isVirtual;
 			SourceNameId = sourceName;
 			TargetNameId = targetName;
 			TargetInputNameId = targetInputName;

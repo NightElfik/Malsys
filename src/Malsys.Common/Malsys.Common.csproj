@@ -113,10 +113,10 @@
     <Compile Include="IO\IndentTextWriter.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="MessageLogger.cs" />
-    <Compile Include="DataTypes\ImmutableList.cs" />
-    <Compile Include="DataTypes\IndexableQueue.cs" />
-    <Compile Include="DataTypes\IndexableStack.cs" />
-    <Compile Include="DataTypes\Position.cs" />
+    <Compile Include="DataStructures%27\ImmutableList.cs" />
+    <Compile Include="DataStructures%27\IndexableQueue.cs" />
+    <Compile Include="DataStructures%27\IndexableStack.cs" />
+    <Compile Include="DataStructures%27\Position.cs" />
     <Compile Include="Extensions%27\DoubleExtensions.cs" />
     <Compile Include="Extensions%27\FSharpMapExtensions.cs" />
     <Compile Include="Extensions%27\SwapExtension.cs" />

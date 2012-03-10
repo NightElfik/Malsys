@@ -10,14 +10,31 @@ namespace Malsys.Ast {
 		public readonly Identificator Instruction;
 		public readonly ImmutableListPos<Expression> InstructionParameters;
 
+		public readonly bool InstructionIsLsystemName;
+		public readonly Identificator LsystemConfigName;
+
 
 		public SymbolsInterpretDef(ImmutableListPos<Identificator> symbols, ImmutableListPos<OptionalParameter> prms,
-				Identificator instr, ImmutableListPos<Expression> instrParams , Position pos) {
+				Identificator instr, ImmutableListPos<Expression> instrParams, Position pos) {
 
 			Symbols = symbols;
 			Parameters = prms;
 			Instruction = instr;
 			InstructionParameters = instrParams;
+			InstructionIsLsystemName = false;
+			LsystemConfigName = Identificator.Empty;
+		}
+
+		public SymbolsInterpretDef(ImmutableListPos<Identificator> symbols, ImmutableListPos<OptionalParameter> prms,
+				Identificator instr, ImmutableListPos<Expression> instrParams, bool instructionIsLsystemName,
+				Identificator lsystemConfigName, Position pos) {
+
+			Symbols = symbols;
+			Parameters = prms;
+			Instruction = instr;
+			InstructionParameters = instrParams;
+			InstructionIsLsystemName = instructionIsLsystemName;
+			LsystemConfigName = lsystemConfigName;
 		}
 
 

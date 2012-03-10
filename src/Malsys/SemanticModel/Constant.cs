@@ -83,6 +83,10 @@ namespace Malsys.SemanticModel {
 			return new Constant(i);
 		}
 
+		public static Constant ToConst(this float f) {
+			return new Constant(f);
+		}
+
 		public static Constant ToConst(this double d) {
 			return new Constant(d);
 		}

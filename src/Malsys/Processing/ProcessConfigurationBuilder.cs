@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using Malsys.Evaluators;
 using Malsys.Processing.Components;
@@ -16,7 +17,8 @@ namespace Malsys.Processing {
 	/// </summary>
 	/// <remarks>
 	/// In order to build process configuration correctly you should call these methods:
-	/// <c>BuildConfigurationComponentsGraph</c>, <c>SetAndCheckUserSettableProperties</c> and <c>CreateConfiguration</c> respectively.
+	/// <c>BuildConfigurationComponentsGraph</c>, <c>SetAndCheckUserSettableProperties</c>,
+	/// <c>InitializeComponents</c> and <c>CreateConfiguration</c> respectively.
 	/// These methods are separated to enable following features:
 	/// <list type="bullet">
 	/// <item><description>To evaluate L-system with respect to gettable variables on components.</description></item>
@@ -35,13 +37,15 @@ namespace Malsys.Processing {
 		/// <param name="componentsAssigns">Assignments of components to containers. Can be empty list because every container has default value.</param>
 		/// <param name="typeResolver">Component (Container) type resolver. Used to resolve string types from Process Configuration to .NET types.</param>
 		/// <param name="logger">Logger for logging any failures during process.</param>
+		/// <param name="componentsBase">Already created components.</param>
 		/// <returns>F# map of connected components or null if error occurred.</returns>
 		public FSharpMap<string, ConfigurationComponent> BuildConfigurationComponentsGraph(ProcessConfigurationStatement processConfigStat,
-				IEnumerable<ProcessComponentAssignment> componentsAssigns, IComponentResolver typeResolver, IMessageLogger logger) {
+				IEnumerable<ProcessComponentAssignment> componentsAssigns, IComponentResolver typeResolver, IMessageLogger logger,
+				FSharpMap<string, ConfigurationComponent> componentsBase = null) {
 
 			using (var errBlock = logger.StartErrorLoggingBlock()) {
 
-				FSharpMap<string, ConfigurationComponent> components = MapModule.Empty<string, ConfigurationComponent>();
+				FSharpMap<string, ConfigurationComponent> components = componentsBase ?? MapModule.Empty<string, ConfigurationComponent>();
 				var compAssignsDict = componentsAssigns.ToDictionary(ca => ca.ContainerName, ca => ca.ComponentTypeName);
 				var usedCompAssigns = new System.Collections.Generic.HashSet<string>();
 
@@ -142,16 +146,41 @@ namespace Malsys.Processing {
 
 
 		/// <summary>
-		/// Initializes all components and checks if measuring pass is required by any component.
+		/// Initializes given components with given context.
+		/// </summary>
+		public void InitializeComponents(FSharpMap<string, ConfigurationComponent> components, ProcessContext ctxt, IMessageLogger logger) {
+
+			foreach (var kvp in components) {
+
+				var comp = kvp.Value;
+
+				try {
+					comp.Component.Initialize(ctxt);
+				}
+				catch (ComponentException ex) {
+					logger.LogMessage(Message.ComponentInitializationError, comp.Name, comp.ComponentType.FullName, ex.Message);
+					continue;
+				}
+#if !DEBUG  // to not catch all exceptions while debugging and allow debugger to catch them
+				catch (Exception ex) {
+					logger.LogMessage(Message.ComponentInitializationException, ex.GetType().Name, comp.Name, comp.ComponentType.FullName);
+					continue;
+				}
+#endif
+
+			}
+		}
+
+		/// <summary>
+		/// Checks if measuring pass is required by any component.
 		/// From these information returns ProcessConfiguration.
+		/// This is last step in creation of ProcessConfiguration components must be already initialized.
 		/// </summary>
 		/// <param name="configurationComponents">Component graph from BuildConfigurationComponentsGraph method.</param>
 		/// <param name="ctxt">Process context with which will be components initialized.</param>
 		/// <param name="logger">Logger for logging any failures during process.</param>
 		/// <returns>Valid ProcessConfiguration or null if error occurred.</returns>
-		public ProcessConfiguration CreateConfiguration(FSharpMap<string, ConfigurationComponent> configurationComponents, ProcessContext ctxt, IMessageLogger logger) {
-
-			initializeComponents(configurationComponents, ctxt, logger);
+		public ProcessConfiguration CreateConfiguration(FSharpMap<string, ConfigurationComponent> configurationComponents, IMessageLogger logger) {
 
 			bool requiresMeasure = false;
 			foreach (var kvp in configurationComponents) {
@@ -167,6 +196,99 @@ namespace Malsys.Processing {
 
 			return new ProcessConfiguration(configurationComponents, requiresMeasure, starter);
 		}
+
+		/// <summary>
+		/// Calls Cleanup method on all given components.
+		/// </summary>
+		public void CleanupComponents(FSharpMap<string, ConfigurationComponent> components, IMessageLogger logger) {
+
+			foreach (var kvp in components) {
+
+				var comp = kvp.Value;
+
+				try {
+					comp.Component.Cleanup();
+				}
+				catch (ComponentException ex) {
+					logger.LogMessage(Message.ComponentCleanupError, comp.Name, comp.ComponentType.FullName, ex.Message);
+					continue;
+				}
+#if !DEBUG  // to not catch all exceptions while debugging and allow debugger to catch them
+				catch (Exception ex) {
+					logger.LogMessage(Message.ComponentCleanupException, ex.GetType().Name, comp.Name, comp.ComponentType.FullName);
+					continue;
+				}
+#endif
+
+
+			}
+		}
+
+
+
+		public IExpressionEvaluatorContext AddComponentsGettableVariables(FSharpMap<string, ConfigurationComponent> componenets, IExpressionEvaluatorContext eec, bool beforeInit) {
+
+			foreach (var componentKvp in componenets) {
+
+				var component = componentKvp.Value.Component;
+				var metadata = componentKvp.Value.Metadata;
+
+				foreach (var gettProp in metadata.GettableProperties.Where(x => x.GettableBeforeInitialiation == beforeInit)) {
+
+					var getFunction = buildComponentVariableCall(gettProp.PropertyInfo, component);
+
+					foreach (var name in gettProp.Names) {
+						eec = eec.AddVariable(new VariableInfo(name, getFunction, componentKvp.Value), false);
+					}
+				}
+
+			}
+
+			return eec;
+
+		}
+
+		public IExpressionEvaluatorContext AddComponentsCallableFunctions(FSharpMap<string, ConfigurationComponent> componenets, IExpressionEvaluatorContext eec) {
+
+			foreach (var componentKvp in componenets) {
+
+				var component = componentKvp.Value.Component;
+				var metadata = componentKvp.Value.Metadata;
+
+				foreach (var callableFun in metadata.CallableFunctions) {
+
+					var getFunction = buildCallableFunctionCall(callableFun.MethodInfo, component);
+
+					foreach (var name in callableFun.Names) {
+						eec = eec.AddFunction(new FunctionInfo(name, callableFun.ParamsCount, getFunction, callableFun.ParamsTypesCyclicPattern, componentKvp.Value), false);
+					}
+				}
+
+			}
+
+			return eec;
+
+		}
+
+		private Func<IValue> buildComponentVariableCall(PropertyInfo pi, object componentInstance) {
+
+			var instance = Expression.Constant(componentInstance, componentInstance.GetType());
+			var call = Expression.Call(instance, pi.GetGetMethod());
+			var x = pi.GetGetMethod().GetParameters();
+			return Expression.Lambda<Func<IValue>>(call).Compile();
+
+		}
+
+		private Func<IValue[], IExpressionEvaluatorContext, IValue> buildCallableFunctionCall(MethodInfo mi, object componentInstance) {
+
+			var instance = Expression.Constant(componentInstance, componentInstance.GetType());
+			var argumentArgs = Expression.Parameter(typeof(IValue[]), "arguments");
+			var argumentEec = Expression.Parameter(typeof(IExpressionEvaluatorContext), "expressionEvaluatorContext");
+			var call = Expression.Call(instance, mi, argumentArgs, argumentEec);
+			return Expression.Lambda<Func<IValue[], IExpressionEvaluatorContext, IValue>>(call, argumentArgs, argumentEec).Compile();
+
+		}
+
 
 
 		private IProcessStarter getStarterComponent(FSharpMap<string, ConfigurationComponent> components, IMessageLogger logger) {
@@ -187,27 +309,6 @@ namespace Malsys.Processing {
 			}
 
 			return starterComponent;
-		}
-
-		private void initializeComponents(FSharpMap<string, ConfigurationComponent> components, ProcessContext ctxt, IMessageLogger logger) {
-
-			foreach (var kvp in components) {
-
-				var comp = kvp.Value;
-
-				try {
-					comp.Component.Initialize(ctxt);
-				}
-				catch (ComponentInitializationException ex) {
-					logger.LogMessage(Message.ComponentInitializationError, comp.Name, comp.ComponentType.FullName, ex.Message);
-					continue;
-				}
-				catch (Exception ex) {
-					logger.LogMessage(Message.ComponentInitializationException, ex.GetType().Name, comp.Name, comp.ComponentType.FullName);
-					continue;
-				}
-
-			}
 		}
 
 		private ConfigurationComponent createComponent(string compName, string compTypeName, IComponentResolver typeResolver, IMessageLogger logger) {
@@ -307,14 +408,15 @@ namespace Malsys.Processing {
 
 			ConfigurationComponent srcComp;
 			if (!components.TryGetValue(conn.SourceName, out srcComp)) {
-				// this is checked by compiler but configuration can be created another way
+				// this is checked by compiler but only on non-virtual connections, moreover configuration may not be from compiler
 				logger.LogMessage(Message.FailedToConnect, conn.SourceName, conn.TargetName, conn.TargetInputName, conn.TargetName);
 				return;
 			}
 
 			ConfigurationComponent destComp;
 			if (!components.TryGetValue(conn.TargetName, out destComp)) {
-				// this is checked by compiler but configuration can be created another way
+				// method calling this method is iterating over existing components so this should not happen
+				// this is checked by compiler but only on non-virtual connections, moreover configuration may not be from compiler
 				logger.LogMessage(Message.FailedToConnect, conn.SourceName, conn.TargetName, conn.TargetInputName, conn.TargetInputName);
 				return;
 			}
@@ -452,6 +554,10 @@ namespace Malsys.Processing {
 			ComponentInitializationError,
 			[Message(MessageType.Error, "`{0}` thrown on initialization of component `{1}` (`{2}`).")]
 			ComponentInitializationException,
+			[Message(MessageType.Error, "Failed clean up component `{0}` (`{1}`). {2}")]
+			ComponentCleanupError,
+			[Message(MessageType.Error, "`{0}` thrown on cleanup of component `{1}` (`{2}`).")]
+			ComponentCleanupException,
 			[Message(MessageType.Error, "Invalid connection rule connecting `{0}` to `{1}`.`{2}`.")]
 			InvalidConnection,
 

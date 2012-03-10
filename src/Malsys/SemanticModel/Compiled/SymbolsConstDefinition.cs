@@ -1,5 +1,8 @@
 ﻿
 namespace Malsys.SemanticModel.Compiled {
+	/// <remarks>
+	/// Immutable.
+	/// </remarks>
 	public class SymbolsConstDefinition : ILsystemStatement {
 
 		public readonly string Name;
@@ -13,12 +16,9 @@ namespace Malsys.SemanticModel.Compiled {
 		}
 
 
-		#region ILsystemStatement Members
-
 		public LsystemStatementType StatementType {
 			get { return LsystemStatementType.SymbolsConstant; }
 		}
 
-		#endregion
 	}
 }

@@ -221,7 +221,8 @@ namespace Malsys.Tests.Rewriters {
 				TestUtils.ExpressionEvaluatorContext);
 
 			var fm = new FileOutputProvider("./");
-			var context = new ProcessContext(lsystem, fm, inBlockEvaled, TestUtils.ExpressionEvaluatorContext, msgs);
+			var context = new ProcessContext(lsystem, fm, inBlockEvaled, evaluator,
+				TestUtils.ExpressionEvaluatorContext, null, TimeSpan.MaxValue, null, msgs);
 
 			var symBuff = new SymbolsMemoryBuffer();
 			rewriter.Initialize(context);

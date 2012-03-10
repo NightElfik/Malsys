@@ -12,6 +12,7 @@ using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Collections;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
 namespace Malsys.Tests.Interpreters {
 	[TestClass]
@@ -269,7 +270,8 @@ namespace Malsys.Tests.Interpreters {
 			var evaluator = new EvaluatorsContainer(TestUtils.ExpressionEvaluatorContext);
 			var symbolEvaluator = evaluator.Resolve<ISymbolEvaluator>();
 			var outProvider = new InMemoryOutputProvider();
-			var context = new ProcessContext(lsystem, outProvider, null, TestUtils.ExpressionEvaluatorContext, logger);
+			var context = new ProcessContext(lsystem, outProvider, null, evaluator,
+				TestUtils.ExpressionEvaluatorContext, null, TimeSpan.MaxValue, null, logger);
 
 			var caller = new InterpreterCaller();
 			caller.Interpreter = testedInterpreter;

@@ -147,8 +147,8 @@ namespace Malsys.Tests.Evaluators {
 		[TestMethod]
 		public void ProcessStatementParamsTests() {
 			doTestAutoidentOutput(
-				"process all(a,r,g,s) with a;",
-				"process all(a, r, g, s) with a;");
+				"process all(0,1,2,3) with a;",
+				"process all(0, 1, 2, 3) with a;");
 			doTestAutoidentOutput(
 				"process LsystemName(0,{1}) with Configuration;",
 				"process LsystemName(0, {1}) with Configuration;");

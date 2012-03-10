@@ -166,7 +166,8 @@ namespace Malsys.Tests.Interpreters {
 			}
 			var lsystem = new LsystemEvaled("", TestUtils.ExpressionEvaluatorContext, null, null, symToInstr, null, null);
 			var logger = new MessageLogger();
-			var context = new ProcessContext(lsystem, new InMemoryOutputProvider(), null, TestUtils.ExpressionEvaluatorContext, logger);
+			var context = new ProcessContext(lsystem, new InMemoryOutputProvider(), null, evaluator,
+				TestUtils.ExpressionEvaluatorContext, null, TimeSpan.MaxValue, null, logger);
 
 			var dummy = new DummyInterpreter();
 			caller.Interpreter = dummy;

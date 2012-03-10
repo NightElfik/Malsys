@@ -5,7 +5,7 @@ using Malsys.SemanticModel;
 using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Processing.Components.Common {
-	public class RandomGeneratorProvider : IRandomGeneratorProvider {
+	public class RandomGeneratorProvider : IComponent {
 
 		private CryptographicRandomGenerator cryptoRandomInstance;
 
@@ -38,12 +38,17 @@ namespace Malsys.Processing.Components.Common {
 			if (trueRandom) {
 				cryptoRandomInstance = new CryptographicRandomGenerator();
 			}
+
 		}
 
 		public void Cleanup() {
+
+			localRandomGenerator = null;
+
 			if (cryptoRandomInstance != null) {
 				cryptoRandomInstance.Dispose();
 			}
+
 		}
 
 

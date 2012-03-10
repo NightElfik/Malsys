@@ -6,7 +6,5 @@ namespace Malsys.Processing.Components {
 
 		IRenderer Renderer { set; }
 
-		bool IsRendererCompatible(IRenderer renderer);
-
 	}
 }

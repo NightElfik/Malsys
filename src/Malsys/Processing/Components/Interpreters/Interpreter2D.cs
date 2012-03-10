@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Malsys.Evaluators;
 using Malsys.Media;
 using Malsys.Processing.Components.Renderers;
@@ -10,8 +9,6 @@ using Malsys.SemanticModel.Evaluated;
 namespace Malsys.Processing.Components.Interpreters {
 	[Component("2D interpreter", ComponentGroupNames.Interpreters)]
 	public class Interpreter2D : IInterpreter {
-
-		private readonly ColorFactory colorFactory = new ColorFactory();
 
 
 		private IRenderer2D renderer;
@@ -101,25 +98,26 @@ namespace Malsys.Processing.Components.Interpreters {
 
 
 		#region IInterpreter Members
-
-		[UserConnectable]
+		// optional for rendering L-system in L-system, there is no connection for renderer
+		// the check has to be done in initialization
+		[UserConnectable(IsOptional=true)]
 		public IRenderer Renderer {
 			set {
-				if (!IsRendererCompatible(value)) {
-					throw new InvalidUserValueException("Renderer do not implement `{0}`.".Fmt(typeof(IRenderer2D).FullName));
+				if (!typeof(IRenderer2D).IsAssignableFrom(value.GetType())) {
+					throw new InvalidConnectedComponentException("Renderer do not implement `{0}`.".Fmt(typeof(IRenderer2D).FullName));
 				}
 				renderer = (IRenderer2D)value;
 			}
 		}
 
 
-		public bool IsRendererCompatible(IRenderer renderer) {
-			return typeof(IRenderer2D).IsAssignableFrom(renderer.GetType());
-		}
-
 		public bool RequiresMeasure { get { return continuousColoring; } }
 
 		public void Initialize(ProcessContext ctxt) {
+
+			if (renderer == null) {
+				throw new ComponentException("Renderer is not set.");
+			}
 
 			logger = ctxt.Logger;
 
@@ -137,7 +135,7 @@ namespace Malsys.Processing.Components.Interpreters {
 			}
 
 			if (InitialColor != null) {
-				initColor = colorFactory.FromIValue(InitialColor, logger);
+				initColor = ColorHelper.FromIValue(InitialColor, logger);
 			}
 
 		}
@@ -229,7 +227,7 @@ namespace Malsys.Processing.Components.Interpreters {
 		/// Draws line in current direction with length equal to value of first parameter.
 		/// </summary>
 		[SymbolInterpretation(1)]
-		public void DrawLine(ArgsStorage args) {
+		public void DrawForward(ArgsStorage args) {
 
 			double length = getArgumentAsDouble(args, 0);
 
@@ -245,11 +243,11 @@ namespace Malsys.Processing.Components.Interpreters {
 					color = colorGradient[(float)colorEvents / colorEventsMeasured];
 				}
 				else if (args.ArgsCount >= 3) {
-					colorFactory.ParseColor(args[2], ref color);
+					ColorHelper.ParseColor(args[2], ref color);
 				}
 
 				colorEvents++;
-				renderer.LineTo(new PointF((float)currState.X, (float)currState.Y), (float)width, color);
+				renderer.DrawTo(new PointF((float)currState.X, (float)currState.Y), (float)width, color);
 			}
 		}
 
@@ -312,10 +310,10 @@ namespace Malsys.Processing.Components.Interpreters {
 			}
 			else {
 				if (args.ArgsCount >= 1) {
-					colorFactory.ParseColor(args[0], ref color);
+					ColorHelper.ParseColor(args[0], ref color);
 				}
 				if (args.ArgsCount >= 3) {
-					colorFactory.ParseColor(args[2], ref strokeColor);
+					ColorHelper.ParseColor(args[2], ref strokeColor);
 				}
 			}
 

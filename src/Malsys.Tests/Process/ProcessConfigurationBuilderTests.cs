@@ -7,6 +7,7 @@ using Microsoft.FSharp.Core;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Malsys.SemanticModel.Compiled;
 using Malsys.Reflection.Components;
+using Malsys.Evaluators;
 
 namespace Malsys.Tests.Process {
 	[TestClass]
@@ -43,33 +44,30 @@ namespace Malsys.Tests.Process {
 					"ContaineredBetaComponent:ContaineredAlphaComponent" });
 		}
 
-		// this is checked already by compiler
-		//[TestMethod]
-		//public void InvalidConnectionSourceTests() {
-		//    doTest(string.Join("\n", "configuration Config {",
-		//            "component Starter typeof StarterComponent;",
-		//            "component ConnProp typeof ConnectablePropertyComponent;",
-		//            "component Empty typeof EmptyComponent;",
-		//            "connect XXXX to ConnProp.Component;",
-		//            "}"),
-		//        "process all with Config;",
-		//        new string[] {
-		//            toId(ProcessConfigurationBuilder.Message.FailedToConnect)});
-		//}
+		[TestMethod]
+		public void InvalidConnectionSourceTests() {
+		    doTest(string.Join("\n", "configuration Config {",
+		            "component Starter typeof StarterComponent;",
+		            "component ConnProp typeof ConnectablePropertyComponent;",
+		            "component Empty typeof EmptyComponent;",
+		            "virtual connect XXXX to ConnProp.Component;",
+		            "}"),
+		        "process all with Config;",
+		        new string[] {
+		            toId(ProcessConfigurationBuilder.Message.FailedToConnect)});
+		}
 
-		// this is checked already by compiler
-		//[TestMethod]
-		//public void InvalidConnectionDestinationTests() {
-		//    doTest(string.Join("\n", "configuration Config {",
-		//            "component Starter typeof StarterComponent;",
-		//            "component ConnProp typeof ConnectablePropertyComponent;",
-		//            "component Empty typeof EmptyComponent;",
-		//            "connect Empty to XXX.Component;",
-		//            "}"),
-		//        "process all with Config;",
-		//        new string[] {
-		//            toId(ProcessConfigurationBuilder.Message.FailedToConnect)});
-		//}
+		[TestMethod]
+		public void InvalidConnectionDestinationTests() {
+		    doTest(string.Join("\n", "configuration Config {",
+		            "component Starter typeof StarterComponent;",
+		            "component Empty typeof EmptyComponent;",
+					"virtual connect Empty to XXX.Component;",
+		            "}"),
+		        "process all with Config;",
+		        new string[] {
+		            toId(ProcessConfigurationBuilder.Message.InvalidConnection) });
+		}
 
 		[TestMethod]
 		public void InvalidConnectionPropertyTests() {
@@ -211,6 +209,7 @@ namespace Malsys.Tests.Process {
 					toId(ProcessConfigurationBuilder.Message.ComponentCtorException) });
 		}
 
+#if !DEBUG  // this test is testing throwing general exception which is not caught in DEBUG configuration
 		[TestMethod]
 		public void ExceptionInInitTests() {
 			doTest(string.Join("\n", "configuration Config {",
@@ -231,6 +230,7 @@ namespace Malsys.Tests.Process {
 					"StarterComponent",
 					toId(ProcessConfigurationBuilder.Message.ComponentInitializationException) });
 		}
+#endif
 
 		[TestMethod]
 		public void SettableVariableTests() {
@@ -515,14 +515,16 @@ namespace Malsys.Tests.Process {
 
 			procCompBuilder.SetAndCheckUserSettableProperties(compGraph, lsystem.ComponentValuesAssigns, lsystem.ComponentSymbolsAssigns, logger);
 
-			var ctxt = new ProcessContext(lsystem, new InMemoryOutputProvider(), input, lsystem.ExpressionEvaluatorContext, logger);
+			var ctxt = new ProcessContext(lsystem, new InMemoryOutputProvider(), input, new EvaluatorsContainer(lsystem.ExpressionEvaluatorContext),
+				lsystem.ExpressionEvaluatorContext, resolver, TimeSpan.MaxValue, compGraph, logger);
 
 			if (logger.ErrorOccurred) {
 				goto results;
 			}
 
 			// we don't need to check output, components are logging state to logger
-			procCompBuilder.CreateConfiguration(compGraph, ctxt, logger);
+			procCompBuilder.InitializeComponents(compGraph, ctxt, logger);
+			procCompBuilder.CreateConfiguration(compGraph, logger);
 
 
 		results:
