@@ -62,7 +62,7 @@ namespace Malsys {
 
 			var maybeValue = map.TryFind(key);
 			if (OptionModule.IsSome(maybeValue)) {
-				return maybeValue.Value.Equals(value);
+				return value != null ? value.Equals(maybeValue.Value) : maybeValue.Value == null;
 			}
 			else {
 				return false;

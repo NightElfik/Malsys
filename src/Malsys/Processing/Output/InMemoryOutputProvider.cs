@@ -11,7 +11,7 @@ namespace Malsys.Processing.Output {
 
 
 		public Stream GetOutputStream<TCaller>(string outputName, string mimeType,
-				bool temp = false, FSharpMap<string, object> additionalData = null) {
+				bool temp = false, IDictionary<string, object> metadata = null) {
 
 			MemoryStream stream = new MemoryStream(1024);
 
@@ -21,7 +21,7 @@ namespace Malsys.Processing.Output {
 				IsTemporary = temp,
 				MimeType = mimeType,
 				Caller = typeof(TCaller),
-				AdditionalData = additionalData ?? MapModule.Empty<string, object>()
+				Metadata = metadata != null ? new Dictionary<string, object>(metadata) : new Dictionary<string, object>()
 			};
 
 			managedFiles.Add(mf);
@@ -29,9 +29,12 @@ namespace Malsys.Processing.Output {
 			return stream;
 		}
 
-		public void AddAdditionalData(Stream outputStream, string key, object value) {
-			var managedFile = managedFiles.Where(x => x.Stream == outputStream).Single();
-			managedFile.AdditionalData = managedFile.AdditionalData.Add(key, value);
+		public void AddMetadata(Stream outputStream, string key, object value) {
+			var managedFile = managedFiles.Where(x => x.Stream == outputStream).SingleOrDefault();
+			if (managedFile == null) {
+				throw new ArgumentException("Given output stream does not exist.");
+			}
+			managedFile.Metadata[key] = value;
 		}
 
 		/// <summary>
@@ -44,7 +47,7 @@ namespace Malsys.Processing.Output {
 					x.Stream.ToArray(),  // copies array, potential performance loss
 					x.MimeType,
 					x.Caller,
-					x.AdditionalData));
+					x.Metadata.ToFsharpMap(y => y.Key, y => y.Value)));
 		}
 
 
@@ -55,7 +58,7 @@ namespace Malsys.Processing.Output {
 			public bool IsTemporary;
 			public string MimeType;
 			public Type Caller;
-			public FSharpMap<string, object> AdditionalData;
+			public Dictionary<string, object> Metadata;
 
 		}
 

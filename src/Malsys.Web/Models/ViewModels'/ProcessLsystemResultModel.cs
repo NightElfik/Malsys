@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Malsys.Processing.Output;
-using System;
 
 namespace Malsys.Web.Models {
 	public class ProcessLsystemResultModel {
@@ -15,7 +15,7 @@ namespace Malsys.Web.Models {
 
 		public List<OutputFile> OutputFiles { get; set; }
 
-		public string SavedInputId { get; set; }
+		public string SavedInputUrlId { get; set; }
 
 		public TimeSpan ProcessDuration { get; set; }
 

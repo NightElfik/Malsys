@@ -12,6 +12,8 @@
           <EntitySet Name="ProcessOutputs" EntityType="MalsysDb.Store.ProcessOutputs" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Roles" EntityType="MalsysDb.Store.Roles" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="SavedInputs" EntityType="MalsysDb.Store.SavedInputs" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="TaggedSavedInputs" EntityType="MalsysDb.Store.TaggedSavedInputs" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Tags" EntityType="MalsysDb.Store.Tags" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Users" EntityType="MalsysDb.Store.Users" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="UsersInRoles" EntityType="MalsysDb.Store.UsersInRoles" store:Type="Tables" Schema="dbo" />
           <AssociationSet Name="FK_Feedbacks_Users" Association="MalsysDb.Store.FK_Feedbacks_Users">
@@ -41,6 +43,14 @@
           <AssociationSet Name="FK_SavedInputs_Users" Association="MalsysDb.Store.FK_SavedInputs_Users">
             <End Role="Users" EntitySet="Users" />
             <End Role="SavedInputs" EntitySet="SavedInputs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TaggedSavedInputs_SavedInputs" Association="MalsysDb.Store.FK_TaggedSavedInputs_SavedInputs">
+            <End Role="SavedInputs" EntitySet="SavedInputs" />
+            <End Role="TaggedSavedInputs" EntitySet="TaggedSavedInputs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TaggedSavedInputs_Tags" Association="MalsysDb.Store.FK_TaggedSavedInputs_Tags">
+            <End Role="Tags" EntitySet="Tags" />
+            <End Role="TaggedSavedInputs" EntitySet="TaggedSavedInputs" />
           </AssociationSet>
           <AssociationSet Name="FK_UsersInRoles_Roles" Association="MalsysDb.Store.FK_UsersInRoles_Roles">
             <End Role="Roles" EntitySet="Roles" />
@@ -79,6 +89,7 @@
           </Key>
           <Property Name="InputProcessId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
           <Property Name="ParentInputProcessId" Type="int" />
+          <Property Name="ChainLength" Type="int" Nullable="false" />
           <Property Name="CanonicInputId" Type="int" Nullable="false" />
           <Property Name="UserId" Type="int" />
           <Property Name="ProcessDate" Type="datetime" Nullable="false" />
@@ -89,7 +100,7 @@
             <PropertyRef Name="ProcessOutputId" />
           </Key>
           <Property Name="ProcessOutputId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
-          <Property Name="InputProcessId" Type="int" Nullable="false" />
+          <Property Name="InputProcessId" Type="int" />
           <Property Name="FileName" Type="nvarchar" Nullable="false" MaxLength="64" />
           <Property Name="CreationDate" Type="datetime" Nullable="false" />
           <Property Name="LastOpenDate" Type="datetime" Nullable="false" />
@@ -107,15 +118,37 @@
             <PropertyRef Name="SavedInputId" />
           </Key>
           <Property Name="SavedInputId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
-          <Property Name="RandomId" Type="nvarchar" Nullable="false" MaxLength="8" />
-          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="UrlId" Type="nvarchar" Nullable="false" MaxLength="8" />
           <Property Name="ParentInputProcessId" Type="int" />
-          <Property Name="Date" Type="datetime" Nullable="false" />
-          <Property Name="Source" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="CreationUserId" Type="int" Nullable="false" />
+          <Property Name="CreationDate" Type="datetime" Nullable="false" />
+          <Property Name="EditDate" Type="datetime" Nullable="false" />
+          <Property Name="Published" Type="bit" Nullable="false" />
+          <Property Name="Deleted" Type="bit" Nullable="false" />
+          <Property Name="Views" Type="int" Nullable="false" />
+          <Property Name="Rating" Type="int" Nullable="false" />
           <Property Name="SourceSize" Type="int" Nullable="false" />
           <Property Name="OutputSize" Type="bigint" Nullable="false" />
           <Property Name="Duration" Type="bigint" Nullable="false" />
-          <Property Name="Views" Type="int" Nullable="false" />
+          <Property Name="Source" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Description" Type="nvarchar(max)" />
+          <Property Name="ThumbnailSource" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="TaggedSavedInputs">
+          <Key>
+            <PropertyRef Name="SavedInputId" />
+            <PropertyRef Name="TagId" />
+          </Key>
+          <Property Name="SavedInputId" Type="int" Nullable="false" />
+          <Property Name="TagId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Tags">
+          <Key>
+            <PropertyRef Name="TagId" />
+          </Key>
+          <Property Name="TagId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="32" />
+          <Property Name="NameLowercase" Type="nvarchar" Nullable="false" MaxLength="32" />
         </EntityType>
         <EntityType Name="Users">
           <Key>
@@ -195,9 +228,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_ProcessOutputs_InputProcesses">
-          <End Role="InputProcesses" Type="MalsysDb.Store.InputProcesses" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
+          <End Role="InputProcesses" Type="MalsysDb.Store.InputProcesses" Multiplicity="0..1" />
           <End Role="ProcessOutputs" Type="MalsysDb.Store.ProcessOutputs" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="InputProcesses">
@@ -228,7 +259,35 @@
               <PropertyRef Name="UserId" />
             </Principal>
             <Dependent Role="SavedInputs">
-              <PropertyRef Name="UserId" />
+              <PropertyRef Name="CreationUserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TaggedSavedInputs_SavedInputs">
+          <End Role="SavedInputs" Type="MalsysDb.Store.SavedInputs" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="TaggedSavedInputs" Type="MalsysDb.Store.TaggedSavedInputs" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SavedInputs">
+              <PropertyRef Name="SavedInputId" />
+            </Principal>
+            <Dependent Role="TaggedSavedInputs">
+              <PropertyRef Name="SavedInputId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TaggedSavedInputs_Tags">
+          <End Role="Tags" Type="MalsysDb.Store.Tags" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="TaggedSavedInputs" Type="MalsysDb.Store.TaggedSavedInputs" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tags">
+              <PropertyRef Name="TagId" />
+            </Principal>
+            <Dependent Role="TaggedSavedInputs">
+              <PropertyRef Name="TagId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -271,6 +330,7 @@
           <EntitySet Name="ProcessOutputs" EntityType="MalsysDbEntities.ProcessOutput" />
           <EntitySet Name="Roles" EntityType="MalsysDbEntities.Role" />
           <EntitySet Name="SavedInputs" EntityType="MalsysDbEntities.SavedInput" />
+          <EntitySet Name="Tags" EntityType="MalsysDbEntities.Tag" />
           <EntitySet Name="Users" EntityType="MalsysDbEntities.User" />
           <AssociationSet Name="FK_InputProcesses_CanonicInputs" Association="MalsysDbEntities.FK_InputProcesses_CanonicInputs">
             <End Role="CanonicInput" EntitySet="CanonicInputs" />
@@ -299,6 +359,10 @@
           <AssociationSet Name="FK_SavedInputs_Users" Association="MalsysDbEntities.FK_SavedInputs_Users">
             <End Role="User" EntitySet="Users" />
             <End Role="SavedInput" EntitySet="SavedInputs" />
+          </AssociationSet>
+          <AssociationSet Name="TaggedSavedInputs" Association="MalsysDbEntities.TaggedSavedInputs">
+            <End Role="SavedInput" EntitySet="SavedInputs" />
+            <End Role="Tag" EntitySet="Tags" />
           </AssociationSet>
           <AssociationSet Name="UsersInRoles" Association="MalsysDbEntities.UsersInRoles">
             <End Role="Role" EntitySet="Roles" />
@@ -335,6 +399,7 @@
           </Key>
           <Property Type="Int32" Name="InputProcessId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Type="Int32" Name="ParentInputProcessId" />
+          <Property Type="Int32" Name="ChainLength" Nullable="false" />
           <Property Type="Int32" Name="CanonicInputId" Nullable="false" />
           <Property Type="Int32" Name="UserId" />
           <Property Type="DateTime" Name="ProcessDate" Nullable="false" />
@@ -351,7 +416,7 @@
             <PropertyRef Name="ProcessOutputId" />
           </Key>
           <Property Type="Int32" Name="ProcessOutputId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Type="Int32" Name="InputProcessId" Nullable="false" />
+          <Property Type="Int32" Name="InputProcessId" />
           <Property Type="String" Name="FileName" Nullable="false" MaxLength="64" FixedLength="false" Unicode="true" />
           <Property Type="DateTime" Name="CreationDate" Nullable="false" />
           <Property Type="DateTime" Name="LastOpenDate" Nullable="false" />
@@ -371,17 +436,33 @@
             <PropertyRef Name="SavedInputId" />
           </Key>
           <Property Type="Int32" Name="SavedInputId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Type="String" Name="RandomId" Nullable="false" MaxLength="8" FixedLength="false" Unicode="true" />
-          <Property Type="Int32" Name="UserId" Nullable="false" />
+          <Property Type="String" Name="UrlId" Nullable="false" MaxLength="8" FixedLength="false" Unicode="true" />
           <Property Type="Int32" Name="ParentInputProcessId" />
-          <Property Type="DateTime" Name="Date" Nullable="false" />
-          <Property Type="String" Name="Source" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="Int32" Name="CreationUserId" Nullable="false" />
+          <Property Type="DateTime" Name="CreationDate" Nullable="false" />
+          <Property Type="DateTime" Name="EditDate" Nullable="false" />
+          <Property Type="Boolean" Name="Published" Nullable="false" />
+          <Property Type="Boolean" Name="Deleted" Nullable="false" />
+          <Property Type="Int32" Name="Views" Nullable="false" />
+          <Property Type="Int32" Name="Rating" Nullable="false" />
           <Property Type="Int32" Name="SourceSize" Nullable="false" />
           <Property Type="Int64" Name="OutputSize" Nullable="false" />
           <Property Type="Int64" Name="Duration" Nullable="false" />
+          <Property Type="String" Name="Source" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Description" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="ThumbnailSource" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="InputProcess" Relationship="MalsysDbEntities.FK_SavedInputs_InputProcesses" FromRole="SavedInput" ToRole="InputProcess" />
           <NavigationProperty Name="User" Relationship="MalsysDbEntities.FK_SavedInputs_Users" FromRole="SavedInput" ToRole="User" />
-          <Property Type="Int32" Name="Views" Nullable="false" />
+          <NavigationProperty Name="Tags" Relationship="MalsysDbEntities.TaggedSavedInputs" FromRole="SavedInput" ToRole="Tag" />
+        </EntityType>
+        <EntityType Name="Tag">
+          <Key>
+            <PropertyRef Name="TagId" />
+          </Key>
+          <Property Type="Int32" Name="TagId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="32" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="NameLowercase" Nullable="false" MaxLength="32" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="SavedInputs" Relationship="MalsysDbEntities.TaggedSavedInputs" FromRole="Tag" ToRole="SavedInput" />
         </EntityType>
         <EntityType Name="User">
           <Key>
@@ -451,7 +532,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_ProcessOutputs_InputProcesses">
-          <End Type="MalsysDbEntities.InputProcess" Role="InputProcess" Multiplicity="1" />
+          <End Type="MalsysDbEntities.InputProcess" Role="InputProcess" Multiplicity="0..1" />
           <End Type="MalsysDbEntities.ProcessOutput" Role="ProcessOutput" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="InputProcess">
@@ -482,9 +563,13 @@
               <PropertyRef Name="UserId" />
             </Principal>
             <Dependent Role="SavedInput">
-              <PropertyRef Name="UserId" />
+              <PropertyRef Name="CreationUserId" />
             </Dependent>
           </ReferentialConstraint>
+        </Association>
+        <Association Name="TaggedSavedInputs">
+          <End Type="MalsysDbEntities.SavedInput" Role="SavedInput" Multiplicity="*" />
+          <End Type="MalsysDbEntities.Tag" Role="Tag" Multiplicity="*" />
         </Association>
         <Association Name="UsersInRoles">
           <End Type="MalsysDbEntities.Role" Role="Role" Multiplicity="*" />
@@ -527,6 +612,7 @@
                 <ScalarProperty Name="ProcessDate" ColumnName="ProcessDate" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="CanonicInputId" ColumnName="CanonicInputId" />
+                <ScalarProperty Name="ChainLength" ColumnName="ChainLength" />
                 <ScalarProperty Name="ParentInputProcessId" ColumnName="ParentInputProcessId" />
                 <ScalarProperty Name="InputProcessId" ColumnName="InputProcessId" />
               </MappingFragment>
@@ -555,16 +641,31 @@
           <EntitySetMapping Name="SavedInputs">
             <EntityTypeMapping TypeName="MalsysDbEntities.SavedInput">
               <MappingFragment StoreEntitySet="SavedInputs">
-                <ScalarProperty Name="Views" ColumnName="Views" />
+                <ScalarProperty Name="ThumbnailSource" ColumnName="ThumbnailSource" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Source" ColumnName="Source" />
                 <ScalarProperty Name="Duration" ColumnName="Duration" />
                 <ScalarProperty Name="OutputSize" ColumnName="OutputSize" />
                 <ScalarProperty Name="SourceSize" ColumnName="SourceSize" />
-                <ScalarProperty Name="Source" ColumnName="Source" />
-                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="Rating" ColumnName="Rating" />
+                <ScalarProperty Name="Views" ColumnName="Views" />
+                <ScalarProperty Name="Deleted" ColumnName="Deleted" />
+                <ScalarProperty Name="Published" ColumnName="Published" />
+                <ScalarProperty Name="EditDate" ColumnName="EditDate" />
+                <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
+                <ScalarProperty Name="CreationUserId" ColumnName="CreationUserId" />
                 <ScalarProperty Name="ParentInputProcessId" ColumnName="ParentInputProcessId" />
-                <ScalarProperty Name="UserId" ColumnName="UserId" />
-                <ScalarProperty Name="RandomId" ColumnName="RandomId" />
+                <ScalarProperty Name="UrlId" ColumnName="UrlId" />
                 <ScalarProperty Name="SavedInputId" ColumnName="SavedInputId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Tags">
+            <EntityTypeMapping TypeName="MalsysDbEntities.Tag">
+              <MappingFragment StoreEntitySet="Tags">
+                <ScalarProperty Name="NameLowercase" ColumnName="NameLowercase" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="TagId" ColumnName="TagId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -584,6 +685,14 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <AssociationSetMapping Name="TaggedSavedInputs" TypeName="MalsysDbEntities.TaggedSavedInputs" StoreEntitySet="TaggedSavedInputs">
+            <EndProperty Name="Tag">
+              <ScalarProperty Name="TagId" ColumnName="TagId" />
+            </EndProperty>
+            <EndProperty Name="SavedInput">
+              <ScalarProperty Name="SavedInputId" ColumnName="SavedInputId" />
+            </EndProperty>
+          </AssociationSetMapping>
           <AssociationSetMapping Name="UsersInRoles" TypeName="MalsysDbEntities.UsersInRoles" StoreEntitySet="UsersInRoles">
             <EndProperty Name="User">
               <ScalarProperty Name="UserId" ColumnName="UserId" />
@@ -613,46 +722,51 @@
     <!-- Diagram content (shape and connector positions) -->
     <Diagrams>
       <Diagram Name="MalsysDbModel">
-        <EntityTypeShape EntityType="MalsysDbEntities.CanonicInput" Width="1.5" PointX="9.375" PointY="0.5" Height="2.1725878906249996" />
-        <EntityTypeShape EntityType="MalsysDbEntities.Feedback" Width="1.5" PointX="0.75" PointY="3" Height="2.5571907552083317" />
-        <EntityTypeShape EntityType="MalsysDbEntities.InputProcess" Width="1.5" PointX="7.125" PointY="0.5" Height="3.3263964843749996" />
-        <EntityTypeShape EntityType="MalsysDbEntities.ProcessOutput" Width="1.5" PointX="9.375" PointY="3.125" Height="2.1725878906250031" />
-        <EntityTypeShape EntityType="MalsysDbEntities.Role" Width="1.5" PointX="0.75" PointY="0.5" Height="1.7879850260416745" />
-        <EntityTypeShape EntityType="MalsysDbEntities.SavedInput" Width="1.5" PointX="5" PointY="1.375" Height="3.1340950520833388" />
-        <EntityTypeShape EntityType="MalsysDbEntities.User" Width="1.5" PointX="2.75" PointY="0.5" Height="3.7109993489583388" />
+        <EntityTypeShape EntityType="MalsysDbEntities.CanonicInput" Width="1.5" PointX="4.5" PointY="5.75" Height="2.1725878906249996" />
+        <EntityTypeShape EntityType="MalsysDbEntities.Feedback" Width="1.5" PointX="1.125" PointY="3" Height="2.5571907552083308" />
+        <EntityTypeShape EntityType="MalsysDbEntities.InputProcess" Width="1.5" PointX="5.5" PointY="1.625" Height="3.5186979166666674" />
+        <EntityTypeShape EntityType="MalsysDbEntities.ProcessOutput" Width="1.5" PointX="6.5" PointY="5.75" Height="2.1725878906250031" />
+        <EntityTypeShape EntityType="MalsysDbEntities.Role" Width="1.5" PointX="1.125" PointY="0.75" Height="1.7879850260416745" />
+        <EntityTypeShape EntityType="MalsysDbEntities.SavedInput" Width="1.5" PointX="7.625" PointY="0.75" Height="4.6725065104166674" />
+        <EntityTypeShape EntityType="MalsysDbEntities.Tag" Width="1.5" PointX="9.625" PointY="0.75" Height="1.7879850260416674" />
+        <EntityTypeShape EntityType="MalsysDbEntities.User" Width="1.5" PointX="3.375" PointY="0.75" Height="3.7109993489583379" />
         <AssociationConnector Association="MalsysDbEntities.FK_InputProcesses_CanonicInputs" >
-          <ConnectorPoint PointX="9.375" PointY="1.5862939453124998" />
-          <ConnectorPoint PointX="8.625" PointY="1.5862939453124998" />
+          <ConnectorPoint PointX="5.75" PointY="5.75" />
+          <ConnectorPoint PointX="5.75" PointY="5.1436979166666674" />
         </AssociationConnector>
         <AssociationConnector Association="MalsysDbEntities.FK_Feedbacks_Users" >
-          <ConnectorPoint PointX="2.75" PointY="3.6054996744791694" />
-          <ConnectorPoint PointX="2.25" PointY="3.6054996744791694" />
+          <ConnectorPoint PointX="3.375" PointY="3.730499674479169" />
+          <ConnectorPoint PointX="2.625" PointY="3.730499674479169" />
         </AssociationConnector>
         <AssociationConnector Association="MalsysDbEntities.FK_InputProcesses_InputProcesses" >
-          <ConnectorPoint PointX="7.5286515131641156" PointY="0.5" />
-          <ConnectorPoint PointX="7.5286515131641156" PointY="0.25" />
-          <ConnectorPoint PointX="8.3333333333333321" PointY="0.25" />
-          <ConnectorPoint PointX="8.3333333333333321" PointY="0.5" />
+          <ConnectorPoint PointX="6.0319230769230767" PointY="1.625" />
+          <ConnectorPoint PointX="6.0319230769230767" PointY="1.375" />
+          <ConnectorPoint PointX="6.4784615384615378" PointY="1.375" />
+          <ConnectorPoint PointX="6.4784615384615378" PointY="1.625" />
         </AssociationConnector>
         <AssociationConnector Association="MalsysDbEntities.FK_InputProcesses_Users" >
-          <ConnectorPoint PointX="4.25" PointY="0.90625" />
-          <ConnectorPoint PointX="7.125" PointY="0.90625" />
+          <ConnectorPoint PointX="4.875" PointY="3.042999674479169" />
+          <ConnectorPoint PointX="5.5" PointY="3.042999674479169" />
         </AssociationConnector>
         <AssociationConnector Association="MalsysDbEntities.FK_ProcessOutputs_InputProcesses" >
-          <ConnectorPoint PointX="8.625" PointY="3.4756982421875" />
-          <ConnectorPoint PointX="9.375" PointY="3.4756982421875" />
+          <ConnectorPoint PointX="6.75" PointY="5.1436979166666674" />
+          <ConnectorPoint PointX="6.75" PointY="5.75" />
         </AssociationConnector>
         <AssociationConnector Association="MalsysDbEntities.FK_SavedInputs_InputProcesses" >
-          <ConnectorPoint PointX="7.125" PointY="2.6006982421875" />
-          <ConnectorPoint PointX="6.5" PointY="2.6006982421875" />
+          <ConnectorPoint PointX="7" PointY="3.3843489583333337" />
+          <ConnectorPoint PointX="7.625" PointY="3.3843489583333337" />
         </AssociationConnector>
         <AssociationConnector Association="MalsysDbEntities.FK_SavedInputs_Users" >
-          <ConnectorPoint PointX="4.25" PointY="2.7929996744791694" />
-          <ConnectorPoint PointX="5" PointY="2.7929996744791694" />
+          <ConnectorPoint PointX="4.875" PointY="1.15625" />
+          <ConnectorPoint PointX="7.625" PointY="1.15625" />
+        </AssociationConnector>
+        <AssociationConnector Association="MalsysDbEntities.TaggedSavedInputs" >
+          <ConnectorPoint PointX="9.125" PointY="1.6439925130208337" />
+          <ConnectorPoint PointX="9.625" PointY="1.6439925130208337" />
         </AssociationConnector>
         <AssociationConnector Association="MalsysDbEntities.UsersInRoles" >
-          <ConnectorPoint PointX="2.25" PointY="1.3939925130208373" />
-          <ConnectorPoint PointX="2.75" PointY="1.3939925130208373" />
+          <ConnectorPoint PointX="2.625" PointY="1.6439925130208373" />
+          <ConnectorPoint PointX="3.375" PointY="1.6439925130208373" />
         </AssociationConnector>
       </Diagram>
     </Diagrams>

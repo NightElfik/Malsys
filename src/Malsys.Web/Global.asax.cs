@@ -23,11 +23,29 @@ using Malsys.Web.Security;
 namespace Malsys.Web {
 	public class MvcApplication : HttpApplication {
 
-		public static void RegisterGlobalFilters(GlobalFilterCollection filters) {
-			//filters.Add(new HandleErrorAttribute());
+		protected void Application_Start() {
+
+			var resolver = buildDependencyResolver();
+			DependencyResolver.SetResolver(resolver);
+
+			AreaRegistration.RegisterAllAreas();
+
+			initializeDb(resolver);
+			checkFileSystem(resolver);
+
+			registerGlobalFilters(GlobalFilters.Filters);
+			registerRoutes(RouteTable.Routes);
+
+
 		}
 
-		public static void RegisterRoutes(RouteCollection routes) {
+
+		private void registerGlobalFilters(GlobalFilterCollection filters) {
+			// no filters registered yet
+		}
+
+		private void registerRoutes(RouteCollection routes) {
+
 			routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
 			routes.MapRoute(
@@ -37,12 +55,13 @@ namespace Malsys.Web {
 				new string[] { "Malsys.Web.Controllers" }
 			);
 
-
 		}
 
-		protected void Application_Start() {
+		private IDependencyResolver buildDependencyResolver() {
 
 			var builder = new ContainerBuilder();
+
+			// registers all MVC controllers in this assembly
 			builder.RegisterControllers(typeof(MvcApplication).Assembly);
 
 			builder.RegisterType<StandardDateTimeProvider>().As<IDateTimeProvider>().SingleInstance();
@@ -65,17 +84,11 @@ namespace Malsys.Web {
 			string basePath = Server.MapPath("~/bin");
 			builder.Register(x => new XmlDocReader(basePath)).SingleInstance();
 
+
 			registerMalsysStuff(builder);
 
 
-			var container = builder.Build();
-			DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
-
-
-			AreaRegistration.RegisterAllAreas();
-
-			RegisterGlobalFilters(GlobalFilters.Filters);
-			RegisterRoutes(RouteTable.Routes);
+			return new AutofacDependencyResolver(builder.Build());
 
 		}
 
@@ -130,6 +143,87 @@ namespace Malsys.Web {
 			}
 
 			throw new Exception("Failed to build std lib.");
+		}
+
+		/// <summary>
+		/// Checks whether DB contains all well-known user roles and at least one user.
+		/// Missing things are added.
+		/// </summary>
+		/// <remarks>
+		/// If there are no user groups in the database, standard user groups from class <c>UserRoles</c> are created.
+		/// If there are no users in the database, "Administrator" user with password "malsys" is created.
+		/// </remarks>
+		private void initializeDb(IDependencyResolver resolver) {
+
+			var usersRepo = resolver.GetService<IUsersRepository>();
+
+			foreach (var fi in typeof(UserRoles).GetFields(BindingFlags.Public | BindingFlags.Static)) {
+
+				if (fi.FieldType != typeof(string) || !fi.IsLiteral) {
+					continue;
+				}
+
+				string value = (string)fi.GetValue(null);
+
+				if (usersRepo.Roles.Where(x => x.NameLowercase == value).Count() == 0) {
+					usersRepo.CreateRole(new NewRoleModel() { RoleName = value });
+				}
+
+			}
+
+			if (usersRepo.Users.Count() == 0) {
+				// DB has no users -- lets create admin
+				var adminUser = usersRepo.CreateUser(new NewUserModel() {
+					UserName = "Administrator",
+					Email = "temp@email.com",
+					Password = "malsys",
+					ConfirmPassword = "malsys"
+				});
+
+				var adminRole = usersRepo.Roles.Where(x => x.NameLowercase == UserRoles.Administrator).Single();
+
+				usersRepo.AddUserToRole(adminUser.UserId, adminRole.RoleId);
+
+			}
+
+		}
+
+
+		private void checkFileSystem(IDependencyResolver resolver) {
+
+			var appSettingsProvider = resolver.GetService<IAppSettingsProvider>();
+
+			ensureDirExistsAndIsWritable(appSettingsProvider[AppSettingsKeys.WorkDir]);
+
+			ensureDirExistsAndIsWritable(appSettingsProvider[AppSettingsKeys.GalleryWorkDir]);
+
+			// TODO: ensure directory for error reporting of elmah, needs better access to web.config
+
+		}
+
+		/// <summary>
+		/// Ensures that directory at given path exists and is writable.
+		/// Directory is created if don't exist and exception is thrown if is not writable.
+		/// </summary>
+		private void ensureDirExistsAndIsWritable(string path, bool pathIsVirtual = true) {
+
+			if (pathIsVirtual) {
+				path = VirtualPathUtility.ToAbsolute(path);
+			}
+
+			if (!Directory.Exists(path)) {
+				Directory.CreateDirectory(path);
+			}
+
+			string filePath = Path.Combine(path, "__Is_This_Directory_Writable__.test");  // unique file name? I hope so :-D
+			try {
+				File.Create(filePath).Dispose();
+				File.Delete(filePath);
+			}
+			catch (Exception ex) {
+				throw new Exception("Directory `{0}` is not writable!", ex);
+			}
+
 		}
 
 	}

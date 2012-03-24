@@ -1,0 +1,150 @@
+
+%% Version for one sided printing:
+% margins: left 40mm, right 25mm, top and bottom 25mm
+% (BUT LaTeX adds automaticly 1in)
+\documentclass[12pt,a4paper]{report}
+\setlength\textwidth{145mm}
+\setlength\textheight{247mm}
+\setlength\oddsidemargin{15mm}
+\setlength\evensidemargin{15mm}
+\setlength\topmargin{0mm}
+\setlength\headsep{0mm}
+\setlength\headheight{0mm}
+% \openright makes following text start on right side of book
+\let\openright=\clearpage
+
+%% Version for two sided printing:
+% \documentclass[12pt,a4paper,twoside,openright]{report}
+% \setlength\textwidth{145mm}
+% \setlength\textheight{247mm}
+% \setlength\oddsidemargin{15mm}
+% \setlength\evensidemargin{0mm}
+% \setlength\topmargin{0mm}
+% \setlength\headsep{0mm}
+% \setlength\headheight{0mm}
+% \let\openright=\cleardoublepage
+
+%\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+%\usepackage[american]{babel}
+
+\usepackage{comment}
+\usepackage{setspace}
+
+\usepackage{graphicx}
+%\usepackage{amsthm}
+\usepackage{booktabs}
+
+
+\usepackage[autostyle]{csquotes}
+\usepackage{xspace}
+
+\usepackage[
+	backend=biber,
+	style=alphabetic,
+	backref=true,
+%	natbib=true,
+%	url=false, 
+%	doi=true,
+%	eprint=false
+]{biblatex}
+\renewcommand{\labelalphaothers}{*}
+\addbibresource{bibliography.bib}
+
+\usepackage{color}
+\definecolor{linkClr}{RGB}{127,0,0}  % dark red
+\definecolor{citeClr}{RGB}{0,127,0}  % dark green
+\definecolor{urlClr}{RGB}{0,0,127}  % dark blue
+
+\usepackage{listings}  % \lstlisting enviroment - source code highliting
+
+\usepackage{lsystemSyntax}  % uses packages color and listings
+
+\usepackage[unicode]{hyperref}  % after all other packages
+\hypersetup{
+	pdftitle=L-systems online,
+	pdfauthor=Marek Fišer,
+	pdfkeywords={keyword1} {key2},
+	colorlinks=true,
+	linkcolor=linkClr,
+	citecolor=citeClr,
+	urlcolor=urlClr
+}
+
+%%% Little tweaks
+
+% These macros remove white space above headers of chapters.
+\makeatletter
+\def\@makechapterhead#1{
+  {\parindent \z@ \raggedright \normalfont
+   \Huge\bfseries \thechapter. #1
+   \par\nobreak
+   \vskip 20\p@
+}}
+\def\@makeschapterhead#1{
+  {\parindent \z@ \raggedright \normalfont
+   \Huge\bfseries #1
+   \par\nobreak
+   \vskip 20\p@
+}}
+\makeatother
+
+% Definition of chapter macro. Chapters are not numbered but they are in TOC.
+\def\chapwithtoc#1{
+\chapter*{#1}
+\addcontentsline{toc}{chapter}{#1}
+}
+
+% default path for graphics
+\graphicspath{{img/}}
+
+% macros for L-system to avoid hyphenation of it.
+\newcommand{\lsystem}{\mbox{L-system}\xspace}
+\newcommand{\lsystems}{\mbox{L-systems}\xspace}
+
+% for carons with t, d
+\newcommand{\varcaron}{\hspace{-1.5pt}'\hspace{-1pt}}
+
+\renewcommand{\ttdefault}{pcr}  % to allow bold in tt font
+
+\begin{document}
+
+% A little freer hyphenation settings than the default.
+%\lefthyphenmin=2
+%\righthyphenmin=2
+
+%\include{frontpage}
+
+%%% Následuje vevázaný list -- kopie podepsaného "Zadání bakalářské práce".
+%%% Toto zadání NENÍ součástí elektronické verze práce, nescanovat.
+
+%\include{thanks}
+%\include{affidavit}
+
+
+
+\include{abstractcz}
+
+\singlespacing
+\openright
+\pagestyle{plain}
+\setcounter{page}{1}
+%\tableofcontents
+
+\onehalfspacing
+\include{introduction}
+
+\include{lsystems}
+
+
+\singlespacing
+\nocite{*}  % Show all Bib-entries
+\printbibliography
+
+%\chapwithtoc{List of Figures}
+%\listoffigures
+
+%\chapwithtoc{Attachments}
+
+\openright
+\end{document}

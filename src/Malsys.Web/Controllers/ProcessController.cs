@@ -15,11 +15,14 @@ namespace Malsys.Web.Controllers {
 
 		private readonly string workDir;
 		private readonly int maxWorkDirFiles;
+		private readonly int workDirCleanAmount;
+		private readonly int autoPackTreshold;
 
 		private readonly IMalsysInputRepository malsysInputRepository;
 		private readonly IUsersRepository usersRepository;
 		private readonly ProcessManager processManager;
 		private readonly InputBlockEvaled stdLib;
+		private readonly IAppSettingsProvider appSettingsProvider;
 
 
 		public ProcessController(IMalsysInputRepository malsysInputRepository, IAppSettingsProvider appSettingsProvider,
@@ -29,9 +32,13 @@ namespace Malsys.Web.Controllers {
 			this.usersRepository = usersRepository;
 			this.processManager = processManager;
 			this.stdLib = stdLib;
+			this.appSettingsProvider = appSettingsProvider;
 
-			workDir = appSettingsProvider["WorkDir"];
-			maxWorkDirFiles = int.Parse(appSettingsProvider["WorkDir_MaxFilesCount"]);
+			workDir = appSettingsProvider[AppSettingsKeys.WorkDir];
+			maxWorkDirFiles = int.Parse(appSettingsProvider[AppSettingsKeys.MaxFilesInWorkDir]);
+			workDirCleanAmount = int.Parse(appSettingsProvider[AppSettingsKeys.WorkDirCleanAmount]);
+			autoPackTreshold = int.Parse(appSettingsProvider[AppSettingsKeys.AutoPackTreshold]);
+
 		}
 
 
@@ -53,21 +60,21 @@ namespace Malsys.Web.Controllers {
 			TimeSpan timeout;
 			if (User.Identity.IsAuthenticated) {
 				if (User.IsInRole(UserRoles.TrustedUser)) {
-					timeout = new TimeSpan(0, 0, 10);
+					timeout = new TimeSpan(0, 0, int.Parse(appSettingsProvider[AppSettingsKeys.TrustedUserProcessTime]));
 				}
 				else {
-					timeout = new TimeSpan(0, 0, 6);
+					timeout = new TimeSpan(0, 0, int.Parse(appSettingsProvider[AppSettingsKeys.RegisteredUserProcessTime]));
 				}
 			}
 			else {
-				timeout = new TimeSpan(0, 0, 4);
+				timeout = new TimeSpan(0, 0, int.Parse(appSettingsProvider[AppSettingsKeys.UnregisteredUserProcessTime]));
 			}
 #if DEBUG
 			timeout = TimeSpan.MaxValue;  // for debugging purposes
 #endif
 
 			string workDirFullPath = Server.MapPath(Url.Content(workDir));
-			malsysInputRepository.CleanProcessOutputs(workDirFullPath, maxWorkDirFiles);
+			malsysInputRepository.CleanProcessOutputs(workDirFullPath, maxWorkDirFiles, workDirCleanAmount);
 
 			var fileMgr = new FileOutputProvider(workDirFullPath);
 			var logger = new MessageLogger();
@@ -111,7 +118,7 @@ namespace Malsys.Web.Controllers {
 
 			List<OutputFile> outputs;
 
-			if (fileMgr.OutputFilesCount > 8) {
+			if (fileMgr.OutputFilesCount > autoPackTreshold) {
 				outputs = fileMgr.GetOutputFilesAsZipArchive().ToList();
 			}
 			else {
@@ -127,7 +134,7 @@ namespace Malsys.Web.Controllers {
 			if (save != null) {
 				if (User.Identity.IsAuthenticated) {
 					var savedinput = malsysInputRepository.SaveInput(sourceCode, resultModel.ReferenceId, outputs, User.Identity.Name, sw.Elapsed);
-					resultModel.SavedInputId = savedinput.RandomId;
+					resultModel.SavedInputUrlId = savedinput.UrlId;
 				}
 				else {
 					ModelState.AddModelError("", "Only registered users can save Malsys inputs.");
@@ -139,30 +146,16 @@ namespace Malsys.Web.Controllers {
 
 		public virtual ActionResult Load(string id) {
 
-			var savedInput = malsysInputRepository.InputDb.SavedInputs.Where(x => x.RandomId == id).SingleOrDefault();
+			var savedInput = malsysInputRepository.InputDb.SavedInputs.Where(x => x.UrlId == id).SingleOrDefault();
 			if (savedInput != null) {
 				savedInput.Views++;
 				malsysInputRepository.InputDb.SaveChanges();
 				return IndexPost(savedInput.Source);
 			}
 
-			return View(new ProcessLsystemResultModel() { SavedInputId = id });
+			return View(new ProcessLsystemResultModel() { SavedInputUrlId = id });
 		}
 
-		public virtual ActionResult MakeAdminAdmin() {
-
-			var role = usersRepository.Roles.Where(x => x.NameLowercase == UserRoles.Administrator.ToLower()).SingleOrDefault();
-			if (role == null) {
-				role = usersRepository.CreateRole(new NewRoleModel() { RoleName = UserRoles.Administrator });
-			}
-			var user = usersRepository.Users.Where(x => x.NameLowercase == UserRoles.Administrator.ToLower()).SingleOrDefault();
-
-			if (user != null && role != null) {
-				usersRepository.AddUserToRole(user.UserId, role.RoleId);
-			}
-
-			return RedirectToAction(MVC.Home.Index());
-		}
 
 		public enum Message {
 
@@ -170,5 +163,6 @@ namespace Malsys.Web.Controllers {
 			NoLsysFoundDumpingConstants,
 
 		}
+
 	}
 }

@@ -10,6 +10,7 @@ using Malsys.Processing.Output;
 using Malsys.SemanticModel.Evaluated;
 using Malsys.SourceCode.Printers;
 using Malsys.Web.Entities;
+using Elmah;
 
 namespace Malsys.Web.Models.Repositories {
 	public class MalsysInputRepository : IMalsysInputRepository {
@@ -108,14 +109,15 @@ namespace Malsys.Web.Models.Repositories {
 				return null;
 			}
 
-			const int randomIdLength = 8;
+			const int urlIdLength = 8;
+
 			var rnd = new Random();
-			var sb = new StringBuilder(randomIdLength);
-			string randomId;
+			var sb = new StringBuilder(urlIdLength);
+			string urlId;
 
 			while (true) {
 				sb.Clear();
-				for (int i = 0; i < randomIdLength; i++) {
+				for (int i = 0; i < urlIdLength; i++) {
 					var rNum = rnd.Next(10 + 26 + 26);
 					if (rNum < 10) {
 						sb.Append((char)('0' + rNum));
@@ -127,8 +129,9 @@ namespace Malsys.Web.Models.Repositories {
 						sb.Append((char)('A' + rNum - 10 - 26));
 					}
 				}
-				randomId = sb.ToString();
-				if (inputDb.SavedInputs.Where(x => x.RandomId == randomId).Count() == 0) {
+
+				urlId = sb.ToString();
+				if (inputDb.SavedInputs.Where(x => x.UrlId == urlId).Count() == 0) {
 					break;  // free random ID found
 				}
 			}
@@ -137,15 +140,21 @@ namespace Malsys.Web.Models.Repositories {
 			DateTime now = dateTimeProvider.Now;
 
 			var savedInput = new SavedInput() {
-				RandomId = randomId,
-				User = user,
+				UrlId = urlId,
 				ParentInputProcessId = parentId,
-				Date = now,
-				Source = source,
+				User = user,
+				CreationDate = now,
+				EditDate = now,
+				Published = false,
+				Deleted = false,
+				Views = 0,
+				Rating = 0,
 				SourceSize = source.Length,
 				OutputSize = outputs.Sum(o => new FileInfo(o.FilePath).Length),
 				Duration = duration.Ticks,
-				Views = 0
+				Source = source,
+				Description = null,
+				ThumbnailSource = null
 			};
 			inputDb.SaveChanges();
 
@@ -153,7 +162,7 @@ namespace Malsys.Web.Models.Repositories {
 		}
 
 
-		public void CleanProcessOutputs(string workDirFullPath, int maxFilesCount) {
+		public void CleanProcessOutputs(string workDirFullPath, int maxFilesCount, int filesToDelete) {
 
 			int count = inputDb.ProcessOutputs.Count();
 
@@ -161,9 +170,8 @@ namespace Malsys.Web.Models.Repositories {
 				return;
 			}
 
-			int toDelete = Math.Max(maxFilesCount / 4, count - maxFilesCount);
 
-			foreach (var poToDelete in inputDb.ProcessOutputs.OrderBy(po => po.LastOpenDate).Take(toDelete)) {
+			foreach (var poToDelete in inputDb.ProcessOutputs.OrderBy(po => po.LastOpenDate).Take(filesToDelete)) {
 
 				string filePath = Path.Combine(workDirFullPath, poToDelete.FileName);
 
@@ -171,13 +179,22 @@ namespace Malsys.Web.Models.Repositories {
 					try {
 						File.Delete(filePath);
 					}
+					catch (FileNotFoundException) {
+						// file can be deleted by another request, we are not locking anything
+					}
 					catch (Exception ex) {
-						// TODO: log
+						ErrorSignal.FromCurrentContext().Raise(ex);
 						continue;  // do not delete from DB
 					}
 				}
 
-				inputDb.DeleteProcessOutput(poToDelete);
+				try {
+					inputDb.DeleteProcessOutput(poToDelete);
+				}
+				catch (Exception) {
+					// DB row could be deleted by another request, we are not locking anything
+					// we have to try to delete DB entry because someone could delete file in FS and not DB row
+				}
 
 			}
 

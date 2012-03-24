@@ -98,6 +98,7 @@
     <Compile Include="AliasAttribute.cs" />
     <Compile Include="Extensions%27\DictionaryExtensions.cs" />
     <Compile Include="Extensions%27\FSharpOptionExtensions.cs" />
+    <Compile Include="Extensions%27\HashSetExtensions.cs" />
     <Compile Include="Extensions%27\TypeExtensions.cs" />
     <Compile Include="Helpers%27\AnonymousObjectHelper.cs" />
     <Compile Include="Extensions%27\TimeExtensions.cs" />

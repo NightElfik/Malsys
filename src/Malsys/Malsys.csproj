@@ -134,6 +134,8 @@
     <Compile Include="Compilers\ProcessStatementsCompiler.cs" />
     <Compile Include="Compilers\RewriteRuleCompiler.cs" />
     <Compile Include="Compilers\SymbolsCompiler.cs" />
+    <Compile Include="Processing\Context\ContextListBuilder.cs" />
+    <Compile Include="Processing\Context\ContextListNode.cs" />
     <Compile Include="Evaluators\ExpressionEvaluatorContext.cs" />
     <Compile Include="Evaluators\FunctionData.cs" />
     <Compile Include="Evaluators\FunctionInfo.cs" />
@@ -157,7 +159,10 @@
     <Compile Include="Media\ColorGradients.cs" />
     <Compile Include="Media\Math3D.cs" />
     <Compile Include="Media\Polygon3D.cs" />
-    <Compile Include="Processing\CommonAdditionalDataKeys.cs" />
+    <Compile Include="Processing\Context\ContextChecker.cs" />
+    <Compile Include="Processing\Components\Rewriters\RewriterRewriteRule.cs" />
+    <Compile Include="Processing\ProcessException.cs" />
+    <Compile Include="Processing\OutputMetadataKeyHelper.cs" />
     <Compile Include="Processing\Components\Interfaces%27\ILsystemInLsystemProcessor.cs" />
     <Compile Include="Processing\Components\Common\LsystemInLsystemProcessor.cs" />
     <Compile Include="Processing\Components\Iterators\InnerLsystemIterator.cs" />

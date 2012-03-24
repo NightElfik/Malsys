@@ -1,4 +1,12 @@
 ﻿
+/// <summary>
+/// Well-known user roles.
+/// </summary>
+/// <remarks>
+/// All user role names are in lower-case to allow direct comparison with NameLowercase column on Roles table.
+///
+/// All these roles should be in DB at any time.
+/// </remarks>
 public static class UserRoles {
 
 	public const string Administrator = "administrator";

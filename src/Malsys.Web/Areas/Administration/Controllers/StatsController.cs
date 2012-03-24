@@ -52,12 +52,12 @@ namespace Malsys.Web.Areas.Administration.Controllers {
 			}
 
 			var result = inputDb.SavedInputs
-				.OrderByDescending(x => x.Date)
+				.OrderByDescending(x => x.EditDate)
 				.Select(x => new SavedInputModel {
 					SavedInputId = x.SavedInputId,
-					RandomId = x.RandomId,
+					UrlId = x.UrlId,
 					User = x.User.Name,
-					Date = x.Date,
+					EditDate = x.EditDate,
 					Duration = x.Duration,
 					Source = x.Source
 				})

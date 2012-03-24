@@ -28,7 +28,7 @@ namespace Malsys.Processing.Components.Renderers {
 
 		public virtual void AddCurrentOutputData(string key, object value) {
 			if (outputStream != null) {
-				context.OutputProvider.AddAdditionalData(outputStream, key, value);
+				context.OutputProvider.AddMetadata(outputStream, key, value);
 			}
 		}
 

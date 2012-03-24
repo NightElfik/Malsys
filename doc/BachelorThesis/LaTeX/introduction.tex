@@ -1,0 +1,101 @@
+
+\chapwithtoc{Introduction}
+
+\lsystem (also called Lindenmayer system) is mathematical formalism developed for plant growth modeling by Aristid Lindenmayer in 1968~\cite{Lin68}.
+In the simplest form an \lsystem is variant of regular grammar.
+Using rewriting rules from grammar \lsystem produces string of symbols which can be interpreted in many different ways.
+In first \lsystems by Lindenmayer were symbols interpreted as cells of algae.
+A different approach was taken by Przemyslaw Prusinkiewicz who interpreted \lsystem symbols with Logo-like turtle\footnote{
+	Logo is computer programming language developed for use in education of programming for children.
+	Logo controls cybernetic turtle which is drawing on 2D canvas.}~\cite{Pru85}.
+With this method he obtained more plant-like structures and fractals.~\cite{CD93}
+
+Over the time \lsystems were used in other areas.
+\lsystems were used to generate rivers in fractal mountains~\cite{PH93}, street generating in procedural modeling of cities~\cite{PM01} and to describe subdivision curves \cite{PSSK03}.
+\lsystems can be used in other fields than computer graphics for example in music generation~\cite{HCJ99, Man06}.
+They are still used in plant modeling, for example they were used to generate many plants and trees to famous film Avatar~\cite{Wor08, Dun10}.
+\citeauthor{SBM10} presented automatic generation of \lsystems from 2D model~\cite{SBM10}.
+
+\lsystems has wide variety of interesting applications but it is hard to find some place to experiment with them.
+Web-based \lsystem generators are often too primitive and most of desktop applications are specialized for some concrete \lsystem application.
+Goal of this work is to create online development environment for anybody who wants to experiment with \lsystems.
+Design of development environment will be divided into two parts, user interface and \lsystem processing library.
+
+User interface will be web site which offers great accessibility, anybody can visit it from any computer around the world.
+Interface should be friendly to new users and also offer advanced features for experienced users.
+Primary output format of web based \lsystem processor will be 2D images (vector and raster) but it will be capable to create and display 3D outputs with modern HTML5 WebGL\footnote{
+	WebGL (Web-based Graphics Library) is a cross-platform, royalty-free web standard for a low-level 3D graphics API based on OpenGL ES 2.0, exposed through the HTML5 Canvas element as Document Object Model interfaces.
+	WebGL code executes on a computer display card's GPU (Graphics Processing Unit).} directly in browser.
+Part of the web site will be gallery of \lsystems.
+Any registered user can add his creation to gallery along with some description.
+It can also serve as learning tool for new users.
+
+New syntax for \lsystem input will be created to improve user experience especially for new users.
+The syntax should be clean, easy to learn and remember.
+
+\lsystem processing library will be created to support demands of web interface.
+Emphasis will be placed on extensibility.
+...
+
+All examples of \lsystems in this work will be in designed syntax and can be processed by library or tried on web.
+See syntax reference for details [??].
+
+
+%Each application uses \lsystem to generate string of symbols and than symbols are processed to get desired output.
+%But each application needs little different \lsystem features.
+%It is common practice that each application will also implement \lsystem processing part at its own even if.
+%An idea of universal system for \lsystem generation comes to mind.
+%The system which will offer to use \lsystem common features to specific application.
+%The universal system should allow user to focus on implementing theirs specific application using \lsystem features from universal system.
+
+%This work starts with these ideas in mind.
+%The goal is to implement universal and extensible system for working with \lsystems.
+%The system should be capable to cover as wide variety of applications as possible.
+%It should be possible to easily use common features of \lsystems as well as to redefine them.
+
+%An example of usage and capabilities of the universal system is as important part as design and implementation itself.
+%As an example will be created web page.
+%It will serve as detailed demonstration and also it will allow users around the world to try and play with \lsystems.
+
+%Emphasis will be given on easy extensibility
+
+%It is very hard and time-consuming for human to create realistic model of tree or even whole forest.
+%It is easier to write \lsystem rules specific to desired species of tree and than generate whole forest of trees in which no two trees are identical.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

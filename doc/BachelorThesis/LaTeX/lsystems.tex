@@ -1,0 +1,164 @@
+
+\chapter{\lsystem}
+
+History of \lsystem was mentioned in introduction.
+This chapter will describe \lsystem formally.
+First we will describe \lsystem in general and then we describe some special features of \lsystem.
+At the end of chapter will be List of related works.
+
+
+\section{Formal definition of \lsystem}
+
+\lsystem $L$ is formally triplet $L = (\Sigma, \omega, R)$, where
+
+\begin{itemize}
+	\item $\Sigma$ is alphabet, non-empty set of symbols ($\Sigma^{*}$ is set of all words over the alphabet $\Sigma$, $\Sigma^{+}$ is set of all non-empty words over the alphabet $\Sigma$),
+	\item $\omega \in \Sigma^{+}$ is axiom (also called seed), word defining the initial state of the \lsystem,
+	\item $R \subset \Sigma \times \Sigma^{*}$ is finite set of rewrite rules (production rules), rewrite rule defining rewriting symbol $s \in \Sigma$ to word $w \in \Sigma^{*}$ is written as $s \rightarrow w$.
+\end{itemize}
+
+For any symbol $s \in \Sigma$ which does not appear on the left hand side of any rewrite rule in $R$, the identity rewrite rule $s \rightarrow s$ is assumed.
+These symbols are called constants or terminals.
+
+Formal definition of \lsystem is similar to deterministic context-free grammar but there are few differences.
+In grammar we distinguishes terminal and non-terminal symbols, but in \lsystems we do not define them explicitly (we define identity rewrite rule for terminal symbols in \lsystems.
+Next difference is in initial state.
+In grammar we have only one symbol as initial state but \lsystem allows non-empty word.
+
+
+\subsection{Rewriting principles of \lsystem}
+
+\lsystem is developing in iterations.
+Rewrite rules of the \lsystem grammar are applied iteratively starting from the initial state.
+In each iteration is all symbols are rewritten.
+This is possible because all symbols are on left side of some rewrite rule (if symbol would not be on left side of some rewrite rule, identity rule will be defined).
+There is only one way how to rewrite iteration thus rewriting is deterministic.
+
+
+Rewriting of symbols is parallel (all symbols are rewritten at once).
+This means that if some symbol is rewritten, resulting symbols are not rewritten again in the same iteration.
+Example?
+
+Described rewriting mechanics distinguishes \lsystem and formal grammar.
+In grammar there is not mandatory to rewrite all possible symbols.
+Thus, \lsystems are strict subsets of languages.
+
+\lsystem in figure \ref{fig:rrExample} produces strings shown in table \ref{fig:rrExampleResult}.
+\lsystem starts with axiom $A$ and two rewrite rules $A \rightarrow B$ and $B \rightarrow A B$.
+In first iteration axiom $A$ is rewritten by first rewrite rule to $B$.
+In second iteration is $B$ rewritten with second rewrite rule to symbols $A B$.
+In third iteration is first symbol $A$ rewritten to $B$ and second symbol $B$ rewritten to $A B$ which gives string $B A B$ ...
+
+\begin{figure}[h]
+	\begin{Lsystem}
+lsystem RewritingExample {
+	set symbols axiom = A;
+	set iterations = 6;
+	set interpretEveryIteration = true;
+	rewrite A to B;
+	rewrite B to A B;
+}
+process all with SymbolPrinter;
+	\end{Lsystem}
+	\caption{Simple \lsystem as example of rewriting principles}
+	\label{fig:rrExample}
+\end{figure}
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{c l}
+   		\toprule
+   		Iteration & String of symbols \\
+   		\midrule
+		0 & A \\
+		1 & B \\
+		2 & A B \\
+		3 & B A B \\
+		4 & A B B A B \\
+		5 & B A B A B B A B \\
+		6 & A B B A B B A B A B B A B \\
+		\bottomrule
+	\end{tabular}
+	\caption{Result of \lsystem from figure \ref{fig:rrExample}}
+	\label{fig:rrExampleResult}
+\end{table}
+
+\lsystem in figure \ref{fig:rrExample} has also some interesting properties.
+String of symbols in every iteration (expect the axiom) is suffix of following string in next iteration.
+Also count of symbols in iterations gives Fibonacci sequence\footnote{Fibonacci numbers are defined by following the recurrence relation $F_n = F_{n-1} + F_{n-2}$ where $F_0 = F_1 = 1$} 1, 1, 2, 3, 5, 8, 13,~...
+
+\subsection{Interpretation of \lsystem symbols}
+
+Result of \lsystem rewriting is string of symbols, we can interpret symbols in any way we want.
+Most common and the simplest interpretation of \lsystem symbols is interpret symbols as 2D graphics elements like lines or polygons.
+The first who came with this type of interpretation was Przemyslaw Prusinkiewicz who interpreted \lsystem symbols with Logo-like turtle~\cite{Pru85}.
+Logo is programming language that controls cybernetic turtle which is drawing on 2D canvas.
+This can be easily extended into 3D.
+
+Interpretation of symbols can arbitrary.
+Symbols can be interpreted as music~\cite{HCJ99, Man06}.
+
+
+\section{\lsystem features}
+
+In this section we will describe extending features of \lsystem rewriting and interpreting system.
+Some features may require extension of described formal definition of \lsystem but it will be omitted.
+
+
+\subsection{Basic \lsystem}
+
+Basic \lsystem is called D0L-system\footnote{D0L-system is also called just dL-system~\cite{Zar04}}, \emph{D} stands for deterministic and \emph{0} means they are context-free.
+Deterministic \lsystems have for each symbol just one rewrite rule.
+Because of rewriting principle which rewrites all symbols in each iteration the whole rewriting process is deterministic.
+
+
+\subsection{Context rewriting}
+
+Context rewrite rules allows to rewrite symbol depending on the context (symbols around it).
+
+
+
+\subsection{Parametric rewriting}
+
+\subsection{Bracketed \lsystems}
+
+\subsection{Stochastic \lsystems}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

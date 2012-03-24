@@ -30,7 +30,7 @@ namespace Malsys.Web.Controllers {
 
 			return View(malsysInputRepository.InputDb.SavedInputs
 				.Where(x => x.User.NameLowercase == userLower)
-				.OrderByDescending(x => x.Date)
+				.OrderByDescending(x => x.EditDate)
 				.AsPagination(page));
 		}
 
@@ -41,7 +41,7 @@ namespace Malsys.Web.Controllers {
 			bool admin = User.IsInRole(UserRoles.Administrator);
 
 			var malsysInput = malsysInputRepository.InputDb.SavedInputs
-				.Where(x => x.RandomId == id)
+				.Where(x => x.UrlId == id)
 				.Where(x => admin || x.User.NameLowercase == userLower)
 				.SingleOrDefault();
 

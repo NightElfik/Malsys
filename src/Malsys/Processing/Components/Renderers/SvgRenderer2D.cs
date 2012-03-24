@@ -102,7 +102,7 @@ namespace Malsys.Processing.Components.Renderers {
 			this.measuring = measuring;
 			var localAdditionalData = globalAdditionalData;
 			if (compress) {
-				localAdditionalData = localAdditionalData.Add(CommonAdditionalDataKeys.OutputIsGZipped, true);
+				localAdditionalData = localAdditionalData.Add(OutputMetadataKeyHelper.OutputIsGZipped, true);
 			}
 
 			if (measuring) {
@@ -157,7 +157,7 @@ namespace Malsys.Processing.Components.Renderers {
 
 		public void AddCurrentOutputData(string key, object value) {
 			if (outputStream != null) {
-				context.OutputProvider.AddAdditionalData(outputStream, key, value);
+				context.OutputProvider.AddMetadata(outputStream, key, value);
 			}
 		}
 

@@ -45,15 +45,19 @@ namespace Malsys.Processing.Output {
 		/// If in <paramref name="additionalData" /> is key CommonAdditionalDataKeys.OutputIsGZipped with value true,
 		/// ".gz" will be added to file extension and files with mime type MimeType.Image_SvgXml will have extension ".svgz".
 		/// </remarks>
-		public Stream GetOutputStream<TCaller>(string outputName, string mimeType,
-				bool temp = false, FSharpMap<string, object> additionalData = null) {
+		public Stream GetOutputStream<TCaller>(string outputName, string mimeType, bool temp = false, IDictionary<string, object> metadata = null) {
 
-			if (additionalData == null) {
-				additionalData = MapModule.Empty<string, object>();
+			Dictionary<string, object> meta;
+
+			if (metadata == null) {
+				meta = new Dictionary<string, object>();
+			}
+			else {
+				meta = metadata.ToDictionaryOverwrite(x => x.Key, x => x.Value);
 			}
 
 			string ext = MimeType.ToFileExtension(mimeType);
-			if (additionalData.ContainsValue(CommonAdditionalDataKeys.OutputIsGZipped, true)) {
+			if (meta.ContainsValue(OutputMetadataKeyHelper.OutputIsGZipped, true)) {
 				if (mimeType == MimeType.Image.SvgXml) {
 					ext = ".svgz";
 				}
@@ -73,7 +77,7 @@ namespace Malsys.Processing.Output {
 				IsTemporary = temp,
 				MimeType = mimeType,
 				Caller = typeof(TCaller),
-				AdditionalData = additionalData
+				Metadata = meta
 			};
 
 			managedFiles.Add(mf);
@@ -82,9 +86,9 @@ namespace Malsys.Processing.Output {
 			return stream;
 		}
 
-		public void AddAdditionalData(Stream outputStream, string key, object value) {
+		public void AddMetadata(Stream outputStream, string key, object value) {
 			var managedFile = managedFiles.Where(x => x.Stream == outputStream).Single();
-			managedFile.AdditionalData = managedFile.AdditionalData.Add(key, value);
+			managedFile.Metadata.Add(key, value);
 
 
 		}
@@ -140,7 +144,7 @@ namespace Malsys.Processing.Output {
 					x.FilePath,
 					x.MimeType,
 					x.Caller,
-					x.AdditionalData));
+					x.Metadata.ToFsharpMap(y => y.Key, y => y.Value)));
 		}
 
 		/// <summary>
@@ -171,7 +175,7 @@ namespace Malsys.Processing.Output {
 
 			managedFiles.Clear();
 			FSharpMap<string, object> additionalData = MapModule.Empty<string, object>();
-			additionalData = additionalData.Add(CommonAdditionalDataKeys.PackedOutputs, true);
+			additionalData = additionalData.Add(OutputMetadataKeyHelper.PackedOutputs, true);
 			return new OutputFile[] { new OutputFile("Packed output files", packagePath, MimeType.Application.Zip, typeof(FileOutputProvider), additionalData) };
 
 		}
@@ -206,7 +210,7 @@ namespace Malsys.Processing.Output {
 			public bool IsTemporary;
 			public string MimeType;
 			public Type Caller;
-			public FSharpMap<string, object> AdditionalData;
+			public Dictionary<string, object> Metadata;
 
 		}
 

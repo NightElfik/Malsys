@@ -1,0 +1,85 @@
+\ProvidesPackage{lsystemSyntax}
+
+%\addto\captionsczech{\def\lstlistingname{Kód}}
+%\addto\captionsczech{\def\lstlistlistingname{Seznam ukázek kódů}}
+
+\definecolor{clr_code_bg}{rgb}{0.95,0.95,0.95}
+\definecolor{clr_keyword}{rgb}{0,0,1}
+\definecolor{clr_keyword_ls}{rgb}{0.5,0,0.2}
+\definecolor{clr_string}{rgb}{0.64,0.08,0.08}
+\definecolor{clr_comment}{rgb}{0,0.5,0}
+\definecolor{clr_class}{rgb}{0.17,0.57,0.69}
+\definecolor{clr_string}{rgb}{0.64,0.08,0.08}
+
+\lstdefinelanguage{Csharp}{
+	basicstyle=\footnotesize{}\ttfamily,
+	keywords={
+		abstract,event,new,struct,as,explicit,null,switch,base,extern,object,this,bool,false,operator,throw,
+		break,finally,out,true,byte,fixed,override,try,case,float,params,typeof,catch,for,get,private,uint,char,foreach,protected,ulong,
+		checked,goto,public,unchecked,class,if,readonly,unsafe,const,implicit,ref,ushort,continue,in,return,using,
+		decimal,int,sbyte,set,virtual,default,interface,sealed,volatile,delegate,internal,short,void,do,is,sizeof,while,
+		double,lock,stackalloc,else,long,static,enum,namespace,string},
+	keywordstyle=\color{clr_keyword},
+	classoffset=1,  % new class offset
+	morekeywords={Console,Type,Dictionary,Assembly,ILocalizable,ILocalizableData,PropertyInfo,IRenderer,IVirtualMachine,InitialState,MeasureResult},
+	keywordstyle=\color{clr_class},
+	classoffset=0,  % restore default class offset
+	sensitive=true,
+	comment=[l]{//},
+	morecomment=[s]{/*}{*/},
+	commentstyle=\color{clr_comment}\itshape,
+	string=[b]",
+	stringstyle=\color{clr_string},
+	extendedchars=true,
+	numbers=left,
+	numbersep=4pt,
+	tabsize=4,
+	frame=lines,
+	captionpos=t,
+	backgroundcolor=\color{clr_code_bg},
+	showstringspaces=false
+}
+
+\lstnewenvironment{Csharp}
+{\lstset{language=Csharp}}
+{}
+
+\lstdefinelanguage{Lsystem}{
+	basicstyle=\ttfamily,
+	keywords={
+		all,as,component,configuration,connect,consider,container,default,fun,interpret,let,lsystem,
+		nothing,or,process,return,rewrite,set,symbols,this,to,typeof,use,virtual,weight,with,where},
+	keywordstyle=\color{clr_keyword_ls}\bfseries,
+	comment=[l]{//},
+	morecomment=[s]{/*}{*/},
+	commentstyle=\color{clr_comment}\itshape,
+	extendedchars=true,
+	numbers=left,
+	numbersep=4pt,
+	tabsize=4,
+	frame=lines,
+	captionpos=t,
+	backgroundcolor=\color{clr_code_bg},
+	showstringspaces=false,
+	%xleftmargin=20pt,
+	escapechar=`
+}
+
+\lstnewenvironment{Lsystem}
+{\lstset{language=Lsystem}}
+{}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,11 +1,17 @@
 ﻿@model ProcessLsystemResultModel
 
 @{
-	ViewBag.Title = "Failed to load input";
+	ViewBag.Title = "Failed to load L-system";
 }
 
-<h2>Failed to load input</h2>
+<h2>Failed to load L-system</h2>
 
 <p>
-	Failed to load input with ID `@Model.SavedInputId`.
+	Failed to load L-system with ID `<b>@Model.SavedInputUrlId</b>`.
+	This can happen because:
 </p>
+
+<ul>
+	<li>Author deleted this L-system.</li>
+	<li>ID `<b>@Model.SavedInputUrlId</b>` does not exist.</li>
+</ul>

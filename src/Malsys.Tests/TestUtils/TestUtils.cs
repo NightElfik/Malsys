@@ -1,20 +1,23 @@
 ﻿using System;
+using System.Linq;
 using Malsys.Compilers;
 using Malsys.Evaluators;
 using Malsys.IO;
 using Malsys.Parsing;
+using Malsys.Reflection;
+using Malsys.Resources;
+using Malsys.SemanticModel;
 using Malsys.SemanticModel.Compiled;
+using Malsys.SemanticModel.Evaluated;
 using Malsys.SourceCode.Printers;
 using Microsoft.FSharp.Text.Lexing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Malsys.Reflection;
-using Malsys.Resources;
-using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Tests {
 	internal static class TestUtils {
 
 		public static readonly IExpressionEvaluatorContext ExpressionEvaluatorContext;
+
 
 		static TestUtils() {
 
@@ -37,11 +40,11 @@ namespace Malsys.Tests {
 			return symbolsAst;
 		}
 
-		public static ImmutableList<SemanticModel.Symbol<IExpression>> CompileSymbols(ImmutableList<Ast.LsystemSymbol> symbolsAst) {
+		public static ImmutableList<Symbol<IExpression>> CompileSymbols(ImmutableList<Ast.LsystemSymbol> symbolsAst) {
 
 			var compiler = new CompilersContainer().Resolve<ISymbolCompiler>();
 			var logger = new MessageLogger();
-			var symbols = compiler.CompileList<Ast.LsystemSymbol, Malsys.SemanticModel.Symbol<IExpression>>(symbolsAst, logger);
+			var symbols = compiler.CompileList<Ast.LsystemSymbol, Symbol<IExpression>>(symbolsAst, logger);
 
 			if (logger.ErrorOccurred) {
 				Assert.Fail("Failed to compile symbols. " + logger.ToString());
@@ -50,9 +53,32 @@ namespace Malsys.Tests {
 			return symbols;
 		}
 
-		public static ImmutableList<SemanticModel.Symbol<IExpression>> CompileSymbols(string input) {
+		public static ImmutableList<Symbol<string>> CompileSymbolsAsPattern(ImmutableList<Ast.LsystemSymbol> symbolsAst) {
+
+			var compiler = new CompilersContainer().Resolve<ISymbolCompiler>();
+			var logger = new MessageLogger();
+			var symbols = compiler.CompileList<Ast.LsystemSymbol, Symbol<string>>(symbolsAst, logger);
+
+			if (logger.ErrorOccurred) {
+				Assert.Fail("Failed to compile symbols. " + logger.ToString());
+			}
+
+			return symbols;
+		}
+
+		public static ImmutableList<Symbol<IExpression>> CompileSymbols(string input) {
 			var parsed = ParseSymbols(input);
 			return CompileSymbols(parsed);
+		}
+
+		public static ImmutableList<Symbol<string>> CompileSymbolsAsPattern(string input) {
+			var parsed = ParseSymbols(input);
+			return CompileSymbolsAsPattern(parsed);
+		}
+
+
+		public static ImmutableList<Symbol<IValue>> EvaluateSymbols(ImmutableList<Symbol<IExpression>> input) {
+			return input.Select(s => new Symbol<IValue>(s.Name, ExpressionEvaluatorContext.EvaluateList(s.Arguments))).ToImmutableList();
 		}
 
 
@@ -154,7 +180,7 @@ namespace Malsys.Tests {
 
 		}
 
-		public static string Print(SemanticModel.Constant c) {
+		public static string Print(Constant c) {
 
 			return Print((IValue)c);
 
@@ -191,7 +217,7 @@ namespace Malsys.Tests {
 
 		}
 
-		public static string Print(ImmutableList<SemanticModel.Symbol<IValue>> symbols) {
+		public static string Print(ImmutableList<Symbol<IValue>> symbols) {
 
 			var writer = new IndentStringWriter();
 			new CanonicPrinter(writer).Print(symbols);

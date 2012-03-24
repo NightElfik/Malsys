@@ -60,7 +60,7 @@ namespace Malsys.Processing.Components.Interpreters {
 
 		public void Initialize(ProcessContext ctxt) {
 			logger = ctxt.Logger;
-			renderer.AddGlobalOutputData(CommonAdditionalDataKeys.OutputIsAsciiArt, true);
+			renderer.AddGlobalOutputData(OutputMetadataKeyHelper.OutputIsAsciiArt, true);
 		}
 
 		public void Cleanup() { }

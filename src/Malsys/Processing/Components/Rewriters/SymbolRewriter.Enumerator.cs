@@ -4,22 +4,34 @@ using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using Malsys.Evaluators;
+using Malsys.Processing.Context;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Evaluated;
 using Symbol = Malsys.SemanticModel.Symbol<Malsys.SemanticModel.Evaluated.IValue>;
 using SymbolPatern = Malsys.SemanticModel.Symbol<string>;
-using SymbolPaternsList = Malsys.SemanticModel.SymbolsList<string>;
 
 namespace Malsys.Processing.Components.Rewriters {
 	public partial class SymbolRewriter {
 
+		/// <remarks>
+		/// Enumerator is reusable BUT Reset method must be called before each usage.
+		/// Even source (symbol provider) can be switched between usages, Reset call will gets new enumerator.
+		/// </remarks>
 		private class SymbolRewriterEnumerator : IEnumerator<Symbol> {
 
+			private const string randomFuncName = "random";
+
+			private static readonly ContextChecker contextChecker = new ContextChecker();
+			private static readonly IValue[] emptyArgs = new IValue[0];
+
+
 			private readonly SymbolRewriter parent;
+			private readonly IMessageLogger logger;
 			private readonly IExpressionEvaluatorContext exprEvalCtxt;
-			private readonly Dictionary<string, RewriteRule[]> rewriteRules;
+			private readonly Dictionary<string, RewriterRewriteRule[]> rewriteRules;
 			private readonly HashSet<string> contextIgnoredSymbolNames;
+			private readonly HashSet<string> contextSymbols;
 
 			private IEnumerator<Symbol> symbolsSource;
 
@@ -33,35 +45,29 @@ namespace Malsys.Processing.Components.Rewriters {
 			private readonly int leftCtxtMaxLen;
 
 			/// <summary>
-			/// In left context queue are kept only valid symbols for context checking.
-			/// </summary>
-			private readonly IndexableQueue<Symbol> leftContext;
-
-			/// <summary>
 			/// Maximal length of right context from all rewrite rules.
 			/// </summary>
 			private readonly int rightCtxtMaxLen;
 
-			/// <summary>
-			/// In right context queue are kept only valid symbols for context checking.
-			/// If no symbols are ignored, this queue is same as input buffer.
-			/// </summary>
-			private readonly IndexableQueue<Symbol> rightContext;
+			private ContextListNode<IValue> contextRootNode;
+			private ContextListNode<IValue> currentSombolInContext;
 
-			private const string randomFuncName = "random";
+			private readonly ContextListBuilder<IValue> contextBuilder;
+
 			private Random emergencyRandomGenerator = null;
-			private readonly IValue[] emptyArgs = new IValue[0];
 
 
 
 			public SymbolRewriterEnumerator(SymbolRewriter parentSr) {
 
 				parent = parentSr;
+				logger = parent.context.Logger;
 
 				rewriteRules = parent.rewriteRules;
 				exprEvalCtxt = parent.exprEvalCtxt;
 
 				contextIgnoredSymbolNames = parent.contextIgnoredSymbolNames;
+				contextSymbols = parent.contextSymbols;
 
 				leftCtxtMaxLen = parent.leftCtxtMaxLen;
 				rightCtxtMaxLen = parent.rightCtxtMaxLen;
@@ -70,11 +76,8 @@ namespace Malsys.Processing.Components.Rewriters {
 				// optimal output buffer length is max length of any replacement
 				outputBuffer = new IndexableQueue<Symbol>(parent.rrReplacementMaxLen + 1);
 
-				// optimal history length + 1 to be able add before delete
-				leftContext = new IndexableQueue<Symbol>(leftCtxtMaxLen + 1);
-				rightContext = new IndexableQueue<Symbol>(rightCtxtMaxLen + 1);
+				contextBuilder = new ContextListBuilder<IValue>(s => parent.startBranchSymbolNames.Contains(s.Name), s => parent.endBranchSymbolNames.Contains(s.Name));
 
-				//Reset();
 			}
 
 
@@ -92,13 +95,7 @@ namespace Malsys.Processing.Components.Rewriters {
 
 					rewrite(currSymbol);
 
-					// add processed symbol to left context
-					if (!isIgnoredInContext(currSymbol)) {
-						leftContext.Enqueue(currSymbol);
-						if (leftContext.Count > leftCtxtMaxLen) {
-							leftContext.Dequeue();  // throw away unnecessary symbol from left context
-						}
-					}
+					// TODO: clean context from left
 
 					if (outputBuffer.Count > 0) {
 						Current = outputBuffer.Dequeue();
@@ -117,19 +114,21 @@ namespace Malsys.Processing.Components.Rewriters {
 			}
 
 			/// <summary>
-			/// Have to be called before any usage, even before first usage.
+			/// Must be called before any usage, even before first usage.
 			/// </summary>
 			public void Reset() {
 
 				symbolsSource = parent.SymbolProvider.GetEnumerator();
 				inputBuffer.Clear();
 				outputBuffer.Clear();
-				leftContext.Clear();
-				rightContext.Clear();
+				contextBuilder.Reset();
+				contextRootNode = contextBuilder.RootNode;
+				currentSombolInContext = contextRootNode;  // will correctly set to symbol after load (next of list is its first item)
+
 			}
 
 			public void Dispose() {
-				// do not dispose anything since enumerator is reused
+				// do not dispose anything since enumerator can be reused
 			}
 
 			#endregion
@@ -143,9 +142,9 @@ namespace Malsys.Processing.Components.Rewriters {
 				}
 
 				symbol = inputBuffer.Dequeue();
-				if (!isIgnoredInContext(symbol)) {
-					var rCtxt = rightContext.Dequeue();
-					Debug.Assert(rCtxt == symbol, "First symbol in right context do not match first symbol in input buffer.");
+				if (!contextSymbols.Contains(symbol.Name)) {
+					currentSombolInContext = currentSombolInContext.GetNextSymbolNodeInHierarchy();
+					Debug.Assert(currentSombolInContext.Symbol == symbol, "Context is not synchronized.");
 				}
 
 				return true;
@@ -169,18 +168,21 @@ namespace Malsys.Processing.Components.Rewriters {
 
 				int loadedSymbolsCount = 0;
 
-				while (count-- > 0 && symbolsSource.MoveNext()) {
+				while (count > 0 && symbolsSource.MoveNext()) {
 					var symbol = symbolsSource.Current;
 					inputBuffer.Enqueue(symbol);
-					if (!isIgnoredInContext(symbol)) {
-						rightContext.Enqueue(symbol);
+					if (!contextIgnoredSymbolNames.Contains(symbol.Name)) {
+						contextBuilder.AddSymbolToContext(symbol);
 					}
 					loadedSymbolsCount++;
+					count--;
 				}
 
 				return loadedSymbolsCount;
 
 			}
+
+
 
 			/// <summary>
 			/// Rewrites given symbol to output buffer.
@@ -188,7 +190,7 @@ namespace Malsys.Processing.Components.Rewriters {
 			private void rewrite(Symbol symbol) {
 
 				IExpressionEvaluatorContext eec;
-				RewriteRule rrule;
+				RewriterRewriteRule rrule;
 
 				if (tryFindRewriteRule(symbol, out rrule, out eec)) {
 
@@ -205,9 +207,9 @@ namespace Malsys.Processing.Components.Rewriters {
 				}
 			}
 
-			private bool tryFindRewriteRule(Symbol symbol, out RewriteRule rruleResult, out IExpressionEvaluatorContext empResult) {
+			private bool tryFindRewriteRule(Symbol symbol, out RewriterRewriteRule rruleResult, out IExpressionEvaluatorContext empResult) {
 
-				RewriteRule[] rrules;
+				RewriterRewriteRule[] rrules;
 				if (rewriteRules.TryGetValue(symbol.Name, out rrules)) {
 					foreach (var rr in rrules) {
 
@@ -217,12 +219,15 @@ namespace Malsys.Processing.Components.Rewriters {
 						var eec = exprEvalCtxt;
 
 						// left context check first, it is simpler (do not invoke input reading as right context check)
-						if (rr.LeftContext.Length > 0 && !checkContext(leftContext, rr.LeftContext, ref eec)) {
+						if (!rr.LeftContext.IsEmpty && !contextChecker.CheckLeftContextOfSymbol(currentSombolInContext, rr.LeftContext, ref eec)) {
 							continue;
 						}
 
-						if (rr.RightContext.Length > 0 && !checkRightContext(rr.RightContext, ref eec)) {
-							continue;
+						if (!rr.RightContext.IsEmpty) {
+							ensureEnoughSymbolsForRightContext(rr.RightContextLenth);
+							if (!contextChecker.CheckRightContextOfSymbol(currentSombolInContext, rr.RightContext, ref eec)) {
+								continue;
+							}
 						}
 
 						// map pattern
@@ -261,37 +266,24 @@ namespace Malsys.Processing.Components.Rewriters {
 
 
 
-			private bool checkContext(IndexableQueue<Symbol> contextSymbols, SymbolPaternsList ctxtPattern, ref IExpressionEvaluatorContext eec) {
+			private void ensureEnoughSymbolsForRightContext(int nodesToLoad) {
 
-				if (contextSymbols.Count < ctxtPattern.Length) {
-					return false;
-				}
+				var prevNode = currentSombolInContext;
 
-				for (int i = 0; i < ctxtPattern.Length; i++) {
-					if (ctxtPattern[i].Name == contextSymbols[i].Name) {
-						mapPatternConsts(ctxtPattern[i], contextSymbols[i], ref eec);
+				while (nodesToLoad >= 0) {  // load one more than desired
+
+					if (prevNode.Next == null) {
+						if (loadSymbols(4 + nodesToLoad * 2) == 0) {
+							return;  // no more symbols to load
+						}
 					}
 					else {
-						return false;
+						prevNode = prevNode.Next;
+						nodesToLoad--;
 					}
+
 				}
 
-				return true;
-			}
-
-			private bool checkRightContext(SymbolPaternsList ctxt, ref IExpressionEvaluatorContext eec) {
-
-				while (rightContext.Count < ctxt.Length) {
-					// load as much symbols as needed to match context if non of newly loaded will be ignored
-					// at least 1 symbol is loaded because rightContext.Count < ctxt.Length
-					int toLoad = ctxt.Length - rightContext.Count;
-					int loaded = loadSymbols(toLoad);
-					if (loaded < toLoad) {
-						return false; // not enough symbols to match context
-					}
-				}
-
-				return checkContext(rightContext, ctxt, ref eec);
 			}
 
 			private void mapPatternConsts(SymbolPatern pattern, Symbol symbol, ref IExpressionEvaluatorContext eec) {
@@ -307,9 +299,9 @@ namespace Malsys.Processing.Components.Rewriters {
 
 			}
 
-			private RewriteRuleReplacement chooseReplacement(RewriteRule rr, IExpressionEvaluatorContext eec) {
+			private RewriteRuleReplacement chooseReplacement(RewriterRewriteRule rr, IExpressionEvaluatorContext eec) {
 
-				int rrrLen = rr.Replacements.Length;
+				int rrrLen = rr.Replacements.Count;
 
 				if (rrrLen == 0) {
 					return RewriteRuleReplacement.Empty;
@@ -337,10 +329,6 @@ namespace Malsys.Processing.Components.Rewriters {
 
 				// return last item as result
 				return rr.Replacements[rrrLen - 1];
-			}
-
-			private bool isIgnoredInContext(Symbol symbol) {
-				return contextIgnoredSymbolNames.Contains(symbol.Name);
 			}
 
 			private double nextRandom() {

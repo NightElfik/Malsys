@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml.Linq;
-using System.Reflection;
-using System.Xml.XPath;
 using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Xml.Linq;
+using System.Xml.XPath;
 
 namespace Malsys.Reflection {
+	/// <summary>
+	/// All public members are thread safe.
+	/// </summary>
+	/// <remarks>
+	/// Caches XDocuments for fast access to documentation.
+	/// </remarks>
 	public class XmlDocReader {
 
 		private const string defaultTagPath = "summary";

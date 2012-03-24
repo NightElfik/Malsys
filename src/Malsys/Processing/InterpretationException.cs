@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace Malsys.Processing {
 
 	[Serializable]
-	public class InterpretationException : ApplicationException {
+	public class InterpretationException : ProcessException {
 
 		public InterpretationException() { }
 		public InterpretationException(string message) : base(message) { }

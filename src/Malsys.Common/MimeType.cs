@@ -78,7 +78,7 @@ namespace Malsys {
 
 			Contract.Requires(mimeType != null);
 			Contract.Ensures(Contract.Result<string>() != null);
-			Contract.Ensures(Contract.Result<string>().Length >= 2);
+			Contract.Ensures(Contract.Result<string>().Length >= 3);
 			Contract.Ensures(Contract.Result<string>().StartsWith("."));
 
 			switch (mimeType) {

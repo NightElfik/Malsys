@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.FSharp.Collections;
 
 namespace Malsys {
 	public static class LinqExtensions {
@@ -36,6 +38,31 @@ namespace Malsys {
 			}
 
 			return sb.ToString();
+		}
+
+		/// <summary>
+		/// Converts this enumerable to dictionary according to specified key selector and element selector functions.
+		/// Values with the same key are overwritten.
+		/// </summary>
+		public static Dictionary<TKey, TElement> ToDictionaryOverwrite<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector) {
+
+			var dict = new Dictionary<TKey, TElement>();
+
+			foreach (var item in source) {
+				dict[keySelector(item)] = elementSelector(item);
+			}
+
+			return dict;
+
+		}
+
+		/// <summary>
+		/// Converts this enumerable to F# map according to specified key selector and element selector functions.
+		/// </summary>
+		public static FSharpMap<TKey, TElement> ToFsharpMap<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector) {
+
+			return source.Aggregate(MapModule.Empty<TKey, TElement>(), (acc, x) => acc.Add(keySelector(x), elementSelector(x)));
+
 		}
 	}
 }

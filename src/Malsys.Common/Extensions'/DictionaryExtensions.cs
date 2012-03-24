@@ -22,6 +22,19 @@ namespace Malsys {
 
 		}
 
+		public static bool ContainsValue<TKey, TValue>(this Dictionary<TKey, TValue> dict, TKey key, TValue value) {
+
+			TValue val;
+
+			if(dict.TryGetValue(key, out val)) {
+				return value != null ? value.Equals(val) : val == null;
+			}
+			else {
+				return false;
+			}
+
+		}
+
 
 	}
 }

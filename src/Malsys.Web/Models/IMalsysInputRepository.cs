@@ -13,7 +13,7 @@ namespace Malsys.Web.Models {
 
 		SavedInput SaveInput(string source, int? parentId, IEnumerable<OutputFile> outputs, string userName, TimeSpan duration);
 
-		void CleanProcessOutputs(string workDirFullPath, int maxFilesCount);
+		void CleanProcessOutputs(string workDirFullPath, int maxFilesCount, int filesToDelete);
 
 	}
 }
