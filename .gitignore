@@ -12,19 +12,18 @@ obj/
 /src/TestResults
 /src/Malsys.Web/App_Data
 /src/Malsys.Web/WorkDir
+/src/Malsys.Web/GalleryWorkDir
 /src/Malsys.Web/Publish
 /src/Malsys.Web/ErrorLogs
 /src/Malsys.Web/Malsys.Web.Publish.xml
 /src/packages
-
-
-*.min.js
 
 # Dependencies
 /src/MvcContrib
 /src/dotless.Core.dll
 
 # T4 templaates generated files & rubbsih
+*.min.js
 *.generated.cs
 /src/Malsys.Web/Css/style.css
 /src/Malsys.Web/T4MVC.cs
@@ -36,6 +35,11 @@ obj/
 *.toc
 *.out
 *.synctex
+*.bbl
+*.bcf
+*.blg
+*.synctex.gz
+*.run.xml
 
 # do not need to version, can generate anytime
 /doc/TodoList/main.pdf
