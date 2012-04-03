@@ -1,10 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Malsys.Evaluators;
 using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Collections;
-using System.Collections.Generic;
-using System;
 
 namespace Malsys.Processing.Components.Common {
 	public class LsystemInLsystemProcessor : ILsystemInLsystemProcessor {
@@ -98,10 +98,10 @@ namespace Malsys.Processing.Components.Common {
 			// to avoid setting of settable values and initialization of myself and interpreter, but they are already connected
 			var compGraphOnlyNew = compGraph.Remove(myselfComp.Name).Remove(interpreterComp.Name);
 
-			// add variables and functions from components to ExpressionEvaluatorContext
+			// add variables and functions from components that can be called before init to ExpressionEvaluatorContext
 			var eec = ctxt.InputData.ExpressionEvaluatorContext;
 			eec = configBuilder.AddComponentsGettableVariables(compGraph, eec, true);
-			eec = configBuilder.AddComponentsCallableFunctions(compGraph, eec);
+			eec = configBuilder.AddComponentsCallableFunctions(compGraph, eec, true);
 
 			ProcessConfiguration procConfig;
 			using (var errBlock = ctxt.Logger.StartErrorLoggingBlock()) {
@@ -116,7 +116,9 @@ namespace Malsys.Processing.Components.Common {
 				configBuilder.SetAndCheckUserSettableProperties(compGraphOnlyNew, lsysEvaled.ComponentValuesAssigns, lsysEvaled.ComponentSymbolsAssigns, ctxt.Logger);
 
 				// add gettable variables which can not be get before initialization (do it with full component graph)
-				var newEec = configBuilder.AddComponentsGettableVariables(compGraph, lsysEvaled.ExpressionEvaluatorContext, false);
+				var newEec = lsysEvaled.ExpressionEvaluatorContext;
+				newEec = configBuilder.AddComponentsGettableVariables(compGraph, newEec, false);
+				newEec = configBuilder.AddComponentsCallableFunctions(compGraph, newEec, false);
 
 				var newContext = new ProcessContext(lsysEvaled, ctxt.OutputProvider, ctxt.InputData, ctxt.EvaluatorsContainer,
 					newEec, ctxt.ComponentResolver, ctxt.ProcessingTimeLimit, ctxt.ComponentGraph, ctxt.Logger);
@@ -131,7 +133,7 @@ namespace Malsys.Processing.Components.Common {
 			}
 
 			try {
-				procConfig.StarterComponent.Start(false);  // measuring is done by calling l-system if needed
+				procConfig.StarterComponent.Start(false);  // do not measure internally
 			}
 			catch (EvalException ex) {
 				ctxt.Logger.LogMessage(IEvaluatorsContainerExtensions.Message.EvalFailed, ex.GetFullMessage());

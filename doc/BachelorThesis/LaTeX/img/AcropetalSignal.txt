@@ -1,0 +1,22 @@
+lsystem AcropetalSignal {
+
+	set symbols axiom = B [ + A ] A [ - A ] A [ + A ] A;
+	set symbols contextIgnore = + -;  // ignored in context search
+	set symbols startBranchSymbols = [;
+	set symbols endBranchSymbols = ];
+
+	set iterations = 3;
+	set initialAngle = 90;
+	set interpretEveryIteration = true;
+
+	interpret A as DrawForward(50, 2);
+	interpret B as DrawForward(50, 4);
+	interpret + as TurnLeft(45);
+	interpret - as TurnLeft(-45);
+	interpret [ as StartBranch;
+	interpret ] as EndBranch;
+
+	rewrite { B } A to B;
+
+}
+process all with SvgRenderer;

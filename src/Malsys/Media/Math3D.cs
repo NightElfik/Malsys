@@ -23,13 +23,25 @@ namespace Malsys.Media {
 
 
 		/// <summary>
-		/// Adds two Point3D to Point3D.
+		/// Adds two Point3D.
 		/// </summary>
 		public static Point3D AddPoints(Point3D pt1, Point3D pt2) {
 
 			pt1.X += pt2.X;
 			pt1.Y += pt2.Y;
 			pt1.Z += pt2.Z;
+
+			return pt1;
+		}
+
+		/// <summary>
+		/// Subtracts two Point3D.
+		/// </summary>
+		public static Point3D SubtractPoints(Point3D pt1, Point3D pt2) {
+
+			pt1.X -= pt2.X;
+			pt1.Y -= pt2.Y;
+			pt1.Z -= pt2.Z;
 
 			return pt1;
 		}
@@ -79,22 +91,21 @@ namespace Malsys.Media {
 		/// </remarks>
 		public static Vector3D ToEuclidRotation(this Quaternion q) {
 
-			// Math.Asin(2 * 0.4995) = 87.4 degrees
-			const double gimbalLockTreshold = 0.4995;
-
 			if (!q.IsNormalized) {
 				q.Normalize();
 			}
 
 			double test = q.X * q.Y + q.Z * q.W;
-			//// singularity at north pole
-			//if (test > gimbalLockTreshold) {
-			//    return new Vector3D(0, 2 * Math.Atan2(q.X, q.W), MathHelper.PiHalf);
-			//}
-			//// singularity at south pole
-			//if (test < -gimbalLockTreshold) {
-			//    return new Vector3D(0, -2 * Math.Atan2(q.X, q.W), -MathHelper.PiHalf);
-			//}
+			// Math.Asin(2 * 0.4995) = 87.4 degrees
+			const double gimbalLockTreshold = 0.4995;
+			// singularity at north pole
+			if (test > gimbalLockTreshold) {
+				return new Vector3D(0, 2 * Math.Atan2(q.X, q.W), MathHelper.PiHalf);
+			}
+			// singularity at south pole
+			if (test < -gimbalLockTreshold) {
+				return new Vector3D(0, -2 * Math.Atan2(q.X, q.W), -MathHelper.PiHalf);
+			}
 
 			double sqx = q.X * q.X;
 			double sqy = q.Y * q.Y;
@@ -105,8 +116,18 @@ namespace Malsys.Media {
 			double pitch = Math.Asin(2 * test);
 			return new Vector3D(roll, yaw, pitch);
 
+			/******************************************************************/
 
+			//double e =q.W*q.W;
+			//double d =q.X*q.X;
+			//double c =q.Y*q.Y;
+			//double b =q.Z*q.Z;
 
+			//double Z = (Math.Atan2(2 * (q.X * q.Y + q.Z * q.W), (d - c - b + e)));
+			//double X = (Math.Atan2(2 * (q.Y * q.Z + q.X * q.W), (-d - c + b + e)));
+			//double Y = Math.Asin(MathHelper.Clamp(-2 * (q.X * q.Z - q.Y * q.W), -1, 1));
+
+			//return new Vector3D(X, Y, Z);
 
 			/******************************************************************/
 

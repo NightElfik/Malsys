@@ -1,10 +1,10 @@
 ﻿using System.Web.Mvc;
+using Malsys.Processing;
 using Malsys.Processing.Components.Interpreters;
 using Malsys.Reflection;
-using Malsys.Web.Areas.Help.Models;
-using Malsys.Processing;
 using Malsys.SemanticModel.Evaluated;
-using Malsys.Web.Models;
+using Malsys.Web.Areas.Help.Models;
+using Malsys.Web.Models.Lsystem;
 
 namespace Malsys.Web.Areas.Help.Controllers {
 	public partial class HomeController : Controller {
@@ -27,9 +27,12 @@ namespace Malsys.Web.Areas.Help.Controllers {
 		}
 
 		public virtual ActionResult BasicInterpretation() {
-			return View(ComponentModel.FromType(typeof(Interpreter2D), xmlDocReader));
+			return View(simpleLsystemProcessor/*ComponentModel.FromType(typeof(Interpreter2D), xmlDocReader)*/);
 		}
 
+		public virtual ActionResult Faq() {
+			return View();
+		}
 
 	}
 }

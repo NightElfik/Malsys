@@ -143,6 +143,12 @@ namespace Malsys.Processing.Components.Rewriters {
 
 				symbol = inputBuffer.Dequeue();
 				if (!contextSymbols.Contains(symbol.Name)) {
+					// search for symbol in hierarchy should never fail because it is done after non-ignored symbol is
+					// loaded thus it must be in context
+					if (currentSombolInContext.GetNextSymbolNodeInHierarchy() == null) {
+						var i = 10;
+						i++;
+					}
 					currentSombolInContext = currentSombolInContext.GetNextSymbolNodeInHierarchy();
 					Debug.Assert(currentSombolInContext.Symbol == symbol, "Context is not synchronized.");
 				}

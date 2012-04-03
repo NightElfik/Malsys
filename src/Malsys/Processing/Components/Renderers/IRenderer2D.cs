@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Malsys.Media;
+﻿using Malsys.Media;
 
 namespace Malsys.Processing.Components.Renderers {
 	[Component("Generic 2D renderer", ComponentGroupNames.Renderers)]
@@ -24,6 +23,8 @@ namespace Malsys.Processing.Components.Renderers {
 		void DrawTo(PointF point, float width, ColorF color);
 
 		void DrawPolygon(Polygon2D polygon);
+
+		void DrawCircle(PointF center, float radius, ColorF color);
 
 	}
 }

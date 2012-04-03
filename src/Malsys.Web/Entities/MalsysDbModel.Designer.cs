@@ -27,6 +27,8 @@ using System.Runtime.Serialization;
 [assembly: EdmRelationshipAttribute("MalsysDbEntities", "FK_SavedInputs_Users", "User", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(Malsys.Web.Entities.User), "SavedInput", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(Malsys.Web.Entities.SavedInput), true)]
 [assembly: EdmRelationshipAttribute("MalsysDbEntities", "TaggedSavedInputs", "SavedInput", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(Malsys.Web.Entities.SavedInput), "Tag", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(Malsys.Web.Entities.Tag))]
 [assembly: EdmRelationshipAttribute("MalsysDbEntities", "UsersInRoles", "Role", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(Malsys.Web.Entities.Role), "User", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(Malsys.Web.Entities.User))]
+[assembly: EdmRelationshipAttribute("MalsysDbEntities", "FK_SavedInputsVoes_SavedInputs", "SavedInput", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(Malsys.Web.Entities.SavedInput), "SavedInputVote", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(Malsys.Web.Entities.SavedInputVote), true)]
+[assembly: EdmRelationshipAttribute("MalsysDbEntities", "FK_SavedInputsVoes_Users", "User", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(Malsys.Web.Entities.User), "SavedInputVote", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(Malsys.Web.Entities.SavedInputVote), true)]
 
 #endregion
 
@@ -205,6 +207,22 @@ namespace Malsys.Web.Entities
             }
         }
         private ObjectSet<User> _Users;
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        public ObjectSet<SavedInputVote> SavedInputVotes
+        {
+            get
+            {
+                if ((_SavedInputVotes == null))
+                {
+                    _SavedInputVotes = base.CreateObjectSet<SavedInputVote>("SavedInputVotes");
+                }
+                return _SavedInputVotes;
+            }
+        }
+        private ObjectSet<SavedInputVote> _SavedInputVotes;
 
         #endregion
         #region AddTo Methods
@@ -272,6 +290,14 @@ namespace Malsys.Web.Entities
         {
             base.AddObject("Users", user);
         }
+    
+        /// <summary>
+        /// Deprecated Method for adding a new object to the SavedInputVotes EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
+        /// </summary>
+        public void AddToSavedInputVotes(SavedInputVote savedInputVote)
+        {
+            base.AddObject("SavedInputVotes", savedInputVote);
+        }
 
         #endregion
     }
@@ -296,15 +322,15 @@ namespace Malsys.Web.Entities
         /// </summary>
         /// <param name="canonicInputId">Initial value of the CanonicInputId property.</param>
         /// <param name="hash">Initial value of the Hash property.</param>
-        /// <param name="source">Initial value of the Source property.</param>
+        /// <param name="sourceCode">Initial value of the SourceCode property.</param>
         /// <param name="sourceSize">Initial value of the SourceSize property.</param>
         /// <param name="outputSize">Initial value of the OutputSize property.</param>
-        public static CanonicInput CreateCanonicInput(global::System.Int32 canonicInputId, global::System.Byte[] hash, global::System.String source, global::System.Int32 sourceSize, global::System.Int64 outputSize)
+        public static CanonicInput CreateCanonicInput(global::System.Int32 canonicInputId, global::System.Byte[] hash, global::System.String sourceCode, global::System.Int32 sourceSize, global::System.Int64 outputSize)
         {
             CanonicInput canonicInput = new CanonicInput();
             canonicInput.CanonicInputId = canonicInputId;
             canonicInput.Hash = hash;
-            canonicInput.Source = source;
+            canonicInput.SourceCode = sourceCode;
             canonicInput.SourceSize = sourceSize;
             canonicInput.OutputSize = outputSize;
             return canonicInput;
@@ -369,24 +395,24 @@ namespace Malsys.Web.Entities
         /// </summary>
         [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
         [DataMemberAttribute()]
-        public global::System.String Source
+        public global::System.String SourceCode
         {
             get
             {
-                return _Source;
+                return _SourceCode;
             }
             set
             {
-                OnSourceChanging(value);
-                ReportPropertyChanging("Source");
-                _Source = StructuralObject.SetValidValue(value, false);
-                ReportPropertyChanged("Source");
-                OnSourceChanged();
+                OnSourceCodeChanging(value);
+                ReportPropertyChanging("SourceCode");
+                _SourceCode = StructuralObject.SetValidValue(value, false);
+                ReportPropertyChanged("SourceCode");
+                OnSourceCodeChanged();
             }
         }
-        private global::System.String _Source;
-        partial void OnSourceChanging(global::System.String value);
-        partial void OnSourceChanged();
+        private global::System.String _SourceCode;
+        partial void OnSourceCodeChanging(global::System.String value);
+        partial void OnSourceCodeChanged();
     
         /// <summary>
         /// No Metadata Documentation available.
@@ -1255,6 +1281,30 @@ namespace Malsys.Web.Entities
         private global::System.DateTime _LastOpenDate;
         partial void OnLastOpenDateChanging(global::System.DateTime value);
         partial void OnLastOpenDateChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public global::System.Byte[] Metadata
+        {
+            get
+            {
+                return StructuralObject.GetValidValue(_Metadata);
+            }
+            set
+            {
+                OnMetadataChanging(value);
+                ReportPropertyChanging("Metadata");
+                _Metadata = StructuralObject.SetValidValue(value, true);
+                ReportPropertyChanged("Metadata");
+                OnMetadataChanged();
+            }
+        }
+        private global::System.Byte[] _Metadata;
+        partial void OnMetadataChanging(global::System.Byte[] value);
+        partial void OnMetadataChanged();
 
         #endregion
     
@@ -1451,15 +1501,15 @@ namespace Malsys.Web.Entities
         /// <param name="creationUserId">Initial value of the CreationUserId property.</param>
         /// <param name="creationDate">Initial value of the CreationDate property.</param>
         /// <param name="editDate">Initial value of the EditDate property.</param>
-        /// <param name="published">Initial value of the Published property.</param>
-        /// <param name="deleted">Initial value of the Deleted property.</param>
+        /// <param name="isPublished">Initial value of the IsPublished property.</param>
+        /// <param name="isDeleted">Initial value of the IsDeleted property.</param>
         /// <param name="views">Initial value of the Views property.</param>
         /// <param name="rating">Initial value of the Rating property.</param>
         /// <param name="sourceSize">Initial value of the SourceSize property.</param>
         /// <param name="outputSize">Initial value of the OutputSize property.</param>
         /// <param name="duration">Initial value of the Duration property.</param>
-        /// <param name="source">Initial value of the Source property.</param>
-        public static SavedInput CreateSavedInput(global::System.Int32 savedInputId, global::System.String urlId, global::System.Int32 creationUserId, global::System.DateTime creationDate, global::System.DateTime editDate, global::System.Boolean published, global::System.Boolean deleted, global::System.Int32 views, global::System.Int32 rating, global::System.Int32 sourceSize, global::System.Int64 outputSize, global::System.Int64 duration, global::System.String source)
+        /// <param name="sourceCode">Initial value of the SourceCode property.</param>
+        public static SavedInput CreateSavedInput(global::System.Int32 savedInputId, global::System.String urlId, global::System.Int32 creationUserId, global::System.DateTime creationDate, global::System.DateTime editDate, global::System.Boolean isPublished, global::System.Boolean isDeleted, global::System.Int32 views, global::System.Int32 rating, global::System.Int32 sourceSize, global::System.Int64 outputSize, global::System.Int64 duration, global::System.String sourceCode)
         {
             SavedInput savedInput = new SavedInput();
             savedInput.SavedInputId = savedInputId;
@@ -1467,14 +1517,14 @@ namespace Malsys.Web.Entities
             savedInput.CreationUserId = creationUserId;
             savedInput.CreationDate = creationDate;
             savedInput.EditDate = editDate;
-            savedInput.Published = published;
-            savedInput.Deleted = deleted;
+            savedInput.IsPublished = isPublished;
+            savedInput.IsDeleted = isDeleted;
             savedInput.Views = views;
             savedInput.Rating = rating;
             savedInput.SourceSize = sourceSize;
             savedInput.OutputSize = outputSize;
             savedInput.Duration = duration;
-            savedInput.Source = source;
+            savedInput.SourceCode = sourceCode;
             return savedInput;
         }
 
@@ -1633,48 +1683,72 @@ namespace Malsys.Web.Entities
         /// </summary>
         [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
         [DataMemberAttribute()]
-        public global::System.Boolean Published
+        public global::System.Boolean IsPublished
         {
             get
             {
-                return _Published;
+                return _IsPublished;
             }
             set
             {
-                OnPublishedChanging(value);
-                ReportPropertyChanging("Published");
-                _Published = StructuralObject.SetValidValue(value);
-                ReportPropertyChanged("Published");
-                OnPublishedChanged();
+                OnIsPublishedChanging(value);
+                ReportPropertyChanging("IsPublished");
+                _IsPublished = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("IsPublished");
+                OnIsPublishedChanged();
             }
         }
-        private global::System.Boolean _Published;
-        partial void OnPublishedChanging(global::System.Boolean value);
-        partial void OnPublishedChanged();
+        private global::System.Boolean _IsPublished;
+        partial void OnIsPublishedChanging(global::System.Boolean value);
+        partial void OnIsPublishedChanged();
     
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
         [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
         [DataMemberAttribute()]
-        public global::System.Boolean Deleted
+        public global::System.Boolean IsDeleted
         {
             get
             {
-                return _Deleted;
+                return _IsDeleted;
             }
             set
             {
-                OnDeletedChanging(value);
-                ReportPropertyChanging("Deleted");
-                _Deleted = StructuralObject.SetValidValue(value);
-                ReportPropertyChanged("Deleted");
-                OnDeletedChanged();
+                OnIsDeletedChanging(value);
+                ReportPropertyChanging("IsDeleted");
+                _IsDeleted = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("IsDeleted");
+                OnIsDeletedChanged();
             }
         }
-        private global::System.Boolean _Deleted;
-        partial void OnDeletedChanging(global::System.Boolean value);
-        partial void OnDeletedChanged();
+        private global::System.Boolean _IsDeleted;
+        partial void OnIsDeletedChanging(global::System.Boolean value);
+        partial void OnIsDeletedChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public global::System.String PublishName
+        {
+            get
+            {
+                return _PublishName;
+            }
+            set
+            {
+                OnPublishNameChanging(value);
+                ReportPropertyChanging("PublishName");
+                _PublishName = StructuralObject.SetValidValue(value, true);
+                ReportPropertyChanged("PublishName");
+                OnPublishNameChanged();
+            }
+        }
+        private global::System.String _PublishName;
+        partial void OnPublishNameChanging(global::System.String value);
+        partial void OnPublishNameChanged();
     
         /// <summary>
         /// No Metadata Documentation available.
@@ -1799,26 +1873,50 @@ namespace Malsys.Web.Entities
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
-        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
         [DataMemberAttribute()]
-        public global::System.String Source
+        public global::System.String MimeType
         {
             get
             {
-                return _Source;
+                return _MimeType;
             }
             set
             {
-                OnSourceChanging(value);
-                ReportPropertyChanging("Source");
-                _Source = StructuralObject.SetValidValue(value, false);
-                ReportPropertyChanged("Source");
-                OnSourceChanged();
+                OnMimeTypeChanging(value);
+                ReportPropertyChanging("MimeType");
+                _MimeType = StructuralObject.SetValidValue(value, true);
+                ReportPropertyChanged("MimeType");
+                OnMimeTypeChanged();
             }
         }
-        private global::System.String _Source;
-        partial void OnSourceChanging(global::System.String value);
-        partial void OnSourceChanged();
+        private global::System.String _MimeType;
+        partial void OnMimeTypeChanging(global::System.String value);
+        partial void OnMimeTypeChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.String SourceCode
+        {
+            get
+            {
+                return _SourceCode;
+            }
+            set
+            {
+                OnSourceCodeChanging(value);
+                ReportPropertyChanging("SourceCode");
+                _SourceCode = StructuralObject.SetValidValue(value, false);
+                ReportPropertyChanged("SourceCode");
+                OnSourceCodeChanged();
+            }
+        }
+        private global::System.String _SourceCode;
+        partial void OnSourceCodeChanging(global::System.String value);
+        partial void OnSourceCodeChanged();
     
         /// <summary>
         /// No Metadata Documentation available.
@@ -1849,24 +1947,24 @@ namespace Malsys.Web.Entities
         /// </summary>
         [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
         [DataMemberAttribute()]
-        public global::System.String ThumbnailSource
+        public global::System.Byte[] OutputMetadata
         {
             get
             {
-                return _ThumbnailSource;
+                return StructuralObject.GetValidValue(_OutputMetadata);
             }
             set
             {
-                OnThumbnailSourceChanging(value);
-                ReportPropertyChanging("ThumbnailSource");
-                _ThumbnailSource = StructuralObject.SetValidValue(value, true);
-                ReportPropertyChanged("ThumbnailSource");
-                OnThumbnailSourceChanged();
+                OnOutputMetadataChanging(value);
+                ReportPropertyChanging("OutputMetadata");
+                _OutputMetadata = StructuralObject.SetValidValue(value, true);
+                ReportPropertyChanged("OutputMetadata");
+                OnOutputMetadataChanged();
             }
         }
-        private global::System.String _ThumbnailSource;
-        partial void OnThumbnailSourceChanging(global::System.String value);
-        partial void OnThumbnailSourceChanged();
+        private global::System.Byte[] _OutputMetadata;
+        partial void OnOutputMetadataChanging(global::System.Byte[] value);
+        partial void OnOutputMetadataChanged();
 
         #endregion
     
@@ -1966,6 +2064,217 @@ namespace Malsys.Web.Entities
                 if ((value != null))
                 {
                     ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<Tag>("MalsysDbEntities.TaggedSavedInputs", "Tag", value);
+                }
+            }
+        }
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("MalsysDbEntities", "FK_SavedInputsVoes_SavedInputs", "SavedInputVote")]
+        public EntityCollection<SavedInputVote> SavedInputVotes
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<SavedInputVote>("MalsysDbEntities.FK_SavedInputsVoes_SavedInputs", "SavedInputVote");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<SavedInputVote>("MalsysDbEntities.FK_SavedInputsVoes_SavedInputs", "SavedInputVote", value);
+                }
+            }
+        }
+
+        #endregion
+    }
+    
+    /// <summary>
+    /// No Metadata Documentation available.
+    /// </summary>
+    [EdmEntityTypeAttribute(NamespaceName="MalsysDbEntities", Name="SavedInputVote")]
+    [Serializable()]
+    [DataContractAttribute(IsReference=true)]
+    public partial class SavedInputVote : EntityObject
+    {
+        #region Factory Method
+    
+        /// <summary>
+        /// Create a new SavedInputVote object.
+        /// </summary>
+        /// <param name="savedInputId">Initial value of the SavedInputId property.</param>
+        /// <param name="userId">Initial value of the UserId property.</param>
+        /// <param name="upVote">Initial value of the UpVote property.</param>
+        public static SavedInputVote CreateSavedInputVote(global::System.Int32 savedInputId, global::System.Int32 userId, global::System.Boolean upVote)
+        {
+            SavedInputVote savedInputVote = new SavedInputVote();
+            savedInputVote.SavedInputId = savedInputId;
+            savedInputVote.UserId = userId;
+            savedInputVote.UpVote = upVote;
+            return savedInputVote;
+        }
+
+        #endregion
+        #region Primitive Properties
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=true, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int32 SavedInputId
+        {
+            get
+            {
+                return _SavedInputId;
+            }
+            set
+            {
+                if (_SavedInputId != value)
+                {
+                    OnSavedInputIdChanging(value);
+                    ReportPropertyChanging("SavedInputId");
+                    _SavedInputId = StructuralObject.SetValidValue(value);
+                    ReportPropertyChanged("SavedInputId");
+                    OnSavedInputIdChanged();
+                }
+            }
+        }
+        private global::System.Int32 _SavedInputId;
+        partial void OnSavedInputIdChanging(global::System.Int32 value);
+        partial void OnSavedInputIdChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=true, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int32 UserId
+        {
+            get
+            {
+                return _UserId;
+            }
+            set
+            {
+                if (_UserId != value)
+                {
+                    OnUserIdChanging(value);
+                    ReportPropertyChanging("UserId");
+                    _UserId = StructuralObject.SetValidValue(value);
+                    ReportPropertyChanged("UserId");
+                    OnUserIdChanged();
+                }
+            }
+        }
+        private global::System.Int32 _UserId;
+        partial void OnUserIdChanging(global::System.Int32 value);
+        partial void OnUserIdChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Boolean UpVote
+        {
+            get
+            {
+                return _UpVote;
+            }
+            set
+            {
+                OnUpVoteChanging(value);
+                ReportPropertyChanging("UpVote");
+                _UpVote = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("UpVote");
+                OnUpVoteChanged();
+            }
+        }
+        private global::System.Boolean _UpVote;
+        partial void OnUpVoteChanging(global::System.Boolean value);
+        partial void OnUpVoteChanged();
+
+        #endregion
+    
+        #region Navigation Properties
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("MalsysDbEntities", "FK_SavedInputsVoes_SavedInputs", "SavedInput")]
+        public SavedInput SavedInput
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<SavedInput>("MalsysDbEntities.FK_SavedInputsVoes_SavedInputs", "SavedInput").Value;
+            }
+            set
+            {
+                ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<SavedInput>("MalsysDbEntities.FK_SavedInputsVoes_SavedInputs", "SavedInput").Value = value;
+            }
+        }
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [BrowsableAttribute(false)]
+        [DataMemberAttribute()]
+        public EntityReference<SavedInput> SavedInputReference
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<SavedInput>("MalsysDbEntities.FK_SavedInputsVoes_SavedInputs", "SavedInput");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedReference<SavedInput>("MalsysDbEntities.FK_SavedInputsVoes_SavedInputs", "SavedInput", value);
+                }
+            }
+        }
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("MalsysDbEntities", "FK_SavedInputsVoes_Users", "User")]
+        public User User
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<User>("MalsysDbEntities.FK_SavedInputsVoes_Users", "User").Value;
+            }
+            set
+            {
+                ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<User>("MalsysDbEntities.FK_SavedInputsVoes_Users", "User").Value = value;
+            }
+        }
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [BrowsableAttribute(false)]
+        [DataMemberAttribute()]
+        public EntityReference<User> UserReference
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<User>("MalsysDbEntities.FK_SavedInputsVoes_Users", "User");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedReference<User>("MalsysDbEntities.FK_SavedInputsVoes_Users", "User", value);
                 }
             }
         }
@@ -2478,6 +2787,28 @@ namespace Malsys.Web.Entities
                 if ((value != null))
                 {
                     ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<Role>("MalsysDbEntities.UsersInRoles", "Role", value);
+                }
+            }
+        }
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("MalsysDbEntities", "FK_SavedInputsVoes_Users", "SavedInputVote")]
+        public EntityCollection<SavedInputVote> SavedInputVotes
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<SavedInputVote>("MalsysDbEntities.FK_SavedInputsVoes_Users", "SavedInputVote");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<SavedInputVote>("MalsysDbEntities.FK_SavedInputsVoes_Users", "SavedInputVote", value);
                 }
             }
         }

@@ -270,13 +270,13 @@ namespace Malsys.Tests {
 
 		public class GettablePropertiesComponent : IComponent {
 
-			[UserGettable(GettableBeforeInitialiation=true)]
+			[UserGettable(IsGettableBeforeInitialiation=true)]
 			public Constant ConstantGet { get { return 8.ToConst(); } }
 
-			[UserGettable(GettableBeforeInitialiation = true)]
+			[UserGettable(IsGettableBeforeInitialiation = true)]
 			public ValuesArray ValuesArrayGet { get { return new ValuesArray(new ImmutableList<IValue>(1.ToConst(), 2.ToConst(), 3.ToConst())); } }
 
-			[UserGettable(GettableBeforeInitialiation = true)]
+			[UserGettable(IsGettableBeforeInitialiation = true)]
 			public IValue IValueGet { get { return 42.ToConst(); } }
 
 

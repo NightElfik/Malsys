@@ -96,6 +96,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AliasAttribute.cs" />
+    <Compile Include="Extensions%27\BinaryFormatterExtensions.cs" />
     <Compile Include="Extensions%27\DictionaryExtensions.cs" />
     <Compile Include="Extensions%27\FSharpOptionExtensions.cs" />
     <Compile Include="Extensions%27\HashSetExtensions.cs" />
@@ -120,7 +121,7 @@
     <Compile Include="DataStructures%27\Position.cs" />
     <Compile Include="Extensions%27\DoubleExtensions.cs" />
     <Compile Include="Extensions%27\FSharpMapExtensions.cs" />
-    <Compile Include="Extensions%27\SwapExtension.cs" />
+    <Compile Include="Helpers%27\SwapHelper.cs" />
     <Compile Include="Helpers%27\EnumHelper.cs" />
     <Compile Include="Extensions%27\LinqExtensions.cs" />
     <Compile Include="Extensions%27\StringExtensions.cs" />

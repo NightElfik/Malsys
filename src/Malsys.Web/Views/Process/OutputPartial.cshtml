@@ -22,7 +22,7 @@
 
 	case MimeType.Text.Plain:
 		using (var sr = fi.OpenText()) {
-			bool asciiArt = Model.AdditionalData.ContainsValue(OutputMetadataKeyHelper.OutputIsAsciiArt, true);
+			bool asciiArt = Model.Metadata.ContainsValue(OutputMetadataKeyHelper.OutputIsAsciiArt, true);
 			int readChars = 1000;
 			if (asciiArt) {
 				readChars *= 4;
@@ -44,18 +44,24 @@
 			<p class="outputTruncated">SVG image is not shown directly (it is greater than 0.5 MB). Please download the file to see the result.</p>
 		}
 		else {
+			int width = Model.Metadata.TryGetValue(OutputMetadataKeyHelper.OutputWidth, -1);
+			int height = Model.Metadata.TryGetValue(OutputMetadataKeyHelper.OutputHeight, -1);
+			bool hasValidSize = width > 0 && height > 0;
 			<div class="scrollBox">
-				<img src="@Url.Action(MVC.ProcessOutput.Show(fi.Name))" alt="Process result" />
+				<img src="@Url.Action(MVC.ProcessOutput.Show(fi.Name))" @if(hasValidSize) { <text>width="@(width)px" height="@(height)px"</text> } alt="Process result" />
 			</div>
 		}
 		break;
 
 	case MimeType.Application.Json:
-		<div class="threeJsScene" data-scene="@Url.Action(MVC.ProcessOutput.Download(fi.Name))"></div>
+		<div class="threeJsScene" data-scene="@Url.Action(MVC.ProcessOutput.Download(fi.Name))" data-clear-color="FFFFFF" data-stats-display="true" data-anti-alias="true">
+			<p class="webgl">WebGL is not supported by your browser. Please <a href="http://get.webgl.org/">get supported browser</a>.</p>
+			<p class="controls">Controls: Move mouse &amp; press LEFT/A: rotate, MIDDLE/S: zoom, RIGHT/D: pan</p>
+		</div>
 		break;
 
 	case MimeType.Application.Zip:
-		if (Model.AdditionalData.ContainsValue(OutputMetadataKeyHelper.PackedOutputs, true)) {
+		if (Model.Metadata.ContainsValue(OutputMetadataKeyHelper.PackedOutputs, true)) {
 			<p class="outputTruncated">Too many outputs to display. All outputs were packed. Please download the package to see the results.</p>
 		}
 		else {

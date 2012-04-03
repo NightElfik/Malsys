@@ -15,16 +15,16 @@ namespace Malsys.Processing.Output {
 
 		public readonly Type SourceType;
 
-		public readonly FSharpMap<string, object> AdditionalData;
+		public readonly FSharpMap<string, object> Metadata;
 
 
-		public OutputFile(string name, string filePath, string mimeType, Type sourceType, FSharpMap<string, object> additionalData) {
+		public OutputFile(string name, string filePath, string mimeType, Type sourceType, FSharpMap<string, object> metadata) {
 
 			Name = name;
 			FilePath = filePath;
 			MimeType = mimeType;
 			SourceType = sourceType;
-			AdditionalData = additionalData;
+			Metadata = metadata;
 		}
 
 	}

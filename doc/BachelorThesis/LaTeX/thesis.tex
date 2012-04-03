@@ -31,6 +31,8 @@
 \usepackage{comment}
 \usepackage{setspace}
 
+\usepackage{subfig}
+\usepackage{wrapfig}
 \usepackage{graphicx}
 %\usepackage{amsthm}
 \usepackage{booktabs}
@@ -43,10 +45,11 @@
 	backend=biber,
 	style=alphabetic,
 	backref=true,
-%	natbib=true,
-%	url=false, 
-%	doi=true,
-%	eprint=false
+%	backrefstyle=all+,
+	natbib=true,
+	url=false, % url field of @online entries is always printed
+	doi=false,
+	eprint=false
 ]{biblatex}
 \renewcommand{\labelalphaothers}{*}
 \addbibresource{bibliography.bib}
@@ -106,6 +109,15 @@
 \newcommand{\varcaron}{\hspace{-1.5pt}'\hspace{-1pt}}
 
 \renewcommand{\ttdefault}{pcr}  % to allow bold in tt font
+
+\newenvironment{itemize*}
+	{\begin{itemize}
+		%\setlength{\itemsep}{0pt}
+		\setlength{\parskip}{0pt}}
+	{\end{itemize}}
+\newenvironment{enumerate*}
+	{\begin{enumerate}\setlength{\parskip}{0pt}}
+	{\end{enumerate}}
 
 \begin{document}
 

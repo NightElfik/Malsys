@@ -1,4 +1,4 @@
-﻿using Malsys.Web.Models;
+﻿using Malsys.Web.Models.Lsystem;
 
 namespace Malsys.Web.Areas.Help.Models {
 	public class LsystemExampleViewModel {

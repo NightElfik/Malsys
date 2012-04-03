@@ -8,6 +8,7 @@ namespace Malsys.Processing.Components.Renderers {
 		public static readonly string MoveToName = "MoveTo";
 		public static readonly string DrawToName = "DrawTo";
 		public static readonly string DrawPolygonName = "DrawPolygon";
+		public static readonly string DrawSphereName = "DrawSphere";
 
 
 		private string logFormat;
@@ -34,6 +35,10 @@ namespace Malsys.Processing.Components.Renderers {
 
 		public void DrawPolygon(Polygon3D polygon) {
 			logState(DrawPolygonName);
+		}
+
+		public void DrawSphere(Point3D center, double radius, ColorF color) {
+			logState(logFormat, DrawSphereName, center, "", radius, color);
 		}
 
 		#endregion

@@ -1,0 +1,74 @@
+﻿@model IPagination<SavedInput>
+
+@using Malsys;
+@using Malsys.Processing;
+@using Malsys.Web.Models.Lsystem;
+
+@{
+	ViewBag.Title = "Gallery of L-systems";
+	var serializer = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+
+	int thnMaxWidth = 512;
+	int thnMaxHeight = 256;
+	bool loadThreeJs = false;
+}
+
+<h2>Gallery of L-systems</h2>
+
+<div class="clearfix">
+@Html.Pager(Model)
+</div>
+
+<div class="gallery clearfix">
+@foreach (var input in Model) {
+
+	var metadata = OutputMetadataHelper.DeserializeMetadata(input.OutputMetadata);
+
+	HtmlString linkStrBegin = new HtmlString("<a href=\"" + Url.Action(MVC.Gallery.Detail(input.UrlId)) + "\">");
+	HtmlString linkStrEnd = new HtmlString("</a>");
+
+	<div class="thn">
+	@linkStrBegin
+
+	@switch (input.MimeType) {
+
+		case MimeType.Image.SvgXml:
+			int width = OutputMetadataHelper.TryGetValue(metadata, OutputMetadataKeyHelper.OutputWidth, -1);
+			int height = OutputMetadataHelper.TryGetValue(metadata, OutputMetadataKeyHelper.OutputHeight, -1);
+			bool hasValidSize = width > 0 && height > 0;
+			if (hasValidSize) {
+				MathHelper.ScaleSizeToFit(ref width, ref height, thnMaxWidth, thnMaxHeight);
+			}
+			else {
+				height = thnMaxHeight;
+			}
+			<img src="@Url.Action(MVC.Gallery.GetThumbnail(input.UrlId))" @if (width > 0) { <text>width="@(width)px" </text> } height="@(height)px" alt="Thumbnail of @input.UrlId" />
+			break;
+
+		case MimeType.Application.Json:
+			loadThreeJs = true;
+			<div class="threeJsScene" data-scene="@Url.Action(MVC.Gallery.GetThumbnail(input.UrlId))" data-clear-color="FFFFFF" data-anti-alias="false"></div>
+			break;
+
+			default:
+				<p>Thumbnail for this type of output is not supported</p>
+				break;
+
+	}
+
+	@linkStrEnd
+	</div>
+
+}
+</div>
+
+@if (loadThreeJs) {
+	<text>
+	@section scripts {
+		@Content.Js(Links.Js.ThreeJs.Three_js)
+		@Content.Js(Links.Js.ThreeJs.Detector_js)
+		@Content.Js(Links.Js.ThreeJs.Stats_js)
+		@Content.Js(Links.Js.ThreeJs.malsys_three_js)
+	}
+	</text>
+}

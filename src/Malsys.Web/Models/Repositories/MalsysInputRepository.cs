@@ -5,15 +5,18 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using Elmah;
 using Malsys.IO;
 using Malsys.Processing.Output;
 using Malsys.SemanticModel.Evaluated;
 using Malsys.SourceCode.Printers;
 using Malsys.Web.Entities;
-using Elmah;
+using Malsys.Web.Models.Lsystem;
 
 namespace Malsys.Web.Models.Repositories {
 	public class MalsysInputRepository : IMalsysInputRepository {
+
+		const int urlIdLength = 8;  // must match with DB
 
 		private readonly IUsersDb usersDb;
 		private readonly IInputDb inputDb;
@@ -47,9 +50,9 @@ namespace Malsys.Web.Models.Repositories {
 				hash = hasher.ComputeHash(inputBytes);
 			}
 
-			Debug.Assert(hash.Length == 16);
+			Debug.Assert(hash.Length == 16);  // just to be sure it will fit to DB
 
-			CanonicInput canonicInput = inputDb.CanonicInputs.Where(i => i.Hash == hash).Where(i => i.Source == inputStr).SingleOrDefault();
+			CanonicInput canonicInput = inputDb.CanonicInputs.Where(x => x.Hash == hash).Where(x => x.SourceCode == inputStr).SingleOrDefault();
 
 			if (canonicInput != null) {
 				var oldestProcess = canonicInput.InputProcesses.OrderBy(ci => ci.ProcessDate).FirstOrDefault();
@@ -60,7 +63,7 @@ namespace Malsys.Web.Models.Repositories {
 			else {
 				canonicInput = new CanonicInput() {
 					Hash = hash,
-					Source = inputStr,
+					SourceCode = inputStr,
 					SourceSize = inputStr.Length,
 					OutputSize = outputs.Sum(o => new FileInfo(o.FilePath).Length)
 				};
@@ -91,7 +94,8 @@ namespace Malsys.Web.Models.Repositories {
 					InputProcess = inputProcess,
 					FileName = Path.GetFileName(output.FilePath),
 					CreationDate = now,
-					LastOpenDate = now
+					LastOpenDate = now,
+					Metadata = OutputMetadataHelper.SerializeMetadata(output.Metadata)
 				};
 
 				inputDb.AddProcessOutput(o);
@@ -109,34 +113,7 @@ namespace Malsys.Web.Models.Repositories {
 				return null;
 			}
 
-			const int urlIdLength = 8;
-
-			var rnd = new Random();
-			var sb = new StringBuilder(urlIdLength);
-			string urlId;
-
-			while (true) {
-				sb.Clear();
-				for (int i = 0; i < urlIdLength; i++) {
-					var rNum = rnd.Next(10 + 26 + 26);
-					if (rNum < 10) {
-						sb.Append((char)('0' + rNum));
-					}
-					else if (rNum < 10 + 26) {
-						sb.Append((char)('a' + rNum - 10));
-					}
-					else {
-						sb.Append((char)('A' + rNum - 10 - 26));
-					}
-				}
-
-				urlId = sb.ToString();
-				if (inputDb.SavedInputs.Where(x => x.UrlId == urlId).Count() == 0) {
-					break;  // free random ID found
-				}
-			}
-
-
+			string urlId = generateUniqueUrlId();
 			DateTime now = dateTimeProvider.Now;
 
 			var savedInput = new SavedInput() {
@@ -145,16 +122,18 @@ namespace Malsys.Web.Models.Repositories {
 				User = user,
 				CreationDate = now,
 				EditDate = now,
-				Published = false,
-				Deleted = false,
+				IsPublished = false,
+				IsDeleted = false,
+				PublishName = null,
 				Views = 0,
 				Rating = 0,
 				SourceSize = source.Length,
 				OutputSize = outputs.Sum(o => new FileInfo(o.FilePath).Length),
 				Duration = duration.Ticks,
-				Source = source,
+				MimeType = null,
+				SourceCode = source,
 				Description = null,
-				ThumbnailSource = null
+				OutputMetadata = null
 			};
 			inputDb.SaveChanges();
 
@@ -202,6 +181,131 @@ namespace Malsys.Web.Models.Repositories {
 
 		}
 
+
+		private string generateUniqueUrlId() {
+
+			var rnd = new Random();
+			var sb = new StringBuilder(urlIdLength);
+
+			while (true) {
+				sb.Clear();
+				for (int i = 0; i < urlIdLength; i++) {
+					var rNum = rnd.Next(10 + 26 + 26);
+					if (rNum < 10) {
+						sb.Append((char)('0' + rNum));
+					}
+					else if (rNum < 10 + 26) {
+						sb.Append((char)('a' + rNum - 10));
+					}
+					else {
+						sb.Append((char)('A' + rNum - 10 - 26));
+					}
+				}
+
+				string urlId = sb.ToString();
+				if (inputDb.SavedInputs.Where(x => x.UrlId == urlId).Count() == 0) {
+					return urlId;  // free random ID found
+				}
+			}
+
+		}
+
+
+		public IEnumerable<Tag> GetTags(params string[] tags) {
+
+			string[] tagsLower = new string[tags.Length];
+			for (int i = 0; i < tags.Length; i++) {
+				tagsLower[i] = tags[i].ToLower();
+			}
+
+			var tagsInDb = inputDb.Tags.Where(x => tagsLower.Contains(x.NameLowercase)).ToList();
+			if (tagsInDb.Count == tags.Length) {
+				return tagsInDb;
+			}
+
+			// some tags are missing
+			for (int i = 0; i < tags.Length; i++) {
+				if (tagsInDb.Where(x => x.NameLowercase == tagsLower[i]).FirstOrDefault() == null) {
+					// tag is missing
+
+					Tag t = new Tag() {
+						Name = tags[i],
+						NameLowercase = tagsLower[i]
+					};
+
+					inputDb.AddTag(t);
+					tagsInDb.Add(t);
+				}
+			}
+
+			inputDb.SaveChanges();
+
+			return tagsInDb;
+		}
+
+
+		public bool Vote(string urlId, string userName, bool upVote) {
+
+			var input = inputDb.SavedInputs
+				.Where(x => x.UrlId == urlId && !x.IsDeleted)
+				.SingleOrDefault();
+
+			if (input == null) {
+				return false;
+			}
+
+			userName = userName.ToLower();
+			var user = usersDb.Users
+				.Where(x => x.NameLowercase == userName)
+				.SingleOrDefault();
+
+			if (user == null) {
+				return false;
+			}
+
+			var vote = inputDb.Votes
+				.Where(x => x.SavedInputId == input.SavedInputId && x.UserId == user.UserId)
+				.SingleOrDefault();
+
+			if (vote != null) {
+				if (vote.UpVote == upVote) {
+					return true;
+				}
+
+				vote.UpVote = upVote;
+				input.Rating += upVote ? 2 : -2;
+			}
+			else{
+				vote = new SavedInputVote() {
+					SavedInput = input,
+					User = user,
+					UpVote = upVote
+				};
+
+				inputDb.AddVote(vote);
+
+				input.Rating += upVote ? 1 : -1;
+			}
+
+			inputDb.SaveChanges();
+			return true;
+		}
+
+		public bool? GetUserVote(string urlId, string userName) {
+
+			userName = userName.ToLower();
+
+			var vote = inputDb.Votes
+				.Where(x => x.SavedInput.UrlId == urlId && x.User.NameLowercase == userName)
+				.SingleOrDefault();
+
+			if (vote == null) {
+				return null;
+			}
+
+			return vote.UpVote;
+
+		}
 
 	}
 }

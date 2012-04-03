@@ -6,7 +6,7 @@ using Malsys.Processing;
 using Malsys.Processing.Output;
 using Malsys.SemanticModel.Evaluated;
 
-namespace Malsys.Web.Models {
+namespace Malsys.Web.Models.Lsystem {
 	public class SimpleLsystemProcessor {
 
 		private readonly ProcessManager processManager;
@@ -25,7 +25,7 @@ namespace Malsys.Web.Models {
 
 			var inEvaled = processManager.CompileAndEvaluateInput(input, "simpleWebInput", logger);
 			if (logger.ErrorOccurred) {
-				return new string[] { logger.AllMessagesToFullString() };
+				return logger.Select(x => x.GetFullMessage());
 			}
 
 			inEvaled = stdLib.JoinWith(inEvaled);
@@ -33,7 +33,7 @@ namespace Malsys.Web.Models {
 
 			processManager.ProcessInput(inEvaled, outputProvider, logger, new TimeSpan(0, 0, 1));
 			if (logger.ErrorOccurred) {
-				return new string[] { logger.AllMessagesToFullString() };
+				return logger.Select(x => x.GetFullMessage());
 			}
 
 			var utfEncoding = new UTF8Encoding();

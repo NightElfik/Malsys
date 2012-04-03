@@ -32,9 +32,6 @@
 				<a href="/" title="Home"><h1 id="title">Malsys</h1></a>
 				<h4 id="subtitle">Mark's L-systems</h4>
 			</div>
-			<div class="betaContainer">
-				<h2>B E T A</h2>
-			</div>
 			<div class="logonBox">
 				@Html.Partial(MVC.Shared.Views.LogOnPartial)
 			</div>
@@ -53,7 +50,7 @@
 
 	<div id="footerContainer">
 		<footer class="wrapper">
-			<div class="center"><p>&copy; @Html.ActionLink("Marek Fišer", MVC.Feedback.EmailToAuthor()) 2011 &mdash; 2012</p></div>
+			<div class="center"><p>&copy; @Html.ActionLink("Marek Fišer", MVC.Feedback.EmailToAuthor()) 2011 &mdash; 2012, @Html.ActionLink("Feedback", MVC.Feedback.Index())</p></div>
 		</footer>
 	</div>
 

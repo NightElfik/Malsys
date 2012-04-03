@@ -15,7 +15,7 @@ namespace Malsys.Processing.Components {
 	[AttributeUsage(AttributeTargets.Property, Inherited = true, AllowMultiple = false)]
 	public sealed class UserGettableAttribute : Attribute {
 
-		public bool GettableBeforeInitialiation { get; set; }
+		public bool IsGettableBeforeInitialiation { get; set; }
 
 	}
 

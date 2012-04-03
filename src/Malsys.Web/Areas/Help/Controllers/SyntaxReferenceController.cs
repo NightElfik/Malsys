@@ -1,7 +1,7 @@
 ﻿using System.Web.Mvc;
 using Malsys.Processing;
 using Malsys.SemanticModel.Evaluated;
-using Malsys.Web.Models;
+using Malsys.Web.Models.Lsystem;
 
 namespace Malsys.Web.Areas.Help.Controllers {
 	public partial class SyntaxReferenceController : Controller {

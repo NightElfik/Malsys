@@ -9,11 +9,10 @@
 <h2>L-system processor</h2>
 
 @if (Model.SavedInputUrlId != null) {
-	string url = Request.Url.Scheme + System.Uri.SchemeDelimiter + Request.Url.Host +
-		(Request.Url.IsDefaultPort ? "" : ":" + Request.Url.Port) + Url.Action(MVC.Process.Load(Model.SavedInputUrlId));
 	<p>
 		Your input was saved under ID `@Model.SavedInputUrlId`.
-		You can share it by URL @Html.Link(url).
+		You can share it by URL @Html.Partial(MVC.Shared.Views.SavedInputPermaLink, Model.SavedInputUrlId)
+			or you can @Html.ActionLink("publish it", MVC.Gallery.Edit(Model.SavedInputUrlId)) to public gallery!
 	</p>
 }
 
@@ -23,10 +22,10 @@
 		Please look at the help to learn how to write process statements or use one from list below (put it at the very end of the input).
 	</p>
 	<ul>
-		<li><code>process with SymbolPrinter;</code></li>
-		<li><code>process with SvgRenderer;</code></li>
-		<li><code>process with HexAsciiRenderer;</code></li>
-		<li><code>process with ThreeJsRenderer;</code></li>
+		<li><code>process all with SymbolPrinter;</code></li>
+		<li><code>process all with SvgRenderer;</code></li>
+		<li><code>process all with HexAsciiRenderer;</code></li>
+		<li><code>process all with ThreeJsRenderer;</code></li>
 	</ul>
 }
 
@@ -103,7 +102,7 @@
 	@if (loadThreeJs) {
 		@Content.Js(Links.Js.ThreeJs.Three_js)
 		@Content.Js(Links.Js.ThreeJs.Detector_js)
-		@Content.Js(Links.Js.ThreeJs.threex_dragpancontrols_js)
+		@Content.Js(Links.Js.ThreeJs.Stats_js)
 		@Content.Js(Links.Js.ThreeJs.malsys_three_js)
 	}
 }

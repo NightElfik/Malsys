@@ -119,6 +119,12 @@ namespace Malsys.Resources {
 				? Constant.NaN
 				: (l.CompareTo(r) == 0 ? Constant.True : Constant.False));
 
+		public static readonly OperatorCore NotEqual = new OperatorCore("!=", EQ_PREC, EQ_PREC_A,
+			ExpressionValueTypeFlags.Any, ExpressionValueTypeFlags.Any,
+			(l, r) => (l.IsNaN || r.IsNaN)
+				? Constant.NaN
+				: (l.CompareTo(r) == 0 ? Constant.False : Constant.True));
+
 
 		public static readonly OperatorCore And = new OperatorCore("&&", AND_PREC, AND_PREC_A,
 			ExpressionValueTypeFlags.Constant, ExpressionValueTypeFlags.Constant,

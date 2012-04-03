@@ -2,12 +2,17 @@
 	ViewBag.Title = "Malsys help index";
 }
 
+<h2>Frequently asked questions</h2>
+
+<p>If you have any questions try look at @Html.ActionLink("FAQ page", MVC.Help.Home.Faq()).</p>
+
+
 <h2>Malsys help index</h2>
 
 <ol>
 	<li>@Html.ActionLink("Basic principles of L-system rewriting", MVC.Help.Home.BasicRewriting())</li>
-	<li>Symbols parameters</li>
-	<li>@Html.ActionLink("Interpret symbols to render image", MVC.Help.Home.BasicInterpretation())</li>
+	<li>L-system symbols parameters</li>
+	<li>@Html.ActionLink("L-system symbols interpretation", MVC.Help.Home.BasicInterpretation())</li>
 	<li>Process configurations</li>
 </ol>
 

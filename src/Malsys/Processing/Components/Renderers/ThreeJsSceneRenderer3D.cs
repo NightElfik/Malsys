@@ -10,17 +10,12 @@ namespace Malsys.Processing.Components.Renderers {
 
 		private IndentTextWriter writer;
 
-		private int objCounetr;
-
 
 		private const string lineGeometryName = "line";
 		private const string lineMaterialName = "basic";
 
 		public override void Initialize(ProcessContext ctxt) {
 			base.Initialize(ctxt);
-
-			ctxt.Logger.LogMessage("beta", MessageType.Warning, Position.Unknown,
-				"3D renderer is not working properly.");
 		}
 
 
@@ -29,8 +24,6 @@ namespace Malsys.Processing.Components.Renderers {
 		public override void BeginProcessing(bool measuring) {
 
 			base.BeginProcessing(measuring);
-
-			objCounetr = 0;
 
 			if (measuring) {
 				writer = null;
@@ -67,22 +60,29 @@ namespace Malsys.Processing.Components.Renderers {
 		public override void DrawTo(Point3D endPoint, Quaternion rotation, double width, ColorF color) {
 
 			if (!measuring) {
-				var euclidRotation = rotation.ToEuclidRotation();
-				//euclidRotation.Z -= MathHelper.PiHalf;
 
-				startJsonObject("obj" + objCounetr++);
-				{
-					writeJsonValue("geometry", lineGeometryName);
-					writeJson("\"materials\": [\"" + lineMaterialName + "\"]");
-					writeJsonValue("position", Math3D.CountMiddlePoint(endPoint, lastPoint));
-					writeJsonValue("rotation", euclidRotation);
-					writeJsonValue("quaternion", rotation);
-					writeJsonValue("useQuaternion", true);
-					writeJsonValue("scale", new Vector3D(Math3D.Distance(endPoint, lastPoint), width , width));
-					writeJsonValue("doubleSided", false);
-					writeJsonValue("visible", true, false);
-				}
-				endJsonObject();
+				// materials
+				writer.WriteLine("material = new THREE.MeshLambertMaterial({{ color: 0x{0}, shading: THREE.FlatShading }});".Fmt(color.ToRgbHexString()));
+				writer.WriteLine("mesh = new THREE.Mesh(lineGeometry, material);");
+
+				var middle = Math3D.CountMiddlePoint(endPoint, lastPoint);
+				writer.WriteLine("mesh.position.x = {0:0.000};".Fmt(middle.X));
+				writer.WriteLine("mesh.position.y = {0:0.000};".Fmt(middle.Y));
+				writer.WriteLine("mesh.position.z = {0:0.000};".Fmt(middle.Z));
+
+				var euclidRotation = rotation.ToEuclidRotation();
+				writer.WriteLine("mesh.eulerOrder = 'YZX';");
+				writer.WriteLine("mesh.rotation.x = {0:0.000};".Fmt(euclidRotation.X));
+				writer.WriteLine("mesh.rotation.y = {0:0.000};".Fmt(euclidRotation.Y));
+				writer.WriteLine("mesh.rotation.z = {0:0.000};".Fmt(euclidRotation.Z));
+
+				writer.WriteLine("mesh.scale.x = {0:0.000};".Fmt(Math3D.Distance(endPoint, lastPoint)));
+				writer.WriteLine("mesh.scale.y = {0:0.000};".Fmt(width));
+				writer.WriteLine("mesh.scale.z = {0:0.000};".Fmt(width));
+
+				writer.WriteLine("mesh.updateMatrix();");
+				writer.WriteLine("mesh.matrixAutoUpdate = false;");
+				writer.WriteLine("objectHolder.add(mesh);");
 
 				base.DrawTo(endPoint, rotation, width, color);
 
@@ -94,222 +94,88 @@ namespace Malsys.Processing.Components.Renderers {
 			throw new NotImplementedException();
 		}
 
+		public override void DrawSphere(Point3D center, double radius, ColorF color) {
+			if (!measuring) {
+				// materials
+				writer.WriteLine("material = new THREE.MeshLambertMaterial({{ color: 0x{0}, shading: THREE.FlatShading }});".Fmt(color.ToRgbHexString()));
+				writer.WriteLine("mesh = new THREE.Mesh(spgereGeometry, material);");
 
-		#region Json output methods
+				writer.WriteLine("mesh.position.x = {0:0.000};".Fmt(center.X));
+				writer.WriteLine("mesh.position.y = {0:0.000};".Fmt(center.Y));
+				writer.WriteLine("mesh.position.z = {0:0.000};".Fmt(center.Z));
 
-		private void startJsonObject(string name) {
-			writer.WriteLine("\"" + name + "\": {");
-			writer.Indent();
+				if (radius.EpsilonCompareTo(1.0) != 0) {
+					writer.WriteLine("mesh.scale.x = {0:0.000};".Fmt(radius));
+					writer.WriteLine("mesh.scale.y = {0:0.000};".Fmt(radius));
+					writer.WriteLine("mesh.scale.z = {0:0.000};".Fmt(radius));
+				}
+
+				writer.WriteLine("mesh.updateMatrix();");
+				writer.WriteLine("mesh.matrixAutoUpdate = false;");
+				writer.WriteLine("objectHolder.add(mesh);");
+
+				var radPoint = new Point3D(radius, radius, radius);
+				measure(Math3D.AddPoints(center, radPoint));
+				measure(Math3D.SubtractPoints(center, radPoint));
+
+			}
 		}
 
-		private void writeJson(string value, bool comma = true) {
-			writer.WriteLine(value + (comma ? "," : ""));
-		}
 
-		private void writeJsonValue(string name, bool value, bool comma = true) {
-			writer.WriteLine("\"{0}\": {1}{2}".Fmt(name, value ? "true" : "false", comma ? "," : ""));
-		}
-
-		private void writeJsonValue(string name, string value, bool comma = true) {
-			writer.WriteLine("\"{0}\": \"{1}\"{2}".Fmt(name, value, comma ? "," : ""));
-		}
-
-		private void writeJsonValue(string name, double value, bool comma = true) {
-			writer.WriteLine("\"{0}\": {1}{2}".FmtInvariant(name, value, comma ? "," : ""));
-		}
-
-		private void writeJsonValue(string name, Point3D value, bool comma = true) {
-			writer.WriteLine("\"{0}\": [{1},{2},{3}]{4}".FmtInvariant(name, value.X, value.Y, value.Z, comma ? "," : ""));
-		}
-
-		private void writeJsonValue(string name, Vector3D value, bool comma = true) {
-			writer.WriteLine("\"{0}\": [{1},{2},{3}]{4}".FmtInvariant(name, value.X, value.Y, value.Z, comma ? "," : ""));
-		}
-
-		private void writeJsonValue(string name, Quaternion value, bool comma = true) {
-			writer.WriteLine("\"{0}\": [{1},{2},{3},{4}]{5}".FmtInvariant(name, value.W, value.X, value.Y, value.Z, comma ? "," : ""));
-		}
-
-		private void endJsonObject(bool comma = true) {
-			writer.Unindent();
-			writer.WriteLine("}" + (comma ? "," : ""));
-		}
 
 		private void startFile() {
 
-			writer.WriteLine("{");
+			writer.WriteLine("var Scene = function() {");  // create scope to not fill global scope with mess
+			writer.WriteLine("var scene = new THREE.Scene();");
 
-			startJsonObject("metadata");
-			{
-				writeJsonValue("formatVersion", 3);
-				writeJsonValue("type", "scene", false);
-			}
-			endJsonObject();
+			// geometries
+			writer.WriteLine("var lineGeometry = new THREE.CubeGeometry(1, 1, 1);");
+			writer.WriteLine("var spgereGeometry = new THREE.SphereGeometry(1, 7, 5);");
 
+			// objects
+			writer.WriteLine("var objectHolder = new THREE.Object3D();");
+			writer.WriteLine("scene.add(objectHolder);");
 
-			startJsonObject("geometries");
-			{
-				startJsonObject(lineGeometryName);
-				{
-					//writeJsonValue("type", "cylinder");
-					//writeJsonValue("topRad", 0.5);
-					//writeJsonValue("botRad", 0.5);
-					//writeJsonValue("height", 1);
-					//writeJsonValue("radSegs", 7);
-					//writeJsonValue("heightSegs", 1, false);
-					writeJsonValue("type", "cube");
-					writeJsonValue("width", 1);
-					writeJsonValue("height", 1);
-					writeJsonValue("depth", 1);
-					writeJsonValue("segmentsWidth", 1);
-					writeJsonValue("segmentsHeight", 1);
-					writeJsonValue("segmentsDepth", 1);
-					writeJsonValue("flipped", false, false);
-				}
-				endJsonObject(false);
-			}
-			endJsonObject();
+			writer.WriteLine("var mesh; var material;");  // mesh for creating objects
 
-
-			startJsonObject("materials");
-			{
-				startJsonObject(lineMaterialName);
-				{
-					writeJsonValue("type", "MeshLambertMaterial");
-					startJsonObject("parameters");
-					{
-						writeJsonValue("color", 16777215);
-						writeJsonValue("shading", "flat", false);
-					}
-					endJsonObject(false);
-				}
-				endJsonObject();
-
-				startJsonObject("red");
-				{
-					writeJsonValue("type", "MeshLambertMaterial");
-					startJsonObject("parameters");
-					{
-						writeJsonValue("color", 16711680);
-						writeJsonValue("shading", "flat", false);
-					}
-					endJsonObject(false);
-				}
-				endJsonObject();
-
-				startJsonObject("green");
-				{
-					writeJsonValue("type", "MeshLambertMaterial");
-					startJsonObject("parameters");
-					{
-						writeJsonValue("color", 65280);
-						writeJsonValue("shading", "flat", false);
-					}
-					endJsonObject(false);
-				}
-				endJsonObject();
-
-				startJsonObject("blue");
-				{
-					writeJsonValue("type", "MeshLambertMaterial");
-					startJsonObject("parameters");
-					{
-						writeJsonValue("color", 255);
-						writeJsonValue("shading", "flat", false);
-					}
-					endJsonObject(false);
-				}
-				endJsonObject(false);
-			}
-			endJsonObject();
-
-
-			startJsonObject("lights");
-			{
-				startJsonObject("directionalLight");
-				{
-					writeJsonValue("type", "directional");
-					writeJsonValue("direction", new Point3D(0, 1, 1));
-					writeJsonValue("color", 16777215);
-					writeJsonValue("intensity", 0.8, false);
-				}
-				endJsonObject(false);
-			}
-			endJsonObject();
-
-
-			startJsonObject("defaults");
-			{
-				writeJsonValue("bgcolor", new Point3D(1, 1, 1));
-				writeJsonValue("bgalpha", 1);
-				writeJsonValue("camera", "camera", false);
-			}
-			endJsonObject();
-
-
-			startJsonObject("objects");
 		}
 
 		private void endFile() {
 
-			startJsonObject("x");
-			{
-				writeJsonValue("geometry", lineGeometryName);
-				writeJson("\"materials\": [\"red\"]");
-				writeJsonValue("position", new Point3D(10, 0, 0));
-				writeJsonValue("rotation", new Vector3D(0, 0, MathHelper.PiHalf));
-				writeJsonValue("scale", new Vector3D(1, 20, 1));
-				writeJsonValue("visible", true, false);
-			}
-			endJsonObject();
+			var cameraTarget = Math3D.CountMiddlePoint(measuredMin, measuredMax);
+			var cameraPos = Math3D.AddPoints(cameraTarget, measuredMax);
+			var cameraPosNorm = ((Vector3D)cameraPos);
+			cameraPosNorm.Normalize();
 
-			startJsonObject("y");
-			{
-				writeJsonValue("geometry", lineGeometryName);
-				writeJson("\"materials\": [\"green\"]");
-				writeJsonValue("position", new Point3D(0, 10, 0));
-				writeJsonValue("rotation", new Vector3D(0, 0, 0));
-				writeJsonValue("scale", new Vector3D(1, 20, 1));
-				writeJsonValue("visible", true, false);
-			}
-			endJsonObject();
+			// lights
+			//writer.WriteLine("var ambientLight = new THREE.AmbientLight(0x111111);");
+			//writer.WriteLine("scene.add(ambientLight);");
 
-			startJsonObject("z");
-			{
-				writeJsonValue("geometry", lineGeometryName);
-				writeJson("\"materials\": [\"blue\"]");
-				writeJsonValue("position", new Point3D(0, 0, 10));
-				writeJsonValue("rotation", new Vector3D(MathHelper.PiHalf, 0, 0));
-				writeJsonValue("scale", new Vector3D(1, 20, 1));
-				writeJsonValue("visible", true, false);
-			}
-			endJsonObject(false);
+			// main light from camera
+			writer.WriteLine("var directionalLight = new THREE.DirectionalLight(0xFFFFFF);");
+			writer.WriteLine("directionalLight.position.x = {0:0.000};".Fmt(cameraPosNorm.X));
+			writer.WriteLine("directionalLight.position.y = {0:0.000};".Fmt(cameraPosNorm.Y));
+			writer.WriteLine("directionalLight.position.z = {0:0.000};".Fmt(cameraPosNorm.Z));
+			writer.WriteLine("scene.add(directionalLight);");
 
-			endJsonObject();  // end "objects" object
+			// secondary light to avoid completely black sides (not directly against primaty light)
+			writer.WriteLine("directionalLight = new THREE.DirectionalLight(0x777777);");
+			writer.WriteLine("directionalLight.position.x = {0:0.000};".Fmt(-cameraPosNorm.Y));
+			writer.WriteLine("directionalLight.position.y = {0:0.000};".Fmt(-cameraPosNorm.X));
+			writer.WriteLine("directionalLight.position.z = {0:0.000};".Fmt(-cameraPosNorm.Z));
+			writer.WriteLine("scene.add(directionalLight);");
 
+			writer.WriteLine("return {");
+			writer.WriteLine("getScene: function() { return scene; },");
+			writer.WriteLine("getCameraPosition: function() {{ return new THREE.Vector3( {0:0.000}, {1:0.000}, {2:0.000} ); }},"
+				.Fmt(cameraPos.X, cameraPos.Y, cameraPos.Z));
+			writer.WriteLine("getCameraTarget: function() {{ return new THREE.Vector3( {0:0.000}, {1:0.000}, {2:0.000} ); }}"
+				.Fmt(cameraTarget.X, cameraTarget.Y, cameraTarget.Z));
+			writer.WriteLine("};");
 
-			startJsonObject("cameras");
-			{
-				startJsonObject("camera");
-				{
-					writeJsonValue("type", "perspective");
-					writeJsonValue("fov", 60);
-					writeJsonValue("aspect", 1.33333);
-					writeJsonValue("near", 1);
-					writeJsonValue("far", 1e7);
-					writeJsonValue("position", measuredMax);
-					writeJsonValue("target", Math3D.CountMiddlePoint(measuredMin, measuredMax), false);
-				}
-				endJsonObject(false);
-			}
-			endJsonObject(false);
+			writer.WriteLine("};");  // end of scope
 
-
-			writer.WriteLine("}");
 		}
-
-		#endregion
-
 
 	}
 }

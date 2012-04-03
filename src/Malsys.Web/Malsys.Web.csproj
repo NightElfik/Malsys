@@ -243,15 +243,20 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Infrastructure\IAppSettingsProvider.cs" />
+    <Compile Include="Models\ViewModels%27\InputDetail.cs" />
+    <Compile Include="Models\ViewModels%27\EditSavedInputModel.cs" />
     <Compile Include="Models\IMalsysInputRepository.cs" />
     <Compile Include="Models\IUsersRepository.cs" />
+    <Compile Include="Models\Lsystem\LsystemProcessor.cs" />
+    <Compile Include="Models\Lsystem\OutputMetadataHelper.cs" />
     <Compile Include="Models\Repositories\MalsysInputRepository.cs" />
     <Compile Include="Models\Repositories\UsersRepository.cs" />
     <Compile Include="Models\NewRoleModel.cs" />
-    <Compile Include="Models\SimpleLsystemProcessor.cs" />
+    <Compile Include="Models\Lsystem\SimpleLsystemProcessor.cs" />
     <Compile Include="Models\ViewModels%27\FeedbackModel.cs" />
     <Compile Include="Areas\Administration\Models\InputProcessesHistoryItem.cs" />
     <Compile Include="Areas\Administration\Models\RoleDetailModel.cs" />
+    <Compile Include="PreventRenderingAttribute.cs" />
     <Compile Include="ProcessController.generated.cs">
       <DependentUpon>T4MVC.tt</DependentUpon>
     </Compile>
@@ -302,6 +307,7 @@
     <Content Include="Areas\Help\Views\SyntaxReference\Constant.cshtml" />
     <Content Include="Areas\Help\Views\SyntaxReference\Tokens.cshtml" />
     <Content Include="Areas\Administration\Views\Home\TrySendMail.cshtml" />
+    <Content Include="Areas\Help\Views\Home\BasicSyntax.cshtml" />
     <None Include="Css\style.less.css" />
     <Content Include="Css\style.css">
       <DependentUpon>T4CSS.tt</DependentUpon>
@@ -313,46 +319,11 @@
     <None Include="Js\jquery.validate.js" />
     <None Include="Js\jquery.js" />
     <None Include="Js\malsys.js" />
-    <None Include="Js\MinifyJs.log">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </None>
     <None Include="Js\modernizr.js" />
-    <Content Include="Js\jquery.min.js">
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
-    <Content Include="Js\jquery.textarea.min.js">
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
-    <Content Include="Js\jquery.unobtrusive-ajax.min.js">
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
-    <Content Include="Js\jquery.validate.min.js">
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
-    <Content Include="Js\jquery.validate.unobtrusive.min.js">
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
-    <Content Include="Js\malsys.min.js">
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
-    <Content Include="Js\modernizr.min.js">
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
     <None Include="Js\ThreeJs\Detector.js" />
     <None Include="Js\ThreeJs\malsys.three.js" />
-    <Content Include="Js\ThreeJs\Detector.min.js">
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
-    <Content Include="Js\ThreeJs\malsys.three.min.js">
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
+    <Content Include="Js\ThreeJs\Stats.js" />
     <Content Include="Js\ThreeJs\Three.js" />
-    <None Include="Js\ThreeJs\threex.dragpancontrols.js" />
-    <Content Include="Js\ThreeJs\threex.dragpancontrols.min.js">
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -420,14 +391,16 @@
     <Content Include="Views\Examples\Ascii.cshtml" />
     <Content Include="Views\Examples\ThreeD.cshtml" />
     <Content Include="Views\User\DeleteInput.cshtml" />
+    <Content Include="Views\Gallery\Index.cshtml" />
+    <Content Include="Views\Gallery\Detail.cshtml" />
+    <Content Include="Views\Gallery\Edit.cshtml" />
+    <Content Include="Views\Shared\SavedInputPermaLink.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Areas\Administration\Views\Shared\" />
     <Folder Include="Content\themes\" />
-    <Folder Include="Models\Lsystem\" />
     <Folder Include="Views\Shared\DisplayTemplates\" />
     <Folder Include="Views\Shared\EditorTemplates\" />
-    <Folder Include="WorkDir\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

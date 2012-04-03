@@ -25,5 +25,7 @@ namespace Malsys.Processing.Components.Renderers {
 
 		void DrawPolygon(Polygon3D polygon);
 
+		void DrawSphere(Point3D center, double radius, ColorF color);
+
 	}
 }

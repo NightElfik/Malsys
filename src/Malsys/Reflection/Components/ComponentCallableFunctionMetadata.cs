@@ -15,15 +15,18 @@ namespace Malsys.Reflection.Components {
 
 		public readonly ImmutableList<ExpressionValueTypeFlags> ParamsTypesCyclicPattern;
 
+		public readonly bool IsGettableBeforeInitialiation;
+
 
 
 		public ComponentCallableFunctionMetadata(ImmutableList<string> names, MethodInfo methodInfo, int paramsCount,
-				ImmutableList<ExpressionValueTypeFlags> paramsTypesCyclicPattern) {
+				ImmutableList<ExpressionValueTypeFlags> paramsTypesCyclicPattern, bool isGettableBeforeInitialiation) {
 
 			Names = names;
 			ParamsCount = paramsCount;
 			ParamsTypesCyclicPattern = paramsTypesCyclicPattern;
 			MethodInfo = methodInfo;
+			IsGettableBeforeInitialiation = isGettableBeforeInitialiation;
 
 		}
 

@@ -8,7 +8,7 @@ namespace Malsys.Web.Areas.Administration.Models {
 		public string User { get; set; }
 		public DateTime EditDate { get; set; }
 		public long Duration { get; set; }
-		public string Source { get; set; }
+		public string SourceCode { get; set; }
 
 	}
 }

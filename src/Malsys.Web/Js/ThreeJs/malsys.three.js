@@ -1,56 +1,94 @@
 ﻿/// <reference path="~/Js/jquery.js" />
 
-var scene, renderer, camera, cameraControls;
+var controls = [];
 
 (function ($) {
 
-	var firstScene = true;
+	$('.threeJsScene').each(function (i) {
 
-	$(".threeJsScene").each(function (i) {
-
-		if (firstScene){
-			firstScene = false;
-		}
-		else {
-			$(this).text("Only one scene per page is supported in beta.");
-			return;
-		}
-
-		var sceneUrl = $(this).attr("data-scene");
+		var domElement = $(this);
+		var sceneUrl = domElement.attr('data-scene');
 		if (!sceneUrl) {
 			return;
 		}
 
+		var width = domElement.width();
+		var height = domElement.height();
+
+		var renderer;
+
+		// renderer ============================================================
+
 		if (Detector.webgl) {
 			renderer = new THREE.WebGLRenderer({
-				antialias: true,
+				antialias: domElement.attr('data-anti-alias') ? true : false,
 				preserveDrawingBuffer: true  // to allow screenshot
 			});
+			domElement.children('.webgl').remove();
 		}
 		else {
 			renderer = new THREE.CanvasRenderer();
 			renderer.sortObjects = true;
 		}
 
-		renderer.setSize($(this).width(), $(this).height());
-		var rendererDomElement = renderer.domElement;
-		$(this).append(rendererDomElement);
+		renderer.setSize(width, height);
 
-		// load the scene
-		var loader = new THREE.SceneLoader();
-		//loader.callbackSync = callbackSync;
-		//loader.callbackProgress = callbackProgress;
-		loader.load(sceneUrl, function (result) {
-			scene = result.scene;
-			camera = result.currentCamera;
-			cameraControls = new THREEx.DragPanControls(camera, camera.target, rendererDomElement);
-			cameraControls.update();
+
+		var clearClrHex = parseInt(domElement.attr('data-clear-color') || '000000', 16);
+
+		var bgColor = new THREE.Color(0);
+		bgColor.setHex(clearClrHex);
+		renderer.setClearColor(bgColor, 1);
+
+		var rendererDomElement = renderer.domElement;
+		domElement.append(rendererDomElement);
+
+
+		// load scene ==========================================================
+
+		var statsDisplay = domElement.attr('data-stats-display');
+
+		$.getScript(sceneUrl, function() {
+
+			if (!Scene) {
+				return;
+			}
+
+			var returnedScene = Scene();
+
+			var scene = returnedScene.getScene();
+			var target = returnedScene.getCameraTarget();
+
+			var camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 10000);
+
+			camera.position = returnedScene.getCameraPosition();
 
 			scene.add(camera);
 
-			renderer.setClearColor(result.bgColor, result.bgColorAlpha);
+			var ctrl = new THREE.TrackballControls(camera, rendererDomElement);
+			ctrl.staticMoving = false;
+			ctrl.target = target;
+			controls.push(ctrl);
 
-			animate();
+			if (statsDisplay) {
+				stats = new Stats();
+				stats.domElement.style.position = 'absolute';
+				stats.domElement.style.top = '0px';
+				stats.domElement.style.right = '0px';
+				stats.domElement.style.opacity = '0.8';
+				domElement.append(stats.domElement);
+				ctrl.addEventListener('change', function() {
+					renderer.render(scene, camera);
+					stats.update();
+				});
+			}
+			else {
+				ctrl.addEventListener('change', function() {
+					renderer.render(scene, camera);
+				});
+			}
+
+
 		});
 
 	});
@@ -60,25 +98,16 @@ var scene, renderer, camera, cameraControls;
 
 
 
-// animation loop
 function animate() {
 
-	// loop on request animation loop
-	// - it has to be at the begining of the function
-	// - see details at http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
 	requestAnimationFrame(animate);
+	// update all controls
+	for (var i in controls) {
+		controls[i].update();
+	}
+	// do not render scene, scenes are rendered on camera move
 
-	// do the render
-	render();
 }
 
-// render the scene
-function render() {
-
-	// update camera controls
-	cameraControls.update();
-
-	// actually render the scene
-	//renderer.clear();
-	renderer.render(scene, camera);
-}
+// start animation loop
+animate();

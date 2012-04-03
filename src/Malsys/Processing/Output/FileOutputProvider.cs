@@ -7,6 +7,7 @@ using System.IO.Packaging;
 using System.Linq;
 using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Collections;
+using System.Diagnostics;
 
 namespace Malsys.Processing.Output {
 	public class FileOutputProvider : IOutputProvider, IDisposable {
@@ -104,7 +105,6 @@ namespace Malsys.Processing.Output {
 		/// <summary>
 		/// Closes all opened output streams and deletes all temporary outputs.
 		/// </summary>
-		/// <returns>Number of output files.</returns>
 		public void CloseAllOutputStreams() {
 
 			if (allStreamsClosed) {
@@ -117,7 +117,6 @@ namespace Malsys.Processing.Output {
 
 				if (file.Stream.CanWrite) {
 					file.Stream.Flush();
-					file.Stream.Close();
 					file.Stream.Dispose();
 				}
 
@@ -130,6 +129,7 @@ namespace Malsys.Processing.Output {
 
 			allStreamsClosed = true;
 		}
+
 
 		/// <summary>
 		/// Returns all output files.
@@ -168,7 +168,13 @@ namespace Malsys.Processing.Output {
 						fs.CopyTo(packagePart.GetStream());
 					}
 
-					File.Delete(file.FilePath);
+					try {
+						File.Delete(file.FilePath);
+					}
+					catch (Exception) {
+						// TODO: handle it somehow
+						Debug.Fail("File not deleted.");
+					}
 
 				}
 			}

@@ -15,5 +15,15 @@ namespace Malsys.Web.Models {
 
 		void CleanProcessOutputs(string workDirFullPath, int maxFilesCount, int filesToDelete);
 
+		/// <summary>
+		/// Gets tags with given names.
+		/// Tags which do not exist are created.
+		/// </summary>
+		IEnumerable<Tag> GetTags(params string[] tags);
+
+		bool Vote(string urlId, string userName, bool upVote);
+
+		bool? GetUserVote(string urlId, string userName);
+
 	}
 }

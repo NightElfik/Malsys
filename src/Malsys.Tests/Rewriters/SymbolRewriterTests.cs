@@ -1,19 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using Malsys.Compilers;
 using Malsys.Evaluators;
 using Malsys.IO;
 using Malsys.Processing;
-using Malsys.Processing.Components;
 using Malsys.Processing.Components.Common;
+using Malsys.Processing.Components.Rewriters;
+using Malsys.Processing.Output;
 using Malsys.SemanticModel;
-using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Evaluated;
 using Malsys.SourceCode.Printers;
-using Microsoft.FSharp.Collections;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Malsys.Processing.Output;
-using Malsys.Processing.Components.Rewriters;
 
 namespace Malsys.Tests.Rewriters {
 	[TestClass]

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Evaluated;
+using Malsys.Processing.Components.Common;
 
 namespace Malsys.Processing.Components.RewriterIterators {
 	[Component("Memory buffered iterator", ComponentGroupNames.Iterators)]
@@ -69,6 +70,10 @@ namespace Malsys.Processing.Components.RewriterIterators {
 				interpretEveryIterationFrom = Math.Max(0, value.RoundedIntValue);
 			}
 		}
+
+
+		[UserConnectable(IsOptional = true)]
+		public RandomGeneratorProvider RandomGeneratorProvider { private get; set; }
 
 
 		#region IIterator Members
@@ -181,6 +186,10 @@ namespace Malsys.Processing.Components.RewriterIterators {
 		}
 
 		private void interpret(bool measuring) {
+
+			if (RandomGeneratorProvider != null) {
+				RandomGeneratorProvider.Reset();
+			}
 
 			outProcessor.BeginProcessing(measuring);
 

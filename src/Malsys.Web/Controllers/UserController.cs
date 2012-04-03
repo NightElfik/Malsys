@@ -55,7 +55,7 @@ namespace Malsys.Web.Controllers {
 				return RedirectToAction(Actions.SavedInputs());
 			}
 			else {
-				return View(new KeyValuePair<string, string>(id, malsysInput.Source));
+				return View(new KeyValuePair<string, string>(id, malsysInput.SourceCode));
 			}
 
 		}

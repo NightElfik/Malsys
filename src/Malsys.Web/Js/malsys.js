@@ -31,7 +31,7 @@
 	}
 
 	function highlightLsystemKeywords(code) {
-		return (' ' + code).replace(/(\s)(as|component|configuration|connect|consider|container|default|fun|interpret|let|lsystem|nothing|or|process|return|rewrite|set|this|to|typeof|use|weight|with|where)(?=\s)/g, '$1<span class="keyword">$2</span>').trim();
+		return (' ' + code + ' ').replace(/(\s)(all|as|component|configuration|connect|consider|container|default|fun|interpret|let|lsystem|nothing|or|process|return|rewrite|set|symbols|this|to|typeof|use|virtual|weight|with|where)(?=\s)/g, '$1<span class="keyword">$2</span>').trim();
 	}
 
 	function urlEncode(str) {

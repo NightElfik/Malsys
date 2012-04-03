@@ -63,10 +63,10 @@ namespace Malsys.Processing {
 					continue;
 				}
 
-				// add variables and functions from components to ExpressionEvaluatorContext
+				// add variables and functions from components that can be called before init to ExpressionEvaluatorContext
 				var eec = inBlockEvaled.ExpressionEvaluatorContext;
 				eec = configBuilder.AddComponentsGettableVariables(compGraph, eec, true);
-				eec = configBuilder.AddComponentsCallableFunctions(compGraph, eec);
+				eec = configBuilder.AddComponentsCallableFunctions(compGraph, eec, true);
 
 
 				foreach (var lsystem in lsystemsToProcess) {
@@ -83,7 +83,9 @@ namespace Malsys.Processing {
 						configBuilder.SetAndCheckUserSettableProperties(compGraph, lsysEvaled.ComponentValuesAssigns, lsysEvaled.ComponentSymbolsAssigns, logger);
 
 						// add gettable variables which can not be get before initialization
-						var newEec = configBuilder.AddComponentsGettableVariables(compGraph, lsysEvaled.ExpressionEvaluatorContext, false);
+						var newEec = lsysEvaled.ExpressionEvaluatorContext;
+						newEec = configBuilder.AddComponentsGettableVariables(compGraph, newEec, false);
+						newEec = configBuilder.AddComponentsCallableFunctions(compGraph, newEec, false);
 
 						var context = new ProcessContext(lsysEvaled, outputProvider, inBlockEvaled, evaluator,
 							newEec, componentResolver, timeout, compGraph, logger);

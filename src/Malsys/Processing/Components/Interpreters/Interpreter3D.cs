@@ -271,6 +271,27 @@ namespace Malsys.Processing.Components.Interpreters {
 		}
 
 		/// <summary>
+		/// Draws sphere in current position with radius equal to value of first parameter.
+		/// </summary>
+		[SymbolInterpretation(1)]
+		public void DrawSphere(ArgsStorage args) {
+
+			double radius = getArgumentAsDouble(args, 0);
+
+			ColorF color = currState.Color;
+
+			if (colorContinously) {
+				color = colorGradient[(float)colorEvents / colorEventsMeasured];
+			}
+			else if (args.ArgsCount >= 2) {
+				ColorHelper.ParseColor(args[1], ref color);
+			}
+
+			colorEvents++;
+			renderer.DrawSphere(currState.Position, radius, color);
+		}
+
+		/// <summary>
 		/// Turns left around up vector axis by value given in the first parameter (in degrees).
 		/// </summary>
 		[SymbolInterpretation(1)]

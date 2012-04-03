@@ -28,6 +28,16 @@ namespace Malsys.Web.Entities {
 		void DeleteSavedInput(SavedInput savedInput);
 
 
+		IQueryable<Tag> Tags { get; }
+
+		void AddTag(Tag tag);
+
+
+		IQueryable<SavedInputVote> Votes { get; }
+
+		void AddVote(SavedInputVote vote);
+
+
 		int SaveChanges();
 
 		void Detach(object entity);

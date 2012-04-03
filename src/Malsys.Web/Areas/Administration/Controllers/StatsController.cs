@@ -37,7 +37,7 @@ namespace Malsys.Web.Areas.Administration.Controllers {
 					Date = p.ProcessDate,
 					Duration = p.Duration,
 					SourceId = p.CanonicInput.CanonicInputId,
-					Source = p.CanonicInput.Source
+					Source = p.CanonicInput.SourceCode
 				})
 				.AsPagination(page, 10);
 
@@ -59,7 +59,7 @@ namespace Malsys.Web.Areas.Administration.Controllers {
 					User = x.User.Name,
 					EditDate = x.EditDate,
 					Duration = x.Duration,
-					Source = x.Source
+					SourceCode = x.SourceCode
 				})
 				.AsPagination(page, 10);
 

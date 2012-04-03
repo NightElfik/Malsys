@@ -1,0 +1,5 @@
+﻿@model string
+
+
+@Html.Link(Request.Url.Scheme + System.Uri.SchemeDelimiter + Request.Url.Host +
+		(Request.Url.IsDefaultPort ? "" : ":" + Request.Url.Port) + Url.Action(MVC.Gallery.Detail(Model)))

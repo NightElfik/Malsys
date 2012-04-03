@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Data.Objects;
+using System.Linq;
 using System.Linq.Expressions;
-using System.Web.Mvc;
 
 namespace Malsys.Web.Entities {
 	public static class IQueriableExtensions {

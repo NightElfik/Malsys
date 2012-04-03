@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Web;
+using System.Web.Configuration;
 using System.Web.Mvc;
 using System.Web.Routing;
 using Autofac;
@@ -19,6 +21,7 @@ using Malsys.Web.Infrastructure;
 using Malsys.Web.Models;
 using Malsys.Web.Models.Repositories;
 using Malsys.Web.Security;
+using Malsys.Web.Models.Lsystem;
 
 namespace Malsys.Web {
 	public class MvcApplication : HttpApplication {
@@ -120,6 +123,7 @@ namespace Malsys.Web {
 				.SingleInstance();
 
 			builder.RegisterType<ProcessManager>().InstancePerHttpRequest();
+			builder.RegisterType<LsystemProcessor>().InstancePerHttpRequest();
 
 			builder.Register(x => buildStdLib(knownStuffProvider, eec)).SingleInstance();
 
@@ -197,7 +201,18 @@ namespace Malsys.Web {
 
 			ensureDirExistsAndIsWritable(appSettingsProvider[AppSettingsKeys.GalleryWorkDir]);
 
-			// TODO: ensure directory for error reporting of elmah, needs better access to web.config
+
+			// this is not elegant solution but better than nothing (I can not find better solution)
+			var section = WebConfigurationManager.OpenWebConfiguration("/").GetSection("elmah/errorLog") as DefaultSection;
+			string rawXml = section.SectionInformation.GetRawXml();
+
+			const string start = "logPath=\"";
+			const string end = "\"";
+			int startI = rawXml.IndexOf(start) + start.Length;
+			int endI = rawXml.IndexOf(end, startI);
+			string errReportDirPath = rawXml.SubstringPos(startI, endI);
+
+			ensureDirExistsAndIsWritable(errReportDirPath);
 
 		}
 
@@ -208,20 +223,20 @@ namespace Malsys.Web {
 		private void ensureDirExistsAndIsWritable(string path, bool pathIsVirtual = true) {
 
 			if (pathIsVirtual) {
-				path = VirtualPathUtility.ToAbsolute(path);
+				path = Server.MapPath(VirtualPathUtility.ToAbsolute(path));
 			}
 
 			if (!Directory.Exists(path)) {
 				Directory.CreateDirectory(path);
 			}
 
-			string filePath = Path.Combine(path, "__Is_This_Directory_Writable__.test");  // unique file name? I hope so :-D
+			string filePath = Path.Combine(path, "IsThisDirectoryWritableTest." + DateTime.Now.Ticks.ToString());  // unique file name? I hope so :-D
 			try {
 				File.Create(filePath).Dispose();
 				File.Delete(filePath);
 			}
 			catch (Exception ex) {
-				throw new Exception("Directory `{0}` is not writable!", ex);
+				throw new Exception("Directory `{0}` is not writable!".Fmt(path), ex);
 			}
 
 		}

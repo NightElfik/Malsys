@@ -10,6 +10,7 @@
 @themeColorDarkerDarker: darken(@themeColor, 20%);
 
 @bgColor: lighten(@themeColor, 5%);
+@bgColorLight: lighten(@themeColor, 50%);
 
 @linkColor: @themeColor;
 @linkHoverColor: darken(@linkColor, 10%);
@@ -79,10 +80,12 @@ body { margin: 0; font-size: 1em; line-height: 1.4; }
 
 /* Links ==================================================================== */
 
-a { color: @linkColor; text-decoration: none; }
-a:hover { color: @linkHoverColor; text-decoration: underline; }
-a:visited { color: @linkVisitedColor; }
-a:focus { outline: thin dotted; }
+a {
+	color: @linkColor; text-decoration: none;
+	&:hover { color: @linkHoverColor; text-decoration: underline; }
+	&:visited { color: @linkVisitedColor; }
+	&:focus { outline: thin dotted; }
+}
 
 /* Improve readability when focused and hovered in all browsers: h5bp.com/h */
 a:hover, a:active { outline: 0; }
@@ -269,17 +272,6 @@ html, #headerContainer, #footerContainer {
 }
 
 #subtitle { color: @themeColorDarkerDarker; font-size: 0.6em; line-height: 1; letter-spacing: 0.65em; }
-
-.betaContainer {
-	float: left;
-	width: 1em;
-	font-size: 0.8em;
-	line-height: 1.2em;
-	color: @bgColor;
-	text-shadow: 0px 0px 4px @themeColorDarkerDarker;
-	h2 { border: none; .box-shadow(0, 0, 0, 0, #000); }
-}
-.no-textshadow .betaContainer { color: @themeColor; }
 
 .wrapper { margin: 0 auto; width: @baseWidth; padding: 0 20px; }
 
@@ -469,11 +461,45 @@ pre.asciiArt {
 }
 
 .threeJsScene {
+	position: relative;
 	border: solid 1px #000000;
 	width: 800px;
 	height: 600px;
 	.box-shadow(0px, 0px, 5px, 0, #000);
+
+	.webgl { position: absolute; top: 4px; left: 4px; margin: 0; font-size: 0.8em; color: #888888; }
+	.controls { position: absolute; bottom: 4px; left: 4px; margin: 0; font-size: 0.8em; color: #888888; }
 }
+
+/* Gallery ================================================================== */
+
+.gallery {
+	text-align: justify;
+
+	.thn { float: left; padding: 0px 2px; }
+	.threeJsScene {
+		width: 341px;
+		height: 256px;
+		border: none;
+		.box-shadow(0px, 0px, 0px, 0, #000);
+	}
+}
+
+a.tag {
+	padding: 3px 6px;
+	margin: 1px 2px;
+	border: solid 1px @linkColor;
+	background-color: @bgColorLight;
+
+	&:visited { color: @linkColor; }
+	&:hover {
+		color: @linkHoverColor; border-color: @linkHoverColor; background-color: darken(@bgColorLight, 10%);
+		.box-shadow-inset(0, 0, 8px, 0, #FFF); text-shadow: 0px 0px 8px #FFF;
+	}
+}
+
+p.rating { font-size: 2em; margin: 0; }
+
 
 /* Components ============================================================== */
 .componentBox {

@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.IO;
 using System.Windows.Media.Media3D;
 using Malsys.Media;
 using Microsoft.FSharp.Collections;
-using System.IO;
 
 namespace Malsys.Processing.Components.Renderers {
 	public abstract class BaseRenderer3D : IRenderer3D {
@@ -133,6 +129,8 @@ namespace Malsys.Processing.Components.Renderers {
 		}
 
 		public abstract void DrawPolygon(Polygon3D polygon);
+
+		public abstract void DrawSphere(Point3D center, double radius, ColorF color);
 
 		#endregion
 

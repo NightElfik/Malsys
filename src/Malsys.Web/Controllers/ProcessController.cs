@@ -8,6 +8,7 @@ using Malsys.Processing.Output;
 using Malsys.SemanticModel.Evaluated;
 using Malsys.Web.Infrastructure;
 using Malsys.Web.Models;
+using Malsys.Web.Models.Lsystem;
 
 namespace Malsys.Web.Controllers {
 	public partial class ProcessController : Controller {
@@ -20,18 +21,16 @@ namespace Malsys.Web.Controllers {
 
 		private readonly IMalsysInputRepository malsysInputRepository;
 		private readonly IUsersRepository usersRepository;
-		private readonly ProcessManager processManager;
-		private readonly InputBlockEvaled stdLib;
+		private readonly LsystemProcessor lsystemProcessor;
 		private readonly IAppSettingsProvider appSettingsProvider;
 
 
 		public ProcessController(IMalsysInputRepository malsysInputRepository, IAppSettingsProvider appSettingsProvider,
-				IUsersRepository usersRepository, ProcessManager processManager, InputBlockEvaled stdLib) {
+				IUsersRepository usersRepository, LsystemProcessor lsystemProcessor) {
 
 			this.malsysInputRepository = malsysInputRepository;
 			this.usersRepository = usersRepository;
-			this.processManager = processManager;
-			this.stdLib = stdLib;
+			this.lsystemProcessor = lsystemProcessor;
 			this.appSettingsProvider = appSettingsProvider;
 
 			workDir = appSettingsProvider[AppSettingsKeys.WorkDir];
@@ -72,7 +71,6 @@ namespace Malsys.Web.Controllers {
 #if DEBUG
 			timeout = TimeSpan.MaxValue;  // for debugging purposes
 #endif
-
 			string workDirFullPath = Server.MapPath(Url.Content(workDir));
 			malsysInputRepository.CleanProcessOutputs(workDirFullPath, maxWorkDirFiles, workDirCleanAmount);
 
@@ -85,36 +83,26 @@ namespace Malsys.Web.Controllers {
 				Logger = logger
 			};
 
+
+			bool compileOnly = compile != null;
+
+			InputBlockEvaled evaledInput;
+
 			var sw = new Stopwatch();
 			sw.Start();
-
-			var evaledInput = processManager.CompileAndEvaluateInput(sourceCode, "webInput", logger);
-
-			if (logger.ErrorOccurred || compile != null) {
-				return View(Views.Index, resultModel);
-			}
-
-
-			var inAndStdlib = stdLib.JoinWith(evaledInput);
-
-			if (inAndStdlib.Lsystems.Count == 0) {
-				logger.LogMessage(Message.NoLsysFoundDumpingConstants);
-				processManager.DumpConstants(inAndStdlib, fileMgr, logger);
-			}
-			else if (inAndStdlib.ProcessStatements.Count == 0) {
-				resultModel.NoProcessStatement = true;
-			}
-			else {
-				processManager.ProcessInput(inAndStdlib, fileMgr, logger, timeout);
-			}
-
-			if (logger.ErrorOccurred) {
-				return View(Views.Index, resultModel);
-			}
-
+			bool result = lsystemProcessor.TryProcess(sourceCode, timeout, fileMgr, logger, out evaledInput, true, compileOnly, true);
 			sw.Stop();
 
 			resultModel.ProcessDuration = sw.Elapsed;
+
+			if (compileOnly || !result) {
+				return View(Views.Index, resultModel);
+			}
+
+			if (evaledInput.ProcessStatements.Count == 0) {
+				resultModel.NoProcessStatement = true;
+				return View(Views.Index, resultModel);
+			}
 
 			List<OutputFile> outputs;
 
@@ -150,18 +138,10 @@ namespace Malsys.Web.Controllers {
 			if (savedInput != null) {
 				savedInput.Views++;
 				malsysInputRepository.InputDb.SaveChanges();
-				return IndexPost(savedInput.Source);
+				return IndexPost(savedInput.SourceCode);
 			}
 
 			return View(new ProcessLsystemResultModel() { SavedInputUrlId = id });
-		}
-
-
-		public enum Message {
-
-			[Message(MessageType.Info, "No L-systems found, dumping constants.")]
-			NoLsysFoundDumpingConstants,
-
 		}
 
 	}

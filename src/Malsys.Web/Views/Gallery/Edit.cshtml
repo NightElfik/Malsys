@@ -1,0 +1,19 @@
+﻿@model EditSavedInputModel
+
+@{
+	ViewBag.Title = "Edit " + Model.UrlId;
+}
+
+<h2>Edit @Model.UrlId</h2>
+
+@using (Html.BeginForm(MVC.Gallery.Edit(Model.UrlId))) {
+
+	@Html.ValidationSummary(true)
+
+	@Html.EditorForModel();
+
+	<p>
+		<input type="submit" value="Save" />
+	</p>
+
+}

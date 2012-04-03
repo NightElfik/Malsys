@@ -11,6 +11,8 @@ namespace Malsys.Processing.Components.Interpreters {
 
 		void DrawForward(ArgsStorage args);
 
+		void DrawSphere(ArgsStorage args);
+
 
 		void Yaw(ArgsStorage args);
 

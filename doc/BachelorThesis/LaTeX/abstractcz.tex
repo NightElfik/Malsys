@@ -1,63 +1,21 @@
 
-%L-systémy, které byly vynalezeny již v roce 1968 Aristidem Lindenmayerem za účelem modelování rostlin se ujaly a používají se dodnes.
-%Mohli jste se s nimi setkat například ve slavném filmu Avatar, ve kterém mnoho stromů a rostlin bylo vytvořeno právě za pomocí L-systémů.
-%Jejich využití se však neomezuje jen na rostliny, ale používají se například pro skládání hudby nebo pro modelování ulic ve virtuálních městech.
-
-%Pokud někoho L-systémy osloví a chce s nimi experimentovat má několik možností.
-%Jedna možnost je vyzkoušet nějaký web nebo webový applet.
-%Ty jsou většinou velice jednoduché a nenabízí příliš možností.
-%Další možností je stáhnout si nějaký program, který nabízí více možností.
-%%K němu je ale třeba nastudovat dokumentaci, pochopit ovládání a syntaxi vstupu.
-%Samostatný program zase ztrácí výhodu webové stránky, která je dostupná odkudkoliv a nabízí místo pro komunitu.
-%%Problém samostatných programů je v tom, že je těžké najít jiné uživatele používající stejný program se kterými bsyte mohli sdílet výsledky své práce nebo diskutovat o společných problémech.
-
-%Tato práce se snaží zkombinovat to nejlepší z výše zmíněných možností.
-%Cílem této práce je vytvořit webovou stránku, která nabídne uživatelům snadno přístupné rozhraní pro experimentování s L-systémy.
-%Rozhraní by mělo být srozumitelné pro nováčky a zároveň by mělo nabízet pokročilé funkce pro náročnější uživatele.
-%Tento cíl se podařilo splnit.
-%Výsledný webový generátor podporuje celou řadu grafických výstupů jako 2D a 3D obrázky nebo prostý text.
-%Součástí webu je i galerie L-systémů do které může každý uživatel přispívat a tvořit tak komunitu.
-
-%Protože webový generátor podporuje širokou škálu výstupů, bylo třeba vytvořit univerzální systém pro generování L-systémů.
-%Díky tomu vznikla modulární knihovna pro zpracování L-systémů, která se dá použít i samostatně bez webového rozhraní.
-%Její síla spočívá v rozložení procesu zpracování do tzv. komponent, každá komponenta má na starosti malou část zpracování.
-%Celý systém vznikne propojením komponent.
-%Díky systému komponent je velice jednoduché knihovnu rozšiřovat, protože stačí vytvořit jen rozšiřující komponentu a zapojit ji do systému.
-
-\section*{\lsystems online}
-Marek Fišer
-
-\section*{Omluva}
-Chtěl bych se Vám omluvit za to, že úvod hovoří o něčem jiném než absrtakt.
-Na textu pracuji od pondělka ale teprve v neděli jsem zjistil, co je vlastně mým cílem a čím jsem přispěl (problém implementačních prací).
-Abstrakt jsem upravit stihl ale úvod už ne.
-\\
-\\
-Mohl bych Vás poprosit, abyste si tuto práci nechala na opravování mezi posledními?
-Pokusil bych se nedostatky odstranit a poslat lepší verzi v týdnu. Děkuji.
-\\
-\\
-Abstrakt jsem napsal v čj a úvod v aj, ale to doufám není takový prohřešek.
-
-
 \section*{Abstrakt}
 
+\mbox{L-systém} je v nejjednodušší podobě varianta bezkontextové gramatiky.
+Byl vyvi\-nut a používá se hlavně pro modelování růstu rostlin, ale s jeho pomocí se také dají vytvářet obecné fraktály, modely měst nebo dokonce hudbu.
+Pokud někoho \mbox{L-systémy} zaujmou a che s nimi experimentovat, je těžké najít aplikaci, která by mu to umožňovala.
+Cílem této práce bylo vytvořit online systém, který by umožňoval práci a experimentování s L-systémy širokému spektru uživatelů.
+Výsledné řešení se skládá ze dvou částí.
 
-Cílem této práce bylo vytvořit online systém pro práci s L-systémy a jejich vizualizaci.
-Řešení se skládá ze dvou částí.
+První část je univerzální, snadno rozšiřitelná knihovna pro zpracování \mbox{L-sys}\-témů.
+Svou rozšiřitelnost dosahuje vysokou modularitou, vstup zpracovává pros\-třednic\-tvím systému propojených komponent, které jsou specializované na kon\-krét\-ní činnost.
+To také přispívá k přehlednosti a spolehlivosti celku.
+Navíc je knihovna zcela nezávislá a multiplatformní, lze ji tedy použít i v jiných aplikacích.
 
-První část je univerzální knihovna pro zpracování L-systémů.%, která je navíc také multiplatformní.
-Tato knihovna zpracovává vstup prostřednictvým úzce specializovaných komponent orientovaných na svou konkrétní činnost, což přispívá k přehlednosti a spolehlivosti celku.
-Díky tomu je knihovna snadno rozšiřitelná o další funkcionalitu.
-%Tato knihovna zpracovává vstup pomocí systému komponent.
-%Komponenty jsou úzce specializované na jednu konkrétní činnost což přispívá k přehlednosti a spolehlivosti celku.
-%Díky systému komponent je knihovna snadno rozšiřitelná o další funkcionalitu.
-Navíc je knihovna zcela nezávislá a použitelná i v jiných aplikacích.
-
-Druhá část je webové rozhraní, používající moderní technologie jako HTML5 WebGL pro vizualizaci L-systémů.
-Rozhraní bylo navrženo tak, aby bylo srozumitelné pro nováčky a zároveň aby nabízelo pokročilé funkce pro náročnější uživatele.
+Druhá část je moderní webové rozhraní, které bylo navrženo tak, aby bylo srozumitelné pro nováčky a zároveň aby nabízelo pokročilé funkce pro nároč\-nější uživatele.
+Pro vizualizaci 3D \mbox{L-systémů} využívá moderní technologie jako HTML5 WebGL.
 Součástí webu je i galerie L-systémů do které může každý uživatel přispívat a tvořit tak komunitu.
-Webové rozhraní plně využívá schopnosti navržené knihovny a slouží tak i jako ukázka jejího použití.
+Webové rozhraní plně využívá schopnosti navr\-žené knihovny a slouží tak i jako ukázka jejího použití.
 
 
 

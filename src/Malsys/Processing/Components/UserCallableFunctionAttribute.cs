@@ -17,16 +17,27 @@ namespace Malsys.Processing.Components {
 
 		public ExpressionValueTypeFlags[] ParamsTypesCyclicPattern { get; set; }
 
+		public bool IsCallableBeforeInitialiation { get; set; }
 
+
+		/// <summary>
+		/// Marks function that takes no parameters.
+		/// </summary>
 		public UserCallableFunctionAttribute() {
 			ParamsCount = 0;
 			ParamsTypesCyclicPattern = new ExpressionValueTypeFlags[0];
 		}
 
+		/// <summary>
+		/// Marks function that takes given count of parameters with any value type.
+		/// </summary>
 		public UserCallableFunctionAttribute(int paramsCount) {
 			ParamsTypesCyclicPattern = new ExpressionValueTypeFlags[1] { ExpressionValueTypeFlags.Any };
 		}
 
+		/// <summary>
+		/// Marks function that takes given count of parameters given value type pattern.
+		/// </summary>
 		public UserCallableFunctionAttribute(int paramsCount, params ExpressionValueTypeFlags[] paramsTypesCyclicPattern) {
 			ParamsCount = paramsCount;
 			ParamsTypesCyclicPattern = paramsTypesCyclicPattern;

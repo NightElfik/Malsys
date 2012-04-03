@@ -16,14 +16,14 @@ namespace Malsys.Processing {
 	/// Class for building process configuration.
 	/// </summary>
 	/// <remarks>
-	/// In order to build process configuration correctly you should call these methods:
-	/// <c>BuildConfigurationComponentsGraph</c>, <c>SetAndCheckUserSettableProperties</c>,
-	/// <c>InitializeComponents</c> and <c>CreateConfiguration</c> respectively.
-	/// These methods are separated to enable following features:
-	/// <list type="bullet">
-	/// <item><description>To evaluate L-system with respect to gettable variables on components.</description></item>
-	/// <item><description>To get variables or call functions on other components during initialization.</description></item>
-	/// </list>
+	/// In order to build process configuration correctly you should call these methods if following order:
+	/// <c>BuildConfigurationComponentsGraph</c>, <c>AddComponentsGettableVariables</c> and <c>AddComponentsCallableFunctions</c>
+	/// with beforeInit parameter set to true, <c>SetAndCheckUserSettableProperties</c>,
+	/// <c>InitializeComponents</c>,  <c>AddComponentsGettableVariables</c> and <c>AddComponentsCallableFunctions</c>
+	/// with beforeInit parameter set to false and finally <c>CreateConfiguration</c> respectively.
+	/// Methods are separated to enable getting variables or calling functions while evaluating L-system
+	/// and initializing components (before init).
+	/// Do not forget to call <c>CleanupComponents</c> at the end of processing.
 	/// </remarks>
 	public class ProcessConfigurationBuilder {
 
@@ -97,10 +97,11 @@ namespace Malsys.Processing {
 		}
 
 		/// <summary>
-		/// Sets and checks all settable properties in all given components. The values are obtained from given L-system.
+		/// Sets and checks all settable properties in all given components.
 		/// </summary>
 		/// <param name="components">F# list of components to process.</param>
-		/// <param name="lsystem">Used to get variables which are set to components.</param>
+		/// <param name="valueAssigns">Values to assign to settable properties.</param>
+		/// <param name="symbolsAssigns">Symbols to assign to symbol settable properties.</param>
 		/// <param name="logger">Logger for logging any failures during process.</param>
 		public void SetAndCheckUserSettableProperties(FSharpMap<string, ConfigurationComponent> components,
 				FSharpMap<string, IValue> valueAssigns, FSharpMap<string, ImmutableList<Symbol<IValue>>> symbolsAssigns, IMessageLogger logger) {
@@ -233,7 +234,7 @@ namespace Malsys.Processing {
 				var component = componentKvp.Value.Component;
 				var metadata = componentKvp.Value.Metadata;
 
-				foreach (var gettProp in metadata.GettableProperties.Where(x => x.GettableBeforeInitialiation == beforeInit)) {
+				foreach (var gettProp in metadata.GettableProperties.Where(x => x.IsGettableBeforeInitialiation == beforeInit)) {
 
 					var getFunction = buildComponentVariableCall(gettProp.PropertyInfo, component);
 
@@ -248,14 +249,14 @@ namespace Malsys.Processing {
 
 		}
 
-		public IExpressionEvaluatorContext AddComponentsCallableFunctions(FSharpMap<string, ConfigurationComponent> componenets, IExpressionEvaluatorContext eec) {
+		public IExpressionEvaluatorContext AddComponentsCallableFunctions(FSharpMap<string, ConfigurationComponent> componenets, IExpressionEvaluatorContext eec, bool beforeInit) {
 
 			foreach (var componentKvp in componenets) {
 
 				var component = componentKvp.Value.Component;
 				var metadata = componentKvp.Value.Metadata;
 
-				foreach (var callableFun in metadata.CallableFunctions) {
+				foreach (var callableFun in metadata.CallableFunctions.Where(x => x.IsGettableBeforeInitialiation == beforeInit)) {
 
 					var getFunction = buildCallableFunctionCall(callableFun.MethodInfo, component);
 
@@ -328,7 +329,9 @@ namespace Malsys.Processing {
 			IComponent componentInstance;
 
 			try {
-				componentInstance = (IComponent)metadata.ComponentConstructor.Invoke(null);
+				componentInstance = (IComponent)(metadata.HasCtorWithMessageLogger
+					? metadata.ComponentConstructor.Invoke(new object[] { logger })
+					: metadata.ComponentConstructor.Invoke(null));
 			}
 			catch (Exception ex) {
 				logger.LogMessage(Message.ComponentCtorException, ex.GetType().Name, compName, compType.FullName);

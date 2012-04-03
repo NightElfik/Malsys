@@ -32,14 +32,15 @@ namespace Malsys.Reflection.Components {
 				logger.LogMessage(Message.InvalidComponentType, componentType.FullName, typeof(IComponent).FullName);
 			}
 
-
+			bool hasMsgCtor;
 			return new ComponentMetadata(componentType,
 				getGettableProperties(componentType, logger).ToImmutableList(),
 				getSettableProperties(componentType, logger).ToImmutableList(),
 				getSettableSymbolsProperties(componentType, logger).ToImmutableList(),
 				getConnectableProperties(componentType, logger).ToImmutableList(),
 				getCallableFunctions(componentType, logger).ToImmutableList(),
-				getConstructor(componentType, logger));
+				getConstructor(componentType, logger, out hasMsgCtor),
+				hasMsgCtor);
 
 		}
 
@@ -58,7 +59,7 @@ namespace Malsys.Reflection.Components {
 					continue;
 				}
 
-				yield return new ComponentGettablePropertyMetadata(propInfo.GetAliases().ToImmutableList(), propInfoAndAttr.Item2.GettableBeforeInitialiation, propInfo);
+				yield return new ComponentGettablePropertyMetadata(propInfo.GetAliases().ToImmutableList(), propInfo, propInfoAndAttr.Item2.IsGettableBeforeInitialiation);
 			}
 		}
 
@@ -137,17 +138,22 @@ namespace Malsys.Reflection.Components {
 					continue;
 				}
 
-				yield return new ComponentCallableFunctionMetadata(methodInfo.GetAliases().ToImmutableList(), methodInfo, attr.ParamsCount, attr.ParamsTypesCyclicPattern.ToImmutableList());
+				yield return new ComponentCallableFunctionMetadata(methodInfo.GetAliases().ToImmutableList(), methodInfo, attr.ParamsCount,
+					attr.ParamsTypesCyclicPattern.ToImmutableList(), attr.IsCallableBeforeInitialiation);
 			}
 		}
 
-		private ConstructorInfo getConstructor(Type type, IMessageLogger logger) {
+		private ConstructorInfo getConstructor(Type type, IMessageLogger logger, out bool hasMessageCtor) {
 
-			var ctorInfo = type.GetConstructor(Type.EmptyTypes);
+			var ctorInfo = type.GetConstructor(new Type[] { typeof(IMessageLogger) });
 
-			if (ctorInfo == null) {
-				logger.LogMessage(Message.ComponentParamlessCtorMissing, type.FullName);
-				return null;
+			hasMessageCtor = ctorInfo != null;
+			if (!hasMessageCtor) {
+				ctorInfo = type.GetConstructor(Type.EmptyTypes);
+				if (ctorInfo == null) {
+					logger.LogMessage(Message.ComponentParamlessCtorMissing, type.FullName);
+					return null;
+				}
 			}
 
 			return ctorInfo;
@@ -177,7 +183,7 @@ namespace Malsys.Reflection.Components {
 			[Message(MessageType.Error, "Type of Property `{0}` on component `{1}` marked as connectable is not assignable to `{2}`.")]
 			ConnectablePropTypeError,
 
-			[Message(MessageType.Error, "Method `{0}` on component `{1}` marked as callable function has invalid parameters. "+
+			[Message(MessageType.Error, "Method `{0}` on component `{1}` marked as callable function has invalid parameters. " +
 				"Callable function must have two parameters with types `{2}` and `{3}` respectively.")]
 			InvalidParamsOfCallableFun,
 			[Message(MessageType.Error, "Method `{0}` on component `{1}` marked as callable function has invalid return type. Return type has to be assignable to `{2}`.")]

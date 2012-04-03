@@ -1,0 +1,115 @@
+﻿@model InputDetail
+
+@using Malsys;
+@using Malsys.Processing;
+@using Malsys.Web.Models.Lsystem;
+
+
+<h2>@Model.Name</h2>
+<h4>by @Model.AuthorName</h4>
+<p>permalink: @Html.Partial(MVC.Shared.Views.SavedInputPermaLink, Model.UrlId)</p>
+
+@{
+	ViewBag.Title = Model.Name;
+
+	var fi = new FileInfo(Model.FilePath);
+	if (!fi.Exists) {
+		<p>File no found!</p>
+		return;
+	}
+
+	if (Model.CurrentUserIsOwner) {
+
+		if (Model.IsPublished) {
+			<p>Published</p>
+		}
+		else {
+			<p>Not published</p>
+		}
+
+		<p>@Html.ActionLink("Edit or publish", MVC.Gallery.Edit(Model.UrlId))</p>
+	}
+
+}
+
+@switch (Model.MimeType) {
+
+	case MimeType.Text.Plain:
+		using (var sr = fi.OpenText()) {
+			bool asciiArt = OutputMetadataHelper.TryGetValue(Model.Metadata, OutputMetadataKeyHelper.OutputIsAsciiArt, false);
+			<pre class="box @(asciiArt ? "asciiArt" : "")">@sr.ReadToEnd()</pre>
+		}
+		break;
+
+	case MimeType.Image.SvgXml:
+		int width = OutputMetadataHelper.TryGetValue(Model.Metadata, OutputMetadataKeyHelper.OutputWidth, -1);
+		int height = OutputMetadataHelper.TryGetValue(Model.Metadata, OutputMetadataKeyHelper.OutputHeight, -1);
+		bool hasValidSize = width > 0 && height > 0;
+		<div class="scrollBox">
+			<img src="@Url.Action(MVC.Gallery.GetOutput(Model.UrlId))" @if (hasValidSize) { <text>width="@(width)px" height="@(height)px"</text> } alt="Process result" />
+		</div>
+															  break;
+	case MimeType.Application.Json:
+		<div class="threeJsScene" data-scene="@Url.Action(MVC.Gallery.GetOutput(Model.UrlId))" data-clear-color="FFFFFF" data-stats-display="true" data-anti-alias="true">
+			<p class="webgl">WebGL is not supported by your browser. Please <a href="http://get.webgl.org/">get supported browser</a>.</p>
+			<p class="controls">Controls: Move mouse &amp; press LEFT/A: rotate, MIDDLE/S: zoom, RIGHT/D: pan</p>
+		</div>
+		<text>
+		@section scripts {
+			@Content.Js(Links.Js.ThreeJs.Three_js)
+			@Content.Js(Links.Js.ThreeJs.Detector_js)
+			@Content.Js(Links.Js.ThreeJs.Stats_js)
+			@Content.Js(Links.Js.ThreeJs.malsys_three_js)
+		}
+		</text>
+		break;
+
+	default:
+		<p class="outputTruncated">Unknown output type `@Model.MimeType`.</p>
+											 break;
+}
+
+<h3>Description</h3>
+
+<p>@Model.Description</p>
+
+
+<h3>Rating</h3>
+
+@{
+	Malsys.Media.ColorF ratingColor;
+	if (Model.Rating > 0) {
+		ratingColor = new Malsys.Media.ColorF(0.0, Math.Min(0.6, Model.Rating / 16.0), 0.0);
+	}
+	else {
+		ratingColor = new Malsys.Media.ColorF(Math.Min(0.6, Model.Rating / -16.0), 0.0, 0.0);
+	}
+}
+
+<p class="rating" style="color: #@ratingColor.ToRgbHexString();">@Model.Rating</p>
+
+@if (User.Identity.IsAuthenticated) {
+	if (Model.UserVote == null || Model.UserVote == false) {
+		@Html.ActionLink("I like it (+1)", MVC.Gallery.UpVote(Model.UrlId))
+	}
+	if (Model.UserVote == null || Model.UserVote == true) {
+		@Html.ActionLink("I don't like it (-1)", MVC.Gallery.DownVote(Model.UrlId))
+	}
+}
+else {
+	<p>Only registered users can vote.</p>
+}
+
+
+<h3>Tags</h3>
+@foreach (var tag in Model.Tags) {
+	@Html.ActionLink(tag, MVC.Gallery.Index(tag: tag), new { @class = "tag" })
+}
+
+
+<h3>Source</h3>
+
+<pre class="malsys box">
+@Model.SourceCode
+</pre>
+

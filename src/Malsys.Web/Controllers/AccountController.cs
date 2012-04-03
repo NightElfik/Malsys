@@ -17,8 +17,8 @@ namespace Malsys.Web.Controllers {
 			this.usersRepo = usersRepo;
 			this.userAuth = userAuth;
 
-			ReCaptcha.PublicKey = appSettingsProvider["ReCaptcha_PublicKey"];
-			ReCaptcha.PrivateKey = appSettingsProvider["ReCaptcha_PrivateKey"];
+			ReCaptcha.PublicKey = appSettingsProvider[AppSettingsKeys.ReCaptchaPublicKey];
+			ReCaptcha.PrivateKey = appSettingsProvider[AppSettingsKeys.ReCaptchaPrivateKey];
 		}
 
 

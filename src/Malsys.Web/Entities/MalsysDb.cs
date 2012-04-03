@@ -64,6 +64,18 @@ namespace Malsys.Web.Entities {
 			SavedInputs.DeleteObject(savedInput);
 		}
 
+		IQueryable<Tag> IInputDb.Tags { get { return Tags; } }
+
+		public void AddTag(Tag tag) {
+			Tags.AddObject(tag);
+		}
+
+		public IQueryable<SavedInputVote> Votes { get { return SavedInputVotes; } }
+
+		public void AddVote(SavedInputVote vote) {
+			SavedInputVotes.AddObject(vote);
+		}
+
 		#endregion
 
 

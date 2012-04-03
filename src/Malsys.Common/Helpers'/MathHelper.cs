@@ -23,6 +23,18 @@ namespace Malsys {
 			}
 		}
 
+		public static double Clamp(double value, double min, double max) {
+			if (value < min) {
+				return min;
+			}
+			else if (value > max) {
+				return max;
+			}
+			else {
+				return value;
+			}
+		}
+
 		public static float Clamp01(float value) {
 			if (value < 0) {
 				return 0;
@@ -45,6 +57,27 @@ namespace Malsys {
 			else {
 				return value;
 			}
+		}
+
+		public static void ScaleSizeToFit(ref int width, ref int height, int maxWidth, int maxHeight, bool shrinkOnly = false) {
+
+			float wRatio = (float)width / maxWidth;
+			float hRatio = (float)height / maxHeight;
+
+			// which dimension is worst?
+			if (wRatio > hRatio) {  // width is worst
+				if (!shrinkOnly || wRatio > 1) {
+					width = (int)Math.Round(width / wRatio);
+					height = (int)Math.Round(height / wRatio);
+				}
+			}
+			else {  // height is worst
+				if (!shrinkOnly || hRatio > 1) {
+					width = (int)Math.Round(width / hRatio);
+					height = (int)Math.Round(height / hRatio);
+				}
+			}
+
 		}
 
 

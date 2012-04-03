@@ -39,6 +39,7 @@ configuration SymbolPrinter {
 	container Iterator typeof IIterator default MemoryBufferedIterator;
 	container SymbolProcessor typeof ISymbolProcessor default SymbolsSaver;
 
+	connect RandomGeneratorProvider to Iterator.RandomGeneratorProvider;
 	connect AxiomProvider to Iterator.AxiomProvider;
 	connect Iterator to Rewriter.SymbolProvider;
 	connect Rewriter to Iterator.SymbolProvider;
@@ -58,6 +59,7 @@ configuration SvgRenderer {
 	container Interpreter typeof IInterpreter default Interpreter2D;
 	container Renderer typeof IRenderer default SvgRenderer2D;
 
+	connect RandomGeneratorProvider to Iterator.RandomGeneratorProvider;
 	connect AxiomProvider to Iterator.AxiomProvider;
 	connect Iterator to Rewriter.SymbolProvider;
 	connect Rewriter to Iterator.SymbolProvider;
@@ -81,6 +83,7 @@ configuration HexAsciiRenderer {
 	container Interpreter typeof IInterpreter default HexaAsciiInterpreter;
 	container Renderer typeof IRenderer default TextRenderer;
 
+	connect RandomGeneratorProvider to Iterator.RandomGeneratorProvider;
 	connect AxiomProvider to Iterator.AxiomProvider;
 	connect Iterator to Rewriter.SymbolProvider;
 	connect Rewriter to Iterator.SymbolProvider;
@@ -104,6 +107,7 @@ configuration ThreeJsRenderer {
 	container Interpreter typeof IInterpreter default Interpreter3D;
 	container Renderer typeof IRenderer default ThreeJsSceneRenderer3D;
 
+	connect RandomGeneratorProvider to Iterator.RandomGeneratorProvider;
 	connect AxiomProvider to Iterator.AxiomProvider;
 	connect Iterator to Rewriter.SymbolProvider;
 	connect Rewriter to Iterator.SymbolProvider;

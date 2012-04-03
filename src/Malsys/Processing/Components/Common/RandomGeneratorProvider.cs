@@ -25,19 +25,19 @@ namespace Malsys.Processing.Components.Common {
 		}
 
 		[Alias("randomSeed")]
-		[UserGettable]
+		[UserGettable(IsGettableBeforeInitialiation=true)]
 		[UserSettable]
 		public Constant RandomSeed { get; set; }
 
+
+		public RandomGeneratorProvider(IMessageLogger logger) {
+			this.logger = logger;
+		}
 
 
 		public void Initialize(ProcessContext ctxt) {
 
 			logger = ctxt.Logger;
-
-			if (trueRandom) {
-				cryptoRandomInstance = new CryptographicRandomGenerator();
-			}
 
 		}
 
@@ -51,6 +51,13 @@ namespace Malsys.Processing.Components.Common {
 
 		}
 
+		/// <summary>
+		/// Resets random generator to initial state.
+		/// </summary>
+		public void Reset() {
+			localRandomGenerator = null;
+		}
+
 
 		public IRandomGenerator GetRandomGenerator() {
 
@@ -60,6 +67,10 @@ namespace Malsys.Processing.Components.Common {
 				if (RandomSeed != null) {
 					logger.LogMessage(Message.SeedWhileTrueRandom);
 					RandomSeed = null;
+				}
+
+				if (cryptoRandomInstance == null) {
+					cryptoRandomInstance = new CryptographicRandomGenerator();
 				}
 
 				return cryptoRandomInstance;
@@ -77,9 +88,12 @@ namespace Malsys.Processing.Components.Common {
 			}
 		}
 
-		[Alias("getRandomValue", "Rand", "rand", "Random", "random")]
-		[UserCallableFunction]
-		public IValue GetRandomValue(IValue[] args, IExpressionEvaluatorContext eec) {
+		/// <summary>
+		/// Returns random value from 0.0 (inclusive) to 1.0 (exclusive).
+		/// </summary>
+		[Alias(true, "Random", "random")]
+		[UserCallableFunction(IsCallableBeforeInitialiation=true)]
+		public Constant GetRandomValue(IValue[] args, IExpressionEvaluatorContext eec) {
 
 			Contract.Ensures(Contract.Result<IValue>() != null);
 
@@ -87,7 +101,27 @@ namespace Malsys.Processing.Components.Common {
 				localRandomGenerator = GetRandomGenerator();
 			}
 
-			return localRandomGenerator.Next().ToConst();
+			return localRandomGenerator.NextDouble().ToConst();
+
+		}
+
+		/// <summary>
+		/// Returns random value within specified range.
+		/// </summary>
+		[Alias(true, "Random", "random")]
+		[UserCallableFunction(2, ExpressionValueTypeFlags.Constant, ExpressionValueTypeFlags.Constant, IsCallableBeforeInitialiation = true)]
+		public Constant GetRandomValueRange(IValue[] args, IExpressionEvaluatorContext eec) {
+
+			Contract.Ensures(Contract.Result<IValue>() != null);
+
+			if (localRandomGenerator == null) {
+				localRandomGenerator = GetRandomGenerator();
+			}
+
+			double lower = ((Constant)args[0]).Value;
+			double upper = ((Constant)args[1]).Value;
+
+			return (localRandomGenerator.NextDouble() * (upper - lower) + lower).ToConst();
 
 		}
 

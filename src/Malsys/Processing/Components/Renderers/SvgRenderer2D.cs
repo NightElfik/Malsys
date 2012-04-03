@@ -4,6 +4,7 @@ using Malsys.Media;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Collections;
+using System;
 
 namespace Malsys.Processing.Components.Renderers {
 	[Component("2D SVG renderer", ComponentGroupNames.Renderers)]
@@ -109,6 +110,11 @@ namespace Malsys.Processing.Components.Renderers {
 				writer = null;
 			}
 			else {
+				float svgWidth = measuredMaxX - measuredMinX + marginL + marginR;
+				float svgHeigh = measuredMaxY - measuredMinY + marginT + marginB;
+
+				localAdditionalData = localAdditionalData.Add(OutputMetadataKeyHelper.OutputWidth, (int)Math.Round(svgWidth));
+				localAdditionalData = localAdditionalData.Add(OutputMetadataKeyHelper.OutputHeight, (int)Math.Round(svgHeigh));
 
 				outputStream = context.OutputProvider.GetOutputStream<SvgRenderer2D>(
 					"SVG result from `{0}`".Fmt(context.Lsystem.Name),
@@ -124,10 +130,10 @@ namespace Malsys.Processing.Components.Renderers {
 
 				writer.WriteLine(FileHeader);
 				writer.WriteLine(SvgHeader.FmtInvariant(
-					 measuredMinX - marginL,
-					 measuredMinY - marginT,
-					 measuredMaxX - measuredMinX + marginL + marginR,
-					 measuredMaxY - measuredMinY + marginT + marginB));
+					measuredMinX - marginL,
+					measuredMinY - marginT,
+					measuredMaxX - measuredMinX + marginL + marginR,
+					measuredMaxY - measuredMinY + marginT + marginB));
 
 			}
 		}
@@ -227,6 +233,20 @@ namespace Malsys.Processing.Components.Renderers {
 				}
 
 				writer.WriteLine("\" />");
+			}
+		}
+
+		public void DrawCircle(PointF center, float radius, ColorF color) {
+
+			center.Y *= -1;
+
+			if (measuring) {
+				measure(center.X + radius, center.Y + radius);
+				measure(center.X - radius, center.Y - radius);
+			}
+			else {
+				writer.Write("<circle cx=\"{0:0.###}\" cy=\"{1:0.###}\" r=\"{2:0.###}\" fill=\"#{3}\" stroke-width=\"0px\" />"
+					.FmtInvariant(center.X, center.Y, radius, color.ToRgbHexString()));
 			}
 		}
 

@@ -22,6 +22,7 @@ namespace Malsys.Reflection.Components {
 
 		public readonly ImmutableList<ComponentCallableFunctionMetadata> CallableFunctions;
 
+		public readonly bool HasCtorWithMessageLogger;
 		public readonly ConstructorInfo ComponentConstructor;
 
 		public readonly bool CaseSensitiveLookup;
@@ -41,7 +42,7 @@ namespace Malsys.Reflection.Components {
 		public ComponentMetadata(Type componentType, ImmutableList<ComponentGettablePropertyMetadata> gettableProperties,
 				ImmutableList<ComponentSettablePropertyMetadata> settableProperties, ImmutableList<ComponentSettableSybolsPropertyMetadata> settableSymbolsProperties,
 				ImmutableList<ComponentConnectablePropertyMetadata> connectableProperties, ImmutableList<ComponentCallableFunctionMetadata> callableFunctions,
-			ConstructorInfo componentConstructor, bool caseSensitiveLookup = false) {
+				ConstructorInfo componentConstructor, bool hasCtorWithMessageLogger, bool caseSensitiveLookup = false) {
 
 			ComponentType = componentType;
 			GettableProperties = gettableProperties;
@@ -50,6 +51,7 @@ namespace Malsys.Reflection.Components {
 			ConnectableProperties = connectableProperties;
 			CallableFunctions = callableFunctions;
 			ComponentConstructor = componentConstructor;
+			HasCtorWithMessageLogger = hasCtorWithMessageLogger;
 			CaseSensitiveLookup = caseSensitiveLookup;
 
 			GettablePropertiesDictionary = new Dictionary<string, ComponentGettablePropertyMetadata>();

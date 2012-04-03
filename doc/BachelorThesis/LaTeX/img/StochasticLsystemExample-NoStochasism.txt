@@ -1,0 +1,15 @@
+lsystem StochasticLsystemExample {
+	set symbols axiom = X;
+	set initialAngle = 90;
+	set iterations = 8;
+
+	interpret F(age) as DrawForward(1.8^age, age / 2);
+	interpret + as TurnLeft(45);
+	interpret - as TurnLeft(-45);
+	interpret [ as StartBranch;
+	interpret ] as EndBranch;
+
+	rewrite F(age) to F(age + 1);
+	rewrite X to F(1) [ + X ] [ - X ] F(1) X;
+}
+process all with SvgRenderer;

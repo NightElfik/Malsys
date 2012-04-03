@@ -100,7 +100,7 @@ namespace Malsys.Processing.Components.Interpreters {
 		#region IInterpreter Members
 		// optional for rendering L-system in L-system, there is no connection for renderer
 		// the check has to be done in initialization
-		[UserConnectable(IsOptional=true)]
+		[UserConnectable(IsOptional = true)]
 		public IRenderer Renderer {
 			set {
 				if (!typeof(IRenderer2D).IsAssignableFrom(value.GetType())) {
@@ -378,6 +378,24 @@ namespace Malsys.Processing.Components.Interpreters {
 			currPolygon = polygonStack.Count > 0 ? polygonStack.Pop() : null;
 		}
 
+		[SymbolInterpretation]
+		public void DrawCircle(ArgsStorage args) {
+
+			double radius = getArgumentAsDouble(args, 0);
+
+			ColorF color = currState.Color;
+
+			if (colorContinously) {
+				color = colorGradient[(float)colorEvents / colorEventsMeasured];
+			}
+			else if (args.ArgsCount >= 2) {
+				ColorHelper.ParseColor(args[1], ref color);
+			}
+
+			colorEvents++;
+			renderer.DrawCircle(new PointF((float)currState.X, (float)currState.Y), (float)radius, color);
+
+		}
 
 		#endregion
 

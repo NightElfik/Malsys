@@ -45,17 +45,12 @@ namespace Malsys.Processing.Context {
 
 		public ContextListNode<T> GetNextNodeInHierarchy() {
 
-			if (InnerList == null) {
-				// item node
-				if (Next != null) {
-					return Next;
-				}
+			if (IsListNode && !InnerList.IsEmpty) {
+				return InnerList.First;
 			}
-			else {
-				// list node
-				if (InnerList.First != null) {
-					return InnerList.First;
-				}
+
+			if (Next != null) {
+				return Next;
 			}
 
 			// no direct successor, we have to look in parents

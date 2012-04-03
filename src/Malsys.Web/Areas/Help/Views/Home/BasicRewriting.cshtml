@@ -1,16 +1,17 @@
-﻿@model Malsys.Web.Models.SimpleLsystemProcessor
+﻿@model Malsys.Web.Models.Lsystem.SimpleLsystemProcessor
 
 @{
 	ViewBag.Title = "Rewriting basics";
 	var exampleModel = new LsystemExampleViewModel() {
 		LsystemProcessor = Model,
+		UnimportantLines = new int[] { -1 },
 		SourceCodeTemplate = string.Join(Environment.NewLine,
 			"lsystem {0} {{",
-			"set axiom = {1};",
-			"let iterations = {2};",
-			"",
+			"set symbols axiom = {1};",
+			"set iterations = {2};",
 			"{3}",
-			"}}")
+			"}}",
+			"process all with SymbolPrinter;")
 	};
 }
 
@@ -24,9 +25,9 @@
 </p>
 
 <p>
-	Let's define very simple L-system called <code class="malsys">MyFirstLsystem</code> with an axiom set to one symbol <code class="lsysSymbols">A</code>,
-		number of iterations equal to <code class="lsysSymbols">5</code> and in each iteration we want to rewrite symbol
-		<code class="lsysSymbols">A</code> to symbols <code class="lsysSymbols">B</code> and <code class="lsysSymbols">A</code>.
+	Let's define very simple L-system called <code>MyFirstLsystem</code> with an axiom set to one symbol <code>A</code>,
+		number of iterations equal to <code>5</code> and in each iteration we want to rewrite symbol
+		<code>A</code> to symbols <code>B</code> and <code>A</code>.
 </p>
 
 @Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(
@@ -34,12 +35,13 @@
 
 <p>
 	Pretty simple, isn't it?
-	If we want to see progress of result, we can set  <code class="malsys">iterations</code> to array of desired iterations.
-	With this feature we can look at symbols in each iteration.
+	If we want to see symbols in all iterations we can set <code>interpretEveryIteration</code> property to <code>true</code>.
 </p>
 
 @Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(
-		"MyFirstLsystem", "A", "{1, 2, 3, 4, 5}", "rewrite A to B A;"))
+		"MyFirstLsystem", "A", "5", string.Join(Environment.NewLine,
+			"set interpretEveryIteration = true;",
+			"rewrite A to B A;")))
 
 <p>
 	As we can see, in every iteration the L-system can apply the rewrite only on the last symbol and rewrites
@@ -73,12 +75,15 @@
 </p>
 
 @Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(
-		"Fibonacci", "A", "{1, 2, 3, 4, 5, 6, 7}",
-		string.Join(Environment.NewLine, "rewrite A to B;", "rewrite B to A B;")))
+		"Fibonacci", "A", "6",
+			string.Join(Environment.NewLine,
+				"set interpretEveryIteration = true;",
+				"rewrite A to B;",
+				"rewrite B to A B;")))
 
 <p>
 	Let's count number of symbols in each iteration (starting with the axiom).
-	1, 1, 2, 3, 5, 8, 13, 21.
+	1, 1, 2, 3, 5, 8, 13.
 	Yes, these numbers are Fibonacci sequence.
 	This L-system have many interesting properties, for example suffix of any iteration is the previous one.
 	But let's move on some more complex topics.
@@ -106,8 +111,11 @@
 </p>
 
 @Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(
-		"SignalPropagation", "B A A A A", "{0, 1, 2, 3, 4, 5}",
-		string.Join(Environment.NewLine, "rewrite {B} A to B;", "rewrite B to A;")))
+		"SignalPropagation", "B A A A A", "5",
+		string.Join(Environment.NewLine,
+			"set interpretEveryIteration = true;",
+			"rewrite {B} A to B;",
+			"rewrite B to A;")))
 
 <p>
 	With context rewrite rules can be simulated switching two neighbor symbols.
@@ -118,8 +126,9 @@
 </p>
 
 @Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(
-		"Transpose", "A  X Y  B", "{0, 1, 2, 3}",
+		"Transpose", "A  X Y  B", "3",
 		string.Join(Environment.NewLine,
+			"set interpretEveryIteration = true;",
 			"rewrite {X} Y to X;", "rewrite X {Y} to Y;", "",
 			"rewrite Y {X} to X;", "rewrite {Y} X to Y;")))
 
@@ -130,7 +139,9 @@
 
 @Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(
 		"TwoAtOnce", "A  A B  B  A B  A", "1",
-		string.Join(Environment.NewLine, "rewrite A {B} to C D E;", "rewrite {A} B to nothing;")))
+		string.Join(Environment.NewLine,
+			"rewrite A {B} to C D E;",
+			"rewrite {A} B to nothing;")))
 
 
 <h3>Rewriting is parallel (concurrent)</h3>

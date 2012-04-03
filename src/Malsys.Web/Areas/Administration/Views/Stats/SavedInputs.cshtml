@@ -14,12 +14,12 @@
 		col.For(m => m.SavedInputId)
 			.HeaderAttributes(style => "width: 40px;")
 			.Attributes(@class => "center");
-		col.For(m => m.RandomId)
+		col.For(m => m.UrlId)
 			.HeaderAttributes(style => "width: 40px;")
 			.Attributes(@class => "center");
 		col.For(m => m.User)
 			.HeaderAttributes(style => "width: 100px;");
-		col.For(m => "<abbr title=\"" + m.Date + "\">" + m.Date.ToTimeSpanStringFromNow() + "</abbr>")
+		col.For(m => "<abbr title=\"" + m.EditDate + "\">" + m.EditDate.ToTimeSpanStringFromNow() + "</abbr>")
 			.Named("Age")
 			.HeaderAttributes(style => "width: 100px;")
 			.Attributes(@class => "center")
@@ -28,7 +28,7 @@
 			.Named("Process duration")
 			.HeaderAttributes(style => "width: 60px;")
 			.Attributes(@class => "center");
-		col.For(m => "<pre class=\"malsys collapsable noMargin\">" + m.Source + "</pre>")
+		col.For(m => "<pre class=\"malsys collapsable noMargin\">" + m.SourceCode + "</pre>")
 			.Named("Source")
 			.Encode(false);
 	}).Attributes(@class => "w100")

@@ -1,0 +1,155 @@
+﻿@model Malsys.Web.Models.Lsystem.SimpleLsystemProcessor
+
+@{
+	ViewBag.Title = "Basic syntax";
+	var exampleModel = new LsystemExampleViewModel() {
+		LsystemProcessor = Model,
+		SourceCodeTemplate = string.Join(Environment.NewLine, "{0}")
+	};
+}
+
+<h2>Basic syntax</h2>
+
+
+<h3>Comments</h3>
+
+<p>Single-line comments start with <code>//</code> (two forward slashes) and ends on line end.</p>
+
+<pre class="malsys box">
+let a = 5;
+// let a = 10;
+
+let b = a;  // b equals 5
+</pre>
+
+<p>
+	Multi-line comment starts with <code>/*</code> (forward slash, star) and ends with <code>*/</code> (star, forward slash).
+	Multi-line comments are nested.
+	Please note that syntax highlighter may not highlight nested comments correctly.
+</p>
+
+<pre class="malsys box">
+let a = 7;
+/*
+
+/*
+ * This is comment
+ * for test L-system
+ */
+let a = 0;
+
+*/
+
+let b = a * 2;  // b is 14
+
+</pre>
+
+
+<h3>L-system definition</h3>
+
+<pre class="malsys box">
+lsystem LsystemName {
+	// L-system statements...
+}
+</pre>
+
+<p>L-system can have parameters (like function).</p>
+
+<pre class="malsys box">
+lsystem Lsystem(arg1, arg2 = 2) {
+	let localConst = arg1 * 2 + arg2;
+	set symbols axiom = A(localConst);
+}
+
+process Lsystem(1) with SymbolPrinter;
+</pre>
+
+
+<h3>Constant definition</h3>
+
+<p>
+	Constant definition starts with keyword <code class="malsys">let</code> and is can be defined in global scope or locally in L-system.
+</p>
+
+<pre class="malsys box">
+let globalConstant = 5;
+let globalArray = {1, 2, 3};
+
+lsystem Lsystem {
+
+	let localConstant = globalConstant + 3;  // 8
+	let x = localConstant * 2;  // 16
+
+	let len = length(globalArray);  // 3
+	let y = globalArray[1];  // 2
+
+}
+
+// following line will yield error:
+let a = localConstant + 1;
+</pre>
+
+
+<h3>Set properties of components</h3>
+
+<p>
+	There are two types of set statements.
+	First type is setting value or array and starts with keyword <code class="malsys">set</code>.
+	Second type is setting symbols and starts with keywords <code class="malsys">set symbols</code>.
+	Set statements are valid only in L-system scope.
+</p>
+
+<p>
+	Names of settable properties depends on used process configuration.
+	Available settable properties for predefined process configurations can be found in help.
+</p>
+
+<pre class="malsys box">
+lsystem Lsystem {
+
+	set symbols axiom = A B C;
+
+	set iterations = 5;
+
+}
+
+//
+</pre>
+
+
+<h3>Function definition</h3>
+
+<p>
+	Function definition starts with keyword <code class="fun">let</code> followed by name and arguments.
+	Only valid statements in function are local constant definitions and return statement.
+	Functions can be defined in global scope or locally in L-system.
+</p>
+
+<pre class="malsys box">
+fun globalFunction(arg1, arg2) {
+	let a = arg1 * arg2;
+	return a - 1;
+}
+
+let x = globalFunction(3, 5);  // 14
+</pre>
+
+<pre class="malsys box">
+fun globalFunction { return 1; }
+lsystem Lsystem {
+	fun localFunction() {
+		return 18 + globalFunction();
+	}
+	let x = localFunction();  // 19
+}
+</pre>
+
+<h3>Rewrite rule</h3>
+
+<pre class="malsys box">
+lsystem Lsystem {
+
+	rewrite X to A B C D;
+
+}
+</pre>

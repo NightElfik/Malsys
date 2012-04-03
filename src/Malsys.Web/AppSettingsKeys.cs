@@ -41,13 +41,18 @@ public class AppSettingsKeys {
 	public const string RegisteredUserProcessTime = "ProcessTime_Registered";
 
 	/// <summary>
+	/// Maximum process time for gallery inputs.
+	/// </summary>
+	public const string GalleryProcessTime = "ProcessTime_Gallery";
+
+	/// <summary>
 	/// Maximum process time for trusted users in seconds.
 	/// </summary>
 	public const string TrustedUserProcessTime = "ProcessTime_Trusted";
 
 
-	public const string ReCaptchaPublicKey = "WorkDir_MaxFilesCount";
+	public const string ReCaptchaPublicKey = "ReCaptcha_PublicKey";
 
-	public const string ReCaptchaPrivateKey = "WorkDir_MaxFilesCount";
+	public const string ReCaptchaPrivateKey = "ReCaptcha_PrivateKey";
 
 }

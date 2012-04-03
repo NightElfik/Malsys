@@ -63,6 +63,15 @@ namespace Malsys.Media {
 			B = (float)b;
 		}
 
+		public uint ToRgb() {
+
+			uint r = (uint)(MathHelper.Clamp01(R) * 255);
+			uint g = (uint)(MathHelper.Clamp01(G) * 255);
+			uint b = (uint)(MathHelper.Clamp01(B) * 255);
+
+			return (r << 16) | (g << 8) | b;
+		}
+
 		public uint ToArgb() {
 
 			uint a = (uint)(MathHelper.Clamp01(A) * 255);
