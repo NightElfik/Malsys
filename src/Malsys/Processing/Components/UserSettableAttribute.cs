@@ -6,11 +6,10 @@ namespace Malsys.Processing.Components {
 	/// Indicates that marked property value can be set by user from input code.
 	/// </summary>
 	/// <remarks>
-	/// Marked property must have public setter.
+	/// Marked property must have public setter (public getter is not required).
 	/// Property type must be assignable to IValue.
-	/// Attribute inherence do not work on properties in interface, do not forget to add it to derived types too.
 	/// </remarks>
-	[AttributeUsage(AttributeTargets.Property, Inherited = true, AllowMultiple = false)]
+	[AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
 	public sealed class UserSettableAttribute : Attribute {
 
 		/// <summary>
@@ -30,7 +29,7 @@ namespace Malsys.Processing.Components {
 	/// Property type must be type of ImmutableList<Symbol<IValue>>.
 	/// Attribute inherence do not work on properties in interface, do not forget to add it to derived types too.
 	/// </remarks>
-	[AttributeUsage(AttributeTargets.Property, Inherited = true, AllowMultiple = false)]
+	[AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
 	public sealed class UserSettableSybolsAttribute : Attribute {
 
 		/// <summary>

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Text;
 using System.Windows.Media.Media3D;
 using Malsys.Evaluators;
@@ -12,11 +13,10 @@ using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Collections;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 
 namespace Malsys.Tests.Interpreters {
 	[TestClass]
-	public class Interpreter3DTests {
+	public class UniversalInterpreterTests {
 
 		private static ImmutableList<OptionalParameterEvaled> emptyParams = ImmutableList<OptionalParameterEvaled>.Empty;
 		private static ImmutableList<IExpression> emptyInstrParams = ImmutableList<IExpression>.Empty;
@@ -260,11 +260,11 @@ namespace Malsys.Tests.Interpreters {
 
 		private void doTest(Point3D startPoint, Quaternion startRotation, string inputSymbols, Data[] excpectedOutput) {
 
-			var testedInterpreter = new Interpreter3D();
+			var testedInterpreter = new TurtleInterpreter();
 
 			var symbols = TestUtils.CompileSymbols(inputSymbols);
 
-			var lsystem = new LsystemEvaled("", TestUtils.ExpressionEvaluatorContext, null, null, symToInstr, null, null);
+			var lsystem = new LsystemEvaled("", false, null, TestUtils.ExpressionEvaluatorContext, null, null, symToInstr, null, null);
 
 			var logger = new MessageLogger();
 			var evaluator = new EvaluatorsContainer(TestUtils.ExpressionEvaluatorContext);

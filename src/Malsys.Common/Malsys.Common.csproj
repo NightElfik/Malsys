@@ -86,6 +86,7 @@
     <Reference Include="FSharp.PowerPack, Version=2.0.0.0, Culture=neutral, PublicKeyToken=a19089b1c74d0809, processorArchitecture=MSIL">
       <HintPath>C:\Program Files (x86)\FSharpPowerPack-2.0.0.0\bin\FSharp.PowerPack.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -93,13 +94,16 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AliasAttribute.cs" />
+    <Compile Include="AccessNameAttribute.cs" />
+    <Compile Include="DullMessageLogger.cs" />
     <Compile Include="Extensions%27\BinaryFormatterExtensions.cs" />
     <Compile Include="Extensions%27\DictionaryExtensions.cs" />
     <Compile Include="Extensions%27\FSharpOptionExtensions.cs" />
     <Compile Include="Extensions%27\HashSetExtensions.cs" />
+    <Compile Include="Extensions%27\Point3DExtensions.cs" />
     <Compile Include="Extensions%27\TypeExtensions.cs" />
     <Compile Include="Helpers%27\AnonymousObjectHelper.cs" />
     <Compile Include="Extensions%27\TimeExtensions.cs" />

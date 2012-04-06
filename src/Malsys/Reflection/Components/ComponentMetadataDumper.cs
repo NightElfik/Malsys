@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics.Contracts;
 using System.Reflection;
 using Malsys.Evaluators;
 using Malsys.Processing.Components;
-using Malsys.SemanticModel.Evaluated;
-using System.Diagnostics.Contracts;
 using Malsys.SemanticModel;
+using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Reflection.Components {
 	public class ComponentMetadataDumper {
@@ -39,6 +38,7 @@ namespace Malsys.Reflection.Components {
 				getSettableSymbolsProperties(componentType, logger).ToImmutableList(),
 				getConnectableProperties(componentType, logger).ToImmutableList(),
 				getCallableFunctions(componentType, logger).ToImmutableList(),
+				getInterpretationMethods(componentType, logger).ToImmutableList(),
 				getConstructor(componentType, logger, out hasMsgCtor),
 				hasMsgCtor);
 
@@ -59,7 +59,7 @@ namespace Malsys.Reflection.Components {
 					continue;
 				}
 
-				yield return new ComponentGettablePropertyMetadata(propInfo.GetAliases().ToImmutableList(), propInfo, propInfoAndAttr.Item2.IsGettableBeforeInitialiation);
+				yield return new ComponentGettablePropertyMetadata(propInfo.GetAccessNames().ToImmutableList(), propInfo, propInfoAndAttr.Item2.IsGettableBeforeInitialiation);
 			}
 		}
 
@@ -78,7 +78,7 @@ namespace Malsys.Reflection.Components {
 					continue;
 				}
 
-				yield return new ComponentSettablePropertyMetadata(propInfo.GetAliases().ToImmutableList(), propInfo, propInfoAndAttr.Item2.IsMandatory);
+				yield return new ComponentSettablePropertyMetadata(propInfo.GetAccessNames().ToImmutableList(), propInfo, propInfoAndAttr.Item2.IsMandatory);
 			}
 		}
 
@@ -97,7 +97,7 @@ namespace Malsys.Reflection.Components {
 					continue;
 				}
 
-				yield return new ComponentSettableSybolsPropertyMetadata(propInfo.GetAliases().ToImmutableList(), propInfo, propInfoAndAttr.Item2.IsMandatory);
+				yield return new ComponentSettableSybolsPropertyMetadata(propInfo.GetAccessNames().ToImmutableList(), propInfo, propInfoAndAttr.Item2.IsMandatory);
 			}
 		}
 
@@ -116,7 +116,7 @@ namespace Malsys.Reflection.Components {
 					continue;
 				}
 
-				yield return new ComponentConnectablePropertyMetadata(propInfo.GetAliases().ToImmutableList(), propInfo, propInfoAndAttr.Item2.IsOptional, propInfoAndAttr.Item2.AllowMultiple);
+				yield return new ComponentConnectablePropertyMetadata(propInfo.GetAccessNames().ToImmutableList(), propInfo, propInfoAndAttr.Item2.IsOptional, propInfoAndAttr.Item2.AllowMultiple);
 			}
 		}
 
@@ -138,8 +138,30 @@ namespace Malsys.Reflection.Components {
 					continue;
 				}
 
-				yield return new ComponentCallableFunctionMetadata(methodInfo.GetAliases().ToImmutableList(), methodInfo, attr.ParamsCount,
+				yield return new ComponentCallableFunctionMetadata(methodInfo.GetAccessNames().ToImmutableList(), methodInfo, attr.ParamsCount,
 					attr.ParamsTypesCyclicPattern.ToImmutableList(), attr.IsCallableBeforeInitialiation);
+			}
+		}
+
+		private IEnumerable<ComponentInterpretationMethodMetadata> getInterpretationMethods(Type type, IMessageLogger logger) {
+
+			foreach (var propInfoAndAttr in type.GetMethodsHavingAttr<SymbolInterpretationAttribute>()) {
+
+				MethodInfo methodInfo = propInfoAndAttr.Item1;
+				var attr = propInfoAndAttr.Item2;
+
+				var prms = methodInfo.GetParameters();
+				if (prms.Length != 1 || prms[0].ParameterType != typeof(ArgsStorage)) {
+					logger.LogMessage(Message.InvalidParamsOfSymbolInterpret, methodInfo.Name, type.ToString(), typeof(ArgsStorage).FullName);
+					continue;
+				}
+
+				if (methodInfo.ReturnType != typeof(void)) {
+					logger.LogMessage(Message.InvalidReturnTypeOfSymbolInterpret, methodInfo.Name, type.ToString());
+					continue;
+				}
+
+				yield return new ComponentInterpretationMethodMetadata(methodInfo.GetAccessNames().ToImmutableList(), methodInfo, attr.ParametersCount, attr.RequiredParametersCount);
 			}
 		}
 
@@ -186,8 +208,14 @@ namespace Malsys.Reflection.Components {
 			[Message(MessageType.Error, "Method `{0}` on component `{1}` marked as callable function has invalid parameters. " +
 				"Callable function must have two parameters with types `{2}` and `{3}` respectively.")]
 			InvalidParamsOfCallableFun,
-			[Message(MessageType.Error, "Method `{0}` on component `{1}` marked as callable function has invalid return type. Return type has to be assignable to `{2}`.")]
+			[Message(MessageType.Error, "Method `{0}` on component `{1}` marked as callable function has invalid return type. Return type must be assignable to `{2}`.")]
 			InvalidReturnTypeOfCallableFun,
+
+			[Message(MessageType.Error, "Method `{0}` on component `{1}` marked as symbol interpretation has invalid parameters. " +
+				"Symbol interpretation must have one parameter of type `{2}`.")]
+			InvalidParamsOfSymbolInterpret,
+			[Message(MessageType.Error, "Method `{0}` on component `{1}` marked as symbol interpretation has invalid return type. Return type must be void.")]
+			InvalidReturnTypeOfSymbolInterpret,
 
 			[Message(MessageType.Error, "Component `{0}` does not have parameter-less constructor.")]
 			ComponentParamlessCtorMissing,

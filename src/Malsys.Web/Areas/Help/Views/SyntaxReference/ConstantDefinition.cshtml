@@ -1,0 +1,77 @@
+﻿@model Malsys.Web.Models.Lsystem.SimpleLsystemProcessor
+
+@{
+	ViewBag.Title = "Constant definition";
+	var exampleModel = new LsystemExampleViewModel() {
+		LsystemProcessor = Model,
+		SourceCodeTemplate = string.Join(Environment.NewLine,
+			"// constant definition example {0:00}",
+			"{1}")
+	};
+	int exampleId = 1;
+}
+
+<h2>Constant definition</h2>
+
+<h3>Formal grammar</h3>
+
+<pre class="grammar box">
+constant_def = 'let' ID '=' expression ';'
+</pre>
+
+<p>
+	Defines constant with name represented by token <code>ID</code> as value of <code>expression</code>.
+	If constant with same name already exists, it is redefined by new definition.
+</p>
+
+<div id="toc"></div>
+
+@* ================================================================================================================== *@
+<h3>Basic definitions</h3>
+
+<p>
+	Value of constant can be any expression.
+	You can use constants defined earlier of functions.
+	List of predefined functions can be found on @Html.ActionLink("this page", MVC.Help.Predefined.Functions()).
+	It is also possible to define new function, details about that are on @Html.ActionLink("function definition page", MVC.Help.SyntaxReference.FunctionDefinition()).
+</p>
+
+@Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, StringHelper.JoinLines(
+		"let a = 3;",
+		"let b = (2 + 2) * 2 ^ 2;",
+		"let c = sqrt(a * b);",
+		"let a = 0;")))
+
+
+@* ================================================================================================================== *@
+<h3>Global and local scope</h3>
+
+<p>
+	Constants can be defined in global scope or in local scope of some L-system.
+</p>
+
+@Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, StringHelper.JoinLines(
+		"let glob = 8;",
+		"lsystem Lsystem {",
+		"	let loc = 7;",
+		"	set symbols axiom = A(glob) B(loc);",
+		"}",
+		"process all with SymbolPrinter;")))
+
+<p>
+	Constants defined in local scope overlays constants from global scope, but they do not affect them.
+</p>
+@Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, StringHelper.JoinLines(
+		"let x = 8;",
+		"lsystem LsystemA {",
+		"	let x = 0;  // x is 0 only in this L-system",
+		"	set symbols axiom = A(x);",
+		"}",
+		"lsystem LsystemB {",
+		"	// x is 8 here",
+		"	set symbols axiom = B(x);",
+		"}",
+		"process all with SymbolPrinter;")))
+
+
+

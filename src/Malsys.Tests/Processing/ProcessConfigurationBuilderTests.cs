@@ -186,7 +186,8 @@ namespace Malsys.Tests.Process {
 					"}"),
 				"process all with Config;",
 				new string[] {
-					toId(ComponentMetadataDumper.Message.ComponentParamlessCtorMissing) });
+					toId(ComponentMetadataDumper.Message.ComponentParamlessCtorMissing),
+					toId(ProcessConfigurationBuilder.Message.ComponentResolveError) });
 
 			doTest(string.Join("\n", "configuration Config {",
 					"container Devil typeof NoParamlessCtorComponent default XXX;",
@@ -194,7 +195,8 @@ namespace Malsys.Tests.Process {
 					"}"),
 				"process all with Config use NoParamlessCtorComponent as Devil;",
 				new string[] {
-					toId(ComponentMetadataDumper.Message.ComponentParamlessCtorMissing) });
+					toId(ComponentMetadataDumper.Message.ComponentParamlessCtorMissing),
+					toId(ProcessConfigurationBuilder.Message.ComponentResolveError)  });
 
 		}
 
@@ -479,7 +481,7 @@ namespace Malsys.Tests.Process {
 
 		private void doTest(string configDefinition, string configStatement, string[] exceptedMessagesIds) {
 
-			var input = TestUtils.EvaluateLsystem(configDefinition + configStatement);
+			var input = TestUtils.EvaluateInput(configDefinition + configStatement);
 
 			if (input.ProcessStatements.Length != 1) {
 				Assert.Fail("Expected 1 process statement.");
@@ -501,7 +503,7 @@ namespace Malsys.Tests.Process {
 			}
 
 
-			var resolver = new ComponentResolver();
+			var resolver = new CachedComponentResolver();
 			Components.RegisterAllComponents(resolver);
 
 			var logger = new MessageLogger();

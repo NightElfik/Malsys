@@ -8,6 +8,7 @@ namespace Malsys.Parsing {
 		FailedParseInt,
 		[Message(MessageType.Error, "Failed to parse `{0}` as floating point number.")]
 		FailedParseFloat,
+
 		[Message(MessageType.Warning, "Unterminated multiline comment.")]
 		UnterminatedMultilineComment,
 

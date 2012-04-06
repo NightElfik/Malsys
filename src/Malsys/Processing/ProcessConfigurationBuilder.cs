@@ -27,20 +27,17 @@ namespace Malsys.Processing {
 	/// </remarks>
 	public class ProcessConfigurationBuilder {
 
-
-		private ComponentMetadataDumper metadataDumper = new ComponentMetadataDumper();
-
 		/// <summary>
 		/// Crates instances of all needed components and connects all connections.
 		/// </summary>
 		/// <param name="processConfigStat">The "build" plan.</param>
 		/// <param name="componentsAssigns">Assignments of components to containers. Can be empty list because every container has default value.</param>
-		/// <param name="typeResolver">Component (Container) type resolver. Used to resolve string types from Process Configuration to .NET types.</param>
+		/// <param name="componentResolver">Component metadata resolver. Used to resolve component metadata from string from Process Configuration.</param>
 		/// <param name="logger">Logger for logging any failures during process.</param>
 		/// <param name="componentsBase">Already created components.</param>
 		/// <returns>F# map of connected components or null if error occurred.</returns>
 		public FSharpMap<string, ConfigurationComponent> BuildConfigurationComponentsGraph(ProcessConfigurationStatement processConfigStat,
-				IEnumerable<ProcessComponentAssignment> componentsAssigns, IComponentResolver typeResolver, IMessageLogger logger,
+				IEnumerable<ProcessComponentAssignment> componentsAssigns, IComponentMetadataResolver componentResolver, IMessageLogger logger,
 				FSharpMap<string, ConfigurationComponent> componentsBase = null) {
 
 			using (var errBlock = logger.StartErrorLoggingBlock()) {
@@ -52,7 +49,7 @@ namespace Malsys.Processing {
 
 				// components
 				foreach (var procComp in processConfigStat.Components) {
-					var comp = createComponent(procComp.Name, procComp.TypeName, typeResolver, logger);
+					var comp = createComponent(procComp.Name, procComp.TypeName, componentResolver, logger);
 					if (comp != null) {
 						components = components.Add(comp.Name, comp);
 					}
@@ -69,7 +66,7 @@ namespace Malsys.Processing {
 						contCompTypeName = procCont.DefaultTypeName;
 					}
 
-					var comp = createContaineredComponent(procCont.Name, procCont.TypeName, contCompTypeName, typeResolver, logger);
+					var comp = createContaineredComponent(procCont.Name, procCont.TypeName, contCompTypeName, componentResolver, logger);
 					if (comp != null) {
 						components = components.Add(comp.Name, comp);
 					}
@@ -312,17 +309,11 @@ namespace Malsys.Processing {
 			return starterComponent;
 		}
 
-		private ConfigurationComponent createComponent(string compName, string compTypeName, IComponentResolver typeResolver, IMessageLogger logger) {
+		private ConfigurationComponent createComponent(string compName, string compTypeName, IComponentMetadataResolver componentResolver, IMessageLogger logger) {
 
-			var compType = typeResolver.ResolveComponent(compTypeName);
-			if (compType == null) {
+			var metadata = componentResolver.ResolveComponentMetadata(compTypeName, logger);
+			if (metadata == null) {
 				logger.LogMessage(Message.ComponentResolveError, compName, compTypeName);
-				return null;
-			}
-
-			var metadata = metadataDumper.GetMetadata(compType, logger);
-
-			if (metadata.ComponentConstructor == null) {
 				return null;
 			}
 
@@ -334,7 +325,7 @@ namespace Malsys.Processing {
 					: metadata.ComponentConstructor.Invoke(null));
 			}
 			catch (Exception ex) {
-				logger.LogMessage(Message.ComponentCtorException, ex.GetType().Name, compName, compType.FullName);
+				logger.LogMessage(Message.ComponentCtorException, ex.GetType().Name, compName, metadata.ComponentType.FullName);
 				return null;
 			}
 
@@ -342,15 +333,16 @@ namespace Malsys.Processing {
 
 		}
 
-		private ConfigurationComponent createContaineredComponent(string compName, string contTypeName, string compTypeName, IComponentResolver typeResolver, IMessageLogger logger) {
+		private ConfigurationComponent createContaineredComponent(string compName, string contTypeName, string compTypeName,
+				IComponentMetadataResolver componentResolver, IMessageLogger logger) {
 
-			var contType = typeResolver.ResolveComponent(contTypeName);
+			var contType = componentResolver.ResolveComponentType(contTypeName);
 			if (contType == null) {
 				logger.LogMessage(Message.ContainerResolveError, compName, contTypeName);
 				return null;
 			}
 
-			var comp = createComponent(compName, compTypeName, typeResolver, logger);
+			var comp = createComponent(compName, compTypeName, componentResolver, logger);
 			if (comp == null) {
 				return null;
 			}

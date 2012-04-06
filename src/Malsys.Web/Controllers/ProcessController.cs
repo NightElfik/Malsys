@@ -99,7 +99,7 @@ namespace Malsys.Web.Controllers {
 				return View(Views.Index, resultModel);
 			}
 
-			if (evaledInput.ProcessStatements.Count == 0) {
+			if (fileMgr.OutputFilesCount == 0 && evaledInput.ProcessStatements.Count == 0) {
 				resultModel.NoProcessStatement = true;
 				return View(Views.Index, resultModel);
 			}

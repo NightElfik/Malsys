@@ -13,13 +13,13 @@ namespace Malsys.Web.Areas.Help.Controllers {
 	public partial class PredefinedController : Controller {
 
 		private readonly InputBlockEvaled stdLib;
-		private readonly IComponentContainer componentContainer;
+		private readonly IComponentTypeContainer componentContainer;
 		private readonly IKnownConstantsProvider knownConstantsProvider;
 		private readonly IExpressionEvaluatorContext expressionEvaluatorContext;
 		private readonly XmlDocReader xmlDocReader;
 
 
-		public PredefinedController(IComponentContainer componentContainer, IKnownConstantsProvider knownConstantsProvider,
+		public PredefinedController(IComponentTypeContainer componentContainer, IKnownConstantsProvider knownConstantsProvider,
 			IExpressionEvaluatorContext expressionEvaluatorContext, XmlDocReader xmlDocReader, InputBlockEvaled stdLib) {
 
 			this.componentContainer = componentContainer;
@@ -38,8 +38,8 @@ namespace Malsys.Web.Areas.Help.Controllers {
 			var model = expressionEvaluatorContext.GetAllStoredFunctions()
 				.Select(x => new Function() {
 					FunctionInfo = x,
-					Documentation = xmlDocReader.TryGetXmlDocumentation(x.Metadata as FieldInfo),
-					Group = xmlDocReader.TryGetXmlDocumentation(x.Metadata as FieldInfo, "docGroup"),
+					Documentation = x.Metadata is FieldInfo ? xmlDocReader.GetXmlDocumentation(x.Metadata as FieldInfo) : "",
+					Group = x.Metadata is FieldInfo ? xmlDocReader.GetXmlDocumentation(x.Metadata as FieldInfo, "docGroup") : "",
 				});
 
 			return View(model);
@@ -50,7 +50,7 @@ namespace Malsys.Web.Areas.Help.Controllers {
 		}
 
 		public virtual ActionResult Components() {
-			var allCompGroupTypes = componentContainer.GetAllRegisteredComponents().GroupBy(x => x.Value);
+			var allCompGroupTypes = componentContainer.GetAllRegisteredComponentTypes().GroupBy(x => x.Value);
 			var allTypes = allCompGroupTypes.Select(x => x.Key).ToList();
 			var components = allCompGroupTypes.Select(g => ComponentModel.FromType(g.Key, xmlDocReader, g.Select(y => y.Key), allTypes));
 			return View(components);

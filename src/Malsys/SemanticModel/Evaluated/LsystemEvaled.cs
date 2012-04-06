@@ -10,6 +10,10 @@ namespace Malsys.SemanticModel.Evaluated {
 
 		public readonly string Name;
 
+		public readonly bool IsAbstract;
+
+
+		public readonly ImmutableList<LsystemEvaled> BaseLsystems;
 
 		public readonly IExpressionEvaluatorContext ExpressionEvaluatorContext;
 
@@ -32,6 +36,8 @@ namespace Malsys.SemanticModel.Evaluated {
 		public LsystemEvaled(string name) {
 
 			Name = name;
+			IsAbstract = false;
+			BaseLsystems = new ImmutableList<LsystemEvaled>();
 			ExpressionEvaluatorContext = new ExpressionEvaluatorContext();
 			ComponentValuesAssigns = MapModule.Empty<string, IValue>();
 			ComponentSymbolsAssigns = MapModule.Empty<string, ImmutableList<Symbol<IValue>>>();
@@ -40,10 +46,12 @@ namespace Malsys.SemanticModel.Evaluated {
 			AstNode = null;
 		}
 
-		public LsystemEvaled(string name, IExpressionEvaluatorContext exprEvalCtxt, ValsMap valuesAssigns, SymListMap symbolsAssigns, SymIntMap symsInt,
-				ImmutableList<RewriteRule> rRules, Ast.LsystemDefinition astNode = null) {
+		public LsystemEvaled(string name, bool isAbstract, ImmutableList<LsystemEvaled> baseLsystems, IExpressionEvaluatorContext exprEvalCtxt,
+				ValsMap valuesAssigns, SymListMap symbolsAssigns, SymIntMap symsInt, ImmutableList<RewriteRule> rRules, Ast.LsystemDefinition astNode = null) {
 
 			Name = name;
+			IsAbstract = isAbstract;
+			BaseLsystems = baseLsystems;
 			ExpressionEvaluatorContext = exprEvalCtxt;
 			ComponentValuesAssigns = valuesAssigns;
 			ComponentSymbolsAssigns = symbolsAssigns;

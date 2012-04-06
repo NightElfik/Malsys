@@ -22,6 +22,7 @@ using Malsys.Web.Models;
 using Malsys.Web.Models.Repositories;
 using Malsys.Web.Security;
 using Malsys.Web.Models.Lsystem;
+using Malsys.Reflection.Components;
 
 namespace Malsys.Web {
 	public class MvcApplication : HttpApplication {
@@ -84,8 +85,9 @@ namespace Malsys.Web {
 
 			builder.RegisterType<AppSettingsProvider>().As<IAppSettingsProvider>().SingleInstance();
 
-			string basePath = Server.MapPath("~/bin");
+			string basePath = Server.MapPath("~/bin");  // path where DLL and theirs XML doc files are
 			builder.Register(x => new XmlDocReader(basePath)).SingleInstance();
+			builder.RegisterType<ComponentXmlDocLoader>().SingleInstance();
 
 
 			registerMalsysStuff(builder);
@@ -111,15 +113,16 @@ namespace Malsys.Web {
 			builder.RegisterType<CompilersContainer>().As<ICompilersContainer>().InstancePerHttpRequest();
 			builder.RegisterType<EvaluatorsContainer>().As<IEvaluatorsContainer>().InstancePerHttpRequest();
 
-			var componentResolver = new ComponentResolver();
-			var componentsTypes = Assembly.GetAssembly(typeof(ComponentResolver)).GetTypes()
+			var componentResolver = new CachedComponentResolver();
+			var componentsTypes = Assembly.GetAssembly(typeof(CachedComponentResolver)).GetTypes()
 				.Where(t => (t.IsClass || t.IsInterface) && (typeof(IComponent)).IsAssignableFrom(t));
 			foreach (var type in componentsTypes) {
 				componentResolver.RegisterComponentNameAndFullName(type, false);
 			}
 			builder.Register(x => componentResolver)
-				.As<IComponentResolver>()
-				.As<IComponentContainer>()
+				.As<IComponentTypeResolver>()
+				.As<IComponentMetadataResolver>()
+				.As<IComponentTypeContainer>()
 				.SingleInstance();
 
 			builder.RegisterType<ProcessManager>().InstancePerHttpRequest();
@@ -131,7 +134,7 @@ namespace Malsys.Web {
 
 		private InputBlockEvaled buildStdLib(KnownConstOpProvider knownStuffProvider, IExpressionEvaluatorContext eec) {
 
-			const string resName = "StdLib.malsys";
+			string resName = ResourcesHelper.StdLibResourceName;
 
 			var logger = new MessageLogger();
 
@@ -223,7 +226,7 @@ namespace Malsys.Web {
 		private void ensureDirExistsAndIsWritable(string path, bool pathIsVirtual = true) {
 
 			if (pathIsVirtual) {
-				path = Server.MapPath(VirtualPathUtility.ToAbsolute(path));
+				path = Server.MapPath(path);
 			}
 
 			if (!Directory.Exists(path)) {

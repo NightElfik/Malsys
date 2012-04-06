@@ -37,7 +37,7 @@ namespace Malsys.Tests.Evaluators {
 
 		private void doTest(string inputDefinitions, string inputExpression, string excpected) {
 
-			var inBlockEvaled = TestUtils.EvaluateLsystem(inputDefinitions);
+			var inBlockEvaled = TestUtils.EvaluateInput(inputDefinitions);
 			var result = TestUtils.EvaluateExpression(inputExpression, inBlockEvaled.ExpressionEvaluatorContext);
 			string actual = TestUtils.Print(result);
 

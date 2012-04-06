@@ -68,11 +68,11 @@ namespace Malsys.Tests.Process {
 		}
 
 
-		private void doTest(string input, params string[] excpectedOutputs) {
+		private void doTest(string input, params string[] expectedOutputs) {
 
 			var logger = new MessageLogger();
 
-			var resolver = new ComponentResolver();
+			var resolver = new CachedComponentResolver();
 			Components.RegisterAllComponents(resolver);
 
 			var processManager = new ProcessManager(new CompilersContainer(), new EvaluatorsContainer(new ExpressionEvaluatorContext()), resolver);
@@ -93,7 +93,7 @@ namespace Malsys.Tests.Process {
 
 			Console.WriteLine(string.Join(Environment.NewLine, actualOutputs));
 
-			CollectionAssert.AreEquivalent(excpectedOutputs, actualOutputs);
+			CollectionAssert.AreEquivalent(expectedOutputs, actualOutputs);
 
 		}
 

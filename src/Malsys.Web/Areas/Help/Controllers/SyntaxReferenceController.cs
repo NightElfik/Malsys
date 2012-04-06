@@ -23,7 +23,11 @@ namespace Malsys.Web.Areas.Help.Controllers {
 			return View();
 		}
 
-		public virtual ActionResult Constant() {
+		public virtual ActionResult ConstantDefinition() {
+			return View(simpleLsystemProcessor);
+		}
+
+		public virtual ActionResult FunctionDefinition() {
 			return View(simpleLsystemProcessor);
 		}
 

@@ -103,10 +103,12 @@ namespace Malsys.Processing.Components.Common {
 			eec = configBuilder.AddComponentsGettableVariables(compGraph, eec, true);
 			eec = configBuilder.AddComponentsCallableFunctions(compGraph, eec, true);
 
+			var baseResolver = new BaseLsystemResolver(ctxt.InputData.Lsystems);
+
 			ProcessConfiguration procConfig;
 			using (var errBlock = ctxt.Logger.StartErrorLoggingBlock()) {
 				// evaluate L-system
-				var lsysEvaled = ctxt.EvaluatorsContainer.TryEvaluateLsystem(lsystem, args, ctxt.ExpressionEvaluatorContext, ctxt.Logger);
+				var lsysEvaled = ctxt.EvaluatorsContainer.TryEvaluateLsystem(lsystem, args, ctxt.ExpressionEvaluatorContext, baseResolver, ctxt.Logger);
 				if (errBlock.ErrorOccurred) {
 					return;
 				}
@@ -136,10 +138,10 @@ namespace Malsys.Processing.Components.Common {
 				procConfig.StarterComponent.Start(false);  // do not measure internally
 			}
 			catch (EvalException ex) {
-				ctxt.Logger.LogMessage(IEvaluatorsContainerExtensions.Message.EvalFailed, ex.GetFullMessage());
+				ctxt.Logger.LogMessage(Message.LsystemEvalFailed, name, ex.GetFullMessage());
 			}
 			catch (InterpretationException ex) {
-				ctxt.Logger.LogMessage(IEvaluatorsContainerExtensions.Message.EvalFailed, ex.Message);
+				ctxt.Logger.LogMessage(Message.InterpretError, name, ex.Message);
 			}
 
 			configBuilder.CleanupComponents(compGraphOnlyNew, ctxt.Logger);
@@ -157,9 +159,12 @@ namespace Malsys.Processing.Components.Common {
 
 			[Message(MessageType.Error, "Failed to evaluate symbol as lsystem `{0}`. Required L-system is not defined.")]
 			LsystemNotFound,
-
 			[Message(MessageType.Error, "Failed to evaluate symbol as lsystem `{0}`. Required process configuration `{1}` is not defined and default process configuration `{2}` is not defined.")]
 			NoProcessConfig,
+			[Message(MessageType.Error, "Failed to evaluate symbol as lsystem `{0}`. {1}")]
+			LsystemEvalFailed,
+			[Message(MessageType.Error, "Failed to evaluate symbol as lsystem `{0}`. Interpretation error occurred. {1}")]
+			InterpretError,
 
 		}
 

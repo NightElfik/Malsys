@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using System;
 
 namespace Malsys {
 	public static class StringHelper {
@@ -74,6 +75,9 @@ namespace Malsys {
 			}
 		}
 
+		public static string JoinLines(params string[] lines) {
+			return string.Join(Environment.NewLine, lines);
+		}
 
 	}
 }

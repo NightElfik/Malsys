@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Linq;
-using System.Reflection;
-using Microsoft.FSharp.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Malsys.Reflection.Components {
 	/// <remarks>
-	/// Immutable.
+	/// Nearly immutable (only documentation strings can be set later).
 	/// </remarks>
 	public class ComponentMetadata {
 
@@ -22,17 +20,24 @@ namespace Malsys.Reflection.Components {
 
 		public readonly ImmutableList<ComponentCallableFunctionMetadata> CallableFunctions;
 
+		public readonly ImmutableList<ComponentInterpretationMethodMetadata> InterpretationMethods;
+
 		public readonly bool HasCtorWithMessageLogger;
 		public readonly ConstructorInfo ComponentConstructor;
 
 		public readonly bool CaseSensitiveLookup;
 
 
-		private readonly Dictionary<string, ComponentGettablePropertyMetadata> GettablePropertiesDictionary;
-		private readonly Dictionary<string, ComponentSettablePropertyMetadata> SettablePropertiesDictionary;
-		private readonly Dictionary<string, ComponentSettableSybolsPropertyMetadata> SettableSymbolsPropertiesDictionary;
-		private readonly Dictionary<string, ComponentConnectablePropertyMetadata> ConnectablePropertiesDictionary;
-		private readonly Dictionary<string, ComponentCallableFunctionMetadata> CallableFunctionsDictionary;
+		public bool IsDocumentationSet { get; private set; }
+
+
+
+		private readonly Dictionary<string, ComponentGettablePropertyMetadata> gettablePropertiesDictionary;
+		private readonly Dictionary<string, ComponentSettablePropertyMetadata> settablePropertiesDictionary;
+		private readonly Dictionary<string, ComponentSettableSybolsPropertyMetadata> settableSymbolsPropertiesDictionary;
+		private readonly Dictionary<string, ComponentConnectablePropertyMetadata> connectablePropertiesDictionary;
+		private readonly Dictionary<string, ComponentCallableFunctionMetadata> callableFunctionsDictionary;
+		private readonly Dictionary<string, ComponentInterpretationMethodMetadata> interpretationMethodsDictionary;
 
 
 		public ComponentMetadata() {
@@ -42,7 +47,8 @@ namespace Malsys.Reflection.Components {
 		public ComponentMetadata(Type componentType, ImmutableList<ComponentGettablePropertyMetadata> gettableProperties,
 				ImmutableList<ComponentSettablePropertyMetadata> settableProperties, ImmutableList<ComponentSettableSybolsPropertyMetadata> settableSymbolsProperties,
 				ImmutableList<ComponentConnectablePropertyMetadata> connectableProperties, ImmutableList<ComponentCallableFunctionMetadata> callableFunctions,
-				ConstructorInfo componentConstructor, bool hasCtorWithMessageLogger, bool caseSensitiveLookup = false) {
+				ImmutableList<ComponentInterpretationMethodMetadata> interpretationMethods, ConstructorInfo componentConstructor,
+				bool hasCtorWithMessageLogger, bool caseSensitiveLookup = false) {
 
 			ComponentType = componentType;
 			GettableProperties = gettableProperties;
@@ -50,15 +56,17 @@ namespace Malsys.Reflection.Components {
 			SettableSymbolsProperties = settableSymbolsProperties;
 			ConnectableProperties = connectableProperties;
 			CallableFunctions = callableFunctions;
+			InterpretationMethods = interpretationMethods;
 			ComponentConstructor = componentConstructor;
 			HasCtorWithMessageLogger = hasCtorWithMessageLogger;
 			CaseSensitiveLookup = caseSensitiveLookup;
 
-			GettablePropertiesDictionary = new Dictionary<string, ComponentGettablePropertyMetadata>();
-			SettablePropertiesDictionary = new Dictionary<string, ComponentSettablePropertyMetadata>();
-			SettableSymbolsPropertiesDictionary = new Dictionary<string, ComponentSettableSybolsPropertyMetadata>();
-			ConnectablePropertiesDictionary = new Dictionary<string, ComponentConnectablePropertyMetadata>();
-			CallableFunctionsDictionary = new Dictionary<string, ComponentCallableFunctionMetadata>();
+			gettablePropertiesDictionary = new Dictionary<string, ComponentGettablePropertyMetadata>();
+			settablePropertiesDictionary = new Dictionary<string, ComponentSettablePropertyMetadata>();
+			settableSymbolsPropertiesDictionary = new Dictionary<string, ComponentSettableSybolsPropertyMetadata>();
+			connectablePropertiesDictionary = new Dictionary<string, ComponentConnectablePropertyMetadata>();
+			callableFunctionsDictionary = new Dictionary<string, ComponentCallableFunctionMetadata>();
+			interpretationMethodsDictionary = new Dictionary<string, ComponentInterpretationMethodMetadata>();
 
 			buildLookupCache();
 
@@ -71,31 +79,37 @@ namespace Malsys.Reflection.Components {
 
 			foreach (var gettProp in GettableProperties) {
 				foreach (string name in gettProp.Names) {
-					GettablePropertiesDictionary[CaseSensitiveLookup ? name : name.ToLowerInvariant()] = gettProp;
+					gettablePropertiesDictionary[CaseSensitiveLookup ? name : name.ToLower()] = gettProp;
 				}
 			}
 
 			foreach (var settProp in SettableProperties) {
 				foreach (string name in settProp.Names) {
-					SettablePropertiesDictionary[CaseSensitiveLookup ? name : name.ToLowerInvariant()] = settProp;
+					settablePropertiesDictionary[CaseSensitiveLookup ? name : name.ToLower()] = settProp;
 				}
 			}
 
 			foreach (var settProp in SettableSymbolsProperties) {
 				foreach (string name in settProp.Names) {
-					SettableSymbolsPropertiesDictionary[CaseSensitiveLookup ? name : name.ToLowerInvariant()] = settProp;
+					settableSymbolsPropertiesDictionary[CaseSensitiveLookup ? name : name.ToLower()] = settProp;
 				}
 			}
 
 			foreach (var connProp in ConnectableProperties) {
 				foreach (string name in connProp.Names) {
-					ConnectablePropertiesDictionary[CaseSensitiveLookup ? name : name.ToLowerInvariant()] = connProp;
+					connectablePropertiesDictionary[CaseSensitiveLookup ? name : name.ToLower()] = connProp;
 				}
 			}
 
 			foreach (var callfun in CallableFunctions) {
 				foreach (string name in callfun.Names) {
-					CallableFunctionsDictionary[CaseSensitiveLookup ? name : name.ToLowerInvariant()] = callfun;
+					callableFunctionsDictionary[CaseSensitiveLookup ? name : name.ToLower()] = callfun;
+				}
+			}
+
+			foreach (var intMeth in InterpretationMethods) {
+				foreach (string name in intMeth.Names) {
+					interpretationMethodsDictionary[CaseSensitiveLookup ? name : name.ToLower()] = intMeth;
 				}
 			}
 
@@ -103,23 +117,34 @@ namespace Malsys.Reflection.Components {
 
 
 		public bool TryGetGettableProperty(string name, out ComponentGettablePropertyMetadata gettPropMetadata) {
-			return GettablePropertiesDictionary.TryGetValue(CaseSensitiveLookup ? name : name.ToLowerInvariant(), out gettPropMetadata);
+			return gettablePropertiesDictionary.TryGetValue(CaseSensitiveLookup ? name : name.ToLower(), out gettPropMetadata);
 		}
 
 		public bool TryGetSettableProperty(string name, out ComponentSettablePropertyMetadata settPropMetadata) {
-			return SettablePropertiesDictionary.TryGetValue(CaseSensitiveLookup ? name : name.ToLowerInvariant(), out settPropMetadata);
+			return settablePropertiesDictionary.TryGetValue(CaseSensitiveLookup ? name : name.ToLower(), out settPropMetadata);
 		}
 
 		public bool TryGetSettableSymbolsProperty(string name, out ComponentSettableSybolsPropertyMetadata settSymPropMetadata) {
-			return SettableSymbolsPropertiesDictionary.TryGetValue(CaseSensitiveLookup ? name : name.ToLowerInvariant(), out settSymPropMetadata);
+			return settableSymbolsPropertiesDictionary.TryGetValue(CaseSensitiveLookup ? name : name.ToLower(), out settSymPropMetadata);
 		}
 
 		public bool TryGetConnectableProperty(string name, out ComponentConnectablePropertyMetadata connPropMetadata) {
-			return ConnectablePropertiesDictionary.TryGetValue(CaseSensitiveLookup ? name : name.ToLowerInvariant(), out connPropMetadata);
+			return connectablePropertiesDictionary.TryGetValue(CaseSensitiveLookup ? name : name.ToLower(), out connPropMetadata);
 		}
 
 		public bool TryGetCallableFunction(string name, out ComponentCallableFunctionMetadata callFunMetadata) {
-			return CallableFunctionsDictionary.TryGetValue(CaseSensitiveLookup ? name : name.ToLowerInvariant(), out callFunMetadata);
+			return callableFunctionsDictionary.TryGetValue(CaseSensitiveLookup ? name : name.ToLower(), out callFunMetadata);
+		}
+
+		public bool TryGetInterpretationMethod(string name, out ComponentInterpretationMethodMetadata intMethodMetadata) {
+			return interpretationMethodsDictionary.TryGetValue(CaseSensitiveLookup ? name : name.ToLower(), out intMethodMetadata);
+		}
+
+
+		public void SetDocumentation() {
+
+			IsDocumentationSet = true;
+
 		}
 
 

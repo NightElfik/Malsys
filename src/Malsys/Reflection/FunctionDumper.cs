@@ -17,7 +17,7 @@ namespace Malsys.Reflection {
 
 				var value = (FunctionCore)fieldInfo.GetValue(null);
 
-				foreach (var name in fieldInfo.GetAliases()) {
+				foreach (var name in fieldInfo.GetAccessNames()) {
 					yield return new FunctionInfo(name, value.ParametersCount, value.EvalFunction, value.ParamsTypesCyclicPattern, fieldInfo);
 				}
 

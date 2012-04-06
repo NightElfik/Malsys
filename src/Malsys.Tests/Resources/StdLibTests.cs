@@ -1,0 +1,36 @@
+﻿using System;
+using System.IO;
+using Malsys.Compilers;
+using Malsys.Evaluators;
+using Malsys.Resources;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace Malsys.Tests.Resources {
+	[TestClass]
+	public class StdLibTests {
+
+		[TestMethod]
+		public void BuildStdLibTest() {
+
+			string resName = ResourcesHelper.StdLibResourceName;
+
+			var logger = new MessageLogger();
+
+			using (Stream stream = new ResourcesReader().GetResourceStream(resName)) {
+				using (TextReader reader = new StreamReader(stream)) {
+					var inCompiled = new CompilersContainer().CompileInput(reader, resName, logger);
+					var stdLib = new EvaluatorsContainer(TestUtils.ExpressionEvaluatorContext).EvaluateInput(inCompiled);
+					if (logger.ErrorOccurred) {
+						foreach (var msg in logger) {
+							Console.WriteLine(msg.GetFullMessage());
+						}
+						Assert.Fail();
+					}
+					Assert.AreNotEqual(stdLib, null);
+				}
+			}
+
+		}
+
+	}
+}

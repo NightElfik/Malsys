@@ -1,0 +1,14 @@
+﻿@model Malsys.Web.Models.Lsystem.SimpleLsystemProcessor
+
+@{
+	ViewBag.Title = "FunctionDefinition";
+	var exampleModel = new LsystemExampleViewModel() {
+		LsystemProcessor = Model,
+		SourceCodeTemplate = string.Join(Environment.NewLine,
+			"// function definition example {0:00}",
+			"{1}")
+	};
+	int exampleId = 1;
+}
+
+<h2>Function definition</h2>

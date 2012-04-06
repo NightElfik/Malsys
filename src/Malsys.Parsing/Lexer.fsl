@@ -44,6 +44,7 @@ let appendToSb lexbuf (sb : StringBuilder) =
 
 let kw =
     [
+        (Keyword.Abstract, ABSTRACT Keyword.Abstract);
         (Keyword.All, ALL Keyword.All);
         (Keyword.As, AS Keyword.As);
         (Keyword.Component, COMPONENT Keyword.Component);
@@ -52,6 +53,7 @@ let kw =
         (Keyword.Consider, CONSIDER Keyword.Consider);
         (Keyword.Container, CONTAINER Keyword.Container);
         (Keyword.Default, DEFAULT Keyword.Default);
+        (Keyword.Extends, EXTENDS Keyword.Extends);
         (Keyword.Fun, FUN Keyword.Fun);
         (Keyword.Interpret, INTERPRET Keyword.Interpret);
         (Keyword.Let, LET Keyword.Let);

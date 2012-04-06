@@ -7,7 +7,7 @@ namespace Malsys.SemanticModel.Evaluated {
 	/// </remarks>
 	public class ValuesArray : ImmutableList<IValue>, IValue {
 
-		new public static readonly ValuesArray Empty = new ValuesArray(null);
+		new public static readonly ValuesArray Empty = new ValuesArray((Ast.ExpressionsArray)null);
 
 
 
@@ -32,6 +32,13 @@ namespace Malsys.SemanticModel.Evaluated {
 
 			AstNode = astNode;
 		}
+
+		public ValuesArray(params IValue[] vals)
+			: base(vals) {
+
+			AstNode = null;
+		}
+
 
 		public bool IsConstant { get { return false; } }
 

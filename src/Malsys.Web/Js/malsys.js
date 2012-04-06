@@ -59,6 +59,27 @@
 		return str;
 	}
 
+
+	var toc = $("#toc");
+	if (toc !== undefined) {
+		toc.append('<div class="collapseSwitch"><span class="u">Table of contents [show]</span><span class="c">Table of contents [hide]</span></div>');
+		toc.append('<ul>');
+
+		$('h3').each(function (i) {
+			var text = $(this).text();
+			var id = $(this).attr('id');
+			if (id === undefined) {
+				id = text;
+				$(this).attr('id', id);
+			}
+			toc.append('<li><a href="#' + id + '">' + text + '</a></li>');
+		});
+
+		toc.append('</ul>');
+	}
+
+
+
 	$("pre.grammar").each(function (i) {
 
 		$(this).html(addRefLinks($(this).html()));
@@ -168,6 +189,8 @@
 	});
 
 	$(".collapseSwitch").trigger('click');
+
+
 
 } (jQuery));
 

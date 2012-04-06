@@ -16,7 +16,7 @@ namespace Malsys.Processing {
 
 		public readonly IExpressionEvaluatorContext ExpressionEvaluatorContext;
 
-		public readonly IComponentResolver ComponentResolver;
+		public readonly IComponentMetadataResolver ComponentResolver;
 
 		public readonly FSharpMap<string, ConfigurationComponent> ComponentGraph;
 
@@ -26,7 +26,7 @@ namespace Malsys.Processing {
 
 
 		public ProcessContext(LsystemEvaled lsystem, IOutputProvider outputProvider, InputBlockEvaled data, IEvaluatorsContainer evaluatorsContainer,
-				IExpressionEvaluatorContext exprEvalCtxt, IComponentResolver componentResolver, TimeSpan processingTimeLimit,
+				IExpressionEvaluatorContext exprEvalCtxt, IComponentMetadataResolver componentResolver, TimeSpan processingTimeLimit,
 				FSharpMap<string, ConfigurationComponent> componentGraph, IMessageLogger logger) {
 
 			Lsystem = lsystem;

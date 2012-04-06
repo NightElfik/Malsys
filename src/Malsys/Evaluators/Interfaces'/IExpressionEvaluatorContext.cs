@@ -48,6 +48,16 @@ namespace Malsys.Evaluators {
 
 	public static class IExpressionEvaluatorContextExtensions {
 
+		public static IValue TryEvaluate(this IExpressionEvaluatorContext eec, IExpression expr, IMessageLogger logger, IValue returnValueOnError = null) {
+			try {
+				return eec.Evaluate(expr);
+			}
+			catch (EvalException ex) {
+				logger.LogMessage(Message.EvaluationError, ex.GetFullMessage());
+				return returnValueOnError;
+			}
+		}
+
 		public static Constant EvaluateAsConst(this IExpressionEvaluatorContext eec, IExpression expr) {
 
 			var val = eec.Evaluate(expr);
@@ -96,6 +106,14 @@ namespace Malsys.Evaluators {
 			}
 
 			return eec;
+
+		}
+
+
+		public enum Message {
+
+			[Message(MessageType.Error, "Failed to evaluate expression. {0}")]
+			EvaluationError,
 
 		}
 

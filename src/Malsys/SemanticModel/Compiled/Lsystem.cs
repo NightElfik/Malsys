@@ -6,17 +6,21 @@ namespace Malsys.SemanticModel.Compiled {
 	public class Lsystem : IInputStatement {
 
 		public readonly string Name;
+		public readonly bool IsAbstract;
 		public readonly ImmutableList<OptionalParameter> Parameters;
+		public readonly ImmutableList<BaseLsystem> BaseLsystems;
 		public readonly ImmutableList<ILsystemStatement> Statements;
 
 		public readonly Ast.LsystemDefinition AstNode;
 
 
-		public Lsystem(string name, ImmutableList<OptionalParameter> prms, ImmutableList<ILsystemStatement> statements,
-				Ast.LsystemDefinition astNode) {
+		public Lsystem(string name, bool isAbstract, ImmutableList<OptionalParameter> prms, ImmutableList<BaseLsystem> baseLsystems,
+				ImmutableList<ILsystemStatement> statements, Ast.LsystemDefinition astNode) {
 
 			Name = name;
+			IsAbstract = isAbstract;
 			Parameters = prms;
+			BaseLsystems = baseLsystems;
 			Statements = statements;
 
 			AstNode = astNode;

@@ -14,17 +14,19 @@ namespace Malsys.Processing {
 
 		private readonly ICompilersContainer compiler;
 		private readonly IEvaluatorsContainer evaluator;
-		private readonly IComponentResolver componentResolver;
+		private readonly IComponentMetadataResolver componentResolver;
 
 		private readonly ProcessConfigurationBuilder configBuilder = new ProcessConfigurationBuilder();
 
 
-		public ProcessManager(ICompilersContainer compilersContainer, IEvaluatorsContainer evaluatorsContainer, IComponentResolver componentResolver) {
+		public ProcessManager(ICompilersContainer compilersContainer, IEvaluatorsContainer evaluatorsContainer, IComponentMetadataResolver componentResolver) {
 
 			compiler = compilersContainer;
 			evaluator = evaluatorsContainer;
 			this.componentResolver = componentResolver;
 		}
+
+		public IComponentMetadataResolver ComponentResolver { get { return componentResolver; } }
 
 
 		public InputBlockEvaled CompileAndEvaluateInput(string src, string sourcName, IMessageLogger logger) {
@@ -68,13 +70,15 @@ namespace Malsys.Processing {
 				eec = configBuilder.AddComponentsGettableVariables(compGraph, eec, true);
 				eec = configBuilder.AddComponentsCallableFunctions(compGraph, eec, true);
 
+				var baseResolver = new BaseLsystemResolver(inBlockEvaled.Lsystems);
+
 
 				foreach (var lsystem in lsystemsToProcess) {
 
 					ProcessConfiguration procConfig;
 					using (var errBlock = logger.StartErrorLoggingBlock()) {
 
-						var lsysEvaled = evaluator.TryEvaluateLsystem(lsystem, processStat.Arguments, eec, logger);
+						var lsysEvaled = evaluator.TryEvaluateLsystem(lsystem, processStat.Arguments, eec, baseResolver, logger);
 						if (errBlock.ErrorOccurred) {
 							continue;
 						}
@@ -103,10 +107,10 @@ namespace Malsys.Processing {
 						procConfig.StarterComponent.Start(procConfig.RequiresMeasure);
 					}
 					catch (EvalException ex) {
-						logger.LogMessage(IEvaluatorsContainerExtensions.Message.EvalFailed, ex.GetFullMessage());
+						logger.LogMessage(Message.LsystemEvalFailed, lsystem.Name, ex.GetFullMessage());
 					}
 					catch (InterpretationException ex) {
-						logger.LogMessage(IEvaluatorsContainerExtensions.Message.EvalFailed, ex.Message);
+						logger.LogMessage(Message.InterpretError, lsystem.Name, ex.Message);
 					}
 
 					configBuilder.CleanupComponents(compGraph, logger);
@@ -121,7 +125,7 @@ namespace Malsys.Processing {
 		private IEnumerable<LsystemEvaledParams> getLsystemsToProcess(ProcessStatementEvaled processStat, InputBlockEvaled inBlockEvaled, IMessageLogger logger) {
 
 			if (processStat.TargetLsystemName.Length == 0) {
-				return inBlockEvaled.Lsystems.Select(x => x.Value);
+				return inBlockEvaled.Lsystems.Where(x => !x.Value.IsAbstract).Select(x => x.Value);
 			}
 			else {
 				LsystemEvaledParams lsys;
@@ -156,6 +160,11 @@ namespace Malsys.Processing {
 			LsysNotDefined,
 			[Message(MessageType.Error, "Failed to process L-system, `{0}` was thrown.")]
 			ExceptionThrownWhileProcessing,
+
+			[Message(MessageType.Error, "Evaluation of L-system `{0}` failed. {1}")]
+			LsystemEvalFailed,
+			[Message(MessageType.Error, "Interpretation error occurred in L-system `{0}`. {1}")]
+			InterpretError,
 
 		}
 

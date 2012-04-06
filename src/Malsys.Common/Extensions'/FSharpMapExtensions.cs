@@ -70,16 +70,28 @@ namespace Malsys {
 
 		}
 
-		public static TResult TryGetValue<TKey, TValue, TResult>(this FSharpMap<TKey, TValue> map, TKey key, TResult defaultValue = default(TResult)) {
+		public static TResult TryGetValue<TKey, TResult>(this FSharpMap<TKey, object> map, TKey key, TResult defaultValue = default(TResult)) {
 
 			var maybeValue = map.TryFind(key);
 			if (OptionModule.IsSome(maybeValue)) {
 				if (maybeValue.Value is TResult) {
-					return (TResult)(object)maybeValue.Value;
+					return (TResult)maybeValue.Value;
 				}
 				else {
 					return defaultValue;
 				}
+			}
+			else {
+				return defaultValue;
+			}
+
+		}
+
+		public static TValue TryGetValue<TKey, TValue>(this FSharpMap<TKey, TValue> map, TKey key, TValue defaultValue = default(TValue)) {
+
+			var maybeValue = map.TryFind(key);
+			if (OptionModule.IsSome(maybeValue)) {
+				return maybeValue.Value;
 			}
 			else {
 				return defaultValue;

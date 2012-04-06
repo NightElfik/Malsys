@@ -106,6 +106,7 @@
     <Compile Include="Expressions%27\EmptyExpression.cs" />
     <Compile Include="IStatement.cs" />
     <Compile Include="Keyword.cs" />
+    <Compile Include="Lsystem%27\BaseLsystem.cs" />
     <Compile Include="Lsystem%27\ILsystemStatement.cs" />
     <Compile Include="Lsystem%27\SymbolsInterpretDef.cs" />
     <Compile Include="Lsystem%27\RewriteRuleReplacement.cs" />

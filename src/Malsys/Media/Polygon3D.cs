@@ -2,10 +2,8 @@
 using System.Windows.Media.Media3D;
 
 namespace Malsys.Media {
-	/// <summary>
-	/// </summary>
 	/// <remarks>
-	/// I know that polygon is by definition 2D.
+	/// I know that polygon is by definition 2D object.
 	/// </remarks>
 	public class Polygon3D {
 
@@ -13,12 +11,12 @@ namespace Malsys.Media {
 
 		public ColorF Color;
 
-		public float StrokeWidth;
+		public double StrokeWidth;
 
 		public ColorF StrokeColor;
 
 
-		public Polygon3D(ColorF color, float strokeWidth, ColorF strokeColor) {
+		public Polygon3D(ColorF color, double strokeWidth, ColorF strokeColor) {
 
 			Color = color;
 			StrokeColor = strokeColor;

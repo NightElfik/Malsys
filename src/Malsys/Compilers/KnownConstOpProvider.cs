@@ -51,7 +51,7 @@ namespace Malsys.Compilers {
 
 				double value = (double)fieldInfo.GetValue(null);
 
-				foreach (var name in fieldInfo.GetAliases()) {
+				foreach (var name in fieldInfo.GetAccessNames()) {
 					constCache[name] = value;
 				}
 			}

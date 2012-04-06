@@ -5,7 +5,7 @@ using System.Reflection;
 namespace Malsys.Reflection {
 	public static class TypeExtensions {
 
-		public static IEnumerable<Tuple<FieldInfo, TAttr>> GetFieldsHavingAttr<TAttr>(this Type type, bool inherit = true) where TAttr : class {
+		public static IEnumerable<Tuple<FieldInfo, TAttr>> GetFieldsHavingAttr<TAttr>(this Type type, bool inherit = false) where TAttr : class {
 
 			foreach (var fi in type.GetFields()) {
 				var attrs = fi.GetCustomAttributes(typeof(TAttr), inherit);
@@ -17,7 +17,7 @@ namespace Malsys.Reflection {
 			}
 		}
 
-		public static IEnumerable<Tuple<PropertyInfo, TAttr>> GetPropertiesHavingAttr<TAttr>(this Type type, bool inherit = true) where TAttr : class {
+		public static IEnumerable<Tuple<PropertyInfo, TAttr>> GetPropertiesHavingAttr<TAttr>(this Type type, bool inherit = false) where TAttr : class {
 
 			foreach (var pi in type.GetProperties()) {
 				var attrs = pi.GetCustomAttributes(typeof(TAttr), inherit);
@@ -29,7 +29,7 @@ namespace Malsys.Reflection {
 			}
 		}
 
-		public static IEnumerable<Tuple<MethodInfo, TAttr>> GetMethodsHavingAttr<TAttr>(this Type type, bool inherit = true) where TAttr : class {
+		public static IEnumerable<Tuple<MethodInfo, TAttr>> GetMethodsHavingAttr<TAttr>(this Type type, bool inherit = false) where TAttr : class {
 
 			foreach (var mi in type.GetMethods()) {
 				var attrs = mi.GetCustomAttributes(typeof(TAttr), inherit);
@@ -41,7 +41,7 @@ namespace Malsys.Reflection {
 			}
 		}
 
-		public static bool TryGetAttribute<TAttr>(this Type type, out TAttr result, bool inherit = true) where TAttr : class {
+		public static bool TryGetAttribute<TAttr>(this Type type, out TAttr result, bool inherit = false) where TAttr : class {
 
 			var attrs = type.GetCustomAttributes(typeof(TAttr), inherit);
 			if (attrs.Length == 1) {

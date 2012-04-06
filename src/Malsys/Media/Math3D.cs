@@ -115,85 +115,8 @@ namespace Malsys.Media {
 			double yaw = Math.Atan2(2 * q.Y * q.W - 2 * q.X * q.Z, 1 - 2 * sqy - 2 * sqz);
 			double pitch = Math.Asin(2 * test);
 			return new Vector3D(roll, yaw, pitch);
-
-			/******************************************************************/
-
-			//double e =q.W*q.W;
-			//double d =q.X*q.X;
-			//double c =q.Y*q.Y;
-			//double b =q.Z*q.Z;
-
-			//double Z = (Math.Atan2(2 * (q.X * q.Y + q.Z * q.W), (d - c - b + e)));
-			//double X = (Math.Atan2(2 * (q.Y * q.Z + q.X * q.W), (-d - c + b + e)));
-			//double Y = Math.Asin(MathHelper.Clamp(-2 * (q.X * q.Z - q.Y * q.W), -1, 1));
-
-			//return new Vector3D(X, Y, Z);
-
-			/******************************************************************/
-
-			//double test = q.W * q.Y - q.X * q.Z;
-
-			////// test singularities (gimbal lock) http://en.wikipedia.org/wiki/Gimbal_lock
-			//// singularity at north pole
-			////if (test > gimbalLockTreshold) {
-			////    return new Vector3D(MathHelper.PiHalf, MathHelper.PiHalf, MathHelper.PiHalf);
-			////}
-
-			////// singularity at south pole
-			////if (test < -gimbalLockTreshold) {
-			////    return new Vector3D(-2 * Math.Atan2(q.X, q.W), -MathHelper.PiHalf, 0);
-			////}
-
-			//return new Vector3D(
-			//    Math.Atan2(2 * (q.W * q.X + q.Y * q.Z), 1 - 2 * (q.X * q.X + q.Y * q.Y)),
-			//    Math.Asin(2 * test),
-			//    Math.Atan2(2 * (q.W * q.Z + q.X * q.Y), 1 - 2 * (q.Y * q.Y + q.Z * q.Z))
-			//);
-
-			/******************************************************************/
-
-			//Vector3D rotationaxes = new Vector3D();
-
-			//QuaternionRotation3D quatRotation = new QuaternionRotation3D(q);
-			//RotateTransform3D tranform = new RotateTransform3D(quatRotation);
-
-			//Vector3D forward = tranform.Transform(new Vector3D(1, 0, 0));
-			//Vector3D up = tranform.Transform(new Vector3D(0, 1, 0));
-			//rotationaxes = AngleTo(new Vector3D(), forward);
-
-			//if (rotationaxes.X.EpsilonCompareTo(MathHelper.PiHalf) == 0) {
-			//    rotationaxes.Y = Math.Atan2(up.Z, up.X);
-			//    rotationaxes.Z = 0;
-			//}
-			//else if (rotationaxes.X.EpsilonCompareTo(-MathHelper.PiHalf) == 0) {
-			//    rotationaxes.Y = Math.Atan2(-up.Z, -up.X);
-			//    rotationaxes.Z = 0;
-			//}
-			//else {
-			//    AxisAngleRotation3D r = new AxisAngleRotation3D();
-			//    r.Axis = new Vector3D(0, 1, 0);
-			//    r.Angle = -rotationaxes.Y;
-			//    tranform.Rotation = r;
-			//    tranform.Transform(up);
-
-			//    r.Axis = new Vector3D(1, 0, 0);
-			//    r.Angle = -rotationaxes.X;
-			//    tranform.Transform(up);
-
-			//    rotationaxes.Z = Math.Atan2(up.Y, -up.X);
-			//}
-
-			//return new Vector3D(rotationaxes.Z, rotationaxes.Y, rotationaxes.X);
 		}
 
-		//public static Vector3D AngleTo(Vector3D from, Vector3D location) {
-		//    Vector3D angle = new Vector3D();
-		//    Vector3D v3 = location - from;
-		//    v3.Normalize();
-		//    angle.X = Math.Asin(v3.Y);
-		//    angle.Y = Math.Atan2(-v3.Z, -v3.X);
-		//    return angle;
-		//}
 
 	}
 }

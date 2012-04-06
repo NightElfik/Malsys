@@ -1,9 +1,10 @@
-﻿@model Malsys.Web.Models.Lsystem.SimpleLsystemProcessor
+﻿@model BasicInterpretationModel
 
 @{
 	ViewBag.Title = "Symbols interpretation";
+
 	var exampleModel = new LsystemExampleViewModel() {
-		LsystemProcessor = Model,
+		LsystemProcessor = Model.SimpleLsystemProcessor,
 		UnimportantLines = new int[] { 1, -2, -1 },
 		SourceCodeTemplate = string.Join(Environment.NewLine,
 			"lsystem {0} {{",
@@ -12,6 +13,8 @@
 			"}}",
 			"process all with InterpretationDebugger;")
 	};
+
+	var processConfig = Model.StdLib.ProcessConfigurations["SvgRenderer"];
 }
 
 <h2>Symbols interpretation</h2>
@@ -19,8 +22,30 @@
 <p>
 	Next important feature after @Html.ActionLink("rewriting", MVC.Help.Home.BasicRewriting()) is interpretation of symbols.
 	Every symbol can be associated with some action.
-	The set of actions you can use is given by used process configuration.
+	The set of actions you can use is given by interpreter component in used process configuration.
 </p>
+
+<div id="toc"></div>
+
+<h3>Turtle interpreter</h3>
+
+<p>
+	Turtle Interpreter interprets symbols as basic commands for virtual "pen" on 2D canvas (or in 3D space).
+	Virtual pen is often called "turtle" (from LOGO where cybernetic turtle was controlled to draw on canvas).
+	Pen can move or draw forward, change direction, color or other attributes.
+	Interpreter can also save or load its state which allows branching.
+	The basic elements like line, circle or polygon can be rendered by renderer, more complex shapes have to be drawn using these.
+	Following list shows all actions of Turtle interpreter (withdrawn from
+		<a href="@Url.Action(MVC.Help.Predefined.Components())#@Model.Interpreter.ComponentType.FullName">components list</a>).
+</p>
+
+<ul>
+@foreach (var intMethod in Model.Interpreter.InterpretationMethods) {
+	<li>
+		<p><span class="monospace">@string.Join(", ", intMethod.Names)</span> — @intMethod.SummaryDoc</p>
+	</li>
+}
+</ul>
 
 
 <h3>Basic interpretation syntax</h3>
@@ -29,129 +54,75 @@
 	Interpret action can be associated to symbol by following syntax: <code class="malsys">interpret <i>symbol</i> as <i>action</i>;</code>.
 	All arguments from symbol are sent to interpret action.
 	Symbols with no defined action are ignored in interpretation.
-	For example symbols <code>F(1, 2) G(3)</code> with interpretation definition <code class="malsys">interpret F as DrawLine;</code>
-		will interpret as <code>DrawLine(1, 2)</code>.
+	For example symbols <code>F(1, 2) G(3)</code> with interpretation definition <code class="malsys">interpret F as DrawForward;</code>
+		will interpret as <code>DrawForward(1, 2)</code>.
 </p>
 
 @Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(
-		"InterpretationExample", "F(1, 2) G(3)", "interpret F as DrawLine;"))
+		"InterpretationExample", "F(1, 2) G(3)", "interpret F as DrawForward;"))
 
 
 <p>
 	There can be specified more than one symbol to interpret with single action using syntax:
 		<code class="malsys">interpret <i>symbol1 symbol2 symbol3</i> … as <i>action</i>;</code>.
-	For example symbols <code>C A B</code> with interpretation definition <code class="malsys">interpret A B C as DrawLine;</code>
-		will interpret as <code>DrawLine DrawLine DrawLine</code>.
+	For example symbols <code>C A B</code> with interpretation definition <code class="malsys">interpret A B C as DrawForward;</code>
+		will interpret as <code>DrawForward DrawForward DrawForward</code>.
 </p>
 
 @Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(
-		"InterpretationExample", "C A B", "interpret C A B as DrawLine;"))
+		"InterpretationExample", "C A B", "interpret C A B as DrawForward;"))
 
 
-<h3>Default parameters of action</h3>
+<h4>Default parameters of action</h4>
 
 <p>
 	Default parameters of interpretation action can be specified by following syntax: <code class="malsys">interpret symbol as action(x, y, …);</code>
 		where <code>x</code> and <code>y</code> are expressions.
 	Arguments from symbol have greater priority than default parameters.
-	For example symbols <code>F F(5) F(5, 5)</code> with interpretation definition <code class="malsys">interpret F as DrawLine(0, 1 + 1);</code>
-		will interpret as <code>DrawLine(0, 2) DrawLine(5, 2) DrawLine(5, 5)</code>.
+	For example symbols <code>F F(5) F(5, 5)</code> with interpretation definition <code class="malsys">interpret F as DrawForward(0, 1 + 1);</code>
+		will interpret as <code>DrawForward(0, 2) DrawForward(5, 2) DrawForward(5, 5)</code>.
 </p>
 
 @Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(
-		"InterpretationExample", "F F(5) F(5, 5)", "interpret F as DrawLine(0, 1 + 1);"))
+		"InterpretationExample", "F F(5) F(5, 5)", "interpret F as DrawForward(0, 1 + 1);"))
 
 
-<h3>Custom parameters of action</h3>
-
-<p>
-	Arguments from symbols can be mapped on names and used as variables in action parameters.
-	<code class="malsys">interpret symbol (a, b, …) as action(x, y, …);</code> where <code>a</code> and <code>b</code>
-	are parameter names whereas <code>x</code> and <code>y</code> are expressions.
-	For example symbols <code>F(2, 1) F(5, 7) F(2, 2, 2, 2)</code> with interpretation definition <code class="malsys">interpret F(a, b) as DrawLine(a + b);</code>
-		will interpret as <code>DrawLine(3) DrawLine(12) DrawLine(4)</code>.
-</p>
-
-@Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(
-		"InterpretationExample", "F(2, 1) F(5, 7) F(2, 2, 2, 2)", "interpret F(a, b) as DrawLine(a + b);"))
+<h4>More features</h4>
 
 <p>
-	Mapping symbol with less actual arguments than required in interpretation definition will throw an exception and process will be terminated.
-	Symbol's unmapped arguments are ignored (and lost), there is no automatic forwarding of arguments as in interpretation without argument mapping.
-	See the difference on following example.
-	Symbols <code>F F(1) F(1, 2) G(1) G(1, 2)</code> with interpretation definition
-		<code class="malsys">interpret F as DrawLine(0); interpret G(x) as MoveForward(0);</code>
-		will interpret as <code>DrawLine(0) DrawLine(1) DrawLine(1, 2) MoveForward(0) MoveForward(0)</code>
-		(symbol <code>G</code> would cause an exception).
-</p>
-
-<p>
-	Optional parameters ...
+	Full reference for symbol interpretation definition can be found on @Html.ActionLink("syntax reference page", MVC.Help.SyntaxReference.SymbolInterpretation()).
 </p>
 
 
-@*
-<h3>2D interpreter</h3>
+
+
+<h3>Rendering image</h3>
 
 <p>
-	2D interpreter interprets symbols as basic commands for pen on 2D plane.
-	Pen can move or draw forward, change direction or color.
-	Interpret can also save or load its state which allows branching.
-	The basic 2D elements like line or polygon are rendered by renderer.
-	Following list shows all actions of 2D interpreter (withdrawn from
-		<a href="@Url.Action(MVC.Help.Predefined.Components())#@Model.Type.FullName">components list</a>).
-</p>
-
-<ul>
-@foreach (var intMethod in Model.InterpretationMethods) {
-	<li>
-		<span class="monospace">@intMethod.Name</span>
-		@if(intMethod.RequiredParametersCount > 0) {
-			@string.Format("({0} required parameter(s))", intMethod.RequiredParametersCount);
-		}
-		@if(!string.IsNullOrEmpty(intMethod.Documentation)){
-			<ul class="clean"><li>@intMethod.Documentation</li></ul>
-		}
-	</li>
-}
-</ul>
-*@
-
-
-<h3>2D renderer</h3>
-
-<p>
-	Rendered accepts drawing requests from interpret and actually draws them.
-	The simplest implementation of renderer is @Html.Link("SVG", "http://en.wikipedia.org/wiki/Scalable_Vector_Graphics") renderer.
-</p>
-
-
-<h3>Specifying renderer</h3>
-
-<p>
+	Rendered component accepts drawing requests from interpret and actually draws them.
+	The basic interpreter is 2D @Html.Link("SVG", "http://en.wikipedia.org/wiki/Scalable_Vector_Graphics") renderer which renders vector images to 2D canvas.
 	Renderer is specified by process configuration.
 	There are some predefined configurations which are very simple to use.
-	If you want to render L-system with SVG renderer, just add <code class="malsys"> process with SvgRenderer;</code> clause to your definition.
+	If you want to render L-system with SVG renderer, just add <code class="malsys">process all with SvgRenderer;</code> clause to end of input file (in global scope, not in L-system).
+	This statement will render all defined L-systems with <code>SvgRenderer</code>.
+	TODO: add link to configurations list
 </p>
 
 
 <h3>Example</h3>
 
 <p>
-	Many examples can be found on @Html.ActionLink("examples page", MVC.Examples.Index()) but one little example follows.
+	Many examples can be found in @Html.ActionLink("L-systems gallery", MVC.Gallery.Index()) but one little example follows.
 </p>
 
 <pre class="malsys box">
-/**
- * The Algorithmic Beauty of Plants (figure 1.24d)
- */
 lsystem Plant {
 
 	set axiom = X;
 	let initialAngle = 90;
 	let iterations = 7;
 
-	interpret F as DrawLine(3);
+	interpret F as DrawForward(3);
 	interpret + as TurnLeft(20);
 	interpret - as TurnLeft(-20);
 	interpret [ as StartBranch;

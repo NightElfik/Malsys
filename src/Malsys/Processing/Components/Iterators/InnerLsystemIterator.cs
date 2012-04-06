@@ -27,20 +27,20 @@ namespace Malsys.Processing.Components.RewriterIterators {
 		private bool aborted = false;
 
 
-		[Alias("axiom")]
+		[AccessName("axiom")]
 		[UserSettableSybols(IsMandatory = true)]
 		public ImmutableList<Symbol<IValue>> Axiom { private get; set; }
 
 		/// <summary>
 		/// Number of current iteration. Zero-based, first iteration is 0, last is Iterations - 1.
 		/// </summary>
-		[Alias("currentIteration")]
+		[AccessName("currentIteration")]
 		[UserGettable]
 		public Constant CurrentIteration {
 			get { return currIteration.ToConst(); }
 		}
 
-		[Alias("iterations", "i")]
+		[AccessName("iterations", "i")]
 		[UserSettable]
 		public Constant Iterations {
 			set {

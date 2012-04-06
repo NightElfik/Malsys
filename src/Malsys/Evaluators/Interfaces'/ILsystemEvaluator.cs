@@ -5,7 +5,8 @@ using Malsys.SemanticModel.Evaluated;
 namespace Malsys.Evaluators {
 	public interface ILsystemEvaluator {
 
-		LsystemEvaled Evaluate(LsystemEvaledParams lsystem, IList<IValue> arguments, IExpressionEvaluatorContext exprEvalCtxt);
+		LsystemEvaled Evaluate(LsystemEvaledParams lsystem, IList<IValue> arguments, IExpressionEvaluatorContext exprEvalCtxt,
+				IBaseLsystemResolver baseResolver, IMessageLogger logger);
 
 	}
 }

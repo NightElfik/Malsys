@@ -1,4 +1,5 @@
-﻿using Malsys.Media;
+﻿using System.Windows;
+using Malsys.Media;
 
 namespace Malsys.Processing.Components.Renderers {
 	[Component("Generic 2D renderer", ComponentGroupNames.Renderers)]
@@ -10,21 +11,21 @@ namespace Malsys.Processing.Components.Renderers {
 		/// all x/y min/max variables in each measure operation (measure have to do if-then, if-then for each axis).
 		/// But with initialized values each next point point can be only min x/y xor max x/y (measure can do if-then-else).
 		/// </remarks>
-		void InitializeState(PointF point, float width, ColorF color);
+		void InitializeState(Point point, double width, ColorF color);
 
 		/// <summary>
 		/// Moves to given point with given width and color.
 		/// </summary>
-		void MoveTo(PointF point, float width, ColorF color);
+		void MoveTo(Point point, double width, ColorF color);
 
 		/// <summary>
 		/// Draws to given point with given width and color.
 		/// </summary>
-		void DrawTo(PointF point, float width, ColorF color);
+		void DrawTo(Point point, double width, ColorF color);
 
 		void DrawPolygon(Polygon2D polygon);
 
-		void DrawCircle(PointF center, float radius, ColorF color);
+		void DrawCircle(Point center, double radius, ColorF color);
 
 	}
 }

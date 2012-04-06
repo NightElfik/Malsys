@@ -5,8 +5,18 @@ namespace Malsys.Ast {
 	/// </remarks>
 	public class LsystemDefinition : NameParamsStatements<ILsystemStatement>, IInputStatement {
 
-		public LsystemDefinition(Identificator name, ImmutableListPos<OptionalParameter> prms,
-			ImmutableListPos<ILsystemStatement> statements, Position pos) : base(name, prms, statements, pos) {		}
+		public readonly bool IsAbstract;
+
+		public readonly ImmutableListPos<BaseLsystem> BaseLsystems;
+
+
+		public LsystemDefinition(Identificator name, bool isAbstract, ImmutableListPos<OptionalParameter> prms,
+				ImmutableListPos<BaseLsystem> baseLsystems, ImmutableListPos<ILsystemStatement> statements, Position pos)
+			: base(name, prms, statements, pos) {
+
+			IsAbstract = isAbstract;
+			BaseLsystems = baseLsystems;
+		}
 
 
 		public InputStatementType StatementType {

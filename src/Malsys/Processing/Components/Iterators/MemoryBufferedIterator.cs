@@ -23,6 +23,7 @@ namespace Malsys.Processing.Components.RewriterIterators {
 		private bool interpretEveryIteration;
 		private int interpretEveryIterationFrom;
 		private int iterations;
+		private bool resetAfterEachIter;
 		private int currIteration;
 
 		private Stopwatch swDuration = new Stopwatch();
@@ -34,13 +35,13 @@ namespace Malsys.Processing.Components.RewriterIterators {
 		/// <summary>
 		/// Number of current iteration. Zero-based, first iteration is 0, last is Iterations - 1.
 		/// </summary>
-		[Alias("currentIteration")]
+		[AccessName("currentIteration")]
 		[UserGettable]
 		public Constant CurrentIteration {
 			get { return currIteration.ToConst(); }
 		}
 
-		[Alias("iterations", "i")]
+		[AccessName("iterations", "i")]
 		[UserSettable]
 		public Constant Iterations {
 			set {
@@ -53,7 +54,15 @@ namespace Malsys.Processing.Components.RewriterIterators {
 			}
 		}
 
-		[Alias("interpretEveryIteration")]
+		[AccessName("resetRandomAfterEachIteration")]
+		[UserSettable]
+		public Constant ResetRandomAfterEachIteration {
+			set {
+				resetAfterEachIter = !value.IsZero;
+			}
+		}
+
+		[AccessName("interpretEveryIteration")]
 		[UserSettable]
 		public Constant InterpretEveryIteration {
 			set {
@@ -62,7 +71,7 @@ namespace Malsys.Processing.Components.RewriterIterators {
 			}
 		}
 
-		[Alias("interpretEveryIterationFrom")]
+		[AccessName("interpretEveryIterationFrom")]
 		[UserSettable]
 		public Constant InterpretEveryIterationFrom {
 			set {
@@ -187,7 +196,7 @@ namespace Malsys.Processing.Components.RewriterIterators {
 
 		private void interpret(bool measuring) {
 
-			if (RandomGeneratorProvider != null) {
+			if (resetAfterEachIter && RandomGeneratorProvider != null) {
 				RandomGeneratorProvider.Reset();
 			}
 

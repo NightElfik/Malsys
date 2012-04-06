@@ -12,7 +12,7 @@ namespace Malsys.Parsing {
 		ExcpectedParams,
 		[Message(MessageType.Error, "Function body is invalid.")]
 		FunStatementsInvalid,
-		[Message(MessageType.Error, "L-system name and optionally parameters excepted.")]
+		[Message(MessageType.Error, "L-system name, optional parameters or base L-systems are invaild.")]
 		LsystemHeaderInvalid,
 		[Message(MessageType.Error, "L-system body is invalid.")]
 		LsystemStatementsInvalid,
@@ -42,14 +42,16 @@ namespace Malsys.Parsing {
 		ProcessConfigContainerMissingDefaultType,
 
 
-		[Message(MessageType.Info, "Empty constants definition block.")]
+		[Message(MessageType.Warning, "Empty constants definition block.")]
 		EmptyRrConstsDefBlock,
-		[Message(MessageType.Info, "Empty condition block.")]
+		[Message(MessageType.Warning, "Empty condition block.")]
 		EmptyRrConditionBlock,
-		[Message(MessageType.Info, "Empty replacement block found, you can use keyword `nothing` to improve source code readability.")]
+		[Message(MessageType.Warning, "Empty replacement block.")]
 		EmptyRrReplacementBlock,
-		[Message(MessageType.Info, "Empty probability weight block.")]
+		[Message(MessageType.Warning, "Empty probability weight block.")]
 		EmptyRrProbabilityBlock,
+		[Message(MessageType.Warning, "Empty base L-systems block.")]
+		EmptyBaseLsysBlock,
 
 	}
 }

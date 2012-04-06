@@ -88,11 +88,13 @@
     <DocumentationFile>bin\Release\Malsys.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Autofac">
-      <HintPath>..\packages\Autofac.2.5.2.830\lib\NET40\Autofac.dll</HintPath>
+    <Reference Include="Autofac, Version=2.6.1.841, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Autofac.2.6.1.841\lib\NET40\Autofac.dll</HintPath>
     </Reference>
-    <Reference Include="Autofac.Configuration">
-      <HintPath>..\packages\Autofac.2.5.2.830\lib\NET40\Autofac.Configuration.dll</HintPath>
+    <Reference Include="Autofac.Configuration, Version=2.6.1.841, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Autofac.2.6.1.841\lib\NET40\Autofac.Configuration.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="FSharp.PowerPack, Version=2.0.0.0, Culture=neutral, PublicKeyToken=a19089b1c74d0809, processorArchitecture=MSIL">
@@ -134,6 +136,10 @@
     <Compile Include="Compilers\ProcessStatementsCompiler.cs" />
     <Compile Include="Compilers\RewriteRuleCompiler.cs" />
     <Compile Include="Compilers\SymbolsCompiler.cs" />
+    <Compile Include="Evaluators\Interfaces%27\IBaseLsystemResolver.cs" />
+    <Compile Include="Media\ColorParser.cs" />
+    <Compile Include="Processing\BaseLsystemResolver.cs" />
+    <Compile Include="Processing\Components\Interpreters\IInterpreter2D.cs" />
     <Compile Include="Processing\Context\ContextListBuilder.cs" />
     <Compile Include="Processing\Context\ContextListNode.cs" />
     <Compile Include="Evaluators\ExpressionEvaluatorContext.cs" />
@@ -161,6 +167,7 @@
     <Compile Include="Media\Polygon3D.cs" />
     <Compile Include="Processing\Context\ContextChecker.cs" />
     <Compile Include="Processing\Components\Rewriters\RewriterRewriteRule.cs" />
+    <Compile Include="Processing\IComponentMetadataResolver.cs" />
     <Compile Include="Processing\ProcessException.cs" />
     <Compile Include="Processing\OutputMetadataKeyHelper.cs" />
     <Compile Include="Processing\Components\Interfaces%27\ILsystemInLsystemProcessor.cs" />
@@ -170,7 +177,7 @@
     <Compile Include="Processing\ProcessConfiguration.cs" />
     <Compile Include="Reflection\Components\ComponentMetadata.cs" />
     <Compile Include="Reflection\Components\ComponentMetadataDumper.cs" />
-    <Compile Include="Processing\ComponentResolver.cs" />
+    <Compile Include="Processing\CachedComponentResolver.cs" />
     <Compile Include="Processing\Components\Common\AxiomProvider.cs" />
     <Compile Include="Processing\Components\Common\ConstantsDumper.cs" />
     <Compile Include="Processing\Components\Common\RandomGeneratorProvider.cs" />
@@ -184,7 +191,7 @@
     <Compile Include="Media\Polygon2D.cs" />
     <Compile Include="Processing\Components\Interpreters\IInterpreter3D.cs" />
     <Compile Include="Processing\Components\Interpreters\State3D.cs" />
-    <Compile Include="Processing\Components\Interpreters\Interpreter3D.cs" />
+    <Compile Include="Processing\Components\Interpreters\TurtleInterpreter.cs" />
     <Compile Include="Processing\Components\Interpreters\InterpreterCallerDebugger.cs" />
     <Compile Include="Processing\Components\Interpreters\HexaAsciiInterpreter.cs" />
     <Compile Include="Processing\Components\Renderers\BaseRenderer3D.cs" />
@@ -199,7 +206,7 @@
     <Compile Include="Processing\Components\Rewriters\SymbolRewriter.Enumerator.cs" />
     <Compile Include="Processing\Components\Interfaces%27\IProcessComponent.cs" />
     <Compile Include="Processing\Components\Interfaces%27\IProcessStarter.cs" />
-    <Compile Include="Processing\IComponentResolver.cs" />
+    <Compile Include="Processing\IComponentTypeResolver.cs" />
     <Compile Include="Processing\Output\InMemoryOutputProvider.cs" />
     <Compile Include="Processing\InterpretationException.cs" />
     <Compile Include="Processing\Output\IOutputProvider.cs" />
@@ -210,12 +217,16 @@
     <Compile Include="Reflection\Components\ComponentGettablePropertyMetadata.cs" />
     <Compile Include="Reflection\Components\ComponentCallableFunctionMetadata.cs" />
     <Compile Include="Reflection\Components\ComponentSettablePropertyMetadata.cs" />
+    <Compile Include="Reflection\Components\ComponentInterpretationMethodMetadata.cs" />
+    <Compile Include="Reflection\Components\ComponentXmlDocLoader.cs" />
     <Compile Include="Reflection\FunctionDumper.cs" />
     <Compile Include="Resources\FunctionCore.cs" />
+    <Compile Include="Resources\ResourcesHelper.cs" />
     <Compile Include="Resources\ResourcesReader.cs" />
     <Compile Include="Resources\StdConstants.cs" />
     <Compile Include="Resources\StdFunctions.cs" />
     <Compile Include="Resources\StdOperators.cs" />
+    <Compile Include="SemanticModel\Compiled\BaseLsystem.cs" />
     <Compile Include="SemanticModel\Compiled\ConstantDefinition.cs" />
     <Compile Include="SemanticModel\Compiled\Expressions\EmptyExpression.cs" />
     <Compile Include="SemanticModel\Compiled\FunctionReturnExpr.cs" />
@@ -261,10 +272,9 @@
     <Compile Include="Evaluators\ExpressionEvaluator.cs" />
     <Compile Include="Processing\Components\Interpreters\State2D.cs" />
     <Compile Include="Processing\Output\FileOutputProvider.cs" />
-    <Compile Include="Processing\Components\Interpreters\Interpreter2D.cs" />
     <Compile Include="Processing\Components\Interfaces%27\IInterpreterCaller.cs" />
     <Compile Include="Processing\Components\Interpreters\InterpreterCaller.cs" />
-    <Compile Include="Processing\Components\Interpreters\SymbolInterpretation.cs" />
+    <Compile Include="Processing\Components\SymbolInterpretationAttribute.cs" />
     <Compile Include="Processing\Components\Common\SymbolsMemoryBuffer.cs" />
     <Compile Include="Media\ColorF.cs" />
     <Compile Include="Processing\Components\Interfaces%27\IInterpreter.cs" />
@@ -308,8 +318,10 @@
     <Folder Include="SourceCode\Formatters\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
     <EmbeddedResource Include="Resources\StdLib.malsys" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

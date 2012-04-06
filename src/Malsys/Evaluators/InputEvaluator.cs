@@ -41,7 +41,7 @@ namespace Malsys.Evaluators {
 					case InputStatementType.Lsystem:
 						var ls = (Lsystem)stat;
 						var lsPrms = paramsEvaluator.Evaluate(ls.Parameters, exprEvalCtxt);
-						lsys = lsys.Add(ls.Name, new LsystemEvaledParams(ls.Name, lsPrms, ls.Statements, ls.AstNode));
+						lsys = lsys.Add(ls.Name, new LsystemEvaledParams(ls.Name, ls.IsAbstract, lsPrms, ls.BaseLsystems, ls.Statements, ls.AstNode));
 						break;
 
 					case InputStatementType.ProcessConfiguration:

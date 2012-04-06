@@ -31,10 +31,17 @@ namespace Malsys.Web.Models.Lsystem {
 			inEvaled = stdLib.JoinWith(inEvaled);
 			var outputProvider = new InMemoryOutputProvider();
 
-			processManager.ProcessInput(inEvaled, outputProvider, logger, new TimeSpan(0, 0, 1));
+			if (inEvaled.Lsystems.Count == 0) {
+				processManager.DumpConstants(inEvaled, outputProvider, logger);
+			}
+			else {
+				processManager.ProcessInput(inEvaled, outputProvider, logger, new TimeSpan(0, 0, 1));
+			}
+
 			if (logger.ErrorOccurred) {
 				return logger.Select(x => x.GetFullMessage());
 			}
+
 
 			var utfEncoding = new UTF8Encoding();
 			return outputProvider.GetOutputs().Select(x => utfEncoding.GetString(x.OutputData));

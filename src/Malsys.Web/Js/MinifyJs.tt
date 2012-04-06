@@ -30,7 +30,7 @@ string minExt = ".min.js";
 T4. Js Log
 ---------------
 <#
-// VERY VERY VERY VERY VERY IMPORTANT (otherwise all doubles will be malformed in different culture)
+// VERY IMPORTANT (otherwise all doubles will be malformed in different culture)
 System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
 
 string currentDirectory = Path.GetDirectoryName(Host.TemplateFile);

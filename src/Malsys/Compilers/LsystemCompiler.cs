@@ -1,8 +1,8 @@
-﻿using System.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Compiled;
-using System.Diagnostics;
 
 namespace Malsys.Compilers {
 	/// <remarks>
@@ -34,9 +34,24 @@ namespace Malsys.Compilers {
 		public Lsystem Compile(Ast.LsystemDefinition lsysDef, IMessageLogger logger) {
 
 			var prms = paramsCompiler.CompileList(lsysDef.Parameters, logger);
+			var baseLsys = compileBaseLsystems(lsysDef.BaseLsystems, logger);
 			var stats = compileLsystemStatements(lsysDef.Statements, logger);
 
-			return new Lsystem(lsysDef.NameId.Name, prms, stats, lsysDef);
+			return new Lsystem(lsysDef.NameId.Name, lsysDef.IsAbstract, prms, baseLsys, stats, lsysDef);
+		}
+
+
+		private ImmutableList<BaseLsystem> compileBaseLsystems(ImmutableList<Ast.BaseLsystem> baseLsys, IMessageLogger logger) {
+
+			int length = baseLsys.Length;
+			BaseLsystem[] result = new BaseLsystem[length];
+
+			for (int i = 0; i < length; i++) {
+				Ast.BaseLsystem astNode = baseLsys[i];
+				result[i] = new BaseLsystem(astNode.NameId.Name, exprCompiler.CompileList(astNode.Arguments, logger), astNode);
+			}
+
+			return new ImmutableList<BaseLsystem>(result, true);
 		}
 
 

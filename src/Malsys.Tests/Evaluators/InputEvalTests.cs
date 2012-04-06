@@ -100,6 +100,22 @@ namespace Malsys.Tests.Evaluators {
 		}
 
 		[TestMethod]
+		public void LsystemInherenceTests() {
+			doTestAutoidentOutput(
+				"lsystem c(x) extends b(1, 1), a(x) {} lsystem a {} lsystem b extends a {}",
+				"lsystem a {", "}",
+				"lsystem b extends a {", "}",
+				"lsystem c(x) extends b(1, 1), a(x) {", "}");
+		}
+
+		[TestMethod]
+		public void AbstractLsystemTests() {
+			doTestAutoidentOutput(
+				"abstract lsystem c {}",
+				"abstract lsystem c {", "}");
+		}
+
+		[TestMethod]
 		public void ProcessConfigTests() {
 			doTestAutoidentOutput(
 				"configuration c { }",
@@ -193,7 +209,7 @@ namespace Malsys.Tests.Evaluators {
 
 		private void doTest(string input, string excepted) {
 
-			var inputEvaled = TestUtils.EvaluateLsystem(input);
+			var inputEvaled = TestUtils.EvaluateInput(input);
 			var actual = TestUtils.Print(inputEvaled).TrimEnd();
 			Assert.AreEqual(excepted, actual);
 		}

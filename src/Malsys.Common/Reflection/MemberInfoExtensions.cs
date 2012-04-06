@@ -4,18 +4,23 @@ using System.Reflection;
 namespace Malsys.Reflection {
 	public static class MemberInfoExtensions {
 
-		public static IEnumerable<string> GetAliases(this MemberInfo memberInfo, bool inherit = true) {
+		/// <summary>
+		/// Returns access names for this member.
+		/// If member is marked by AccessNameAttribute the names from it are returned.
+		/// Otherwise actual member name is returned.
+		/// </summary>
+		public static IEnumerable<string> GetAccessNames(this MemberInfo memberInfo, bool inherit = false) {
 
-			bool ignoreMemberName = false;
+			bool includeMemberName = true;
 
-			foreach (AliasAttribute aliasAttr in  memberInfo.GetCustomAttributes(typeof(AliasAttribute), inherit)) {
-				ignoreMemberName |= aliasAttr.IgnoreMemberName;
+			foreach (AccessNameAttribute aliasAttr in memberInfo.GetCustomAttributes(typeof(AccessNameAttribute), false)) {
+				includeMemberName &= aliasAttr.IncludeMemberName;
 				foreach (var alias in aliasAttr.Aliases) {
 					yield return alias;
 				}
 			}
 
-			if (!ignoreMemberName) {
+			if (includeMemberName) {
 				yield return memberInfo.Name;
 			}
 

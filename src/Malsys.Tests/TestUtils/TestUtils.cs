@@ -1,9 +1,13 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using Malsys.Compilers;
 using Malsys.Evaluators;
 using Malsys.IO;
 using Malsys.Parsing;
+using Malsys.Processing;
+using Malsys.Processing.Components;
 using Malsys.Reflection;
 using Malsys.Resources;
 using Malsys.SemanticModel;
@@ -18,10 +22,36 @@ namespace Malsys.Tests {
 
 		public static readonly IExpressionEvaluatorContext ExpressionEvaluatorContext;
 
+		public static readonly InputBlockEvaled StdLib;
+
+		public static CachedComponentResolver StdResolver;
+
 
 		static TestUtils() {
 
 			ExpressionEvaluatorContext = new FunctionDumper().RegiterAllFunctions(typeof(StdFunctions), new ExpressionEvaluatorContext());
+
+
+			string resName = ResourcesHelper.StdLibResourceName;
+			var logger = new MessageLogger();
+			using (Stream stream = new ResourcesReader().GetResourceStream(resName)) {
+				using (TextReader reader = new StreamReader(stream)) {
+					var inCompiled = new CompilersContainer().CompileInput(reader, resName, logger);
+					var stdLib = new EvaluatorsContainer(TestUtils.ExpressionEvaluatorContext).EvaluateInput(inCompiled);
+					if (!logger.ErrorOccurred) {
+						StdLib = stdLib;
+					}
+				}
+			}
+
+
+			StdResolver = new CachedComponentResolver();
+			var componentsTypes = Assembly.GetAssembly(typeof(CachedComponentResolver)).GetTypes()
+				.Where(t => (t.IsClass || t.IsInterface) && (typeof(IComponent)).IsAssignableFrom(t));
+
+			foreach (var type in componentsTypes) {
+				StdResolver.RegisterComponentNameAndFullName(type, false);
+			}
 
 		}
 
@@ -156,12 +186,12 @@ namespace Malsys.Tests {
 		}
 
 
-		public static InputBlockEvaled EvaluateLsystem(InputBlock input) {
+		public static InputBlockEvaled EvaluateInput(InputBlock input) {
 
 			return new EvaluatorsContainer(ExpressionEvaluatorContext).EvaluateInput(input, ExpressionEvaluatorContext);
 		}
 
-		public static InputBlockEvaled EvaluateLsystem(string input) {
+		public static InputBlockEvaled EvaluateInput(string input) {
 
 			return new EvaluatorsContainer(ExpressionEvaluatorContext).EvaluateInput(CompileInput(input), ExpressionEvaluatorContext);
 		}
@@ -169,7 +199,15 @@ namespace Malsys.Tests {
 
 		public static LsystemEvaled EvaluateLsystem(LsystemEvaledParams lsystem) {
 
-			return new EvaluatorsContainer(ExpressionEvaluatorContext).EvaluateLsystem(lsystem, ImmutableList<IValue>.Empty, ExpressionEvaluatorContext);
+			var logger = new MessageLogger();
+			var result = new EvaluatorsContainer(ExpressionEvaluatorContext).ResolveLsystemEvaluator().Evaluate(lsystem, ImmutableList<IValue>.Empty,
+				ExpressionEvaluatorContext, new BaseLsystemResolver(), logger);
+
+			if (logger.ErrorOccurred) {
+				Console.WriteLine(logger.ToString());
+				Assert.Fail("Failed to evaluate input");
+			}
+			return result;
 		}
 
 		public static string Print(IValue val) {

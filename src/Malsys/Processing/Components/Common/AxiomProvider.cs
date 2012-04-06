@@ -6,8 +6,10 @@ namespace Malsys.Processing.Components.Common {
 	public class AxiomProvider : SymbolProvider, ISymbolProvider {
 
 
-		[Alias("axiom")]
-		[UserSettableSybols(IsMandatory = true)]
+		public AxiomProvider() : base() { }
+
+		[AccessName("axiom")]
+		[UserSettableSybols]
 		public ImmutableList<Symbol<IValue>> Axiom { set { Symbols = value; } }
 
 

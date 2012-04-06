@@ -7,7 +7,7 @@ using Malsys.SemanticModel.Evaluated;
 namespace Malsys.Tests {
 	internal class Components {
 
-		public static void RegisterAllComponents(IComponentContainer container) {
+		public static void RegisterAllComponents(IComponentTypeContainer container) {
 
 			container.RegisterComponent(typeof(EmptyComponent));
 			container.RegisterComponent(typeof(ConnectablePropertyComponent));
@@ -196,7 +196,7 @@ namespace Malsys.Tests {
 
 		public class SettablePropertyAliasesComponent : IComponent {
 
-			[Alias("iValue", "A", "b")]
+			[AccessName("iValue", "A", "b")]
 			[UserSettable]
 			public IValue IValue { private get; set; }
 

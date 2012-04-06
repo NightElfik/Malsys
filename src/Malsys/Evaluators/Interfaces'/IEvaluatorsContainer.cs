@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Malsys.SemanticModel.Evaluated;
+using Malsys.SemanticModel.Compiled;
 
 namespace Malsys.Evaluators {
 
@@ -17,42 +18,42 @@ namespace Malsys.Evaluators {
 
 	public static class IEvaluatorsContainerExtensions {
 
-		public static InputBlockEvaled EvaluateInput(this IEvaluatorsContainer container, SemanticModel.Compiled.InputBlock input) {
+		public static InputBlockEvaled EvaluateInput(this IEvaluatorsContainer container, InputBlock input) {
 			return container.ResolveInputEvaluator().Evaluate(input, container.ExpressionEvaluatorContext);
 		}
 
-		public static InputBlockEvaled EvaluateInput(this IEvaluatorsContainer container, SemanticModel.Compiled.InputBlock input,
+		public static InputBlockEvaled EvaluateInput(this IEvaluatorsContainer container, InputBlock input,
 			   IExpressionEvaluatorContext exprEvalCtxt) {
 
 			return container.ResolveInputEvaluator().Evaluate(input, exprEvalCtxt);
 		}
 
-		public static InputBlockEvaled TryEvaluateInput(this IEvaluatorsContainer container, SemanticModel.Compiled.InputBlock input,
+		public static InputBlockEvaled TryEvaluateInput(this IEvaluatorsContainer container, InputBlock input,
 				IExpressionEvaluatorContext exprEvalCtxt, IMessageLogger logger) {
 
 			try {
 				return container.ResolveInputEvaluator().Evaluate(input, exprEvalCtxt);
 			}
 			catch (EvalException ex) {
-				logger.LogMessage(Message.EvalFailed, ex.GetFullMessage());
+				logger.LogMessage(Message.LsystemEvalFailed, input.SourceName, ex.GetFullMessage());
 				return null;
 			}
 		}
 
-		public static LsystemEvaled EvaluateLsystem(this IEvaluatorsContainer container, SemanticModel.Compiled.LsystemEvaledParams input,
-				IList<IValue> arguments, IExpressionEvaluatorContext exprEvalCtxt) {
-
-			return container.ResolveLsystemEvaluator().Evaluate(input, arguments, exprEvalCtxt);
-		}
-
-		public static LsystemEvaled TryEvaluateLsystem(this IEvaluatorsContainer container, SemanticModel.Compiled.LsystemEvaledParams input,
-				IList<IValue> arguments, IExpressionEvaluatorContext exprEvalCtxt, IMessageLogger logger) {
+		public static LsystemEvaled TryEvaluateLsystem(this IEvaluatorsContainer container, LsystemEvaledParams input, IList<IValue> arguments,
+				IExpressionEvaluatorContext exprEvalCtxt, IBaseLsystemResolver baseResolver, IMessageLogger logger) {
 
 			try {
-				return container.ResolveLsystemEvaluator().Evaluate(input, arguments, exprEvalCtxt);
+				using (var errBlock = logger.StartErrorLoggingBlock()) {
+					var result = container.ResolveLsystemEvaluator().Evaluate(input, arguments, exprEvalCtxt, baseResolver, logger);
+					if (errBlock.ErrorOccurred) {
+						return null;
+					}
+					return result;
+				}
 			}
 			catch (EvalException ex) {
-				logger.LogMessage(Message.EvalFailed, ex.GetFullMessage());
+				logger.LogMessage(Message.LsystemEvalFailed, input.Name, ex.GetFullMessage());
 				return null;
 			}
 
@@ -61,8 +62,11 @@ namespace Malsys.Evaluators {
 
 		public enum Message {
 
-			[Message(MessageType.Error, "Evaluation failed. {0}")]
-			EvalFailed,
+			[Message(MessageType.Error, "Evaluation of input `{0}` failed. {1}")]
+			InputEvalFailed,
+
+			[Message(MessageType.Error, "Evaluation of L-system `{0}` failed. {1}")]
+			LsystemEvalFailed,
 
 		}
 

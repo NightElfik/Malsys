@@ -160,11 +160,22 @@ namespace Malsys.SourceCode.Printers {
 
 		public void Print(LsystemDefinition lsysDef) {
 
+			if (lsysDef.IsAbstract) {
+				Print(Keyword.Abstract);
+			}
+
 			Print(Keyword.Lsystem);
 			writer.Write(lsysDef.NameId.Name);
 			Print(lsysDef.Parameters);
+			writer.Write(" ");
 
-			writer.Write(" {");
+			if (!lsysDef.BaseLsystems.IsEmpty) {
+				Print(Keyword.Extends);
+				PrintSeparated(lsysDef.BaseLsystems, x => Print(x));
+				writer.Write(" ");
+			}
+
+			writer.Write("{");
 			writer.Indent();
 
 			foreach (var stat in lsysDef.Statements) {
@@ -176,6 +187,18 @@ namespace Malsys.SourceCode.Printers {
 			writer.NewLine();
 			writer.WriteLine("}");
 		}
+
+
+		public void Print(BaseLsystem baseLsys) {
+			writer.Write(baseLsys.NameId.Name);
+
+			if (!baseLsys.Arguments.IsEmpty) {
+				writer.Write("(");
+				PrintSeparated(baseLsys.Arguments, s => Print(s));
+				writer.Write(")");
+			}
+		}
+
 
 		public void Print(ProcessStatement processDef) {
 

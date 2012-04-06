@@ -31,7 +31,7 @@ namespace Malsys.Processing.Components.Rewriters {
 		private bool stochasticRules;
 
 
-		[Alias("contextIgnore")]
+		[AccessName("contextIgnore")]
 		[UserSettableSybols]
 		public ImmutableList<Symbol<IValue>> ContextIgnore {
 			set {
@@ -42,7 +42,7 @@ namespace Malsys.Processing.Components.Rewriters {
 			}
 		}
 
-		[Alias("startBranchSymbols")]
+		[AccessName("startBranchSymbols")]
 		[UserSettableSybols]
 		public ImmutableList<Symbol<IValue>> StartBranchSymbols {
 			set {
@@ -53,7 +53,7 @@ namespace Malsys.Processing.Components.Rewriters {
 			}
 		}
 
-		[Alias("endBranchSymbols")]
+		[AccessName("endBranchSymbols")]
 		[UserSettableSybols]
 		public ImmutableList<Symbol<IValue>> EndBranchSymbols {
 			set {

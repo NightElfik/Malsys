@@ -316,7 +316,8 @@ namespace Malsys.Processing.Components.Rewriters {
 					return rr.Replacements[0];
 				}
 
-				var weights = rr.Replacements.Select(replac => (double)eec.EvaluateAsConst(replac.Weight)).ToArray();
+				// usage of Math.Max to allow only non-negative values
+				var weights = rr.Replacements.Select(replac => Math.Max(0, (double)eec.EvaluateAsConst(replac.Weight))).ToArray();
 				double sumWeights = weights.Sum();
 				double rand = nextRandom() * sumWeights;
 				double acc = 0d;

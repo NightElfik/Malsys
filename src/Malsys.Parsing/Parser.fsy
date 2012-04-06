@@ -74,8 +74,8 @@ type ImmutableListPos_LsystemSymbol = ImmutableListPos<LsystemSymbol>
 //------------------------------------------------------------------------------
 
 %token <string> ID
-%token <Keyword> ALL AS COMPONENT CONFIGURATION CONNECT CONSIDER CONTAINER DEFAULT FUN INTERPRET LET LSYSTEM
-%token <Keyword> NOTHING OR PROCESS RETURN REWRITE SET SYMBOLS THIS TO TYPEOF USE VIRTUAL WEIGHT WITH WHERE
+%token <Keyword> ABSTRACT ALL AS COMPONENT CONFIGURATION CONNECT CONSIDER CONTAINER DEFAULT EXTENDS FUN INTERPRET LET
+%token <Keyword> LSYSTEM NOTHING OR PROCESS RETURN REWRITE SET SYMBOLS THIS TO TYPEOF USE VIRTUAL WEIGHT WITH WHERE
 %token EQUALS SEMI COMMA QMARK COLON
 %token LPAREN RPAREN LBRACE RBRACE
 %token <float * ConstantFormat> FLOAT
@@ -160,7 +160,7 @@ InputStatement:
 //------------------------------------------------------------------------------
 
 ConstDef:
-    | LET id EQUALS Expression SEMI
+    | LET Id EQUALS Expression SEMI
       { new ConstantDefinition($2, $4, getPos parseState) :> IStatement }
     | LET error SEMI
       { logMsgPos ParsserMessage.ConstDefInvalid (getPosBetween parseState 1 3);
@@ -171,9 +171,9 @@ ConstDef:
 //------------------------------------------------------------------------------
 
 FunDef:
-    | FUN id OptParamsParens FunBody
+    | FUN Id OptParamsParens FunBody
       { new FunctionDefinition($2, $3, $4, getPos parseState) :> IStatement }
-    | FUN id error FunBody
+    | FUN Id error FunBody
       { logMsgPos ParsserMessage.ExcpectedParams (getPosBetween parseState 2 4);
         new EmptyStatement(getPos parseState) :> IStatement }
 
@@ -202,11 +202,36 @@ FunStatement:
 //------------------------------------------------------------------------------
 
 LsystemDef:
-    | LSYSTEM id OptParams LsysBody
-      { new LsystemDefinition($2, $3, $4, getPos parseState) :> IInputStatement }
-    | LSYSTEM error LsysBody
-      { logMsgPos ParsserMessage.LsystemHeaderInvalid (getPosBetween parseState 1 3);
+    | OptAbstract LSYSTEM Id OptParams OptBaseLsystems LsysBody
+      { new LsystemDefinition($3, $1, $4, $5, $6, getPos parseState) :> IInputStatement }
+    | OptAbstract LSYSTEM error LsysBody
+      { logMsgPos ParsserMessage.LsystemHeaderInvalid (getPosBetween parseState 2 4);
         new EmptyStatement(getPos parseState) :> IInputStatement }
+
+OptAbstract:
+    |
+      { false }
+    | ABSTRACT
+      { true }
+
+OptBaseLsystems:
+    |
+      { ImmutableListPos<BaseLsystem>.Empty }
+    | EXTENDS
+      { logMsgPos ParsserMessage.EmptyBaseLsysBlock (getPosI parseState 1);
+        ImmutableListPos<BaseLsystem>.Empty }
+    | EXTENDS BaseLsystemListNonEmpty
+      { new ImmutableListPos<BaseLsystem>($2 :> ResizeArray<BaseLsystem>, getPos parseState) }
+
+BaseLsystemListNonEmpty:
+    | BaseLsystem
+      { let mutable x = new ResizeArray<BaseLsystem>() in x.Add($1); x }
+    | BaseLsystemListNonEmpty COMMA BaseLsystem
+      { $1.Add($3); $1 }
+
+BaseLsystem:
+    | Id OptExpressionsListParen
+      { new BaseLsystem($1, $2, getPos parseState) }
 
 LsysBody:
     | LBRACE LsysStatementsList RBRACE
@@ -238,24 +263,24 @@ LsysStatement:
       { new EmptyStatement(getPos parseState) :> ILsystemStatement }
 
 ComponentValueAssignDef:
-    | SET id EQUALS Expression SEMI
+    | SET Id EQUALS Expression SEMI
       { new ConstantDefinition($2, $4, true, getPos parseState) :> ILsystemStatement }
     | SET error SEMI
       { logMsgPos ParsserMessage.CompValueAssignDefInvalid (getPosBetween parseState 1 3);
         new EmptyStatement(getPos parseState) :> ILsystemStatement }
 
 ComponentSymbolsAssignDef:
-    | SET SYMBOLS id EQUALS LsystemSymbolList SEMI
+    | SET SYMBOLS Id EQUALS LsystemSymbolList SEMI
       { new SymbolsConstDefinition($3, $5, getPos parseState) :> ILsystemStatement }
     | SET SYMBOLS error SEMI
       { logMsgPos ParsserMessage.CompSymbolsAssignDefInvalid (getPosBetween parseState 1 4);
         new EmptyStatement(getPos parseState) :> ILsystemStatement }
 
 SymbolsInterpretDef:
-    | INTERPRET LsystemSymbolNoParamsList OptParams AS id OptExpressionsListParen SEMI
+    | INTERPRET LsystemSymbolNoParamsList OptParams AS Id OptExpressionsListParen SEMI
       { let symbolsImm = new ImmutableListPos<Identificator>($2 :> ResizeArray<Identificator>, getPosI parseState 2) in
         new SymbolsInterpretDef(symbolsImm, $3, $5, $6, getPos parseState) :> ILsystemStatement }
-    | INTERPRET LsystemSymbolNoParamsList OptParams AS LSYSTEM id OptExpressionsListParen OptWithId SEMI
+    | INTERPRET LsystemSymbolNoParamsList OptParams AS LSYSTEM Id OptExpressionsListParen OptWithId SEMI
       { let symbolsImm = new ImmutableListPos<Identificator>($2 :> ResizeArray<Identificator>, getPosI parseState 2) in
         new SymbolsInterpretDef(symbolsImm, $3, $6, $7, true, $8, getPos parseState) :> ILsystemStatement }
     | INTERPRET error SEMI
@@ -265,7 +290,7 @@ SymbolsInterpretDef:
 OptWithId:
     |
       { Identificator.Empty }
-    | WITH id
+    | WITH Id
       { $2 }
 
 //------------------------------------------------------------------------------
@@ -355,7 +380,7 @@ OptRrWeight:
 
 
 RrExprConst:
-    | id EQUALS Expression
+    | Id EQUALS Expression
       { new ConstantDefinition($1, $3, getPos parseState) }
 
 RrLocalConstsListNonEmpty:
@@ -441,9 +466,9 @@ OptParamsListNonEmpty:
       { $1.Add($3); $1 }
 
 OptParam:
-    | id
+    | Id
       { new OptionalParameter($1, Expression.Empty, getPos parseState) }
-    | id EQUALS Expression
+    | Id EQUALS Expression
       { new OptionalParameter($1, $3, getPos parseState) }
 
 
@@ -472,7 +497,7 @@ ExprMember:
     | FLOAT
       { let (value, format) = $1 in
         new FloatConstant(value, format, getPos parseState) :> IExpressionMember }
-    | id
+    | Id
       { $1 :> IExpressionMember }
     | ExpressionsArray
       { $1 :> IExpressionMember }
@@ -509,7 +534,7 @@ ExprIndexer:
     | LBRACK Expression RBRACK
       { new ExpressionIndexer($2, getPos parseState) }
 
-// explicit ID to avoid shift/reduce conflict, don't know how to do just with `id` (already tried `%prec ID` in many places)
+// explicit ID to avoid shift/reduce conflict, don't know how to do just with `Id` (already tried `%prec ID` in many places)
 ExprFun:
     | ID LPAREN ExpressionsList RPAREN
       { let id = new Identificator($1, getPos parseState) in
@@ -527,7 +552,7 @@ ExprParen:
 
 
 ProcessConfig:
-    | CONFIGURATION id ProcessConfigBody
+    | CONFIGURATION Id ProcessConfigBody
       { new ProcessConfigurationDefinition($2, $3, getPos parseState) }
 
 ProcessConfigBody:
@@ -555,18 +580,18 @@ ProcessConfigStatement:
 
 
 ProcessComponentDef:
-    | COMPONENT id TYPEOF FullyQualifiedTypeId SEMI
+    | COMPONENT Id TYPEOF FullyQualifiedTypeId SEMI
       { new ProcessComponent($2, $4, getPos parseState) }
 
 ProcessContainerDef:
-    | CONTAINER id TYPEOF FullyQualifiedTypeId DEFAULT FullyQualifiedTypeId SEMI
+    | CONTAINER Id TYPEOF FullyQualifiedTypeId DEFAULT FullyQualifiedTypeId SEMI
       { new ProcessContainer($2, $4, $6, getPos parseState) :> IProcessConfigStatement }
-    | CONTAINER id TYPEOF FullyQualifiedTypeId SEMI
+    | CONTAINER Id TYPEOF FullyQualifiedTypeId SEMI
       { logMsgPos ParsserMessage.ProcessConfigContainerMissingDefaultType (getPosBetween parseState 4 5);
         new EmptyStatement(getPos parseState) :> IProcessConfigStatement }
 
 ProcessConfigConnection:
-    | OptVirtual CONNECT id TO id DOT id SEMI
+    | OptVirtual CONNECT Id TO Id DOT Id SEMI
       { new ProcessConfigConnection($1, $3, $5, $7, getPos parseState) }
 
 OptVirtual:
@@ -588,14 +613,14 @@ FullyQualifiedTypeId:
 //------------------------------------------------------------------------------
 
 ProcessStatement:
-    | PROCESS AllOrId OptExpressionsListParen WITH id ProcessComponentAssignmentList SEMI
+    | PROCESS AllOrId OptExpressionsListParen WITH Id ProcessComponentAssignmentList SEMI
       { let statements = new ImmutableListPos<ProcessComponentAssignment>($6 :> ResizeArray<ProcessComponentAssignment>, getPos parseState)
         new ProcessStatement($2, $3, $5, statements, getPos parseState) :> IInputStatement }
 
 AllOrId:
     | ALL
       { Identificator.Empty }
-    | id
+    | Id
       { $1 }
 
 ProcessComponentAssignmentList:
@@ -605,14 +630,14 @@ ProcessComponentAssignmentList:
       { $1.Add($2); $1 }
 
 ProcessComponentAssignment:
-    | USE FullyQualifiedTypeId AS id
+    | USE FullyQualifiedTypeId AS Id
       { new ProcessComponentAssignment($2, $4, getPos parseState) }
 
 //------------------------------------------------------------------------------
 // Other.
 //------------------------------------------------------------------------------
 
-id:
+Id:
     | ID
       { new Identificator($1, getPos parseState) }
 
@@ -623,7 +648,7 @@ IdsCommaList:
       { new ImmutableListPos<Identificator>($1 :> ResizeArray<Identificator>, getPos parseState) }
 
 IdsCommaListNonEmpty:
-    | id
+    | Id
       { let mutable x = new ResizeArray<Identificator>() in x.Add($1); x }
-    | IdsCommaListNonEmpty COMMA id
+    | IdsCommaListNonEmpty COMMA Id
       { $1.Add($3); $1 }

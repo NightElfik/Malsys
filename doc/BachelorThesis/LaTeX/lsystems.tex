@@ -4,7 +4,6 @@
 History of \lsystem was mentioned in introduction.
 This chapter will describe \lsystem formally.
 First we will describe \lsystem in general and then we describe some special features of \lsystem.
-At the end of chapter will be List of related works.
 
 
 \section{Formal definition of \lsystem}
@@ -21,9 +20,10 @@ For any symbol $s \in \Sigma$ which does not appear on the left hand side of any
 These symbols are called constants or terminals.
 
 Formal definition of \lsystem is similar to deterministic context-free grammar but there are few differences.
-In grammar we distinguishes terminal and non-terminal symbols, but in \lsystems we do not define them explicitly (we define identity rewrite rule for terminal symbols in \lsystems.
-Next difference is in initial state.
+In grammar we distinguishes terminal and non-terminal symbols, but in \lsystems we do not define them explicitly (we define identity rewrite rule for terminal symbols in \lsystems).
+Next difference is in initial string.
 In grammar we have only one symbol as initial state but \lsystem allows non-empty word.
+The biggest difference is in rewriting principles which is described is following section.
 
 
 \subsection{Rewriting principles of \lsystem}
@@ -37,7 +37,7 @@ There is only one way how to rewrite iteration thus rewriting is deterministic.
 
 Rewriting of symbols is parallel (all symbols are rewritten at once).
 This means that if some symbol is rewritten, resulting symbols are not rewritten again in the same iteration.
-Example?
+[Example]
 
 Described rewriting mechanics distinguishes \lsystem and formal grammar.
 In grammar there is not mandatory to rewrite all possible symbols.
@@ -84,19 +84,19 @@ process all with SymbolPrinter;
 \end{table}
 
 \lsystem in figure \ref{fig:rrExample} has also some interesting properties.
-String of symbols in every iteration (expect the axiom) is suffix of following string in next iteration.
+String of symbols in every iteration (expect the axiom) is suffix of string in following iteration.
 Also count of symbols in iterations gives Fibonacci sequence\footnote{Fibonacci sequence is defined by following the recurrence relation $F_n = F_{n-1} + F_{n-2}$ where $F_0 = F_1 = 1$.} 1, 1, 2, 3, 5, 8, 13,~...
 
 \subsection{Interpretation of \lsystem symbols}
 
 Result of \lsystem rewriting is string of symbols, we can interpret symbols in any way we want.
-Most common and the simplest interpretation of \lsystem symbols is interpret symbols as 2D graphics elements like lines or polygons.
+Most common and the simplest interpretation of \lsystem symbols is interpret them as 2D graphics elements like lines or polygons.
 The first who came with this type of interpretation was Przemyslaw Prusinkiewicz who interpreted \lsystem symbols with Logo-like turtle~\cite{Pru85}.
 Logo is programming language that controls cybernetic turtle which is drawing on 2D canvas.
 This can be easily extended into 3D.
 
-Interpretation of symbols can arbitrary.
-Symbols can be interpreted as music~\cite{HCJ99, Man06}.
+Interpretation of symbols can arbitrary. [maybe write something more here]
+%Symbols can be interpreted as music~\cite{HCJ99, Man06}.
 
 
 \section{\lsystem features}
@@ -145,11 +145,11 @@ process all with SvgRenderer;
 \end{figure}
 
 
-
+%\newpage
 \subsection{Branching system}
 
 \begin{wrapfigure}{r}{0.32\textwidth}
-	\vspace{-40pt}
+	\vspace{-50pt}
 	\begin{center}
 	\includegraphics[width=0.3\textwidth]{Branching}
 	\end{center}
@@ -255,7 +255,7 @@ process all with SvgRenderer;
 	\label{fig:randExample}
 \end{figure}
 
-
+\begin{comment}
 \subsection{Context rewriting}
 
 \newcommand{\onelsystems}{\mbox{1L-systems}\xspace}
@@ -375,6 +375,7 @@ Arguments can be also used in rewrite rules to determine whether rewrite symbol 
 In context \twolsystems is also possible to get arguments from symbols in context and use them in rewrite rule.
 
 
+\end{comment}
 
 
 

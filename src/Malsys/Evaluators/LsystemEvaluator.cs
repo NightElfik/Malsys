@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Linq;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Compiled;
@@ -21,14 +22,25 @@ namespace Malsys.Evaluators {
 		}
 
 
-		public LsystemEvaled Evaluate(LsystemEvaledParams lsystem, IList<IValue> arguments, IExpressionEvaluatorContext exprEvalCtxt) {
+		/// <remarks>
+		/// May throw EvalException on evaluation error while evaluating some expression.
+		/// </remarks>
+		public LsystemEvaled Evaluate(LsystemEvaledParams lsystem, IList<IValue> arguments, IExpressionEvaluatorContext exprEvalCtxt,
+				IBaseLsystemResolver baseResolver, IMessageLogger logger) {
+
+			return evaluate(lsystem, arguments, exprEvalCtxt, baseResolver, new List<LsystemEvaledParams>(), logger);
+
+		}
+
+		private LsystemEvaled evaluate(LsystemEvaledParams lsystem, IList<IValue> arguments, IExpressionEvaluatorContext exprEvalCtxt,
+				IBaseLsystemResolver baseResolver, List<LsystemEvaledParams> derivedLsystems, IMessageLogger logger) {
+
 
 			if (lsystem.Parameters.Length < arguments.Count) {
-				throw new EvalException("Failed to evaluate L-system `{0}`. It takes only {1} parameters but {2} arguments were given."
-					.Fmt(lsystem.AstNode.NameId.Name, lsystem.Parameters.Length, arguments.Count));
+				logger.LogMessage(Message.TooManyArgs, lsystem.Name, lsystem.Parameters.Length, arguments.Count);
 			}
 
-			// add arguments as new constants
+			var originalExprEvalCtxt = exprEvalCtxt;  // save original context for evaluation of all base L-systems
 			for (int i = 0; i < lsystem.Parameters.Length; i++) {
 				IValue value;
 				if (lsystem.Parameters[i].IsOptional) {
@@ -39,8 +51,8 @@ namespace Malsys.Evaluators {
 						value = arguments[i];
 					}
 					else {
-						throw new EvalException("Failed to evaluate L-system `{0}`. {1}. parameter is not optional and only {2} values given."
-							.Fmt(lsystem.AstNode.NameId.Name, i + 1, arguments.Count));
+						logger.LogMessage(Message.TooManyArgs, lsystem.AstNode.NameId.Name, i + 1, arguments.Count);
+						return null;
 					}
 				}
 
@@ -50,6 +62,41 @@ namespace Malsys.Evaluators {
 			var valAssigns = MapModule.Empty<string, IValue>();
 			var symAssigns = MapModule.Empty<string, ImmutableList<Symbol<IValue>>>();
 			var symsInt = MapModule.Empty<string, SymbolInterpretationEvaled>();
+			var derivedRrRules = new List<RewriteRule>();
+
+			// evaluate base L-systems
+			var baseLsystems = new LsystemEvaled[lsystem.BaseLsystems.Length];
+			derivedLsystems.Add(lsystem);
+			var argumentsExprEvalCtxt = exprEvalCtxt;  // save arguments context for evaluation of all base L-systems
+
+			for (int i = 0; i < baseLsystems.Length; i++) {
+				var args = argumentsExprEvalCtxt.EvaluateList(lsystem.BaseLsystems[i].Arguments);
+				var baseLsystemCompiled = baseResolver.Resolve(lsystem.BaseLsystems[i].Name, logger);
+				if (baseLsystemCompiled == null) {
+					return null;
+				}
+				if (derivedLsystems.Contains(baseLsystemCompiled)) {
+					logger.LogMessage(Message.InherenceCycle, lsystem.Name);
+					return null;
+				}
+				var baseLsystem = evaluate(baseLsystemCompiled, args, originalExprEvalCtxt, baseResolver, derivedLsystems, logger);
+				if (baseLsystem == null) {
+					return null;
+				}
+				baseLsystems[i] = baseLsystem;
+
+				// merge current L-system with base L-system
+				valAssigns = valAssigns.AddRange(baseLsystem.ComponentValuesAssigns);
+				symAssigns = symAssigns.AddRange(baseLsystem.ComponentSymbolsAssigns);
+				symsInt = symsInt.AddRange(baseLsystem.SymbolsInterpretation);
+				exprEvalCtxt = exprEvalCtxt.MergeWith(baseLsystem.ExpressionEvaluatorContext);
+				// add rewrite rules in reverse order
+				var newRrList = baseLsystem.RewriteRules.ToList();
+				newRrList.AddRange(derivedRrRules);
+				derivedRrRules = newRrList;
+			}
+
+			var baseLsystemsImm = new ImmutableList<LsystemEvaled>(baseLsystems, true);
 			var rRules = new List<RewriteRule>();
 
 			// statements evaluation
@@ -86,10 +133,6 @@ namespace Malsys.Evaluators {
 						var symInt = (SymbolsInterpretation)stat;
 						var symIntPrms = paramsEvaluator.Evaluate(symInt.Parameters, exprEvalCtxt);
 						foreach (var sym in symInt.Symbols) {
-							if (symsInt.ContainsKey(sym.Name)) {
-								throw new EvalException("More than one interpretation method defined for symbol `{0}` (`{1}` and `{2}`)."
-									.Fmt(sym.Name, symInt.InstructionName, symsInt[sym.Name].InstructionName));
-							}
 							symsInt = symsInt.Add(sym.Name, new SymbolInterpretationEvaled(sym.Name, symIntPrms, symInt.InstructionName,
 								symInt.InstructionParameters, symInt.InstructionIsLsystemName, symInt.LsystemConfigName, symInt.AstNode));
 						}
@@ -102,8 +145,26 @@ namespace Malsys.Evaluators {
 				}
 			}
 
-			return new LsystemEvaled(lsystem.Name, exprEvalCtxt, valAssigns, symAssigns, symsInt, rRules.ToImmutableList(), lsystem.AstNode);
+			rRules.AddRange(derivedRrRules);
+
+			return new LsystemEvaled(lsystem.Name, lsystem.IsAbstract, baseLsystemsImm, exprEvalCtxt,
+				valAssigns, symAssigns, symsInt, rRules.ToImmutableList(), lsystem.AstNode);
 		}
+
+
+		public enum Message {
+
+			[Message(MessageType.Error, "Not enough arguments supplied to evaluation of L-system `{0}`."
+				+ " {1}. parameter is not optional and only {2} values given.")]
+			NotEnoughArgs,
+			[Message(MessageType.Error, "Cycle in inherence found while evaluating L-system `{0}`.")]
+			InherenceCycle,
+
+			[Message(MessageType.Warning, "L-system `{0}` takes only {1} parameters but {2} arguments were given.")]
+			TooManyArgs,
+
+		}
+
 
 	}
 }

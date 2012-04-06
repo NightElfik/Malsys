@@ -386,8 +386,15 @@ ol.lAlpha { list-style-type: lower-alpha; }
 		span.c { display: none; }
 		span.u { display: block; }
 	}
+	&:hover { text-decoration: underline; }  /* simulate link */
 }
 
+
+/* TOC ====================================================================== */
+
+#toc {
+	&.collapsed { height: 1.5em; overflow: hidden;  }
+}
 
 /* Source code ============================================================== */
 
@@ -404,7 +411,6 @@ pre {
 	a:hover { text-decoration: underline; color: @srcColor; }
 	.lsysTryMe { right: 8px; border-bottom: none; }
 	.collapseSwitch { right: 96px; }
-	.collapseSwitch:hover { text-decoration: underline; }
 	&.collapsed { height: 1.5em; overflow: hidden;  }
 }
 

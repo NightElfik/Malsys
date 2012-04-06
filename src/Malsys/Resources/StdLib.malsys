@@ -1,29 +1,83 @@
-﻿/**
- * Malsys standard library.
- */
+﻿//==============================================================================
+// Malsys standard library.
+//==============================================================================
 
 //------------------------------------------------------------------------------
 // Constants.
 //------------------------------------------------------------------------------
 
 let pi = 3.14159265358979323846;
-let Pi = pi;
 let π = pi;
 
-let tau = 2 * pi;
-let Tau = tau;
-let τ = tau;
-
-let piHalf = pi / 2;
-let PiHalf = piHalf;
-let pi_half = piHalf;
-
 let e = 2.7182818284590452354;
-let E = e;
 
-let goldenRatio = (1 + sqrt(5)) / 2;
-let GoldenRatio = goldenRatio;
-let golden_ratio = goldenRatio;
+
+//------------------------------------------------------------------------------
+// Abstract L-systems (for inherence).
+//------------------------------------------------------------------------------
+
+abstract lsystem StdLsystem {
+
+	interpret A B C D E F G as DrawForward(8);
+	interpret a b c d e f g as MoveForward(8);
+
+	interpret + as TurnLeft(90);
+	interpret -(x = 90) as TurnLeft(-x);
+	interpret | as TurnLeft(180);
+	interpret / as Roll(180);  // switches meaning of + and - symbols
+
+	interpret < as StartPolygon;
+	interpret . as RecordPolygonVertex;
+	interpret > as EndPolygon;
+
+
+	set symbols startBranchSymbols = [;
+	set symbols endBranchSymbols = ];
+
+	interpret [ as StartBranch;
+	interpret ] as EndBranch;
+
+}
+
+abstract lsystem StdLsystem3D {
+
+	interpret A B C D E F G as DrawForward(8);
+	interpret a b c d e f g as MoveForward(8);
+
+	interpret + as Yaw(90);
+	interpret -(x = 90) as Yaw(-x);
+
+	interpret ^ as Pitch(90);
+	interpret &(x = 90) as Pitch(-x);
+
+	interpret / as Roll(90);
+	interpret \(x = 90) as Roll(-x);
+
+	interpret < as StartPolygon;
+	interpret . as RecordPolygonVertex;
+	interpret > as EndPolygon;
+
+
+	set symbols startBranchSymbols = [;
+	set symbols endBranchSymbols = ];
+
+	interpret [ as StartBranch;
+	interpret ] as EndBranch;
+
+
+}
+
+
+abstract lsystem Branches {
+
+	// to allow rewriter recognize branches and check context correctly
+	set symbols startBranchSymbols = [;
+	set symbols endBranchSymbols = ];
+
+	interpret [ as StartBranch;
+	interpret ] as EndBranch;
+
+}
 
 
 //------------------------------------------------------------------------------
@@ -56,7 +110,7 @@ configuration SvgRenderer {
 	container Rewriter typeof IRewriter default SymbolRewriter;
 	container Iterator typeof IIterator default MemoryBufferedIterator;
 	container InterpreterCaller typeof IInterpreterCaller default InterpreterCaller;
-	container Interpreter typeof IInterpreter default Interpreter2D;
+	container Interpreter typeof IInterpreter default TurtleInterpreter;
 	container Renderer typeof IRenderer default SvgRenderer2D;
 
 	connect RandomGeneratorProvider to Iterator.RandomGeneratorProvider;
@@ -104,7 +158,7 @@ configuration ThreeJsRenderer {
 	container Rewriter typeof IRewriter default SymbolRewriter;
 	container Iterator typeof IIterator default MemoryBufferedIterator;
 	container InterpreterCaller typeof IInterpreterCaller default InterpreterCaller;
-	container Interpreter typeof IInterpreter default Interpreter3D;
+	container Interpreter typeof IInterpreter default TurtleInterpreter;
 	container Renderer typeof IRenderer default ThreeJsSceneRenderer3D;
 
 	connect RandomGeneratorProvider to Iterator.RandomGeneratorProvider;

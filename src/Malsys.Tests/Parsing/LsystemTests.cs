@@ -42,49 +42,49 @@ namespace Malsys.Tests.Parsing {
 
 		[TestMethod]
 		public void RewriteRuleStatementsTests() {
-			doTestAutoident("lsystem l {", "rewrite X", "\tto nothing;", "}");
-			doTestAutoident("lsystem l {", "rewrite X", "\twith x = 0", "\tto nothing;", "}");
-			doTestAutoident("lsystem l {", "rewrite X", "\twith x = 0, y = {x}", "\tto nothing;", "}");
-			doTestAutoident("lsystem l {", "rewrite X", "\twhere x > 0", "\tto nothing;", "}");
-			doTestAutoident("lsystem l {", "rewrite X", "\tto nothing weight 0;", "}");
-			doTestAutoident("lsystem l {", "rewrite X", "\tto nothing weight 0", "\tor to nothing weight 0;", "}");
+			doTestAutoident("lsystem l {", "rewrite X", "to nothing;", "}");
+			doTestAutoident("lsystem l {", "rewrite X", "with x = 0", "to nothing;", "}");
+			doTestAutoident("lsystem l {", "rewrite X", "with x = 0, y = {x}", "to nothing;", "}");
+			doTestAutoident("lsystem l {", "rewrite X", "where x > 0", "to nothing;", "}");
+			doTestAutoident("lsystem l {", "rewrite X", "to nothing weight 0;", "}");
+			doTestAutoident("lsystem l {", "rewrite X", "to nothing weight 0", "or to nothing weight 0;", "}");
 			doTestAutoident("lsystem l {", "rewrite X",
-				"\twith x = 0, y = x + 1, z = {x, z}",
-				"\twhere x > 0 && z[0] == x",
-				"\tto X Y Z weight 0",
-				"\tor to nothing weight 0",
-				"\tor to + - * weight 0;", "}");
+				"with x = 0, y = x + 1, z = {x, z}",
+				"where x > 0 && z[0] == x",
+				"to X Y Z weight 0",
+				"or to nothing weight 0",
+				"or to + - * weight 0;", "}");
 		}
 
 		[TestMethod]
 		public void RewriteRuleContextTests() {
-			doTestAutoidentOutput("lsystem l {rewrite {} X to nothing;}", "lsystem l {", "rewrite X", "\tto nothing;", "}");
-			doTestAutoident("lsystem l {", "rewrite {L(x) c T x(_, x) T} X", "\tto nothing;", "}");
+			doTestAutoidentOutput("lsystem l {rewrite {} X to nothing;}", "lsystem l {", "rewrite X", "to nothing;", "}");
+			doTestAutoident("lsystem l {", "rewrite {L(x) c T x(_, x) T} X", "to nothing;", "}");
 
-			doTestAutoidentOutput("lsystem l {rewrite X {} to nothing;}", "lsystem l {", "rewrite X", "\tto nothing;", "}");
-			doTestAutoident("lsystem l {", "rewrite X {R(x) c T x(_, x) T}", "\tto nothing;", "}");
+			doTestAutoidentOutput("lsystem l {rewrite X {} to nothing;}", "lsystem l {", "rewrite X", "to nothing;", "}");
+			doTestAutoident("lsystem l {", "rewrite X {R(x) c T x(_, x) T}", "to nothing;", "}");
 
-			doTestAutoident("lsystem l {", "rewrite {L} X {R}", "\tto nothing;", "}");
-			doTestAutoident("lsystem l {", "rewrite {L(_)} X(_, _) {R(_)}", "\tto nothing;", "}");
+			doTestAutoident("lsystem l {", "rewrite {L} X {R}", "to nothing;", "}");
+			doTestAutoident("lsystem l {", "rewrite {L(_)} X(_, _) {R(_)}", "to nothing;", "}");
 		}
 
 		[TestMethod]
 		public void RewriteRulePatternTests() {
-			doTestAutoident("lsystem l {", "rewrite x", "\tto nothing;", "}");
-			doTestAutoident("lsystem l {", "rewrite A", "\tto nothing;", "}");
-			doTestAutoident("lsystem l {", "rewrite +", "\tto nothing;", "}");
-			doTestAutoident("lsystem l {", "rewrite |", "\tto nothing;", "}");
-			doTestAutoidentOutput("lsystem l {rewrite X() to nothing;}", "lsystem l {", "rewrite X", "\tto nothing;", "}");
-			doTestAutoident("lsystem l {", "rewrite X(a, b, c')", "\tto nothing;", "}");
-			doTestAutoident("lsystem l {", "rewrite X(_, x)", "\tto nothing;", "}");
+			doTestAutoident("lsystem l {", "rewrite x", "to nothing;", "}");
+			doTestAutoident("lsystem l {", "rewrite A", "to nothing;", "}");
+			doTestAutoident("lsystem l {", "rewrite +", "to nothing;", "}");
+			doTestAutoident("lsystem l {", "rewrite |", "to nothing;", "}");
+			doTestAutoidentOutput("lsystem l {rewrite X() to nothing;}", "lsystem l {", "rewrite X", "to nothing;", "}");
+			doTestAutoident("lsystem l {", "rewrite X(a, b, c')", "to nothing;", "}");
+			doTestAutoident("lsystem l {", "rewrite X(_, x)", "to nothing;", "}");
 		}
 
 		[TestMethod]
 		public void RewriteRuleReplacementTests() {
-			doTestAutoident("lsystem l {", "rewrite X", "\tto + - A * C;", "}");
-			doTestAutoident("lsystem l {", "rewrite X", "\tto +(a) -(b + c) A( - d) *(1 * 2) C(C);", "}");
-			doTestAutoident("lsystem l {", "rewrite X", "\tto &(func(a));", "}");
-			doTestAutoident("lsystem l {", "rewrite X", "\tto &({1 & 2});", "}");
+			doTestAutoident("lsystem l {", "rewrite X", "to + - A * C;", "}");
+			doTestAutoident("lsystem l {", "rewrite X", "to +(a) -(b + c) A( - d) *(1 * 2) C(C);", "}");
+			doTestAutoident("lsystem l {", "rewrite X", "to &(func(a));", "}");
+			doTestAutoident("lsystem l {", "rewrite X", "to &({1 & 2});", "}");
 		}
 
 		[TestMethod]
@@ -95,20 +95,39 @@ namespace Malsys.Tests.Parsing {
 			doTestAutoident("lsystem l {", "interpret X Y Z as Action(0, 1, 2);", "interpret x as Action(x);", "}");
 		}
 
+		[TestMethod]
+		public void LsystemInherenceTests() {
+			doTestAutoident("lsystem l extends x {", "}");
+			doTestAutoident("lsystem l extends x, y {", "}");
+			doTestAutoidentOutput("lsystem l() extends a(), b() { }", "lsystem l extends a, b {", "}");
+			doTestAutoident("lsystem l extends x(a, b), y {", "}");
+			doTestAutoident("lsystem l extends x(a, b), y(d, e), z {", "}");
+		}
+
+		[TestMethod]
+		public void AbstractLsystemTests() {
+			doTestAutoident("abstract lsystem l {", "}");
+		}
+
+
+		private void autoIndent(string[] lines) {
+			for (int i = 1; i < lines.Length - 1; i++) {
+				if (lines[i].StartsWith("to ") || lines[i].StartsWith("or ") || lines[i].StartsWith("with ") || lines[i].StartsWith("where ")) {
+					lines[i] = "\t" + lines[i];
+				}
+				lines[i] = "\t" + lines[i];
+			}
+		}
 
 		private void doTestAutoident(params string[] inputLines) {
-			for (int i = 1; i < inputLines.Length - 1; i++) {
-				inputLines[i] = "\t" + inputLines[i];
-			}
+			autoIndent(inputLines);
 
 			string input = string.Join(Environment.NewLine, inputLines);
 			doTest(input, input);
 		}
 
 		private void doTestAutoidentOutput(string input, params string[] outputLines) {
-			for (int i = 1; i < outputLines.Length - 1; i++) {
-				outputLines[i] = "\t" + outputLines[i];
-			}
+			autoIndent(outputLines);
 
 			string output = string.Join(Environment.NewLine, outputLines);
 			doTest(input, output);

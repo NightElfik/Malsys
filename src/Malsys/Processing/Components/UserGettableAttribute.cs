@@ -10,9 +10,8 @@ namespace Malsys.Processing.Components {
 	/// <remarks>
 	/// Marked property must have public getter.
 	/// Property type must be assignable to IValue.
-	/// Attribute inherence do not work on properties in interface, do not forget to add it to derived types too.
 	/// </remarks>
-	[AttributeUsage(AttributeTargets.Property, Inherited = true, AllowMultiple = false)]
+	[AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
 	public sealed class UserGettableAttribute : Attribute {
 
 		public bool IsGettableBeforeInitialiation { get; set; }

@@ -5,12 +5,13 @@ using Malsys.SemanticModel;
 using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Collections;
 using System;
+using System.Windows;
 
 namespace Malsys.Processing.Components.Renderers {
 	[Component("2D SVG renderer", ComponentGroupNames.Renderers)]
 	public class SvgRenderer2D : IRenderer2D {
 
-		private const float invertY = -1;
+		private const double invertY = -1;
 		public const string SvgFileExtension = ".svg";
 		public const string SvgzFileExtension = ".svgz";
 
@@ -22,15 +23,15 @@ namespace Malsys.Processing.Components.Renderers {
 		private Stream outputStream;
 		private TextWriter writer;
 
-		private float lastX, lastY;
-		private float lastWidth;
+		private double lastX, lastY;
+		private double lastWidth;
 		private ColorF lastColor;
 
 		private bool compress = true;  // compress by default
 
-		private float marginT = 2, marginR = 2, marginB = 2, marginL = 2;
-		private float measuredMinX, measuredMinY, measuredMaxX, measuredMaxY;
-		private float minX, minY, maxX, maxY;
+		private double marginT = 2, marginR = 2, marginB = 2, marginL = 2;
+		private double measuredMinX, measuredMinY, measuredMaxX, measuredMaxY;
+		private double minX, minY, maxX, maxY;
 
 
 		public SvgRenderer2D() {
@@ -50,27 +51,27 @@ namespace Malsys.Processing.Components.Renderers {
 		public string SvgFooter { get; set; }
 
 
-		[Alias("margin")]
+		[AccessName("margin")]
 		[UserSettable]
 		public IValue Margin {
 			set {
 				if (value.IsConstant) {
-					marginT = marginR = marginB = marginL = (float)((Constant)value).Value;
+					marginT = marginR = marginB = marginL = ((Constant)value).Value;
 				}
 				else if (value.IsArray) {
 					var arr = (ValuesArray)value;
 					if (arr.IsConstArrayOfLength(1)) {
-						marginT = marginR = marginB = marginL = (float)arr[0].ConstOrDefault();
+						marginT = marginR = marginB = marginL = arr[0].ConstOrDefault();
 					}
 					else if (arr.IsConstArrayOfLength(2)) {
-						marginT = marginB = (float)arr[0].ConstOrDefault();
-						marginR = marginL = (float)arr[1].ConstOrDefault();
+						marginT = marginB = arr[0].ConstOrDefault();
+						marginR = marginL = arr[1].ConstOrDefault();
 					}
 					else if (arr.IsConstArrayOfLength(4)) {
-						marginT = (float)arr[0].ConstOrDefault();
-						marginR = (float)arr[1].ConstOrDefault();
-						marginB = (float)arr[2].ConstOrDefault();
-						marginL = (float)arr[3].ConstOrDefault();
+						marginT = arr[0].ConstOrDefault();
+						marginR = arr[1].ConstOrDefault();
+						marginB = arr[2].ConstOrDefault();
+						marginL = arr[3].ConstOrDefault();
 					}
 					else {
 						throw new InvalidUserValueException("Margin can be specified as array only with 1, 2 or 4 constants.");
@@ -79,7 +80,7 @@ namespace Malsys.Processing.Components.Renderers {
 			}
 		}
 
-		[Alias("compressSvg")]
+		[AccessName("compressSvg")]
 		[UserSettable]
 		public Constant CompressSvg {
 			set {
@@ -110,8 +111,8 @@ namespace Malsys.Processing.Components.Renderers {
 				writer = null;
 			}
 			else {
-				float svgWidth = measuredMaxX - measuredMinX + marginL + marginR;
-				float svgHeigh = measuredMaxY - measuredMinY + marginT + marginB;
+				double svgWidth = measuredMaxX - measuredMinX + marginL + marginR;
+				double svgHeigh = measuredMaxY - measuredMinY + marginT + marginB;
 
 				localAdditionalData = localAdditionalData.Add(OutputMetadataKeyHelper.OutputWidth, (int)Math.Round(svgWidth));
 				localAdditionalData = localAdditionalData.Add(OutputMetadataKeyHelper.OutputHeight, (int)Math.Round(svgHeigh));
@@ -167,7 +168,7 @@ namespace Malsys.Processing.Components.Renderers {
 			}
 		}
 
-		public void InitializeState(PointF point, float width, ColorF color) {
+		public void InitializeState(Point point, double width, ColorF color) {
 
 			point.Y *= invertY;
 
@@ -184,7 +185,7 @@ namespace Malsys.Processing.Components.Renderers {
 
 		}
 
-		public void MoveTo(PointF point, float width, ColorF color) {
+		public void MoveTo(Point point, double width, ColorF color) {
 
 			point.Y *= invertY;
 
@@ -199,7 +200,7 @@ namespace Malsys.Processing.Components.Renderers {
 			}
 		}
 
-		public void DrawTo(PointF point, float width, ColorF color) {
+		public void DrawTo(Point point, double width, ColorF color) {
 
 			point.Y *= invertY;
 
@@ -236,7 +237,7 @@ namespace Malsys.Processing.Components.Renderers {
 			}
 		}
 
-		public void DrawCircle(PointF center, float radius, ColorF color) {
+		public void DrawCircle(Point center, double radius, ColorF color) {
 
 			center.Y *= -1;
 
@@ -253,7 +254,7 @@ namespace Malsys.Processing.Components.Renderers {
 		#endregion
 
 
-		private void measure(float x, float y) {
+		private void measure(double x, double y) {
 			if (x < minX) {
 				minX = x;
 			}

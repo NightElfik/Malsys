@@ -10,7 +10,7 @@ namespace Malsys.Resources {
 		/// <docGroup>
 		/// Boolean constants
 		/// </docGroup>
-		[Alias("true")]
+		[AccessName("true")]
 		[CompilerConstant]
 		public static readonly double True = 1.0;
 
@@ -20,7 +20,7 @@ namespace Malsys.Resources {
 		/// <docGroup>
 		/// Boolean constants
 		/// </docGroup>
-		[Alias("false")]
+		[AccessName("false")]
 		[CompilerConstant]
 		public static readonly double False = 0.0;
 
@@ -31,7 +31,7 @@ namespace Malsys.Resources {
 		/// <docGroup>
 		/// Special constants
 		/// </docGroup>
-		[Alias("Nan", "nan")]
+		[AccessName("NaN", "nan")]
 		[CompilerConstant]
 		public static readonly double NaN = double.NaN;
 
@@ -41,7 +41,7 @@ namespace Malsys.Resources {
 		/// <docGroup>
 		/// Special constants
 		/// </docGroup>
-		[Alias("infinity", "\u221E")]
+		[AccessName("infinity", "\u221E")]
 		[CompilerConstant]
 		public static readonly double Infinity = double.PositiveInfinity;
 

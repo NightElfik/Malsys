@@ -5,6 +5,8 @@ namespace Malsys.Ast {
 		[StringValue("?unknown?keyword?")]
 		Unknown,
 
+		[StringValue("abstract")]
+		Abstract,
 		[StringValue("all")]
 		All,
 		[StringValue("as")]
@@ -21,6 +23,8 @@ namespace Malsys.Ast {
 		Container,
 		[StringValue("default")]
 		Default,
+		[StringValue("extends")]
+		Extends,
 		[StringValue("fun")]
 		Fun,
 		[StringValue("interpret")]

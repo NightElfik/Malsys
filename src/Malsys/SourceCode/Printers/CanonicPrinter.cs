@@ -216,10 +216,22 @@ namespace Malsys.SourceCode.Printers {
 
 		public void Print(LsystemEvaledParams lsysEvaledParams) {
 
+			if (lsysEvaledParams.IsAbstract) {
+				Print(Ast.Keyword.Abstract);
+			}
+
 			Print(Ast.Keyword.Lsystem);
 			writer.Write(lsysEvaledParams.Name);
 			Print(lsysEvaledParams.Parameters, false);
-			writer.WriteLine(" {");
+			writer.Write(" ");
+
+			if (!lsysEvaledParams.BaseLsystems.IsEmpty) {
+				Print(Ast.Keyword.Extends);
+				PrintSeparated(lsysEvaledParams.BaseLsystems, x => Print(x));
+				writer.Write(" ");
+			}
+
+			writer.WriteLine("{");
 			writer.Indent();
 
 			foreach (var stat in lsysEvaledParams.Statements) {
@@ -235,6 +247,15 @@ namespace Malsys.SourceCode.Printers {
 
 			writer.Unindent();
 			writer.WriteLine("}");
+		}
+
+		public void Print(BaseLsystem baseLsys) {
+			writer.Write(baseLsys.Name);
+			if (!baseLsys.Arguments.IsEmpty) {
+				writer.Write("(");
+				PrintSeparated(baseLsys.Arguments, x => Print(x));
+				writer.Write(")");
+			}
 		}
 
 		public void Print(ConstantDefinition constDef) {

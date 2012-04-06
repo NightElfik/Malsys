@@ -1,5 +1,7 @@
 ﻿using System.Windows.Media.Media3D;
 using Malsys.Media;
+using Malsys.SemanticModel.Evaluated;
+using Microsoft.FSharp.Collections;
 
 namespace Malsys.Processing.Components.Interpreters {
 	public class State3D {
@@ -11,6 +13,8 @@ namespace Malsys.Processing.Components.Interpreters {
 		public double Width;
 
 		public ColorF Color;
+
+		public FSharpMap<string, IValue> Variables;
 
 
 		public State3D Clone() {

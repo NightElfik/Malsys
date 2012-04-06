@@ -16,7 +16,7 @@ namespace Malsys.Processing.Components.Common {
 		private IRandomGenerator localRandomGenerator;
 
 
-		[Alias("trueRandom")]
+		[AccessName("trueRandom")]
 		[UserGettable]
 		[UserSettable]
 		public Constant TrueRandom {
@@ -24,7 +24,7 @@ namespace Malsys.Processing.Components.Common {
 			set { trueRandom = !value.IsZero; }
 		}
 
-		[Alias("randomSeed")]
+		[AccessName("randomSeed")]
 		[UserGettable(IsGettableBeforeInitialiation=true)]
 		[UserSettable]
 		public Constant RandomSeed { get; set; }
@@ -91,7 +91,7 @@ namespace Malsys.Processing.Components.Common {
 		/// <summary>
 		/// Returns random value from 0.0 (inclusive) to 1.0 (exclusive).
 		/// </summary>
-		[Alias(true, "Random", "random")]
+		[AccessName(true, "Random", "random")]
 		[UserCallableFunction(IsCallableBeforeInitialiation=true)]
 		public Constant GetRandomValue(IValue[] args, IExpressionEvaluatorContext eec) {
 
@@ -108,7 +108,7 @@ namespace Malsys.Processing.Components.Common {
 		/// <summary>
 		/// Returns random value within specified range.
 		/// </summary>
-		[Alias(true, "Random", "random")]
+		[AccessName(true, "Random", "random")]
 		[UserCallableFunction(2, ExpressionValueTypeFlags.Constant, ExpressionValueTypeFlags.Constant, IsCallableBeforeInitialiation = true)]
 		public Constant GetRandomValueRange(IValue[] args, IExpressionEvaluatorContext eec) {
 
