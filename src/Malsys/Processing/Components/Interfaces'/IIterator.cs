@@ -1,8 +1,6 @@
-﻿
-using Malsys.SemanticModel.Evaluated;
-using Malsys.SemanticModel;
+﻿using Malsys.SemanticModel;
+
 namespace Malsys.Processing.Components {
-	[Component("Generic iterator", ComponentGroupNames.Iterators)]
 	public interface IIterator : ISymbolProvider, IProcessStarter {
 
 		[UserConnectable]

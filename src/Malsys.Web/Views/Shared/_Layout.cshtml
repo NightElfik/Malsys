@@ -8,18 +8,29 @@
 	<meta charset="utf-8" />
 
 	<title>@ViewBag.Title</title>
-	<meta name="description" content="L-system processor and gallery" />
+	<meta name="description" content="Modern L-system processor and gallery" />
+	<meta name="keywords" content="L-system,generator,gallery,examples,SVG" />
 	<meta name="author" content="Marek Fišer" />
+	<link rel="author" href="/humans.txt" />
 
 	@* Mobile viewport optimized: h5bp.com/viewport *@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-	@Content.Css(Links.Css.style_css)
+	@* IE9 Pinned Sites *@
+	<meta name="application-name" content="Malsys" />
+	<meta name="msapplication-tooltip" content="Modern L-system processor and gallery" />
+	<meta name="msapplication-starturl" content="@Url.ActionAbsolute(MVC.Home.Index())"/>
+	<meta name="msapplication-task" content="name=Process L-system;action-uri=@Url.ActionAbsolute(MVC.Process.Index());icon-uri=" />
+	<meta name="msapplication-task" content="name=Gallery of L-systems;action-uri=@Url.ActionAbsolute(MVC.Gallery.Index());icon-uri=" />
+	<meta name="msapplication-task" content="name=Help index;action-uri=@Url.ActionAbsolute(MVC.Help.Home.Index());icon-uri=" />
+
+	@Content.Css(Links.Css.style_less_css)
 
 	@* All JavaScript at the bottom, except for Modernizr *@
 	@Content.Js(Links.Js.modernizr_js)
 
 	@* More ideas for your <head> here: h5bp.com/d/head-Tips *@
+	@* <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" /> *@
 </head>
 
 <body>
@@ -51,8 +62,10 @@
 	<div id="footerContainer">
 		<footer class="wrapper">
 			<div class="center"><p>&copy; @Html.ActionLink("Marek Fišer", MVC.Feedback.EmailToAuthor()) 2011 &mdash; 2012, @Html.ActionLink("Feedback", MVC.Feedback.Index())</p></div>
+			<p class="timestamp">This page was generated at @DateTime.Now.ToUniversalTime() (UTC)</p>
 		</footer>
 	</div>
+
 
 
 	@* JavaScript at the bottom for fast page loading

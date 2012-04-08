@@ -1,25 +1,57 @@
 ﻿using System.IO;
 using System.Linq;
-using Malsys.SemanticModel.Evaluated;
+using Malsys.SemanticModel;
 
 namespace Malsys.Processing.Components.Common {
-	public class ConstantsDumper {
+	/// <summary>
+	/// Writes all defined constants from global scope.
+	/// </summary>
+	public class ConstantsDumper : IProcessStarter {
 
-		public void DumpConstants(InputBlockEvaled inBlock, IOutputProvider outputProvider, IMessageLogger logger, string onlyFromInput = null) {
+		private ProcessContext context;
 
-			var constants = inBlock.ExpressionEvaluatorContext.GetAllStoredVariables().ToList();
+		[UserSettable]
+		public Constant DumpAllConstants { get; set; }
 
-			if (constants.Count == 0) {
-				return;
-			}
 
-			using (TextWriter writer = new StreamWriter(outputProvider.GetOutputStream<ConstantsDumper>("Constants dump", MimeType.Text.Plain))) {
+		#region IComponent Members
+
+		public void Initialize(ProcessContext ctxt) {
+			context = ctxt;
+		}
+
+		public void Cleanup() {
+			context = null;
+		}
+
+		#endregion
+
+
+		#region IProcessStarter Members
+
+		public void Start(bool doMeasure) {
+			dumpConstants();
+		}
+
+		public void Abort() {
+
+		}
+
+		#endregion
+
+
+		private void dumpConstants() {
+
+			var constants = context.InputData.ExpressionEvaluatorContext.GetAllStoredVariables().ToList();
+			bool dumpAll = DumpAllConstants != null && !DumpAllConstants.IsZero;
+
+			using (TextWriter writer = new StreamWriter(context.OutputProvider.GetOutputStream<ConstantsDumper>("Constants dump", MimeType.Text.Plain))) {
 
 				foreach (var c in constants) {
 
-					if (onlyFromInput != null && c.Metadata != null && c.Metadata is Ast.ConstantDefinition) {
-						if (((Ast.ConstantDefinition)c.Metadata).Position.SourceName != onlyFromInput) {
-							continue;
+					if (!dumpAll && c.Metadata != null && c.Metadata is Ast.ConstantDefinition) {
+						if (((Ast.ConstantDefinition)c.Metadata).Position.SourceName != context.InputData.SourceName) {
+							continue;  // current constant definition is not from current source
 						}
 					}
 
@@ -29,7 +61,7 @@ namespace Malsys.Processing.Components.Common {
 					writer.WriteLine(";");
 				}
 			}
-
 		}
+
 	}
 }

@@ -90,7 +90,7 @@ namespace Malsys.Web.Controllers {
 
 			var sw = new Stopwatch();
 			sw.Start();
-			bool result = lsystemProcessor.TryProcess(sourceCode, timeout, fileMgr, logger, out evaledInput, true, compileOnly, true);
+			bool result = lsystemProcessor.TryProcess(sourceCode, timeout, fileMgr, logger, out evaledInput, true, compileOnly);
 			sw.Stop();
 
 			resultModel.ProcessDuration = sw.Elapsed;

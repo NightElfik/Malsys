@@ -8,9 +8,8 @@ namespace Malsys.Processing.Components {
 	/// <remarks>
 	/// Marked property must have public setter.
 	/// Property type must be assignable to IComponent.
-	/// Attribute inherence do not work on properties in interface, do not forget to add it to derived types too.
 	/// </remarks>
-	[AttributeUsage(AttributeTargets.Property, Inherited = true, AllowMultiple = false)]
+	[AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
 	public sealed class UserConnectableAttribute : Attribute {
 
 		/// <summary>

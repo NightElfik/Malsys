@@ -13,26 +13,19 @@
 
 <h2>Constant definition</h2>
 
-<h3>Formal grammar</h3>
-
-<pre class="grammar box">
-constant_def = 'let' ID '=' expression ';'
-</pre>
-
-<p>
-	Defines constant with name represented by token <code>ID</code> as value of <code>expression</code>.
-	If constant with same name already exists, it is redefined by new definition.
-</p>
-
 <div id="toc"></div>
+
 
 @* ================================================================================================================== *@
 <h3>Basic definitions</h3>
 
 <p>
-	Value of constant can be any expression.
-	You can use constants defined earlier of functions.
-	List of predefined functions can be found on @Html.ActionLink("this page", MVC.Help.Predefined.Functions()).
+	Constant is defined by keyword <code class="malsys">let</code> followed by its name.
+	Then follows equals sign <code>=</code> and its value which can be any expression.
+	At the end of constant definition is semicolon <code>;</code>.
+	In value expression is possible to use earlier defined constants, functions, operators etc.
+	You can look at list of predefined @Html.ActionLink("constants", MVC.Help.Predefined.Constants()),
+		@Html.ActionLink("functions", MVC.Help.Predefined.Functions()) and @Html.ActionLink("operators", MVC.Help.Predefined.Operators()).
 	It is also possible to define new function, details about that are on @Html.ActionLink("function definition page", MVC.Help.SyntaxReference.FunctionDefinition()).
 </p>
 
@@ -40,7 +33,8 @@ constant_def = 'let' ID '=' expression ';'
 		"let a = 3;",
 		"let b = (2 + 2) * 2 ^ 2;",
 		"let c = sqrt(a * b);",
-		"let a = 0;")))
+		"let a = 0;",
+		"process Constants with ConstantDumper;")))
 
 
 @* ================================================================================================================== *@
@@ -53,25 +47,56 @@ constant_def = 'let' ID '=' expression ';'
 @Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, StringHelper.JoinLines(
 		"let glob = 8;",
 		"lsystem Lsystem {",
-		"	let loc = 7;",
-		"	set symbols axiom = A(glob) B(loc);",
+			"let loc = 7;",
+			"set symbols axiom = A(glob) B(loc);",
 		"}",
 		"process all with SymbolPrinter;")))
 
 <p>
 	Constants defined in local scope overlays constants from global scope, but they do not affect them.
 </p>
+
 @Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, StringHelper.JoinLines(
 		"let x = 8;",
 		"lsystem LsystemA {",
-		"	let x = 0;  // x is 0 only in this L-system",
-		"	set symbols axiom = A(x);",
+			"let x = 0;  // x is 0 only in this L-system",
+			"set symbols axiom = A(x);",
 		"}",
 		"lsystem LsystemB {",
-		"	// x is 8 here",
-		"	set symbols axiom = B(x);",
+			"// x is 8 here",
+			"set symbols axiom = B(x);",
 		"}",
 		"process all with SymbolPrinter;")))
 
+
+@* ================================================================================================================== *@
+<h3>Inherence of constants</h3>
+
+<p>
+	Inherence of constants works as expected.
+	Constants from derived L-systems are defined and new constants can redefine them.
+</p>
+
+@Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, StringHelper.JoinLines(
+		"abstract lsystem Base {",
+			"let a = 1;",
+			"let b = 2;",
+		"}",
+		"lsystem Derived extends Base {",
+			"let a = 3;",
+			"set symbols axiom = A(a) B(b);",
+		"}",
+		"process all with SymbolPrinter;")))
+
+
+@* ================================================================================================================== *@
+<h3>Formal grammar</h3>
+
+@MalsysHelper.GrammarBox("constant_def = 'let' ID '=' expression ';'")
+
+<p>
+	Defines constant with name represented by token <code>ID</code> as value of <code>expression</code>.
+	If constant with same name already exists, it is redefined by new definition.
+</p>
 
 

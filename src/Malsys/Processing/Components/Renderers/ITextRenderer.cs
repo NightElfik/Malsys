@@ -1,5 +1,10 @@
 ﻿
 namespace Malsys.Processing.Components.Renderers {
+	/// <summary>
+	/// Provides commands for rendering plain text.
+	/// </summary>
+	/// <name>Text renderer container</name>
+	/// <group>Renderers</group>
 	public interface ITextRenderer : IRenderer {
 
 		/// <summary>

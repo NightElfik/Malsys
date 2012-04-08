@@ -31,56 +31,6 @@
 
 
 @* ================================================================================================================== *@
-<h3>Formal grammar</h3>
-
-<h4>Rewrite rule</h4>
-
-<pre class="grammar box">
-rewrite_rule = 'rewrite' rr_pattern rr_consts? rr_condition? 'to' rr_replacement ';'
-</pre>
-
-
-<h4>Rewrite rule pattern</h4>
-
-<pre class="grammar box">
-rr_pattern = rr_context? symbol_opt_params rr_context?
-
-symbol_opt_params = SYMBOL symbol_params?
-symbol_params = '(' params_list? ')'
-params_list = ID (',' ID)*
-
-rr_context = '{' symbol_opt_params* '}'
-</pre>
-
-
-<h4>Rewrite rule constants definition</h4>
-
-<pre class="grammar box">
-rr_consts = 'with' rr_cost_defs_list?
-
-rr_cost_defs_list = ID '=' expression  (',' rr_cost_defs_list)?
-</pre>
-
-
-<h4>Rewrite rule condition</h4>
-
-<pre class="grammar box">
-rr_condition = 'where' expression
-</pre>
-
-
-<h4>Rewrite rule replacement</h4>
-
-<pre class="grammar box">
-rr_replacements =
-	| symbol_expr_params* rr_weight? ('or'? 'to' rr_replacements)?
-	| 'nothing'
-
-rr_weight = 'weight' expression
-</pre>
-
-
-@* ================================================================================================================== *@
 <h3>Basic rewrite rules</h3>
 
 <p>
@@ -297,9 +247,87 @@ rr_weight = 'weight' expression
 
 
 @* ================================================================================================================== *@
+<h3>Inherence of rewrite rules</h3>
+
+<p>
+	Basic rule which is applied in inherence (and also in single L-system definition) is that newer definitions will replaces new ones.
+	This is problem because rewrite rules can not be redefined.
+	Even if rewrite rules are defined for symbol older can not be replaced by newer because they can rewrite under
+		different conditions (like context or condition in rewrite rule).
+	Order of rewrite rules is inverted by inherence to allow redefine rewrite rules from base class,
+		first are defined rewrite rules from derived L-system then r-rules from base class.
+</p>
+
+@{
+	var specialModelRrInh = new LsystemExampleViewModel() {
+		LsystemProcessor = Model,
+		SourceCodeTemplate = StringHelper.JoinLines(
+		"abstract lsystem Base {{",
+		"{3}",
+		"}}",
+		"lsystem RewriteRuleExample{0:00} extends Base {{",
+		"set symbols axiom = {1};",
+		"set iterations = {2};",
+		"{4}",
+		"}}",
+		"process all with SymbolPrinter;"),
+		UnimportantLines = new int[] {-1 }};
+}
+
+@Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, specialModelRrInh.WithArgs(exampleId++,
+		"A B", "1",
+		StringHelper.JoinLines("rewrite A to X;", "rewrite B to X;"),
+		"rewrite A to C;"))
+
+
+@* ================================================================================================================== *@
 <h3>Everything at once</h3>
 
 <p>
 	Every feature described on this page can be used in any combination.
 	TODO: example
 </p>
+
+
+@* ================================================================================================================== *@
+<h3>Formal grammar</h3>
+
+<h4>Rewrite rule</h4>
+
+@MalsysHelper.GrammarBox("rewrite_rule = 'rewrite' rr_pattern rr_consts? rr_condition? 'to' rr_replacement ';'")
+
+
+<h4>Rewrite rule pattern</h4>
+
+@MalsysHelper.GrammarBox(
+	"rr_pattern = rr_context? symbol_opt_params rr_context?",
+	"",
+	"symbol_opt_params = SYMBOL symbol_params?",
+	"symbol_params = '(' params_list? ')'",
+	"params_list = ID (',' ID)*",
+	"",
+	"rr_context = '{' symbol_opt_params* '}'")
+
+
+<h4>Rewrite rule constants definition</h4>
+
+@MalsysHelper.GrammarBox(
+	"rr_consts = 'with' rr_cost_defs_list",
+	"",
+	"rr_cost_defs_list = ID '=' expression  (',' rr_cost_defs_list)?")
+
+
+<h4>Rewrite rule condition</h4>
+
+@MalsysHelper.GrammarBox("rr_condition = 'where' expression")
+
+
+<h4>Rewrite rule replacement</h4>
+
+@MalsysHelper.GrammarBox(
+	"rr_replacements =",
+	"	| symbol_expr_params* rr_weight? ('or'? 'to' rr_replacements)?",
+	"	| 'nothing'",
+	"",
+	"rr_weight = 'weight' expression")
+

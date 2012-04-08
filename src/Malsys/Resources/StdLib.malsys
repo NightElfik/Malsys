@@ -203,3 +203,15 @@ configuration InnerLsystemConfig {
 
 }
 
+
+/**
+ * Dummy L-system for processing ConstantDumper;
+ */
+abstract lsystem Constants { }
+
+configuration ConstantDumper {
+
+	component Dumper typeof ConstantsDumper;
+
+}
+

@@ -1,6 +1,7 @@
 ﻿
 namespace Malsys.Processing.Components {
-	[Component("Generic renderer", ComponentGroupNames.Renderers)]
+	/// <name>Renderer container</name>
+	/// <group>Renderers</group>
 	public interface IRenderer : IProcessComponent {
 
 		/// <summary>

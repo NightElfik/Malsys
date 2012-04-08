@@ -2,6 +2,12 @@
 using Malsys.Media;
 
 namespace Malsys.Processing.Components.Renderers {
+	/// <summary>
+	/// Prints called commands instead of creating some 3D output.
+	/// This is handy if 3D scene renderer is debugged.
+	/// </summary>
+	/// <name>3D renderer debugger</name>
+	/// <group>Renderers</group>
 	public class DebugRenderer3D : DebugRendererBase, IRenderer3D {
 
 		public static readonly string InitName = "InitializeState";
@@ -14,7 +20,12 @@ namespace Malsys.Processing.Components.Renderers {
 		private string logFormat;
 
 
-		public DebugRenderer3D(string logFormat = "{0}|{1}|{2}|{3}|{4}") {
+		public DebugRenderer3D()
+			: this("{0}|{1}|{2}|{3}|{4}") {
+
+		}
+
+		public DebugRenderer3D(string logFormat) {
 			this.logFormat = logFormat;
 		}
 

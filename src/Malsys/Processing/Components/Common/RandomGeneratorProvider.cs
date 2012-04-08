@@ -91,7 +91,7 @@ namespace Malsys.Processing.Components.Common {
 		/// <summary>
 		/// Returns random value from 0.0 (inclusive) to 1.0 (exclusive).
 		/// </summary>
-		[AccessName(true, "Random", "random")]
+		[AccessName("random")]
 		[UserCallableFunction(IsCallableBeforeInitialiation=true)]
 		public Constant GetRandomValue(IValue[] args, IExpressionEvaluatorContext eec) {
 
@@ -108,7 +108,11 @@ namespace Malsys.Processing.Components.Common {
 		/// <summary>
 		/// Returns random value within specified range.
 		/// </summary>
-		[AccessName(true, "Random", "random")]
+		/// <parameters>
+		/// The inclusive lower bound of the random number returned.
+		/// The exclusive upper bound of the random number returned.
+		/// </parameters>
+		[AccessName("random")]
 		[UserCallableFunction(2, ExpressionValueTypeFlags.Constant, ExpressionValueTypeFlags.Constant, IsCallableBeforeInitialiation = true)]
 		public Constant GetRandomValueRange(IValue[] args, IExpressionEvaluatorContext eec) {
 

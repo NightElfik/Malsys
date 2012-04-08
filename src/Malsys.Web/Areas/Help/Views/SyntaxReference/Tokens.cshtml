@@ -4,20 +4,18 @@
 
 <h2>Tokens</h2>
 
-
 <p>
 	Token is atomic element of Malsys grammar.
 	In token can not be any whitespace character, however whitespace characters are often used to separate individual tokens.
 	More about tokens syntax can be found on @Html.ActionLink("grammar syntax page", MVC.Help.SyntaxReference.Grammar()).
 </p>
 
+<div id="toc"></div>
 
 @* ================================================================================================================== *@
 <h3>Identifier</h3>
 
-<pre class="grammar box">
-ID = (ALPHABETIC_CHAR | '_') (ALPHABETIC_CHAR | DIGIT | '_' | ''')*
-</pre>
+@MalsysHelper.GrammarBox("ID = (ALPHABETIC_CHAR | '_') (ALPHABETIC_CHAR | DIGIT | '_' | ''')*")
 
 <p>
 	Formal grammar of identifier is simplified, to avoid using characters groups in unicode.
@@ -29,14 +27,13 @@ ID = (ALPHABETIC_CHAR | '_') (ALPHABETIC_CHAR | DIGIT | '_' | ''')*
 @* ================================================================================================================== *@
 <h3>Number</h3>
 
-<pre class="grammar box">
-NUMBER =
-	| [0-9]+ ('.' [0-9]+)? ([eE] ('+'|'-')? [0-9]+)?
-	| '0'[bB] [01]+
-	| '0'[oO] [0-7]+
-	| '0'[xX] ([0-9] | [a-f] | [A-F])+
-	| '#' ([0-9] | [a-f] | [A-F])+
-</pre>
+@MalsysHelper.GrammarBox(
+	"NUMBER =",
+	"	| [0-9]+ ('.' [0-9]+)? ([eE] ('+'|'-')? [0-9]+)?",
+	"	| '0'[bB] [01]+",
+	"	| '0'[oO] [0-7]+",
+	"	| '0'[xX] ([0-9] | [a-f] | [A-F])+",
+	"	| '#' ([0-9] | [a-f] | [A-F])+")
 
 <p>
 	Malsys supports 5 different formats of number literal.
@@ -57,16 +54,16 @@ NUMBER =
 
 
 @* ================================================================================================================== *@
-<h4 id="grammar-OPERATOR">Operator</h4>
+<h3>Operator</h3>
 
-<pre class="grammar box">
-OPERATOR = (first_op_char op_char*) | '==' | '/'
+@MalsysHelper.GrammarBox(
+	"OPERATOR = (first_op_char op_char*) | '==' | '/'",
+	"",
+	"first_op_char = '!'|'$'|'%'|'&'|'*'|'+'|'\\'|'<'|'>'|'@'|'^'|'|'|'~'|'?'|':'|'-'",
+	"",
+	"op_char = first_op_char | '=' | '/'")
 
-first_op_char = '!'|'$'|'%'|'&'|'*'|'+'|'\'|'<'|'>'|'@@'|'^'|'|'|'~'|'?'|':'|'-'
-
-op_char = first_op_char | '=' | '/'
-</pre>
 
 <p>
-	Not all combinations of characters are defined as operator in Malsys, see list of predefined operators.
+	Not all combinations of characters are defined as operator in Malsys, see @Html.ActionLink("list of predefined operators", MVC.Help.Predefined.Operators()).
 </p>

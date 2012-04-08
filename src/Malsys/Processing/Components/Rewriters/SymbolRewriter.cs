@@ -1,17 +1,26 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Malsys.Evaluators;
+using Malsys.Processing.Context;
 using Malsys.SemanticModel;
-using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Evaluated;
 using Symbol = Malsys.SemanticModel.Symbol<Malsys.SemanticModel.Evaluated.IValue>;
-using Malsys.Processing.Context;
 
 
 namespace Malsys.Processing.Components.Rewriters {
-	[Component("Symbol rewriter", ComponentGroupNames.Rewriters)]
+	/// <summary>
+	/// Full featured symbol rewriter which rewrites symbols based on defined rewrite rules in current L-system.
+	/// It is capable to rewrite symbol based all criteria of Malsys' rewrite rules.
+	/// Rewriting is initiated by symbol request (by enumerator).
+	/// Then rewriter takes as many symbols from connected symbol provider as is needed for rewriting next symbol.
+	/// If contexts (or branches) are long it may load many symbols before returning.
+	/// </summary>
+	/// <name>Symbol rewriter</name>
+	/// <group>Rewriters</group>
+	/// <remarks>
+	/// Context is not freed yet.
+	/// </remarks>
 	public partial class SymbolRewriter : IRewriter {
-
 
 		private LsystemEvaled lsystem;
 		private ProcessContext context;
@@ -30,7 +39,9 @@ namespace Malsys.Processing.Components.Rewriters {
 		private int rrReplacementMaxLen;
 		private bool stochasticRules;
 
-
+		/// <summary>
+		/// List of symbols which are ignored in context checking.
+		/// </summary>
 		[AccessName("contextIgnore")]
 		[UserSettableSybols]
 		public ImmutableList<Symbol<IValue>> ContextIgnore {
@@ -42,6 +53,10 @@ namespace Malsys.Processing.Components.Rewriters {
 			}
 		}
 
+		/// <summary>
+		/// List of symbols which are indicating start of branch.
+		/// This symbols should be identical to symbols which are interpreted as start branch.
+		/// </summary>
 		[AccessName("startBranchSymbols")]
 		[UserSettableSybols]
 		public ImmutableList<Symbol<IValue>> StartBranchSymbols {
@@ -53,6 +68,10 @@ namespace Malsys.Processing.Components.Rewriters {
 			}
 		}
 
+		/// <summary>
+		/// List of symbols which are indicating end of branch.
+		/// This symbols should be identical to symbols which are interpreted as end branch.
+		/// </summary>
 		[AccessName("endBranchSymbols")]
 		[UserSettableSybols]
 		public ImmutableList<Symbol<IValue>> EndBranchSymbols {

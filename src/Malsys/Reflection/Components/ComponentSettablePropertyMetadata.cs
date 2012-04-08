@@ -4,7 +4,7 @@ using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Reflection.Components {
 	/// <remarks>
-	/// Immutable.
+	/// Nearly immutable (only doc strings can be set later).
 	/// </remarks>
 	public class ComponentSettablePropertyMetadata {
 
@@ -22,6 +22,11 @@ namespace Malsys.Reflection.Components {
 		public readonly ExpressionValueTypeFlags ExpressionValueType;
 
 
+		public string SummaryDoc { get; private set; }
+		public string ExpectedValueDoc { get; private set; }
+		public string DefaultValueDoc { get; private set; }
+
+
 		public ComponentSettablePropertyMetadata(ImmutableList<string> names, PropertyInfo propertyInfo, bool isMandatory) {
 
 			Names = names;
@@ -32,13 +37,19 @@ namespace Malsys.Reflection.Components {
 
 		}
 
+		public void SetDocumentation(string summaryDoc, string expectedValueDoc, string defaultValueDoc) {
+			SummaryDoc = summaryDoc;
+			ExpectedValueDoc = expectedValueDoc;
+			DefaultValueDoc = defaultValueDoc;
+		}
+
 	}
 
 	/// <remarks>
-	/// Immutable.
+	/// Nearly immutable (only doc strings can be set later).
 	/// </remarks>
 	/// <remarks>
-	/// Property type is equal to ImmutableList<Symbol<IValue>>.
+	/// Property type is equal to <see cref="ImmutableList{Symbol{IValue}}"/>.
 	/// </remarks>
 	public class ComponentSettableSybolsPropertyMetadata {
 
@@ -49,12 +60,19 @@ namespace Malsys.Reflection.Components {
 		public readonly PropertyInfo PropertyInfo;
 
 
+		public string SummaryDoc { get; private set; }
+
+
 		public ComponentSettableSybolsPropertyMetadata(ImmutableList<string> names, PropertyInfo propertyInfo, bool isMandatory) {
 
 			Names = names;
 			PropertyInfo = propertyInfo;
 			IsMandatory = isMandatory;
 
+		}
+
+		public void SetDocumentation(string summaryDoc) {
+			SummaryDoc = summaryDoc;
 		}
 
 	}

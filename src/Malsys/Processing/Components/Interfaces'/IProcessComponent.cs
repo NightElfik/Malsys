@@ -1,7 +1,6 @@
 ﻿using System;
 
 namespace Malsys.Processing.Components {
-	[Component("Generic processing component", ComponentGroupNames.Common)]
 	public interface IProcessComponent : IComponent {
 
 		/// <summary>

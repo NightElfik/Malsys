@@ -1,0 +1,49 @@
+﻿@model Malsys.Web.Models.Lsystem.SimpleLsystemProcessor
+
+@{
+	ViewBag.Title = "L-system definition";
+}
+
+<h2>L-system definition</h2>
+
+<p>
+	To learn now to write L-systems take a look at @Html.ActionLink("rewriting basics", MVC.Help.Home.BasicRewriting()) page.
+	Another good place for learning is @Html.ActionLink("gallery", MVC.Gallery.Index()).
+	All entries have source included in details, just pick some simple one and experiment with their source.
+	To further explore capabilities of L-systems visit reference pages for individual L-system statements.
+</p>
+<ul>
+	<li>@Html.ActionLink("constant definition", MVC.Help.SyntaxReference.ConstantDefinition())</li>
+	<li>@Html.ActionLink("function definition", MVC.Help.SyntaxReference.FunctionDefinition())</li>
+	<li>@Html.ActionLink("component property assign definition", MVC.Help.SyntaxReference.ComponentPropertyAssignDefinition())</li>
+	<li>@Html.ActionLink("symbol interpretation definition", MVC.Help.SyntaxReference.SymbolInterpretation())</li>
+	<li>@Html.ActionLink("rewrite rule", MVC.Help.SyntaxReference.RewriteRule())</li>
+</ul>
+
+
+@* ================================================================================================================== *@
+<h3>Formal grammar</h3>
+
+@MalsysHelper.GrammarBox(
+	"lsystem_def = 'abstract'? 'lsystem' ID ('(' params_list? ')')? '{' lsystem_statement* '}'",
+	"",
+	"params_list = ID ('=' expression)?  (',' params_list)?",
+	"",
+	"lsystem_statement =",
+	"	| empty_statement",
+	"	| constant_def",
+	"	| function_def",
+	"	| component_property_assign",
+	"	| symbols_interpretation_def",
+	"	| rewrite_rule"
+)
+
+<p>
+	For formal grammar for L-system statements see @Html.ActionLink("constant definition", MVC.Help.SyntaxReference.ConstantDefinition()),
+		@Html.ActionLink("function definition", MVC.Help.SyntaxReference.FunctionDefinition()),
+		@Html.ActionLink("component property assign definition", MVC.Help.SyntaxReference.ComponentPropertyAssignDefinition()),
+		@Html.ActionLink("symbol interpretation definition", MVC.Help.SyntaxReference.SymbolInterpretation()) and
+		@Html.ActionLink("rewrite rule", MVC.Help.SyntaxReference.RewriteRule()) help pages.
+</p>
+
+

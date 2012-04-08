@@ -1,6 +1,8 @@
 ﻿using Malsys.Evaluators;
 
 namespace Malsys.Processing.Components.Interpreters {
+	/// <name>2D interpreter container</name>
+	/// <group>Interpreters</group>
 	public interface IInterpreter2D : IInterpreter {
 
 		/// <summary>
@@ -10,21 +12,27 @@ namespace Malsys.Processing.Components.Interpreters {
 		void Nothing(ArgsStorage args);
 
 		/// <summary>
-		/// Moves forward in current direction (without drawing) by distance equal to value of the first parameter.
+		/// Moves forward in current direction (without drawing).
 		/// </summary>
-		[SymbolInterpretation(1)]
+		[SymbolInterpretation]
 		void MoveForward(ArgsStorage args);
 
 		/// <summary>
-		/// Draws line in current direction with length equal to value of the first parameter.
+		/// Draws line in current direction.
 		/// </summary>
-		[SymbolInterpretation(1)]
+		[SymbolInterpretation]
 		void DrawForward(ArgsStorage args);
 
 		/// <summary>
-		/// Adds value of the first parameter (in degrees) to current direction angle.
+		/// Draws circle with center in current position.
 		/// </summary>
-		[SymbolInterpretation(1)]
+		[SymbolInterpretation]
+		void DrawCircle(ArgsStorage args);
+
+		/// <summary>
+		/// Turns left.
+		/// </summary>
+		[SymbolInterpretation]
 		void TurnLeft(ArgsStorage args);
 
 		/// <summary>
@@ -40,8 +48,7 @@ namespace Malsys.Processing.Components.Interpreters {
 		void EndBranch(ArgsStorage args);
 
 		/// <summary>
-		/// Starts to record polygon vertices (do not saves current position as first vertex).
-		/// If another polygon is opened its state is saved and will be restored after closing of current polygon.
+		/// Starts to record polygon vertices.
 		/// </summary>
 		[SymbolInterpretation]
 		void StartPolygon(ArgsStorage args);
@@ -53,16 +60,10 @@ namespace Malsys.Processing.Components.Interpreters {
 		void RecordPolygonVertex(ArgsStorage args);
 
 		/// <summary>
-		/// Ends current polygon (do not saves current position as last vertex).
+		/// Ends current polygon.
 		/// </summary>
 		[SymbolInterpretation]
 		void EndPolygon(ArgsStorage args);
-
-		/// <summary>
-		/// Draws circle with center in current position with radius equal to value of the first parameter.
-		/// </summary>
-		[SymbolInterpretation(1)]
-		void DrawCircle(ArgsStorage args);
 
 
 	}

@@ -50,7 +50,7 @@
     <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DocumentationFile>bin\Debug\Malsys.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Malsys.xml</DocumentationFile>
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -183,7 +183,6 @@
     <Compile Include="Processing\Components\Common\RandomGeneratorProvider.cs" />
     <Compile Include="Processing\Components\Common\SymbolProvider.cs" />
     <Compile Include="Processing\Components\Common\SymbolsSaver.cs" />
-    <Compile Include="Processing\Components\ComponentAttribute.cs" />
     <Compile Include="Processing\Components\ComponentGroupNames.cs" />
     <Compile Include="Processing\Components\UserGettableAttribute.cs" />
     <Compile Include="Processing\Components\Interfaces%27\IComponent.cs" />
@@ -219,6 +218,7 @@
     <Compile Include="Reflection\Components\ComponentSettablePropertyMetadata.cs" />
     <Compile Include="Reflection\Components\ComponentInterpretationMethodMetadata.cs" />
     <Compile Include="Reflection\Components\ComponentXmlDocLoader.cs" />
+    <Compile Include="Reflection\Components\IComponentXmlDocLoader.cs" />
     <Compile Include="Reflection\FunctionDumper.cs" />
     <Compile Include="Resources\FunctionCore.cs" />
     <Compile Include="Resources\ResourcesHelper.cs" />

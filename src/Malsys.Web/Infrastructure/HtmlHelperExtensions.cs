@@ -1,7 +1,7 @@
 ﻿using System.Web.Mvc;
 
 namespace Malsys.Web.Infrastructure {
-	public static class HtmlHelpers {
+	public static class HtmlHelperExtensions {
 
 		public static MvcHtmlString Link(this HtmlHelper html, string link) {
 			return Link(html, link, link);

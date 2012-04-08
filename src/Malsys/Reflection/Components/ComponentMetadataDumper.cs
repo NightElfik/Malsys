@@ -31,7 +31,7 @@ namespace Malsys.Reflection.Components {
 				logger.LogMessage(Message.InvalidComponentType, componentType.FullName, typeof(IComponent).FullName);
 			}
 
-			bool hasMsgCtor;
+			bool isContainer, hasMsgCtor;
 			return new ComponentMetadata(componentType,
 				getGettableProperties(componentType, logger).ToImmutableList(),
 				getSettableProperties(componentType, logger).ToImmutableList(),
@@ -39,8 +39,8 @@ namespace Malsys.Reflection.Components {
 				getConnectableProperties(componentType, logger).ToImmutableList(),
 				getCallableFunctions(componentType, logger).ToImmutableList(),
 				getInterpretationMethods(componentType, logger).ToImmutableList(),
-				getConstructor(componentType, logger, out hasMsgCtor),
-				hasMsgCtor);
+				getConstructor(componentType, logger, out isContainer, out hasMsgCtor),
+				hasMsgCtor, isContainer);
 
 		}
 
@@ -165,10 +165,16 @@ namespace Malsys.Reflection.Components {
 			}
 		}
 
-		private ConstructorInfo getConstructor(Type type, IMessageLogger logger, out bool hasMessageCtor) {
+		private ConstructorInfo getConstructor(Type type, IMessageLogger logger, out bool isContainer, out bool hasMessageCtor) {
+
+			isContainer = type.IsInterface || type.IsAbstract;
+
+			if (isContainer) {
+				hasMessageCtor = false;
+				return null;
+			}
 
 			var ctorInfo = type.GetConstructor(new Type[] { typeof(IMessageLogger) });
-
 			hasMessageCtor = ctorInfo != null;
 			if (!hasMessageCtor) {
 				ctorInfo = type.GetConstructor(Type.EmptyTypes);

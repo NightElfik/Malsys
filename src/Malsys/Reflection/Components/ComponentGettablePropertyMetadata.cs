@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Reflection.Components {
 	/// <remarks>
@@ -12,12 +13,17 @@ namespace Malsys.Reflection.Components {
 
 		public readonly bool IsGettableBeforeInitialiation;
 
+		public readonly ExpressionValueTypeFlags ExpressionValueType;
+
+
 
 		public ComponentGettablePropertyMetadata(ImmutableList<string> names, PropertyInfo propertyInfo, bool isGettableBeforeInitialiation) {
 
 			Names = names;
 			PropertyInfo = propertyInfo;
 			IsGettableBeforeInitialiation = isGettableBeforeInitialiation;
+
+			ExpressionValueType = IValueExtensions.IValueTypeToEnum(propertyInfo.PropertyType);
 
 		}
 

@@ -1,9 +1,9 @@
 ﻿using System;
+using System.IO;
+using Elmah;
 using Malsys.Processing;
 using Malsys.Processing.Output;
 using Malsys.SemanticModel.Evaluated;
-using System.IO;
-using Elmah;
 
 namespace Malsys.Web.Models.Lsystem {
 	public class LsystemProcessor {
@@ -18,8 +18,8 @@ namespace Malsys.Web.Models.Lsystem {
 		}
 
 
-		public bool TryProcess(string sourceCode, TimeSpan timeout, FileOutputProvider fileMgr, IMessageLogger logger, out InputBlockEvaled evaledInput,
-			bool cleanupFilesOnError = true, bool compileOnly = false, bool dumpConstants = false) {
+		public bool TryProcess(string sourceCode, TimeSpan timeout, FileOutputProvider fileMgr, IMessageLogger logger,
+				out InputBlockEvaled evaledInput, bool cleanupFilesOnError = true, bool compileOnly = false) {
 
 			evaledInput = processManager.CompileAndEvaluateInput(sourceCode, "webInput", logger);
 
@@ -30,13 +30,7 @@ namespace Malsys.Web.Models.Lsystem {
 
 			var inputAndStdLib = stdLib.JoinWith(evaledInput);
 
-			if (inputAndStdLib.Lsystems.Count == 0) {
-				if (dumpConstants) {
-					logger.LogMessage(Message.NoLsysFoundDumpingConstants);
-					processManager.DumpConstants(inputAndStdLib, fileMgr, logger);
-				}
-			}
-			else if (inputAndStdLib.ProcessStatements.Count > 0) {
+			if (inputAndStdLib.ProcessStatements.Count > 0) {
 				processManager.ProcessInput(inputAndStdLib, fileMgr, logger, timeout);
 			}
 
@@ -48,8 +42,8 @@ namespace Malsys.Web.Models.Lsystem {
 					try {
 						File.Delete(file.FilePath);
 					}
-					catch (Exception) {
-						// TODO
+					catch (Exception ex) {
+						ErrorSignal.FromCurrentContext().Raise(ex);
 					}
 
 				}
@@ -62,9 +56,6 @@ namespace Malsys.Web.Models.Lsystem {
 
 
 		public enum Message {
-
-			[Message(MessageType.Info, "No L-systems found, dumping constants.")]
-			NoLsysFoundDumpingConstants,
 
 		}
 	}

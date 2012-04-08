@@ -16,6 +16,7 @@ obj/
 /src/Malsys.Web/Publish
 /src/Malsys.Web/ErrorLogs
 /src/Malsys.Web/Malsys.Web.Publish.xml
+/src/Documentation/Help/Working
 /src/packages
 
 # Dependencies

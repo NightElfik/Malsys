@@ -21,21 +21,23 @@
 
 <ol class="uRoman">
 	<li>@Html.ActionLink("Available components list", MVC.Help.Predefined.Components())</li>
-	<li>Predefined process configurations</li>
+	<li>@Html.ActionLink("Predefined process configurations", MVC.Help.Predefined.Configurations())</li>
 	<li>@Html.ActionLink("Predefined constants", MVC.Help.Predefined.Constants())</li>
 	<li>@Html.ActionLink("Predefined functions", MVC.Help.Predefined.Functions())</li>
-	<li>Predefined operators</li>
+	<li>@Html.ActionLink("Predefined operators", MVC.Help.Predefined.Operators())</li>
 </ol>
 
 
 <h3>Syntax reference</h3>
 
 <ol class="uAlpha">
+	<li>@Html.ActionLink("L-system definition", MVC.Help.SyntaxReference.LsystemDefinition())</li>
+	<li>@Html.ActionLink("Component property assign definition", MVC.Help.SyntaxReference.ComponentPropertyAssignDefinition())</li>
 	<li>@Html.ActionLink("Constant definition", MVC.Help.SyntaxReference.ConstantDefinition())</li>
 	<li>@Html.ActionLink("Function definition", MVC.Help.SyntaxReference.FunctionDefinition())</li>
-	<li>L-system definition</li>
 	<li>@Html.ActionLink("Rewrite rule definition", MVC.Help.SyntaxReference.RewriteRule())</li>
 	<li>@Html.ActionLink("Symbol interpretation definition", MVC.Help.SyntaxReference.SymbolInterpretation())</li>
+	<li>@Html.ActionLink("Component configuration definition", MVC.Help.SyntaxReference.ComponentConfigurationDefinition())</li>
 	<li>Arithmetic expressions</li>
 </ol>
 

@@ -3,27 +3,6 @@
 }
 
 
-<h2>Malsys syntax</h2>
-
-<p>
-	Syntax is described using formal grammar with regular expressions on right side.
-	Regular expressions are explained on the @Html.ActionLink("separate page", MVC.Help.SyntaxReference.GrammarRegexps())
-		as well as @Html.ActionLink("grammar syntax", MVC.Help.SyntaxReference.Grammar()).
-</p>
-
-<p>
-	Syntax is whitespace-independent.
-	Between individual tokens can be any number of whitespaces like space, tab or new line.
-	On the other hand, whitespaces are not allowed in single tokens, which are defined in Tokens section.
-</p>
-
-
-
-<h3>Tokens</h3>
-
-
-
-
 
 
 <h3>Malsys grammar</h3>
@@ -59,95 +38,9 @@ empty_statement = ';'
 
 
 
-<h4 id="grammar-function_def">Function definition</h4>
-
-<pre class="grammar">
-function_def = 'fun' ID '(' params_list? ')' '{' constant_def* 'return' expression ';' '}'
-
-params_list = ID ('=' expression)?  (',' params_list)?
-</pre>
-
-<p>
-	Binds function with parameters <code class="grammar">params_list</code>, local constants <code class="grammar">constant_def</code>
-		and return value <code class="grammar">expression</code> to name represented by <code class="grammar">ID</code>.
-	If binding on same name already exists in current scope, it is hidden by new binding until end of the scope.
-</p>
-
-<p>Examples:</p>
-<pre class="malsys">
-fun f() {
-	return e ^ pi;
-}
-
-fun addSquares(x, y) {
-	let x2 = x * x;
-	return x2 + y * y;
-}
-
-fun optParams(x, y = 8) {
-	return x ^ y - y;
-}
-</pre>
 
 <h4 id="grammar-lsystem_def">L-system definition</h4>
 
-<pre class="grammar">
-lsystem_def = 'lsystem' ID ('(' params_list? ')')? '{' lsystem_statement* '}'
-
-params_list = ID ('=' expression)?  (',' params_list)?
-</pre>
-
-<p>Examples:</p>
-<pre class="malsys">
-lsystem lsys {
-	set axiom = A;
-	let iterations = 10;
-	rewrite A to B A;
-}
-
-lsystem fib {
-	set axiom = a(0) b(1);
-	let iterations = 10;
-
-	rewrite  a(a) {b(b)} to a(b);
-	rewrite {a(a)} b(b)  to b(a + b);
-}
-</pre>
-
-
-<h4 id="grammar-lsystem_statement">L-system statement</h4>
-
-<pre class="grammar">
-lsystem_statement =
-	| empty_statement
-	| constant_def
-	| function_def
-	| symbols_list_def
-	| symbols_interpretation_def
-	| rewrite_rule
-</pre>
-
-
-<h4 id="grammar-symbols_list_def">Symbols list definition</h4>
-
-<pre class="grammar">
-symbols_list_def = 'set' ID '=' symbol ';'
-</pre>
-
-
-
-
-
-
-<h4 id="grammar-symbol">L-system symbol</h4>
-
-<pre class="grammar">
-symbol = symbol_char+ '(' expr_args? ')'
-
-symbol_char = ID | OPERATOR | '[' | ']'
-
-expr_args = expression (',' expr_args)?
-</pre>
 
 
 <h4 id="grammar-expression">Expression</h4>

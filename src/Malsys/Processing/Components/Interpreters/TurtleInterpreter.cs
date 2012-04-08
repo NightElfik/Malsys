@@ -8,7 +8,13 @@ using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Collections;
 
 namespace Malsys.Processing.Components.Interpreters {
-	[Component("Turtle graphics interpreter (2D/3D)", ComponentGroupNames.Interpreters)]
+	/// <summary>
+	/// Turtle interpreter interprets symbols as basic 2D or 3D graphics primitives.
+	/// Interpreting is always in 3D but if it is connected 2D renderer (<see cref="IInterpreter2D"/>)
+	/// the Z coordinate is omitted.
+	/// </summary>
+	/// <name>Turtle interpreter</name>
+	/// <group>Interpreters</group>
 	public class TurtleInterpreter : IInterpreter2D, IInterpreter3D {
 
 		private IRenderer renderer;

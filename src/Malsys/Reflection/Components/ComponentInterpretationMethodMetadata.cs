@@ -18,7 +18,6 @@ namespace Malsys.Reflection.Components {
 
 
 		public string SummaryDoc { get; private set; }
-
 		public string ParamsDoc { get; private set; }
 
 
@@ -39,6 +38,7 @@ namespace Malsys.Reflection.Components {
 
 			SummaryDoc = summaryDoc;
 			ParamsDoc = paramsDoc;
+
 		}
 
 	}

@@ -12,7 +12,7 @@
 </p>
 
 <p>
-	Simplified form of regular expressions are used in @Html.ActionLink("formal definition of L-system syntax", "Syntax") to describe the possible input (grammar).
+	Simplified form of regular expressions are used in formal definition of L-system syntax to describe the possible input (grammar).
 	There are some differences between common regular expressions and regexps used in Malsys,
 		so their syntax is described on this page, to avoid misunderstanding.
 </p>
@@ -28,7 +28,7 @@
 <p>
 	Regular expression that matches literal is very simple.
 	It is just string in single quotes.
-	For example <code class="grammar">'let'</code> matches string <code class="match">let</code>.
+	For example @MalsysHelper.GrammarCode("'let'") matches string <code class="match">let</code>.
 </p>
 
 
@@ -37,12 +37,12 @@
 
 <p>
 	Set of allowed characters is described by list of individual characters in brackets.
-	Regular expression <code class="grammar">[ab]</code> matches only <code class="match">a</code> or <code class="match">b</code>.
-	So regular expression matching a digit can be written as <code class="grammar">[0123456789]</code> but there is easier way to achieve this, using range.
+	Regular expression @MalsysHelper.GrammarCode("[ab]") matches only <code class="match">a</code> or <code class="match">b</code>.
+	So regular expression matching a digit can be written as @MalsysHelper.GrammarCode("[0123456789]") but there is easier way to achieve this, using range.
 </p>
 
 <p>
-	Set of consecutive characters can be described by range regular expression <code class="grammar">[s-e]</code>
+	Set of consecutive characters can be described by range regular expression @MalsysHelper.GrammarCode("[s-e]")
 		where <code class="match">s</code> is first character and <code class="match">e</code> is last character.
 	Order of characters is same as in @Html.Link("ASCII table", "http://cs.wikipedia.org/wiki/ASCII").
 </p>
@@ -52,8 +52,8 @@
 <h3>Boolean OR operator</h3>
 
 <p>
-	Another useful thing is <i>OR</i> operator represented as vertical bar (<code class="grammar">|</code>) in regular expressions.
-	For example <code class="grammar">'gray' | 'grey'</code> matches <code class="match">gray</code> or <code class="match">grey</code>.
+	Another useful thing is <i>OR</i> operator represented as vertical bar (@MalsysHelper.GrammarCode("|")) in regular expressions.
+	For example @MalsysHelper.GrammarCode("'gray' | 'grey'") matches <code class="match">gray</code> or <code class="match">grey</code>.
 </p>
 
 
@@ -75,27 +75,27 @@
 <p>
 	The question mark indicates there is <i>zero or one</i> of the preceding element.
 	In other words, element is optional.
-	For example, <code class="grammar">'colo' 'u'? 'r'</code> matches both <code class="match">color</code> and <code class="match">colour</code>.
+	For example, @MalsysHelper.GrammarCode("'colo' 'u'? 'r'") matches both <code class="match">color</code> and <code class="match">colour</code>.
 </p>
 
 <p>
 	The plus sign indicates there is <i>one or more</i> of the preceding element.
 	It means that element is mandatory and moreover it can repeat indefinitely times.
-	This quantifier is often used to match a number, <code class="grammar">[0-9]+</code> matches any non-negative integer,
+	This quantifier is often used to match a number, @MalsysHelper.GrammarCode("[0-9]+") matches any non-negative integer,
 		for example <code class="match">5</code> or <code class="match">42</code>.
 </p>
 
 <p>
 	The asterisk indicates there is <i>zero or more</i> of the preceding element.
-	It is combination of previous two quantifiers, because <code class="grammar">(expression)*</code>
-		can be replaced with <code class="grammar">((expression)+)?</code>.
+	It is combination of previous two quantifiers, because @MalsysHelper.GrammarCode("(expression)*")
+		can be replaced with @MalsysHelper.GrammarCode("((expression)+)?").
 	Useful usage of asterisk can be regular expression, that matches non-empty comma-separated list of non-negative integers.
-	<code class="grammar">[0-9]+ (',' [0-9]+)*</code> matches <code class="match">0</code>,
+	@MalsysHelper.GrammarCode("[0-9]+ (',' [0-9]+)*") matches <code class="match">0</code>,
 		<code class="match">127,721</code> or <code class="match">1,1,2,3,5,8</code>.
 </p>
 
 <p>
-	Any of mentioned above can be combined together, so regular expression <code class="grammar">[0-9]+ ('.' [0-9]+)? ([eE] ('+'|'-')? [0-9]+)?</code>
+	Any of mentioned above can be combined together, so regular expression @MalsysHelper.GrammarCode("[0-9]+ ('.' [0-9]+)? ([eE] ('+'|'-')? [0-9]+)?")
 	matches non-negative floating point number with optional fractional part and optional exponent.
 </p>
 
@@ -119,27 +119,27 @@
 		<th>Comment</th>
 	</tr>
 	<tr>
-		<td><code class="grammar">'lsystem'</code></td>
+		<td>@MalsysHelper.GrammarCode("'lsystem'")</td>
 		<td><code class="match">lsystem</code></td>
 		<td></td>
 	</tr>
 	<tr>
-		<td><code class="grammar">[0-9]</code></td>
+		<td>@MalsysHelper.GrammarCode("[0-9]")</td>
 		<td><code class="match">1</code>, <code class="match">8</code></td>
 		<td>any one-digit integer</td>
 	</tr>
 	<tr>
-		<td><code class="grammar">'$' | '%' | '&'</code></td>
+		<td>@MalsysHelper.GrammarCode("'$' | '%' | '&'")</td>
 		<td><code class="match">$</code>, <code class="match">%</code> or <code class="match">&</code></td>
 		<td></td>
 	</tr>
 	<tr>
-		<td><code class="grammar">'0' [xX] ([0-9] | [a-f] | [A-F])+</code></td>
+		<td>@MalsysHelper.GrammarCode("'0' [xX] ([0-9] | [a-f] | [A-F])+")</td>
 		<td><code class="match">0xf8f</code>, <code class="match">0x12ab</code></td>
 		<td>non-negative integer in case-insensitive hexadecimal format prefixed with <code class="match">0x</code></td>
 	</tr>
 	<tr>
-		<td><code class="grammar">('+'|'-')? [0-9]+ ('.' [0-9]+)? ([eE] ('+'|'-')? [0-9]+)?</code></td>
+		<td>@MalsysHelper.GrammarCode("('+'|'-')? [0-9]+ ('.' [0-9]+)? ([eE] ('+'|'-')? [0-9]+)?")</td>
 		<td><code class="match">32</code>, <code class="match">3.14159</code>,
 			<code class="match">-10e-5</code>, <code class="match">+2.121e+5</code></td>
 		<td>floating point number with optional fractional part and optional exponent</td>

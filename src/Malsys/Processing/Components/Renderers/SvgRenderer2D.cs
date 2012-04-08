@@ -1,19 +1,23 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.IO.Compression;
+using System.Windows;
 using Malsys.Media;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Collections;
-using System;
-using System.Windows;
 
 namespace Malsys.Processing.Components.Renderers {
-	[Component("2D SVG renderer", ComponentGroupNames.Renderers)]
+	/// <summary>
+	/// Provides commands for rendering 2D image.
+	/// Result is vector image in SVG (Scalable Vector Graphics, plain text XML).
+	/// Result is by default compressed by GZip (svgz).
+	/// </summary>
+	/// <name>2D SVG renderer</name>
+	/// <group>Renderers</group>
 	public class SvgRenderer2D : IRenderer2D {
 
 		private const double invertY = -1;
-		public const string SvgFileExtension = ".svg";
-		public const string SvgzFileExtension = ".svgz";
 
 		private ProcessContext context;
 		private FSharpMap<string, object> globalAdditionalData = MapModule.Empty<string, object>();

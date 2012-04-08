@@ -7,7 +7,13 @@ using Malsys.SourceCode.Printers;
 using InterpretActionParams = System.Tuple<System.Action<Malsys.Evaluators.ArgsStorage>, int>;
 
 namespace Malsys.Processing.Components.Interpreters {
-	[Component("Interpreter caller debugger", "Debug")]
+	/// <summary>
+	/// Prints conversion from processed symbols to interpretation method name (ignores connected interpreter).
+	/// This is handy if you are not sure how symbols are interpreted
+	/// and what arguments were send to interpretation method.
+	/// </summary>
+	/// <name>Interpreter calls debugger</name>
+	/// <group>Interpreters</group>
 	public class InterpreterCallerDebugger : InterpreterCaller {
 
 		private IndentTextWriter itWriter;

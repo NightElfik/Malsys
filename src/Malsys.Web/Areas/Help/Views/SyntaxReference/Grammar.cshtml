@@ -15,22 +15,20 @@
 
 <p>
 	Each grammar rule describes one part of Malsys input, name of rule is often connected with its actual semantic meaning.
-	The simplest form of rule is <code class="grammar">name = regular_expression</code>.
-	The <code class="grammar">name</code> is name of the rule and with @Html.ActionLink("regular expression", MVC.Help.SyntaxReference.GrammarRegexps())
-		<code class="grammar">regular_expression</code> is described what is should match.
+	The simplest form of rule is <code>name = regular_expression</code>.
+	The <code>name</code> is name of the rule and with @Html.ActionLink("regular expression", MVC.Help.SyntaxReference.GrammarRegexps())
+		<code>regular_expression</code> is described what is should match.
 	It is just named regular expression.
-	Rule can match more different regular using boolean operator <i>OR</i> represented as vertical bar <code class="grammar">|</code>.
+	Rule can match more different regular expressions using boolean operator <i>OR</i> represented as vertical bar <code>|</code>.
 </p>
 
-<pre class="grammar">
-simple = regular_expression
-
-more_regexps =
-	| regular_expression_1
-	| regular_expression_2
-	| regular_expression_3
-	| regular_expression_4
-</pre>
+@MalsysHelper.GrammarBox(
+	"simple = regular_expression",
+	"",
+	"more_regexps =",
+	"	| regular_expression_1",
+	"	| regular_expression_2",
+	"	| regular_expression_3")
 
 
 <h3>Tokens</h3>
@@ -38,18 +36,17 @@ more_regexps =
 <p>
 	A token is a string of characters described by one or more @Html.ActionLink("regular expressions", MVC.Help.SyntaxReference.GrammarRegexps()).
 	Token names are upper-case to separate them from grammar rule names.
-	The following example is token for number literal which is taken from actual @Html.ActionLink("Malsys syntax", MVC.Help.SyntaxReference.Index()).
+	The following example is token for number literal which is taken from @Html.ActionLink("tokens reference", MVC.Help.SyntaxReference.Tokens()).
 	Please note that in token can not be any whitespace character, tokens are atomic.
 </p>
 
-<pre class="grammar">
-NUMBER =
-	| [0-9]+ ('.' [0-9]+)? ([eE] ('+'|'-')? [0-9]+)?
-	| '0'[bB] [01]+
-	| '0'[oO] [0-7]+
-	| '0'[xX] ([0-9] | [a-f] | [A-F])+
-	| '#' ([0-9] | [a-f] | [A-F])+
-</pre>
+@MalsysHelper.GrammarBox(
+	"NUMBER =",
+	"	| [0-9]+ ('.' [0-9]+)? ([eE] ('+'|'-')? [0-9]+)?",
+	"	| '0'[bB] [01]+",
+	"	| '0'[oO] [0-7]+",
+	"	| '0'[xX] ([0-9] | [a-f] | [A-F])+",
+	"	| '#' ([0-9] | [a-f] | [A-F])+"	)
 
 <p>
 	As we can see, number literal is described by 5 different regular expressions.
@@ -69,17 +66,15 @@ NUMBER =
 
 <p>
 	Malsys grammar rules are described by same syntax as tokens, but members in regular expressions can be only grammar rules or tokens.
-	Primitive literals like <code class="grammar">','</code> are directly in the grammar to improve readability,
+	Primitive literals like @MalsysHelper.GrammarCode("','") are directly in the grammar to improve readability,
 		there is no special token rule for them.
 	As an example can be list of numbers.
 </p>
 
-<pre class="grammar">
-num_list = NUMBER (',' NUMBER)*
-</pre>
+@MalsysHelper.GrammarBox("num_list = NUMBER (',' NUMBER)*")
 
 <p>
-	Rule <code class="grammar">num_list</code> matches <code class="match">1</code>,
+	Rule <code>num_list</code> matches <code class="match">1</code>,
 		<code class="match">8,6,4,5</code> or <code class="match">1.1,2.2,3e3</code>.
 </p>
 
@@ -87,6 +82,6 @@ num_list = NUMBER (',' NUMBER)*
 
 <p>
 	Malsys syntax is whitespace-independent, whitespaces can be implicitly between any tokens.
-	So grammar rule <code class="grammar">num_list</code> from previous example also matches <code class="match">42 , 1.1 , 5</code>.
+	So grammar rule <code>num_list</code> from previous example also matches <code class="match">42 , 1.1 , 5</code>.
 	However sometimes is explicit whitespace needed for separate individual tokens.
 </p>

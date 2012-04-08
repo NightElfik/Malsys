@@ -1,81 +1,193 @@
 ﻿@model ComponentModel
+@using Malsys.SemanticModel.Evaluated;
 
-<div class="componentBox">
-<h4 id="@Model.Type.FullName">
-	@Model.Name @(Model.IsContainer ? "(container)" : "")
-	<span class="type">[<abbr title="@Model.Type.FullName">@Model.Type.Name</abbr>]</span>
+@{
+	var data = Model.Metadata;
+	var baseComp = Model.BaseTypes.Where(t => !t.IsInterface).ToList();
+	var baseCont = Model.BaseTypes.Where(t => t.IsInterface).ToList();
+	var derComp = Model.DerivedTypes.Where(t => !t.IsInterface).ToList();
+	var derCont = Model.DerivedTypes.Where(t => t.IsInterface).ToList();
+}
+
+
+<div class="component box">
+<h4 id="@data.ComponentType.FullName">
+	@data.Name <a  href="#@data.ComponentType.FullName" class="type">[<abbr title="@data.ComponentType.FullName">@data.ComponentType.Name</abbr>]</a>
 </h4>
 
-@if (!string.IsNullOrEmpty(Model.Documentation)) {
-	<p>@Model.Documentation</p>
+@if (!string.IsNullOrEmpty(data.SummaryDoc)) {
+	<p>@data.SummaryDoc</p>
 }
 
 <dl>
-	@if (Model.BaseTypes.Count() > 0) {
-		<dt><strong>Base Components</strong></dt>
-		<dd><ul class="clean">
-		@foreach (var baseType in Model.BaseTypes) {
-			<li><a href="#@baseType.FullName" class="type">[<abbr title="@baseType.FullName">@baseType.Name</abbr>]</a></li>
-		}
-		</ul></dd>
-	}
-
-	@if (Model.DerivedTypes.Count() > 0) {
-		<dt><strong>Derived Components</strong></dt>
-		<dd><ul class="clean">
-		@foreach (var derivedType in Model.DerivedTypes) {
-			<li><a href="#@derivedType.FullName" class="type">[<abbr title="@derivedType.FullName">@derivedType.Name</abbr>]</a></li>
-		}
-		</ul></dd>
-	}
-
-	@if (Model.SettableProperties.Count() > 0) {
-		<dt><strong>Settable properties</strong></dt>
-		<dd><ul class="clean">
-		@foreach (var prop in Model.SettableProperties) {
-			<li>
-				<span class="monospace">@prop.Name</span> (only @prop.ValueTypeHumanReadableString values)
-				@(prop.IsMandatory ? "(mandatory)" : "")
-			</li>
-		}
-		</ul></dd>
-	}
-
-	@if (Model.ConnectableProperties.Count() > 0) {
-		<dt><strong>Connectable properties</strong></dt>
-		<dd><ul class="clean">
-		@foreach (var prop in Model.ConnectableProperties) {
-			<li>
-				<span class="monospace">@prop.Name</span> <a href="#@prop.Type.FullName" class="type">[<abbr title="@prop.Type.FullName">@prop.Type.Name</abbr>]</a>
-				@(prop.IsOptional ? "(optional)" : "")
-			</li>
-		}
-		</ul></dd>
-	}
-
-	@if (Model.InterpretationMethods.Count() > 0) {
-		<dt><strong>Interpretation methods</strong></dt>
-		<dd><ul class="clean">
-		@foreach (var intMethod in Model.InterpretationMethods) {
-			<li>
-				<span class="monospace">@intMethod.Name</span>
-				@if(intMethod.RequiredParametersCount > 0) {
-					@string.Format("({0} required parameter(s))", intMethod.RequiredParametersCount);
-				}
-				@if(!string.IsNullOrEmpty(intMethod.Documentation)){
-					<ul class="clean"><li>@intMethod.Documentation</li></ul>
-				}
-			</li>
-		}
-		</ul></dd>
-	}
 
 	<dt><strong>Configuration access names</strong></dt>
 	<dd><ul class="clean monospace">
-	@foreach (var name in Model.AccessibleNames) {
+	@foreach (var name in Model.AccessNames) {
 		<li>@name</li>
 	}
 	</ul></dd>
+
+	@if (baseComp.Count > 0) {
+		<dt><strong>Base components</strong></dt>
+		<dd>
+		@foreach (var type in baseComp) {
+			<a href="#@type.FullName" class="type">[<abbr title="@type.FullName">@type.Name</abbr>]</a>
+		}
+		</dd>
+	}
+
+	@if (derComp.Count> 0) {
+		<dt><strong>Derived components</strong></dt>
+		<dd>
+		@foreach (var type in derComp) {
+			<a href="#@type.FullName" class="type">[<abbr title="@type.FullName">@type.Name</abbr>]</a>
+		}
+		</dd>
+	}
+
+	@if (baseCont.Count > 0) {
+		<dt><strong>@(data.IsContainer ? "Derived" : "Assignable to") containers</strong></dt>
+		<dd>
+		@foreach (var type in baseCont) {
+			<a href="#@type.FullName" class="type">[<abbr title="@type.FullName">@type.Name</abbr>]</a>
+		}
+		</dd>
+	}
+
+	@if (derCont.Count > 0) {
+		<dt><strong>Derived containers</strong></dt>
+		<dd>
+		@foreach (var type in derCont) {
+			<a href="#@type.FullName" class="type">[<abbr title="@type.FullName">@type.Name</abbr>]</a>
+		}
+		</dd>
+	}
+
+	@if (data.GettableProperties.Length > 0) {
+		<dt><strong>Gettable properties</strong></dt>
+		<dd><ul class="clean">
+		@foreach (var prop in data.GettableProperties) {
+			<li class="spaced">
+				<span class="monospace">@string.Join(", ", prop.Names)</span>
+				@if (!prop.IsGettableBeforeInitialiation) { <span class="flag">{run-time only}</span> }
+				(returns @prop.ExpressionValueType.ToTypeString())
+			</li>
+		}
+		</ul></dd>
+	}
+
+	@if (data.SettableProperties.Length > 0) {
+		<dt><strong>Settable properties</strong></dt>
+		<dd><ul class="clean">
+		@foreach (var prop in data.SettableProperties) {
+			<li class="spaced">
+				<span class="monospace">@string.Join(", ", prop.Names)</span>
+				@if (prop.IsMandatory) { <span class="flag">{mandatory}</span> }
+				(accepts @prop.ExpressionValueType.ToTypeString())
+				<ul>
+				@if (!string.IsNullOrEmpty(prop.SummaryDoc)) {
+					<li>@prop.SummaryDoc</li>
+				}
+				@if (!string.IsNullOrEmpty(prop.ExpectedValueDoc)) {
+					<li>Expected value: @prop.ExpectedValueDoc</li>
+				}
+				@if (!string.IsNullOrEmpty(prop.DefaultValueDoc)) {
+					<li>Default value: <code>@prop.DefaultValueDoc</code></li>
+				}
+				</ul>
+			</li>
+		}
+		</ul></dd>
+	}
+
+	@if (data.SettableSymbolsProperties.Length > 0) {
+		<dt><strong>Settable symbol properties</strong></dt>
+		<dd><ul class="clean">
+		@foreach (var prop in data.SettableSymbolsProperties) {
+			<li class="spaced">
+				<span class="monospace">@string.Join(", ", prop.Names)</span>
+				@if (prop.IsMandatory) { <span class="flag">{mandatory}</span> }
+				@if (!string.IsNullOrEmpty(prop.SummaryDoc)) {
+					<ul><li>@prop.SummaryDoc</li></ul>
+				}
+			</li>
+		}
+		</ul></dd>
+	}
+
+	@if (data.ConnectableProperties.Length > 0) {
+		<dt><strong>Connectable properties</strong></dt>
+		<dd><ul class="clean">
+		@foreach (var prop in data.ConnectableProperties) {
+			<li class="spaced">
+				<span class="monospace">@string.Join(", ", prop.Names)</span>
+				<a href="#@prop.PropertyType.FullName" class="type">[<abbr title="@prop.PropertyType.FullName">@prop.PropertyType.Name</abbr>]</a>
+				@if (prop.IsOptional) { <span class="flag">{optional}</span> }
+				@if (prop.AllowMultiple) { <span class="flag">{allowed multiple}</span> }
+			</li>
+		}
+		</ul></dd>
+	}
+
+	@if (data.CallableFunctions.Length > 0) {
+		<dt><strong>Callable functions</strong></dt>
+		<dd><ul class="clean">
+		@foreach (var fun in data.CallableFunctions) {
+			<li class="spaced">
+				<span class="monospace">@string.Join(", ", fun.Names)</span>
+				@if (!fun.IsGettableBeforeInitialiation) { <span class="flag">{run-time only}</span> }
+				(returns @fun.ExpressionValueReturnType.ToTypeString())
+				<ul>
+					@if (!string.IsNullOrEmpty(fun.SummaryDoc)) {
+					<li>@fun.SummaryDoc</li>
+					}
+					<li>Parameters: @fun.ParamsCount
+					@if (fun.ParamsCount > 0) {
+						var paramsDoc = fun.ParamsDoc.SplitToLines().ToList();
+						<ol>
+						@for (int i = 0; i < fun.ParamsCount; i++) {
+							<li>
+								@if (i < paramsDoc.Count) { @paramsDoc[i] }
+							</li>
+						}
+						</ol>
+					}
+					</li>
+				</ul>
+			</li>
+		}
+		</ul></dd>
+	}
+
+	@if (data.InterpretationMethods.Length > 0) {
+		<dt><strong>Interpretation methods</strong></dt>
+		<dd><ul class="clean">
+		@foreach (var intMethod in data.InterpretationMethods) {
+			<li class="spaced">
+				<span class="monospace">@string.Join(", ", intMethod.Names)</span>
+				<ul>
+					@if (!string.IsNullOrEmpty(intMethod.SummaryDoc)) {
+					<li>@intMethod.SummaryDoc</li>
+					}
+					<li>Parameters: @intMethod.ParamsCount
+					@if(intMethod.ParamsCount > 0) {
+						var paramsDoc = intMethod.ParamsDoc.SplitToLines().ToList();
+						<ol>
+						@for (int i = 0; i < intMethod.ParamsCount; i++) {
+							<li>
+								@if (i < intMethod.MandatoryParamsCount) { <span class="flag">{mandatory}</span> }
+								@if (i < paramsDoc.Count) { @paramsDoc[i] }
+							</li>
+						}
+						</ol>
+					}
+					</li>
+				</ul>
+			</li>
+		}
+		</ul></dd>
+	}
 
 </dl>
 </div>

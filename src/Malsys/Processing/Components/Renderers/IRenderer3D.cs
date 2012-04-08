@@ -2,7 +2,11 @@
 using Malsys.Media;
 
 namespace Malsys.Processing.Components.Renderers {
-	[Component("Generic 3D renderer", ComponentGroupNames.Renderers)]
+	/// <summary>
+	/// Provides commands for rendering 3D scene.
+	/// </summary>
+	/// <name>3D renderer container</name>
+	/// <group>Renderers</group>
 	public interface IRenderer3D : IRenderer {
 
 		/// <remarks>

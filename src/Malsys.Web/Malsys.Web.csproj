@@ -50,6 +50,8 @@
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
     <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
+    <DocumentationFile>bin\Malsys.Web.xml</DocumentationFile>
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -255,10 +257,12 @@
       <DependentUpon>T4MVC.tt</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\AppSettingsProvider.cs" />
-    <Compile Include="Infrastructure\HtmlHelpers.cs">
+    <Compile Include="Infrastructure\HtmlHelperExtensions.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Infrastructure\IAppSettingsProvider.cs" />
+    <Compile Include="Infrastructure\MalsysHelper.cs" />
+    <Compile Include="Infrastructure\UrlHelperExtensions.cs" />
     <Compile Include="Models\ViewModels%27\InputDetail.cs" />
     <Compile Include="Models\ViewModels%27\EditSavedInputModel.cs" />
     <Compile Include="Models\IMalsysInputRepository.cs" />
@@ -326,10 +330,9 @@
     <Content Include="Areas\Help\Views\Home\BasicSyntax.cshtml" />
     <Content Include="Areas\Help\Views\SyntaxReference\FunctionDefinition.cshtml" />
     <Content Include="Areas\Help\Views\Home\Faq.cshtml" />
+    <Content Include="Areas\Help\Views\SyntaxReference\LsystemDefinition.cshtml" />
+    <Content Include="Areas\Help\Views\SyntaxReference\ComponentPropertyAssignDefinition.cshtml" />
     <None Include="Css\style.less.css" />
-    <Content Include="Css\style.css">
-      <DependentUpon>T4CSS.tt</DependentUpon>
-    </Content>
     <None Include="DatabaseScheme.sql" />
     <Content Include="Error.html" />
     <Content Include="Global.asax" />
@@ -340,6 +343,7 @@
     <None Include="Js\modernizr.js" />
     <None Include="Js\ThreeJs\Detector.js" />
     <None Include="Js\ThreeJs\malsys.three.js" />
+    <Content Include="humans.txt" />
     <Content Include="Js\ThreeJs\Stats.js" />
     <Content Include="Js\ThreeJs\Three.js" />
     <Content Include="Web.config">
@@ -379,15 +383,6 @@
     <Content Include="Areas\Help\Views\SyntaxReference\GrammarRegexps.cshtml" />
     <Content Include="Areas\Help\Views\Predefined\Constants.cshtml" />
     <Content Include="Areas\Help\Views\Predefined\Functions.cshtml" />
-    <None Include="Css\T4CSS.log">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>T4CSS.tt</DependentUpon>
-    </None>
-    <None Include="Css\T4CSS.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>T4CSS.log</LastGenOutput>
-    </None>
     <None Include="Js\MinifyJs.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>MinifyJs.log</LastGenOutput>

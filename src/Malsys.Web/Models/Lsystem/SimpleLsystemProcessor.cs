@@ -31,12 +31,7 @@ namespace Malsys.Web.Models.Lsystem {
 			inEvaled = stdLib.JoinWith(inEvaled);
 			var outputProvider = new InMemoryOutputProvider();
 
-			if (inEvaled.Lsystems.Count == 0) {
-				processManager.DumpConstants(inEvaled, outputProvider, logger);
-			}
-			else {
-				processManager.ProcessInput(inEvaled, outputProvider, logger, new TimeSpan(0, 0, 1));
-			}
+			processManager.ProcessInput(inEvaled, outputProvider, logger, new TimeSpan(0, 0, 1));
 
 			if (logger.ErrorOccurred) {
 				return logger.Select(x => x.GetFullMessage());

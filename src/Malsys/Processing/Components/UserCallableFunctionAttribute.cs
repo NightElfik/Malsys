@@ -8,9 +8,8 @@ namespace Malsys.Processing.Components {
 	/// <remarks>
 	/// Marked method must have two parameters of types IValue[] and IExpressionEvaluatorContext.
 	/// Return type must be assignable to IValue.
-	/// Attribute inherence do not work on properties in interface, do not forget to add it to derived types too.
 	/// </remarks>
-	[AttributeUsage(AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
+	[AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = false)]
 	public sealed class UserCallableFunctionAttribute : Attribute {
 
 		public int ParamsCount { get; set; }

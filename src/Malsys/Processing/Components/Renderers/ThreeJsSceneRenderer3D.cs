@@ -5,7 +5,12 @@ using Malsys.IO;
 using Malsys.Media;
 
 namespace Malsys.Processing.Components.Renderers {
-	[Component("3D WebGl renderer", ComponentGroupNames.Renderers)]
+	/// <summary>
+	/// Provides commands for rendering 3D scene.
+	/// Result is JavaScript script defining 3D scene in JavaScript 3D engine Three.js.
+	/// </summary>
+	/// <name>3D Three.js renderer</name>
+	/// <group>Renderers</group>
 	public class ThreeJsSceneRenderer3D : BaseRenderer3D {
 
 		private IndentTextWriter writer;

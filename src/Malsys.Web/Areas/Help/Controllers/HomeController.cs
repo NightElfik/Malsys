@@ -1,22 +1,20 @@
 ﻿using System.Web.Mvc;
 using Malsys.Processing;
-using Malsys.Processing.Components.Interpreters;
-using Malsys.Reflection;
+using Malsys.Reflection.Components;
 using Malsys.SemanticModel.Evaluated;
 using Malsys.Web.Areas.Help.Models;
 using Malsys.Web.Models.Lsystem;
-using Malsys.Reflection.Components;
 
 namespace Malsys.Web.Areas.Help.Controllers {
 	public partial class HomeController : Controller {
 
-		private readonly ComponentXmlDocLoader xmlDocLoader;
+		private readonly IComponentXmlDocLoader xmlDocLoader;
 		private readonly SimpleLsystemProcessor simpleLsystemProcessor;
 		private readonly InputBlockEvaled stdLib;
 		private readonly ProcessManager processManager;
 
 
-		public HomeController(ComponentXmlDocLoader xmlDocLoader, ProcessManager processManager, InputBlockEvaled stdLib) {
+		public HomeController(IComponentXmlDocLoader xmlDocLoader, ProcessManager processManager, InputBlockEvaled stdLib) {
 
 			this.xmlDocLoader = xmlDocLoader;
 			this.stdLib = stdLib;
@@ -37,7 +35,7 @@ namespace Malsys.Web.Areas.Help.Controllers {
 		public virtual ActionResult BasicInterpretation() {
 
 			var intMeta = processManager.ComponentResolver.ResolveComponentMetadata("TurtleInterpreter");
-			xmlDocLoader.LoadXmlDocFor(intMeta);
+			xmlDocLoader.LoadXmlDoc(intMeta);
 
 			return View(new BasicInterpretationModel() {
 				SimpleLsystemProcessor = simpleLsystemProcessor,

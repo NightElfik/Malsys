@@ -2,6 +2,9 @@
 using Malsys.Evaluators;
 using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Collections;
+using Malsys.Processing.Components;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace Malsys.Processing {
 	public class ProcessContext {
@@ -38,6 +41,24 @@ namespace Malsys.Processing {
 			ProcessingTimeLimit = processingTimeLimit;
 			ComponentGraph = componentGraph;
 			Logger = logger;
+
+		}
+
+
+		public KeyValuePair<string, ConfigurationComponent>? FindComponent(IComponent instance) {
+
+			Contract.Requires<ArgumentNullException>(instance != null);
+			Contract.Ensures(Contract.Result<KeyValuePair<string, ConfigurationComponent>?>() != null
+				? Contract.Result<KeyValuePair<string, ConfigurationComponent>?>().Value.Value == instance
+				: true);
+
+			foreach (var compKvp in ComponentGraph) {
+				if (compKvp.Value.Component == instance) {
+					return compKvp;
+				}
+			}
+
+			return null;
 
 		}
 

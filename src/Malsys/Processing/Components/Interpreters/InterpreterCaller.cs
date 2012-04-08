@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Malsys.Reflection;
 using Malsys.Evaluators;
 using Malsys.Processing.Components.Common;
 using Malsys.SemanticModel;
@@ -12,7 +11,12 @@ using InterpretActionParams = System.Tuple<System.Action<Malsys.Evaluators.ArgsS
 
 
 namespace Malsys.Processing.Components.Interpreters {
-	[Component("Interpreter caller", ComponentGroupNames.Interpreters)]
+	/// <summary>
+	/// Process symbols by calling interpretation methods on connected interpreter.
+	/// For conversion are used defined interpretation rules in current L-system.
+	/// </summary>
+	/// <name>Interpreter caller</name>
+	/// <group>Interpreters</group>
 	public class InterpreterCaller : IInterpreterCaller {
 
 		protected IInterpreter interpreter;
@@ -71,7 +75,7 @@ namespace Malsys.Processing.Components.Interpreters {
 
 
 			InterpretActionParams iActionParams;
-			if (!instrToDel.TryGetValue(instr.InstructionName.ToLowerInvariant(), out iActionParams)) {
+			if (!instrToDel.TryGetValue(instr.InstructionName, out iActionParams)) {
 				throw new InterpretationException("Unknown interpreter action `{0}` of symbol `{1}` of interpreter `{2}`."
 					.Fmt(instr.InstructionName, symbol.Name, interpreter.GetType().FullName));
 			}
@@ -90,16 +94,19 @@ namespace Malsys.Processing.Components.Interpreters {
 		public virtual void Initialize(ProcessContext ctxt) {
 
 			exprEvalCtxt = ctxt.ExpressionEvaluatorContext;
-
 			symbolToInstr = ctxt.Lsystem.SymbolsInterpretation.ToDictionary(x => x.Key, x => x.Value);
 
-			createInstrToDelCahce();
+			var component = ctxt.FindComponent(interpreter);
+			if (component == null) {
+				throw new ComponentException("Interpreter metadata not found.");
+			}
+
+			createInstrToDelCahce(component.Value.Value);
 		}
 
 		public virtual void Cleanup() { }
 
 		public virtual void BeginProcessing(bool measuring) {
-
 			interpreter.BeginProcessing(measuring);
 		}
 
@@ -133,27 +140,17 @@ namespace Malsys.Processing.Components.Interpreters {
 			}
 		}
 
-		private void createInstrToDelCahce() {
+		private void createInstrToDelCahce(ConfigurationComponent component) {
 
 			instrToDel = new Dictionary<string, InterpretActionParams>();
 
-			if (interpreter == null) {
-				return;
-			}
+			foreach (var intMethod in component.Metadata.InterpretationMethods) {
 
-			foreach (var miAtrKvp in interpreter.GetType().GetMethodsHavingAttr<SymbolInterpretationAttribute>()) {
-
-				var methodInfo = miAtrKvp.Item1;
-				var attr = miAtrKvp.Item2;
-
-				var prms = methodInfo.GetParameters();
-				if (prms.Length != 1 || prms[0].ParameterType != typeof(ArgsStorage)) {
-					throw new ComponentException("Interpreter method marked by `{0}` have invalid parameters."
-						.Fmt(typeof(SymbolInterpretationAttribute).Name));
+				var del = createInterpretAction(intMethod.MethodInfo);
+				var intAction = new InterpretActionParams(del, intMethod.MandatoryParamsCount);
+				foreach (var name in intMethod.Names) {
+					instrToDel.Add(name, intAction);
 				}
-
-				var del = createInterpretAction(methodInfo);
-				instrToDel.Add(methodInfo.Name.ToLowerInvariant(), new InterpretActionParams(del, attr.RequiredParametersCount));
 			}
 		}
 

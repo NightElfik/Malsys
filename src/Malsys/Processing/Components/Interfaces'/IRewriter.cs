@@ -1,7 +1,8 @@
 ﻿using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Processing.Components {
-	[Component("Rewriter container", ComponentGroupNames.Rewriters)]
+	/// <name>Symbol rewriter container</name>
+	/// <group>Rewriters</group>
 	public interface IRewriter : ISymbolProvider {
 
 		ISymbolProvider SymbolProvider { set; }

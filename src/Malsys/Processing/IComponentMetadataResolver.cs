@@ -1,10 +1,17 @@
-﻿using Malsys.Reflection.Components;
+﻿using System.Collections.Generic;
+using Malsys.Reflection.Components;
 
 namespace Malsys.Processing {
 
 	public interface IComponentMetadataResolver : IComponentTypeResolver {
 
 		ComponentMetadata ResolveComponentMetadata(string name, IMessageLogger logger);
+
+	}
+
+	public interface IComponentMetadataContainer : IComponentTypeContainer {
+
+		IEnumerable<KeyValuePair<string, ComponentMetadata>> GetAllRegisteredComponentsMetadata(IMessageLogger logger);
 
 	}
 

@@ -1,6 +1,7 @@
 ﻿
 namespace Malsys.Processing.Components {
-	[Component("Generic interpreter caller", ComponentGroupNames.Interpreters)]
+	/// <name>Interpreter caller container</name>
+	/// <group>Interpreters</group>
 	public interface IInterpreterCaller : ISymbolProcessor {
 
 		[UserConnectable]

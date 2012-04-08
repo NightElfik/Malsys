@@ -6,16 +6,6 @@
 		return code.replace(/(.)([_a-z]+)/gi, '$1<a href="#grammar-$2">$2</a>');
 	}
 
-	function highlightTerminals(code) {
-
-		code = code.replace(/('.[^']*')/g, '<span class="grTerminal">$1</span>');
-		code = code.replace(/\[(.)\-(.)\]/g, '[<span class="grTerminal">$1</span>-<span class="grTerminal">$2</span>]');
-		code = code.replace(/\[([^'\-<\]]+)\]/g, '[<span class="grTerminal">$1</span>]');
-		// quantifiers needs to be after terminals because of quantifiers after terminal
-		code = code.replace(/([^'])([?+*])/g, '$1<span class="grQuantifier">$2</span>');
-		return code;
-	}
-
 	function highlightComments(code) {
 		code = code.replace(/(\/\*(.|\s)*?\*\/)/g, '<span class="comment">$1</span>');
 		code = code.replace(/(\/\/.*)/g, '<span class="comment">$1</span>');
@@ -31,7 +21,7 @@
 	}
 
 	function highlightLsystemKeywords(code) {
-		return (' ' + code + ' ').replace(/(\s)(all|as|component|configuration|connect|consider|container|default|fun|interpret|let|lsystem|nothing|or|process|return|rewrite|set|symbols|this|to|typeof|use|virtual|weight|with|where)(?=\s)/g, '$1<span class="keyword">$2</span>').trim();
+		return (' ' + code + ' ').replace(/(\s)(abstract|all|as|component|configuration|connect|consider|container|default|extends|fun|interpret|let|lsystem|nothing|or|process|return|rewrite|set|symbols|this|to|typeof|use|virtual|weight|with|where)(?=\s)/g, '$1<span class="keyword">$2</span>').trim();
 	}
 
 	function urlEncode(str) {
@@ -78,34 +68,6 @@
 		toc.append('</ul>');
 	}
 
-
-
-	$("pre.grammar").each(function (i) {
-
-		$(this).html(addRefLinks($(this).html()));
-
-		// clean links with invalid href
-		$(this).find("a").each(function (i) {
-			if ($($(this).attr("href")).length == 0) {
-				$(this).replaceWith($(this).text());
-			}
-		});
-
-		var newHtml = highlightTerminals($(this).html());
-		newHtml = replaceTabs(newHtml);
-		$(this).html(newHtml);
-	});
-
-	$("code.grammar").each(function (i) {
-
-		var newHtml = $(this).text();
-		newHtml = highlightTerminals(newHtml);
-		newHtml = replaceTabs(newHtml);
-
-		$(this).text("");
-		$(this).append(newHtml);
-
-	});
 
 	$("pre.malsys").each(function (i) {
 

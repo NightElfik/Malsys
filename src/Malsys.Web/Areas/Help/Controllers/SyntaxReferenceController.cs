@@ -4,6 +4,7 @@ using Malsys.SemanticModel.Evaluated;
 using Malsys.Web.Models.Lsystem;
 
 namespace Malsys.Web.Areas.Help.Controllers {
+	[OutputCache(CacheProfile="HelpCache")]
 	public partial class SyntaxReferenceController : Controller {
 
 		private readonly SimpleLsystemProcessor simpleLsystemProcessor;
@@ -31,6 +32,14 @@ namespace Malsys.Web.Areas.Help.Controllers {
 			return View(simpleLsystemProcessor);
 		}
 
+		public virtual ActionResult LsystemDefinition() {
+			return View(simpleLsystemProcessor);
+		}
+
+		public virtual ActionResult ComponentPropertyAssignDefinition() {
+			return View(simpleLsystemProcessor);
+		}
+
 		public virtual ActionResult SymbolInterpretation() {
 			return View(simpleLsystemProcessor);
 		}
@@ -45,6 +54,10 @@ namespace Malsys.Web.Areas.Help.Controllers {
 
 		public virtual ActionResult GrammarRegexps() {
 			return View();
+		}
+
+		public virtual ActionResult ComponentConfigurationDefinition() {
+			return View(simpleLsystemProcessor);
 		}
 
 	}

@@ -1,0 +1,42 @@
+﻿               _
+   /\/\   __ _| |___ _   _ ___
+  /    \ / _` | / __| | | / __|
+ / /\/\ \ (_| | \__ \ |_| \__ \
+ \/    \/\__,_|_|___/\__, |___/
+                     |___/
+ M a r k ' s   L - s y s t e m s
+
+/* Online L-system processing system and gallery */
+/* malsys.cz (malsys.projekty.ms.mff.cuni.cz) */
+
+
+/* TEAM */
+Developer & Maintainer: Marek Fišer
+E-mail: see bottom of actual web
+Location: Hradec Králové (Prague), Czech Republic
+
+
+/* THANKS */
+Hosting: Faculty of Mathematics and Physics of Charles University in Prague
+
+
+/* USED TECHNOLOGY */
+ASP.NET MVC 3 (web)
+C# .NET (rest -- L-system processing)
+F# power pack's fslex & fsyacc for input parsing http://fsharppowerpack.codeplex.com/
+HTML5 ✰ boilerplate http://html5boilerplate.com
+jQuery http://jquery.com/
+Modernizr http://modernizr.com/
+Code contracts for better code http://research.microsoft.com/en-us/projects/contracts/
+Autofac IOC container with ASP.NET MVC3 Integration http://code.google.com/p/autofac/wiki/Mvc3Integration
+MvcContrib (especially T4MVC) http://mvccontrib.codeplex.com/
+ELMAH for error logging http://code.google.com/p/elmah/
+Data Annotations Extensions http://dataannotationsextensions.org
+ASP.NET Web Helpers Library http://nuget.org/packages/microsoft-web-helpers
+Yahoo! UI Library: YUI Compressor for .Net for minifying JS http://yuicompressor.codeplex.com/
+.less for CSS http://www.dotlesscss.org/
+Sandcastle (with Sandcastle Help File Builder) for building documentation http://sandcastle.codeplex.com/
+
+
+/* SOFTWARE */
+Visual Studio 2010

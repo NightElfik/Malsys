@@ -44,12 +44,6 @@ namespace Malsys.Processing {
 
 		}
 
-		public void DumpConstants(InputBlockEvaled inBlockEvaled, IOutputProvider outputProvider, IMessageLogger logger) {
-
-			new ConstantsDumper().DumpConstants(inBlockEvaled, outputProvider, logger, inBlockEvaled.SourceName);
-
-		}
-
 		public void ProcessInput(InputBlockEvaled inBlockEvaled, IOutputProvider outputProvider, IMessageLogger logger, TimeSpan timeout) {
 
 			foreach (var processStat in inBlockEvaled.ProcessStatements) {

@@ -161,7 +161,7 @@
 </p>
 
 @{
-	var specialModel = new LsystemExampleViewModel() {
+	var specialModelArgs = new LsystemExampleViewModel() {
 		LsystemProcessor = Model,
 		SourceCodeTemplate = StringHelper.JoinLines(
 		"let three = 1 + 2;",
@@ -174,7 +174,7 @@
 		UnimportantLines = new int[] { 2, -1, -2 }};
 }
 
-@Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, specialModel.WithArgs(exampleId++,
+@Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, specialModelArgs.WithArgs(exampleId++,
 		"A(1)  A(1, 2)  A(2, 3)",
 		"interpret A (a, b = 0)\n\t as Draw((a + three) * six, a + b * three);"))
 
@@ -194,22 +194,38 @@
 <hr />
 
 <p>
-	This is important in L-system inherence.
+	Interpretation redefinition is especially important in L-system inherence.
 	If base L-system defines some interpretations the definitions in derived L-system always replaces old ones.
 </p>
 
-EXAMPLE
+@{
+	var specialModelInt = new LsystemExampleViewModel() {
+		LsystemProcessor = Model,
+		SourceCodeTemplate = StringHelper.JoinLines(
+		"abstract lsystem Base {{",
+		"{2}",
+		"}}",
+		"lsystem InterpretationExample{0:00} extends Base {{",
+		"set symbols axiom = {1};",
+		"{3}",
+		"}}",
+		"process all with InterpretationDebugger;"),
+		UnimportantLines = new int[] {-1 }};
+}
 
+@Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, specialModelInt.WithArgs(exampleId++,
+		"A B",
+		"interpret A B as Draw;",
+		"interpret A as Move;"))
 
 @* ================================================================================================================== *@
 <h3>Formal grammar</h3>
 
-<pre class="grammar box">
-symbols_interpretation_def = 'interpret' SYMBOL+ symbol_params? 'as' ID action_params? ';'
-
-symbol_params = '(' params_list? ')'
-params_list = ID ('=' expression)?  (',' params_list)?
-
-action_params = '(' params_expr_list? ')'
-params_expr_list = expression  (',' params_expr_list)?
-</pre>
+@MalsysHelper.GrammarBox(
+	"symbols_interpretation_def = 'interpret' SYMBOL+ symbol_params? 'as' ID action_params? ';'",
+	"",
+	"symbol_params = '(' params_list? ')'",
+	"params_list = ID ('=' expression)?  (',' params_list)?",
+	"",
+	"action_params = '(' params_expr_list? ')'",
+	"params_expr_list = expression  (',' params_expr_list)?")

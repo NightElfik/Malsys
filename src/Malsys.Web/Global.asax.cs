@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Configuration;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Web;
 using System.Web.Configuration;
 using System.Web.Mvc;
@@ -14,15 +16,15 @@ using Malsys.Evaluators;
 using Malsys.Processing;
 using Malsys.Processing.Components;
 using Malsys.Reflection;
+using Malsys.Reflection.Components;
 using Malsys.Resources;
 using Malsys.SemanticModel.Evaluated;
 using Malsys.Web.Entities;
 using Malsys.Web.Infrastructure;
 using Malsys.Web.Models;
+using Malsys.Web.Models.Lsystem;
 using Malsys.Web.Models.Repositories;
 using Malsys.Web.Security;
-using Malsys.Web.Models.Lsystem;
-using Malsys.Reflection.Components;
 
 namespace Malsys.Web {
 	public class MvcApplication : HttpApplication {
@@ -40,12 +42,25 @@ namespace Malsys.Web {
 			registerGlobalFilters(GlobalFilters.Filters);
 			registerRoutes(RouteTable.Routes);
 
-
 		}
 
+		public override string GetVaryByCustomString(HttpContext context, string custom) {
+
+			if (custom == "user") {
+				// cache vary by individual users
+				if (context.User.Identity.IsAuthenticated) {
+					return context.User.Identity.Name.ToLower();
+				}
+				else {
+					return "";
+				}
+			}
+
+			return base.GetVaryByCustomString(context, custom);
+		}
 
 		private void registerGlobalFilters(GlobalFilterCollection filters) {
-			// no filters registered yet
+			filters.Add(new InvariantCultureActionFilter());
 		}
 
 		private void registerRoutes(RouteCollection routes) {
@@ -87,7 +102,7 @@ namespace Malsys.Web {
 
 			string basePath = Server.MapPath("~/bin");  // path where DLL and theirs XML doc files are
 			builder.Register(x => new XmlDocReader(basePath)).SingleInstance();
-			builder.RegisterType<ComponentXmlDocLoader>().SingleInstance();
+			builder.RegisterType<ComponentXmlDocLoader>().As<IComponentXmlDocLoader>().SingleInstance();
 
 
 			registerMalsysStuff(builder);
@@ -120,9 +135,8 @@ namespace Malsys.Web {
 				componentResolver.RegisterComponentNameAndFullName(type, false);
 			}
 			builder.Register(x => componentResolver)
-				.As<IComponentTypeResolver>()
+				.As<IComponentMetadataContainer>()
 				.As<IComponentMetadataResolver>()
-				.As<IComponentTypeContainer>()
 				.SingleInstance();
 
 			builder.RegisterType<ProcessManager>().InstancePerHttpRequest();
@@ -241,6 +255,18 @@ namespace Malsys.Web {
 			catch (Exception ex) {
 				throw new Exception("Directory `{0}` is not writable!".Fmt(path), ex);
 			}
+
+		}
+
+
+		private class InvariantCultureActionFilter : IActionFilter {
+
+			public void OnActionExecuting(ActionExecutingContext filterContext) {
+				Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+				Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
+			}
+
+			public void OnActionExecuted(ActionExecutedContext filterContext) { }
 
 		}
 

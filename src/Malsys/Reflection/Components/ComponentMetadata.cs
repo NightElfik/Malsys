@@ -10,6 +10,8 @@ namespace Malsys.Reflection.Components {
 
 		public readonly Type ComponentType;
 
+		public readonly bool IsContainer;
+
 		public readonly ImmutableList<ComponentGettablePropertyMetadata> GettableProperties;
 
 		public readonly ImmutableList<ComponentSettablePropertyMetadata> SettableProperties;
@@ -28,7 +30,13 @@ namespace Malsys.Reflection.Components {
 		public readonly bool CaseSensitiveLookup;
 
 
-		public bool IsDocumentationSet { get; private set; }
+		public bool IsDocumentationLoaded { get; private set; }
+
+		public string NameDoc { get; private set; }
+		public string GroupDoc { get; private set; }
+		public string SummaryDoc { get; private set; }
+
+		public string Name { get { return string.IsNullOrEmpty(NameDoc) ? ComponentType.Name : NameDoc; } }
 
 
 
@@ -48,7 +56,7 @@ namespace Malsys.Reflection.Components {
 				ImmutableList<ComponentSettablePropertyMetadata> settableProperties, ImmutableList<ComponentSettableSybolsPropertyMetadata> settableSymbolsProperties,
 				ImmutableList<ComponentConnectablePropertyMetadata> connectableProperties, ImmutableList<ComponentCallableFunctionMetadata> callableFunctions,
 				ImmutableList<ComponentInterpretationMethodMetadata> interpretationMethods, ConstructorInfo componentConstructor,
-				bool hasCtorWithMessageLogger, bool caseSensitiveLookup = false) {
+				bool hasCtorWithMessageLogger, bool isContainer = false, bool caseSensitiveLookup = false) {
 
 			ComponentType = componentType;
 			GettableProperties = gettableProperties;
@@ -60,6 +68,7 @@ namespace Malsys.Reflection.Components {
 			ComponentConstructor = componentConstructor;
 			HasCtorWithMessageLogger = hasCtorWithMessageLogger;
 			CaseSensitiveLookup = caseSensitiveLookup;
+			IsContainer = isContainer;
 
 			gettablePropertiesDictionary = new Dictionary<string, ComponentGettablePropertyMetadata>();
 			settablePropertiesDictionary = new Dictionary<string, ComponentSettablePropertyMetadata>();
@@ -141,9 +150,13 @@ namespace Malsys.Reflection.Components {
 		}
 
 
-		public void SetDocumentation() {
+		public void SetDocumentation(string name, string group, string summary) {
 
-			IsDocumentationSet = true;
+			NameDoc = name;
+			GroupDoc = group;
+			SummaryDoc = summary;
+
+			IsDocumentationLoaded = true;
 
 		}
 

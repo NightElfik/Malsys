@@ -4,6 +4,12 @@ using Malsys.Media;
 using Microsoft.FSharp.Collections;
 
 namespace Malsys.Processing.Components.Renderers {
+	/// <summary>
+	/// Provides commands for rendering 3D scene and also
+	/// some basic functionality common for all 3D renderers.
+	/// </summary>
+	/// <name>3D renderer base</name>
+	/// <group>Renderers</group>
 	public abstract class BaseRenderer3D : IRenderer3D {
 
 		protected ProcessContext context;

@@ -1,23 +1,77 @@
 ﻿@model IEnumerable<ComponentModel>
-@using Malsys
 
 @{
-	ViewBag.Title = "Components";
+	ViewBag.Title = "Components (and containers)";
+	string defaultCategory = "Other";
+	var componentsGroupped = Model
+		.Where(c => !c.Metadata.IsContainer)
+		.OrderBy(c => c.Metadata.Name)
+		.GroupBy(x => string.IsNullOrEmpty(x.Metadata.GroupDoc) ? defaultCategory : x.Metadata.GroupDoc)
+		.OrderBy(x => x.Key);
+	var containersGroupped = Model
+		.Where(c => c.Metadata.IsContainer)
+		.OrderBy(c => c.Metadata.Name)
+		.GroupBy(x => string.IsNullOrEmpty(x.Metadata.GroupDoc) ? defaultCategory : x.Metadata.GroupDoc)
+		.OrderBy(x => x.Key);
 }
 
-<h2>Components</h2>
+<h2>Components (and containers)</h2>
 
 <p>
-	This page contains list of all components and containers that you can use custom process configuration.
+	This page contains list of all components (and containers) along with theirs comprehensive information.
 </p>
 
-@foreach (var compGroup in Model.GroupBy(x => x.Group)) {
-	<h3>@(string.IsNullOrEmpty(compGroup.Key) ? "Uncategorized" : compGroup.Key)</h3>
+<div class="clearfix">
+	<div class="leftHalf">
+		<h3>Components</h3>
+		<ul class="clean">
+		@foreach (var group in componentsGroupped) {
+			<li>@group.Key
+				<ul class="clean">
+				@foreach (var component in group) {
+					<li>@Html.Link(component.Metadata.Name, "#" + component.Metadata.ComponentType.FullName)</li>
+				}
+				</ul>
+			</li>
+		}
+		</ul>
+	</div>
 
-	foreach (var comp in compGroup.OrderBy(x => x.IsContainer)) {
+	<div class="rightHalf">
+		<h3>Containers</h3>
+		<ul class="clean">
+		@foreach (var group in containersGroupped) {
+			<li>@group.Key
+				<ul class="clean">
+				@foreach (var container in group) {
+					<li>@Html.Link(container.Metadata.Name, "#" + container.Metadata.ComponentType.FullName)</li>
+				}
+				</ul>
+			</li>
+		}
+		</ul>
+	</div>
+</div>
+
+
+<h2>Components</h2>
+@foreach (var group in componentsGroupped) {
+	<h3>@group.Key</h3>
+
+	foreach (var comp in group) {
 		Html.RenderPartial(MVC.Help.Shared.Views.ComponentPartial, comp);
 	}
 
-	<hr />
+}
+
+<h2>Containers</h2>
+@foreach (var group in containersGroupped) {
+	<h3>@group.Key</h3>
+
+	foreach (var comp in group) {
+		Html.RenderPartial(MVC.Help.Shared.Views.ComponentPartial, comp);
+	}
 
 }
+
+@Html.ValidationSummary(false)

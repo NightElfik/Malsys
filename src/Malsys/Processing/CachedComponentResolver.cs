@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using Malsys.Reflection.Components;
 
 namespace Malsys.Processing {
-	public class CachedComponentResolver : IComponentTypeContainer, IComponentMetadataResolver {
+	public class CachedComponentResolver : IComponentMetadataResolver, IComponentMetadataContainer {
 
 		private Dictionary<string, Type> components = new Dictionary<string, Type>();
 
 		private ComponentMetadataDumper metadataDumper = new ComponentMetadataDumper();
 
+		private bool isCacheComplete = false;
 		private Dictionary<string, ComponentMetadata> metadataCache = new Dictionary<string, ComponentMetadata>();
 
 
@@ -18,6 +19,7 @@ namespace Malsys.Processing {
 				if (ignoreConflicts) {
 					components[name] = type;
 					metadataCache.Remove(name);  // remove possible cached metadata
+					isCacheComplete = false;
 				}
 				else {
 					throw new ArgumentException("Component `{0}` already registered to type `{1}`.".Fmt(name, components[name]));
@@ -25,6 +27,7 @@ namespace Malsys.Processing {
 			}
 			else {
 				components.Add(name, type);
+				isCacheComplete = false;
 			}
 
 		}
@@ -40,6 +43,11 @@ namespace Malsys.Processing {
 				return null;
 			}
 		}
+
+		public IEnumerable<KeyValuePair<string, Type>> GetAllRegisteredComponentTypes() {
+			return components;
+		}
+
 
 		/// <summary>
 		/// Thread safe.
@@ -70,9 +78,19 @@ namespace Malsys.Processing {
 			}
 		}
 
-		public IEnumerable<KeyValuePair<string, Type>> GetAllRegisteredComponentTypes() {
-			return components;
+		public IEnumerable<KeyValuePair<string, ComponentMetadata>> GetAllRegisteredComponentsMetadata(IMessageLogger logger) {
+
+			// ensure that all components metadata are in cache
+			if (!isCacheComplete) {
+				foreach (string name in components.Keys) {
+					ResolveComponentMetadata(name, logger);
+				}
+				isCacheComplete = true;
+			}
+
+			return metadataCache;
 		}
+
 
 
 

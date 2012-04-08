@@ -3,8 +3,12 @@ using Malsys.SemanticModel;
 using Microsoft.FSharp.Collections;
 
 namespace Malsys.Processing.Components.Renderers {
+	/// <summary>
+	/// Provides commands for rendering plain text ASCII art.
+	/// </summary>
+	/// <name>Text renderer</name>
+	/// <group>Renderers</group>
 	public class TextRenderer : ITextRenderer {
-
 
 		private ProcessContext context;
 		private FSharpMap<string, object> globalAdditionalData = MapModule.Empty<string, object>();

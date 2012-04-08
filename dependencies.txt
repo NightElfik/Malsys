@@ -40,7 +40,11 @@ PM> Install-Package dotless
 Rewrite module in IIS
 http://go.microsoft.com/?linkid=9722532
 
+Sandcastle - Documentation Compiler for Managed Class Libraries
+http://sandcastle.codeplex.com/
 
+Sandcastle Help File Builder
+http://shfb.codeplex.com/
 
 
 

@@ -2,7 +2,11 @@
 using Malsys.Media;
 
 namespace Malsys.Processing.Components.Renderers {
-	[Component("Generic 2D renderer", ComponentGroupNames.Renderers)]
+	/// <summary>
+	/// Provides commands for rendering 2D image.
+	/// </summary>
+	/// <name>2D renderer container</name>
+	/// <group>Renderers</group>
 	public interface IRenderer2D : IRenderer {
 
 		/// <remarks>

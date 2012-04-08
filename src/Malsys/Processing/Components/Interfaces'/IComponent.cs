@@ -3,7 +3,6 @@ using System.Runtime.Serialization;
 
 namespace Malsys.Processing.Components {
 
-	[Component("Generic component", ComponentGroupNames.Common)]
 	public interface IComponent {
 
 		/// <remarks>

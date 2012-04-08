@@ -7,7 +7,6 @@ using Malsys.SemanticModel.Evaluated;
 using Malsys.Processing.Components.Common;
 
 namespace Malsys.Processing.Components.RewriterIterators {
-	[Component("Memory buffered iterator", ComponentGroupNames.Iterators)]
 	public class MemoryBufferedIterator : IIterator {
 
 		private IMessageLogger logger;

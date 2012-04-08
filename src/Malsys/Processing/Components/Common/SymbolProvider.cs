@@ -3,7 +3,6 @@ using Malsys.SemanticModel;
 using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Processing.Components.Common {
-	[Component("Symbol provider", ComponentGroupNames.Common)]
 	public class SymbolProvider : ISymbolProvider {
 
 		[UserSettableSybols]
