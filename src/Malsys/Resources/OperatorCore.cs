@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 using Malsys.SemanticModel.Evaluated;
+using System.Reflection;
 
 namespace Malsys.Resources {
 	/// <summary>
 	/// Core of unary or binary operator.
 	/// </summary>
 	/// <remarks>
-	/// Immutable.
+	/// Nearly immutable (only documentation strings can be set later).
 	/// </remarks>
 	public class OperatorCore {
 
@@ -59,6 +60,9 @@ namespace Malsys.Resources {
 		public readonly Func<IValue, IValue, IValue> BinaryEvalFunction;
 
 
+		public string SummaryDoc { get; private set; }
+
+
 		/// <summary>
 		/// Creates instance of operator core for unary operator.
 		/// </summary>
@@ -76,7 +80,6 @@ namespace Malsys.Resources {
 			BinaryEvalFunction = null;
 			FirstParamType = paramType;
 			SecondParamType = ExpressionValueTypeFlags.Unknown;
-
 		}
 
 		/// <summary>
@@ -98,7 +101,11 @@ namespace Malsys.Resources {
 			BinaryEvalFunction = evalFunc;
 			FirstParamType = leftParamType;
 			SecondParamType = rightParamType;
+		}
 
+
+		public void SetDocumentation(string summaryDoc) {
+			SummaryDoc = summaryDoc;
 		}
 
 	}

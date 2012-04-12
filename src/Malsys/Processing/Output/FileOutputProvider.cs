@@ -39,11 +39,8 @@ namespace Malsys.Processing.Output {
 
 		#region IOutputProvider Members
 
-		/// <summary>
-		///
-		/// </summary>
 		/// <remarks>
-		/// If in <paramref name="additionalData" /> is key CommonAdditionalDataKeys.OutputIsGZipped with value true,
+		/// If in <paramref name="metadata" /> is key OutputMetadataKeyHelper.OutputIsGZipped with value true,
 		/// ".gz" will be added to file extension and files with mime type MimeType.Image_SvgXml will have extension ".svgz".
 		/// </remarks>
 		public Stream GetOutputStream<TCaller>(string outputName, string mimeType, bool temp = false, IDictionary<string, object> metadata = null) {

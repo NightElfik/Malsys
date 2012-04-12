@@ -5,6 +5,11 @@ using Malsys.SemanticModel.Evaluated;
 using Malsys.SourceCode.Printers;
 
 namespace Malsys.Processing.Components.Common {
+	/// <summary>
+	/// Prints processed symbols to text file.
+	/// </summary>
+	/// <name>Symbols saver</name>
+	/// <group>General</group>
 	public class SymbolsSaver : ISymbolProcessor {
 
 		private IOutputProvider outProvider;

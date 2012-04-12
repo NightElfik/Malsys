@@ -2,6 +2,11 @@
 using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Processing.Components.Common {
+	/// <summary>
+	///	Provides symbols set by user to Axiom property.
+	/// </summary>
+	/// <name>Axiom provider</name>
+	/// <group>Common</group>
 	public class AxiomProvider : SymbolProvider, ISymbolProvider {
 
 		public AxiomProvider() : base() { }

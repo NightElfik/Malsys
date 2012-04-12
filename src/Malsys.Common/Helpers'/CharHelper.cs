@@ -40,5 +40,10 @@ namespace Malsys {
 		/// </summary>
 		public const char Infinity = '\u221E';
 
+		/// <summary>
+		/// ✰
+		/// </summary>
+		public const char ShadowedWhiteStar = '\u2730';
+
 	}
 }

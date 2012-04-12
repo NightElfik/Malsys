@@ -1,7 +1,10 @@
 ﻿using Malsys.Evaluators;
 
 namespace Malsys.Processing.Components.Interpreters {
-	/// <name>3D interpreter container</name>
+	/// <summary>
+	/// 3D interpreters interprets L-system symbols as scene in 3D space.
+	/// </summary>
+	/// <name>3D interpreter interface</name>
 	/// <group>Interpreters</group>
 	public interface IInterpreter3D : IInterpreter {
 

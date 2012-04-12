@@ -6,6 +6,7 @@ using Malsys.Evaluators;
 using Malsys.Media;
 
 namespace Malsys.Resources {
+	[MalsysFunctions]
 	public static class StdFunctions {
 
 		private static ColorParser colorParser = new ColorParser(new DullMessageLogger());
@@ -16,7 +17,7 @@ namespace Malsys.Resources {
 		/// <summary>
 		/// Returns the square root of a given number.
 		/// </summary>
-		/// <docGroup>Mathematical functions</docGroup>
+		/// <group>Mathematical functions</group>
 		[AccessName("sqrt")]
 		public static readonly FunctionCore Sqrt = new FunctionCore(1,
 			FunctionInfo.ConstantParamsTypes,
@@ -26,7 +27,7 @@ namespace Malsys.Resources {
 		/// <summary>
 		/// Returns the product of all positive integers less than or equal to given number.
 		/// </summary>
-		/// <docGroup>Mathematical functions</docGroup>
+		/// <group>Mathematical functions</group>
 		[AccessName("factorial")]
 		public static readonly FunctionCore Factorial = new FunctionCore(1,
 			FunctionInfo.ConstantParamsTypes,
@@ -46,7 +47,7 @@ namespace Malsys.Resources {
 		/// <summary>
 		/// Returns the natural (base e) logarithm of a given number.
 		/// </summary>
-		/// <docGroup>Mathematical functions</docGroup>
+		/// <group>Mathematical functions</group>
 		[AccessName("log")]
 		public static readonly FunctionCore Log = new FunctionCore(1,
 			FunctionInfo.ConstantParamsTypes,
@@ -56,7 +57,7 @@ namespace Malsys.Resources {
 		/// <summary>
 		/// Returns the base 10 logarithm of a given number.
 		/// </summary>
-		/// <docGroup>Mathematical functions</docGroup>
+		/// <group>Mathematical functions</group>
 		[AccessName("log10")]
 		public static readonly FunctionCore Log10 = new FunctionCore(1,
 			FunctionInfo.ConstantParamsTypes,
@@ -66,7 +67,7 @@ namespace Malsys.Resources {
 		/// <summary>
 		/// Returns the logarithm of a given number in a given base.
 		/// </summary>
-		/// <docGroup>Mathematical functions</docGroup>
+		/// <group>Mathematical functions</group>
 		[AccessName("logBase", "log")]
 		public static readonly FunctionCore LogBase = new FunctionCore(2,
 			FunctionInfo.ConstantParamsTypes,
@@ -82,7 +83,7 @@ namespace Malsys.Resources {
 		/// Rounds given number to the nearest integral value.
 		/// If the fractional component is halfway between two integers, then the even number is returned.
 		/// </summary>
-		/// <docGroup>Rounding functions</docGroup>
+		/// <group>Rounding functions</group>
 		[AccessName("round")]
 		public static readonly FunctionCore Round = new FunctionCore(1,
 			FunctionInfo.ConstantParamsTypes,
@@ -92,7 +93,7 @@ namespace Malsys.Resources {
 		/// <summary>
 		/// Returns the largest integer less than or equal to the given number.
 		/// </summary>
-		/// <docGroup>Rounding functions</docGroup>
+		/// <group>Rounding functions</group>
 		[AccessName("floor")]
 		public static readonly FunctionCore Floor = new FunctionCore(1,
 			FunctionInfo.ConstantParamsTypes,
@@ -102,7 +103,7 @@ namespace Malsys.Resources {
 		/// <summary>
 		/// Returns the smallest integer greater than or equal to the given number.
 		/// </summary>
-		/// <docGroup>Rounding functions</docGroup>
+		/// <group>Rounding functions</group>
 		[AccessName("ceiling")]
 		public static readonly FunctionCore Ceiling = new FunctionCore(1,
 			FunctionInfo.ConstantParamsTypes,
@@ -117,7 +118,7 @@ namespace Malsys.Resources {
 		/// <summary>
 		/// Returns the minimum from all given arguments. Returns NaN (not a number) if no argument is given.
 		/// </summary>
-		/// <docGroup>Multi-values functions</docGroup>
+		/// <group>Multi-values functions</group>
 		[AccessName("min")]
 		public static readonly FunctionCore Min = new FunctionCore(FunctionInfo.AnyParamsCount,
 			FunctionInfo.ConstantParamsTypes,
@@ -126,7 +127,7 @@ namespace Malsys.Resources {
 		/// <summary>
 		/// Returns the average from all given arguments. Returns NaN (not a number) if no argument is given.
 		/// </summary>
-		/// <docGroup>Multi-values functions</docGroup>
+		/// <group>Multi-values functions</group>
 		[AccessName("max")]
 		public static readonly FunctionCore Max = new FunctionCore(FunctionInfo.AnyParamsCount,
 			FunctionInfo.ConstantParamsTypes,
@@ -135,7 +136,7 @@ namespace Malsys.Resources {
 		/// <summary>
 		/// Returns the sum of all given arguments. Returns 0 if no argument is given.
 		/// </summary>
-		/// <docGroup>Multi-values functions</docGroup>
+		/// <group>Multi-values functions</group>
 		[AccessName("sum")]
 		public static readonly FunctionCore Sum = new FunctionCore(FunctionInfo.AnyParamsCount,
 			FunctionInfo.ConstantParamsTypes,
@@ -145,7 +146,7 @@ namespace Malsys.Resources {
 		/// <summary>
 		/// Returns the product of all given arguments. Returns 1 if no argument is given.
 		/// </summary>
-		/// <docGroup>Multi-values functions</docGroup>
+		/// <group>Multi-values functions</group>
 		[AccessName("product")]
 		public static readonly FunctionCore Product = new FunctionCore(FunctionInfo.AnyParamsCount,
 			FunctionInfo.ConstantParamsTypes,
@@ -155,7 +156,7 @@ namespace Malsys.Resources {
 		/// <summary>
 		/// Returns the average of all given arguments. Returns NaN (not a number) if no argument is given.
 		/// </summary>
-		/// <docGroup>Multi-values functions</docGroup>
+		/// <group>Multi-values functions</group>
 		[AccessName("average")]
 		public static readonly FunctionCore Average = new FunctionCore(FunctionInfo.AnyParamsCount,
 			FunctionInfo.ConstantParamsTypes,
@@ -171,7 +172,7 @@ namespace Malsys.Resources {
 		/// <summary>
 		/// Returns the sine of the specified angle in radians.
 		/// </summary>
-		/// <docGroup>Trigonometric functions</docGroup>
+		/// <group>Trigonometric functions</group>
 		[AccessName("sin")]
 		public static readonly FunctionCore Sin = new FunctionCore(1,
 			FunctionInfo.ConstantParamsTypes,
@@ -181,7 +182,7 @@ namespace Malsys.Resources {
 		/// <summary>
 		/// Returns the cosine of the specified angle in radians.
 		/// </summary>
-		/// <docGroup>Trigonometric functions</docGroup>
+		/// <group>Trigonometric functions</group>
 		[AccessName("cos")]
 		public static readonly FunctionCore Cos = new FunctionCore(1,
 			FunctionInfo.ConstantParamsTypes,
@@ -191,7 +192,7 @@ namespace Malsys.Resources {
 		/// <summary>
 		/// Returns the tangent of the specified angle in radians.
 		/// </summary>
-		/// <docGroup>Trigonometric functions</docGroup>
+		/// <group>Trigonometric functions</group>
 		[AccessName("tan")]
 		public static readonly FunctionCore Tan = new FunctionCore(1,
 			FunctionInfo.ConstantParamsTypes,
@@ -201,7 +202,7 @@ namespace Malsys.Resources {
 		/// <summary>
 		/// Returns the angle in radians whose sine is the given number.
 		/// </summary>
-		/// <docGroup>Trigonometric functions</docGroup>
+		/// <group>Trigonometric functions</group>
 		[AccessName("asin")]
 		public static readonly FunctionCore Asin = new FunctionCore(1,
 			FunctionInfo.ConstantParamsTypes,
@@ -211,7 +212,7 @@ namespace Malsys.Resources {
 		/// <summary>
 		/// Returns the angle in radians whose cosine is the given number.
 		/// </summary>
-		/// <docGroup>Trigonometric functions</docGroup>
+		/// <group>Trigonometric functions</group>
 		[AccessName("acos")]
 		public static readonly FunctionCore Acos = new FunctionCore(1,
 			FunctionInfo.ConstantParamsTypes,
@@ -221,7 +222,7 @@ namespace Malsys.Resources {
 		/// <summary>
 		/// Returns the angle in radians whose tangent is the given number.
 		/// </summary>
-		/// <docGroup>Trigonometric functions</docGroup>
+		/// <group>Trigonometric functions</group>
 		[AccessName("atan")]
 		public static readonly FunctionCore Atan = new FunctionCore(1,
 			FunctionInfo.ConstantParamsTypes,
@@ -231,7 +232,7 @@ namespace Malsys.Resources {
 		/// <summary>
 		/// Returns the angle in radians whose tangent is the quotient of two given numbers.
 		/// </summary>
-		/// <docGroup>Trigonometric functions</docGroup>
+		/// <group>Trigonometric functions</group>
 		[AccessName("atan2")]
 		public static readonly FunctionCore Atan2 = new FunctionCore(2,
 			FunctionInfo.ConstantParamsTypes,
@@ -247,7 +248,7 @@ namespace Malsys.Resources {
 		/// <summary>
 		/// Returns a value that represents the total number of elements in given array. Returns -1 if argument is not an array.
 		/// </summary>
-		/// <docGroup>Array functions</docGroup>
+		/// <group>Array functions</group>
 		[AccessName("length")]
 		public static readonly FunctionCore Length = new FunctionCore(1,
 			FunctionInfo.AnyParamsTypes,
@@ -257,7 +258,7 @@ namespace Malsys.Resources {
 		/// <summary>
 		/// Returns the minimum value from given array.
 		/// </summary>
-		/// <docGroup>Array functions</docGroup>
+		/// <group>Array functions</group>
 		[AccessName("min")]
 		public static readonly FunctionCore MinArr = new FunctionCore(1,
 			FunctionInfo.ArrayParamsTypes,
@@ -267,7 +268,7 @@ namespace Malsys.Resources {
 		/// <summary>
 		/// Returns the maximum value from given array
 		/// </summary>
-		/// <docGroup>Array functions</docGroup>
+		/// <group>Array functions</group>
 		[AccessName("max")]
 		public static readonly FunctionCore MaxArr = new FunctionCore(1,
 			FunctionInfo.ArrayParamsTypes,
@@ -278,7 +279,7 @@ namespace Malsys.Resources {
 		/// <summary>
 		/// Returns the sum of all numbers in given array. Sum of an empty array is 0.
 		/// </summary>
-		/// <docGroup>Array functions</docGroup>
+		/// <group>Array functions</group>
 		[AccessName("sum")]
 		public static readonly FunctionCore SumArr = new FunctionCore(1,
 			FunctionInfo.ArrayParamsTypes,
@@ -288,7 +289,7 @@ namespace Malsys.Resources {
 		/// <summary>
 		/// Returns the product of all numbers in given array. Product of an empty array is 1.
 		/// </summary>
-		/// <docGroup>Array functions</docGroup>
+		/// <group>Array functions</group>
 		[AccessName("product")]
 		public static readonly FunctionCore ProductArr = new FunctionCore(1,
 			FunctionInfo.ArrayParamsTypes,
@@ -298,7 +299,7 @@ namespace Malsys.Resources {
 		/// <summary>
 		/// Returns the average value from all numbers in given array.
 		/// </summary>
-		/// <docGroup>Array functions</docGroup>
+		/// <group>Array functions</group>
 		[AccessName("average")]
 		public static readonly FunctionCore AverageArr = new FunctionCore(1,
 			FunctionInfo.ArrayParamsTypes,
@@ -315,7 +316,7 @@ namespace Malsys.Resources {
 		/// <summary>
 		/// Returns a value indicating whether the given number is NaN (not a number).
 		/// </summary>
-		/// <docGroup>Special functions</docGroup>
+		/// <group>Special functions</group>
 		[AccessName("isNan")]
 		public static readonly FunctionCore IsNan = new FunctionCore(1,
 			FunctionInfo.AnyParamsTypes,
@@ -325,7 +326,7 @@ namespace Malsys.Resources {
 		/// <summary>
 		/// Returns a value indicating whether the specified number is negative or positive infinity.
 		/// </summary>
-		/// <docGroup>Special functions</docGroup>
+		/// <group>Special functions</group>
 		[AccessName("isInfinity")]
 		public static readonly FunctionCore IsInfinity = new FunctionCore(1,
 			FunctionInfo.AnyParamsTypes,
@@ -344,7 +345,7 @@ namespace Malsys.Resources {
 		/// evaluated till decision from 1st is made. Recursion is the problem. If recursive call is in 2nd or 3rd
 		/// argument and it is tried to evaluate, stack overflow exception will obviously occur.
 		/// </remarks>
-		/// <docGroup>Special functions</docGroup>
+		/// <group>Special functions</group>
 		[AccessName("if")]
 		public static readonly FunctionCore If = new FunctionCore(3,
 			new ImmutableList<ExpressionValueTypeFlags>(ExpressionValueTypeFlags.Constant, ExpressionValueTypeFlags.Any, ExpressionValueTypeFlags.Any),
@@ -358,7 +359,7 @@ namespace Malsys.Resources {
 		/// <summary>
 		/// Returns the absolute value of given number.
 		/// </summary>
-		/// <docGroup>Other functions</docGroup>
+		/// <group>Other functions</group>
 		[AccessName("abs")]
 		public static readonly FunctionCore Abs = new FunctionCore(1,
 			FunctionInfo.ConstantParamsTypes,
@@ -369,7 +370,7 @@ namespace Malsys.Resources {
 		/// Returns a value indicating the sign of given number.
 		/// Returns value -1 if given number is less than zero, 0 if is equal to zero and 1 if number is greater than zero.
 		/// </summary>
-		/// <docGroup>Other functions</docGroup>
+		/// <group>Other functions</group>
 		[AccessName("sign")]
 		public static readonly FunctionCore Sign = new FunctionCore(1,
 			FunctionInfo.ConstantParamsTypes,
@@ -379,7 +380,7 @@ namespace Malsys.Resources {
 		/// <summary>
 		/// Converts degrees to radians.
 		/// </summary>
-		/// <docGroup>Other functions</docGroup>
+		/// <group>Other functions</group>
 		[AccessName("deg2rad")]
 		public static readonly FunctionCore Deg2Rad = new FunctionCore(1,
 			FunctionInfo.ConstantParamsTypes,
@@ -389,7 +390,7 @@ namespace Malsys.Resources {
 		/// <summary>
 		/// Converts radians to degrees.
 		/// </summary>
-		/// <docGroup>Other functions</docGroup>
+		/// <group>Other functions</group>
 		[AccessName("rad2deg")]
 		public static readonly FunctionCore Rad2Deg = new FunctionCore(1,
 			FunctionInfo.ConstantParamsTypes,
@@ -399,7 +400,7 @@ namespace Malsys.Resources {
 		/// <summary>
 		/// Converts array represented as color gradient to array of colors.
 		/// </summary>
-		/// <docGroup>Other functions</docGroup>
+		/// <group>Other functions</group>
 		[AccessName("toColorGradient")]
 		public static readonly FunctionCore ToColorGradient = new FunctionCore(1,
 			FunctionInfo.ArrayParamsTypes,
@@ -419,7 +420,7 @@ namespace Malsys.Resources {
 		/// <summary>
 		/// Lightens given color by given amount of percent.
 		/// </summary>
-		/// <docGroup>Color functions</docGroup>
+		/// <group>Color functions</group>
 		[AccessName("lighten")]
 		public static readonly FunctionCore Lighten = new FunctionCore(2,
 			new ImmutableList<ExpressionValueTypeFlags>(ExpressionValueTypeFlags.Any, ExpressionValueTypeFlags.Constant),
@@ -443,7 +444,7 @@ namespace Malsys.Resources {
 		/// <summary>
 		/// Darkens given color by given amount of percent.
 		/// </summary>
-		/// <docGroup>Color functions</docGroup>
+		/// <group>Color functions</group>
 		[AccessName("darken")]
 		public static readonly FunctionCore Darken = new FunctionCore(2,
 			new ImmutableList<ExpressionValueTypeFlags>(ExpressionValueTypeFlags.Any, ExpressionValueTypeFlags.Constant),

@@ -72,10 +72,10 @@ namespace Malsys.Tests.Process {
 
 			var logger = new MessageLogger();
 
-			var resolver = new CachedComponentResolver();
+			var resolver = new ComponentResolver();
 			Components.RegisterAllComponents(resolver);
 
-			var processManager = new ProcessManager(new CompilersContainer(), new EvaluatorsContainer(new ExpressionEvaluatorContext()), resolver);
+			var processManager = new ProcessManager(TestUtils.CompilersContainer, new EvaluatorsContainer(new ExpressionEvaluatorContext()), resolver);
 			var inputEvalueated = processManager.CompileAndEvaluateInput(input, "testInput", logger);
 
 			var actualOutputs = new List<string>();

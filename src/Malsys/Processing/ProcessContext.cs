@@ -49,7 +49,7 @@ namespace Malsys.Processing {
 
 			Contract.Requires<ArgumentNullException>(instance != null);
 			Contract.Ensures(Contract.Result<KeyValuePair<string, ConfigurationComponent>?>() != null
-				? Contract.Result<KeyValuePair<string, ConfigurationComponent>?>().Value.Value == instance
+				? Contract.Result<KeyValuePair<string, ConfigurationComponent>?>().Value.Value.Component == instance
 				: true);
 
 			foreach (var compKvp in ComponentGraph) {

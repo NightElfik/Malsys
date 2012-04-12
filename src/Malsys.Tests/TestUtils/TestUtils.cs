@@ -24,33 +24,40 @@ namespace Malsys.Tests {
 
 		public static readonly InputBlockEvaled StdLib;
 
-		public static CachedComponentResolver StdResolver;
+		public static readonly ComponentResolver StdResolver;
+
+		public static readonly KnownConstOpProvider DefaultKnownStuffProvider;
+
+		public static readonly CompilersContainer CompilersContainer;
 
 
 		static TestUtils() {
 
-			ExpressionEvaluatorContext = new FunctionDumper().RegiterAllFunctions(typeof(StdFunctions), new ExpressionEvaluatorContext());
+			var logger = new MessageLogger();
+			DefaultKnownStuffProvider = new KnownConstOpProvider();
+			ExpressionEvaluatorContext = new ExpressionEvaluatorContext();
+			StdResolver = new ComponentResolver();
 
+			var loader = new MalsysLoader();
+			loader.LoadMalsysStuffFromAssembly(Assembly.GetAssembly(typeof(MalsysLoader)), DefaultKnownStuffProvider, DefaultKnownStuffProvider,
+				ref ExpressionEvaluatorContext, StdResolver, logger);
+
+
+			if (logger.ErrorOccurred) {
+				throw new Exception("Failed to register Malsys stuff. " + logger.AllMessagesToFullString());
+			}
+
+			CompilersContainer = new CompilersContainer(DefaultKnownStuffProvider, DefaultKnownStuffProvider);
 
 			string resName = ResourcesHelper.StdLibResourceName;
-			var logger = new MessageLogger();
 			using (Stream stream = new ResourcesReader().GetResourceStream(resName)) {
 				using (TextReader reader = new StreamReader(stream)) {
-					var inCompiled = new CompilersContainer().CompileInput(reader, resName, logger);
+					var inCompiled = new CompilersContainer(DefaultKnownStuffProvider, DefaultKnownStuffProvider).CompileInput(reader, resName, logger);
 					var stdLib = new EvaluatorsContainer(TestUtils.ExpressionEvaluatorContext).EvaluateInput(inCompiled);
 					if (!logger.ErrorOccurred) {
 						StdLib = stdLib;
 					}
 				}
-			}
-
-
-			StdResolver = new CachedComponentResolver();
-			var componentsTypes = Assembly.GetAssembly(typeof(CachedComponentResolver)).GetTypes()
-				.Where(t => (t.IsClass || t.IsInterface) && (typeof(IComponent)).IsAssignableFrom(t));
-
-			foreach (var type in componentsTypes) {
-				StdResolver.RegisterComponentNameAndFullName(type, false);
 			}
 
 		}
@@ -72,7 +79,7 @@ namespace Malsys.Tests {
 
 		public static ImmutableList<Symbol<IExpression>> CompileSymbols(ImmutableList<Ast.LsystemSymbol> symbolsAst) {
 
-			var compiler = new CompilersContainer().Resolve<ISymbolCompiler>();
+			var compiler = CompilersContainer.Resolve<ISymbolCompiler>();
 			var logger = new MessageLogger();
 			var symbols = compiler.CompileList<Ast.LsystemSymbol, Symbol<IExpression>>(symbolsAst, logger);
 
@@ -85,7 +92,7 @@ namespace Malsys.Tests {
 
 		public static ImmutableList<Symbol<string>> CompileSymbolsAsPattern(ImmutableList<Ast.LsystemSymbol> symbolsAst) {
 
-			var compiler = new CompilersContainer().Resolve<ISymbolCompiler>();
+			var compiler = CompilersContainer.Resolve<ISymbolCompiler>();
 			var logger = new MessageLogger();
 			var symbols = compiler.CompileList<Ast.LsystemSymbol, Symbol<string>>(symbolsAst, logger);
 
@@ -134,7 +141,7 @@ namespace Malsys.Tests {
 		public static IExpression CompileExpression(Ast.Expression input) {
 
 			var logger = new MessageLogger();
-			var compiledExpr = new CompilersContainer().ResolveExpressionCompiler().Compile(input, logger);
+			var compiledExpr = CompilersContainer.ResolveExpressionCompiler().Compile(input, logger);
 
 			if (logger.ErrorOccurred) {
 				Console.WriteLine(logger.ToString());
@@ -175,7 +182,7 @@ namespace Malsys.Tests {
 		public static InputBlock CompileInput(Ast.InputBlock input) {
 
 			var logger = new MessageLogger();
-			var compiled = new CompilersContainer().ResolveInputCompiler().Compile(input, logger);
+			var compiled = CompilersContainer.ResolveInputCompiler().Compile(input, logger);
 
 			if (logger.ErrorOccurred) {
 				Console.WriteLine(logger.ToString());

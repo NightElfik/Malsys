@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 
 namespace Malsys.Compilers {
-	public interface IKnownConstantsProvider {
+	public interface ICompilerConstantsProvider {
 
 		/// <summary>
 		/// Tries to get constant with name equal to given string.
 		/// </summary>
-		bool TryGet(string name, out double result);
+		bool TryGetConstant(string name, out CompilerConstant result);
 
-		IEnumerable<double> GetAllConstants();
+		IEnumerable<CompilerConstant> GetAllConstants();
 
 	}
 }

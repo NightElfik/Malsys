@@ -137,14 +137,17 @@
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
           <Property Name="PublishName" Type="nvarchar" MaxLength="32" />
           <Property Name="Views" Type="int" Nullable="false" />
-          <Property Name="Rating" Type="int" Nullable="false" />
           <Property Name="SourceSize" Type="int" Nullable="false" />
           <Property Name="OutputSize" Type="bigint" Nullable="false" />
           <Property Name="Duration" Type="bigint" Nullable="false" />
           <Property Name="MimeType" Type="nvarchar" MaxLength="32" />
           <Property Name="SourceCode" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="ThumbnailSourceExtension" Type="nvarchar(max)" />
           <Property Name="Description" Type="nvarchar(max)" />
           <Property Name="OutputMetadata" Type="varbinary(max)" />
+          <Property Name="OutputThnMetadata" Type="varbinary(max)" />
+          <Property Name="RatingSum" Type="int" Nullable="false" />
+          <Property Name="RatingCount" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="SavedInputVotes">
           <Key>
@@ -153,7 +156,7 @@
           </Key>
           <Property Name="SavedInputId" Type="int" Nullable="false" />
           <Property Name="UserId" Type="int" Nullable="false" />
-          <Property Name="UpVote" Type="bit" Nullable="false" />
+          <Property Name="Rating" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="TaggedSavedInputs">
           <Key>
@@ -377,6 +380,7 @@
           <EntitySet Name="ProcessOutputs" EntityType="MalsysDbEntities.ProcessOutput" />
           <EntitySet Name="Roles" EntityType="MalsysDbEntities.Role" />
           <EntitySet Name="SavedInputs" EntityType="MalsysDbEntities.SavedInput" />
+          <EntitySet Name="SavedInputVotes" EntityType="MalsysDbEntities.SavedInputVote" />
           <EntitySet Name="Tags" EntityType="MalsysDbEntities.Tag" />
           <EntitySet Name="Users" EntityType="MalsysDbEntities.User" />
           <AssociationSet Name="FK_InputProcesses_CanonicInputs" Association="MalsysDbEntities.FK_InputProcesses_CanonicInputs">
@@ -407,15 +411,6 @@
             <End Role="User" EntitySet="Users" />
             <End Role="SavedInput" EntitySet="SavedInputs" />
           </AssociationSet>
-          <AssociationSet Name="TaggedSavedInputs" Association="MalsysDbEntities.TaggedSavedInputs">
-            <End Role="SavedInput" EntitySet="SavedInputs" />
-            <End Role="Tag" EntitySet="Tags" />
-          </AssociationSet>
-          <AssociationSet Name="UsersInRoles" Association="MalsysDbEntities.UsersInRoles">
-            <End Role="Role" EntitySet="Roles" />
-            <End Role="User" EntitySet="Users" />
-          </AssociationSet>
-          <EntitySet Name="SavedInputVotes" EntityType="MalsysDbEntities.SavedInputVote" />
           <AssociationSet Name="FK_SavedInputsVoes_SavedInputs" Association="MalsysDbEntities.FK_SavedInputsVoes_SavedInputs">
             <End Role="SavedInput" EntitySet="SavedInputs" />
             <End Role="SavedInputVote" EntitySet="SavedInputVotes" />
@@ -423,6 +418,14 @@
           <AssociationSet Name="FK_SavedInputsVoes_Users" Association="MalsysDbEntities.FK_SavedInputsVoes_Users">
             <End Role="User" EntitySet="Users" />
             <End Role="SavedInputVote" EntitySet="SavedInputVotes" />
+          </AssociationSet>
+          <AssociationSet Name="TaggedSavedInputs" Association="MalsysDbEntities.TaggedSavedInputs">
+            <End Role="SavedInput" EntitySet="SavedInputs" />
+            <End Role="Tag" EntitySet="Tags" />
+          </AssociationSet>
+          <AssociationSet Name="UsersInRoles" Association="MalsysDbEntities.UsersInRoles">
+            <End Role="Role" EntitySet="Roles" />
+            <End Role="User" EntitySet="Users" />
           </AssociationSet>
         </EntityContainer>
         <EntityType Name="CanonicInput">
@@ -502,18 +505,32 @@
           <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
           <Property Type="String" Name="PublishName" MaxLength="32" FixedLength="false" Unicode="true" />
           <Property Type="Int32" Name="Views" Nullable="false" />
-          <Property Type="Int32" Name="Rating" Nullable="false" />
           <Property Type="Int32" Name="SourceSize" Nullable="false" />
           <Property Type="Int64" Name="OutputSize" Nullable="false" />
           <Property Type="Int64" Name="Duration" Nullable="false" />
           <Property Type="String" Name="MimeType" MaxLength="32" FixedLength="false" Unicode="true" />
           <Property Type="String" Name="SourceCode" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="ThumbnailSourceExtension" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Type="String" Name="Description" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Type="Binary" Name="OutputMetadata" MaxLength="Max" FixedLength="false" />
+          <Property Type="Binary" Name="OutputThnMetadata" MaxLength="Max" FixedLength="false" />
+          <Property Type="Int32" Name="RatingSum" Nullable="false" />
+          <Property Type="Int32" Name="RatingCount" Nullable="false" />
           <NavigationProperty Name="InputProcess" Relationship="MalsysDbEntities.FK_SavedInputs_InputProcesses" FromRole="SavedInput" ToRole="InputProcess" />
           <NavigationProperty Name="User" Relationship="MalsysDbEntities.FK_SavedInputs_Users" FromRole="SavedInput" ToRole="User" />
-          <NavigationProperty Name="Tags" Relationship="MalsysDbEntities.TaggedSavedInputs" FromRole="SavedInput" ToRole="Tag" />
           <NavigationProperty Name="SavedInputVotes" Relationship="MalsysDbEntities.FK_SavedInputsVoes_SavedInputs" FromRole="SavedInput" ToRole="SavedInputVote" />
+          <NavigationProperty Name="Tags" Relationship="MalsysDbEntities.TaggedSavedInputs" FromRole="SavedInput" ToRole="Tag" />
+        </EntityType>
+        <EntityType Name="SavedInputVote">
+          <Key>
+            <PropertyRef Name="SavedInputId" />
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Type="Int32" Name="SavedInputId" Nullable="false" />
+          <Property Type="Int32" Name="UserId" Nullable="false" />
+          <Property Type="Int32" Name="Rating" Nullable="false" />
+          <NavigationProperty Name="SavedInput" Relationship="MalsysDbEntities.FK_SavedInputsVoes_SavedInputs" FromRole="SavedInputVote" ToRole="SavedInput" />
+          <NavigationProperty Name="User" Relationship="MalsysDbEntities.FK_SavedInputsVoes_Users" FromRole="SavedInputVote" ToRole="User" />
         </EntityType>
         <EntityType Name="Tag">
           <Key>
@@ -541,8 +558,8 @@
           <NavigationProperty Name="Feedbacks" Relationship="MalsysDbEntities.FK_Feedbacks_Users" FromRole="User" ToRole="Feedback" />
           <NavigationProperty Name="InputProcesses" Relationship="MalsysDbEntities.FK_InputProcesses_Users" FromRole="User" ToRole="InputProcess" />
           <NavigationProperty Name="SavedInputs" Relationship="MalsysDbEntities.FK_SavedInputs_Users" FromRole="User" ToRole="SavedInput" />
-          <NavigationProperty Name="Roles" Relationship="MalsysDbEntities.UsersInRoles" FromRole="User" ToRole="Role" />
           <NavigationProperty Name="SavedInputVotes" Relationship="MalsysDbEntities.FK_SavedInputsVoes_Users" FromRole="User" ToRole="SavedInputVote" />
+          <NavigationProperty Name="Roles" Relationship="MalsysDbEntities.UsersInRoles" FromRole="User" ToRole="Role" />
         </EntityType>
         <Association Name="FK_InputProcesses_CanonicInputs">
           <End Type="MalsysDbEntities.CanonicInput" Role="CanonicInput" Multiplicity="1" />
@@ -628,25 +645,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="TaggedSavedInputs">
-          <End Type="MalsysDbEntities.SavedInput" Role="SavedInput" Multiplicity="*" />
-          <End Type="MalsysDbEntities.Tag" Role="Tag" Multiplicity="*" />
-        </Association>
-        <Association Name="UsersInRoles">
-          <End Type="MalsysDbEntities.Role" Role="Role" Multiplicity="*" />
-          <End Type="MalsysDbEntities.User" Role="User" Multiplicity="*" />
-        </Association>
-        <EntityType Name="SavedInputVote">
-          <Key>
-            <PropertyRef Name="SavedInputId" />
-            <PropertyRef Name="UserId" />
-          </Key>
-          <Property Type="Int32" Name="SavedInputId" Nullable="false" />
-          <Property Type="Int32" Name="UserId" Nullable="false" />
-          <Property Type="Boolean" Name="UpVote" Nullable="false" />
-          <NavigationProperty Name="SavedInput" Relationship="MalsysDbEntities.FK_SavedInputsVoes_SavedInputs" FromRole="SavedInputVote" ToRole="SavedInput" />
-          <NavigationProperty Name="User" Relationship="MalsysDbEntities.FK_SavedInputsVoes_Users" FromRole="SavedInputVote" ToRole="User" />
-        </EntityType>
         <Association Name="FK_SavedInputsVoes_SavedInputs">
           <End Type="MalsysDbEntities.SavedInput" Role="SavedInput" Multiplicity="1" />
           <End Type="MalsysDbEntities.SavedInputVote" Role="SavedInputVote" Multiplicity="*" />
@@ -670,6 +668,14 @@
               <PropertyRef Name="UserId" />
             </Dependent>
           </ReferentialConstraint>
+        </Association>
+        <Association Name="TaggedSavedInputs">
+          <End Type="MalsysDbEntities.SavedInput" Role="SavedInput" Multiplicity="*" />
+          <End Type="MalsysDbEntities.Tag" Role="Tag" Multiplicity="*" />
+        </Association>
+        <Association Name="UsersInRoles">
+          <End Type="MalsysDbEntities.Role" Role="Role" Multiplicity="*" />
+          <End Type="MalsysDbEntities.User" Role="User" Multiplicity="*" />
         </Association>
         </Schema>
     </edmx:ConceptualModels>
@@ -738,14 +744,17 @@
           <EntitySetMapping Name="SavedInputs">
             <EntityTypeMapping TypeName="MalsysDbEntities.SavedInput">
               <MappingFragment StoreEntitySet="SavedInputs">
+                <ScalarProperty Name="RatingCount" ColumnName="RatingCount" />
+                <ScalarProperty Name="RatingSum" ColumnName="RatingSum" />
+                <ScalarProperty Name="OutputThnMetadata" ColumnName="OutputThnMetadata" />
                 <ScalarProperty Name="OutputMetadata" ColumnName="OutputMetadata" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="ThumbnailSourceExtension" ColumnName="ThumbnailSourceExtension" />
                 <ScalarProperty Name="SourceCode" ColumnName="SourceCode" />
                 <ScalarProperty Name="MimeType" ColumnName="MimeType" />
                 <ScalarProperty Name="Duration" ColumnName="Duration" />
                 <ScalarProperty Name="OutputSize" ColumnName="OutputSize" />
                 <ScalarProperty Name="SourceSize" ColumnName="SourceSize" />
-                <ScalarProperty Name="Rating" ColumnName="Rating" />
                 <ScalarProperty Name="Views" ColumnName="Views" />
                 <ScalarProperty Name="PublishName" ColumnName="PublishName" />
                 <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
@@ -755,6 +764,15 @@
                 <ScalarProperty Name="CreationUserId" ColumnName="CreationUserId" />
                 <ScalarProperty Name="ParentInputProcessId" ColumnName="ParentInputProcessId" />
                 <ScalarProperty Name="UrlId" ColumnName="UrlId" />
+                <ScalarProperty Name="SavedInputId" ColumnName="SavedInputId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SavedInputVotes">
+            <EntityTypeMapping TypeName="MalsysDbEntities.SavedInputVote">
+              <MappingFragment StoreEntitySet="SavedInputVotes">
+                <ScalarProperty Name="Rating" ColumnName="Rating" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="SavedInputId" ColumnName="SavedInputId" />
               </MappingFragment>
             </EntityTypeMapping>
@@ -800,15 +818,6 @@
               <ScalarProperty Name="RoleId" ColumnName="RoleId" />
             </EndProperty>
           </AssociationSetMapping>
-          <EntitySetMapping Name="SavedInputVotes">
-            <EntityTypeMapping TypeName="MalsysDbEntities.SavedInputVote">
-              <MappingFragment StoreEntitySet="SavedInputVotes">
-                <ScalarProperty Name="UpVote" ColumnName="UpVote" />
-                <ScalarProperty Name="UserId" ColumnName="UserId" />
-                <ScalarProperty Name="SavedInputId" ColumnName="SavedInputId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
@@ -830,60 +839,72 @@
     <!-- Diagram content (shape and connector positions) -->
     <Diagrams>
       <Diagram Name="MalsysDbModel">
-        <EntityTypeShape EntityType="MalsysDbEntities.CanonicInput" Width="1.5" PointX="3.5" PointY="5.375" Height="2.1725878906250031" />
-        <EntityTypeShape EntityType="MalsysDbEntities.Feedback" Width="1.5" PointX="1.25" PointY="3" Height="2.5571907552083388" />
-        <EntityTypeShape EntityType="MalsysDbEntities.InputProcess" Width="1.5" PointX="6.125" PointY="3.875" Height="3.5186979166666674" />
-        <EntityTypeShape EntityType="MalsysDbEntities.ProcessOutput" Width="1.5" PointX="8.875" PointY="6.25" Height="2.3648893229166674" />
-        <EntityTypeShape EntityType="MalsysDbEntities.Role" Width="1.5" PointX="1.25" PointY="0.625" Height="1.7879850260416674" />
-        <EntityTypeShape EntityType="MalsysDbEntities.SavedInput" Width="1.5" PointX="8.875" PointY="0.625" Height="5.2494108072916674" />
-        <EntityTypeShape EntityType="MalsysDbEntities.Tag" Width="1.5" PointX="11.375" PointY="0.625" Height="1.7879850260416674" />
-        <EntityTypeShape EntityType="MalsysDbEntities.User" Width="1.5" PointX="3.5" PointY="0.625" Height="3.9033007812500102" />
+        <EntityTypeShape EntityType="MalsysDbEntities.CanonicInput" Width="1.5" PointX="6" PointY="2.5" Height="2.1725878906249996" />
+        <EntityTypeShape EntityType="MalsysDbEntities.Feedback" Width="1.5" PointX="5.25" PointY="6.25" Height="2.5571907552083317" />
+        <EntityTypeShape EntityType="MalsysDbEntities.InputProcess" Width="1.5" PointX="8.25" PointY="5.75" Height="3.5186979166666674" />
+        <EntityTypeShape EntityType="MalsysDbEntities.ProcessOutput" Width="1.5" PointX="10.5" PointY="6.375" Height="2.3648893229166674" />
+        <EntityTypeShape EntityType="MalsysDbEntities.Role" Width="1.5" PointX="0.75" PointY="6.625" Height="1.7879850260416665" />
+        <EntityTypeShape EntityType="MalsysDbEntities.SavedInput" Width="1.5" PointX="13.5" PointY="4.625" Height="5.8263151041666674" />
+        <EntityTypeShape EntityType="MalsysDbEntities.SavedInputVote" Width="1.5" PointX="15.75" PointY="6.625" Height="1.9802864583333388" />
+        <EntityTypeShape EntityType="MalsysDbEntities.Tag" Width="1.5" PointX="15.75" PointY="9.375" Height="1.7879850260416674" />
+        <EntityTypeShape EntityType="MalsysDbEntities.User" Width="1.5" PointX="3" PointY="5.625" Height="3.903300781249996" />
         <AssociationConnector Association="MalsysDbEntities.FK_InputProcesses_CanonicInputs" >
-          <ConnectorPoint PointX="5" PointY="6.3843489583333337" />
-          <ConnectorPoint PointX="6.125" PointY="6.3843489583333337" />
+          <ConnectorPoint PointX="7.15625" PointY="4.672587890625" />
+          <ConnectorPoint PointX="7.15625" PointY="5.96875" />
+          <ConnectorPoint PointX="8.25" PointY="5.96875" />
         </AssociationConnector>
         <AssociationConnector Association="MalsysDbEntities.FK_Feedbacks_Users" >
-          <ConnectorPoint PointX="3.5" PointY="3.764150390625" />
-          <ConnectorPoint PointX="2.75" PointY="3.764150390625" />
+          <ConnectorPoint PointX="4.5" PointY="7.5285953776041659" />
+          <ConnectorPoint PointX="5.25" PointY="7.5285953776041659" />
         </AssociationConnector>
         <AssociationConnector Association="MalsysDbEntities.FK_InputProcesses_InputProcesses" >
-          <ConnectorPoint PointX="6.6569230769230767" PointY="7.3936979166666674" />
-          <ConnectorPoint PointX="6.6569230769230767" PointY="7.6436979166666674" />
-          <ConnectorPoint PointX="7.1034615384615378" PointY="7.6436979166666674" />
-          <ConnectorPoint PointX="7.1034615384615378" PointY="7.3936979166666674" />
+          <ConnectorPoint PointX="8.7819230769230767" PointY="9.2686979166666674" />
+          <ConnectorPoint PointX="8.7819230769230767" PointY="9.5186979166666674" />
+          <ConnectorPoint PointX="9.2284615384615378" PointY="9.5186979166666674" />
+          <ConnectorPoint PointX="9.2284615384615378" PointY="9.2686979166666674" />
         </AssociationConnector>
         <AssociationConnector Association="MalsysDbEntities.FK_InputProcesses_Users" >
-          <ConnectorPoint PointX="5" PointY="4.201650390625" />
-          <ConnectorPoint PointX="6.125" PointY="4.201650390625" />
+          <ConnectorPoint PointX="4.5" PointY="9.0691943359375" />
+          <ConnectorPoint PointX="8.25" PointY="9.0691943359375" />
         </AssociationConnector>
         <AssociationConnector Association="MalsysDbEntities.FK_ProcessOutputs_InputProcesses" >
-          <ConnectorPoint PointX="7.625" PointY="6.8218489583333337" />
-          <ConnectorPoint PointX="8.875" PointY="6.8218489583333337" />
+          <ConnectorPoint PointX="9.75" PointY="7.5574446614583337" />
+          <ConnectorPoint PointX="10.5" PointY="7.5574446614583337" />
         </AssociationConnector>
         <AssociationConnector Association="MalsysDbEntities.FK_SavedInputs_InputProcesses" >
-          <ConnectorPoint PointX="7.625" PointY="4.8747054036458328" />
-          <ConnectorPoint PointX="8.875" PointY="4.8747054036458328" />
+          <ConnectorPoint PointX="9.75" PointY="6.03125" />
+          <ConnectorPoint PointX="13.5" PointY="6.03125" />
         </AssociationConnector>
         <AssociationConnector Association="MalsysDbEntities.FK_SavedInputs_Users" >
-          <ConnectorPoint PointX="5" PointY="3.2401432291666659" />
-          <ConnectorPoint PointX="8.875" PointY="3.2401432291666659" />
+          <ConnectorPoint PointX="4.5" PointY="9.3624479166666674" />
+          <ConnectorPoint PointX="8.6985897435897428" PointY="9.3624479166666674" />
+          <ConnectorPoint PointX="8.86525641025641" PointY="9.3624479166666674" />
+          <ConnectorPoint PointX="9.1451282051282039" PointY="9.3624479166666674" />
+          <ConnectorPoint PointX="9.3117948717948718" PointY="9.3624479166666674" />
+          <ConnectorPoint PointX="13.5" PointY="9.3624479166666674" />
         </AssociationConnector>
-        <AssociationConnector Association="MalsysDbEntities.TaggedSavedInputs" >
-          <ConnectorPoint PointX="10.375" PointY="1.5189925130208337" />
-          <ConnectorPoint PointX="11.375" PointY="1.5189925130208337" />
-        </AssociationConnector>
-        <AssociationConnector Association="MalsysDbEntities.UsersInRoles" >
-          <ConnectorPoint PointX="2.75" PointY="1.5189925130208337" />
-          <ConnectorPoint PointX="3.5" PointY="1.5189925130208337" />
-        </AssociationConnector>
-        <EntityTypeShape EntityType="MalsysDbEntities.SavedInputVote" Width="1.5" PointX="6.125" PointY="0.625" Height="1.9802864583333317" />
         <AssociationConnector Association="MalsysDbEntities.FK_SavedInputsVoes_SavedInputs" >
-          <ConnectorPoint PointX="8.875" PointY="1.6151432291666659" />
-          <ConnectorPoint PointX="7.625" PointY="1.6151432291666659" />
+          <ConnectorPoint PointX="15" PointY="7.6151432291666694" />
+          <ConnectorPoint PointX="15.291666666666666" PointY="7.6151432291666685" />
+          <ConnectorPoint PointX="15.458333333333334" PointY="7.6151432291666694" />
+          <ConnectorPoint PointX="15.75" PointY="7.6151432291666694" />
         </AssociationConnector>
         <AssociationConnector Association="MalsysDbEntities.FK_SavedInputsVoes_Users" >
-          <ConnectorPoint PointX="5" PointY="1.6151432291666659" />
-          <ConnectorPoint PointX="6.125" PointY="1.6151432291666659" />
+          <ConnectorPoint PointX="3.75" PointY="9.528300781249996" />
+          <ConnectorPoint PointX="3.75" PointY="10.701315104166667" />
+          <ConnectorPoint PointX="15.375" PointY="10.701315104166667" />
+          <ConnectorPoint PointX="15.375" PointY="7.0888196145833344" />
+          <ConnectorPoint PointX="15.75" PointY="7.0888196145833344" />
+        </AssociationConnector>
+        <AssociationConnector Association="MalsysDbEntities.TaggedSavedInputs" >
+          <ConnectorPoint PointX="15" PointY="9.9131575520833337" />
+          <ConnectorPoint PointX="15.291666666666666" PointY="9.9131575520833337" />
+          <ConnectorPoint PointX="15.458333333333334" PointY="9.9131575520833337" />
+          <ConnectorPoint PointX="15.75" PointY="9.9131575520833337" />
+        </AssociationConnector>
+        <AssociationConnector Association="MalsysDbEntities.UsersInRoles" >
+          <ConnectorPoint PointX="2.25" PointY="7.5189925130208337" />
+          <ConnectorPoint PointX="3" PointY="7.5189925130208337" />
         </AssociationConnector>
       </Diagram>
     </Diagrams>

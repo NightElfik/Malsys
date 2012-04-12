@@ -73,7 +73,7 @@ namespace Malsys.Compilers {
 						}
 
 						connections.Add(new ProcessComponentsConnection(connection.IsVirtual, connection.SourceNameId.Name,
-							connection.TargetNameId.Name, connection.TargetInputNameId.Name));
+							connection.TargetNameId.Name, connection.TargetInputNameId.Name, connection));
 						break;
 
 					default:

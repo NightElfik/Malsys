@@ -2,47 +2,44 @@
 using Malsys.Compilers;
 
 namespace Malsys.Resources {
+	[MalsysConstants]
 	public static class StdConstants {
 
 		/// <summary>
-		/// True
+		/// True.
 		/// </summary>
-		/// <docGroup>
+		/// <group>
 		/// Boolean constants
-		/// </docGroup>
+		/// </group>
 		[AccessName("true")]
-		[CompilerConstant]
 		public static readonly double True = 1.0;
 
 		/// <summary>
-		/// False
+		/// False.
 		/// </summary>
-		/// <docGroup>
+		/// <group>
 		/// Boolean constants
-		/// </docGroup>
+		/// </group>
 		[AccessName("false")]
-		[CompilerConstant]
 		public static readonly double False = 0.0;
 
 
 		/// <summary>
-		/// Not a number
+		/// Not a number.
 		/// </summary>
-		/// <docGroup>
+		/// <group>
 		/// Special constants
-		/// </docGroup>
+		/// </group>
 		[AccessName("NaN", "nan")]
-		[CompilerConstant]
 		public static readonly double NaN = double.NaN;
 
 		/// <summary>
-		/// Not a number
+		/// Positive infinity.
 		/// </summary>
-		/// <docGroup>
+		/// <group>
 		/// Special constants
-		/// </docGroup>
+		/// </group>
 		[AccessName("infinity", "\u221E")]
-		[CompilerConstant]
 		public static readonly double Infinity = double.PositiveInfinity;
 
 	}

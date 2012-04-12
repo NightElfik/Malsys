@@ -40,7 +40,7 @@ namespace Malsys.Processing.Components.Renderers {
 			logState(logFormat, MoveToName, endPoint, rotation, width, color);
 		}
 
-		public void DrawTo(Point3D endPoint, Quaternion rotation, double width, ColorF color) {
+		public void DrawTo(Point3D endPoint, Quaternion rotation, double width, ColorF color, double quality) {
 			logState(logFormat, DrawToName, endPoint, rotation, width, color);
 		}
 
@@ -48,7 +48,7 @@ namespace Malsys.Processing.Components.Renderers {
 			logState(DrawPolygonName);
 		}
 
-		public void DrawSphere(Point3D center, double radius, ColorF color) {
+		public void DrawSphere(Point3D center, double radius, ColorF color, double quality) {
 			logState(logFormat, DrawSphereName, center, "", radius, color);
 		}
 

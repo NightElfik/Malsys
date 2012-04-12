@@ -22,18 +22,24 @@ namespace Malsys.Reflection.Components {
 
 		public readonly PropertyInfo PropertyInfo;
 
+		public readonly string SummaryDoc;
+
 
 		public Type PropertyType { get { return PropertyInfo.PropertyType; } }
 
 
-		public ComponentConnectablePropertyMetadata(ImmutableList<string> names, PropertyInfo propertyInfo, bool isOptional, bool allowMultiple) {
+
+		public ComponentConnectablePropertyMetadata(ImmutableList<string> names, PropertyInfo propertyInfo, bool isOptional, bool allowMultiple, string summaryDoc = null) {
 
 			Names = names;
 			PropertyInfo = propertyInfo;
 			IsOptional = isOptional;
 			AllowMultiple = allowMultiple;
 
+			SummaryDoc = summaryDoc ?? "";
+
 		}
+
 
 	}
 }

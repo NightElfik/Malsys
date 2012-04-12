@@ -127,7 +127,7 @@ namespace Malsys.Processing.Components.Renderers {
 		/// <summary>
 		/// Saves last point, width and color. Should be called at the end of derived class implementation.
 		/// </summary>
-		public virtual void DrawTo(Point3D endPoint, Quaternion rotation, double width, ColorF color) {
+		public virtual void DrawTo(Point3D endPoint, Quaternion rotation, double width, ColorF color, double quality) {
 			lastPoint = endPoint;
 			lastRotation = rotation;
 			lastWidth = width;
@@ -136,7 +136,7 @@ namespace Malsys.Processing.Components.Renderers {
 
 		public abstract void DrawPolygon(Polygon3D polygon);
 
-		public abstract void DrawSphere(Point3D center, double radius, ColorF color);
+		public abstract void DrawSphere(Point3D center, double radius, ColorF color, double quality);
 
 		#endregion
 

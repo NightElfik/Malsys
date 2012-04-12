@@ -1,0 +1,82 @@
+﻿@model Tuple<IEnumerable<Malsys.Resources.OperatorCore>, Malsys.Web.Models.Lsystem.SimpleLsystemProcessor>
+
+@{
+	ViewBag.Title = "Predefined operators";
+	var ops = Model.Item1.OrderBy(x => x.Precedence);
+	var exampleModel = new LsystemExampleViewModel() {
+		LsystemProcessor = Model.Item2,
+		SourceCodeTemplate = "{0}"
+	};
+}
+
+<h2>Operators</h2>
+
+<p>
+	All defined operator are shown in table below.
+	At this time it is not possible to define custom operators but it can change in the future
+		(the system offers it but I found no benefit from it, if you have different opinion send me @Html.ActionLink("feedback", MVC.Feedback.Index())).
+</p>
+
+<p>
+	Operators are grouped by their precedence, they have equal precedence within each group.
+	If there are two operators in a row the one with lower precedence will be applied first
+		(the left operator will use precedence number but right one will use active precedence number).
+	If they have same precedence their associativity will determine if left or right one will be applied first.
+	If you are not sure about precedence use parenthesis in expression to force execution order.
+</p>
+
+
+@* ================================================================================================================== *@
+<h2>Defined operators</h2>
+
+<table>
+	<tr>
+		<th style="width: 80px;">Syntax</th>
+		<th style="width: 80px;">Arity</th>
+		<th style="width: 80px;"><abbr title="Associativity">Assoc</abbr></th>
+		<th style="width: 100px;">Precedence (active)</th>
+		<th></th>
+	</tr>
+@foreach (var opGroup in ops.GroupBy(x => x.Precedence)) {
+	<tr class="th"><th colspan="5">Precedence group @opGroup.Key</th></tr>
+	foreach (var op in opGroup) {
+		<tr>
+			<td class="monospace center">@op.Syntax</td>
+			<td class="center">@(op.IsUnary ? "unary" : "binary")</td>
+			<td class="center">@(op.Precedence == op.ActivePrecedence ? "right" : "left")</td>
+			<td class="center">@op.Precedence (@op.ActivePrecedence)</td>
+			<td>@op.SummaryDoc</td>
+		</tr>
+	}
+
+}
+</table>
+
+
+@* ================================================================================================================== *@
+<h2>Examples</h2>
+
+@Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(StringHelper.JoinLines(
+		"// - is left associative",
+		"let a = 2 - 2 - 2;",
+		"let a' = (2 - 2) - 2;",
+		"let a'' = 2 - (2 - 2);",
+		"process Constants with ConstantDumper;")))
+
+<hr />
+
+@Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(StringHelper.JoinLines(
+		"// ^ (power) is right associative",
+		"let b = 2 ^ 2 ^ 3;",
+		"let b' = 2 ^ (2 ^ 3);",
+		"let b'' = (2 ^ 2) ^ 3;",
+		"process Constants with ConstantDumper;")))
+
+<hr />
+
+@Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(StringHelper.JoinLines(
+		"// power have lower active precedence than minus",
+		"let c = -2^2;",
+		"let c' = -(2^2);",
+		"let c'' = (-2)^2;",
+		"process Constants with ConstantDumper;")))

@@ -11,7 +11,7 @@ namespace Malsys.Evaluators {
 		/// Constant representing any parameters count on function.
 		/// </summary>
 		/// <remarks>
-		/// Yet another M$soft fail! I wanted to place this constant in interface BUT:
+		/// Yet another M$soft fail. I wanted to place this constant in interface BUT:
 		/// In CIL it's possible to have const in interface, but C# does not support it.
 		/// </remarks>
 		public const int AnyParamsCount = int.MaxValue;
@@ -45,15 +45,20 @@ namespace Malsys.Evaluators {
 
 		public readonly object Metadata;
 
+		public readonly string SummaryDoc;
+		public readonly string GroupDoc;
+
 
 		public FunctionInfo(string name, int paramsCount, Func<IValue[], IExpressionEvaluatorContext, IValue> functionBody,
-			   ImmutableList<ExpressionValueTypeFlags> paramsTypesCyclicPattern, object metadata = null) {
+			   ImmutableList<ExpressionValueTypeFlags> paramsTypesCyclicPattern, object metadata = null, string summaryDoc = null, string groupDoc = null) {
 
 			Name = name;
 			ParamsCount = paramsCount;
 			FunctionBody = functionBody;
 			ParamsTypesCyclicPattern = paramsTypesCyclicPattern;
 			Metadata = metadata;
+			SummaryDoc = summaryDoc;
+			GroupDoc = groupDoc;
 		}
 
 

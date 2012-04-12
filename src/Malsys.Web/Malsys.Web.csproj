@@ -202,8 +202,10 @@
     <Compile Include="Areas\Help\HelpAreaRegistration.cs" />
     <Compile Include="Areas\Help\Models\BasicInterpretationModel.cs" />
     <Compile Include="Areas\Help\Models\ComponentModel.cs" />
+    <Compile Include="Areas\Help\Models\ConfigurationModel.cs" />
     <Compile Include="Areas\Help\Models\LsystemExampleViewModel.cs" />
-    <Compile Include="Areas\Help\Models\Predefined\Function.cs" />
+    <Compile Include="Areas\Help\Models\PredefinedConstantsModel.cs" />
+    <Compile Include="Areas\Help\Views\CompilerConstantsAttribute.cs" />
     <Compile Include="AuthenticationController.generated.cs">
       <DependentUpon>T4MVC.tt</DependentUpon>
     </Compile>
@@ -332,6 +334,14 @@
     <Content Include="Areas\Help\Views\Home\Faq.cshtml" />
     <Content Include="Areas\Help\Views\SyntaxReference\LsystemDefinition.cshtml" />
     <Content Include="Areas\Help\Views\SyntaxReference\ComponentPropertyAssignDefinition.cshtml" />
+    <Content Include="Areas\Help\Views\Predefined\Configurations.cshtml" />
+    <Content Include="Areas\Help\Views\Shared\ConfigurationPartial.cshtml" />
+    <Content Include="Areas\Help\Views\Home\LsystemSymbols.cshtml" />
+    <Content Include="Areas\Help\Views\Home\ProcessConfigurations.cshtml" />
+    <Content Include="Areas\Help\Views\SyntaxReference\ProcessStatements.cshtml" />
+    <Content Include="Areas\Help\Views\Predefined\Operators.cshtml" />
+    <Content Include="Areas\Help\Views\SyntaxReference\ComponentConfigurationDefinition.cshtml" />
+    <Content Include="Areas\Help\Views\SyntaxReference\ArithmeticExpressions.cshtml" />
     <None Include="Css\style.less.css" />
     <None Include="DatabaseScheme.sql" />
     <Content Include="Error.html" />
@@ -378,7 +388,6 @@
     <Content Include="Areas\Administration\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Help\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Help\Views\Home\BasicRewriting.cshtml" />
-    <Content Include="Areas\Help\Views\SyntaxReference\Index.cshtml" />
     <Content Include="Areas\Help\Views\SyntaxReference\Grammar.cshtml" />
     <Content Include="Areas\Help\Views\SyntaxReference\GrammarRegexps.cshtml" />
     <Content Include="Areas\Help\Views\Predefined\Constants.cshtml" />

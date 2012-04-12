@@ -7,31 +7,37 @@ using Malsys.SemanticModel.Evaluated;
 namespace Malsys.Tests {
 	internal class Components {
 
-		public static void RegisterAllComponents(IComponentTypeContainer container) {
+		public static void RegisterAllComponents(IComponentMetadataContainer container) {
 
-			container.RegisterComponent(typeof(EmptyComponent));
-			container.RegisterComponent(typeof(ConnectablePropertyComponent));
+			var logger = new MessageLogger();
 
-			container.RegisterComponent(typeof(StarterComponent));
+			container.RegisterComponent(typeof(EmptyComponent), logger);
+			container.RegisterComponent(typeof(ConnectablePropertyComponent), logger);
 
-			container.RegisterComponent(typeof(IContainer));
+			container.RegisterComponent(typeof(StarterComponent), logger);
 
-			container.RegisterComponent(typeof(ContaineredAlphaComponent));
-			container.RegisterComponent(typeof(ContaineredBetaComponent));
+			container.RegisterComponent(typeof(IContainer), logger);
 
-			container.RegisterComponent(typeof(NoParamlessCtorComponent));
-			container.RegisterComponent(typeof(ExceptionInCtorComponent));
-			container.RegisterComponent(typeof(ErrorInInitComponent));
-			container.RegisterComponent(typeof(ExceptionInInitComponent));
+			container.RegisterComponent(typeof(ContaineredAlphaComponent), logger);
+			container.RegisterComponent(typeof(ContaineredBetaComponent), logger);
 
-			container.RegisterComponent(typeof(SettablePropertiesComponent));
-			container.RegisterComponent(typeof(SettablePropertyAliasesComponent));
-			container.RegisterComponent(typeof(SettablePropertyInvalidValueComponent));
-			container.RegisterComponent(typeof(MandatorySettablePropertyComponent));
-			container.RegisterComponent(typeof(SettableSymbolPropertiesComponent));
-			container.RegisterComponent(typeof(MndatorySettableSymbolPropertiesComponent));
+			//container.RegisterComponent(typeof(NoParamlessCtorComponent), logger);
+			container.RegisterComponent(typeof(ExceptionInCtorComponent), logger);
+			container.RegisterComponent(typeof(ErrorInInitComponent), logger);
+			container.RegisterComponent(typeof(ExceptionInInitComponent), logger);
 
-			container.RegisterComponent(typeof(GettablePropertiesComponent));
+			container.RegisterComponent(typeof(SettablePropertiesComponent), logger);
+			container.RegisterComponent(typeof(SettablePropertyAliasesComponent), logger);
+			container.RegisterComponent(typeof(SettablePropertyInvalidValueComponent), logger);
+			container.RegisterComponent(typeof(MandatorySettablePropertyComponent), logger);
+			container.RegisterComponent(typeof(SettableSymbolPropertiesComponent), logger);
+			container.RegisterComponent(typeof(MndatorySettableSymbolPropertiesComponent), logger);
+
+			container.RegisterComponent(typeof(GettablePropertiesComponent), logger);
+
+			if (logger.ErrorOccurred) {
+				throw new Exception("Failed to register components. " + logger.AllMessagesToFullString());
+			}
 
 		}
 
@@ -80,7 +86,7 @@ namespace Malsys.Tests {
 		}
 
 
-		public interface IContainer {
+		public interface IContainer : IComponent {
 
 			[UserConnectable]
 			IComponent Component { set; }
@@ -196,7 +202,7 @@ namespace Malsys.Tests {
 
 		public class SettablePropertyAliasesComponent : IComponent {
 
-			[AccessName("iValue", "A", "b")]
+			[AccessName("IValue", "iValue", "A", "b")]
 			[UserSettable]
 			public IValue IValue { private get; set; }
 
@@ -270,7 +276,7 @@ namespace Malsys.Tests {
 
 		public class GettablePropertiesComponent : IComponent {
 
-			[UserGettable(IsGettableBeforeInitialiation=true)]
+			[UserGettable(IsGettableBeforeInitialiation = true)]
 			public Constant ConstantGet { get { return 8.ToConst(); } }
 
 			[UserGettable(IsGettableBeforeInitialiation = true)]

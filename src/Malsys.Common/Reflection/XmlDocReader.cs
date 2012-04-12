@@ -13,9 +13,7 @@ namespace Malsys.Reflection {
 	/// <remarks>
 	/// Caches XDocuments for fast access to documentation.
 	/// </remarks>
-	public class XmlDocReader {
-
-		private const string defaultTagPath = "summary";
+	public class XmlDocReader : IXmlDocReader {
 
 		private Dictionary<string, XDocument> XDocumentCache = new Dictionary<string, XDocument>(StringComparer.OrdinalIgnoreCase);
 
@@ -29,7 +27,7 @@ namespace Malsys.Reflection {
 		/// <summary>
 		/// Returns the XML documentation for given member and tag path.
 		/// </summary>
-		public string GetXmlDocumentation(MemberInfo member, string tagPath = defaultTagPath) {
+		public string GetXmlDocumentationAsString(MemberInfo member, string tagPath = "summary") {
 			AssemblyName assemblyName = member.Module.Assembly.GetName();
 			return getXmlDocumentation(member, tagPath);
 		}
@@ -99,7 +97,7 @@ namespace Malsys.Reflection {
 		/// Returns the XML documentation from given xml file path for given member and tag path.
 		/// </summary>
 		/// <returns>Object that can contain bool, double, string, or IEnumerable&gt;T&lt;.</returns>
-		private string getXmlDocumentation(MemberInfo member, string tagPath = defaultTagPath) {
+		private string getXmlDocumentation(MemberInfo member, string tagPath) {
 
 			string assemblyFullName = member.Module.Assembly.GetName().FullName;
 			XDocument xml;

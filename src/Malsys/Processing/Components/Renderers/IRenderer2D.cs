@@ -3,9 +3,9 @@ using Malsys.Media;
 
 namespace Malsys.Processing.Components.Renderers {
 	/// <summary>
-	/// Provides commands for rendering 2D image.
+	/// Provides commands for rendering of 2D image.
 	/// </summary>
-	/// <name>2D renderer container</name>
+	/// <name>2D renderer interface</name>
 	/// <group>Renderers</group>
 	public interface IRenderer2D : IRenderer {
 

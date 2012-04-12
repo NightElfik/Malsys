@@ -1,65 +1,62 @@
-﻿using System.Linq;
-using System.Reflection;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
 using Malsys.Compilers;
 using Malsys.Evaluators;
 using Malsys.Processing;
-using Malsys.Reflection;
-using Malsys.SemanticModel.Evaluated;
-using Malsys.Web.Areas.Help.Models.Predefined;
 using Malsys.Reflection.Components;
-using System.Collections.Generic;
+using Malsys.SemanticModel.Evaluated;
 using Malsys.Web.Areas.Help.Models;
-using System;
+using Malsys.Resources;
+using Malsys.Web.Models.Lsystem;
 
 namespace Malsys.Web.Areas.Help.Controllers {
+	[OutputCache(CacheProfile = "HelpCache")]
 	public partial class PredefinedController : Controller {
 
 		private readonly InputBlockEvaled stdLib;
 		private readonly IComponentMetadataContainer componentContainer;
 		private readonly IComponentMetadataResolver metadataResolver;
-		private readonly IKnownConstantsProvider knownConstantsProvider;
+		private readonly ICompilerConstantsProvider compilerConstantsProvider;
+		private readonly IOperatorsProvider operatorsProvider;
 		private readonly IExpressionEvaluatorContext expressionEvaluatorContext;
-		private readonly XmlDocReader xmlDocReader;
-		private readonly IComponentXmlDocLoader xmlDocLoader;
+
+		private readonly SimpleLsystemProcessor simpleLsystemProcessor;
 
 
-		public PredefinedController(IComponentMetadataContainer componentContainer, IComponentMetadataResolver metadataResolver, IKnownConstantsProvider knownConstantsProvider,
-				IExpressionEvaluatorContext expressionEvaluatorContext, XmlDocReader xmlDocReader, InputBlockEvaled stdLib, IComponentXmlDocLoader xmlDocLoader) {
+		public PredefinedController(IComponentMetadataContainer componentContainer, IComponentMetadataResolver metadataResolver, ICompilerConstantsProvider compilerConstantsProvider,
+				 IOperatorsProvider operatorsProvider, IExpressionEvaluatorContext expressionEvaluatorContext, ProcessManager processManager, InputBlockEvaled stdLib) {
 
 			this.componentContainer = componentContainer;
 			this.metadataResolver = metadataResolver;
-			this.knownConstantsProvider = knownConstantsProvider;
+			this.compilerConstantsProvider = compilerConstantsProvider;
+			this.operatorsProvider = operatorsProvider;
 			this.expressionEvaluatorContext = expressionEvaluatorContext;
-			this.xmlDocReader = xmlDocReader;
 			this.stdLib = stdLib;
-			this.xmlDocLoader = xmlDocLoader;
+
+			simpleLsystemProcessor = new SimpleLsystemProcessor(processManager, stdLib);
 		}
 
 		public virtual ActionResult Constants() {
-			return View();
+			return View(new PredefinedConstantsModel() {
+				CompilerConstants = compilerConstantsProvider.GetAllConstants(),
+				StdLibConstants = stdLib.ExpressionEvaluatorContext.GetAllStoredVariables()
+			});
 		}
 
 		public virtual ActionResult Functions() {
-
-			var model = expressionEvaluatorContext.GetAllStoredFunctions()
-				.Select(x => new Function() {
-					FunctionInfo = x,
-					Documentation = x.Metadata is FieldInfo ? xmlDocReader.GetXmlDocumentation(x.Metadata as FieldInfo) : "",
-					Group = x.Metadata is FieldInfo ? xmlDocReader.GetXmlDocumentation(x.Metadata as FieldInfo, "docGroup") : "",
-				});
-
-			return View(model);
+			return View(expressionEvaluatorContext.GetAllStoredFunctions());
 		}
 
 		public virtual ActionResult Operators() {
-			return View();
+			return View(new Tuple<IEnumerable<OperatorCore>, SimpleLsystemProcessor>(operatorsProvider.GetAllOperators(), simpleLsystemProcessor));
 		}
 
 		public virtual ActionResult Components() {
 
 			var logger = new MessageLogger();
-			var allRegistered = componentContainer.GetAllRegisteredComponentsMetadata(logger);
+			var allRegistered = componentContainer.GetAllRegisteredComponents();
 			if (logger.ErrorOccurred) {
 				foreach (var msg in logger) {
 					ModelState.AddModelError("", msg.GetFullMessage());
@@ -85,18 +82,49 @@ namespace Malsys.Web.Areas.Help.Controllers {
 				};
 			}).ToList();
 
-			foreach (var c in components) {
-				if (!c.Metadata.IsDocumentationLoaded) {
-					xmlDocLoader.LoadXmlDoc(c.Metadata);
-				}
-			}
-
 
 			return View(components);
 		}
 
 		public virtual ActionResult Configurations() {
-			return View();
+
+			var componentModels = stdLib.ProcessConfigurations.Select(compKvp => {
+				var config = compKvp.Value;
+
+				var allComponentsMetadata = config.Components.Select(x => metadataResolver.ResolveComponentMetadata(x.TypeName))
+					.Concat(config.Containers.Select(y => metadataResolver.ResolveComponentMetadata(y.DefaultTypeName))).ToList();
+
+				var gettableProps = allComponentsMetadata.SelectMany(meta => meta.GettableProperties.Select(item =>
+					new KeyValuePair<ComponentMetadata, ComponentGettablePropertyMetadata>(meta, item))).ToList();
+
+				var settableProps = allComponentsMetadata.SelectMany(meta => meta.SettableProperties.Select(item =>
+					new KeyValuePair<ComponentMetadata, ComponentSettablePropertyMetadata>(meta, item))).ToList();
+
+				var settableSymbolProps = allComponentsMetadata.SelectMany(meta => meta.SettableSymbolsProperties.Select(item =>
+					new KeyValuePair<ComponentMetadata, ComponentSettableSybolsPropertyMetadata>(meta, item))).ToList();
+
+				var connectableProps = allComponentsMetadata.SelectMany(meta => meta.ConnectableProperties.Select(item =>
+					new KeyValuePair<ComponentMetadata, ComponentConnectablePropertyMetadata>(meta, item))).ToList();
+
+				var callableFuns = allComponentsMetadata.SelectMany(meta => meta.CallableFunctions.Select(item =>
+					new KeyValuePair<ComponentMetadata, ComponentCallableFunctionMetadata>(meta, item))).ToList();
+
+				var interpretMethods = allComponentsMetadata.SelectMany(meta => meta.InterpretationMethods.Select(item =>
+					new KeyValuePair<ComponentMetadata, ComponentInterpretationMethodMetadata>(meta, item))).ToList();
+
+				return new ConfigurationModel() {
+					ProcessConfiguration = config,
+					ComponentMetadataResolver = metadataResolver,
+					GettableProperties = gettableProps,
+					SettableProperties = settableProps,
+					SettableSymbolProperties = settableSymbolProps,
+					ConnectableProperties = connectableProps,
+					CallableFunctions = callableFuns,
+					InterpretationMethods = interpretMethods
+				};
+			});
+
+			return View(componentModels.ToList());
 		}
 
 	}

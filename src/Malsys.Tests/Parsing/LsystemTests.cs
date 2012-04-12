@@ -96,7 +96,7 @@ namespace Malsys.Tests.Parsing {
 		}
 
 		[TestMethod]
-		public void LsystemInherenceTests() {
+		public void LsystemInheritanceTests() {
 			doTestAutoident("lsystem l extends x {", "}");
 			doTestAutoident("lsystem l extends x, y {", "}");
 			doTestAutoidentOutput("lsystem l() extends a(), b() { }", "lsystem l extends a, b {", "}");

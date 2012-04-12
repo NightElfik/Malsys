@@ -6,11 +6,16 @@ using System.Web;
 namespace Malsys {
 	public static class MalsysHelper {
 
-		// "('(.[^']*|')')"
 		private static Regex terminal = new Regex("('(.[^']*|')')", RegexOptions.Compiled);
 		private static Regex terminalRange = new Regex(@"\[(.)\-(.)\]", RegexOptions.Compiled);
 		private static Regex terminalList = new Regex(@"\[([^'\-<\]]+)\]", RegexOptions.Compiled);
 		private static Regex quantifier = new Regex("([^'])([?+*])", RegexOptions.Compiled);
+
+
+		public static HtmlString TocLink(bool autoHide = false) {
+			return new HtmlString("<div class=\"clearfix\"><a href=\"#toc\" class=\"tocLink" + (autoHide ? " autoHide" : "")
+				+ "\">↑ table of contents ↑</a></div>");
+		}
 
 
 		public static HtmlString GrammarCode(string code) {

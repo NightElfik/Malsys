@@ -18,6 +18,10 @@ namespace Malsys.Web.Models {
 		[DataType(DataType.MultilineText)]
 		public string SourceCode { get; set; }
 
+		[StringLength(10000)]
+		[DataType(DataType.MultilineText)]
+		public string SourceCodeThn { get; set; }
+
 		[Required]
 		public bool Publish { get; set; }
 

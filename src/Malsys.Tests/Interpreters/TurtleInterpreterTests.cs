@@ -8,6 +8,7 @@ using Malsys.Processing;
 using Malsys.Processing.Components.Interpreters;
 using Malsys.Processing.Components.Renderers;
 using Malsys.Processing.Output;
+using Malsys.Reflection.Components;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Evaluated;
@@ -16,7 +17,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Malsys.Tests.Interpreters {
 	[TestClass]
-	public class UniversalInterpreterTests {
+	public class TurtleInterpreterTests {
 
 		private static ImmutableList<OptionalParameterEvaled> emptyParams = ImmutableList<OptionalParameterEvaled>.Empty;
 		private static ImmutableList<IExpression> emptyInstrParams = ImmutableList<IExpression>.Empty;
@@ -270,8 +271,13 @@ namespace Malsys.Tests.Interpreters {
 			var evaluator = new EvaluatorsContainer(TestUtils.ExpressionEvaluatorContext);
 			var symbolEvaluator = evaluator.Resolve<ISymbolEvaluator>();
 			var outProvider = new InMemoryOutputProvider();
+
+			var intMeta = new ComponentMetadataDumper().GetMetadata(testedInterpreter.GetType(), logger);
+			var component = new ConfigurationComponent("interpreter", testedInterpreter, intMeta);
+			var componentsGraph = MapModule.Empty<string, ConfigurationComponent>().Add(component.Name, component);
+
 			var context = new ProcessContext(lsystem, outProvider, null, evaluator,
-				TestUtils.ExpressionEvaluatorContext, null, TimeSpan.MaxValue, null, logger);
+				TestUtils.ExpressionEvaluatorContext, null, TimeSpan.MaxValue, componentsGraph, logger);
 
 			var caller = new InterpreterCaller();
 			caller.Interpreter = testedInterpreter;

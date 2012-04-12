@@ -5,6 +5,14 @@ using Malsys.SemanticModel;
 using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Processing.Components.Common {
+	/// <summary>
+	/// This component offers both pseudo-random and random generators.
+	/// It provides callable function Random which can be called even in
+	/// L-system (not only at run-time).
+	/// It uses pseudo-random number generator by default.
+	/// </summary>
+	/// <name>Random generator provider</name>
+	/// <group>General</group>
 	public class RandomGeneratorProvider : IComponent {
 
 		private CryptographicRandomGenerator cryptoRandomInstance;
@@ -15,7 +23,15 @@ namespace Malsys.Processing.Components.Common {
 
 		private IRandomGenerator localRandomGenerator;
 
-
+		/// <summary>
+		/// If set to true as random generator will be used
+		/// true-random (cryptographic random) generator.
+		/// For this random generator can not be set any seed and numbers are
+		/// always unpredictably random.
+		/// If set to false as random generator will be used pseudo-random generator.
+		/// </summary>
+		/// <expected>true or false</expected>
+		/// <default>false</default>
 		[AccessName("trueRandom")]
 		[UserGettable]
 		[UserSettable]
@@ -24,6 +40,12 @@ namespace Malsys.Processing.Components.Common {
 			set { trueRandom = !value.IsZero; }
 		}
 
+		/// <summary>
+		/// If set pseudo-random generator ill generate always same sequence of random numbers.
+		/// Do not work if TrueRandom property is set.
+		/// </summary>
+		/// <expected>Non-negative integer.</expected>
+		/// <default>random</default>
 		[AccessName("randomSeed")]
 		[UserGettable(IsGettableBeforeInitialiation=true)]
 		[UserSettable]

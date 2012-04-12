@@ -178,29 +178,6 @@ namespace Malsys.Tests.Process {
 		}
 
 		[TestMethod]
-		public void NoCtorTests() {
-
-			doTest(string.Join("\n", "configuration Config {",
-					"component Devil typeof NoParamlessCtorComponent;",
-					"component Starter typeof StarterComponent;",
-					"}"),
-				"process all with Config;",
-				new string[] {
-					toId(ComponentMetadataDumper.Message.ComponentParamlessCtorMissing),
-					toId(ProcessConfigurationBuilder.Message.ComponentResolveError) });
-
-			doTest(string.Join("\n", "configuration Config {",
-					"container Devil typeof NoParamlessCtorComponent default XXX;",
-					"component Starter typeof StarterComponent;",
-					"}"),
-				"process all with Config use NoParamlessCtorComponent as Devil;",
-				new string[] {
-					toId(ComponentMetadataDumper.Message.ComponentParamlessCtorMissing),
-					toId(ProcessConfigurationBuilder.Message.ComponentResolveError)  });
-
-		}
-
-		[TestMethod]
 		public void ExceptionInCtorTests() {
 			doTest(string.Join("\n", "configuration Config {",
 					"component Devil typeof ExceptionInCtorComponent;",
@@ -503,7 +480,7 @@ namespace Malsys.Tests.Process {
 			}
 
 
-			var resolver = new CachedComponentResolver();
+			var resolver = new ComponentResolver();
 			Components.RegisterAllComponents(resolver);
 
 			var logger = new MessageLogger();

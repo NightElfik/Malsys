@@ -1,0 +1,86 @@
+﻿@model Malsys.Web.Models.Lsystem.SimpleLsystemProcessor
+
+@{
+	ViewBag.Title = "L-system symbols";
+
+	var rrModel = new LsystemExampleViewModel() {
+		LsystemProcessor = Model,
+		SourceCodeTemplate = string.Join(Environment.NewLine,
+			"lsystem SymbolExample{0:00} {{",
+			"set symbols axiom = {1};",
+			"set iterations = {2};",
+			"{3}",
+			"}}",
+			"process all with SymbolPrinter;"),
+		UnimportantLines = new int[] { 1, -1, -2 }
+
+	};
+	var interpretationModel = new LsystemExampleViewModel() {
+		LsystemProcessor = Model,
+		SourceCodeTemplate = StringHelper.JoinLines(
+			"lsystem SymbolExample{0:00} {{",
+			"set symbols axiom = {1};",
+			"{2}",
+			"}}",
+			"process all with InterpretationDebugger;"),
+		UnimportantLines = new int[] { 1, -1, -2 }
+	};
+
+	int exampleId = 1;
+}
+
+<h2>L-system symbols</h2>
+
+<p>
+	Symbols are fundamental in L-system processing.
+	The input is made of symbols, rewriting rewrites symbols and at the end symbols can be interpreted as image.
+</p>
+
+<p>
+	Symbols can carry arguments which can be used while rewriting or send to interpretation methods.
+</p>
+
+
+@* ================================================================================================================== *@
+<h3>Symbol arguments in rewrite rules</h3>
+
+<p>
+	To be able to work with arguments of symbol in rewrite rule we need to name them.
+	This is done by adding list of names separated by comma after matching symbol.
+	We can use matched arguments as local variables.
+</p>
+
+@Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, rrModel.WithArgs(exampleId++,
+		"A(1)", "4",
+		"rewrite A(x) to B(x) A(x + 1);"))
+
+<p>
+	Symbol arguments can be also used in rewrite-rule condition.
+</p>
+
+
+@Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, rrModel.WithArgs(exampleId++,
+		"A(1) A(2) A(-1) A(3) A(1)", "1",
+		"rewrite A(x) where x*x == abs(x) to X;"))
+
+<p>
+	More details about rewriting can be found on @Html.ActionLink("rewrite rules reference page", MVC.Help.SyntaxReference.RewriteRule()).
+</p>
+
+
+@* ================================================================================================================== *@
+<h3>Symbol arguments in interpretation rules</h3>
+
+<p>
+	Arguments from symbols are matched on local variables listed after symbol.
+	Unmapped symbol's arguments are ignored.
+</p>
+
+@Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, interpretationModel.WithArgs(exampleId++,
+		"F(1, 2)  F(2, 2, 2)",
+		"interpret F(a, b) as DrawForward(a + b);"))
+
+<p>
+	More details about interpreting can be found on @Html.ActionLink("symbols interpretation reference page", MVC.Help.SyntaxReference.SymbolInterpretation()).
+</p>
+

@@ -170,12 +170,11 @@ namespace Malsys.Processing {
 		}
 
 		/// <summary>
-		/// Checks if measuring pass is required by any component.
+		/// Finds starter component and checks if measuring pass is required by any component.
 		/// From these information returns ProcessConfiguration.
 		/// This is last step in creation of ProcessConfiguration components must be already initialized.
 		/// </summary>
 		/// <param name="configurationComponents">Component graph from BuildConfigurationComponentsGraph method.</param>
-		/// <param name="ctxt">Process context with which will be components initialized.</param>
 		/// <param name="logger">Logger for logging any failures during process.</param>
 		/// <returns>Valid ProcessConfiguration or null if error occurred.</returns>
 		public ProcessConfiguration CreateConfiguration(FSharpMap<string, ConfigurationComponent> configurationComponents, IMessageLogger logger) {
@@ -311,7 +310,7 @@ namespace Malsys.Processing {
 
 		private ConfigurationComponent createComponent(string compName, string compTypeName, IComponentMetadataResolver componentResolver, IMessageLogger logger) {
 
-			var metadata = componentResolver.ResolveComponentMetadata(compTypeName, logger);
+			var metadata = componentResolver.ResolveComponentMetadata(compTypeName);
 			if (metadata == null) {
 				logger.LogMessage(Message.ComponentResolveError, compName, compTypeName);
 				return null;
@@ -336,11 +335,13 @@ namespace Malsys.Processing {
 		private ConfigurationComponent createContaineredComponent(string compName, string contTypeName, string compTypeName,
 				IComponentMetadataResolver componentResolver, IMessageLogger logger) {
 
-			var contType = componentResolver.ResolveComponentType(contTypeName);
-			if (contType == null) {
+			var contMeta = componentResolver.ResolveComponentMetadata(contTypeName);
+			if (contMeta == null) {
 				logger.LogMessage(Message.ContainerResolveError, compName, contTypeName);
 				return null;
 			}
+
+			var contType = contMeta.ComponentType;
 
 			var comp = createComponent(compName, compTypeName, componentResolver, logger);
 			if (comp == null) {
@@ -393,7 +394,7 @@ namespace Malsys.Processing {
 
 			foreach (var conn in connections) {
 				if (!usedConnections.Contains(conn)) {
-					logger.LogMessage(Message.InvalidConnection, conn.SourceName, conn.TargetName, conn.TargetInputName);
+					logger.LogMessage(Message.InvalidConnection, conn.AstNode.TryGetPosition(), conn.SourceName, conn.TargetName, conn.TargetInputName);
 				}
 			}
 

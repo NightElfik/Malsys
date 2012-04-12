@@ -10,8 +10,8 @@ using Microsoft.FSharp.Collections;
 namespace Malsys.Processing.Components.Interpreters {
 	/// <summary>
 	/// Turtle interpreter interprets symbols as basic 2D or 3D graphics primitives.
-	/// Interpreting is always in 3D but if it is connected 2D renderer (<see cref="IInterpreter2D"/>)
-	/// the Z coordinate is omitted.
+	/// Interpreting is always in 3D but if it is connected 2D renderer
+	/// (component with interface IRenderer2D) the Z coordinate is omitted.
 	/// </summary>
 	/// <name>Turtle interpreter</name>
 	/// <group>Interpreters</group>
@@ -79,7 +79,7 @@ namespace Malsys.Processing.Components.Interpreters {
 		/// Reverses order of drawn polygons from first-opened last-drawn to first-opened first-drawn.
 		/// This in only valid when 2D renderer is attached (in 3D is order insignificant).
 		/// </summary>
-		/// <expected>Boolean (true/false).</expected>
+		/// <expected>true or false</expected>
 		/// <default>false</default>
 		[AccessName("reversePolygonOrder")]
 		[UserSettable]
@@ -88,14 +88,14 @@ namespace Malsys.Processing.Components.Interpreters {
 		/// <summary>
 		/// Origin (start position) of "turtle".
 		/// </summary>
-		/// <expected>Array of 2 or 3 constants representing x, y and optionally z coordinate.</expected>
+		/// <expected>Array of 2 or 3 numbers representing x, y and optionally z coordinate.</expected>
 		/// <default>{0, 0, 0}</default>
 		[AccessName("origin")]
 		[UserSettable]
 		public ValuesArray Origin {
 			set {
 				if (!value.IsConstArray() || (value.Length != 2 && value.Length != 3)) {
-					throw new InvalidUserValueException("Origin have to be array of 2 or 3 constants representing x, y and optionally z coordinate.");
+					throw new InvalidUserValueException("Origin have to be array of 2 or 3 numbers representing x, y and optionally z coordinate.");
 				}
 
 				initPosition.X = ((Constant)value[0]).Value;
@@ -107,14 +107,14 @@ namespace Malsys.Processing.Components.Interpreters {
 		/// <summary>
 		/// Forward vector of "turtle".
 		/// </summary>
-		/// <expected>Array of 3 constants representing x, y and z coordinate.</expected>
+		/// <expected>Array of 3 numbers representing x, y and z coordinate.</expected>
 		/// <default>{1, 0, 0}</default>
 		[AccessName("forwardVector")]
 		[UserSettable]
 		public ValuesArray ForwardVector {
 			set {
 				if (!value.IsConstArrayOfLength(3)) {
-					throw new InvalidUserValueException("Forward vector value must be array of 3 constants representing x, y and z coordinate.");
+					throw new InvalidUserValueException("Forward vector value must be array of 3 numbers representing x, y and z coordinate.");
 				}
 
 				fwdVector.X = ((Constant)value[0]).Value;
@@ -133,7 +133,7 @@ namespace Malsys.Processing.Components.Interpreters {
 		public ValuesArray UpVector {
 			set {
 				if (!value.IsConstArrayOfLength(3)) {
-					throw new InvalidUserValueException("Up vector value must be array of 3 constants representing x, y and z coordinate.");
+					throw new InvalidUserValueException("Up vector value must be array of 3 numbers representing x, y and z coordinate.");
 				}
 
 				upVector.X = ((Constant)value[0]).Value;
@@ -149,7 +149,7 @@ namespace Malsys.Processing.Components.Interpreters {
 		public ValuesArray RotationQuaternion {
 			set {
 				if (!value.IsConstArrayOfLength(4)) {
-					throw new InvalidUserValueException("Rotation quaternion have to be array of 4 constants representing direction quaternion.");
+					throw new InvalidUserValueException("Rotation quaternion have to be array of 4 numbers representing direction quaternion.");
 				}
 				initRotation.W = ((Constant)value[0]).Value;
 				initRotation.X = ((Constant)value[1]).Value;
@@ -161,7 +161,7 @@ namespace Malsys.Processing.Components.Interpreters {
 		/// <summary>
 		/// Initial angle (in degrees) in 2D mode (angle in plane given by forward and up vectors).
 		/// </summary>
-		/// <expected>Constant representing angle in degrees.</expected>
+		/// <expected>Number representing angle in degrees.</expected>
 		/// <default>0</default>
 		[AccessName("initialAngle")]
 		[UserSettable]
@@ -170,7 +170,7 @@ namespace Malsys.Processing.Components.Interpreters {
 		/// <summary>
 		/// Initial width of drawn line.
 		/// </summary>
-		/// <expected>Constant representing width. Unit of value depends on used renderer.</expected>
+		/// <expected>Number representing width. Unit of value depends on used renderer.</expected>
 		/// <default>2</default>
 		[AccessName("initialLineWidth")]
 		[UserSettable]
@@ -181,27 +181,32 @@ namespace Malsys.Processing.Components.Interpreters {
 		/// <summary>
 		/// Initial color of drawn line.
 		/// </summary>
-		/// <expected>Constant representing ARGB color (in range from 0 to 2^32 - 1) or array of constants (in range from 0.0 to 1.0) with length of 3 (RGB) or 4 (ARGB).</expected>
+		/// <expected>Number representing ARGB color (in range from 0 to 2^32 - 1) or array of numbers (in range from 0.0 to 1.0) with length of 3 (RGB) or 4 (ARGB).</expected>
 		/// <default>0 (black)</default>
 		[AccessName("initialColor")]
 		[UserSettable]
-		public ValuesArray InitialColor { get; set; }
+		public IValue InitialColor { get; set; }
 
 		/// <summary>
 		/// Continuous coloring gradient.
 		/// If enabled all colors will be ignored and given gradient (or default gradient of rainbow) will be used to continuously color all objects.
 		/// </summary>
-		/// <expected>Boolean (true) to use default rainbow gradient or array representing color gradient (see documentation or examples for syntax).</expected>
+		/// <expected>Boolean false disables continuous coloring, true uses default rainbow gradient to continuous coloring.
+		///		Array representing color gradient can be also set (see documentation or examples for syntax).</expected>
 		/// <default>false</default>
-		[AccessName("continousColoring")]
+		[AccessName("continuousColoring")]
 		[UserSettable]
-		public IValue ContinousColoring { get; set; }
+		public IValue ContinuousColoring { get; set; }
 
 		#endregion
 
 
 		#region IInterpreter Members
 
+		/// <summary>
+		/// All render events will be called on connected renderer.
+		/// Both IRenderer2D or IRenderer3D can be connected.
+		/// </summary>
 		[UserConnectable]
 		public IRenderer Renderer {
 			set {
@@ -255,16 +260,16 @@ namespace Malsys.Processing.Components.Interpreters {
 			}
 
 
-			if (ContinousColoring != null) {
-				if (ContinousColoring.IsConstant) {
-					if (!((Constant)ContinousColoring).IsZero) {
+			if (ContinuousColoring != null) {
+				if (ContinuousColoring.IsConstant) {
+					if (!((Constant)ContinuousColoring).IsZero) {
 						continousColoring = true;
 						colorGradient = ColorGradients.Rainbow;
 					}
 				}
-				else if (ContinousColoring.IsArray) {
+				else if (ContinuousColoring.IsArray) {
 					continousColoring = true;
-					colorGradient = new ColorGradientFactory().CreateFromValuesArray((ValuesArray)ContinousColoring, logger);
+					colorGradient = new ColorGradientFactory().CreateFromValuesArray((ValuesArray)ContinuousColoring, logger);
 				}
 			}
 
@@ -408,8 +413,9 @@ namespace Malsys.Processing.Components.Interpreters {
 		/// Length of line.
 		/// Width of line.
 		/// Color of line. Can be ARGB number in range from 0 to 2^32 - 1 or array with 3 (RGB) or 4 (ARGB) items in range from 0.0 to 1.0.
+		/// Quality of rendered line in 3D.
 		/// </parameters>
-		[SymbolInterpretation(3, 1)]
+		[SymbolInterpretation(4, 1)]
 		public void DrawForward(ArgsStorage args) {
 
 			double length = getArgumentAsDouble(args, 0);
@@ -424,13 +430,18 @@ namespace Malsys.Processing.Components.Interpreters {
 				renderer2D.DrawTo(currState.Position.ToPoint2D(), width, color);
 			}
 			else {
-				renderer3D.DrawTo(currState.Position, currState.Rotation, width, color);
+				double quality = getArgumentAsDouble(args, 3);
+				renderer3D.DrawTo(currState.Position, currState.Rotation, width, color, quality);
 			}
 		}
 
 		/// <summary>
 		/// Draws circle with center in current position and radius equal to value of the first parameter.
 		/// </summary>
+		/// <parameters>
+		/// Radius of circle.
+		/// Color of circle.
+		/// </parameters>
 		[SymbolInterpretation(2, 1)]
 		public void DrawCircle(ArgsStorage args) {
 			DrawSphere(args);
@@ -439,7 +450,12 @@ namespace Malsys.Processing.Components.Interpreters {
 		/// <summary>
 		/// Draws sphere with center in current position and radius equal to value of the first parameter.
 		/// </summary>
-		[SymbolInterpretation(2, 1)]
+		/// <parameters>
+		/// Radius of sphere.
+		/// Color of sphere.
+		/// Quality of sphere (number of triangles).
+		/// </parameters>
+		[SymbolInterpretation(3, 1)]
 		public void DrawSphere(ArgsStorage args) {
 
 			double radius = getArgumentAsDouble(args, 0);
@@ -450,7 +466,8 @@ namespace Malsys.Processing.Components.Interpreters {
 				renderer2D.DrawCircle(currState.Position.ToPoint2D(), radius, color);
 			}
 			else {
-				renderer3D.DrawSphere(currState.Position, radius, color);
+				double quality = getArgumentAsDouble(args, 2);
+				renderer3D.DrawSphere(currState.Position, radius, color, quality);
 			}
 		}
 
@@ -458,6 +475,9 @@ namespace Malsys.Processing.Components.Interpreters {
 		/// <summary>
 		/// Turns left by value of the first parameter (in degrees) (in X-Y plane, around axis Z).
 		/// </summary>
+		/// <parameters>
+		/// Angle in degrees.
+		/// </parameters>
 		[SymbolInterpretation(1)]
 		public void TurnLeft(ArgsStorage args) {
 			Pitch(args);
@@ -466,6 +486,9 @@ namespace Malsys.Processing.Components.Interpreters {
 		/// <summary>
 		/// Turns left around up vector axis (default Y axis [0, 1, 0]) by value given in the first parameter (in degrees).
 		/// </summary>
+		/// <parameters>
+		/// Angle in degrees.
+		/// </parameters>
 		[SymbolInterpretation(1)]
 		public void Yaw(ArgsStorage args) {
 
@@ -477,6 +500,9 @@ namespace Malsys.Processing.Components.Interpreters {
 		/// <summary>
 		/// Turns up around right-hand vector axis (default Z axis [0, 0, 1]) by value given in the first parameter (in degrees).
 		/// </summary>
+		/// <parameters>
+		/// Angle in degrees.
+		/// </parameters>
 		[SymbolInterpretation(1)]
 		public void Pitch(ArgsStorage args) {
 
@@ -488,6 +514,9 @@ namespace Malsys.Processing.Components.Interpreters {
 		/// <summary>
 		/// Rolls clock-wise around forward vector axis (default X axis [1, 0, 0]) by value given in the first parameter (in degrees).
 		/// </summary>
+		/// <parameters>
+		/// Angle in degrees.
+		/// </parameters>
 		[SymbolInterpretation(1)]
 		public void Roll(ArgsStorage args) {
 
@@ -526,6 +555,11 @@ namespace Malsys.Processing.Components.Interpreters {
 		/// Starts to record polygon vertices (do not saves current position as first vertex).
 		/// If another polygon is opened, its state is saved and will be restored after closing of current polygon.
 		/// </summary>
+		/// <parameters>
+		/// Color of polygon.
+		/// Stroke width.
+		/// Stroke color.
+		/// </parameters>
 		[SymbolInterpretation(3)]
 		public void StartPolygon(ArgsStorage args) {
 

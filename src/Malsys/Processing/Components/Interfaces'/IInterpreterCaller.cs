@@ -1,9 +1,15 @@
 ﻿
 namespace Malsys.Processing.Components {
-	/// <name>Interpreter caller container</name>
+	/// <summary>
+	///	Interpreter callers are responsible for converting symbols for calls of interpreter methods.
+	/// </summary>
+	/// <name>Interpreter caller interface</name>
 	/// <group>Interpreters</group>
 	public interface IInterpreterCaller : ISymbolProcessor {
 
+		/// <summary>
+		/// Interpreter on which will be interpretation methods called.
+		/// </summary>
 		[UserConnectable]
 		IInterpreter Interpreter { set; }
 

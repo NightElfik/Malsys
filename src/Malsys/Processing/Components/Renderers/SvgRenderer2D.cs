@@ -27,6 +27,8 @@ namespace Malsys.Processing.Components.Renderers {
 		private Stream outputStream;
 		private TextWriter writer;
 
+		private double scale = 1;
+
 		private double lastX, lastY;
 		private double lastWidth;
 		private ColorF lastColor;
@@ -42,7 +44,7 @@ namespace Malsys.Processing.Components.Renderers {
 
 			FileHeader = "<?xml version=\"1.0\" standalone=\"no\"?>\n" +
 				"<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">";
-			SvgHeader = "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" viewBox=\"{0:0.###} {1:0.###} {2:0.###} {3:0.###}\" width=\"{2:0.###}px\" height=\"{3:0.###}px\">";
+			SvgHeader = "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" viewBox=\"{0:0.###} {1:0.###} {2:0.###} {3:0.###}\" width=\"{4:0.###}px\" height=\"{5:0.###}px\">";
 			SvgFooter = "</svg>";
 
 		}
@@ -54,7 +56,12 @@ namespace Malsys.Processing.Components.Renderers {
 
 		public string SvgFooter { get; set; }
 
-
+		/// <summary>
+		/// Margin of result image.
+		/// </summary>
+		/// <expected>One number (ao array with one number) for all margins, array of two numbers for vertical and horizontal margin
+		/// or array of four numbers as top, right, bottom and left margin respectively.</expected>
+		/// <default>2</default>
 		[AccessName("margin")]
 		[UserSettable]
 		public IValue Margin {
@@ -84,11 +91,31 @@ namespace Malsys.Processing.Components.Renderers {
 			}
 		}
 
+		/// <summary>
+		/// If set to true result SBG image is compressed by GZip.
+		/// GZipped SVG images are standard and all programs supporting SVG should be able to open it.
+		/// GZipping SVG significantly reduces its size.
+		/// </summary>
+		/// <expected>true or false</expected>
+		/// <default>true</default>
 		[AccessName("compressSvg")]
 		[UserSettable]
 		public Constant CompressSvg {
 			set {
 				compress = !value.IsZero;
+			}
+		}
+
+		/// <summary>
+		/// Scale of result image.
+		/// </summary>
+		/// <expected>Positive number.</expected>
+		/// <default>1</default>
+		[AccessName("scale")]
+		[UserSettable]
+		public Constant Scale {
+			set {
+				scale = Math.Max(0, value.Value);
 			}
 		}
 
@@ -116,10 +143,12 @@ namespace Malsys.Processing.Components.Renderers {
 			}
 			else {
 				double svgWidth = measuredMaxX - measuredMinX + marginL + marginR;
-				double svgHeigh = measuredMaxY - measuredMinY + marginT + marginB;
+				double svgHeight = measuredMaxY - measuredMinY + marginT + marginB;
+				double svgWidthScaled = svgWidth * scale;
+				double svgHeighScaled = svgHeight * scale;
 
-				localAdditionalData = localAdditionalData.Add(OutputMetadataKeyHelper.OutputWidth, (int)Math.Round(svgWidth));
-				localAdditionalData = localAdditionalData.Add(OutputMetadataKeyHelper.OutputHeight, (int)Math.Round(svgHeigh));
+				localAdditionalData = localAdditionalData.Add(OutputMetadataKeyHelper.OutputWidth, (int)Math.Round(svgWidthScaled));
+				localAdditionalData = localAdditionalData.Add(OutputMetadataKeyHelper.OutputHeight, (int)Math.Round(svgHeighScaled));
 
 				outputStream = context.OutputProvider.GetOutputStream<SvgRenderer2D>(
 					"SVG result from `{0}`".Fmt(context.Lsystem.Name),
@@ -137,9 +166,10 @@ namespace Malsys.Processing.Components.Renderers {
 				writer.WriteLine(SvgHeader.FmtInvariant(
 					measuredMinX - marginL,
 					measuredMinY - marginT,
-					measuredMaxX - measuredMinX + marginL + marginR,
-					measuredMaxY - measuredMinY + marginT + marginB));
-
+					svgWidth,
+					svgHeight,
+					svgWidthScaled,
+					svgHeighScaled));
 			}
 		}
 

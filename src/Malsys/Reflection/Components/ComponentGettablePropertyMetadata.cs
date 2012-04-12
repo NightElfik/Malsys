@@ -16,16 +16,22 @@ namespace Malsys.Reflection.Components {
 		public readonly ExpressionValueTypeFlags ExpressionValueType;
 
 
+		public readonly string SummaryDoc;
 
-		public ComponentGettablePropertyMetadata(ImmutableList<string> names, PropertyInfo propertyInfo, bool isGettableBeforeInitialiation) {
+
+
+		public ComponentGettablePropertyMetadata(ImmutableList<string> names, PropertyInfo propertyInfo, bool isGettableBeforeInitialiation, string summaryDoc = null) {
 
 			Names = names;
 			PropertyInfo = propertyInfo;
 			IsGettableBeforeInitialiation = isGettableBeforeInitialiation;
 
+			SummaryDoc = summaryDoc ?? "";
+
 			ExpressionValueType = IValueExtensions.IValueTypeToEnum(propertyInfo.PropertyType);
 
 		}
+
 
 	}
 }

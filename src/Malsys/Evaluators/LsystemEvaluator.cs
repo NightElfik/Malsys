@@ -51,7 +51,7 @@ namespace Malsys.Evaluators {
 						value = arguments[i];
 					}
 					else {
-						logger.LogMessage(Message.TooManyArgs, lsystem.AstNode.NameId.Name, i + 1, arguments.Count);
+						logger.LogMessage(Message.NotEnoughArgs, lsystem.Name, i + 1, arguments.Count);
 						return null;
 					}
 				}
@@ -73,10 +73,11 @@ namespace Malsys.Evaluators {
 				var args = argumentsExprEvalCtxt.EvaluateList(lsystem.BaseLsystems[i].Arguments);
 				var baseLsystemCompiled = baseResolver.Resolve(lsystem.BaseLsystems[i].Name, logger);
 				if (baseLsystemCompiled == null) {
+					logger.LogMessage(Message.BaseLsestemNotDefinded, lsystem.BaseLsystems[i].Name, lsystem.Name);
 					return null;
 				}
 				if (derivedLsystems.Contains(baseLsystemCompiled)) {
-					logger.LogMessage(Message.InherenceCycle, lsystem.Name);
+					logger.LogMessage(Message.InheritanceCycle, lsystem.Name);
 					return null;
 				}
 				var baseLsystem = evaluate(baseLsystemCompiled, args, originalExprEvalCtxt, baseResolver, derivedLsystems, logger);
@@ -157,8 +158,10 @@ namespace Malsys.Evaluators {
 			[Message(MessageType.Error, "Not enough arguments supplied to evaluation of L-system `{0}`."
 				+ " {1}. parameter is not optional and only {2} values given.")]
 			NotEnoughArgs,
-			[Message(MessageType.Error, "Cycle in inherence found while evaluating L-system `{0}`.")]
-			InherenceCycle,
+			[Message(MessageType.Error, "Cycle in inheritance found while evaluating L-system `{0}`.")]
+			InheritanceCycle,
+			[Message(MessageType.Error, "Base L-system `{0}` of L-system `{1}` is not defined.")]
+			BaseLsestemNotDefinded,
 
 			[Message(MessageType.Warning, "L-system `{0}` takes only {1} parameters but {2} arguments were given.")]
 			TooManyArgs,

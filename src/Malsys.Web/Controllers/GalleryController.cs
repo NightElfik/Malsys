@@ -63,8 +63,8 @@ namespace Malsys.Web.Controllers {
 				}
 			}
 
-			var model = inputs.OrderByDescending(x => x.Rating)
-				.AsPagination(page.Value);
+			var model = inputs.OrderByDescending(x => (float)x.RatingSum / ((float)x.RatingCount + 1) + x.RatingCount)
+				.AsPagination(page.Value, 10);
 
 			return View(model);
 		}
@@ -84,8 +84,8 @@ namespace Malsys.Web.Controllers {
 				return HttpNotFound();
 			}
 
-			string filePath = Path.Combine(Server.MapPath(Url.Content(appSettingsProvider[AppSettingsKeys.GalleryWorkDir])), input.UrlId);
-			ensureOutput(input);
+			ensureOutput(input, false);
+			ensureOutput(input, true);
 
 			var model = new InputDetail() {
 				UrlId = input.UrlId,
@@ -93,11 +93,12 @@ namespace Malsys.Web.Controllers {
 				AuthorName = input.User.Name,
 				CurrentUserIsOwner = owner,
 				IsPublished = input.IsPublished,
-				Rating = input.Rating,
+				Rating = (float)input.RatingSum / (float)input.RatingCount,
 				UserVote = malsysInputRepository.GetUserVote(input.UrlId, User.Identity.Name),
 				Tags = input.Tags.Select(x => x.Name).ToArray(),
 				SourceCode = input.SourceCode,
-				FilePath = filePath,
+				FilePath = getFilePath(input.UrlId, input.MimeType, false),
+				ThnFilePath = getFilePath(input.UrlId, input.MimeType, true),
 				MimeType = input.MimeType,
 				Description = input.Description,
 				Metadata = OutputMetadataHelper.DeserializeMetadata(input.OutputMetadata)
@@ -108,18 +109,11 @@ namespace Malsys.Web.Controllers {
 
 
 		[Authorize]
-		public virtual ActionResult UpVote(string id) {
+		public virtual ActionResult Vote(string id, int rating) {
 
-			malsysInputRepository.Vote(id, User.Identity.Name, true);
+			malsysInputRepository.Vote(id, User.Identity.Name, MathHelper.Clamp(rating, 0, 5));
 			return RedirectToAction(Actions.Detail(id));
 
-		}
-
-		[Authorize]
-		public virtual ActionResult DownVote(string id) {
-
-			malsysInputRepository.Vote(id, User.Identity.Name, false);
-			return RedirectToAction(Actions.Detail(id));
 		}
 
 
@@ -137,6 +131,7 @@ namespace Malsys.Web.Controllers {
 				UrlId = input.UrlId,
 				Name = input.PublishName,
 				SourceCode = input.SourceCode,
+				SourceCodeThn = input.ThumbnailSourceExtension,
 				Publish = input.IsPublished,
 				Tags = string.Join(" ", input.Tags.Select(x => x.Name)),
 				Description = input.Description
@@ -167,6 +162,7 @@ namespace Malsys.Web.Controllers {
 
 			input.PublishName = model.Name;
 			input.SourceCode = model.SourceCode;
+			input.ThumbnailSourceExtension = model.SourceCodeThn;
 			input.IsPublished = model.Publish;
 			input.Description = model.Description;
 
@@ -180,8 +176,8 @@ namespace Malsys.Web.Controllers {
 			}
 
 			var logger = new MessageLogger();
-			if (!tryGenerateInput(input, logger)) {
-				ModelState.AddModelError("", "Failed to generate input.");
+			if (!tryGenerateInput(input, false, logger) || !tryGenerateInput(input, true, logger)) {
+				ModelState.AddModelError("", "Failed to generate input or thumbnail.");
 				foreach (var msg in logger) {
 					ModelState.AddModelError("", msg.GetFullMessage());
 				}
@@ -195,7 +191,15 @@ namespace Malsys.Web.Controllers {
 		}
 
 		public virtual ActionResult GetOutput(string id) {
+			return getOutput(id, false);
+		}
 
+		public virtual ActionResult GetThumbnail(string id) {
+			return getOutput(id, true);
+		}
+
+
+		private ActionResult getOutput(string id, bool thumbnail) {
 			var input = malsysInputRepository.InputDb.SavedInputs
 				.Where(x => x.UrlId == id && !x.IsDeleted)
 				.SingleOrDefault();
@@ -205,23 +209,24 @@ namespace Malsys.Web.Controllers {
 			}
 
 			string workDirFullPath;
-			string filePath = getFilePath(input.UrlId, out workDirFullPath);
+			string filePath = getFilePath(input.UrlId, input.MimeType, thumbnail, out workDirFullPath);
 
 			if (!System.IO.File.Exists(filePath)) {
-				if (tryGenerateInput(input, workDirFullPath, filePath)) {
+				if (tryGenerateInput(input, workDirFullPath, filePath, thumbnail)) {
 					if (!System.IO.File.Exists(filePath)) {
 						ErrorSignal.FromCurrentContext().Raise(new Exception("Generation of input `{0}` in gallery returned true but file `{1}` not found."
 							.Fmt(input.UrlId, filePath)));
-						return new HttpNotFoundResult();
+						return HttpNotFound(); ;
 					}
 					malsysInputRepository.InputDb.SaveChanges();
 				}
 				else {
-					return new HttpNotFoundResult();
+					return HttpNotFound();
 				}
 			}
 
-			var metadata = OutputMetadataHelper.DeserializeMetadata(input.OutputMetadata);
+
+			var metadata = OutputMetadataHelper.DeserializeMetadata(thumbnail ? input.OutputMetadata : input.OutputThnMetadata);
 
 			if (metadata.Contains(new KeyValuePair<string, object>(OutputMetadataKeyHelper.OutputIsGZipped, true))) {
 				Response.AppendHeader("Content-Encoding", "gzip");
@@ -230,34 +235,38 @@ namespace Malsys.Web.Controllers {
 			return File(filePath, input.MimeType);
 		}
 
-		public virtual ActionResult GetThumbnail(string id) {
-			return GetOutput(id);
-		}
 
 
-
-		private string getFilePath(string urlId) {
+		private string getFilePath(string urlId, string mimeType, bool thumbnail) {
 			string workDirFullPath;
-			return getFilePath(urlId, out workDirFullPath);
+			return getFilePath(urlId, mimeType, thumbnail, out workDirFullPath);
 		}
 
-		private string getFilePath(string urlId, out string workDirFullPath) {
+		private string getFilePath(string urlId, string mimeType, bool thumbnail, out string workDirFullPath) {
+
 			string workDir = appSettingsProvider[AppSettingsKeys.GalleryWorkDir];
 			workDirFullPath = Server.MapPath(Url.Content(workDir));
-			return Path.Combine(workDirFullPath, urlId);
+
+			string fileName = urlId;
+			if (thumbnail) {
+				fileName += ".thn";
+			}
+			fileName += MimeType.ToFileExtension(mimeType);
+
+			return Path.Combine(workDirFullPath, fileName);
 		}
 
 
-		private void ensureOutput(SavedInput input) {
+		private void ensureOutput(SavedInput input, bool thumbnail) {
 
 			string workDirFullPath;
-			string filePath = getFilePath(input.UrlId, out workDirFullPath);
+			string filePath = getFilePath(input.UrlId, input.MimeType, thumbnail, out workDirFullPath);
 
 			if (System.IO.File.Exists(filePath)) {
 				return;
 			}
 
-			if (tryGenerateInput(input, workDirFullPath, filePath)) {
+			if (tryGenerateInput(input, workDirFullPath, filePath, thumbnail)) {
 				malsysInputRepository.InputDb.SaveChanges();
 			}
 
@@ -267,18 +276,18 @@ namespace Malsys.Web.Controllers {
 		/// <remarks>
 		/// Also saves information about output (mime type, metadata) to given input entity.
 		/// </remarks>
-		private bool tryGenerateInput(SavedInput input, IMessageLogger logger = null) {
+		private bool tryGenerateInput(SavedInput input, bool thumbnail, IMessageLogger logger = null) {
 
 			string workDirFullPath;
-			string filePath = getFilePath(input.UrlId, out workDirFullPath);
+			string filePath = getFilePath(input.UrlId, input.MimeType, thumbnail, out workDirFullPath);
 
-			return tryGenerateInput(input, workDirFullPath, filePath, logger);
+			return tryGenerateInput(input, workDirFullPath, filePath, thumbnail, logger);
 		}
 
 		/// <remarks>
 		/// Also saves information about output (mime type, metadata) to given input entity.
 		/// </remarks>
-		private bool tryGenerateInput(SavedInput input, string workDirFullPath, string outputFilePath, IMessageLogger logger = null) {
+		private bool tryGenerateInput(SavedInput input, string workDirFullPath, string outputFilePath, bool thumbnail, IMessageLogger logger = null) {
 
 			TimeSpan timeout = new TimeSpan(0, 0, int.Parse(appSettingsProvider[AppSettingsKeys.GalleryProcessTime]));
 			var fileMgr = new FileOutputProvider(workDirFullPath);
@@ -287,8 +296,13 @@ namespace Malsys.Web.Controllers {
 				logger = new MessageLogger();
 			}
 
+			string source = input.SourceCode;
+			if (thumbnail && !string.IsNullOrEmpty(input.ThumbnailSourceExtension)) {
+				source += input.ThumbnailSourceExtension;
+			}
+
 			InputBlockEvaled evaledInput;
-			bool result = lsystemProcessor.TryProcess(input.SourceCode, timeout, fileMgr, logger, out evaledInput);
+			bool result = lsystemProcessor.TryProcess(source, timeout, fileMgr, logger, out evaledInput);
 			if (!result) {
 				return false;
 			}
@@ -298,9 +312,16 @@ namespace Malsys.Web.Controllers {
 				return false;
 			}
 
-			var output = outputs[0];
+			var output = outputs.Last();
 			input.MimeType = output.MimeType;
-			input.OutputMetadata = OutputMetadataHelper.SerializeMetadata(output.Metadata);
+			var meta = OutputMetadataHelper.SerializeMetadata(output.Metadata);
+
+			if (thumbnail) {
+				input.OutputThnMetadata = meta;
+			}
+			else {
+				input.OutputMetadata = meta;
+			}
 
 			System.IO.File.Delete(outputFilePath);
 			System.IO.File.Copy(output.FilePath, outputFilePath);
@@ -309,8 +330,8 @@ namespace Malsys.Web.Controllers {
 				try {
 					System.IO.File.Delete(o.FilePath);
 				}
-				catch (Exception) {
-					// TODO
+				catch (Exception ex) {
+					Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("Failed to delete temp gallery file.", ex));
 				}
 			}
 

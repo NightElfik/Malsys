@@ -4,12 +4,25 @@ using Malsys.SemanticModel;
 
 namespace Malsys.Processing.Components.Common {
 	/// <summary>
-	/// Writes all defined constants from global scope.
+	/// Prints all defined constants from global scope.
+	/// To use this component process input with some dummy L-system and
+	/// with process configuration containing only this component.
+	/// Standard library in Malsys offers predefined L-system and configuration for this.
+	/// Just use following process statement.
+	/// <code>process Constants with ConstantDumper;</code>
 	/// </summary>
+	/// <name>Constants dumper</name>
+	/// <group>Special</group>
 	public class ConstantsDumper : IProcessStarter {
 
 		private ProcessContext context;
 
+		/// <summary>
+		/// Default behavior is to print only constants in main input.
+		/// If this is set to true all constants will be printed.
+		/// </summary>
+		/// <expected>true or false</expected>
+		/// <default>false</default>
 		[UserSettable]
 		public Constant DumpAllConstants { get; set; }
 

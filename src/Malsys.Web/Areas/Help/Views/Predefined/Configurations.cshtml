@@ -1,0 +1,31 @@
+﻿@model List<ConfigurationModel>
+
+@{
+	ViewBag.Title = "Predefined process configurations";
+	var configs = Model.OrderBy(x => x.ProcessConfiguration.Name);
+}
+
+
+<h2>Process configurations</h2>
+
+<p>
+	Malsys input is processed by system of connected components.
+	Components and connections are defined by process configuration.
+	There are few predefined process configuration to for easy work and also for demonstration.
+	This page contains list of all predefined process configurations which can be used in online L-system processor.
+</p>
+
+
+<h2 id="toc">Predefined process configurations</h2>
+
+<ul class="clean">
+@foreach (var configModel in Model) {
+	<li>@Url.AnchorLink(configModel.ProcessConfiguration.Name, MVC.Help.Predefined.Configurations(), configModel.ProcessConfiguration.Name)</li>
+}
+</ul>
+
+
+@foreach (var configModel in Model) {
+	Html.RenderPartial(MVC.Help.Shared.Views.ConfigurationPartial, configModel);
+	@MalsysHelper.TocLink(true);
+}

@@ -3,9 +3,9 @@ using Malsys.Media;
 
 namespace Malsys.Processing.Components.Renderers {
 	/// <summary>
-	/// Provides commands for rendering 3D scene.
+	/// Provides commands for rendering of 3D scene.
 	/// </summary>
-	/// <name>3D renderer container</name>
+	/// <name>3D renderer interface</name>
 	/// <group>Renderers</group>
 	public interface IRenderer3D : IRenderer {
 
@@ -25,11 +25,11 @@ namespace Malsys.Processing.Components.Renderers {
 		/// <summary>
 		/// Draws to given point with given orientation, width and color.
 		/// </summary>
-		void DrawTo(Point3D endPoint, Quaternion rotation, double width, ColorF color);
+		void DrawTo(Point3D endPoint, Quaternion rotation, double width, ColorF color, double quality);
 
 		void DrawPolygon(Polygon3D polygon);
 
-		void DrawSphere(Point3D center, double radius, ColorF color);
+		void DrawSphere(Point3D center, double radius, ColorF color, double quality);
 
 	}
 }

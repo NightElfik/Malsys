@@ -2,7 +2,14 @@
 using System.Runtime.Serialization;
 
 namespace Malsys.Processing.Components {
-
+	/// <summary>
+	///	General component interface. All components must implement this interface.
+	/// </summary>
+	/// <name>Component interface</name>
+	/// <group>Common</group>
+	/// <remarks>
+	/// This interface marks class as component.
+	/// </remarks>
 	public interface IComponent {
 
 		/// <remarks>

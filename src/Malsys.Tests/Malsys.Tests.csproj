@@ -123,9 +123,8 @@
     <Compile Include="Evaluators\FunctionEvalTests.cs" />
     <Compile Include="Evaluators\InputEvalTests.cs" />
     <Compile Include="Expressions\GeneralExpressionsTests.cs" />
-    <Compile Include="Interpreters\GenericInterpreterCallerTests.cs" />
-    <Compile Include="Interpreters\UniversalInterpreterTests.cs" />
     <Compile Include="Interpreters\InterpreterCallerTests.cs" />
+    <Compile Include="Interpreters\TurtleInterpreterTests.cs" />
     <Compile Include="Math3DTests.cs" />
     <Compile Include="Parsing\ExpressionTests.cs" />
     <Compile Include="Parsing\LsystemTests.cs" />

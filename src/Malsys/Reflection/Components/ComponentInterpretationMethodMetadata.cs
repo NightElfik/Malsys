@@ -1,10 +1,8 @@
-﻿using System;
-using System.Diagnostics.Contracts;
-using System.Reflection;
+﻿using System.Reflection;
 
 namespace Malsys.Reflection.Components {
 	/// <remarks>
-	/// Nearly immutable (only doc strings can be set later).
+	/// Immutable.
 	/// </remarks>
 	public class ComponentInterpretationMethodMetadata {
 
@@ -17,29 +15,23 @@ namespace Malsys.Reflection.Components {
 		public readonly int MandatoryParamsCount;
 
 
-		public string SummaryDoc { get; private set; }
-		public string ParamsDoc { get; private set; }
+		public readonly string SummaryDoc;
+		public readonly string ParamsDoc;
 
 
-		public ComponentInterpretationMethodMetadata(ImmutableList<string> names, MethodInfo methodInfo, int paramsCount, int mandatoryParamsCount) {
+		public ComponentInterpretationMethodMetadata(ImmutableList<string> names, MethodInfo methodInfo, int paramsCount, int mandatoryParamsCount,
+				string summaryDoc = null, string paramsDoc = null) {
 
 			Names = names;
 			ParamsCount = paramsCount;
 			MethodInfo = methodInfo;
 			MandatoryParamsCount = mandatoryParamsCount;
 
-		}
-
-
-		public void SetDocumentation(string summaryDoc, string paramsDoc) {
-
-			Contract.Requires<ArgumentNullException>(summaryDoc != null);
-			Contract.Requires<ArgumentNullException>(paramsDoc != null);
-
-			SummaryDoc = summaryDoc;
-			ParamsDoc = paramsDoc;
+			SummaryDoc = summaryDoc ?? "";
+			ParamsDoc = paramsDoc ?? "";
 
 		}
+
 
 	}
 }

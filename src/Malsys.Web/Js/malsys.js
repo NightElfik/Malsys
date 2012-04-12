@@ -50,7 +50,7 @@
 	}
 
 
-	var toc = $("#toc");
+	var toc = $("#toc:empty");
 	if (toc !== undefined) {
 		toc.append('<div class="collapseSwitch"><span class="u">Table of contents [show]</span><span class="c">Table of contents [hide]</span></div>');
 		toc.append('<ul>');

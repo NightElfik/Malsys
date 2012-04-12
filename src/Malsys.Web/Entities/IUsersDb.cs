@@ -26,6 +26,7 @@ namespace Malsys.Web.Entities {
 
 	public static class IUsersDbExtensions {
 
+		/// <param name="db">User database for query.</param>
 		/// <param name="name">Case insensitive name of desired user.</param>
 		public static User GetUserByName(this IUsersDb db, string name) {
 			string userNameLower = name.ToLowerInvariant();
@@ -35,6 +36,7 @@ namespace Malsys.Web.Entities {
 		/// <summary>
 		/// Returns null if user with given name do not exist.
 		/// </summary>
+		/// <param name="db">User database for query.</param>
 		/// <param name="name">Case insensitive name of desired user.</param>
 		public static User TryGetUserByName(this IUsersDb db, string name) {
 

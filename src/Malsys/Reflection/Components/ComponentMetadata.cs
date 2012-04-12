@@ -4,13 +4,13 @@ using System.Reflection;
 
 namespace Malsys.Reflection.Components {
 	/// <remarks>
-	/// Nearly immutable (only documentation strings can be set later).
+	/// Immutable.
 	/// </remarks>
 	public class ComponentMetadata {
 
 		public readonly Type ComponentType;
 
-		public readonly bool IsContainer;
+		public readonly bool IsInstantiable;
 
 		public readonly ImmutableList<ComponentGettablePropertyMetadata> GettableProperties;
 
@@ -30,13 +30,11 @@ namespace Malsys.Reflection.Components {
 		public readonly bool CaseSensitiveLookup;
 
 
-		public bool IsDocumentationLoaded { get; private set; }
+		public readonly string NameDoc;
+		public readonly string GroupDoc;
+		public readonly string SummaryDoc;
 
-		public string NameDoc { get; private set; }
-		public string GroupDoc { get; private set; }
-		public string SummaryDoc { get; private set; }
-
-		public string Name { get { return string.IsNullOrEmpty(NameDoc) ? ComponentType.Name : NameDoc; } }
+		public string HumanReadableName { get { return string.IsNullOrEmpty(NameDoc) ? ComponentType.Name : NameDoc; } }
 
 
 
@@ -48,15 +46,12 @@ namespace Malsys.Reflection.Components {
 		private readonly Dictionary<string, ComponentInterpretationMethodMetadata> interpretationMethodsDictionary;
 
 
-		public ComponentMetadata() {
-
-		}
 
 		public ComponentMetadata(Type componentType, ImmutableList<ComponentGettablePropertyMetadata> gettableProperties,
 				ImmutableList<ComponentSettablePropertyMetadata> settableProperties, ImmutableList<ComponentSettableSybolsPropertyMetadata> settableSymbolsProperties,
 				ImmutableList<ComponentConnectablePropertyMetadata> connectableProperties, ImmutableList<ComponentCallableFunctionMetadata> callableFunctions,
 				ImmutableList<ComponentInterpretationMethodMetadata> interpretationMethods, ConstructorInfo componentConstructor,
-				bool hasCtorWithMessageLogger, bool isContainer = false, bool caseSensitiveLookup = false) {
+				bool hasCtorWithMessageLogger, bool isInstantiable, bool caseSensitiveLookup, string nameDoc = null, string groupDoc = null, string summaryDoc = null) {
 
 			ComponentType = componentType;
 			GettableProperties = gettableProperties;
@@ -68,7 +63,11 @@ namespace Malsys.Reflection.Components {
 			ComponentConstructor = componentConstructor;
 			HasCtorWithMessageLogger = hasCtorWithMessageLogger;
 			CaseSensitiveLookup = caseSensitiveLookup;
-			IsContainer = isContainer;
+			IsInstantiable = isInstantiable;
+
+			NameDoc = nameDoc ?? "";
+			GroupDoc = groupDoc ?? "";
+			SummaryDoc = summaryDoc ?? "";
 
 			gettablePropertiesDictionary = new Dictionary<string, ComponentGettablePropertyMetadata>();
 			settablePropertiesDictionary = new Dictionary<string, ComponentSettablePropertyMetadata>();
@@ -148,18 +147,6 @@ namespace Malsys.Reflection.Components {
 		public bool TryGetInterpretationMethod(string name, out ComponentInterpretationMethodMetadata intMethodMetadata) {
 			return interpretationMethodsDictionary.TryGetValue(CaseSensitiveLookup ? name : name.ToLower(), out intMethodMetadata);
 		}
-
-
-		public void SetDocumentation(string name, string group, string summary) {
-
-			NameDoc = name;
-			GroupDoc = group;
-			SummaryDoc = summary;
-
-			IsDocumentationLoaded = true;
-
-		}
-
 
 	}
 }

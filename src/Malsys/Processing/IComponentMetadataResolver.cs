@@ -1,35 +1,44 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Malsys.Reflection.Components;
+using Malsys.Reflection;
 
 namespace Malsys.Processing {
 
-	public interface IComponentMetadataResolver : IComponentTypeResolver {
+	public interface IComponentMetadataResolver {
 
-		ComponentMetadata ResolveComponentMetadata(string name, IMessageLogger logger);
-
-	}
-
-	public interface IComponentMetadataContainer : IComponentTypeContainer {
-
-		IEnumerable<KeyValuePair<string, ComponentMetadata>> GetAllRegisteredComponentsMetadata(IMessageLogger logger);
+		ComponentMetadata ResolveComponentMetadata(string name);
 
 	}
 
-	public static class IComponentMetadataResolverExtensions {
+	public interface IComponentMetadataContainer {
 
-		private static IMessageLogger dullLogger = new DullMessageLogger();
+		void RegisterComponentMetadata(string name, ComponentMetadata metadata);
 
-		/// <summary>
-		/// Resolver component by its type name ignoring any errors occurred.
-		/// This method should be used only if there is no effective way how to
-		/// show possible logged errors to user.
-		/// </summary>
-		/// <remarks>
-		/// Ignoring error messages is valid because metadata resolver should not cache result when error occurred
-		/// so errors can be logged in some other call with logger.
-		/// </remarks>
-		public static ComponentMetadata ResolveComponentMetadata(this IComponentMetadataResolver metadataResolver, string name) {
-			return metadataResolver.ResolveComponentMetadata(name, dullLogger);
+		IEnumerable<KeyValuePair<string, ComponentMetadata>> GetAllRegisteredComponents();
+
+	}
+
+
+
+	public static class IComponentMetadataContainerExtensions {
+
+
+		public static readonly ComponentMetadataDumper ComponentMetadataDumper = new ComponentMetadataDumper();
+
+
+		public static void RegisterComponentMetadata(this IComponentMetadataContainer container, string name, Type t, IMessageLogger logger, IXmlDocReader xmlDocReader = null) {
+			container.RegisterComponentMetadata(name, ComponentMetadataDumper.GetMetadata(t, logger, xmlDocReader));
+		}
+
+		public static void RegisterComponent(this IComponentMetadataContainer container, Type t, IMessageLogger logger, IXmlDocReader xmlDocReader = null) {
+			container.RegisterComponentMetadata(t.Name, ComponentMetadataDumper.GetMetadata(t, logger, xmlDocReader));
+		}
+
+		public static void RegisterComponentNameAndFullName(this IComponentMetadataContainer container, Type t, IMessageLogger logger, IXmlDocReader xmlDocReader = null) {
+			var meta = ComponentMetadataDumper.GetMetadata(t, logger, xmlDocReader);
+			container.RegisterComponentMetadata(t.Name, meta);
+			container.RegisterComponentMetadata(t.FullName, meta);
 		}
 
 	}

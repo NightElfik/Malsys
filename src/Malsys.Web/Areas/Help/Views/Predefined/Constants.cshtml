@@ -1,4 +1,4 @@
-﻿@model Tuple<IEnumerable<Malsys.Compilers.Expressions.KnownConstant>, Microsoft.FSharp.Collections.FSharpMap<string, Malsys.SemanticModel.Evaluated.IValue>>
+﻿@model Malsys.Web.Areas.Help.Models.PredefinedConstantsModel
 
 @{
 	ViewBag.Title = "Predefined constants";
@@ -15,24 +15,25 @@
 <h3>Built-in compiler constants</h3>
 
 <p>
-	Following constants are recognized by the compiler though it is not possible to change their value at run time.
-	Their names are case-insensitive to be independent on user's naming conventions.
+	Following constants are recognized by the compiler though it is not possible to change their value.
+	Their names are case-sensitive.
 </p>
 
-<table class="center">
-	<tr><th style="width: 128px;">Name</th><th style="width: 192px;">Value</th></tr>
-@foreach (var constGroup in Model.Item1.GroupBy(x => x.Group)) {
+<table>
+	<tr><th style="width: 128px;">Name</th><th style="width: 192px;">Value</th><th></th></tr>
+@foreach (var constGroup in Model.CompilerConstants.GroupBy(x => x.GroupDoc)) {
 
-	<tr class="th"><th colspan="2">@constGroup.Key</th></tr>
+	<tr class="th"><th colspan="3">@(string.IsNullOrEmpty(constGroup.Key) ? "Other" : constGroup.Key)</th></tr>
 	foreach (var valGroup in constGroup.GroupBy(x => x.Value)) {
 		var count = valGroup.Count();
 		bool first = true;
 		foreach (var c in valGroup) {
 		<tr>
-			<td class="monospace">@c.Name</td>
+			<td class="monospace center">@c.Name</td>
 			@if (first) {
 				first = false;
-				<td rowspan="@count">@c.Value</td>
+				<td class="center" rowspan="@count">@c.Value</td>
+				<td rowspan="@count">@c.SummaryDoc</td>
 			}
 		</tr>
 		}
@@ -52,15 +53,15 @@
 
 <table class="center">
 	<tr><th style="width: 128px;">Name</th><th style="width: 192px;">Value</th></tr>
-@foreach (var constKvpGroup in Model.Item2.GroupBy(x => x.Value)) {
+@foreach (var constKvpGroup in Model.StdLibConstants.GroupBy(x => x.ValueFunc())) {
 	var count = constKvpGroup.Count();
 	bool first = true;
-	foreach (var constKvp in constKvpGroup) {
+	foreach (var constant in constKvpGroup) {
 	<tr>
-		<td class="monospace">@constKvp.Key</td>
+		<td class="monospace">@constant.Name</td>
 		@if (first) {
 			first = false;
-			<td rowspan="@count">@constKvp.Value</td>
+			<td rowspan="@count">@constant.ValueFunc()</td>
 		}
 	</tr>
 	}

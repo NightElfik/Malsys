@@ -11,17 +11,17 @@ namespace Malsys.Reflection.Components {
 	public class ComponentMetadataDumper {
 
 
-		public ComponentMetadata GetMetadata(IComponent component, IMessageLogger logger) {
+		public ComponentMetadata GetMetadata(IComponent component, IMessageLogger logger, IXmlDocReader xmlDocReader = null) {
 
 			Contract.Requires<ArgumentNullException>(component != null);
 			Contract.Requires<ArgumentNullException>(logger != null);
 			Contract.Ensures(Contract.Result<ComponentMetadata>() != null);
 
-			return GetMetadata(component.GetType(), logger);
+			return GetMetadata(component.GetType(), logger, xmlDocReader);
 
 		}
 
-		public ComponentMetadata GetMetadata(Type componentType, IMessageLogger logger) {
+		public ComponentMetadata GetMetadata(Type componentType, IMessageLogger logger, IXmlDocReader xmlDocReader = null) {
 
 			Contract.Requires<ArgumentNullException>(componentType != null);
 			Contract.Requires<ArgumentNullException>(logger != null);
@@ -31,20 +31,26 @@ namespace Malsys.Reflection.Components {
 				logger.LogMessage(Message.InvalidComponentType, componentType.FullName, typeof(IComponent).FullName);
 			}
 
-			bool isContainer, hasMsgCtor;
+
+			string name = xmlDocReader != null ? xmlDocReader.GetXmlDocumentationAsString(componentType, "name") : null;
+			string group = xmlDocReader != null ? xmlDocReader.GetXmlDocumentationAsString(componentType, "group") : null;
+			string summary = xmlDocReader != null ? xmlDocReader.GetXmlDocumentationAsString(componentType) : null;
+
+			bool isInstantiable, hasMsgCtor;
 			return new ComponentMetadata(componentType,
-				getGettableProperties(componentType, logger).ToImmutableList(),
-				getSettableProperties(componentType, logger).ToImmutableList(),
-				getSettableSymbolsProperties(componentType, logger).ToImmutableList(),
-				getConnectableProperties(componentType, logger).ToImmutableList(),
-				getCallableFunctions(componentType, logger).ToImmutableList(),
-				getInterpretationMethods(componentType, logger).ToImmutableList(),
-				getConstructor(componentType, logger, out isContainer, out hasMsgCtor),
-				hasMsgCtor, isContainer);
+				getGettableProperties(componentType, logger, xmlDocReader).ToImmutableList(),
+				getSettableProperties(componentType, logger, xmlDocReader).ToImmutableList(),
+				getSettableSymbolsProperties(componentType, logger, xmlDocReader).ToImmutableList(),
+				getConnectableProperties(componentType, logger, xmlDocReader).ToImmutableList(),
+				getCallableFunctions(componentType, logger, xmlDocReader).ToImmutableList(),
+				getInterpretationMethods(componentType, logger, xmlDocReader).ToImmutableList(),
+				getConstructor(componentType, logger, out isInstantiable, out hasMsgCtor),
+				hasMsgCtor, isInstantiable, true,
+				name, group, summary);
 
 		}
 
-		private IEnumerable<ComponentGettablePropertyMetadata> getGettableProperties(Type type, IMessageLogger logger) {
+		private IEnumerable<ComponentGettablePropertyMetadata> getGettableProperties(Type type, IMessageLogger logger, IXmlDocReader xmlDocReader) {
 
 			foreach (var propInfoAndAttr in type.GetPropertiesHavingAttr<UserGettableAttribute>()) {
 				PropertyInfo propInfo = propInfoAndAttr.Item1;
@@ -59,11 +65,14 @@ namespace Malsys.Reflection.Components {
 					continue;
 				}
 
-				yield return new ComponentGettablePropertyMetadata(propInfo.GetAccessNames().ToImmutableList(), propInfo, propInfoAndAttr.Item2.IsGettableBeforeInitialiation);
+				string summary = xmlDocReader != null ? xmlDocReader.GetXmlDocumentationAsString(propInfo) : null;
+
+				yield return new ComponentGettablePropertyMetadata(propInfo.GetAccessNames().ToImmutableList(), propInfo, propInfoAndAttr.Item2.IsGettableBeforeInitialiation, summary);
 			}
+
 		}
 
-		private IEnumerable<ComponentSettablePropertyMetadata> getSettableProperties(Type type, IMessageLogger logger) {
+		private IEnumerable<ComponentSettablePropertyMetadata> getSettableProperties(Type type, IMessageLogger logger, IXmlDocReader xmlDocReader) {
 
 			foreach (var propInfoAndAttr in type.GetPropertiesHavingAttr<UserSettableAttribute>()) {
 				PropertyInfo propInfo = propInfoAndAttr.Item1;
@@ -78,11 +87,16 @@ namespace Malsys.Reflection.Components {
 					continue;
 				}
 
-				yield return new ComponentSettablePropertyMetadata(propInfo.GetAccessNames().ToImmutableList(), propInfo, propInfoAndAttr.Item2.IsMandatory);
+				string summary = xmlDocReader != null ? xmlDocReader.GetXmlDocumentationAsString(propInfo) : null;
+				string excpected = xmlDocReader != null ? xmlDocReader.GetXmlDocumentationAsString(propInfo, "expected") : null;
+				string def = xmlDocReader != null ? xmlDocReader.GetXmlDocumentationAsString(propInfo, "default") : null;
+
+				yield return new ComponentSettablePropertyMetadata(propInfo.GetAccessNames().ToImmutableList(), propInfo, propInfoAndAttr.Item2.IsMandatory, summary, excpected, def);
 			}
+
 		}
 
-		private IEnumerable<ComponentSettableSybolsPropertyMetadata> getSettableSymbolsProperties(Type type, IMessageLogger logger) {
+		private IEnumerable<ComponentSettableSybolsPropertyMetadata> getSettableSymbolsProperties(Type type, IMessageLogger logger, IXmlDocReader xmlDocReader) {
 
 			foreach (var propInfoAndAttr in type.GetPropertiesHavingAttr<UserSettableSybolsAttribute>()) {
 				PropertyInfo propInfo = propInfoAndAttr.Item1;
@@ -97,11 +111,14 @@ namespace Malsys.Reflection.Components {
 					continue;
 				}
 
-				yield return new ComponentSettableSybolsPropertyMetadata(propInfo.GetAccessNames().ToImmutableList(), propInfo, propInfoAndAttr.Item2.IsMandatory);
+				string summary = xmlDocReader != null ? xmlDocReader.GetXmlDocumentationAsString(propInfo) : null;
+
+				yield return new ComponentSettableSybolsPropertyMetadata(propInfo.GetAccessNames().ToImmutableList(), propInfo, propInfoAndAttr.Item2.IsMandatory, summary);
 			}
+
 		}
 
-		private IEnumerable<ComponentConnectablePropertyMetadata> getConnectableProperties(Type type, IMessageLogger logger) {
+		private IEnumerable<ComponentConnectablePropertyMetadata> getConnectableProperties(Type type, IMessageLogger logger, IXmlDocReader xmlDocReader) {
 
 			foreach (var propInfoAndAttr in type.GetPropertiesHavingAttr<UserConnectableAttribute>()) {
 				PropertyInfo propInfo = propInfoAndAttr.Item1;
@@ -116,11 +133,15 @@ namespace Malsys.Reflection.Components {
 					continue;
 				}
 
-				yield return new ComponentConnectablePropertyMetadata(propInfo.GetAccessNames().ToImmutableList(), propInfo, propInfoAndAttr.Item2.IsOptional, propInfoAndAttr.Item2.AllowMultiple);
+				string summary = xmlDocReader != null ? xmlDocReader.GetXmlDocumentationAsString(propInfo) : null;
+
+				yield return new ComponentConnectablePropertyMetadata(propInfo.GetAccessNames().ToImmutableList(), propInfo, propInfoAndAttr.Item2.IsOptional,
+					propInfoAndAttr.Item2.AllowMultiple, summary);
 			}
+
 		}
 
-		private IEnumerable<ComponentCallableFunctionMetadata> getCallableFunctions(Type type, IMessageLogger logger) {
+		private IEnumerable<ComponentCallableFunctionMetadata> getCallableFunctions(Type type, IMessageLogger logger, IXmlDocReader xmlDocReader) {
 
 			foreach (var propInfoAndAttr in type.GetMethodsHavingAttr<UserCallableFunctionAttribute>()) {
 
@@ -138,12 +159,16 @@ namespace Malsys.Reflection.Components {
 					continue;
 				}
 
+				string summary = xmlDocReader != null ? xmlDocReader.GetXmlDocumentationAsString(methodInfo) : null;
+				string paramsDoc = xmlDocReader != null ? xmlDocReader.GetXmlDocumentationAsString(methodInfo, "parameters") : null;
+
 				yield return new ComponentCallableFunctionMetadata(methodInfo.GetAccessNames().ToImmutableList(), methodInfo, attr.ParamsCount,
-					attr.ParamsTypesCyclicPattern.ToImmutableList(), attr.IsCallableBeforeInitialiation);
+					attr.ParamsTypesCyclicPattern.ToImmutableList(), attr.IsCallableBeforeInitialiation, summary, paramsDoc);
 			}
+
 		}
 
-		private IEnumerable<ComponentInterpretationMethodMetadata> getInterpretationMethods(Type type, IMessageLogger logger) {
+		private IEnumerable<ComponentInterpretationMethodMetadata> getInterpretationMethods(Type type, IMessageLogger logger, IXmlDocReader xmlDocReader) {
 
 			foreach (var propInfoAndAttr in type.GetMethodsHavingAttr<SymbolInterpretationAttribute>()) {
 
@@ -161,15 +186,20 @@ namespace Malsys.Reflection.Components {
 					continue;
 				}
 
-				yield return new ComponentInterpretationMethodMetadata(methodInfo.GetAccessNames().ToImmutableList(), methodInfo, attr.ParametersCount, attr.RequiredParametersCount);
+				string summary = xmlDocReader != null ? xmlDocReader.GetXmlDocumentationAsString(methodInfo) : null;
+				string paramsDoc = xmlDocReader != null ? xmlDocReader.GetXmlDocumentationAsString(methodInfo, "parameters") : null;
+
+				yield return new ComponentInterpretationMethodMetadata(methodInfo.GetAccessNames().ToImmutableList(), methodInfo, attr.ParametersCount,
+					attr.RequiredParametersCount, summary, paramsDoc);
 			}
+
 		}
 
-		private ConstructorInfo getConstructor(Type type, IMessageLogger logger, out bool isContainer, out bool hasMessageCtor) {
+		private ConstructorInfo getConstructor(Type type, IMessageLogger logger, out bool isInstantiable, out bool hasMessageCtor) {
 
-			isContainer = type.IsInterface || type.IsAbstract;
+			isInstantiable = !type.IsInterface && !type.IsAbstract;
 
-			if (isContainer) {
+			if (!isInstantiable) {
 				hasMessageCtor = false;
 				return null;
 			}

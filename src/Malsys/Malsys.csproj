@@ -113,9 +113,13 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Compilers\CompilerConstantAttribute.cs" />
+    <Compile Include="Compilers\CompilerConstant.cs" />
+    <Compile Include="Compilers\Interfaces%27\IOperatorsContainer.cs" />
+    <Compile Include="Compilers\Interfaces%27\ICompilerConstantsContainer.cs" />
+    <Compile Include="Resources\MalsysConstantsAttribute.cs" />
     <Compile Include="Compilers\CompilerResult.cs" />
     <Compile Include="Compilers\ConstantDefCompiler.cs" />
+    <Compile Include="Compilers\OperatorAttribute.cs" />
     <Compile Include="Compilers\ExpressionCompiler.cs" />
     <Compile Include="Compilers\FunctionDefCompiler.cs" />
     <Compile Include="Compilers\Interfaces%27\ICompiler.cs" />
@@ -177,7 +181,7 @@
     <Compile Include="Processing\ProcessConfiguration.cs" />
     <Compile Include="Reflection\Components\ComponentMetadata.cs" />
     <Compile Include="Reflection\Components\ComponentMetadataDumper.cs" />
-    <Compile Include="Processing\CachedComponentResolver.cs" />
+    <Compile Include="Processing\ComponentResolver.cs" />
     <Compile Include="Processing\Components\Common\AxiomProvider.cs" />
     <Compile Include="Processing\Components\Common\ConstantsDumper.cs" />
     <Compile Include="Processing\Components\Common\RandomGeneratorProvider.cs" />
@@ -205,7 +209,6 @@
     <Compile Include="Processing\Components\Rewriters\SymbolRewriter.Enumerator.cs" />
     <Compile Include="Processing\Components\Interfaces%27\IProcessComponent.cs" />
     <Compile Include="Processing\Components\Interfaces%27\IProcessStarter.cs" />
-    <Compile Include="Processing\IComponentTypeResolver.cs" />
     <Compile Include="Processing\Output\InMemoryOutputProvider.cs" />
     <Compile Include="Processing\InterpretationException.cs" />
     <Compile Include="Processing\Output\IOutputProvider.cs" />
@@ -217,9 +220,9 @@
     <Compile Include="Reflection\Components\ComponentCallableFunctionMetadata.cs" />
     <Compile Include="Reflection\Components\ComponentSettablePropertyMetadata.cs" />
     <Compile Include="Reflection\Components\ComponentInterpretationMethodMetadata.cs" />
-    <Compile Include="Reflection\Components\ComponentXmlDocLoader.cs" />
-    <Compile Include="Reflection\Components\IComponentXmlDocLoader.cs" />
-    <Compile Include="Reflection\FunctionDumper.cs" />
+    <Compile Include="Reflection\MalsysLoader.cs" />
+    <Compile Include="Resources\MalsysOpertorsAttribute.cs" />
+    <Compile Include="Resources\MalsysFunctionsAttribute.cs" />
     <Compile Include="Resources\FunctionCore.cs" />
     <Compile Include="Resources\ResourcesHelper.cs" />
     <Compile Include="Resources\ResourcesReader.cs" />
@@ -258,9 +261,9 @@
     <Compile Include="SemanticModel\Compiled\Expressions\ExpressionValuesArray.cs" />
     <Compile Include="Evaluators\ArgsStorage.cs" />
     <Compile Include="SemanticModel\Compiled\Expressions\Indexer.cs" />
-    <Compile Include="Compilers\Interfaces%27\IKnownConstantsProvider.cs" />
+    <Compile Include="Compilers\Interfaces%27\ICompilerConstantsProvider.cs" />
     <Compile Include="Compilers\KnownConstOpProvider.cs" />
-    <Compile Include="Compilers\Interfaces%27\IKnownOperatorsProvider.cs" />
+    <Compile Include="Compilers\Interfaces%27\IOperatorsProvider.cs" />
     <Compile Include="Resources\OperatorCore.cs" />
     <Compile Include="SemanticModel\Evaluated\OptionalParameterEvaled.cs" />
     <Compile Include="SemanticModel\Evaluated\ValuesArray.cs" />

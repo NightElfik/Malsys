@@ -1,27 +1,27 @@
 ﻿@model IEnumerable<ComponentModel>
 
 @{
-	ViewBag.Title = "Components (and containers)";
+	ViewBag.Title = "Components and interfaces (containers)";
 	string defaultCategory = "Other";
 	var componentsGroupped = Model
-		.Where(c => !c.Metadata.IsContainer)
-		.OrderBy(c => c.Metadata.Name)
+		.Where(c => c.Metadata.IsInstantiable)
+		.OrderBy(c => c.Metadata.HumanReadableName)
 		.GroupBy(x => string.IsNullOrEmpty(x.Metadata.GroupDoc) ? defaultCategory : x.Metadata.GroupDoc)
 		.OrderBy(x => x.Key);
-	var containersGroupped = Model
-		.Where(c => c.Metadata.IsContainer)
-		.OrderBy(c => c.Metadata.Name)
+	var interfacesGroupped = Model
+		.Where(c => !c.Metadata.IsInstantiable)
+		.OrderBy(c => c.Metadata.HumanReadableName)
 		.GroupBy(x => string.IsNullOrEmpty(x.Metadata.GroupDoc) ? defaultCategory : x.Metadata.GroupDoc)
 		.OrderBy(x => x.Key);
 }
 
-<h2>Components (and containers)</h2>
+<h2>Components and interfaces (containers)</h2>
 
 <p>
-	This page contains list of all components (and containers) along with theirs comprehensive information.
+	This page contains list of all Components and interfaces (containers) along with theirs comprehensive information.
 </p>
 
-<div class="clearfix">
+<div class="clearfix" id="toc">
 	<div class="leftHalf">
 		<h3>Components</h3>
 		<ul class="clean">
@@ -29,7 +29,7 @@
 			<li>@group.Key
 				<ul class="clean">
 				@foreach (var component in group) {
-					<li>@Html.Link(component.Metadata.Name, "#" + component.Metadata.ComponentType.FullName)</li>
+					<li>@Url.AnchorLink(component.Metadata.HumanReadableName, MVC.Help.Predefined.Components(), component.Metadata.ComponentType.FullName)</li>
 				}
 				</ul>
 			</li>
@@ -38,13 +38,13 @@
 	</div>
 
 	<div class="rightHalf">
-		<h3>Containers</h3>
+		<h3>Interfaces (containers)</h3>
 		<ul class="clean">
-		@foreach (var group in containersGroupped) {
+		@foreach (var group in interfacesGroupped) {
 			<li>@group.Key
 				<ul class="clean">
 				@foreach (var container in group) {
-					<li>@Html.Link(container.Metadata.Name, "#" + container.Metadata.ComponentType.FullName)</li>
+					<li>@Url.AnchorLink(container.Metadata.HumanReadableName, MVC.Help.Predefined.Components(), container.Metadata.ComponentType.FullName)</li>
 				}
 				</ul>
 			</li>
@@ -60,16 +60,18 @@
 
 	foreach (var comp in group) {
 		Html.RenderPartial(MVC.Help.Shared.Views.ComponentPartial, comp);
+		@MalsysHelper.TocLink();
 	}
 
 }
 
-<h2>Containers</h2>
-@foreach (var group in containersGroupped) {
+<h2>Interfaces (containers)</h2>
+@foreach (var group in interfacesGroupped) {
 	<h3>@group.Key</h3>
 
 	foreach (var comp in group) {
 		Html.RenderPartial(MVC.Help.Shared.Views.ComponentPartial, comp);
+		@MalsysHelper.TocLink(true);
 	}
 
 }

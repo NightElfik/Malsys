@@ -1,11 +1,9 @@
-﻿using System;
-using System.Diagnostics.Contracts;
-using System.Reflection;
+﻿using System.Reflection;
 using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Reflection.Components {
 	/// <remarks>
-	/// Nearly immutable (only doc strings can be set later).
+	/// Immutable.
 	/// </remarks>
 	public class ComponentCallableFunctionMetadata {
 
@@ -22,13 +20,13 @@ namespace Malsys.Reflection.Components {
 		public readonly ExpressionValueTypeFlags ExpressionValueReturnType;
 
 
-		public string SummaryDoc { get; private set; }
-		public string ParamsDoc { get; private set; }
+		public readonly string SummaryDoc;
+		public readonly string ParamsDoc;
 
 
 
 		public ComponentCallableFunctionMetadata(ImmutableList<string> names, MethodInfo methodInfo, int paramsCount,
-				ImmutableList<ExpressionValueTypeFlags> paramsTypesCyclicPattern, bool isGettableBeforeInitialiation) {
+				ImmutableList<ExpressionValueTypeFlags> paramsTypesCyclicPattern, bool isGettableBeforeInitialiation, string summaryDoc = null, string paramsDoc = null) {
 
 			Names = names;
 			ParamsCount = paramsCount;
@@ -36,19 +34,13 @@ namespace Malsys.Reflection.Components {
 			MethodInfo = methodInfo;
 			IsGettableBeforeInitialiation = isGettableBeforeInitialiation;
 
+			SummaryDoc = summaryDoc ?? "";
+			ParamsDoc = paramsDoc ?? "";
+
 			ExpressionValueReturnType = IValueExtensions.IValueTypeToEnum(MethodInfo.ReturnType);
 
 		}
 
-		public void SetDocumentation(string summaryDoc, string paramsDoc) {
-
-			Contract.Requires<ArgumentNullException>(summaryDoc != null);
-			Contract.Requires<ArgumentNullException>(paramsDoc != null);
-
-			SummaryDoc = summaryDoc;
-			ParamsDoc = paramsDoc;
-
-		}
 
 	}
 }

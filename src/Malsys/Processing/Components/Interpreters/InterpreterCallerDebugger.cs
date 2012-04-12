@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Linq;
 using Malsys.Evaluators;
 using Malsys.IO;
 using Malsys.SemanticModel;
@@ -20,6 +21,10 @@ namespace Malsys.Processing.Components.Interpreters {
 		private CanonicPrinter debugPrinter;
 		private IOutputProvider outProvider;
 
+		/// <summary>
+		/// Connectable interpreter property to allow replacing any interpreter in any configuration with this debugger.
+		/// This component is ignored.
+		/// </summary>
 		[UserConnectable(IsOptional = true)]
 		override public IInterpreter Interpreter {
 			set {
@@ -84,8 +89,8 @@ namespace Malsys.Processing.Components.Interpreters {
 		override public void Initialize(ProcessContext ctxt) {
 
 			outProvider = ctxt.OutputProvider;
-
-			base.Initialize(ctxt);
+			exprEvalCtxt = ctxt.ExpressionEvaluatorContext;
+			symbolToInstr = ctxt.Lsystem.SymbolsInterpretation.ToDictionary(x => x.Key, x => x.Value);
 		}
 
 

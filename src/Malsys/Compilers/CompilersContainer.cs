@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Malsys.Resources;
+using Malsys.Reflection;
 
 namespace Malsys.Compilers {
 	/// <summary>
@@ -7,30 +8,11 @@ namespace Malsys.Compilers {
 	/// </summary>
 	public class CompilersContainer : ICompilersContainer {
 
-		private static readonly KnownConstOpProvider defaultKnownStuffProvider;
-
-
-		static CompilersContainer() {
-
-			defaultKnownStuffProvider = new KnownConstOpProvider();
-			defaultKnownStuffProvider.LoadConstants(typeof(StdConstants));
-			defaultKnownStuffProvider.LoadOperators(typeof(StdOperators));
-
-		}
-
 
 		protected IContainer container;
 
 
-
-		/// <summary>
-		/// Creates container with standard constants and operators.
-		/// </summary>
-		internal CompilersContainer() {
-			buildContainer(defaultKnownStuffProvider, defaultKnownStuffProvider);
-		}
-
-		public CompilersContainer(IKnownConstantsProvider knownConstantsProvider, IKnownOperatorsProvider knownOperatorsProvider) {
+		public CompilersContainer(ICompilerConstantsProvider knownConstantsProvider, IOperatorsProvider knownOperatorsProvider) {
 			buildContainer(knownConstantsProvider, knownOperatorsProvider);
 		}
 
@@ -50,12 +32,12 @@ namespace Malsys.Compilers {
 		}
 
 
-		private void buildContainer(IKnownConstantsProvider knownConstantsProvider, IKnownOperatorsProvider knownOperatorsProvider) {
+		private void buildContainer(ICompilerConstantsProvider knownConstantsProvider, IOperatorsProvider knownOperatorsProvider) {
 
 			var builder = new ContainerBuilder();
 
-			builder.Register(x => knownConstantsProvider).As<IKnownConstantsProvider>().SingleInstance();
-			builder.Register(x => knownOperatorsProvider).As<IKnownOperatorsProvider>().SingleInstance();
+			builder.Register(x => knownConstantsProvider).As<ICompilerConstantsProvider>().SingleInstance();
+			builder.Register(x => knownOperatorsProvider).As<IOperatorsProvider>().SingleInstance();
 
 			builder.RegisterType<InputCompiler>().As<IInputCompiler>().SingleInstance();
 			builder.RegisterType<ConstantDefCompiler>().As<IConstantDefinitionCompiler>().SingleInstance();

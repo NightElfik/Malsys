@@ -7,6 +7,12 @@ using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Collections;
 
 namespace Malsys.Processing.Components.Common {
+	/// <summary>
+	///	This is special component for interpreting L-system symbol as another L-system.
+	///	It caches process components for processing inner L-system to optimize speed of processing.
+	/// </summary>
+	/// <name>Inner L-system processor</name>
+	/// <group>Special</group>
 	public class LsystemInLsystemProcessor : ILsystemInLsystemProcessor {
 
 		public const string DefaultProcessConfigName = "InnerLsystemConfig";
@@ -22,7 +28,18 @@ namespace Malsys.Processing.Components.Common {
 		private ConfigurationComponent interpreterComp;
 		private FSharpMap<string, ConfigurationComponent> componentBase;
 
-
+		/// <summary>
+		/// Interpreter of main L-system.
+		/// All symbols from inner L-system should be processed with same interpreter as main L-system.
+		/// This connection is set to optional due to technical reasons but must be set to same interpreter component as
+		/// main L-system. Otherwise Exception is thrown.
+		/// </summary>
+		/// <remarks>
+		/// This connection is set to optional because this component is part of inner configuration when ProcessManager
+		/// is building inner configuration there is no interpreter component to no override main interpreter.
+		/// To avoid errors of unconnected connection this is optional.
+		/// Connection is set after creating inner process configuration from outside.
+		/// </remarks>
 		[UserConnectable(IsOptional = true)]
 		public IInterpreter Interpreter {
 			set { interpreter = value; }
@@ -58,7 +75,7 @@ namespace Malsys.Processing.Components.Common {
 
 		/// <remarks>
 		/// The given process configuration must have connections to "virtual" components type of
-		/// <c>ILsystemInLsystemProcessor</c> and <c>IInterpreter</c> called with same name as this component
+		/// ILsystemInLsystemProcessor and IInterpreter called with same name as this component
 		/// and given interpreter. These two components are added to component graph builder to connect them to new
 		/// component graph.
 		/// </remarks>

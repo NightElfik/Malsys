@@ -14,7 +14,6 @@ using Autofac.Integration.Mvc;
 using Malsys.Compilers;
 using Malsys.Evaluators;
 using Malsys.Processing;
-using Malsys.Processing.Components;
 using Malsys.Reflection;
 using Malsys.Reflection.Components;
 using Malsys.Resources;
@@ -101,43 +100,54 @@ namespace Malsys.Web {
 			builder.RegisterType<AppSettingsProvider>().As<IAppSettingsProvider>().SingleInstance();
 
 			string basePath = Server.MapPath("~/bin");  // path where DLL and theirs XML doc files are
-			builder.Register(x => new XmlDocReader(basePath)).SingleInstance();
-			builder.RegisterType<ComponentXmlDocLoader>().As<IComponentXmlDocLoader>().SingleInstance();
+			var xmlDocReader = new XmlDocReader(basePath);
+			builder.Register(x => xmlDocReader)
+				.As<IXmlDocReader>()
+				.SingleInstance();
 
 
-			registerMalsysStuff(builder);
-
+			registerMalsysStuff(builder, xmlDocReader);
 
 			return new AutofacDependencyResolver(builder.Build());
 
 		}
 
-		private void registerMalsysStuff(ContainerBuilder builder) {
-
-			var eec = new FunctionDumper().RegiterAllFunctions(typeof(StdFunctions), new ExpressionEvaluatorContext());
-			builder.Register(x => eec).As<IExpressionEvaluatorContext>().SingleInstance();
+		private void registerMalsysStuff(ContainerBuilder builder, IXmlDocReader xmlDocReader) {
 
 			var knownStuffProvider = new KnownConstOpProvider();
-			knownStuffProvider.LoadConstants(typeof(StdConstants));
-			knownStuffProvider.LoadOperators(typeof(StdOperators));
+			IExpressionEvaluatorContext eec = new ExpressionEvaluatorContext();
+			var componentResolver = new ComponentResolver();
+
+			var logger = new MessageLogger();
+
+			new MalsysLoader().LoadMalsysStuffFromAssembly(Assembly.GetAssembly(typeof(MalsysLoader)),
+				knownStuffProvider, knownStuffProvider, ref eec, componentResolver, logger, xmlDocReader);
+
+			if (logger.ErrorOccurred) {
+				throw new Exception("Failed to load Malsys stuff" + logger.AllMessagesToFullString());
+			}
+
 			builder.Register(x => knownStuffProvider)
-				.As<IKnownConstantsProvider>()
-				.As<IKnownOperatorsProvider>()
+				.As<ICompilerConstantsProvider>()
+				.As<IOperatorsProvider>()
 				.SingleInstance();
 
-			builder.RegisterType<CompilersContainer>().As<ICompilersContainer>().InstancePerHttpRequest();
-			builder.RegisterType<EvaluatorsContainer>().As<IEvaluatorsContainer>().InstancePerHttpRequest();
+			builder.Register(x => eec)
+				.As<IExpressionEvaluatorContext>()
+				.SingleInstance();
 
-			var componentResolver = new CachedComponentResolver();
-			var componentsTypes = Assembly.GetAssembly(typeof(CachedComponentResolver)).GetTypes()
-				.Where(t => (t.IsClass || t.IsInterface) && (typeof(IComponent)).IsAssignableFrom(t));
-			foreach (var type in componentsTypes) {
-				componentResolver.RegisterComponentNameAndFullName(type, false);
-			}
 			builder.Register(x => componentResolver)
 				.As<IComponentMetadataContainer>()
 				.As<IComponentMetadataResolver>()
 				.SingleInstance();
+
+
+			builder.RegisterType<CompilersContainer>()
+				.As<ICompilersContainer>()
+				.InstancePerHttpRequest();
+			builder.RegisterType<EvaluatorsContainer>()
+				.As<IEvaluatorsContainer>()
+				.InstancePerHttpRequest();
 
 			builder.RegisterType<ProcessManager>().InstancePerHttpRequest();
 			builder.RegisterType<LsystemProcessor>().InstancePerHttpRequest();

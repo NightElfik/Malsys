@@ -2,7 +2,7 @@
 using Malsys.Resources;
 
 namespace Malsys.Compilers {
-	public interface IKnownOperatorsProvider {
+	public interface IOperatorsProvider {
 
 		bool TryGet(string syntax, bool unary, out OperatorCore result);
 

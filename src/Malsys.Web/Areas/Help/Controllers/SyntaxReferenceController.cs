@@ -60,5 +60,13 @@ namespace Malsys.Web.Areas.Help.Controllers {
 			return View(simpleLsystemProcessor);
 		}
 
+		public virtual ActionResult ProcessStatements() {
+			return View(simpleLsystemProcessor);
+		}
+
+		public virtual ActionResult ArithmeticExpressions() {
+			return View(simpleLsystemProcessor);
+		}
+
 	}
 }

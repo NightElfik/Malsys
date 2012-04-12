@@ -10,10 +10,61 @@
 
 	@Html.ValidationSummary(true)
 
-	@Html.EditorForModel();
+	<div class="editor-label">
+		@Html.LabelFor(m => m.Name)
+	</div>
+	<div class="editor-field">
+		@Html.EditorFor(m => m.Name)
+		@Html.ValidationMessageFor(m => m.Name)
+	</div>
+
+	<div class="editor-label">
+		@Html.LabelFor(m => m.Tags) (space separated)
+	</div>
+	<div class="editor-field">
+		@Html.EditorFor(m => m.Tags)
+		@Html.ValidationMessageFor(m => m.Tags)
+	</div>
+
+	<div class="editor-label">
+		@Html.LabelFor(m => m.Description) — description of L-system, sources, references, etc...
+	</div>
+	<div class="editor-field">
+		@Html.EditorFor(m => m.Description)
+		@Html.ValidationMessageFor(m => m.Description)
+	</div>
+
+	<fieldset class="malsysSource">
+		<legend>Source code</legend>
+		<p>
+			If processing results in more than 1 output the last one will be displayed.
+		</p>
+		@Html.TextAreaFor(m => m.SourceCode, 20, 60, null)
+
+	</fieldset>
+
+	<fieldset class="malsysSource">
+		<legend>Thumbnail source code extension (optional)</legend>
+		<p>
+			This code will be added at the end of main source code if thumbnail is generated.
+			Since last output is displayed this code can produce another output with different parameters as thumbnail.
+			@Html.ActionLink("L-system inheritance", MVC.Help.SyntaxReference.LsystemDefinition()) can be used to easily change parameters of main L-system
+				(for example to lower amount of iterations for thumbnail)
+		</p>
+		@Html.TextAreaFor(m => m.SourceCodeThn, 15, 60, null)
+
+	</fieldset>
+
+	<div class="editor-label">
+		@Html.LabelFor(m => m.Publish) — this L-system will be shown in public gallery
+	</div>
+	<div class="editor-field">
+		@Html.EditorFor(m => m.Publish)
+		@Html.ValidationMessageFor(m => m.Publish)
+	</div>
 
 	<p>
-		<input type="submit" value="Save" />
+		@Html.SubmitButton("Save")
 	</p>
 
 }

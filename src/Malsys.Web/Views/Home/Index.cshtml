@@ -4,9 +4,9 @@
 
 <h3>What is Malsys?</h3>
 <p>
-	Malsys is online L-system processing system.
-	Please note that this is beta version, some parts are not finished yet.
-	Feel free to try anything you want (and send me a @Html.ActionLink("feedback", MVC.Feedback.Index()) if you (dis)like it :).
+	Malsys is online L-system processing environment designed for working and experimenting L-systems.
+	Malsys interface is friendly to new users and also offers advanced features for experienced users.
+	Part of web site is @Html.ActionLink("gallery", MVC.Gallery.Index()) in which any registered user can contribute.
 </p>
 
 
@@ -18,10 +18,9 @@
 </p>
 
 
-<h3>How can i use it?</h3>
+<h3>How can I use Malsys?</h3>
 <p>
-	The best way to start is looking at some  @Html.ActionLink("examples", MVC.Examples.Index()).
-	Then you can check @Html.ActionLink("help page", MVC.Help.Home.Index()) for more details.
+	You can check @Html.ActionLink("help pages", MVC.Help.Home.Index()) or examples in @Html.ActionLink("gallery", MVC.Gallery.Index()).
 </p>
 
 
@@ -29,19 +28,23 @@
 
 <ul>
 	<li>Readable L-system syntax</li>
-	<li>Variables and functions definitions</li>
-	<li>Saving of L-systems for registered users (with permalink)</li>
+	<li>Lot of predefined @Html.ActionLink("functions", MVC.Help.Predefined.Functions()) and @Html.ActionLink("operators", MVC.Help.Predefined.Operators())</li>
+	<li>Custom @Html.ActionLink("constants", MVC.Help.SyntaxReference.ConstantDefinition()) and @Html.ActionLink("functions", MVC.Help.SyntaxReference.FunctionDefinition()) definitions</li>
+	<li>Public gallery, saving of L-systems for registered users (with permalink)</li>
 	<li>Rendering
 		<ul>
 			<li>SVG</li>
+			<li>Text (print L-system symbols)</li>
 			<li>ASCII art (only on hexagonal grid)</li>
 		</ul>
 	</li>
 	<li>L-system capabilities
 		<ul>
+			<li>Branching</li>
 			<li>Context sensitive rewrite rules</li>
 			<li>Conditional rewrite rules</li>
 			<li>Stochastic (randomized) rewriting</li>
+			<li>Custom interpretation methods</li>
 		</ul>
 	</li>
 </ul>

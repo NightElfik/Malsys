@@ -1,0 +1,36 @@
+﻿@{
+	ViewBag.Title = "Arithmetic expressions";
+}
+
+<h2>Arithmetic expressions</h2>
+
+<p>
+	<i>To be done in the near future.</i>
+</p>
+
+@* ================================================================================================================== *@
+<h3>Formal grammar</h3>
+
+@MalsysHelper.GrammarBox(
+	"expression = expr_member+",
+	"",
+	"expr_member =",
+	"	| NUMBER",
+	"	| ID",
+	"	| OPERATOR",
+	"	| expr_indexer",
+	"	| expr_array",
+	"	| expr_function",
+	"	| '(' expression ')'",
+	"",
+	"expr_indexer = '[' expression ']'",
+	"",
+	"expr_array = '{' (expression (',' expression)*)? '}'",
+	"",
+	"expr_function = ID '(' params_expr_list? ')'",
+	"",
+	"params_expr_list = expression (',' params_expr_list)?")
+
+<p>
+	Expression grammar is not strict, correctness of expression will ensure compiler or interpreter.
+</p>

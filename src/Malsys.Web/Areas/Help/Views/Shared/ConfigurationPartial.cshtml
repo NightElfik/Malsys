@@ -1,0 +1,154 @@
+﻿@model ConfigurationModel
+@using Malsys.SemanticModel.Evaluated;
+
+@{
+	var config = Model.ProcessConfiguration;
+	var reolver = Model.ComponentMetadataResolver;
+
+	var anchorLink = Url.AnchorLink("↑ " + config.Name, MVC.Help.Predefined.Configurations(), config.Name, true, true);
+}
+
+<div class="component box">
+@Url.AnchorLink("#", MVC.Help.Predefined.Configurations(), config.Name, true)
+<h4 id="@config.Name">
+	@config.Name
+</h4>
+
+<dl>
+
+	@if (config.Components.Length > 0) {
+		<dt><strong>Components</strong> @anchorLink</dt>
+		<dd><ul class="clean">
+		@foreach (var comp in config.Components) {
+			<li><span class="monospace">@comp.Name</span> @Url.TypeLink(reolver.ResolveComponentMetadata(comp.TypeName).ComponentType)</li>
+		}
+		</ul></dd>
+	}
+
+	@if (config.Containers.Length > 0) {
+		<dt><strong>Containers</strong> @anchorLink</dt>
+		<dd><ul class="clean">
+		@foreach (var cont in config.Containers) {
+			<li><span class="monospace">@cont.Name</span> @Url.TypeLink(reolver.ResolveComponentMetadata(cont.TypeName).ComponentType)
+				(default @Url.TypeLink(reolver.ResolveComponentMetadata(cont.DefaultTypeName).ComponentType))</li>
+  }
+		</ul></dd>
+	}
+
+
+	@if (config.Connections.Length > 0) {
+		<dt><strong>Connections</strong> @anchorLink</dt>
+		<dd><ul class="clean">
+		@foreach (var conn in config.Connections) {
+			<li><span class="monospace">@conn.SourceName</span> to <span class="monospace">@conn.TargetName</span>.<span class="monospace">@conn.TargetInputName</span></li>
+		}
+		</ul></dd>
+	}
+
+	@if (Model.GettableProperties.Count > 0) {
+		<dt><strong>Gettable properties</strong> @anchorLink</dt>
+		<dd>Consolidated list of gettable properties from all components (considers default components for containers).</dd>
+		<dd><ul class="clean">
+		@foreach (var metaGettPropKvp in Model.GettableProperties) {
+			var prop = metaGettPropKvp.Value;
+			<li class="spaced">
+				<span class="monospace">@string.Join(", ", prop.Names)</span> @Url.TypeLink(metaGettPropKvp.Key.ComponentType)
+				@if (!prop.IsGettableBeforeInitialiation) { <span class="flag">{run-time only}</span> }
+				(returns @prop.ExpressionValueType.ToTypeString())
+				@if (!string.IsNullOrEmpty(prop.SummaryDoc)) {
+					<ul><li>@prop.SummaryDoc</li></ul>
+				}
+			</li>
+		}
+		</ul></dd>
+	}
+
+	@if (Model.SettableProperties.Count > 0) {
+		<dt><strong>Settable properties</strong> @anchorLink</dt>
+		<dd>Consolidated list of settable properties from all components (considers default components for containers).</dd>
+		<dd><ul class="clean">
+		@foreach (var metaSettPropKvp in Model.SettableProperties) {
+			var prop = metaSettPropKvp.Value;
+			<li class="spaced">
+				<span class="monospace">@string.Join(", ", prop.Names)</span> @Url.TypeLink(metaSettPropKvp.Key.ComponentType)
+				@if (prop.IsMandatory) { <span class="flag">{mandatory}</span> }
+				(accepts @prop.ExpressionValueType.ToTypeString())
+				@if (!string.IsNullOrEmpty(prop.SummaryDoc)) {
+					<ul><li>@prop.SummaryDoc</li></ul>
+				}
+			</li>
+		}
+		</ul></dd>
+	}
+
+	@if (Model.SettableSymbolProperties.Count > 0) {
+		<dt><strong>Settable symbol properties</strong> @anchorLink</dt>
+		<dd>Consolidated list of settable symbol properties from all components (considers default components for containers).</dd>
+		<dd><ul class="clean">
+		@foreach (var metaSettPropKvp in Model.SettableSymbolProperties) {
+			var prop = metaSettPropKvp.Value;
+			<li class="spaced">
+				<span class="monospace">@string.Join(", ", prop.Names)</span> @Url.TypeLink(metaSettPropKvp.Key.ComponentType)
+				@if (prop.IsMandatory) { <span class="flag">{mandatory}</span> }
+				@if (!string.IsNullOrEmpty(prop.SummaryDoc)) {
+					<ul><li>@prop.SummaryDoc</li></ul>
+				}
+			</li>
+		}
+		</ul></dd>
+	}
+
+	@if (Model.ConnectableProperties.Count > 0) {
+		<dt><strong>Connectable properties</strong> @anchorLink</dt>
+		<dd>Consolidated list of connectable properties from all components (considers default components for containers).</dd>
+		<dd><ul class="clean">
+		@foreach (var metaConnPropKvp in Model.ConnectableProperties) {
+			var prop = metaConnPropKvp.Value;
+			<li class="spaced">
+				<span class="monospace">@string.Join(", ", prop.Names)</span> @Url.TypeLink(metaConnPropKvp.Key.ComponentType)
+				@if (prop.IsOptional) { <span class="flag">{optional}</span> }
+				@if (prop.AllowMultiple) { <span class="flag">{allowed multiple}</span> }
+				@if (!string.IsNullOrEmpty(prop.SummaryDoc)) {
+					<ul><li>@prop.SummaryDoc</li></ul>
+				}
+			</li>
+		}
+		</ul></dd>
+	}
+
+	@if (Model.CallableFunctions.Count > 0) {
+		<dt><strong>Callable functions</strong> @anchorLink</dt>
+		<dd>Consolidated list of callable functions from all components (considers default components for containers).</dd>
+		<dd><ul class="clean">
+		@foreach (var metaFunKvp in Model.CallableFunctions) {
+			var fun = metaFunKvp.Value;
+			<li class="spaced">
+				<span class="monospace">@string.Join(", ", fun.Names)</span> (@fun.ParamsCount parameters) @Url.TypeLink(metaFunKvp.Key.ComponentType)
+				@if (!fun.IsGettableBeforeInitialiation) { <span class="flag">{run-time only}</span> }
+				(returns @fun.ExpressionValueReturnType.ToTypeString())
+				@if (!string.IsNullOrEmpty(fun.SummaryDoc)) {
+					<ul><li>@fun.SummaryDoc</li></ul>
+				}
+			</li>
+		}
+		</ul></dd>
+	}
+
+	@if (Model.InterpretationMethods.Count > 0) {
+		<dt><strong>Interpretation methods</strong> @anchorLink</dt>
+		<dd>Consolidated list of interpretation methods from all components (considers default components for containers).</dd>
+		<dd><ul class="clean">
+		@foreach (var metaIntMethonKvp in Model.InterpretationMethods) {
+			var intMethod = metaIntMethonKvp.Value;
+			<li class="spaced">
+				<span class="monospace">@string.Join(", ", intMethod.Names)</span> @Url.TypeLink(metaIntMethonKvp.Key.ComponentType)
+				@if (!string.IsNullOrEmpty(intMethod.SummaryDoc)) {
+					<ul><li>@intMethod.SummaryDoc</li></ul>
+				}
+			</li>
+		}
+		</ul></dd>
+	}
+
+</dl>
+</div>

@@ -1,25 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
-using Malsys.Reflection;
+﻿using System.Collections.Generic;
 using Malsys.Resources;
 using StringBool = System.Tuple<string, bool>;
 
 namespace Malsys.Compilers {
-	public class KnownConstOpProvider : IKnownConstantsProvider, IKnownOperatorsProvider {
+	public class KnownConstOpProvider : ICompilerConstantsProvider, ICompilerConstantsContainer, IOperatorsProvider, IOperatorsContainer {
 
-		private Dictionary<string, double> constCache = new Dictionary<string, double>();
+
+		private Dictionary<string, CompilerConstant> constCache = new Dictionary<string, CompilerConstant>();
 		private Dictionary<StringBool, OperatorCore> opCache = new Dictionary<StringBool, OperatorCore>();
 
 
 
-		public bool TryGet(string name, out double result) {
+		public bool TryGetConstant(string name, out CompilerConstant result) {
 			return constCache.TryGetValue(name.ToLowerInvariant(), out result);
 		}
 
-		public IEnumerable<double> GetAllConstants() {
+		public IEnumerable<CompilerConstant> GetAllConstants() {
 			return constCache.Values;
 		}
+
+		public void AddCompilerConstant(CompilerConstant constant) {
+			constCache[constant.Name] = constant;
+		}
+
 
 
 		public bool TryGet(string syntax, bool unary, out OperatorCore result) {
@@ -30,51 +33,8 @@ namespace Malsys.Compilers {
 			return opCache.Values;
 		}
 
-
-		/// <summary>
-		/// Loads all constants from public static fields of given type marked with CompilerConstantAttribute.
-		/// </summary>
-		public void LoadConstants(Type t) {
-
-			foreach (var fiAttrTuple in t.GetFieldsHavingAttr<CompilerConstantAttribute>()) {
-
-				var fieldInfo = fiAttrTuple.Item1;
-				var attr = fiAttrTuple.Item2;
-
-				if (!fieldInfo.IsStatic) {
-					continue;
-				}
-
-				if (fieldInfo.FieldType != typeof(double)) {
-					continue;
-				}
-
-				double value = (double)fieldInfo.GetValue(null);
-
-				foreach (var name in fieldInfo.GetAccessNames()) {
-					constCache[name] = value;
-				}
-			}
-
-		}
-
-		/// <summary>
-		/// Loads all (unary and binary) operators from public static fields of type OperatorCore.
-		/// </summary>
-		public void LoadOperators(Type t) {
-
-			foreach (var fieldInfo in t.GetFields(BindingFlags.Public | BindingFlags.Static)) {
-
-				if (fieldInfo.FieldType != typeof(OperatorCore)) {
-					continue;
-				}
-
-				OperatorCore value = (OperatorCore)fieldInfo.GetValue(null);
-
-				opCache[new StringBool(value.Syntax, value.IsUnary)] = value;
-
-			}
-
+		public void AddOperator(OperatorCore op) {
+			opCache[new StringBool(op.Syntax, op.IsUnary)] = op;
 		}
 
 

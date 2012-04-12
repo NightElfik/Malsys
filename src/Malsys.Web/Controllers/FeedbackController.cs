@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Web.Helpers;
 using System.Web.Mvc;
 using Malsys.Web.Entities;
 using Malsys.Web.Infrastructure;
@@ -53,6 +55,23 @@ namespace Malsys.Web.Controllers {
 
 			feedbackDb.AddFeedback(feedback);
 			feedbackDb.SaveChanges();
+
+			var fbRole = usersDb.Roles.Where(r => r.NameLowercase == UserRoles.ViewFeedbacks).SingleOrDefault();
+			if (fbRole != null) {
+				foreach (var user in fbRole.Users) {
+					if (string.IsNullOrWhiteSpace(user.Email)) {
+						continue;
+					}
+
+					try {
+						WebMail.Send(user.Email, "Feedback submitted on Malsys -- " + model.Subject.Trim(), model.Message.Trim());
+					}
+					catch (Exception ex) {
+						Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("Failed to send feedback e-mail", ex));
+					}
+				}
+
+			}
 
 			return RedirectToAction("Thanks");
 		}

@@ -3,8 +3,16 @@ using Malsys.SemanticModel;
 using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Processing.Components.Common {
+	/// <summary>
+	///	Standard implementation of ISymbolProvider interface.
+	/// </summary>
+	/// <name>Symbol provider component</name>
+	/// <group>Common</group>
 	public class SymbolProvider : ISymbolProvider {
 
+		/// <summary>
+		/// Symbol string which is provided.
+		/// </summary>
 		[UserSettableSybols]
 		public ImmutableList<Symbol<IValue>> Symbols { get; set; }
 

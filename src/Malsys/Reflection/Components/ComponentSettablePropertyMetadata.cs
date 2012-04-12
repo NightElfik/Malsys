@@ -4,7 +4,7 @@ using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Reflection.Components {
 	/// <remarks>
-	/// Nearly immutable (only doc strings can be set later).
+	/// Immutable.
 	/// </remarks>
 	public class ComponentSettablePropertyMetadata {
 
@@ -22,34 +22,33 @@ namespace Malsys.Reflection.Components {
 		public readonly ExpressionValueTypeFlags ExpressionValueType;
 
 
-		public string SummaryDoc { get; private set; }
-		public string ExpectedValueDoc { get; private set; }
-		public string DefaultValueDoc { get; private set; }
+		public readonly string SummaryDoc;
+		public readonly string ExpectedValueDoc;
+		public readonly string DefaultValueDoc;
 
 
-		public ComponentSettablePropertyMetadata(ImmutableList<string> names, PropertyInfo propertyInfo, bool isMandatory) {
+		public ComponentSettablePropertyMetadata(ImmutableList<string> names, PropertyInfo propertyInfo, bool isMandatory,
+				string summaryDoc = null, string expectedValueDoc = null, string defaultValueDoc = null) {
 
 			Names = names;
 			PropertyInfo = propertyInfo;
 			IsMandatory = isMandatory;
 
+			SummaryDoc = summaryDoc ?? "";
+			ExpectedValueDoc = expectedValueDoc ?? "";
+			DefaultValueDoc = defaultValueDoc ?? "";
+
 			ExpressionValueType = IValueExtensions.IValueTypeToEnum(propertyInfo.PropertyType);
 
-		}
-
-		public void SetDocumentation(string summaryDoc, string expectedValueDoc, string defaultValueDoc) {
-			SummaryDoc = summaryDoc;
-			ExpectedValueDoc = expectedValueDoc;
-			DefaultValueDoc = defaultValueDoc;
 		}
 
 	}
 
 	/// <remarks>
-	/// Nearly immutable (only doc strings can be set later).
+	/// Immutable.
 	/// </remarks>
 	/// <remarks>
-	/// Property type is equal to <see cref="ImmutableList{Symbol{IValue}}"/>.
+	/// Property type should be equal to ImmutableList{Symbol{IValue}}.
 	/// </remarks>
 	public class ComponentSettableSybolsPropertyMetadata {
 
@@ -60,19 +59,17 @@ namespace Malsys.Reflection.Components {
 		public readonly PropertyInfo PropertyInfo;
 
 
-		public string SummaryDoc { get; private set; }
+		public readonly string SummaryDoc;
 
 
-		public ComponentSettableSybolsPropertyMetadata(ImmutableList<string> names, PropertyInfo propertyInfo, bool isMandatory) {
+		public ComponentSettableSybolsPropertyMetadata(ImmutableList<string> names, PropertyInfo propertyInfo, bool isMandatory, string summaryDoc = null) {
 
 			Names = names;
 			PropertyInfo = propertyInfo;
 			IsMandatory = isMandatory;
 
-		}
+			SummaryDoc = summaryDoc ?? "";
 
-		public void SetDocumentation(string summaryDoc) {
-			SummaryDoc = summaryDoc;
 		}
 
 	}

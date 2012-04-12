@@ -1,6 +1,9 @@
 ﻿
 namespace Malsys.Processing.Components {
-	/// <name>Renderer container</name>
+	/// <summary>
+	///	Renderer components are usually connected to interpreters and they produce actual output.
+	/// </summary>
+	/// <name>Renderer component interface</name>
 	/// <group>Renderers</group>
 	public interface IRenderer : IProcessComponent {
 

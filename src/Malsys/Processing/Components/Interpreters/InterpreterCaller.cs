@@ -33,6 +33,9 @@ namespace Malsys.Processing.Components.Interpreters {
 
 		#region IInterpreterCaller Members
 
+		/// <summary>
+		/// Interpreter on which will be interpretation methods called.
+		/// </summary>
 		[UserConnectable]
 		public virtual IInterpreter Interpreter {
 			set {
@@ -40,6 +43,9 @@ namespace Malsys.Processing.Components.Interpreters {
 			}
 		}
 
+		/// <summary>
+		/// Specialized component to allow interpret L-system symbol as another L-system.
+		/// </summary>
 		[UserConnectable(IsOptional=true)]
 		public virtual ILsystemInLsystemProcessor LsystemInLsystemProcessor {
 			set {

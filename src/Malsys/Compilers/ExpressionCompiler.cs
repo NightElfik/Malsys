@@ -26,11 +26,11 @@ namespace Malsys.Compilers {
 
 		public static readonly IExpression ErrorResult = Constant.NaN;
 
-		private readonly IKnownConstantsProvider knownConstants;
-		private readonly IKnownOperatorsProvider knownOperators;
+		private readonly ICompilerConstantsProvider knownConstants;
+		private readonly IOperatorsProvider knownOperators;
 
 
-		public ExpressionCompiler(IKnownConstantsProvider constants, IKnownOperatorsProvider operators) {
+		public ExpressionCompiler(ICompilerConstantsProvider constants, IOperatorsProvider operators) {
 			knownConstants = constants;
 			knownOperators = operators;
 		}
@@ -223,10 +223,10 @@ namespace Malsys.Compilers {
 
 		private void compileVariable(Ast.Identificator variable, Stack<IExpression> operandsStack) {
 
-			double cnst;
-			if (knownConstants.TryGet(variable.Name, out cnst)) {
+			CompilerConstant cnst;
+			if (knownConstants.TryGetConstant(variable.Name, out cnst)) {
 				// known constant
-				operandsStack.Push(new Constant(cnst, new Ast.FloatConstant(cnst, Ast.ConstantFormat.Float, variable.Position)));
+				operandsStack.Push(new Constant(cnst.Value, new Ast.FloatConstant(cnst.Value, Ast.ConstantFormat.Float, variable.Position)));
 			}
 			else {
 				// variable

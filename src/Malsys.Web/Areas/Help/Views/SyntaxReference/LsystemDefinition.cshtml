@@ -2,6 +2,12 @@
 
 @{
 	ViewBag.Title = "L-system definition";
+
+	var exampleModel = new LsystemExampleViewModel() {
+		LsystemProcessor = Model,
+		SourceCodeTemplate = "{0}"
+
+	};
 }
 
 <h2>L-system definition</h2>
@@ -20,14 +26,100 @@
 	<li>@Html.ActionLink("rewrite rule", MVC.Help.SyntaxReference.RewriteRule())</li>
 </ul>
 
+<div id="toc"></div>
+
+
+@* ================================================================================================================== *@
+<h3>L-system inheritance</h3>
+
+<p>
+	L-system can inherit (extend) all features from some other L-system.
+	The pre-existing L-system is called base or ancestor and the new L-system is called derived L-system or child L-system.
+	Inheritance behavior of individual L-system statements can be found on their reference pages along with examples but they all follows simple rule:
+		derived L-system will redefine definitions in base L-system.
+</p>
+
+<p>
+	In following example there are defined two L-systems, <code>BaseLsystem</code> and <code>DerivedLsystem</code> which derives <code>BaseLsystem</code>.
+	<code>BaseLsystem</code> will produce <code>B B B B B A</code> but <code>DerivedLsystem</code> overrides number of iterations to 2
+		and overrides rewrite rule for symbol <code>A</code>.
+	Due to overrides <code>DerivedLsystem</code> will produce <code>X X A</code>.
+</p>
+
+@Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(StringHelper.JoinLines(
+		"lsystem BaseLsystem {",
+			"set symbols axiom = A;",
+			"set iterations = 5;",
+			"rewrite A to B A;",
+		"}",
+		"",
+		"lsystem DerivedLsystem extends BaseLsystem {",
+			"set iterations = 2;",
+			"rewrite A to X A;",
+		"}",
+		"",
+		"process BaseLsystem with SymbolPrinter;",
+		"process DerivedLsystem with SymbolPrinter;")))
+<hr />
+
+<p>
+	It is possible to inherit more than one L-system.
+	Their features are overridden in appropriate order.
+</p>
+
+@Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(StringHelper.JoinLines(
+		"lsystem BaseLsystemX {",
+			"set symbols axiom = A;",
+			"set iterations = 5;",
+			"rewrite A to X A;",
+		"}",
+		"",
+		"lsystem BaseLsystemY {",
+			"rewrite A to Y A;",
+		"}",
+		"",
+		"lsystem DerivedLsystem extends BaseLsystemX, BaseLsystemY {",
+			"set iterations = 2;",
+		"}",
+		"",
+		"process DerivedLsystem with SymbolPrinter;")))
+
+
+@* ================================================================================================================== *@
+<h3 id="AbstractLsystems">Abstract L-systems</h3>
+
+<p>
+	Only difference between abstract and normal (non-abstract) L-system is in processing with <code class="malsys">all</code> keyword.
+	Abstract L-systems are not processed by @Html.ActionLink("process statement", MVC.Help.SyntaxReference.ProcessStatements()) with <code class="malsys">all</code> keyword but non-abstract are.
+	Abstract L-systems are designed for creating base (ancestor) L-systems in L-system inheritance.
+</p>
+
+@Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(StringHelper.JoinLines(
+		"abstract lsystem AbstarctLsystem {",
+			"set symbols axiom = A;",
+			"set iterations = 5;",
+			"rewrite A to B A;",
+		"}",
+		"",
+		"lsystem DerivedLsystem extends AbstarctLsystem {",
+			"set iterations = 2;",
+			"rewrite A to X A;",
+		"}",
+		"",
+		"process all with SymbolPrinter;")))
+
 
 @* ================================================================================================================== *@
 <h3>Formal grammar</h3>
 
 @MalsysHelper.GrammarBox(
-	"lsystem_def = 'abstract'? 'lsystem' ID ('(' params_list? ')')? '{' lsystem_statement* '}'",
+	"lsystem_def = 'abstract'? 'lsystem' ID ('(' params_list? ')')? baseLsystems? '{' lsystem_statement* '}'",
 	"",
 	"params_list = ID ('=' expression)?  (',' params_list)?",
+	"",
+	"baseLsystems = 'extends' baseLsystemsList",
+	"",
+	"baseLsystemsList = ID ('(' expression (',' expression)+ ')')? baseLsystemsList?",
 	"",
 	"lsystem_statement =",
 	"	| empty_statement",

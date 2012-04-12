@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
+﻿using System.IO;
 using Microsoft.FSharp.Collections;
 
 namespace Malsys.Processing.Components.Renderers {
+	/// <summary>
+	/// Provides common functionality for renderer debuggers.
+	/// </summary>
+	/// <name>Renderer debugger base</name>
+	/// <group>Renderers</group>
 	public abstract class DebugRendererBase : IRenderer {
 
 		protected FSharpMap<string, object> globalAdditionalData = MapModule.Empty<string, object>();

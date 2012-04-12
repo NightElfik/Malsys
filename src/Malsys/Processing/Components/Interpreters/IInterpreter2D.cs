@@ -1,7 +1,10 @@
 ﻿using Malsys.Evaluators;
 
 namespace Malsys.Processing.Components.Interpreters {
-	/// <name>2D interpreter container</name>
+	/// <summary>
+	/// 2D interpreters interprets L-system symbols as image on 2D canvas.
+	/// </summary>
+	/// <name>2D interpreter interface</name>
 	/// <group>Interpreters</group>
 	public interface IInterpreter2D : IInterpreter {
 

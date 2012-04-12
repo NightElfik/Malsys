@@ -13,15 +13,17 @@ namespace Malsys.Web.Models {
 
 		public bool IsPublished { get; set; }
 
-		public int Rating { get; set; }
+		public float Rating { get; set; }
 
-		public bool? UserVote { get; set; }
+		public int? UserVote { get; set; }
 
 		public string[] Tags { get; set; }
 
 		public string SourceCode { get; set; }
 
 		public string FilePath { get; set; }
+
+		public string ThnFilePath { get; set; }
 
 		public string MimeType { get; set; }
 

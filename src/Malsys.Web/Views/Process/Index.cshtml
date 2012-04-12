@@ -41,13 +41,19 @@
 	<tr>
 		<th style="width: 24px;"></th>
 		<th>Message</th>
-		<th style="width: 150px;">Position</th>
+		<th style="width: 160px;">Position</th>
 	</tr>
 	@foreach (var msg in Model.Logger) {
 	<tr class="@msg.Type.ToString().ToLower()">
 		<td class="center"><abbr title="@msg.Type (@msg.Id)">@msg.Type.ToString()[0]</abbr></td>
 		<td><p class="malsysMsg">@msg.MessageStr</p></td>
-		<td>@(msg.Position.IsUnknown ? "" : msg.Position.ToString())</td>
+		<td>
+			@if (!msg.Position.IsUnknown) {
+				@:ln: @msg.Position.BeginLine
+				@:col: @msg.Position.BeginColumn
+				@:src: @msg.Position.SourceName
+			}
+		</td>
 	</tr>
  }
 	</table>

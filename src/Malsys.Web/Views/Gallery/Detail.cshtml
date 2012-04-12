@@ -6,7 +6,7 @@
 
 
 <h2>@Model.Name</h2>
-<h4>by @Model.AuthorName</h4>
+<h4>by @Html.ActionLink(Model.AuthorName, MVC.Gallery.Index(Model.AuthorName))</h4>
 <p>permalink: @Html.Partial(MVC.Shared.Views.SavedInputPermaLink, Model.UrlId)</p>
 
 @{
@@ -62,7 +62,7 @@
 			@Content.Js(Links.Js.ThreeJs.malsys_three_js)
 		}
 		</text>
-		break;
+break;
 
 	default:
 		<p class="outputTruncated">Unknown output type `@Model.MimeType`.</p>
@@ -78,27 +78,36 @@
 
 @{
 	Malsys.Media.ColorF ratingColor;
-	if (Model.Rating > 0) {
-		ratingColor = new Malsys.Media.ColorF(0.0, Math.Min(0.6, Model.Rating / 16.0), 0.0);
+	float half = 2.5f;
+	if (Model.Rating > half) {
+		ratingColor = new Malsys.Media.ColorF(0.0, (Model.Rating - half) / half, 0.0);  // 2.5 -- 5
 	}
 	else {
-		ratingColor = new Malsys.Media.ColorF(Math.Min(0.6, Model.Rating / -16.0), 0.0, 0.0);
+		ratingColor = new Malsys.Media.ColorF((half - Model.Rating) / half, 0.0, 0.0);
 	}
 }
 
 <p class="rating" style="color: #@ratingColor.ToRgbHexString();">@Model.Rating</p>
-
+<div class="votes">
 @if (User.Identity.IsAuthenticated) {
-	if (Model.UserVote == null || Model.UserVote == false) {
-		@Html.ActionLink("I like it (+1)", MVC.Gallery.UpVote(Model.UrlId))
+	<span class="vote">worst</span>
+	for (int i = 0; i <= 5; i++) {
+		var text = i.ToString() + CharHelper.ShadowedWhiteStar;
+		<span class="vote">
+		@if (Model.UserVote == null || Model.UserVote != i) {
+			@Html.ActionLink(text, MVC.Gallery.Vote(Model.UrlId, i))
+		}
+		else {
+			@text
+		}
+		</span>
 	}
-	if (Model.UserVote == null || Model.UserVote == true) {
-		@Html.ActionLink("I don't like it (-1)", MVC.Gallery.DownVote(Model.UrlId))
-	}
+	<span class="vote">best</span>
 }
 else {
 	<p>Only registered users can vote.</p>
 }
+</div>
 
 
 <h3>Tags</h3>

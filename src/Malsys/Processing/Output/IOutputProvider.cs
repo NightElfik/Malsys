@@ -16,6 +16,7 @@ namespace Malsys.Processing {
 		/// <param name="outputName">Name of output (for user).</param>
 		/// <param name="mimeType">Mime type of the output.</param>
 		/// <param name="temp">If true, contents saved in the stream will be erased at the end of processing.</param>
+		/// <param name="metadata">Metadata associated with output.</param>
 		Stream GetOutputStream<TCaller>(string outputName, string mimeType, bool temp = false, IDictionary<string, object> metadata = null);
 
 		/// <summary>

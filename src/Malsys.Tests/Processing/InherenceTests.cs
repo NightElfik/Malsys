@@ -10,7 +10,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Malsys.Tests.Processing {
 	[TestClass]
-	public class InherenceTests {
+	public class InheritanceTests {
 
 
 		[TestMethod]
@@ -19,7 +19,7 @@ namespace Malsys.Tests.Processing {
 		}
 
 		[TestMethod]
-		public void LsystemConstantInherenceTests() {
+		public void LsystemConstantInheritanceTests() {
 			doTest("abstract lsystem Base { let a = 1; let b = 2; }"
 				+ "lsystem Derived extends Base { let b = 3; set symbols axiom = A(a) B(b); }"
 				+ "process all with SymbolPrinter;",
@@ -27,7 +27,7 @@ namespace Malsys.Tests.Processing {
 		}
 
 		[TestMethod]
-		public void LsystemFunctionInherenceTests() {
+		public void LsystemFunctionInheritanceTests() {
 			doTest("abstract lsystem Base { fun a(){ return 1; } fun b(){ return 2; } }"
 				+ "lsystem Derived extends Base { fun b(){ return 3; } set symbols axiom = A(a()) B(b()); }"
 				+ "process all with SymbolPrinter;",
@@ -35,7 +35,7 @@ namespace Malsys.Tests.Processing {
 		}
 
 		[TestMethod]
-		public void LsystemSymbolsInherenceTests() {
+		public void LsystemSymbolsInheritanceTests() {
 			doTest("abstract lsystem Base { set symbols axiom = A; }"
 				+ "lsystem Derived extends Base { set symbols axiom = B; }"
 				+ "process all with SymbolPrinter;",
@@ -47,7 +47,7 @@ namespace Malsys.Tests.Processing {
 		}
 
 		[TestMethod]
-		public void LsystemCompSetInherenceTests() {
+		public void LsystemCompSetInheritanceTests() {
 			doTest("abstract lsystem Base { set iterations = 1; }"
 				+ "lsystem Derived extends Base { set iterations = 2; set symbols axiom = A; rewrite A to A(currentIteration); }"
 				+ "process all with SymbolPrinter;",
@@ -59,7 +59,7 @@ namespace Malsys.Tests.Processing {
 		}
 
 		[TestMethod]
-		public void LsystemRewriteRuleInherenceTests() {
+		public void LsystemRewriteRuleInheritanceTests() {
 			doTest("abstract lsystem Base { rewrite A to B; rewrite X to Y; }"
 				+ "lsystem Derived extends Base { rewrite A to C; set iterations = 1; set symbols axiom = A X; }"
 				+ "process all with SymbolPrinter;",
@@ -67,7 +67,7 @@ namespace Malsys.Tests.Processing {
 		}
 
 		[TestMethod]
-		public void LsystemInterpretationsInherenceTests() {
+		public void LsystemInterpretationsInheritanceTests() {
 			doTest("abstract lsystem Base { interpret A as X; interpret B as Y; }"
 				+ "lsystem Derived extends Base { interpret A as W; set symbols axiom = A B; }"
 				+ "process all with InterpretationDebugger;",
@@ -76,7 +76,7 @@ namespace Malsys.Tests.Processing {
 		}
 
 		[TestMethod]
-		public void LsystemArgsInherenceTests() {
+		public void LsystemArgsInheritanceTests() {
 			doTest("abstract lsystem Base(a, b = 2) { interpret A as A(a); interpret B as B(b); }"
 				+ "lsystem Derived extends Base(1) { set symbols axiom = A B; }"
 				+ "process all with InterpretationDebugger;",
@@ -95,7 +95,7 @@ namespace Malsys.Tests.Processing {
 
 			var logger = new MessageLogger();
 
-			var processManager = new ProcessManager(new CompilersContainer(), new EvaluatorsContainer(TestUtils.ExpressionEvaluatorContext), TestUtils.StdResolver);
+			var processManager = new ProcessManager(TestUtils.CompilersContainer, new EvaluatorsContainer(TestUtils.ExpressionEvaluatorContext), TestUtils.StdResolver);
 			var inputEvalueated = processManager.CompileAndEvaluateInput(input, "testInput", logger);
 
 			var actualOutputs = new List<string>();

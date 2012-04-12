@@ -2,6 +2,13 @@
 using Symbol = Malsys.SemanticModel.Symbol<Malsys.SemanticModel.Evaluated.IValue>;
 
 namespace Malsys.Processing.Components.Common {
+	/// <summary>
+	/// Saves processed symbols to memory buffer.
+	/// This component is used especially in unit tests where printing
+	/// of symbols is not desired.
+	/// </summary>
+	/// <name>Symbols memory buffer</name>
+	/// <group>Special</group>
 	public class SymbolsMemoryBuffer : ISymbolProcessor {
 
 		private List<Symbol> buffer;

@@ -27,7 +27,7 @@ namespace Malsys.Processing.Components {
 	/// </summary>
 	/// <remarks>
 	/// Marked property must have public setter.
-	/// Property type must be type of <see cref="Malsys.ImmutableList{Malsys.SemanticModel.Symbol{Malsys.SemanticModel.Evaluated.IValue}}"/>.
+	/// Property type must be type of ImmutableList{Symbol{IValue}}.
 	/// </remarks>
 	[AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
 	public sealed class UserSettableSybolsAttribute : Attribute {

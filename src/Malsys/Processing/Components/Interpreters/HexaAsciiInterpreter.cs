@@ -1,6 +1,6 @@
 ﻿using System;
-using Malsys.Evaluators;
 using System.Collections.Generic;
+using Malsys.Evaluators;
 using Malsys.Processing.Components.Renderers;
 using Malsys.SemanticModel;
 
@@ -34,13 +34,24 @@ namespace Malsys.Processing.Components.Interpreters {
 		private int scale = 1;
 		private float horizontalScaleMult = 2;
 
-
+		/// <summary>
+		/// Scale of result ASCII art.
+		/// Value representing number of characters to draw per line.
+		/// </summary>
+		/// <expected>Positive number.</expected>
+		/// <default>1</default>
 		[AccessName("scale")]
 		[UserSettable]
 		public Constant Scale {
 			set { scale = value.RoundedIntValue; }
 		}
 
+		/// <summary>
+		/// Horizontal scale multiplier is used to multiply number of characters per horizontal line.
+		/// Default value is 2 because ordinary characters are 2 times taller than wider.
+		/// </summary>
+		/// <expected>Positive number.</expected>
+		/// <default>2</default>
 		[AccessName("horizontalScaleMultiplier")]
 		[UserSettable]
 		public Constant HorizontalScaleMultiplier {
@@ -49,6 +60,10 @@ namespace Malsys.Processing.Components.Interpreters {
 
 		#region IInterpreter Members
 
+		/// <summary>
+		/// Render for rendering of ASCII art.
+		/// Connected renderer must implement ITextRenderer interface.
+		/// </summary>
 		[UserConnectable]
 		public IRenderer Renderer {
 			set {
@@ -88,9 +103,7 @@ namespace Malsys.Processing.Components.Interpreters {
 		/// Symbol is ignored.
 		/// </summary>
 		[SymbolInterpretation]
-		public void Nothing(ArgsStorage args) {
-
-		}
+		public void Nothing(ArgsStorage args) { }
 
 		/// <summary>
 		/// Moves forward (without drawing) by one tile in current direction.
@@ -102,7 +115,7 @@ namespace Malsys.Processing.Components.Interpreters {
 		}
 
 		/// <summary>
-		/// Draws line in current direction.
+		/// Draws line (from characters) in current direction.
 		/// </summary>
 		[SymbolInterpretation]
 		public void DrawLine(ArgsStorage args) {
@@ -180,7 +193,6 @@ namespace Malsys.Processing.Components.Interpreters {
 			public HexaState Clone() {
 				return (HexaState)MemberwiseClone();
 			}
-
 
 		}
 

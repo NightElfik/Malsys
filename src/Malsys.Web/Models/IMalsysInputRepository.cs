@@ -21,9 +21,9 @@ namespace Malsys.Web.Models {
 		/// </summary>
 		IEnumerable<Tag> GetTags(params string[] tags);
 
-		bool Vote(string urlId, string userName, bool upVote);
+		bool Vote(string urlId, string userName, int rating);
 
-		bool? GetUserVote(string urlId, string userName);
+		int? GetUserVote(string urlId, string userName);
 
 	}
 }

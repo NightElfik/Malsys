@@ -100,7 +100,7 @@ namespace Malsys.Tests.Evaluators {
 		}
 
 		[TestMethod]
-		public void LsystemInherenceTests() {
+		public void LsystemInheritanceTests() {
 			doTestAutoidentOutput(
 				"lsystem c(x) extends b(1, 1), a(x) {} lsystem a {} lsystem b extends a {}",
 				"lsystem a {", "}",

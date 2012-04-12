@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Malsys.Web.Areas.Help.Models.Predefined.Function>
+﻿@model IEnumerable<Malsys.Evaluators.FunctionInfo>
 
 
 @{
@@ -14,7 +14,7 @@
 	Names of functions are case-sensitive but all usual case variants are defined.
 </p>
 
-@foreach (var funGroup in Model.GroupBy(x => x.Group).OrderBy(x => x.Key)) {
+@foreach (var funGroup in Model.GroupBy(x => x.GroupDoc).OrderBy(x => x.Key)) {
 
 <h3>@funGroup.Key</h3>
 
@@ -26,22 +26,22 @@
 		<th>Description</th>
 	</tr>
 
-@foreach (var equalFunGroup in funGroup.GroupBy(x => x.FunctionInfo.FunctionBody)) {
+@foreach (var equalFunGroup in funGroup.GroupBy(x => x.FunctionBody)) {
 	 var count = equalFunGroup.Count();
 	 bool first = true;
 	 foreach (var fun in equalFunGroup) {
 		<tr>
-			<td class="monospace">@fun.FunctionInfo.Name</td>
+			<td class="monospace">@fun.Name</td>
 			@if (first) {
 				first = false;
-				<td rowspan="@count" class="center">@(fun.FunctionInfo.ParamsCount == anyParams ? "any" : fun.FunctionInfo.ParamsCount.ToString())</td>
+				<td rowspan="@count" class="center">@(fun.ParamsCount == anyParams ? "any" : fun.ParamsCount.ToString())</td>
 				<td rowspan="@count" class="center">
-					@for (int i = 0; i < fun.FunctionInfo.ParamsTypesCyclicPattern.Length; i++) {
+					@for (int i = 0; i < fun.ParamsTypesCyclicPattern.Length; i++) {
 						if (i != 0) { <br /> }
-						@Malsys.SemanticModel.Evaluated.ExpressionValueTypeExtensions.ToTypeString(fun.FunctionInfo.ParamsTypesCyclicPattern[i])
+						@Malsys.SemanticModel.Evaluated.ExpressionValueTypeExtensions.ToTypeString(fun.ParamsTypesCyclicPattern[i])
 					}
 				</td>
-				<td rowspan="@count">@fun.Documentation</td>
+				<td rowspan="@count">@fun.SummaryDoc</td>
 			}
 		</tr>
 	}

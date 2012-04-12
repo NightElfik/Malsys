@@ -126,7 +126,6 @@ namespace Malsys.Web.Models.Repositories {
 				IsDeleted = false,
 				PublishName = null,
 				Views = 0,
-				Rating = 0,
 				SourceSize = source.Length,
 				OutputSize = outputs.Sum(o => new FileInfo(o.FilePath).Length),
 				Duration = duration.Ticks,
@@ -244,7 +243,9 @@ namespace Malsys.Web.Models.Repositories {
 		}
 
 
-		public bool Vote(string urlId, string userName, bool upVote) {
+		public bool Vote(string urlId, string userName, int rating) {
+
+			rating = MathHelper.Clamp(rating, 0, 5);
 
 			var input = inputDb.SavedInputs
 				.Where(x => x.UrlId == urlId && !x.IsDeleted)
@@ -268,30 +269,30 @@ namespace Malsys.Web.Models.Repositories {
 				.SingleOrDefault();
 
 			if (vote != null) {
-				if (vote.UpVote == upVote) {
+				if (vote.Rating == rating) {
 					return true;
 				}
 
-				vote.UpVote = upVote;
-				input.Rating += upVote ? 2 : -2;
+				input.RatingSum += rating - vote.Rating;
+				vote.Rating = rating;
 			}
-			else{
+			else {
 				vote = new SavedInputVote() {
 					SavedInput = input,
 					User = user,
-					UpVote = upVote
+					Rating = rating
 				};
 
 				inputDb.AddVote(vote);
-
-				input.Rating += upVote ? 1 : -1;
+				input.RatingSum += rating;
+				input.RatingCount++;
 			}
 
 			inputDb.SaveChanges();
 			return true;
 		}
 
-		public bool? GetUserVote(string urlId, string userName) {
+		public int? GetUserVote(string urlId, string userName) {
 
 			userName = userName.ToLower();
 
@@ -303,7 +304,7 @@ namespace Malsys.Web.Models.Repositories {
 				return null;
 			}
 
-			return vote.UpVote;
+			return vote.Rating;
 
 		}
 
