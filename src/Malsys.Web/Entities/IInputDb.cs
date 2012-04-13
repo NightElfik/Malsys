@@ -32,6 +32,8 @@ namespace Malsys.Web.Entities {
 
 		void AddTag(Tag tag);
 
+		void DeleteTag(Tag tag);
+
 
 		IQueryable<SavedInputVote> Votes { get; }
 

@@ -31,7 +31,7 @@ namespace Malsys.Web.Areas.Administration.Controllers {
 		public virtual ViewResult Details(int id) {
 			User user = usersRepo.Users.SingleOrDefault(u => u.UserId == id);
 			if (user == null) {
-				return View("Index");
+				return View(Views.Index);
 			}
 
 			return View(user);
@@ -42,7 +42,7 @@ namespace Malsys.Web.Areas.Administration.Controllers {
 
 			User user = usersRepo.Users.SingleOrDefault(u => u.UserId == id);
 			if (user == null) {
-				return View("Index");
+				return View(Views.Index);
 			}
 
 			return View(UserDetailModel.FromUser(user));
@@ -57,7 +57,10 @@ namespace Malsys.Web.Areas.Administration.Controllers {
 				if (user != null) {
 					userModel.UpdateUser(user);
 					usersRepo.SaveChanges();
-					return RedirectToAction("Index");
+					return RedirectToAction(Actions.Index());
+				}
+				else {
+					ModelState.AddModelError("", "Unknown user");
 				}
 			}
 
@@ -69,7 +72,7 @@ namespace Malsys.Web.Areas.Administration.Controllers {
 
 			var user = usersRepo.Users.SingleOrDefault(u => u.UserId == id);
 			if (user == null) {
-				return View("Index");
+				return View(Views.Index);
 			}
 
 			var aviableRoles = usersRepo.Roles.ToList();
@@ -83,12 +86,12 @@ namespace Malsys.Web.Areas.Administration.Controllers {
 
 			var user = usersRepo.Users.SingleOrDefault(u => u.UserId == userId);
 			if (user == null) {
-				return View("Index");
+				return View(Views.Index);
 			}
 
 			var role = usersRepo.Roles.SingleOrDefault(r => r.NameLowercase == roleName.Trim().ToLower());
 			if (role == null) {
-				return View("Index");
+				return View(Views.Index);
 			}
 
 			bool success = false;
@@ -106,7 +109,7 @@ namespace Malsys.Web.Areas.Administration.Controllers {
 			}
 
 			if (success) {
-				return RedirectToAction("Details", new { id = userId });
+				return RedirectToAction(Actions.Details(userId));
 			}
 
 			return Roles(userId);

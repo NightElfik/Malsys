@@ -173,6 +173,7 @@
           <Property Name="TagId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
           <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="32" />
           <Property Name="NameLowercase" Type="nvarchar" Nullable="false" MaxLength="32" />
+          <Property Name="Description" Type="nvarchar(max)" />
         </EntityType>
         <EntityType Name="Users">
           <Key>
@@ -539,6 +540,7 @@
           <Property Type="Int32" Name="TagId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Type="String" Name="Name" Nullable="false" MaxLength="32" FixedLength="false" Unicode="true" />
           <Property Type="String" Name="NameLowercase" Nullable="false" MaxLength="32" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Description" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="SavedInputs" Relationship="MalsysDbEntities.TaggedSavedInputs" FromRole="Tag" ToRole="SavedInput" />
         </EntityType>
         <EntityType Name="User">
@@ -780,6 +782,7 @@
           <EntitySetMapping Name="Tags">
             <EntityTypeMapping TypeName="MalsysDbEntities.Tag">
               <MappingFragment StoreEntitySet="Tags">
+                <ScalarProperty Name="Description" ColumnName="Description" />
                 <ScalarProperty Name="NameLowercase" ColumnName="NameLowercase" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="TagId" ColumnName="TagId" />
@@ -846,7 +849,7 @@
         <EntityTypeShape EntityType="MalsysDbEntities.Role" Width="1.5" PointX="0.75" PointY="6.625" Height="1.7879850260416665" />
         <EntityTypeShape EntityType="MalsysDbEntities.SavedInput" Width="1.5" PointX="13.5" PointY="4.625" Height="5.8263151041666674" />
         <EntityTypeShape EntityType="MalsysDbEntities.SavedInputVote" Width="1.5" PointX="15.75" PointY="6.625" Height="1.9802864583333388" />
-        <EntityTypeShape EntityType="MalsysDbEntities.Tag" Width="1.5" PointX="15.75" PointY="9.375" Height="1.7879850260416674" />
+        <EntityTypeShape EntityType="MalsysDbEntities.Tag" Width="1.5" PointX="15.75" PointY="9.25" Height="1.9802864583333388" />
         <EntityTypeShape EntityType="MalsysDbEntities.User" Width="1.5" PointX="3" PointY="5.625" Height="3.903300781249996" />
         <AssociationConnector Association="MalsysDbEntities.FK_InputProcesses_CanonicInputs" >
           <ConnectorPoint PointX="7.15625" PointY="4.672587890625" />
@@ -897,10 +900,10 @@
           <ConnectorPoint PointX="15.75" PointY="7.0888196145833344" />
         </AssociationConnector>
         <AssociationConnector Association="MalsysDbEntities.TaggedSavedInputs" >
-          <ConnectorPoint PointX="15" PointY="9.9131575520833337" />
-          <ConnectorPoint PointX="15.291666666666666" PointY="9.9131575520833337" />
-          <ConnectorPoint PointX="15.458333333333334" PointY="9.9131575520833337" />
-          <ConnectorPoint PointX="15.75" PointY="9.9131575520833337" />
+          <ConnectorPoint PointX="15" PointY="9.8506575520833337" />
+          <ConnectorPoint PointX="15.291666666666666" PointY="9.8506575520833337" />
+          <ConnectorPoint PointX="15.458333333333334" PointY="9.8506575520833337" />
+          <ConnectorPoint PointX="15.75" PointY="9.8506575520833337" />
         </AssociationConnector>
         <AssociationConnector Association="MalsysDbEntities.UsersInRoles" >
           <ConnectorPoint PointX="2.25" PointY="7.5189925130208337" />

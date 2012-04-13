@@ -1,0 +1,24 @@
+﻿@model IEnumerable<Tag>
+
+@{
+	ViewBag.Title = "Tags";
+}
+
+<h2>Tags</h2>
+
+<table>
+	<tr>
+		<th style="width: 128px;">Tag</th>
+		<th>Description</th>
+		<th>Actions</th>
+	</tr>
+
+@foreach (var tag in Model) {
+	<tr>
+		<td>@tag.Name</td>
+		<td>@tag.Description</td>
+		<td>@Html.ActionLink("Edit", MVC.Administration.Tags.Edit(tag.TagId)) | @Html.ActionLink("Delete", MVC.Administration.Tags.Delete(tag.TagId))</td>
+	</tr>
+}
+
+</table>

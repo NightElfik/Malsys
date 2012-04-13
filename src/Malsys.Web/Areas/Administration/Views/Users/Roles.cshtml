@@ -1,7 +1,7 @@
 ﻿@model Tuple<User, IEnumerable<Role>>
 
 @{
-	ViewBag.Title = "Roles of user";
+	ViewBag.Title = "Roles of user " + Model.Item1.Name;
 }
 
 <h2>Roles of user @Model.Item1.Name [@Model.Item1.UserId]</h2>

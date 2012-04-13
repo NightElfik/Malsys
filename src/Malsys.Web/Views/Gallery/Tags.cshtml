@@ -1,0 +1,17 @@
+﻿@model IEnumerable<TagModel>
+
+@{
+	ViewBag.Title = "Tags";
+	var tags = Model.OrderByDescending(x => x.Quantity);
+}
+
+<h2>Tags</h2>
+
+@foreach (var tag in tags) {
+	<div>
+	<p>
+		@Html.Tag(tag.TagName) (@tag.Quantity L-systems)
+		@if (!string.IsNullOrWhiteSpace(tag.Description)) { <text>—</text> @tag.Description }
+	</p>
+	</div>
+}

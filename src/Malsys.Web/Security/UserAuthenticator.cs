@@ -36,7 +36,6 @@ namespace Malsys.Web.Security {
 			}
 
 			// password ok, update last login date
-
 			user.LastLoginDate = dateTimeProvider.Now;
 			usersDb.SaveChanges();
 

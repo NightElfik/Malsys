@@ -1,12 +1,14 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.Contracts;
+using System.Web.Mvc;
 using Malsys.Web.Entities;
 
 namespace Malsys.Web.Areas.Administration.Models {
 	public class UserDetailModel {
 
 		[Key]
+		[HiddenInput(DisplayValue=false)]
 		public int UserId { get; set; }
 
 		[Required]

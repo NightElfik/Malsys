@@ -527,7 +527,7 @@ a.tag {
 	}
 }
 
-p.rating { font-size: 2em; margin: 0; }
+.huge { font-size: 2em; margin: 0; }
 
 .votes .vote { margin: 0.2em; }
 

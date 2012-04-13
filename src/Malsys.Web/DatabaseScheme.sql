@@ -24,7 +24,7 @@ CREATE TABLE [dbo].[Users](
 GO
 SET ANSI_PADDING OFF
 GO
-/****** Object:  Table [dbo].[Tags]    Script Date: 04/12/2012 17:35:33 ******/
+/****** Object:  Table [dbo].[Tags]    Script Date: 04/13/2012 17:34:38 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -33,6 +33,7 @@ CREATE TABLE [dbo].[Tags](
 	[TagId] [int] IDENTITY(1,1) NOT NULL,
 	[Name] [nvarchar](32) NOT NULL,
 	[NameLowercase] [nvarchar](32) NOT NULL,
+	[Description] [nvarchar](max) NULL,
  CONSTRAINT [PK_Tags] PRIMARY KEY CLUSTERED
 (
 	[TagId] ASC

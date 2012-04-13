@@ -1,9 +1,10 @@
 ﻿@{
-	ViewBag.Title = "User";
+	ViewBag.Title = "User " + User.Identity.Name;
 }
 
-<h2>User</h2>
+<h2>User @User.Identity.Name</h2>
 
 <ul>
-	<li>@Html.ActionLink("Saved inputs", MVC.User.SavedInputs())</li>
+	<li>@Html.ActionLink("Saved inputs", MVC.Gallery.Index(User.Identity.Name))</li>
+	<li>@Html.ActionLink("Change password", MVC.Account.ChangePassword())</li>
 </ul>

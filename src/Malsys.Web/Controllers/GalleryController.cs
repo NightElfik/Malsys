@@ -41,6 +41,7 @@ namespace Malsys.Web.Controllers {
 				page = 1;
 			}
 
+			var model = new GalleryModel();
 
 			var inputs = malsysInputRepository.InputDb.SavedInputs
 				.Where(x => !x.IsDeleted);
@@ -53,6 +54,7 @@ namespace Malsys.Web.Controllers {
 			if (user != null) {
 				string userLower = user.ToLower();
 				inputs = inputs.Where(x => x.User.NameLowercase == userLower);
+				model.UserFilter = user;
 			}
 
 			if (tag != null) {
@@ -60,13 +62,23 @@ namespace Malsys.Web.Controllers {
 				var tagEntity = malsysInputRepository.InputDb.Tags.Where(x => x.NameLowercase == tagLower).SingleOrDefault();
 				if (tagEntity != null) {
 					inputs = inputs.Where(x => x.Tags.Where(t => t.TagId == tagEntity.TagId).Count() == 1);
+					model.TagFilter = tagEntity;
 				}
 			}
 
-			var model = inputs.OrderByDescending(x => (float)x.RatingSum / ((float)x.RatingCount + 1) + x.RatingCount)
+			model.Inputs = inputs.OrderByDescending(x => (float)x.RatingSum / ((float)x.RatingCount + 1) + x.RatingCount)
 				.AsPagination(page.Value, 10);
 
-			return View(model);
+			return View( model);
+		}
+
+		public virtual ActionResult Tags() {
+			var tags = malsysInputRepository.InputDb.Tags.Select(t => new TagModel() {
+				TagName = t.Name,
+				Description = t.Description,
+				Quantity = t.SavedInputs.Count()
+			});
+			return View(tags);
 		}
 
 		public virtual ActionResult Detail(string id) {
@@ -87,22 +99,18 @@ namespace Malsys.Web.Controllers {
 			ensureOutput(input, false);
 			ensureOutput(input, true);
 
+			input.Views++;
+
 			var model = new InputDetail() {
-				UrlId = input.UrlId,
-				Name = input.PublishName,
-				AuthorName = input.User.Name,
+				Input = input,
 				CurrentUserIsOwner = owner,
-				IsPublished = input.IsPublished,
-				Rating = (float)input.RatingSum / (float)input.RatingCount,
 				UserVote = malsysInputRepository.GetUserVote(input.UrlId, User.Identity.Name),
-				Tags = input.Tags.Select(x => x.Name).ToArray(),
-				SourceCode = input.SourceCode,
 				FilePath = getFilePath(input.UrlId, input.MimeType, false),
 				ThnFilePath = getFilePath(input.UrlId, input.MimeType, true),
-				MimeType = input.MimeType,
-				Description = input.Description,
 				Metadata = OutputMetadataHelper.DeserializeMetadata(input.OutputMetadata)
 			};
+
+			malsysInputRepository.InputDb.SaveChanges();
 
 			return View(model);
 		}

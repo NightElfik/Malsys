@@ -15,7 +15,6 @@ using Malsys.Compilers;
 using Malsys.Evaluators;
 using Malsys.Processing;
 using Malsys.Reflection;
-using Malsys.Reflection.Components;
 using Malsys.Resources;
 using Malsys.SemanticModel.Evaluated;
 using Malsys.Web.Entities;
@@ -67,11 +66,18 @@ namespace Malsys.Web {
 			routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
 			routes.MapRoute(
-				"Default",
-				"{controller}/{action}/{id}",
-				new { controller = "Home", action = "Index", id = UrlParameter.Optional },
+				"Permalink",
+				MVC.Permalink.Name.ToLower() + "/{id}",
+				new { controller = MVC.Permalink.Name, action = MVC.Permalink.ActionNames.Index },
 				new string[] { "Malsys.Web.Controllers" }
 			);
+
+			routes.MapRoute(
+				 "Default",
+				 "{controller}/{action}/{id}",
+				 new { controller = "Home", action = "Index", id = UrlParameter.Optional },
+				 new string[] { "Malsys.Web.Controllers" }
+			 );
 
 		}
 

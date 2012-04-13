@@ -11,7 +11,7 @@
 @if (Model.SavedInputUrlId != null) {
 	<p>
 		Your input was saved under ID `@Model.SavedInputUrlId`.
-		You can share it by URL @Html.Partial(MVC.Shared.Views.SavedInputPermaLink, Model.SavedInputUrlId)
+		You can share it by URL @Html.InputPermaLink(Model.SavedInputUrlId)
 			or you can @Html.ActionLink("publish it", MVC.Gallery.Edit(Model.SavedInputUrlId)) to public gallery!
 	</p>
 }

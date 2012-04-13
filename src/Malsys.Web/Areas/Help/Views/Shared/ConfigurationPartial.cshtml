@@ -5,11 +5,11 @@
 	var config = Model.ProcessConfiguration;
 	var reolver = Model.ComponentMetadataResolver;
 
-	var anchorLink = Url.AnchorLink("↑ " + config.Name, MVC.Help.Predefined.Configurations(), config.Name, true, true);
+	var anchorLink = Html.AnchorLink("↑ " + config.Name, MVC.Help.Predefined.Configurations(), config.Name, true, true);
 }
 
 <div class="component box">
-@Url.AnchorLink("#", MVC.Help.Predefined.Configurations(), config.Name, true)
+@Html.AnchorLink("#", MVC.Help.Predefined.Configurations(), config.Name, true)
 <h4 id="@config.Name">
 	@config.Name
 </h4>
@@ -20,7 +20,7 @@
 		<dt><strong>Components</strong> @anchorLink</dt>
 		<dd><ul class="clean">
 		@foreach (var comp in config.Components) {
-			<li><span class="monospace">@comp.Name</span> @Url.TypeLink(reolver.ResolveComponentMetadata(comp.TypeName).ComponentType)</li>
+			<li><span class="monospace">@comp.Name</span> @Html.TypeLink(reolver.ResolveComponentMetadata(comp.TypeName).ComponentType)</li>
 		}
 		</ul></dd>
 	}
@@ -29,8 +29,8 @@
 		<dt><strong>Containers</strong> @anchorLink</dt>
 		<dd><ul class="clean">
 		@foreach (var cont in config.Containers) {
-			<li><span class="monospace">@cont.Name</span> @Url.TypeLink(reolver.ResolveComponentMetadata(cont.TypeName).ComponentType)
-				(default @Url.TypeLink(reolver.ResolveComponentMetadata(cont.DefaultTypeName).ComponentType))</li>
+			<li><span class="monospace">@cont.Name</span> @Html.TypeLink(reolver.ResolveComponentMetadata(cont.TypeName).ComponentType)
+				(default @Html.TypeLink(reolver.ResolveComponentMetadata(cont.DefaultTypeName).ComponentType))</li>
   }
 		</ul></dd>
 	}
@@ -52,7 +52,7 @@
 		@foreach (var metaGettPropKvp in Model.GettableProperties) {
 			var prop = metaGettPropKvp.Value;
 			<li class="spaced">
-				<span class="monospace">@string.Join(", ", prop.Names)</span> @Url.TypeLink(metaGettPropKvp.Key.ComponentType)
+				<span class="monospace">@string.Join(", ", prop.Names)</span> @Html.TypeLink(metaGettPropKvp.Key.ComponentType)
 				@if (!prop.IsGettableBeforeInitialiation) { <span class="flag">{run-time only}</span> }
 				(returns @prop.ExpressionValueType.ToTypeString())
 				@if (!string.IsNullOrEmpty(prop.SummaryDoc)) {
@@ -70,7 +70,7 @@
 		@foreach (var metaSettPropKvp in Model.SettableProperties) {
 			var prop = metaSettPropKvp.Value;
 			<li class="spaced">
-				<span class="monospace">@string.Join(", ", prop.Names)</span> @Url.TypeLink(metaSettPropKvp.Key.ComponentType)
+				<span class="monospace">@string.Join(", ", prop.Names)</span> @Html.TypeLink(metaSettPropKvp.Key.ComponentType)
 				@if (prop.IsMandatory) { <span class="flag">{mandatory}</span> }
 				(accepts @prop.ExpressionValueType.ToTypeString())
 				@if (!string.IsNullOrEmpty(prop.SummaryDoc)) {
@@ -88,7 +88,7 @@
 		@foreach (var metaSettPropKvp in Model.SettableSymbolProperties) {
 			var prop = metaSettPropKvp.Value;
 			<li class="spaced">
-				<span class="monospace">@string.Join(", ", prop.Names)</span> @Url.TypeLink(metaSettPropKvp.Key.ComponentType)
+				<span class="monospace">@string.Join(", ", prop.Names)</span> @Html.TypeLink(metaSettPropKvp.Key.ComponentType)
 				@if (prop.IsMandatory) { <span class="flag">{mandatory}</span> }
 				@if (!string.IsNullOrEmpty(prop.SummaryDoc)) {
 					<ul><li>@prop.SummaryDoc</li></ul>
@@ -105,7 +105,7 @@
 		@foreach (var metaConnPropKvp in Model.ConnectableProperties) {
 			var prop = metaConnPropKvp.Value;
 			<li class="spaced">
-				<span class="monospace">@string.Join(", ", prop.Names)</span> @Url.TypeLink(metaConnPropKvp.Key.ComponentType)
+				<span class="monospace">@string.Join(", ", prop.Names)</span> @Html.TypeLink(metaConnPropKvp.Key.ComponentType)
 				@if (prop.IsOptional) { <span class="flag">{optional}</span> }
 				@if (prop.AllowMultiple) { <span class="flag">{allowed multiple}</span> }
 				@if (!string.IsNullOrEmpty(prop.SummaryDoc)) {
@@ -123,7 +123,7 @@
 		@foreach (var metaFunKvp in Model.CallableFunctions) {
 			var fun = metaFunKvp.Value;
 			<li class="spaced">
-				<span class="monospace">@string.Join(", ", fun.Names)</span> (@fun.ParamsCount parameters) @Url.TypeLink(metaFunKvp.Key.ComponentType)
+				<span class="monospace">@string.Join(", ", fun.Names)</span> (@fun.ParamsCount parameters) @Html.TypeLink(metaFunKvp.Key.ComponentType)
 				@if (!fun.IsGettableBeforeInitialiation) { <span class="flag">{run-time only}</span> }
 				(returns @fun.ExpressionValueReturnType.ToTypeString())
 				@if (!string.IsNullOrEmpty(fun.SummaryDoc)) {
@@ -141,7 +141,7 @@
 		@foreach (var metaIntMethonKvp in Model.InterpretationMethods) {
 			var intMethod = metaIntMethonKvp.Value;
 			<li class="spaced">
-				<span class="monospace">@string.Join(", ", intMethod.Names)</span> @Url.TypeLink(metaIntMethonKvp.Key.ComponentType)
+				<span class="monospace">@string.Join(", ", intMethod.Names)</span> @Html.TypeLink(metaIntMethonKvp.Key.ComponentType)
 				@if (!string.IsNullOrEmpty(intMethod.SummaryDoc)) {
 					<ul><li>@intMethod.SummaryDoc</li></ul>
 				}

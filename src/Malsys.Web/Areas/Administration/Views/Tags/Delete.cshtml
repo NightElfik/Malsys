@@ -1,0 +1,29 @@
+﻿@model Tag
+
+@{
+	ViewBag.Title = "Delete tag " + Model.Name;
+}
+
+<h2>Delete tag @Model.Name</h2>
+
+<p>
+	Do you really want to delete tag @Html.Tag(Model.Name)?
+</p>
+
+<p>
+	Following inputs are tagged with this tag:
+</p>
+
+
+<ul>
+	@foreach (var input in Model.SavedInputs) {
+		@Html.ActionLink(input.UrlId, MVC.Gallery.Detail(input.UrlId)) @: (@input.PublishName)
+	}
+</ul>
+
+@using (Html.BeginForm()) {
+	@Html.ValidationSummary(true)
+	<p>@Html.SubmitButton("delete", "Yes") @Html.SubmitButton("delete", "No")</p>
+}
+
+<p>@Html.ActionLink("Back to List", MVC.Administration.Tags.Index())</p>

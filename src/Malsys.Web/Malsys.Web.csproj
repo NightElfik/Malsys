@@ -187,6 +187,9 @@
     <Compile Include="Administration.StatsController.generated.cs">
       <DependentUpon>T4MVC.tt</DependentUpon>
     </Compile>
+    <Compile Include="Administration.TagsController.generated.cs">
+      <DependentUpon>T4MVC.tt</DependentUpon>
+    </Compile>
     <Compile Include="Administration.UsersController.generated.cs">
       <DependentUpon>T4MVC.tt</DependentUpon>
     </Compile>
@@ -194,6 +197,8 @@
     <Compile Include="App_Start\RegisterClientValidationExtensions.cs" />
     <Compile Include="Areas\Administration\AdministrationAreaRegistration.cs" />
     <Compile Include="Areas\Administration\Controllers\HomeController.cs" />
+    <Compile Include="Areas\Administration\Controllers\TagsController.cs" />
+    <Compile Include="Areas\Administration\Models\TagModel.cs" />
     <Compile Include="Areas\Administration\Models\SavedInputModel.cs" />
     <Compile Include="Areas\Administration\Models\MailModel.cs" />
     <Compile Include="Areas\Help\Controllers\HomeController.cs" />
@@ -218,6 +223,7 @@
     <Compile Include="Controllers\FeedbackController.cs" />
     <Compile Include="Controllers\GalleryController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\PermalinkController.cs" />
     <Compile Include="Controllers\ProcessController.cs" />
     <Compile Include="Controllers\ProcessOutputController.cs" />
     <Compile Include="Controllers\UserController.cs" />
@@ -265,6 +271,8 @@
     <Compile Include="Infrastructure\IAppSettingsProvider.cs" />
     <Compile Include="Infrastructure\MalsysHelper.cs" />
     <Compile Include="Infrastructure\UrlHelperExtensions.cs" />
+    <Compile Include="Models\ViewModels%27\GalleryModel.cs" />
+    <Compile Include="Models\ViewModels%27\TagModel.cs" />
     <Compile Include="Models\ViewModels%27\InputDetail.cs" />
     <Compile Include="Models\ViewModels%27\EditSavedInputModel.cs" />
     <Compile Include="Models\IMalsysInputRepository.cs" />
@@ -278,6 +286,9 @@
     <Compile Include="Models\ViewModels%27\FeedbackModel.cs" />
     <Compile Include="Areas\Administration\Models\InputProcessesHistoryItem.cs" />
     <Compile Include="Areas\Administration\Models\RoleDetailModel.cs" />
+    <Compile Include="PermalinkController.generated.cs">
+      <DependentUpon>T4MVC.tt</DependentUpon>
+    </Compile>
     <Compile Include="PreventRenderingAttribute.cs" />
     <Compile Include="ProcessController.generated.cs">
       <DependentUpon>T4MVC.tt</DependentUpon>
@@ -342,6 +353,9 @@
     <Content Include="Areas\Help\Views\Predefined\Operators.cshtml" />
     <Content Include="Areas\Help\Views\SyntaxReference\ComponentConfigurationDefinition.cshtml" />
     <Content Include="Areas\Help\Views\SyntaxReference\ArithmeticExpressions.cshtml" />
+    <Content Include="Areas\Administration\Views\Tags\Index.cshtml" />
+    <Content Include="Areas\Administration\Views\Tags\Edit.cshtml" />
+    <Content Include="Areas\Administration\Views\Tags\Delete.cshtml" />
     <None Include="Css\style.less.css" />
     <None Include="DatabaseScheme.sql" />
     <Content Include="Error.html" />
@@ -369,10 +383,10 @@
     <None Include="Js\jquery.unobtrusive-ajax.js" />
     <None Include="Js\jquery.validate.unobtrusive.js" />
     <Content Include="Views\_ViewStart.cshtml" />
-    <Content Include="Views\Authentication\Account\ChangePassword.cshtml" />
-    <Content Include="Views\Authentication\Account\ChangePasswordSuccess.cshtml" />
+    <Content Include="Views\Account\ChangePassword.cshtml" />
+    <Content Include="Views\Account\ChangePasswordSuccess.cshtml" />
     <Content Include="Views\Authentication\LogOn.cshtml" />
-    <Content Include="Views\Authentication\Account\Register.cshtml" />
+    <Content Include="Views\Account\Register.cshtml" />
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
@@ -403,7 +417,6 @@
     </None>
     <Content Include="Views\Feedback\EmailToAuthor.cshtml" />
     <Content Include="Views\Process\Load.cshtml" />
-    <Content Include="Views\User\SavedInputs.cshtml" />
     <Content Include="Views\User\Index.cshtml" />
     <Content Include="Views\Feedback\List.cshtml" />
     <Content Include="Views\Examples\Abop.cshtml" />
@@ -412,11 +425,10 @@
     <Content Include="Views\Examples\Other.cshtml" />
     <Content Include="Views\Examples\Ascii.cshtml" />
     <Content Include="Views\Examples\ThreeD.cshtml" />
-    <Content Include="Views\User\DeleteInput.cshtml" />
     <Content Include="Views\Gallery\Index.cshtml" />
     <Content Include="Views\Gallery\Detail.cshtml" />
     <Content Include="Views\Gallery\Edit.cshtml" />
-    <Content Include="Views\Shared\SavedInputPermaLink.cshtml" />
+    <Content Include="Views\Gallery\Tags.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Areas\Administration\Views\Shared\" />

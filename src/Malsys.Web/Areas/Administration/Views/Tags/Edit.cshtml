@@ -1,0 +1,17 @@
+﻿@model TagModel
+
+@{
+	ViewBag.Title = "Edit tag " + Model.Name;
+}
+
+<h2>Edit tag @Html.Tag(Model.Name)</h2>
+
+@using (Html.BeginForm()) {
+	@Html.ValidationSummary(true)
+	@Html.EditorForModel();
+	<p>@Html.SubmitButton("Save")</p>
+}
+
+<p>
+	@Html.ActionLink("Back to List", MVC.Administration.Tags.Index())
+</p>

@@ -1,4 +1,4 @@
-﻿@model IPagination<SavedInput>
+﻿@model GalleryModel
 
 @using Malsys;
 @using Malsys.Processing;
@@ -13,14 +13,23 @@
 	bool loadThreeJs = false;
 }
 
+<div class="right">@Html.ActionLink("list of tags", MVC.Gallery.Tags())</div>
 <h2>Gallery of L-systems</h2>
 
 <div class="clearfix">
-@Html.Pager(Model)
+@Html.Pager(Model.Inputs)
 </div>
 
+@if (!string.IsNullOrWhiteSpace(Model.UserFilter)) {
+	<p>Filtered by user @Model.UserFilter</p>
+}
+
+@if (Model.TagFilter != null) {
+	<p>Filtered by tag @Html.Tag(Model.TagFilter.Name) @if (!string.IsNullOrWhiteSpace(Model.TagFilter.Description)) { <text>— @Model.TagFilter.Description</text> }</p>
+}
+
 <div class="gallery clearfix">
-@foreach (var input in Model) {
+@foreach (var input in Model.Inputs) {
 
 	var metadata = OutputMetadataHelper.DeserializeMetadata(input.OutputMetadata);
 

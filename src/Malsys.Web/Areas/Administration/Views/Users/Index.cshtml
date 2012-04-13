@@ -38,7 +38,7 @@
 			.HeaderAttributes(style => "width: 100px;")
 			.Attributes(@class => "center")
 			.Encode(false);
-		col.For(x => Html.ActionLink("Edit", "Edit", new { id = x.UserId }) + "|" + Html.ActionLink("Details", "Details", new { id = x.UserId }))
+		col.For(x => Html.ActionLink("Edit", MVC.Administration.Users.Edit(x.UserId)) + "|" + Html.ActionLink("Details", MVC.Administration.Users.Details(x.UserId)))
 			.Attributes(@class => "center")
 			.HeaderAttributes(style => "width: 110px;")
 			.Encode(false);

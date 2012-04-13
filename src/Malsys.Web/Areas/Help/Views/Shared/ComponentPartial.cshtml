@@ -8,14 +8,14 @@
 	var derComp = Model.DerivedTypes.Where(t => t.IsInterface).ToList();
 	var derInt = Model.DerivedTypes.Where(t => t.IsInterface).ToList();
 
-	var anchorLink = Url.AnchorLink("↑ " + data.HumanReadableName, MVC.Help.Predefined.Components(), data.ComponentType.FullName, true, true);
+	var anchorLink = Html.AnchorLink("↑ " + data.HumanReadableName, MVC.Help.Predefined.Components(), data.ComponentType.FullName, true, true);
 }
 
 
 <div class="component box">
-@Url.AnchorLink("#", MVC.Help.Predefined.Components(), data.ComponentType.FullName, true)
+@Html.AnchorLink("#", MVC.Help.Predefined.Components(), data.ComponentType.FullName, true)
 <h4 id="@data.ComponentType.FullName">
-	@data.HumanReadableName @Url.TypeLink(data.ComponentType)
+	@data.HumanReadableName @Html.TypeLink(data.ComponentType)
 </h4>
 
 @if (!string.IsNullOrEmpty(data.SummaryDoc)) {
@@ -35,7 +35,7 @@
 		<dt><strong>Base components</strong> @anchorLink</dt>
 		<dd>
 		@foreach (var type in baseComp) {
-			@Url.TypeLink(type)@(" ")
+			@Html.TypeLink(type)@(" ")
 		}
 		</dd>
 	}
@@ -44,7 +44,7 @@
 		<dt><strong>Derived components</strong> @anchorLink</dt>
 		<dd>
 		@foreach (var type in derComp) {
-			@Url.TypeLink(type)@(" ")
+			@Html.TypeLink(type)@(" ")
 		}
 		</dd>
 	}
@@ -53,7 +53,7 @@
 		<dt><strong>@(data.IsInstantiable ? "Assignable to" : "Derived") interfaces</strong> @anchorLink</dt>
 		<dd>
 		@foreach (var type in baseInt) {
-			@Url.TypeLink(type)@(" ")
+			@Html.TypeLink(type)@(" ")
 		}
 		</dd>
 	}
@@ -62,7 +62,7 @@
 		<dt><strong>Derived interfaces</strong> @anchorLink</dt>
 		<dd>
 		@foreach (var type in derInt) {
-			@Url.TypeLink(type)@(" ")
+			@Html.TypeLink(type)@(" ")
 		}
 		</dd>
 	}
@@ -128,7 +128,7 @@
 		@foreach (var prop in data.ConnectableProperties) {
 			<li class="spaced">
 				<span class="monospace">@string.Join(", ", prop.Names)</span>
-				@Url.TypeLink(prop.PropertyType)
+				@Html.TypeLink(prop.PropertyType)
 				@if (prop.IsOptional) { <span class="flag">{optional}</span> }
 				@if (prop.AllowMultiple) { <span class="flag">{allowed multiple}</span> }
 				@if (!string.IsNullOrEmpty(prop.SummaryDoc)) {

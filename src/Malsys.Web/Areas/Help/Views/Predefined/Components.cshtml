@@ -29,7 +29,7 @@
 			<li>@group.Key
 				<ul class="clean">
 				@foreach (var component in group) {
-					<li>@Url.AnchorLink(component.Metadata.HumanReadableName, MVC.Help.Predefined.Components(), component.Metadata.ComponentType.FullName)</li>
+					<li>@Html.AnchorLink(component.Metadata.HumanReadableName, MVC.Help.Predefined.Components(), component.Metadata.ComponentType.FullName)</li>
 				}
 				</ul>
 			</li>
@@ -44,7 +44,7 @@
 			<li>@group.Key
 				<ul class="clean">
 				@foreach (var container in group) {
-					<li>@Url.AnchorLink(container.Metadata.HumanReadableName, MVC.Help.Predefined.Components(), container.Metadata.ComponentType.FullName)</li>
+					<li>@Html.AnchorLink(container.Metadata.HumanReadableName, MVC.Help.Predefined.Components(), container.Metadata.ComponentType.FullName)</li>
 				}
 				</ul>
 			</li>

@@ -70,6 +70,10 @@ namespace Malsys.Web.Entities {
 			Tags.AddObject(tag);
 		}
 
+		public void DeleteTag(Tag tag) {
+			Tags.DeleteObject(tag);
+		}
+
 		public IQueryable<SavedInputVote> Votes { get { return SavedInputVotes; } }
 
 		public void AddVote(SavedInputVote vote) {

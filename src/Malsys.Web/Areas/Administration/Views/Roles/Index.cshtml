@@ -19,7 +19,7 @@
 			.HeaderAttributes(style => "width: 40px;")
 			.Attributes(@class => "center");
 		col.For(x => x.Name);
-		col.For(x => Html.ActionLink("Edit", "Edit", new { id = x.RoleId }))
+		col.For(x => Html.ActionLink("Edit", MVC.Administration.Roles.Edit(x.RoleId)))
 			.Attributes(@class => "center")
 			.HeaderAttributes(style => "width: 50px;")
 			.Encode(false);

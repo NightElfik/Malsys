@@ -1,7 +1,7 @@
 ﻿@model UserDetailModel
 
 @{
-	ViewBag.Title = "Edit user";
+	ViewBag.Title = "Edit user " + Model.Name;
 }
 
 @section scripts {
@@ -9,38 +9,14 @@
 	@Content.Js(Links.Js.jquery_validate_unobtrusive_js)
 }
 
-<h2>Edit user</h2>
+<h2>Edit @Model.Name [@Model.UserId]</h2>
 
 @using (Html.BeginForm()) {
 	@Html.ValidationSummary(true)
-
-	<fieldset>
-		<legend>User @Model.Name [@Model.UserId]</legend>
-
-		@Html.HiddenFor(m => m.UserId)
-
-		<div class="editor-label">
-			@Html.LabelFor(m => m.Name)
-		</div>
-		<div class="editor-field">
-			@Html.EditorFor(m => m.Name)
-			@Html.ValidationMessageFor(m => m.Name)
-		</div>
-
-		<div class="editor-label">
-			@Html.LabelFor(m => m.Email)
-		</div>
-		<div class="editor-field">
-			@Html.EditorFor(m => m.Email)
-			@Html.ValidationMessageFor(m => m.Email)
-		</div>
-
-		<p>
-			<input type="submit" value="Save" />
-		</p>
-	</fieldset>
+	@Html.EditorForModel();
+	<p>@Html.SubmitButton("Save")</p>
 }
 
 <div>
-	@Html.ActionLink("Back to List", "Index")
+	@Html.ActionLink("Back to List", MVC.Administration.Users.Index())
 </div>

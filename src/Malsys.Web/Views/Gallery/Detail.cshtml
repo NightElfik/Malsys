@@ -5,12 +5,13 @@
 @using Malsys.Web.Models.Lsystem;
 
 
-<h2>@Model.Name</h2>
-<h4>by @Html.ActionLink(Model.AuthorName, MVC.Gallery.Index(Model.AuthorName))</h4>
-<p>permalink: @Html.Partial(MVC.Shared.Views.SavedInputPermaLink, Model.UrlId)</p>
+<div class="right">permalink: @Html.InputPermaLink(Model.Input.UrlId)</div>
+<h2>@Model.Input.PublishName</h2>
+<div class="right">@if (Model.CurrentUserIsOwner) { @Html.ActionLink("Edit or change publish settings", MVC.Gallery.Edit(Model.Input.UrlId)) }</div>
+<h4>by @Html.ActionLink(Model.Input.User.Name, MVC.Gallery.Index(Model.Input.User.Name)) @if (Model.CurrentUserIsOwner) { <text>(you)</text> }</h4>
 
 @{
-	ViewBag.Title = Model.Name;
+	ViewBag.Title = Model.Input.PublishName;
 
 	var fi = new FileInfo(Model.FilePath);
 	if (!fi.Exists) {
@@ -18,21 +19,13 @@
 		return;
 	}
 
-	if (Model.CurrentUserIsOwner) {
-
-		if (Model.IsPublished) {
-			<p>Published</p>
-		}
-		else {
-			<p>Not published</p>
-		}
-
-		<p>@Html.ActionLink("Edit or publish", MVC.Gallery.Edit(Model.UrlId))</p>
+	if (!Model.Input.IsPublished) {
+		<p>Not published</p>
 	}
 
 }
 
-@switch (Model.MimeType) {
+@switch (Model.Input.MimeType) {
 
 	case MimeType.Text.Plain:
 		using (var sr = fi.OpenText()) {
@@ -46,11 +39,11 @@
 		int height = OutputMetadataHelper.TryGetValue(Model.Metadata, OutputMetadataKeyHelper.OutputHeight, -1);
 		bool hasValidSize = width > 0 && height > 0;
 		<div class="scrollBox">
-			<img src="@Url.Action(MVC.Gallery.GetOutput(Model.UrlId))" @if (hasValidSize) { <text>width="@(width)px" height="@(height)px"</text> } alt="Process result" />
+			<img src="@Url.Action(MVC.Gallery.GetOutput(Model.Input.UrlId))" @if (hasValidSize) { <text>width="@(width)px" height="@(height)px"</text> } alt="Process result" />
 		</div>
-															  break;
+																	break;
 	case MimeType.Application.Json:
-		<div class="threeJsScene" data-scene="@Url.Action(MVC.Gallery.GetOutput(Model.UrlId))" data-clear-color="FFFFFF" data-stats-display="true" data-anti-alias="true">
+		<div class="threeJsScene" data-scene="@Url.Action(MVC.Gallery.GetOutput(Model.Input.UrlId))" data-clear-color="FFFFFF" data-stats-display="true" data-anti-alias="true">
 			<p class="webgl">WebGL is not supported by your browser. Please <a href="http://get.webgl.org/">get supported browser</a>.</p>
 			<p class="controls">Controls: Move mouse &amp; press LEFT/A: rotate, MIDDLE/S: zoom, RIGHT/D: pan</p>
 		</div>
@@ -65,29 +58,36 @@
 break;
 
 	default:
-		<p class="outputTruncated">Unknown output type `@Model.MimeType`.</p>
+		<p class="outputTruncated">Unknown output type `@Model.Input.MimeType`.</p>
 											 break;
 }
 
-<h3>Description</h3>
+@if (!string.IsNullOrWhiteSpace(Model.Input.Description)) {
+	<h3>Description</h3>
 
-<p>@Model.Description</p>
+	<p>@Model.Input.Description</p>
+}
 
-
-<h3>Rating</h3>
+<h3>Views & rating</h3>
 
 @{
 	Malsys.Media.ColorF ratingColor;
+	var rating = (float)Model.Input.RatingSum / (float)Model.Input.RatingCount;
 	float half = 2.5f;
-	if (Model.Rating > half) {
-		ratingColor = new Malsys.Media.ColorF(0.0, (Model.Rating - half) / half, 0.0);  // 2.5 -- 5
+	if (float.IsNaN(rating)) {
+		ratingColor = Malsys.Media.ColorF.Black;
+	}
+	else if (rating > half) {
+		ratingColor = new Malsys.Media.ColorF(0.0, (rating - half) / half, 0.0);  // 2.5 -- 5
 	}
 	else {
-		ratingColor = new Malsys.Media.ColorF((half - Model.Rating) / half, 0.0, 0.0);
+		ratingColor = new Malsys.Media.ColorF((half - rating) / half, 0.0, 0.0);
 	}
 }
 
-<p class="rating" style="color: #@ratingColor.ToRgbHexString();">@Model.Rating</p>
+<p>Views: <span class="huge">@Model.Input.Views</span></p>
+
+<p>Rating: <span class="huge" style="color: #@ratingColor.ToRgbHexString();">@rating</span></p>
 <div class="votes">
 @if (User.Identity.IsAuthenticated) {
 	<span class="vote">worst</span>
@@ -95,7 +95,7 @@ break;
 		var text = i.ToString() + CharHelper.ShadowedWhiteStar;
 		<span class="vote">
 		@if (Model.UserVote == null || Model.UserVote != i) {
-			@Html.ActionLink(text, MVC.Gallery.Vote(Model.UrlId, i))
+			@Html.ActionLink(text, MVC.Gallery.Vote(Model.Input.UrlId, i))
 		}
 		else {
 			@text
@@ -110,15 +110,17 @@ else {
 </div>
 
 
-<h3>Tags</h3>
-@foreach (var tag in Model.Tags) {
-	@Html.ActionLink(tag, MVC.Gallery.Index(tag: tag), new { @class = "tag" })
+@if (Model.Input.Tags.Count > 0) {
+	<h3>Tags</h3>
+	foreach (var tag in Model.Input.Tags) {
+		@Html.Tag(tag.Name)
+	}
 }
 
 
 <h3>Source</h3>
 
 <pre class="malsys box">
-@Model.SourceCode
+@Model.Input.SourceCode
 </pre>
 
