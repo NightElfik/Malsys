@@ -25,8 +25,6 @@ namespace Malsys.Processing.Components.Interpreters {
 		/// </summary>
 		private bool mode2D;
 
-		private IMessageLogger logger;
-
 		private State3D currState;
 
 		private QuaternionRotation3D quatRotation;
@@ -43,14 +41,13 @@ namespace Malsys.Processing.Components.Interpreters {
 
 		private ColorParser colorParser;
 
-		private Vector3D fwdVector = new Vector3D(1, 0, 0);
-		private Vector3D upVector = new Vector3D(0, 1, 0);
-		private Vector3D rightVector;  // counted from forward and up vectors by cross product
+		private Vector3D fwdVect;
+		private Vector3D upVect;
+		private Vector3D rightVect;  // counted from forward and up vectors by cross product
 
-		private Point3D initPosition = new Point3D(0, 0, 0);
-		private Quaternion initRotation = Quaternion.Identity;
-		private double initWidth = 2;
-		private ColorF initColor = ColorF.Black;
+		private Point3D initPosition;
+		private Quaternion initRotation;
+		private ColorF initColor;
 
 		private Stack<State3D> statesStack = new Stack<State3D>();
 
@@ -66,24 +63,16 @@ namespace Malsys.Processing.Components.Interpreters {
 
 		public TurtleInterpreter() {
 
-			ReversePolygonOrder = Constant.False;
 
 			quatRotation = new QuaternionRotation3D();
 			tranform = new RotateTransform3D(quatRotation, 0, 0, 0);
 		}
 
 
-		#region User settable variables
+		public IMessageLogger Logger { get; set; }
 
-		/// <summary>
-		/// Reverses order of drawn polygons from first-opened last-drawn to first-opened first-drawn.
-		/// This in only valid when 2D renderer is attached (in 3D is order insignificant).
-		/// </summary>
-		/// <expected>true or false</expected>
-		/// <default>false</default>
-		[AccessName("reversePolygonOrder")]
-		[UserSettable]
-		public Constant ReversePolygonOrder { get; set; }
+
+		#region User settable variables
 
 		/// <summary>
 		/// Origin (start position) of "turtle".
@@ -91,18 +80,18 @@ namespace Malsys.Processing.Components.Interpreters {
 		/// <expected>Array of 2 or 3 numbers representing x, y and optionally z coordinate.</expected>
 		/// <default>{0, 0, 0}</default>
 		[AccessName("origin")]
+		[UserGettable(IsGettableBeforeInitialiation = true)]
 		[UserSettable]
 		public ValuesArray Origin {
+			get { return origin; }
 			set {
 				if (!value.IsConstArray() || (value.Length != 2 && value.Length != 3)) {
 					throw new InvalidUserValueException("Origin have to be array of 2 or 3 numbers representing x, y and optionally z coordinate.");
 				}
-
-				initPosition.X = ((Constant)value[0]).Value;
-				initPosition.Y = ((Constant)value[1]).Value;
-				initPosition.Z = value.Length == 3 ? ((Constant)value[2]).Value : 0.0;
+				origin = value;
 			}
 		}
+		private ValuesArray origin;
 
 		/// <summary>
 		/// Forward vector of "turtle".
@@ -110,18 +99,18 @@ namespace Malsys.Processing.Components.Interpreters {
 		/// <expected>Array of 3 numbers representing x, y and z coordinate.</expected>
 		/// <default>{1, 0, 0}</default>
 		[AccessName("forwardVector")]
+		[UserGettable(IsGettableBeforeInitialiation = true)]
 		[UserSettable]
 		public ValuesArray ForwardVector {
+			get { return forwardVector; }
 			set {
 				if (!value.IsConstArrayOfLength(3)) {
 					throw new InvalidUserValueException("Forward vector value must be array of 3 numbers representing x, y and z coordinate.");
 				}
-
-				fwdVector.X = ((Constant)value[0]).Value;
-				fwdVector.Y = ((Constant)value[1]).Value;
-				fwdVector.Z = ((Constant)value[2]).Value;
+				forwardVector = value;
 			}
 		}
+		private ValuesArray forwardVector;
 
 		/// <summary>
 		/// Up vector of "turtle".
@@ -129,18 +118,18 @@ namespace Malsys.Processing.Components.Interpreters {
 		/// <expected>Array of 3 constants representing x, y and z coordinate.</expected>
 		/// <default>{0, 1, 0}</default>
 		[AccessName("upVector")]
+		[UserGettable(IsGettableBeforeInitialiation = true)]
 		[UserSettable]
 		public ValuesArray UpVector {
+			get { return upVector; }
 			set {
 				if (!value.IsConstArrayOfLength(3)) {
 					throw new InvalidUserValueException("Up vector value must be array of 3 numbers representing x, y and z coordinate.");
 				}
-
-				upVector.X = ((Constant)value[0]).Value;
-				upVector.Y = ((Constant)value[1]).Value;
-				upVector.Z = ((Constant)value[2]).Value;
+				upVector = value;
 			}
 		}
+		private ValuesArray upVector;
 
 
 
@@ -151,12 +140,10 @@ namespace Malsys.Processing.Components.Interpreters {
 				if (!value.IsConstArrayOfLength(4)) {
 					throw new InvalidUserValueException("Rotation quaternion have to be array of 4 numbers representing direction quaternion.");
 				}
-				initRotation.W = ((Constant)value[0]).Value;
-				initRotation.X = ((Constant)value[1]).Value;
-				initRotation.Y = ((Constant)value[2]).Value;
-				initRotation.Z = ((Constant)value[3]).Value;
+				rotationQuaternion = value;
 			}
 		}
+		private ValuesArray rotationQuaternion;
 
 		/// <summary>
 		/// Initial angle (in degrees) in 2D mode (angle in plane given by forward and up vectors).
@@ -165,7 +152,7 @@ namespace Malsys.Processing.Components.Interpreters {
 		/// <default>0</default>
 		[AccessName("initialAngle")]
 		[UserSettable]
-		public Constant InitialAngleZ { private get; set; }
+		public Constant InitialAngleZ { get; set; }
 
 		/// <summary>
 		/// Initial width of drawn line.
@@ -174,9 +161,7 @@ namespace Malsys.Processing.Components.Interpreters {
 		/// <default>2</default>
 		[AccessName("initialLineWidth")]
 		[UserSettable]
-		public Constant InitialLineWidth {
-			set { initWidth = value.Value; }
-		}
+		public Constant InitialLineWidth { get; set; }
 
 		/// <summary>
 		/// Initial color of drawn line.
@@ -197,6 +182,17 @@ namespace Malsys.Processing.Components.Interpreters {
 		[AccessName("continuousColoring")]
 		[UserSettable]
 		public IValue ContinuousColoring { get; set; }
+
+		/// <summary>
+		/// Reverses order of drawn polygons from first-opened last-drawn to first-opened first-drawn.
+		/// This in only valid when 2D renderer is attached (in 3D is order insignificant).
+		/// </summary>
+		/// <expected>true or false</expected>
+		/// <default>false</default>
+		[AccessName("reversePolygonOrder")]
+		[UserSettable]
+		public Constant ReversePolygonOrder { get; set; }
+
 
 		#endregion
 
@@ -236,50 +232,65 @@ namespace Malsys.Processing.Components.Interpreters {
 
 		public void Initialize(ProcessContext ctxt) {
 
-			logger = ctxt.Logger;
-			colorParser = new ColorParser(ctxt.Logger);
+			initPosition.X = ((Constant)origin[0]).Value;
+			initPosition.Y = ((Constant)origin[1]).Value;
+			initPosition.Z = origin.Length == 3 ? ((Constant)origin[2]).Value : 0.0;
 
-			rightVector = Vector3D.CrossProduct(fwdVector, upVector);
+			fwdVect.X = ((Constant)forwardVector[0]).Value;
+			fwdVect.Y = ((Constant)forwardVector[1]).Value;
+			fwdVect.Z = ((Constant)forwardVector[2]).Value;
 
-			fwdVector.Normalize();
-			upVector.Normalize();
-			rightVector.Normalize();
+			upVect.X = ((Constant)upVector[0]).Value;
+			upVect.Y = ((Constant)upVector[1]).Value;
+			upVect.Z = ((Constant)upVector[2]).Value;
 
-			if (fwdVector.Length.EpsilonCompareTo(0) == 0) {
+			colorParser = new ColorParser(Logger);
+
+			rightVect = Vector3D.CrossProduct(fwdVect, upVect);
+
+			fwdVect.Normalize();
+			upVect.Normalize();
+			rightVect.Normalize();
+
+			if (double.IsNaN(fwdVect.Length) || fwdVect.Length.EpsilonCompareTo(0) == 0) {
 				throw new ComponentException("Forward vector must be non-zero.");
 			}
-			if (upVector.Length.EpsilonCompareTo(0) == 0) {
+			if (double.IsNaN(upVect.Length) || upVect.Length.EpsilonCompareTo(0) == 0) {
 				throw new ComponentException("Up vector must be non-zero.");
 			}
-			if (rightVector.Length.EpsilonCompareTo(0) == 0) {
+			if (double.IsNaN(rightVect.Length) || rightVect.Length.EpsilonCompareTo(0) == 0) {
 				throw new ComponentException("Forward and up vectors must be linearly independent.");
 			}
 
-			if (InitialAngleZ != null) {
-				initRotation = new Quaternion(rightVector, InitialAngleZ.Value);
+			initRotation.W = ((Constant)rotationQuaternion[0]).Value;
+			initRotation.X = ((Constant)rotationQuaternion[1]).Value;
+			initRotation.Y = ((Constant)rotationQuaternion[2]).Value;
+			initRotation.Z = ((Constant)rotationQuaternion[3]).Value;
+
+			if (!InitialAngleZ.IsZero) {
+				initRotation = new Quaternion(rightVect, InitialAngleZ.Value);
 			}
 
+			if (InitialColor != null) {
+				colorParser.TryParseColor(InitialColor, out initColor, Logger);
+			}
 
 			if (ContinuousColoring != null) {
 				if (ContinuousColoring.IsConstant) {
-					if (!((Constant)ContinuousColoring).IsZero) {
+					if (((Constant)ContinuousColoring).IsTrue) {
 						continousColoring = true;
 						colorGradient = ColorGradients.Rainbow;
 					}
 				}
 				else if (ContinuousColoring.IsArray) {
 					continousColoring = true;
-					colorGradient = new ColorGradientFactory().CreateFromValuesArray((ValuesArray)ContinuousColoring, logger);
+					colorGradient = new ColorGradientFactory().CreateFromValuesArray((ValuesArray)ContinuousColoring, Logger);
 				}
 			}
 
-			if (InitialColor != null) {
-				colorParser.TryParseColor(InitialColor, out initColor);
-			}
-
-			bool reversePoly = !ReversePolygonOrder.IsZero;
+			bool reversePoly = ReversePolygonOrder.IsTrue;
 			if (reversePoly && !mode2D) {
-				logger.LogMessage(Message.ReversePolyIn3d);
+				Logger.LogMessage(Message.ReversePolyIn3d);
 				reversePolygonOrder = false;
 			}
 			else {
@@ -288,7 +299,17 @@ namespace Malsys.Processing.Components.Interpreters {
 
 		}
 
-		public void Cleanup() { }
+		public void Cleanup() {
+			Origin = new ValuesArray(Constant.Zero, Constant.Zero, Constant.Zero);
+			ForwardVector = new ValuesArray(Constant.One, Constant.Zero, Constant.Zero);
+			UpVector = new ValuesArray(Constant.Zero, Constant.One, Constant.Zero);
+			InitialAngleZ = Constant.Zero;
+			InitialLineWidth = new Constant(2d);
+			InitialColor = Constant.Zero;
+			ContinuousColoring = Constant.False;
+			ReversePolygonOrder = Constant.False;
+			RotationQuaternion = new ValuesArray(Constant.One, Constant.Zero, Constant.Zero, Constant.Zero);
+		}
 
 		public void BeginProcessing(bool measuring) {
 
@@ -317,7 +338,7 @@ namespace Malsys.Processing.Components.Interpreters {
 			currState = new State3D() {
 				Position = initPosition,
 				Rotation = initRotation,
-				Width = initWidth,
+				Width = InitialLineWidth.Value,
 				Color = initColor,
 				Variables = MapModule.Empty<string, IValue>()
 			};
@@ -342,13 +363,13 @@ namespace Malsys.Processing.Components.Interpreters {
 			}
 			else {
 				if (statesStack.Count > 0) {
-					logger.LogMessage(Message.BranchNotClosedAtEnd);
+					Logger.LogMessage(Message.BranchNotClosedAtEnd);
 					statesStack.Clear();
 				}
 
 				if (mode2D) {
 					if (polygonStack2d.Count > 0) {
-						logger.LogMessage(Message.PolygonNotClosedAtEnd);
+						Logger.LogMessage(Message.PolygonNotClosedAtEnd);
 						if (reversePolygonOrder) {
 							// if polygon order reverse is true polygons are not drawn until all are closed
 							// draw at least all closed polygons
@@ -363,7 +384,7 @@ namespace Malsys.Processing.Components.Interpreters {
 				}
 				else {
 					if (polygonStack3d.Count > 0) {
-						logger.LogMessage(Message.PolygonNotClosedAtEnd);
+						Logger.LogMessage(Message.PolygonNotClosedAtEnd);
 						currPolygon3d = null;
 						polygonStack3d.Clear();
 					}
@@ -396,7 +417,7 @@ namespace Malsys.Processing.Components.Interpreters {
 			double length = getArgumentAsDouble(args, 0);
 
 			quatRotation.Quaternion = currState.Rotation;
-			currState.Position += tranform.Transform(fwdVector * length);
+			currState.Position += tranform.Transform(fwdVect * length);
 
 			if (mode2D) {
 				renderer2D.MoveTo(currState.Position.ToPoint2D(), currState.Width, currState.Color);
@@ -423,7 +444,7 @@ namespace Malsys.Processing.Components.Interpreters {
 			ColorF color = getArgumentAsColor(args, 2);
 
 			quatRotation.Quaternion = currState.Rotation;
-			currState.Position += tranform.Transform(fwdVector * length);
+			currState.Position += tranform.Transform(fwdVect * length);
 
 			colorEvents++;
 			if (mode2D) {
@@ -494,7 +515,7 @@ namespace Malsys.Processing.Components.Interpreters {
 
 			double angle = getArgumentAsDouble(args, 0);
 
-			currState.Rotation *= new Quaternion(upVector, angle);
+			currState.Rotation *= new Quaternion(upVect, angle);
 		}
 
 		/// <summary>
@@ -508,7 +529,7 @@ namespace Malsys.Processing.Components.Interpreters {
 
 			double angle = getArgumentAsDouble(args, 0);
 
-			currState.Rotation *= new Quaternion(rightVector, angle);
+			currState.Rotation *= new Quaternion(rightVect, angle);
 		}
 
 		/// <summary>
@@ -522,7 +543,7 @@ namespace Malsys.Processing.Components.Interpreters {
 
 			double angle = getArgumentAsDouble(args, 0);
 
-			currState.Rotation *= new Quaternion(fwdVector, angle);
+			currState.Rotation *= new Quaternion(fwdVect, angle);
 		}
 
 		/// <summary>

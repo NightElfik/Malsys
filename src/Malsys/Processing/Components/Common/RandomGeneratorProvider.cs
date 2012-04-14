@@ -17,11 +17,11 @@ namespace Malsys.Processing.Components.Common {
 
 		private CryptographicRandomGenerator cryptoRandomInstance;
 
-		private bool trueRandom = false;
-
-		private IMessageLogger logger;
-
 		private IRandomGenerator localRandomGenerator;
+
+
+		public IMessageLogger Logger { get; set; }
+
 
 		/// <summary>
 		/// If set to true as random generator will be used
@@ -35,33 +35,21 @@ namespace Malsys.Processing.Components.Common {
 		[AccessName("trueRandom")]
 		[UserGettable]
 		[UserSettable]
-		public Constant TrueRandom {
-			get { return trueRandom ? Constant.One : Constant.Zero; }
-			set { trueRandom = !value.IsZero; }
-		}
+		public Constant TrueRandom { get; set; }
 
 		/// <summary>
-		/// If set pseudo-random generator ill generate always same sequence of random numbers.
+		/// If set pseudo-random generator will generate always same sequence of random numbers.
 		/// Do not work if TrueRandom property is set.
 		/// </summary>
 		/// <expected>Non-negative integer.</expected>
 		/// <default>random</default>
 		[AccessName("randomSeed")]
-		[UserGettable(IsGettableBeforeInitialiation=true)]
+		[UserGettable(IsGettableBeforeInitialiation = true)]
 		[UserSettable]
 		public Constant RandomSeed { get; set; }
 
 
-		public RandomGeneratorProvider(IMessageLogger logger) {
-			this.logger = logger;
-		}
-
-
-		public void Initialize(ProcessContext ctxt) {
-
-			logger = ctxt.Logger;
-
-		}
+		public void Initialize(ProcessContext ctxt) { }
 
 		public void Cleanup() {
 
@@ -70,6 +58,9 @@ namespace Malsys.Processing.Components.Common {
 			if (cryptoRandomInstance != null) {
 				cryptoRandomInstance.Dispose();
 			}
+
+			TrueRandom = Constant.False;
+			RandomSeed = Constant.MinusOne;
 
 		}
 
@@ -85,10 +76,9 @@ namespace Malsys.Processing.Components.Common {
 
 			Contract.Ensures(Contract.Result<IRandomGenerator>() != null);
 
-			if (trueRandom) {
-				if (RandomSeed != null) {
-					logger.LogMessage(Message.SeedWhileTrueRandom);
-					RandomSeed = null;
+			if (TrueRandom.IsTrue) {
+				if (RandomSeed.Value < 0) {
+					Logger.LogMessage(Message.SeedWhileTrueRandom);
 				}
 
 				if (cryptoRandomInstance == null) {
@@ -98,11 +88,12 @@ namespace Malsys.Processing.Components.Common {
 				return cryptoRandomInstance;
 			}
 			else {
-				if (RandomSeed == null) {
+				if (RandomSeed.Value < 0) {
+					// no random seed set, generate random one
 					Random r = new Random();
 					int seed = r.Next();
 
-					logger.LogMessage(Message.NoSeed, seed);
+					Logger.LogMessage(Message.NoSeed, seed);
 					RandomSeed = seed.ToConst();
 				}
 
@@ -114,7 +105,7 @@ namespace Malsys.Processing.Components.Common {
 		/// Returns random value from 0.0 (inclusive) to 1.0 (exclusive).
 		/// </summary>
 		[AccessName("random")]
-		[UserCallableFunction(IsCallableBeforeInitialiation=true)]
+		[UserCallableFunction(IsCallableBeforeInitialiation = true)]
 		public Constant GetRandomValue(IValue[] args, IExpressionEvaluatorContext eec) {
 
 			Contract.Ensures(Contract.Result<IValue>() != null);

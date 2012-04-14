@@ -262,6 +262,7 @@ namespace Malsys.Tests.Interpreters {
 		private void doTest(Point3D startPoint, Quaternion startRotation, string inputSymbols, Data[] excpectedOutput) {
 
 			var testedInterpreter = new TurtleInterpreter();
+			testedInterpreter.Cleanup();
 
 			var symbols = TestUtils.CompileSymbols(inputSymbols);
 
@@ -280,10 +281,11 @@ namespace Malsys.Tests.Interpreters {
 				TestUtils.ExpressionEvaluatorContext, null, TimeSpan.MaxValue, componentsGraph, logger);
 
 			var caller = new InterpreterCaller();
-			caller.Interpreter = testedInterpreter;
+			caller.Cleanup();
 			caller.Initialize(context);
 
 			var renderer = new DebugRenderer3D();
+			renderer.Cleanup();
 			renderer.Initialize(context);
 			testedInterpreter.Renderer = renderer;
 

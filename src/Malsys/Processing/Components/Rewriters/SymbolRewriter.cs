@@ -29,15 +29,19 @@ namespace Malsys.Processing.Components.Rewriters {
 		private SymbolRewriterEnumerator enumerator;
 
 		private Dictionary<string, RewriterRewriteRule[]> rewriteRules;
-		private HashSet<string> contextIgnoredSymbolNames;
-		private HashSet<string> startBranchSymbolNames;
-		private HashSet<string> endBranchSymbolNames;
-		private HashSet<string> contextSymbols;
+		private HashSet<string> contextIgnoredSymbolNames = new HashSet<string>();
+		private HashSet<string> startBranchSymbolNames = new HashSet<string>();
+		private HashSet<string> endBranchSymbolNames = new HashSet<string>();
+		private HashSet<string> contextSymbols = new HashSet<string>();
 
 		private int leftCtxtMaxLen;
 		private int rightCtxtMaxLen;
 		private int rrReplacementMaxLen;
 		private bool stochasticRules;
+
+
+		public IMessageLogger Logger { get; set; }
+
 
 		/// <summary>
 		/// List of symbols which are ignored in context checking.
@@ -46,7 +50,7 @@ namespace Malsys.Processing.Components.Rewriters {
 		[UserSettableSybols]
 		public ImmutableList<Symbol<IValue>> ContextIgnore {
 			set {
-				contextIgnoredSymbolNames = new HashSet<string>();
+				contextIgnoredSymbolNames.Clear();
 				foreach (var sym in value) {
 					contextIgnoredSymbolNames.Add(sym.Name);
 				}
@@ -61,7 +65,7 @@ namespace Malsys.Processing.Components.Rewriters {
 		[UserSettableSybols]
 		public ImmutableList<Symbol<IValue>> StartBranchSymbols {
 			set {
-				startBranchSymbolNames = new HashSet<string>();
+				startBranchSymbolNames.Clear();
 				foreach (var sym in value) {
 					startBranchSymbolNames.Add(sym.Name);
 				}
@@ -76,7 +80,7 @@ namespace Malsys.Processing.Components.Rewriters {
 		[UserSettableSybols]
 		public ImmutableList<Symbol<IValue>> EndBranchSymbols {
 			set {
-				endBranchSymbolNames = new HashSet<string>();
+				endBranchSymbolNames.Clear();
 				foreach (var sym in value) {
 					if (!endBranchSymbolNames.Contains(sym.Name)) {
 						endBranchSymbolNames.Add(sym.Name);
@@ -118,20 +122,6 @@ namespace Malsys.Processing.Components.Rewriters {
 			lsystem = ctxt.Lsystem;
 			exprEvalCtxt = ctxt.ExpressionEvaluatorContext;
 
-
-			if (contextIgnoredSymbolNames == null) {
-				contextIgnoredSymbolNames = new HashSet<string>();
-			}
-
-			if (startBranchSymbolNames == null) {
-				startBranchSymbolNames = new HashSet<string>();
-			}
-
-			if (endBranchSymbolNames == null) {
-				endBranchSymbolNames = new HashSet<string>();
-			}
-
-			contextSymbols = new HashSet<string>();
 			contextSymbols.AddRange(contextIgnoredSymbolNames);
 			contextSymbols.AddRange(startBranchSymbolNames);
 			contextSymbols.AddRange(endBranchSymbolNames);
@@ -170,20 +160,23 @@ namespace Malsys.Processing.Components.Rewriters {
 		}
 
 		public void Cleanup() {
-
+			context = null;
+			lsystem = null;
+			exprEvalCtxt = null;
+			rewriteRules = null;
+			endBranchSymbolNames.Clear();
+			startBranchSymbolNames.Clear();
+			endBranchSymbolNames.Clear();
+			contextSymbols.Clear();
 		}
 
 		public void BeginProcessing(bool measuring) {
-
 			enumerator = new SymbolRewriterEnumerator(this);
-
 			SymbolProvider.BeginProcessing(measuring);
 		}
 
 		public void EndProcessing() {
-
 			enumerator = null;
-
 			SymbolProvider.EndProcessing();
 		}
 

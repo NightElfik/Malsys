@@ -5,12 +5,14 @@ namespace Malsys.Compilers {
 	/// <remarks>
 	/// All public members are thread safe if supplied compilers are thread safe.
 	/// </remarks>
-	internal class ProcessStatementsCompiler : IProcessStatementsCompiler {
+	public class ProcessStatementsCompiler : IProcessStatementsCompiler {
 
-		private readonly IExpressionCompiler exprCompiler;
+		protected readonly IExpressionCompiler exprCompiler;
+		protected readonly ILsystemCompiler lsysCompiler;
 
 
-		public ProcessStatementsCompiler(IExpressionCompiler expressionCompiler) {
+		public ProcessStatementsCompiler(ILsystemCompiler lsystemCompiler, IExpressionCompiler expressionCompiler) {
+			lsysCompiler = lsystemCompiler;
 			exprCompiler = expressionCompiler;
 		}
 
@@ -19,8 +21,9 @@ namespace Malsys.Compilers {
 
 			var assigns = statement.ComponentAssignments.Convert(a => new ProcessComponentAssignment(a.ComponentTypeNameId.Name, a.ContainerNameId.Name));
 			var args = exprCompiler.CompileList(statement.Arguments, logger);
+			var lsysStats = lsysCompiler.CompileList(statement.AdditionalLsystemStatements, logger);
 
-			return new ProcessStatement(statement.TargetLsystemNameId.Name, args, statement.ProcessConfiNameId.Name, assigns, statement);
+			return new ProcessStatement(statement.TargetLsystemNameId.Name, args, statement.ProcessConfiNameId.Name, assigns, lsysStats, statement);
 		}
 
 

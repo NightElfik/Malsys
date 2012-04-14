@@ -19,6 +19,14 @@ namespace Malsys.Tests.Parsing {
 		}
 
 		[TestMethod]
+		public void LsysStatementsTests() {
+			doTestAutoident("process LsystemName with ConfigName", "set a = 10;");
+			doTestAutoident("process LsystemName with ConfigName", "set a = 10", "set symbols b = A B C(1, {2}, c);");
+			doTestAutoident("process LsystemName with ConfigName", "rewrite a", "\tto b", "interpret a as b;");
+			doTestAutoident("process LsystemName with ConfigName", "rewrite {a(x)} a(y) {a}", "\twhere x < y", "\tto b(a)", "interpret a b c(x, y = 10) as b(x + y);");
+		}
+
+		[TestMethod]
 		public void LsystemArgsTests() {
 			doTestAutoident("process all(a, r, g, s) with ConfigName;");
 			doTestAutoident("process LsystemName(0, 1, {2}) with ConfigName;");

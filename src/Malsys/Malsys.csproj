@@ -116,8 +116,8 @@
     <Compile Include="Compilers\CompilerConstant.cs" />
     <Compile Include="Compilers\Interfaces%27\IOperatorsContainer.cs" />
     <Compile Include="Compilers\Interfaces%27\ICompilerConstantsContainer.cs" />
+    <Compile Include="Processing\Components\Renderers\DebugRenderer2D.cs" />
     <Compile Include="Resources\MalsysConstantsAttribute.cs" />
-    <Compile Include="Compilers\CompilerResult.cs" />
     <Compile Include="Compilers\ConstantDefCompiler.cs" />
     <Compile Include="Compilers\OperatorAttribute.cs" />
     <Compile Include="Compilers\ExpressionCompiler.cs" />

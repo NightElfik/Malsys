@@ -33,7 +33,7 @@ namespace Malsys.Evaluators {
 		/// <summary>
 		/// Can be used to resolve other evaluators.
 		/// </summary>
-		public T Resolve<T>() {
+		public virtual T Resolve<T>() {
 			return container.Resolve<T>();
 		}
 

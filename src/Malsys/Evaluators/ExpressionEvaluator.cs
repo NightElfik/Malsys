@@ -10,7 +10,7 @@ namespace Malsys.Evaluators {
 	/// All public members are thread safe.
 	/// Since this class has no state there is no reason of creating instances.
 	/// </remarks>
-	internal class ExpressionEvaluator : IExpressionEvaluator {
+	public class ExpressionEvaluator : IExpressionEvaluator {
 
 
 		public static readonly ExpressionEvaluator Instance = new ExpressionEvaluator();
@@ -78,10 +78,10 @@ namespace Malsys.Evaluators {
 
 						IExpression arg;
 
-						if (!FloatArithmeticHelper.IsZero((Constant)condition)) { // not zero -- true
+						if (((Constant)condition).IsTrue) {
 							arg = funCall.Arguments[1];
 						}
-						else { // zero -- false
+						else {
 							arg = funCall.Arguments[2];
 						}
 

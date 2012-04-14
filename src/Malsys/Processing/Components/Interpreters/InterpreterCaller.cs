@@ -19,39 +19,64 @@ namespace Malsys.Processing.Components.Interpreters {
 	/// <group>Interpreters</group>
 	public class InterpreterCaller : IInterpreterCaller {
 
-		protected IInterpreter interpreter;
-		protected ILsystemInLsystemProcessor lsystemInLsystemProcessor;
+		protected List<IInterpreter> interpreters = new List<IInterpreter>();
+
 		protected IExpressionEvaluatorContext exprEvalCtxt;
 
 		protected Dictionary<string, SymbolInterpretationEvaled> symbolToInstr;
 
-		protected Dictionary<string, InterpretActionParams> instrToDel;
+		protected Dictionary<string, InterpretActionParams> instrToDel = new Dictionary<string, InterpretActionParams>();
 
 		protected ArgsStorage args = new ArgsStorage();
 
 
+		public IMessageLogger Logger { get; set; }
 
-		#region IInterpreterCaller Members
-
-		/// <summary>
-		/// Interpreter on which will be interpretation methods called.
-		/// </summary>
-		[UserConnectable]
-		public virtual IInterpreter Interpreter {
-			set {
-				interpreter = value;
-			}
-		}
 
 		/// <summary>
 		/// Specialized component to allow interpret L-system symbol as another L-system.
 		/// </summary>
-		[UserConnectable(IsOptional=true)]
-		public virtual ILsystemInLsystemProcessor LsystemInLsystemProcessor {
-			set {
-				lsystemInLsystemProcessor = value;
+		[UserConnectable(IsOptional = true)]
+		public virtual ILsystemInLsystemProcessor LsystemInLsystemProcessor { get; set; }
+
+
+		public bool RequiresMeasure { get { return false; } }
+
+
+		public virtual void Initialize(ProcessContext ctxt) {
+
+			exprEvalCtxt = ctxt.ExpressionEvaluatorContext;
+			symbolToInstr = ctxt.Lsystem.SymbolsInterpretation.ToDictionary(x => x.Key, x => x.Value);
+
+			var interpretersMeta = ctxt.ComponentGraph
+				.Where(x => typeof(IInterpreter).IsAssignableFrom(x.Value.ComponentType))
+				.Select(x => x.Value)
+				.ToList();
+
+			createInstrToDelCahce(interpretersMeta);
+
+			interpreters = interpretersMeta.Select(x => (IInterpreter)x.Component).ToList();
+
+		}
+
+		public virtual void Cleanup() {
+			interpreters = null;
+			instrToDel.Clear();
+		}
+
+
+		public virtual void BeginProcessing(bool measuring) {
+			foreach (var i in interpreters) {
+				i.BeginProcessing(measuring);
 			}
 		}
+
+		public virtual void EndProcessing() {
+			foreach (var i in interpreters) {
+				i.EndProcessing();
+			}
+		}
+
 
 		public virtual void ProcessSymbol(Symbol<IValue> symbol) {
 
@@ -71,19 +96,19 @@ namespace Malsys.Processing.Components.Interpreters {
 			}
 
 			if (instr.InstructionIsLsystemName) {
-				if (lsystemInLsystemProcessor == null) {
+				if (LsystemInLsystemProcessor == null) {
 					throw new InterpretationException("Failed to interpret symbol `{0}` as L-system `{1}`. Component of type `{2}` is not connected."
 						.Fmt(symbol.Name, instr.InstructionName, typeof(ILsystemInLsystemProcessor).FullName));
 				}
-				lsystemInLsystemProcessor.ProcessLsystem(instr.InstructionName, instr.LsystemConfigName, args.ToArray());
+				LsystemInLsystemProcessor.ProcessLsystem(instr.InstructionName, instr.LsystemConfigName, args.ToArray());
 				return;
 			}
 
 
 			InterpretActionParams iActionParams;
 			if (!instrToDel.TryGetValue(instr.InstructionName, out iActionParams)) {
-				throw new InterpretationException("Unknown interpreter action `{0}` of symbol `{1}` of interpreter `{2}`."
-					.Fmt(instr.InstructionName, symbol.Name, interpreter.GetType().FullName));
+				throw new InterpretationException("Unknown interpreter action `{0}` of symbol `{1}`."
+					.Fmt(instr.InstructionName, symbol.Name));
 			}
 
 			if (args.ArgsCount < iActionParams.Item2) {
@@ -95,32 +120,6 @@ namespace Malsys.Processing.Components.Interpreters {
 			iActionParams.Item1(args);
 		}
 
-		public bool RequiresMeasure { get { return false; } }
-
-		public virtual void Initialize(ProcessContext ctxt) {
-
-			exprEvalCtxt = ctxt.ExpressionEvaluatorContext;
-			symbolToInstr = ctxt.Lsystem.SymbolsInterpretation.ToDictionary(x => x.Key, x => x.Value);
-
-			var component = ctxt.FindComponent(interpreter);
-			if (component == null) {
-				throw new ComponentException("Interpreter metadata not found.");
-			}
-
-			createInstrToDelCahce(component.Value.Value);
-		}
-
-		public virtual void Cleanup() { }
-
-		public virtual void BeginProcessing(bool measuring) {
-			interpreter.BeginProcessing(measuring);
-		}
-
-		public virtual void EndProcessing() {
-			interpreter.EndProcessing();
-		}
-
-		#endregion
 
 
 		protected void mapSybolArgs(Symbol<IValue> symbol, SymbolInterpretationEvaled instr, ref IExpressionEvaluatorContext eec) {
@@ -146,21 +145,23 @@ namespace Malsys.Processing.Components.Interpreters {
 			}
 		}
 
-		private void createInstrToDelCahce(ConfigurationComponent component) {
+		private void createInstrToDelCahce(IEnumerable<ConfigurationComponent> interpretersMeta) {
 
-			instrToDel = new Dictionary<string, InterpretActionParams>();
+			foreach (var interpretMeta in interpretersMeta) {
+				var interpret = (IInterpreter)interpretMeta.Component;
 
-			foreach (var intMethod in component.Metadata.InterpretationMethods) {
+				foreach (var intMethod in interpretMeta.Metadata.InterpretationMethods) {
 
-				var del = createInterpretAction(intMethod.MethodInfo);
-				var intAction = new InterpretActionParams(del, intMethod.MandatoryParamsCount);
-				foreach (var name in intMethod.Names) {
-					instrToDel.Add(name, intAction);
+					var del = createInterpretAction(intMethod.MethodInfo, interpret);
+					var intAction = new InterpretActionParams(del, intMethod.MandatoryParamsCount);
+					foreach (var name in intMethod.Names) {
+						instrToDel.Add(name, intAction);
+					}
 				}
 			}
 		}
 
-		private Action<ArgsStorage> createInterpretAction(MethodInfo mi) {
+		private Action<ArgsStorage> createInterpretAction(MethodInfo mi, IInterpreter interpreter) {
 			var instance = Expression.Constant(interpreter, interpreter.GetType());
 			var argument = Expression.Parameter(typeof(ArgsStorage), "arguments");
 			var call = Expression.Call(instance, mi, argument);

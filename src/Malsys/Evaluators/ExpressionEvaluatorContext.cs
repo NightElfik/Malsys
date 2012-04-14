@@ -8,12 +8,12 @@ using StringInt = System.Tuple<string, int>;
 namespace Malsys.Evaluators {
 	public class ExpressionEvaluatorContext : IExpressionEvaluatorContext {
 
-		private readonly IExpressionEvaluator exprEvaluator;
+		protected readonly IExpressionEvaluator exprEvaluator;
 
 
-		private readonly FSharpMap<string, VariableInfo> varMap;
+		protected readonly FSharpMap<string, VariableInfo> varMap;
 
-		private readonly FSharpMap<StringInt, FunctionInfo> funMap;
+		protected readonly FSharpMap<StringInt, FunctionInfo> funMap;
 
 
 

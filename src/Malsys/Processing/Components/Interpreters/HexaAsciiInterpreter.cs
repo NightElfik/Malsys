@@ -26,13 +26,16 @@ namespace Malsys.Processing.Components.Interpreters {
 		private static readonly char[] angleToChar = { '_', '/', '\\', '_', '/', '\\' };
 
 		private ITextRenderer renderer;
-		private IMessageLogger logger;
 
 		private Stack<HexaState> statesStack = new Stack<HexaState>();
 		private HexaState currState;
 
-		private int scale = 1;
-		private float horizontalScaleMult = 2;
+		private int scale;
+		private float horizontalScaleMult;
+
+
+		public IMessageLogger Logger { get; set; }
+
 
 		/// <summary>
 		/// Scale of result ASCII art.
@@ -42,9 +45,7 @@ namespace Malsys.Processing.Components.Interpreters {
 		/// <default>1</default>
 		[AccessName("scale")]
 		[UserSettable]
-		public Constant Scale {
-			set { scale = value.RoundedIntValue; }
-		}
+		public Constant Scale { get; set; }
 
 		/// <summary>
 		/// Horizontal scale multiplier is used to multiply number of characters per horizontal line.
@@ -54,11 +55,8 @@ namespace Malsys.Processing.Components.Interpreters {
 		/// <default>2</default>
 		[AccessName("horizontalScaleMultiplier")]
 		[UserSettable]
-		public Constant HorizontalScaleMultiplier {
-			set { horizontalScaleMult = (float)value.Value; }
-		}
+		public Constant HorizontalScaleMultiplier { get; set; }
 
-		#region IInterpreter Members
 
 		/// <summary>
 		/// Render for rendering of ASCII art.
@@ -77,12 +75,18 @@ namespace Malsys.Processing.Components.Interpreters {
 
 		public bool RequiresMeasure { get { return false; } }
 
+
 		public void Initialize(ProcessContext ctxt) {
-			logger = ctxt.Logger;
+			scale = Scale.RoundedIntValue;
+			horizontalScaleMult = (float)HorizontalScaleMultiplier.Value;
 			renderer.AddGlobalOutputData(OutputMetadataKeyHelper.OutputIsAsciiArt, true);
 		}
 
-		public void Cleanup() { }
+		public void Cleanup() {
+			Scale = Constant.One;
+			HorizontalScaleMultiplier = new Constant(2d);
+		}
+
 
 		public void BeginProcessing(bool measuring) {
 			statesStack.Clear();
@@ -94,7 +98,6 @@ namespace Malsys.Processing.Components.Interpreters {
 			renderer.EndProcessing();
 		}
 
-		#endregion
 
 
 		#region Symbols interpretation methods

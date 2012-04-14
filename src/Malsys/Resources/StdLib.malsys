@@ -1,5 +1,6 @@
 ﻿//==============================================================================
 // Malsys standard library.
+// @author Marek Fišer 2011-2012
 //==============================================================================
 
 //------------------------------------------------------------------------------
@@ -7,7 +8,7 @@
 //------------------------------------------------------------------------------
 
 let pi = 3.14159265358979323846;
-let π = pi;
+let π = pi;  // Malsys supports Unicode! Yay!
 
 let e = 2.7182818284590452354;
 
@@ -16,6 +17,9 @@ let e = 2.7182818284590452354;
 // Abstract L-systems (for inheritance).
 //------------------------------------------------------------------------------
 
+/**
+ * Basic L-system with usual interpretations and correctly set branches.
+ */
 abstract lsystem StdLsystem {
 
 	interpret A B C D E F G as DrawForward(8);
@@ -39,6 +43,12 @@ abstract lsystem StdLsystem {
 
 }
 
+/**
+ * Basic 3D L-system with usual interpretations and correctly set branches.
+ * Main difference between this L-system and StdLsystem is in interpretation
+ * of + and -. 2D Image must be in XY plane so + and - must do Pitch but in
+ * 3D for pitch is better use ^ and &.
+ */
 abstract lsystem StdLsystem3D {
 
 	interpret A B C D E F G as DrawForward(8);
@@ -67,7 +77,9 @@ abstract lsystem StdLsystem3D {
 
 }
 
-
+/**
+ * Just correctly set branches.
+ */
 abstract lsystem Branches {
 
 	// to allow rewriter recognize branches and check context correctly
@@ -84,6 +96,9 @@ abstract lsystem Branches {
 // Process configurations.
 //------------------------------------------------------------------------------
 
+/**
+ * Prints symbols to string.
+ */
 configuration SymbolPrinter {
 
 	component AxiomProvider typeof AxiomProvider;
@@ -101,6 +116,9 @@ configuration SymbolPrinter {
 
 }
 
+/**
+ * Renders symbols as SVG vector image.
+ */
 configuration SvgRenderer {
 
 	component AxiomProvider typeof AxiomProvider;
@@ -118,13 +136,14 @@ configuration SvgRenderer {
 	connect Iterator to Rewriter.SymbolProvider;
 	connect Rewriter to Iterator.SymbolProvider;
 	connect InterpreterCaller to Iterator.OutputProcessor;
-	connect Interpreter to InterpreterCaller.Interpreter;
-	connect Interpreter to LsystemInLsystemProcessor.Interpreter;
 	connect LsystemInLsystemProcessor to InterpreterCaller.LsystemInLsystemProcessor;
 	connect Renderer to Interpreter.Renderer;
 
 }
 
+/**
+ * Renders symbols as lines from ASCII characters in hexagonal grid.
+ */
 configuration HexAsciiRenderer {
 
 	component AxiomProvider typeof AxiomProvider;
@@ -142,13 +161,14 @@ configuration HexAsciiRenderer {
 	connect Iterator to Rewriter.SymbolProvider;
 	connect Rewriter to Iterator.SymbolProvider;
 	connect InterpreterCaller to Iterator.OutputProcessor;
-	connect Interpreter to InterpreterCaller.Interpreter;
-	connect Interpreter to LsystemInLsystemProcessor.Interpreter;
 	connect LsystemInLsystemProcessor to InterpreterCaller.LsystemInLsystemProcessor;
 	connect Renderer to Interpreter.Renderer;
 
 }
 
+/**
+ * Renders symbols as 3D scene for Three.js engine.
+ */
 configuration ThreeJsRenderer {
 
 	component AxiomProvider typeof AxiomProvider;
@@ -166,22 +186,30 @@ configuration ThreeJsRenderer {
 	connect Iterator to Rewriter.SymbolProvider;
 	connect Rewriter to Iterator.SymbolProvider;
 	connect InterpreterCaller to Iterator.OutputProcessor;
-	connect Interpreter to InterpreterCaller.Interpreter;
-	connect Interpreter to LsystemInLsystemProcessor.Interpreter;
 	connect LsystemInLsystemProcessor to InterpreterCaller.LsystemInLsystemProcessor;
 	connect Renderer to Interpreter.Renderer;
 
 }
 
+/**
+ * Prints conversion of symbols to interpretation methods.
+ */
 configuration InterpretationDebugger {
 
 	component AxiomProvider typeof AxiomProvider;
-	container Iterator typeof IIterator default MemoryBufferedIterator;
-	container InterpreterCaller typeof IInterpreterCaller default InterpreterCallerDebugger;
+	component RandomGeneratorProvider typeof RandomGeneratorProvider;
+	component LsystemInLsystemProcessor typeof LsystemInLsystemProcessor;
+	component InterpreterCaller typeof InterpreterCallerDebugger;
 
+	container Rewriter typeof IRewriter default SymbolRewriter;
+	container Iterator typeof IIterator default MemoryBufferedIterator;
+
+	connect RandomGeneratorProvider to Iterator.RandomGeneratorProvider;
 	connect AxiomProvider to Iterator.AxiomProvider;
-	connect AxiomProvider to Iterator.SymbolProvider;
+	connect Iterator to Rewriter.SymbolProvider;
+	connect Rewriter to Iterator.SymbolProvider;
 	connect InterpreterCaller to Iterator.OutputProcessor;
+	connect LsystemInLsystemProcessor to InterpreterCaller.LsystemInLsystemProcessor;
 
 }
 
@@ -198,14 +226,16 @@ configuration InnerLsystemConfig {
 	connect Rewriter to Iterator.SymbolProvider;
 	connect InterpreterCaller to Iterator.OutputProcessor;
 
-	virtual connect Interpreter to InterpreterCaller.Interpreter;
+	// this connection is virtual because LsystemInLsystemProcessor component
+	// will be added to process configuration from main process configuration
 	virtual connect LsystemInLsystemProcessor to InterpreterCaller.LsystemInLsystemProcessor;
 
 }
 
 
 /**
- * Dummy L-system for processing ConstantDumper;
+ * Dummy L-system for processing ConstantDumper.
+ * Usage: process Constants with ConstantDumper;
  */
 abstract lsystem Constants { }
 

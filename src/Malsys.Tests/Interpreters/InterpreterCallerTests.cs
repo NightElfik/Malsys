@@ -168,6 +168,7 @@ namespace Malsys.Tests.Interpreters {
 				string inputSymbols, string[] excpected) {
 
 			var caller = new InterpreterCaller();
+			caller.Cleanup();
 			var symbols = TestUtils.CompileSymbols(inputSymbols);
 
 			var evaluator = new EvaluatorsContainer(TestUtils.ExpressionEvaluatorContext);
@@ -179,6 +180,7 @@ namespace Malsys.Tests.Interpreters {
 			var logger = new MessageLogger();
 
 			var dummyInterpreter = new DummyInterpreter();
+			dummyInterpreter.Cleanup();
 			var intMeta = new ComponentMetadataDumper().GetMetadata(dummyInterpreter.GetType(), logger);
 			var component = new ConfigurationComponent("interpreter", dummyInterpreter, intMeta);
 			var componentsGraph = MapModule.Empty<string, ConfigurationComponent>().Add(component.Name, component);
@@ -186,7 +188,6 @@ namespace Malsys.Tests.Interpreters {
 			var context = new ProcessContext(lsystem, new InMemoryOutputProvider(), null, evaluator,
 				TestUtils.ExpressionEvaluatorContext, null, TimeSpan.MaxValue, componentsGraph, logger);
 
-			caller.Interpreter = dummyInterpreter;
 			caller.Initialize(context);
 
 			var symbolEvaluator = evaluator.Resolve<ISymbolEvaluator>();
@@ -215,6 +216,8 @@ namespace Malsys.Tests.Interpreters {
 			IndentStringWriter writer;
 			CanonicPrinter printer;
 
+			public IMessageLogger Logger { get; set; }
+
 			public DummyInterpreter() {
 				writer = new IndentStringWriter();
 				printer = new CanonicPrinter(writer);
@@ -227,25 +230,16 @@ namespace Malsys.Tests.Interpreters {
 				set { throw new NotImplementedException(); }
 			}
 
-			public bool IsRendererCompatible(IRenderer renderer) {
-				throw new NotImplementedException();
-			}
 
 			public bool RequiresMeasure { get { return false; } }
 
-			public void Initialize(ProcessContext context) {
-				throw new NotImplementedException();
-			}
+			public void Initialize(ProcessContext context) { }
 
-			public void Cleanup() {
-				throw new NotImplementedException();
-			}
+			public void Cleanup() { }
 
-			public void BeginProcessing(bool measuring) {
-			}
+			public void BeginProcessing(bool measuring) { }
 
-			public void EndProcessing() {
-			}
+			public void EndProcessing() { }
 
 			#endregion
 

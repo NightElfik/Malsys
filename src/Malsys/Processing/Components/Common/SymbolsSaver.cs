@@ -21,14 +21,8 @@ namespace Malsys.Processing.Components.Common {
 		bool notMeasuring;
 
 
-		#region ISymbolProcessor Members
+		public IMessageLogger Logger { get; set; }
 
-		public void ProcessSymbol(Symbol<IValue> symbol) {
-			if (notMeasuring) {
-				printer.Print(symbol);
-				writer.Write(" ");
-			}
-		}
 
 		public bool RequiresMeasure { get { return false; } }
 
@@ -37,7 +31,10 @@ namespace Malsys.Processing.Components.Common {
 			outputName = "Symbols from `{0}`".Fmt(ctxt.Lsystem.Name);
 		}
 
-		public void Cleanup() { }
+		public void Cleanup() {
+			outProvider = null;
+		}
+
 
 		public void BeginProcessing(bool measuring) {
 			notMeasuring = !measuring;
@@ -56,6 +53,13 @@ namespace Malsys.Processing.Components.Common {
 			}
 		}
 
-		#endregion
+
+		public void ProcessSymbol(Symbol<IValue> symbol) {
+			if (notMeasuring) {
+				printer.Print(symbol);
+				writer.Write(" ");
+			}
+		}
+
 	}
 }

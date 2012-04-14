@@ -15,23 +15,8 @@ namespace Malsys.Processing.Components.Renderers {
 		protected Stream outputStream;
 		protected TextWriter writer;
 
+		public IMessageLogger Logger { get; set; }
 
-		protected void logState(string format, params object[] args) {
-			writer.WriteLine(format.FmtInvariant(args));
-		}
-
-
-		#region IRenderer Members
-
-		public virtual void AddGlobalOutputData(string key, object value) {
-			globalAdditionalData = globalAdditionalData.Add(key, value);
-		}
-
-		public virtual void AddCurrentOutputData(string key, object value) {
-			if (outputStream != null) {
-				context.OutputProvider.AddMetadata(outputStream, key, value);
-			}
-		}
 
 
 		public virtual bool RequiresMeasure {
@@ -47,8 +32,7 @@ namespace Malsys.Processing.Components.Renderers {
 		}
 
 		public virtual void BeginProcessing(bool measuring) {
-			outputStream = context.OutputProvider.GetOutputStream<DebugRendererBase>(
-				"debug renderer output", MimeType.Text.Plain);
+			outputStream = context.OutputProvider.GetOutputStream<DebugRendererBase>("debug renderer output", MimeType.Text.Plain);
 			writer = new StreamWriter(outputStream);
 		}
 
@@ -56,6 +40,22 @@ namespace Malsys.Processing.Components.Renderers {
 			writer.Close();
 		}
 
-		#endregion
+
+		public virtual void AddGlobalOutputData(string key, object value) {
+			globalAdditionalData = globalAdditionalData.Add(key, value);
+		}
+
+		public virtual void AddCurrentOutputData(string key, object value) {
+			if (outputStream != null) {
+				context.OutputProvider.AddMetadata(outputStream, key, value);
+			}
+		}
+
+
+
+		protected void logState(string format, params object[] args) {
+			writer.WriteLine(format.FmtInvariant(args));
+		}
+
 	}
 }

@@ -9,7 +9,6 @@ namespace Malsys.Processing.Components.Common {
 	/// <group>Common</group>
 	public class AxiomProvider : SymbolProvider, ISymbolProvider {
 
-		public AxiomProvider() : base() { }
 
 		/// <summary>
 		/// Storage for axiom.

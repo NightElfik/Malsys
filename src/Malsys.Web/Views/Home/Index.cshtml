@@ -1,5 +1,14 @@
-﻿@{
+﻿@model GalleryThumbnailModel
+
+@{
 	ViewBag.Title = "Malsys";
+}
+
+@if (Model != null) {
+	<div class="right bg">
+	@Html.Partial(MVC.Shared.Views.GalleryThumbnailPartial, Model)
+	<h4 class="center">@Model.SavedInput.PublishName</h4>
+	</div>
 }
 
 <h3>What is Malsys?</h3>
@@ -23,7 +32,7 @@
 	Check @Html.ActionLink("help pages", MVC.Help.Home.Index()) or examples in @Html.ActionLink("gallery", MVC.Gallery.Index()).
 </p>
 
-
+@*
 <h3>Features</h3>
 
 <ul>
@@ -48,3 +57,15 @@
 		</ul>
 	</li>
 </ul>
+*@
+
+@if (Model != null && Model.NeedsThreeJs) {
+	<text>
+	@section scripts {
+		@Content.Js(Links.Js.ThreeJs.Three_js)
+		@Content.Js(Links.Js.ThreeJs.Detector_js)
+		@Content.Js(Links.Js.ThreeJs.Stats_js)
+		@Content.Js(Links.Js.ThreeJs.malsys_three_js)
+	}
+	</text>
+}

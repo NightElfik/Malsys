@@ -14,13 +14,15 @@ namespace Malsys.Processing.Components.Common {
 		private List<Symbol> buffer;
 
 
-		#region ISymbolProcessor Members
+		public IMessageLogger Logger { get; set; }
+
 
 		public bool RequiresMeasure { get { return false; } }
 
 		public void Initialize(ProcessContext ctxt) { }
 
 		public void Cleanup() { }
+
 
 		public void BeginProcessing(bool measuring) {
 			buffer = measuring ? null : new List<Symbol>();
@@ -35,7 +37,6 @@ namespace Malsys.Processing.Components.Common {
 			}
 		}
 
-		#endregion
 
 
 		public List<Symbol> GetAndClear() {

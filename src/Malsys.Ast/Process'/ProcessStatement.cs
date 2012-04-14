@@ -13,14 +13,17 @@ namespace Malsys.Ast {
 
 		public readonly ImmutableListPos<ProcessComponentAssignment> ComponentAssignments;
 
+		public readonly ImmutableListPos<ILsystemStatement> AdditionalLsystemStatements;
+
 
 		public ProcessStatement(Identificator targetLsystemName, ImmutableListPos<Expression> arguments, Identificator processConfiNameId,
-				ImmutableListPos<ProcessComponentAssignment> componentAssignments, Position pos) {
+				ImmutableListPos<ProcessComponentAssignment> componentAssignments, ImmutableListPos<ILsystemStatement> additionalLsystemStatements, Position pos) {
 
 			TargetLsystemNameId = targetLsystemName;
 			Arguments = arguments;
 			ProcessConfiNameId = processConfiNameId;
 			ComponentAssignments = componentAssignments;
+			AdditionalLsystemStatements = additionalLsystemStatements;
 
 			Position = pos;
 		}

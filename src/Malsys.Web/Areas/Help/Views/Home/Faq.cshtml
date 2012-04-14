@@ -1,11 +1,63 @@
-﻿@{
+﻿@model Malsys.Web.Models.Lsystem.SimpleLsystemProcessor
+
+@{
 	ViewBag.Title = "Frequently asked questions";
+	var exampleModel = new LsystemExampleViewModel() {
+		LsystemProcessor = Model,
+		SourceCodeTemplate = "{0}"
+	};
 }
 
 <h2>Frequently asked questions</h2>
 
+<p>
+	If you are interested in Malsys and you have questions which are not answered here or in @Html.ActionLink("help", MVC.Help.Home.Index())
+		feel free to @Html.ActionLink("contact me", MVC.Feedback.EmailToAuthor()) :)
+</p>
+
 <div id="toc"></div>
 
-<h3>Q1</h3>
 
-<h3>Q2</h3>
+<h3>Symbol rewriting is not working properly!</h3>
+
+<p>
+	<span class="huge">Q:</span>
+	In following L-system rewriting do not work, nothing is rendered:
+</p>
+
+<pre class="malsys box">
+lsystem RewritingProblem {
+	set symbols axiom = F;
+	set iterations = 2;
+
+	interpret F as DrawForward(10);
+
+	rewrite F to FFF;
+}
+
+process all with SvgRenderer;
+</pre>
+
+<p>
+	<span class="huge">A:</span>
+	Problem is in symbols, <code>FFF</code> is one symbol for Malsys, you need to separate individual symbols with space.
+	This problem can be debugged with <code>InterpretationDebugger</code> process configuration or with <code>InterpreterCallerDebugger</code> component
+		(which can be replaced instead of InterpreterCaller in any configuration).
+	If you run previous L-system with <code>InterpretationDebugger</code> configuration you will see <code>FFF =></code> which means that symbol <code>FFF</code> has no interpretation.
+</p>
+
+<pre class="malsys box" data-unimportant-lines="1 2 3 4 5 6 7 8">
+lsystem RewritingProblem {
+	set symbols axiom = F;
+	set iterations = 2;
+
+	interpret F as DrawForward(10);
+
+	rewrite F to FFF;
+}
+
+process all with InterpretationDebugger;
+// or:
+// process all with SvgRenderer use InterpreterCallerDebugger as InterpreterCaller;
+</pre>
+

@@ -7,11 +7,5 @@ namespace Malsys.Processing.Components {
 	/// <group>Interpreters</group>
 	public interface IInterpreterCaller : ISymbolProcessor {
 
-		/// <summary>
-		/// Interpreter on which will be interpretation methods called.
-		/// </summary>
-		[UserConnectable]
-		IInterpreter Interpreter { set; }
-
 	}
 }

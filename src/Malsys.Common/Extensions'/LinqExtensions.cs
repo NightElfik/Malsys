@@ -64,5 +64,20 @@ namespace Malsys {
 			return source.Aggregate(MapModule.Empty<TKey, TElement>(), (acc, x) => acc.Add(keySelector(x), elementSelector(x)));
 
 		}
+
+
+		public static T RandomOrDefault<T>(this IQueryable<T> source) {
+
+			int count = source.Count();
+
+			if (count == 0) {
+				return default(T);
+			}
+
+			int index = new Random().Next(count);
+
+			return source.Skip(index).First();
+		}
+
 	}
 }

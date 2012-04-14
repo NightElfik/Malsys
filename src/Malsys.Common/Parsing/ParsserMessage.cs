@@ -12,7 +12,7 @@ namespace Malsys.Parsing {
 		ExcpectedParams,
 		[Message(MessageType.Error, "Function body is invalid.")]
 		FunStatementsInvalid,
-		[Message(MessageType.Error, "L-system name, optional parameters or base L-systems are invaild.")]
+		[Message(MessageType.Error, "L-system name, optional parameters or base L-systems are invalid.")]
 		LsystemHeaderInvalid,
 		[Message(MessageType.Error, "L-system body is invalid.")]
 		LsystemStatementsInvalid,

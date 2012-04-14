@@ -158,30 +158,25 @@ namespace Malsys.Web {
 			builder.RegisterType<ProcessManager>().InstancePerHttpRequest();
 			builder.RegisterType<LsystemProcessor>().InstancePerHttpRequest();
 
-			builder.Register(x => buildStdLib(knownStuffProvider, eec)).SingleInstance();
 
-		}
-
-		private InputBlockEvaled buildStdLib(KnownConstOpProvider knownStuffProvider, IExpressionEvaluatorContext eec) {
-
-			string resName = ResourcesHelper.StdLibResourceName;
-
-			var logger = new MessageLogger();
-
-			using (Stream stream = new ResourcesReader().GetResourceStream(resName)) {
+			string stdlib;
+			using (Stream stream = new ResourcesReader().GetResourceStream(ResourcesHelper.StdLibResourceName)) {
 				using (TextReader reader = new StreamReader(stream)) {
-					var inCompiled = new CompilersContainer(knownStuffProvider, knownStuffProvider)
-						.CompileInput(reader, resName, logger);
-					var stdLib = new EvaluatorsContainer(eec).EvaluateInput(inCompiled);
-					if (!logger.ErrorOccurred) {
-						return stdLib;
-					}
+					stdlib = reader.ReadToEnd();
 				}
 			}
 
-			throw new Exception("Failed to build std lib.");
-		}
+			builder.Register(x => new MalsysStdLibSource(stdlib)).SingleInstance();
 
+			var inCompiled = new CompilersContainer(knownStuffProvider, knownStuffProvider).CompileInput(stdlib, ResourcesHelper.StdLibResourceName, logger);
+			var stdLib = new EvaluatorsContainer(eec).EvaluateInput(inCompiled, logger);
+			if (logger.ErrorOccurred) {
+				throw new Exception("Failed to build std lib.");
+			}
+
+			builder.Register(x => stdLib).SingleInstance();
+
+		}
 		/// <summary>
 		/// Checks whether DB contains all well-known user roles and at least one user.
 		/// Missing things are added.

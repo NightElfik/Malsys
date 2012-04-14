@@ -44,8 +44,10 @@ namespace Malsys.Tests {
 
 		public class EmptyComponent : IComponent {
 
+			public IMessageLogger Logger { get; set; }
+
 			public void Initialize(ProcessContext context) {
-				context.Logger.LogInfo(this.GetType().Name, "");
+				Logger.LogInfo(this.GetType().Name, "");
 			}
 
 			public void Cleanup() { }
@@ -54,12 +56,14 @@ namespace Malsys.Tests {
 
 		public class ConnectablePropertyComponent : IComponent {
 
+			public IMessageLogger Logger { get; set; }
+
 			[UserConnectable]
 			public IComponent Component { get; set; }
 
 
 			public void Initialize(ProcessContext context) {
-				context.Logger.LogInfo(this.GetType().Name + ":" + Component.GetType().Name, "");
+				Logger.LogInfo(this.GetType().Name + ":" + Component.GetType().Name, "");
 			}
 
 			public void Cleanup() { }
@@ -69,8 +73,10 @@ namespace Malsys.Tests {
 
 		public class StarterComponent : IProcessStarter {
 
+			public IMessageLogger Logger { get; set; }
+
 			public void Initialize(ProcessContext context) {
-				context.Logger.LogInfo(this.GetType().Name, "");
+				Logger.LogInfo(this.GetType().Name, "");
 			}
 
 			public void Cleanup() { }
@@ -96,12 +102,14 @@ namespace Malsys.Tests {
 
 		public class ContaineredAlphaComponent : IContainer, IComponent {
 
+			public IMessageLogger Logger { get; set; }
+
 			[UserConnectable]
 			public IComponent Component { get; set; }
 
 
 			public void Initialize(ProcessContext context) {
-				context.Logger.LogInfo(this.GetType().Name + ":" + Component.GetType().Name, "");
+				Logger.LogInfo(this.GetType().Name + ":" + Component.GetType().Name, "");
 			}
 
 			public void Cleanup() { }
@@ -110,12 +118,14 @@ namespace Malsys.Tests {
 
 		public class ContaineredBetaComponent : IContainer, IComponent {
 
+			public IMessageLogger Logger { get; set; }
+
 			[UserConnectable(IsOptional = true)]
 			public IComponent Component { get; set; }
 
 
 			public void Initialize(ProcessContext context) {
-				context.Logger.LogInfo(this.GetType().Name + ":" + (Component != null ? Component.GetType().Name : ""), "");
+				Logger.LogInfo(this.GetType().Name + ":" + (Component != null ? Component.GetType().Name : ""), "");
 			}
 
 			public void Cleanup() { }
@@ -125,12 +135,14 @@ namespace Malsys.Tests {
 
 		public class NoParamlessCtorComponent : IComponent, IContainer {
 
+			public IMessageLogger Logger { get; set; }
+
 
 			public NoParamlessCtorComponent(string something, int weird) { }
 
 
 			public void Initialize(ProcessContext context) {
-				context.Logger.LogInfo(this.GetType().Name, "");
+				Logger.LogInfo(this.GetType().Name, "");
 			}
 
 			public void Cleanup() { }
@@ -145,6 +157,8 @@ namespace Malsys.Tests {
 
 		public class ExceptionInCtorComponent : IComponent {
 
+			public IMessageLogger Logger { get; set; }
+
 			public ExceptionInCtorComponent() {
 				throw new Exception("Something went wrong.");
 			}
@@ -158,6 +172,8 @@ namespace Malsys.Tests {
 
 		public class ErrorInInitComponent : IComponent {
 
+			public IMessageLogger Logger { get; set; }
+
 			public void Initialize(ProcessContext context) {
 				throw new ComponentException("Something went wrong.");
 			}
@@ -167,6 +183,8 @@ namespace Malsys.Tests {
 		}
 
 		public class ExceptionInInitComponent : IComponent {
+
+			public IMessageLogger Logger { get; set; }
 
 			public void Initialize(ProcessContext context) {
 				throw new Exception("Something went wrong.");
@@ -179,6 +197,8 @@ namespace Malsys.Tests {
 
 		public class SettablePropertiesComponent : IComponent {
 
+			public IMessageLogger Logger { get; set; }
+
 			[UserSettable]
 			public Constant Constant { private get; set; }
 
@@ -190,7 +210,7 @@ namespace Malsys.Tests {
 
 
 			public void Initialize(ProcessContext context) {
-				context.Logger.LogInfo(this.GetType().Name
+				Logger.LogInfo(this.GetType().Name
 					+ ":Constant=" + (Constant != null ? TestUtils.Print(Constant) : "")
 					+ ",ValuesArray=" + (ValuesArray != null ? TestUtils.Print(ValuesArray) : "")
 					+ ",IValue=" + (IValue != null ? TestUtils.Print(IValue) : ""), "");
@@ -202,13 +222,15 @@ namespace Malsys.Tests {
 
 		public class SettablePropertyAliasesComponent : IComponent {
 
+			public IMessageLogger Logger { get; set; }
+
 			[AccessName("IValue", "iValue", "A", "b")]
 			[UserSettable]
 			public IValue IValue { private get; set; }
 
 
 			public void Initialize(ProcessContext context) {
-				context.Logger.LogInfo(this.GetType().Name
+				Logger.LogInfo(this.GetType().Name
 					+ ":" + (IValue != null ? TestUtils.Print(IValue) : ""), "");
 			}
 
@@ -218,12 +240,14 @@ namespace Malsys.Tests {
 
 		public class SettablePropertyInvalidValueComponent : IComponent {
 
+			public IMessageLogger Logger { get; set; }
+
 			[UserSettable]
 			public IValue IValue { set { throw new InvalidUserValueException(); } }
 
 
 			public void Initialize(ProcessContext context) {
-				context.Logger.LogInfo(this.GetType().Name, "");
+				Logger.LogInfo(this.GetType().Name, "");
 			}
 
 			public void Cleanup() { }
@@ -232,11 +256,13 @@ namespace Malsys.Tests {
 
 		public class MandatorySettablePropertyComponent : IComponent {
 
+			public IMessageLogger Logger { get; set; }
+
 			[UserSettable(IsMandatory = true)]
 			public IValue Mandatory { private get; set; }
 
 			public void Initialize(ProcessContext context) {
-				context.Logger.LogInfo(this.GetType().Name
+				Logger.LogInfo(this.GetType().Name
 					+ ":" + (Mandatory != null ? TestUtils.Print(Mandatory) : ""), "");
 			}
 
@@ -246,12 +272,14 @@ namespace Malsys.Tests {
 
 		public class SettableSymbolPropertiesComponent : IComponent {
 
+			public IMessageLogger Logger { get; set; }
+
 			[UserSettableSybols]
 			public ImmutableList<Symbol<IValue>> Symbols { private get; set; }
 
 
 			public void Initialize(ProcessContext context) {
-				context.Logger.LogInfo(this.GetType().Name
+				Logger.LogInfo(this.GetType().Name
 					+ ":" + (Symbols != null ? TestUtils.Print(Symbols) : ""), "");
 			}
 
@@ -261,12 +289,14 @@ namespace Malsys.Tests {
 
 		public class MndatorySettableSymbolPropertiesComponent : IComponent {
 
+			public IMessageLogger Logger { get; set; }
+
 			[UserSettableSybols(IsMandatory = true)]
 			public ImmutableList<Symbol<IValue>> Mandatory { private get; set; }
 
 
 			public void Initialize(ProcessContext context) {
-				context.Logger.LogInfo(this.GetType().Name
+				Logger.LogInfo(this.GetType().Name
 					+ ":" + (Mandatory != null ? TestUtils.Print(Mandatory) : ""), "");
 			}
 
@@ -275,6 +305,8 @@ namespace Malsys.Tests {
 		}
 
 		public class GettablePropertiesComponent : IComponent {
+
+			public IMessageLogger Logger { get; set; }
 
 			[UserGettable(IsGettableBeforeInitialiation = true)]
 			public Constant ConstantGet { get { return 8.ToConst(); } }
@@ -287,7 +319,7 @@ namespace Malsys.Tests {
 
 
 			public void Initialize(ProcessContext context) {
-				context.Logger.LogInfo(this.GetType().Name, "");
+				Logger.LogInfo(this.GetType().Name, "");
 			}
 
 			public void Cleanup() { }

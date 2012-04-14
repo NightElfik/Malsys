@@ -8,5 +8,7 @@ namespace Malsys.Evaluators {
 		LsystemEvaled Evaluate(LsystemEvaledParams lsystem, IList<IValue> arguments, IExpressionEvaluatorContext exprEvalCtxt,
 				IBaseLsystemResolver baseResolver, IMessageLogger logger);
 
+		LsystemEvaled EvaluateAdditionalStatements(LsystemEvaled lsystem, IEnumerable<ILsystemStatement> additionalStatements, IMessageLogger logger);
+
 	}
 }

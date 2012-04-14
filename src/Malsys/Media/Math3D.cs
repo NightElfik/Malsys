@@ -74,10 +74,15 @@ namespace Malsys.Media {
 				&& vector.Z.EpsilonCompareTo(another.Z) == 0;
 		}
 
-		public static bool IsEpsilonEqualTo(this Point3D vector, Point3D another) {
-			return vector.X.EpsilonCompareTo(another.X) == 0
-				&& vector.Y.EpsilonCompareTo(another.Y) == 0
-				&& vector.Z.EpsilonCompareTo(another.Z) == 0;
+		public static bool IsEpsilonEqualTo(this Point3D pt, Point3D another) {
+			return pt.X.EpsilonCompareTo(another.X) == 0
+				&& pt.Y.EpsilonCompareTo(another.Y) == 0
+				&& pt.Z.EpsilonCompareTo(another.Z) == 0;
+		}
+
+		public static bool IsEpsilonEqualTo(this Point pt, Point another) {
+			return pt.X.EpsilonCompareTo(another.X) == 0
+				&& pt.Y.EpsilonCompareTo(another.Y) == 0;
 		}
 
 		/// <summary>

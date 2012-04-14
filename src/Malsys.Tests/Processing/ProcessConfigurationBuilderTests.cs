@@ -486,8 +486,12 @@ namespace Malsys.Tests.Process {
 			var logger = new MessageLogger();
 
 			var procCompBuilder = new ProcessConfigurationBuilder();
-			var compGraph = procCompBuilder.BuildConfigurationComponentsGraph(procConfig, procStat.ComponentAssignments, resolver, logger);
-
+			var compGraph = procCompBuilder.CreateComponents(procConfig.Components, procConfig.Containers, procStat.ComponentAssignments, resolver, logger);
+			if (logger.ErrorOccurred) {
+				goto results;
+			}
+			procCompBuilder.SetLogger(compGraph, logger);
+			procCompBuilder.ConnectComponentsAndCheck(compGraph, procConfig.Connections, logger);
 			if (logger.ErrorOccurred) {
 				goto results;
 			}

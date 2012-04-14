@@ -6,7 +6,7 @@ namespace Malsys.Evaluators {
 	/// <remarks>
 	/// All public members are thread safe.
 	/// </remarks>
-	internal class SymbolEvaluator : ISymbolEvaluator {
+	public class SymbolEvaluator : ISymbolEvaluator {
 
 
 		public Symbol<IValue> Evaluate(Symbol<IExpression> symbol, IExpressionEvaluatorContext exprEvalCtxt) {

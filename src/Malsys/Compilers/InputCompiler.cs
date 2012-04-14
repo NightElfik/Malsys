@@ -6,13 +6,13 @@ namespace Malsys.Compilers {
 	/// <remarks>
 	/// All public members are thread safe if supplied compilers are thread safe.
 	/// </remarks>
-	internal class InputCompiler : IInputCompiler {
+	public class InputCompiler : IInputCompiler {
 
-		private readonly IConstantDefinitionCompiler constDefCompiler;
-		private readonly IFunctionDefinitionCompiler funDefCompiler;
-		private readonly ILsystemCompiler lsysCompiler;
-		private readonly IExpressionCompiler exprCompiler;
-		private readonly IProcessStatementsCompiler processStatsCompiler;
+		protected readonly IConstantDefinitionCompiler constDefCompiler;
+		protected readonly IFunctionDefinitionCompiler funDefCompiler;
+		protected readonly ILsystemCompiler lsysCompiler;
+		protected readonly IExpressionCompiler exprCompiler;
+		protected readonly IProcessStatementsCompiler processStatsCompiler;
 
 
 		public InputCompiler(IConstantDefinitionCompiler constantDefCompiler, IFunctionDefinitionCompiler functionDefCompiler,

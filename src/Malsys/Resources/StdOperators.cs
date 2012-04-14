@@ -66,7 +66,7 @@ namespace Malsys.Resources {
 			ExpressionValueTypeFlags.Constant,
 			(a) => a.IsNaN
 				? Constant.NaN
-				: (FloatArithmeticHelper.IsZero((Constant)a) ? Constant.True : Constant.False));
+				: (((Constant)a).IsTrue ? Constant.False : Constant.True ));
 
 		/// <summary>
 		/// Multiply operator.
@@ -174,7 +174,7 @@ namespace Malsys.Resources {
 			ExpressionValueTypeFlags.Constant, ExpressionValueTypeFlags.Constant,
 			(l, r) => (l.IsNaN || r.IsNaN)
 				? Constant.NaN
-				: ((FloatArithmeticHelper.IsZero((Constant)l) || FloatArithmeticHelper.IsZero((Constant)r)) ? Constant.False : Constant.True));
+				: (((Constant)l).IsZero || ((Constant)r).IsZero ? Constant.False : Constant.True));
 
 
 		/// <summary>
@@ -184,7 +184,7 @@ namespace Malsys.Resources {
 			ExpressionValueTypeFlags.Constant, ExpressionValueTypeFlags.Constant,
 			(l, r) => (l.IsNaN || r.IsNaN)
 				? Constant.NaN
-				: ((FloatArithmeticHelper.IsZero((Constant)l) == FloatArithmeticHelper.IsZero((Constant)r)) ? Constant.False : Constant.True));
+				: (((Constant)l).IsZero == ((Constant)r).IsZero ? Constant.False : Constant.True));
 
 
 		/// <summary>
@@ -194,7 +194,7 @@ namespace Malsys.Resources {
 			ExpressionValueTypeFlags.Constant, ExpressionValueTypeFlags.Constant,
 			(l, r) => (l.IsNaN || r.IsNaN)
 				? Constant.NaN
-				: ((FloatArithmeticHelper.IsZero((Constant)l) && FloatArithmeticHelper.IsZero((Constant)r)) ? Constant.False : Constant.True));
+				: (((Constant)l).IsZero && ((Constant)r).IsZero ? Constant.False : Constant.True));
 
 
 	}

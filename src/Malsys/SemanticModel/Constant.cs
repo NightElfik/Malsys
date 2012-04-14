@@ -8,13 +8,33 @@ namespace Malsys.SemanticModel {
 	/// </remarks>
 	public class Constant : IExpression, IValue {
 
+		/// <summary>
+		/// Constant with value NaN (not a number).
+		/// </summary>
 		public static readonly Constant NaN = new Constant(double.NaN);
 
+		/// <summary>
+		/// Constant with value -1.
+		/// </summary>
 		public static readonly Constant MinusOne = new Constant(-1d);
+
+		/// <summary>
+		/// Constant with value 0.
+		/// </summary>
 		public static readonly Constant Zero = new Constant(0d);
+
+		/// <summary>
+		/// Constant with value 1.
+		/// </summary>
 		public static readonly Constant One = new Constant(1d);
 
+		/// <summary>
+		/// Constant with value 1 representing true.
+		/// </summary>
 		public static readonly Constant True = One;
+		/// <summary>
+		/// Constant with value 0 representing false.
+		/// </summary>
 		public static readonly Constant False = Zero;
 
 
@@ -29,12 +49,26 @@ namespace Malsys.SemanticModel {
 			AstNode = astNode;
 		}
 
+		/// <summary>
+		/// Returns true if value is not zero (with respect to epsilon).
+		/// </summary>
+		public bool IsTrue { get { return !(-FloatArithmeticHelper.Epsilon < Value && Value < FloatArithmeticHelper.Epsilon); } }
 
-		public bool IsZero { get { return Math.Abs(Value) < FloatArithmeticHelper.Epsilon; } }
+		/// <summary>
+		/// Returns true if value is zero (with respect to epsilon).
+		/// </summary>
+		public bool IsZero { get { return -FloatArithmeticHelper.Epsilon < Value && Value < FloatArithmeticHelper.Epsilon; } }
 
+		/// <summary>
+		/// Returns true if value is NaN (not a number).
+		/// </summary>
 		public bool IsNaN { get { return double.IsNaN(Value); } }
 
+		/// <summary>
+		/// Returns true if value is infinity (positive or negative).
+		/// </summary>
 		public bool IsInfinity { get { return double.IsInfinity(Value); } }
+
 
 		public bool IsConstant { get { return true; } }
 

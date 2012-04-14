@@ -14,17 +14,20 @@ namespace Malsys.SemanticModel.Evaluated {
 
 		public readonly ImmutableList<ProcessComponentAssignment> ComponentAssignments;
 
+		public readonly ImmutableList<ILsystemStatement> AdditionalLsystemStatements;
+
 
 		public readonly Ast.ProcessStatement AstNode;
 
 
 		public ProcessStatementEvaled(string targetLsystemName, ImmutableList<IValue> arguments, string processConfiName,
-				ImmutableList<ProcessComponentAssignment> componentAssignments, Ast.ProcessStatement astNode = null) {
+				ImmutableList<ProcessComponentAssignment> componentAssignments, ImmutableList<ILsystemStatement> additionalLsysStats, Ast.ProcessStatement astNode = null) {
 
 			TargetLsystemName = targetLsystemName;
 			Arguments = arguments;
 			ProcessConfiName = processConfiName;
 			ComponentAssignments = componentAssignments;
+			AdditionalLsystemStatements = additionalLsysStats;
 
 			AstNode = astNode;
 		}

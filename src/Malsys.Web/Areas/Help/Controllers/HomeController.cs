@@ -3,6 +3,7 @@ using Malsys.Processing;
 using Malsys.SemanticModel.Evaluated;
 using Malsys.Web.Areas.Help.Models;
 using Malsys.Web.Models.Lsystem;
+using Malsys.Web.Models;
 
 namespace Malsys.Web.Areas.Help.Controllers {
 	[OutputCache(CacheProfile = "HelpCache")]
@@ -11,12 +12,14 @@ namespace Malsys.Web.Areas.Help.Controllers {
 		private readonly SimpleLsystemProcessor simpleLsystemProcessor;
 		private readonly InputBlockEvaled stdLib;
 		private readonly ProcessManager processManager;
+		private readonly MalsysStdLibSource malsysStdLibSource;
 
 
-		public HomeController(ProcessManager processManager, InputBlockEvaled stdLib) {
+		public HomeController(ProcessManager processManager, InputBlockEvaled stdLib, MalsysStdLibSource malsysStdLibSource) {
 
 			this.stdLib = stdLib;
 			this.processManager = processManager;
+			this.malsysStdLibSource = malsysStdLibSource;
 
 			simpleLsystemProcessor = new SimpleLsystemProcessor(processManager, stdLib);
 
@@ -24,6 +27,10 @@ namespace Malsys.Web.Areas.Help.Controllers {
 
 		public virtual ActionResult Index() {
 			return View();
+		}
+
+		public virtual ActionResult Faq() {
+			return View(simpleLsystemProcessor);
 		}
 
 		public virtual ActionResult BasicRewriting() {
@@ -45,12 +52,12 @@ namespace Malsys.Web.Areas.Help.Controllers {
 			});
 		}
 
-		public virtual ActionResult Faq() {
-			return View();
-		}
-
 		public virtual ActionResult ProcessConfigurations() {
 			return View(simpleLsystemProcessor);
+		}
+
+		public virtual ActionResult StdLib() {
+			return View(malsysStdLibSource);
 		}
 
 	}

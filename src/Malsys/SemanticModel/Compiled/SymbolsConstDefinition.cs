@@ -8,11 +8,16 @@ namespace Malsys.SemanticModel.Compiled {
 		public readonly string Name;
 		public readonly ImmutableList<Symbol<IExpression>> Symbols;
 
+		public readonly Ast.SymbolsConstDefinition AstNode;
 
-		public SymbolsConstDefinition(string name, ImmutableList<Symbol<IExpression>> symbols) {
+
+		public SymbolsConstDefinition(string name, ImmutableList<Symbol<IExpression>> symbols, Ast.SymbolsConstDefinition astNode = null) {
 
 			Name = name;
 			Symbols = symbols;
+
+			AstNode = astNode;
+
 		}
 
 

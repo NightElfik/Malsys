@@ -135,15 +135,16 @@
     <Compile Include="Processing\ContextListBuilderTests.cs" />
     <Compile Include="Processing\ContextTesterTests.cs" />
     <Compile Include="Processing\InherenceTests.cs" />
+    <Compile Include="Processing\LsystemInLsystemTests.cs" />
     <Compile Include="Processing\ProcessConfigurationBuilderTests.cs" />
     <Compile Include="Processing\ProcessManagerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Common\StringExtensionsTest.cs" />
     <Compile Include="Prototypes\MetadataStoreComparison.cs" />
     <Compile Include="Resources\StdLibTests.cs" />
-    <Compile Include="Rewriters\GenericRewriterIteratorTests.cs" />
     <Compile Include="Rewriters\MemoryBufferedIteratorTests.cs" />
     <Compile Include="Rewriters\SymbolRewriterTests.cs" />
+    <Compile Include="SourceCode\CanonicPrinterTests.cs" />
     <Compile Include="TestUtils\AssertEx.cs" />
     <Compile Include="TestUtils\Components.cs" />
     <Compile Include="TestUtils\TestUtils.cs" />

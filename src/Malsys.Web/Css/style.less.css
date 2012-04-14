@@ -12,6 +12,7 @@
 @themeColorDarker: darken(@themeColor, 10%);
 @themeColorDarkerDarker: darken(@themeColor, 20%);
 
+@bodyBgColor: #FFF;
 @bgColor: lighten(@themeColor, 5%);
 @bgColorLight: lighten(@themeColor, 50%);
 
@@ -241,7 +242,7 @@ table th {
 body {
 	font-size: 120%;
 	font-family: "Trebuchet MS", Helvetica, Arial, sans-serif;
-	background: #FFF;
+	background: @bodyBgColor;
 }
 
 /* Header =================================================================== */
@@ -365,7 +366,7 @@ footer {
 .noMargin { margin: 0; }
 .left { float: left; }
 .right { float: right; text-align: left; }
-
+.bg { background-color: @bodyBgColor; }
 .box {
 	.malsysBox();
 	margin-bottom: 0.5em;
@@ -425,7 +426,7 @@ a.tocLink, a.anchorLink {
 @srcKeywordColor: #7F0055;
 @srcStringColor: #800000;
 @srcCommentColor: #007700;
-@srcUnimportantColor: #AAA;
+@srcUnimportantColor: #999;
 
 pre {
 	margin: 0;

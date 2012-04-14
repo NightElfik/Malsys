@@ -53,7 +53,7 @@ namespace Malsys.Tests {
 			using (Stream stream = new ResourcesReader().GetResourceStream(resName)) {
 				using (TextReader reader = new StreamReader(stream)) {
 					var inCompiled = new CompilersContainer(DefaultKnownStuffProvider, DefaultKnownStuffProvider).CompileInput(reader, resName, logger);
-					var stdLib = new EvaluatorsContainer(TestUtils.ExpressionEvaluatorContext).EvaluateInput(inCompiled);
+					var stdLib = new EvaluatorsContainer(TestUtils.ExpressionEvaluatorContext).EvaluateInput(inCompiled, logger);
 					if (!logger.ErrorOccurred) {
 						StdLib = stdLib;
 					}
@@ -194,13 +194,21 @@ namespace Malsys.Tests {
 
 
 		public static InputBlockEvaled EvaluateInput(InputBlock input) {
-
-			return new EvaluatorsContainer(ExpressionEvaluatorContext).EvaluateInput(input, ExpressionEvaluatorContext);
+			var logger = new MessageLogger();
+			var result = new EvaluatorsContainer(ExpressionEvaluatorContext).EvaluateInput(input, ExpressionEvaluatorContext, logger);
+			if (logger.ErrorOccurred) {
+				throw new Exception(logger.AllMessagesToFullString());
+			}
+			return result;
 		}
 
 		public static InputBlockEvaled EvaluateInput(string input) {
-
-			return new EvaluatorsContainer(ExpressionEvaluatorContext).EvaluateInput(CompileInput(input), ExpressionEvaluatorContext);
+			var logger = new MessageLogger();
+			var result = new EvaluatorsContainer(ExpressionEvaluatorContext).EvaluateInput(CompileInput(input), ExpressionEvaluatorContext, logger);
+			if (logger.ErrorOccurred) {
+				throw new Exception(logger.AllMessagesToFullString());
+			}
+			return result;
 		}
 
 

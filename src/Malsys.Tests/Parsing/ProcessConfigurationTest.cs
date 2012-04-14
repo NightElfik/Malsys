@@ -35,6 +35,11 @@ namespace Malsys.Tests.Parsing {
 		}
 
 		[TestMethod]
+		public void VirtualConnectionsTests() {
+			doTestAutoident("configuration ConfigName {", "virtual connect Iterator to Rewriter.OutputProcessor;", "}");
+		}
+
+		[TestMethod]
 		public void AllStatementsTests() {
 			doTestAutoident("configuration ConfigName {",
 				"component Interpret typeof SymbolsSaver;",

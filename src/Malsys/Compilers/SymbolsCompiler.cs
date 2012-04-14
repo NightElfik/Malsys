@@ -5,9 +5,9 @@ namespace Malsys.Compilers {
 	/// <remarks>
 	/// All public members are thread safe if supplied compilers are thread safe.
 	/// </remarks>
-	internal class SymbolsCompiler : ISymbolCompiler {
+	public class SymbolsCompiler : ISymbolCompiler {
 
-		private readonly IExpressionCompiler exprCompiler;
+		protected readonly IExpressionCompiler exprCompiler;
 
 
 		public SymbolsCompiler(IExpressionCompiler expressionCompiler) {

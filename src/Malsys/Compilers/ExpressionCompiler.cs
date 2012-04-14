@@ -20,14 +20,14 @@ namespace Malsys.Compilers {
 	/// Compiling process can be enhanced removing calls to compile sub-expressions (fun arguments, indexer, ...).
 	/// The removal can be done inserting some special stop-operator on stack and evaluate sub-expression
 	/// in current stacks. At the end just pop all operators till stop-operator found. Remove it and continue.
-	/// Easy to implement but I have no time now.
+	/// Easy to implement but I do not have time for it.
 	/// </remarks>
-	internal class ExpressionCompiler : IExpressionCompiler {
+	public class ExpressionCompiler : IExpressionCompiler {
 
 		public static readonly IExpression ErrorResult = Constant.NaN;
 
-		private readonly ICompilerConstantsProvider knownConstants;
-		private readonly IOperatorsProvider knownOperators;
+		protected readonly ICompilerConstantsProvider knownConstants;
+		protected readonly IOperatorsProvider knownOperators;
 
 
 		public ExpressionCompiler(ICompilerConstantsProvider constants, IOperatorsProvider operators) {

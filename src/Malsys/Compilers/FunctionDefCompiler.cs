@@ -5,11 +5,11 @@ namespace Malsys.Compilers {
 	/// <remarks>
 	/// All public members are thread safe if supplied compilers are thread safe.
 	/// </remarks>
-	internal class FunctionDefCompiler : IFunctionDefinitionCompiler {
+	public class FunctionDefCompiler : IFunctionDefinitionCompiler {
 
-		private readonly IConstantDefinitionCompiler constDefCompiler;
-		private readonly IExpressionCompiler exprCompiler;
-		private readonly IParametersCompiler paramsCompiler;
+		protected readonly IConstantDefinitionCompiler constDefCompiler;
+		protected readonly IExpressionCompiler exprCompiler;
+		protected readonly IParametersCompiler paramsCompiler;
 
 
 		public FunctionDefCompiler(IConstantDefinitionCompiler constantDefCompiler, IExpressionCompiler expressionCompiler, IParametersCompiler parametersCompiler) {

@@ -1,10 +1,10 @@
 ﻿using System;
-using Malsys.Evaluators;
-using Malsys.SemanticModel.Evaluated;
-using Microsoft.FSharp.Collections;
-using Malsys.Processing.Components;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using Malsys.Evaluators;
+using Malsys.Processing.Components;
+using Malsys.SemanticModel.Evaluated;
+using Microsoft.FSharp.Collections;
 
 namespace Malsys.Processing {
 	public class ProcessContext {
@@ -25,7 +25,7 @@ namespace Malsys.Processing {
 
 		public readonly TimeSpan ProcessingTimeLimit;
 
-		public readonly IMessageLogger Logger;
+		//public readonly IMessageLogger Logger;
 
 
 		public ProcessContext(LsystemEvaled lsystem, IOutputProvider outputProvider, InputBlockEvaled data, IEvaluatorsContainer evaluatorsContainer,
@@ -40,7 +40,7 @@ namespace Malsys.Processing {
 			ComponentResolver = componentResolver;
 			ProcessingTimeLimit = processingTimeLimit;
 			ComponentGraph = componentGraph;
-			Logger = logger;
+			//Logger = logger;
 
 		}
 

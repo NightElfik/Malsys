@@ -16,47 +16,82 @@ namespace Malsys.Processing {
 	/// Class for building process configuration.
 	/// </summary>
 	/// <remarks>
-	/// In order to build process configuration correctly you should call these methods if following order:
-	/// <c>BuildConfigurationComponentsGraph</c>, <c>AddComponentsGettableVariables</c> and <c>AddComponentsCallableFunctions</c>
-	/// with beforeInit parameter set to true, <c>SetAndCheckUserSettableProperties</c>,
-	/// <c>InitializeComponents</c>,  <c>AddComponentsGettableVariables</c> and <c>AddComponentsCallableFunctions</c>
-	/// with beforeInit parameter set to false and finally <c>CreateConfiguration</c> respectively.
-	/// Methods are separated to enable getting variables or calling functions while evaluating L-system
-	/// and initializing components (before init).
-	/// Do not forget to call <c>CleanupComponents</c> at the end of processing.
+	/// In order to build process configuration correctly following methods should be called in appropriate order.
+	/// The order is not strict, minor changes can be made.
+	///
+	/// <list type="bullet">
+	/// <item>
+	///     <term>CreateComponents</term>
+	///     <description>Crates instances of components.</description>
+	/// </item>
+	/// <item>
+	///     <term>SetLogger</term>
+	///     <description>Sets logger to components so they can use it to log while "building".</description>
+	/// </item>
+	/// <item>
+	///     <term>CleanupComponents</term>
+	///     <description>Cleanup must be called before any usage of components before initialization. This call may not be at exactly this place</description>
+	/// </item>
+	/// <item>
+	///     <term>AddComponentsGettableVariables, AddComponentsCallableFunctions with beforeInit parameter set to true</term>
+	///     <description>Adds variables (functions) which can be get (called) while evaluating L-system.</description>
+	/// </item>
+	/// <item>
+	///     <term>ConnectComponentsAndCheck</term>
+	///     <description>Connects components and checks if all required connections are set.</description>
+	/// </item>
+	/// <item>
+	///     <term>SetAndCheckUserSettableProperties</term>
+	///     <description>Sets settable properties and checks if values for required properties are set.</description>
+	/// </item>
+	/// <item>
+	///     <term>AddComponentsGettableVariables, AddComponentsCallableFunctions with beforeInit parameter set to false</term>
+	///     <description>Adds variables (functions) which can be get (called) at run-time.</description>
+	/// </item>
+	/// <item>
+	///     <term>InitializeComponents</term>
+	///     <description>Initializes components with context.</description>
+	/// </item>
+	/// <item>
+	///     <term>CreateConfiguration</term>
+	///     <description>Finds starter component and checks if measuring pass is required by any component.</description>
+	/// </item>
+	/// </list>
+	///
+	/// CleanupComponents method can be called at the end of processing (but it must be called before any usage, even the first usage).
 	/// </remarks>
 	public class ProcessConfigurationBuilder {
 
 		/// <summary>
-		/// Crates instances of all needed components and connects all connections.
+		/// Crates instances of all needed components.
 		/// </summary>
-		/// <param name="processConfigStat">The "build" plan.</param>
+		/// <param name="components">Components list to create.</param>
+		/// <param name="containers">Containers list to create.</param>
 		/// <param name="componentsAssigns">Assignments of components to containers. Can be empty list because every container has default value.</param>
 		/// <param name="componentResolver">Component metadata resolver. Used to resolve component metadata from string from Process Configuration.</param>
 		/// <param name="logger">Logger for logging any failures during process.</param>
 		/// <param name="componentsBase">Already created components.</param>
 		/// <returns>F# map of connected components or null if error occurred.</returns>
-		public FSharpMap<string, ConfigurationComponent> BuildConfigurationComponentsGraph(ProcessConfigurationStatement processConfigStat,
+		public FSharpMap<string, ConfigurationComponent> CreateComponents(IEnumerable<ProcessComponent> components, IEnumerable<ProcessContainer> containers,
 				IEnumerable<ProcessComponentAssignment> componentsAssigns, IComponentMetadataResolver componentResolver, IMessageLogger logger,
 				FSharpMap<string, ConfigurationComponent> componentsBase = null) {
 
 			using (var errBlock = logger.StartErrorLoggingBlock()) {
 
-				FSharpMap<string, ConfigurationComponent> components = componentsBase ?? MapModule.Empty<string, ConfigurationComponent>();
+				FSharpMap<string, ConfigurationComponent> resultComponents = componentsBase ?? MapModule.Empty<string, ConfigurationComponent>();
 				var compAssignsDict = componentsAssigns.ToDictionary(ca => ca.ContainerName, ca => ca.ComponentTypeName);
 				var usedCompAssigns = new System.Collections.Generic.HashSet<string>();
 
-
 				// components
-				foreach (var procComp in processConfigStat.Components) {
+				foreach (var procComp in components) {
 					var comp = createComponent(procComp.Name, procComp.TypeName, componentResolver, logger);
 					if (comp != null) {
-						components = components.Add(comp.Name, comp);
+						resultComponents = resultComponents.Add(comp.Name, comp);
 					}
 				}
 
 				// containers
-				foreach (var procCont in processConfigStat.Containers) {
+				foreach (var procCont in containers) {
 
 					string contCompTypeName;
 					if (compAssignsDict.TryGetValue(procCont.Name, out contCompTypeName)) {
@@ -68,17 +103,12 @@ namespace Malsys.Processing {
 
 					var comp = createContaineredComponent(procCont.Name, procCont.TypeName, contCompTypeName, componentResolver, logger);
 					if (comp != null) {
-						components = components.Add(comp.Name, comp);
+						resultComponents = resultComponents.Add(comp.Name, comp);
 					}
 				}
 
 				if (errBlock.ErrorOccurred) {
 					// return early if some error occurred to prevent weird errors
-					return null;
-				}
-
-				connectAndCheck(components, processConfigStat.Connections, logger);
-				if (errBlock.ErrorOccurred) {
 					return null;
 				}
 
@@ -89,8 +119,68 @@ namespace Malsys.Processing {
 					}
 				}
 
-				return components;
+
+				return resultComponents;
 			}
+		}
+
+		/// <summary>
+		/// Initializes given components with given context.
+		/// </summary>
+		public void SetLogger(FSharpMap<string, ConfigurationComponent> components, IMessageLogger logger) {
+			foreach (var kvp in components) {
+				kvp.Value.Component.Logger = logger;
+			}
+		}
+
+
+		/// <summary>
+		/// Connects components according to given connections list and checks if all required connections are set.
+		/// </summary>
+		/// <param name="components">F# list of components to process.</param>
+		/// <param name="connections">List of connections.</param>
+		/// <param name="logger">Logger for logging any failures during process.</param>
+		/// <remarks>
+		/// Now it is possible to connect a connection, that is not visible (illegal) from configuration:
+		/// Component in container can use properties, that are not declared in its container.
+		/// </remarks>
+		public void ConnectComponentsAndCheck(FSharpMap<string, ConfigurationComponent> components, IEnumerable<ProcessComponentsConnection> connections, IMessageLogger logger) {
+
+			var usedConnections = new System.Collections.Generic.HashSet<ProcessComponentsConnection>();
+
+			foreach (var compKvp in components) {
+
+				var component = compKvp.Value;
+				var aviableComponentConns = connections.Where(c => c.TargetName == component.Name).ToList();
+
+				foreach (var connProp in component.Metadata.ConnectableProperties) {
+
+					var conn = aviableComponentConns.Where(c => connProp.Names.Contains(c.TargetInputName)).ToList();
+
+					if (conn.Count == 0) {
+						if (!connProp.IsOptional) {
+							logger.LogMessage(Message.UnsetMandatoryConnection, component.Name, connProp.Names[0], component.ComponentType.FullName);
+						}
+						continue;
+					}
+					else if (!connProp.AllowMultiple && conn.Count > 1) {
+						logger.LogMessage(Message.MoreThanOneConnection, component.Name, conn[0].TargetInputName, component.ComponentType.FullName);
+					}
+
+					foreach (var c in conn) {
+						connectComponents(components, c, logger);
+						usedConnections.Add(c);
+					}
+
+				}
+			}
+
+			foreach (var conn in connections) {
+				if (!usedConnections.Contains(conn)) {
+					logger.LogMessage(Message.InvalidConnection, conn.AstNode.TryGetPosition(), conn.SourceName, conn.TargetName, conn.TargetInputName);
+				}
+			}
+
 		}
 
 		/// <summary>
@@ -356,49 +446,6 @@ namespace Malsys.Processing {
 			return comp;
 		}
 
-		/// <remarks>
-		/// Now it is possible to connect a connection, that is not visible (illegal) from configuration:
-		/// Component in container can use properties, that are not declared in its container.
-		/// </remarks>
-		private void connectAndCheck(FSharpMap<string, ConfigurationComponent> components, IEnumerable<ProcessComponentsConnection> connections, IMessageLogger logger) {
-
-
-			var usedConnections = new System.Collections.Generic.HashSet<ProcessComponentsConnection>();
-
-			foreach (var compKvp in components) {
-
-				var component = compKvp.Value;
-				var aviableComponentConns = connections.Where(c => c.TargetName == component.Name).ToList();
-
-				foreach (var connProp in component.Metadata.ConnectableProperties) {
-
-					var conn = aviableComponentConns.Where(c => connProp.Names.Contains(c.TargetInputName)).ToList();
-
-					if (conn.Count == 0) {
-						if (!connProp.IsOptional) {
-							logger.LogMessage(Message.UnsetMandatoryConnection, component.Name, connProp.Names[0], component.ComponentType.FullName);
-						}
-						continue;
-					}
-					else if (!connProp.AllowMultiple && conn.Count > 1) {
-						logger.LogMessage(Message.MoreThanOneConnection, component.Name, conn[0].TargetInputName, component.ComponentType.FullName);
-					}
-
-					foreach (var c in conn) {
-						connectComponents(components, c, logger);
-						usedConnections.Add(c);
-					}
-
-				}
-			}
-
-			foreach (var conn in connections) {
-				if (!usedConnections.Contains(conn)) {
-					logger.LogMessage(Message.InvalidConnection, conn.AstNode.TryGetPosition(), conn.SourceName, conn.TargetName, conn.TargetInputName);
-				}
-			}
-
-		}
 
 		private void connectComponents(FSharpMap<string, ConfigurationComponent> components, ProcessComponentsConnection conn, IMessageLogger logger) {
 

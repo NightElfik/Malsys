@@ -19,7 +19,7 @@ namespace Malsys.Tests.Resources {
 			using (Stream stream = new ResourcesReader().GetResourceStream(resName)) {
 				using (TextReader reader = new StreamReader(stream)) {
 					var inCompiled = TestUtils.CompilersContainer.CompileInput(reader, resName, logger);
-					var stdLib = new EvaluatorsContainer(TestUtils.ExpressionEvaluatorContext).EvaluateInput(inCompiled);
+					var stdLib = new EvaluatorsContainer(TestUtils.ExpressionEvaluatorContext).EvaluateInput(inCompiled, logger);
 					if (logger.ErrorOccurred) {
 						foreach (var msg in logger) {
 							Console.WriteLine(msg.GetFullMessage());

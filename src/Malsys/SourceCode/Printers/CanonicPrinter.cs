@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using Malsys.Evaluators;
 using Malsys.IO;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Compiled.Expressions;
 using Malsys.SemanticModel.Evaluated;
-using System.Diagnostics;
-using Malsys.Evaluators;
 
 namespace Malsys.SourceCode.Printers {
 	public class CanonicPrinter {
@@ -235,18 +235,43 @@ namespace Malsys.SourceCode.Printers {
 			writer.Indent();
 
 			foreach (var stat in lsysEvaledParams.Statements) {
-				switch (stat.StatementType) {
-					case LsystemStatementType.Constant: Print((ConstantDefinition)stat); break;
-					case LsystemStatementType.Function: Print((Function)stat); break;
-					case LsystemStatementType.SymbolsConstant: Print((SymbolsConstDefinition)stat); break;
-					case LsystemStatementType.RewriteRule: Print((RewriteRule)stat); break;
-					case LsystemStatementType.SymbolsInterpretation: Print((SymbolsInterpretation)stat); break;
-					default: Debug.Fail("Unknown L-system statement type `{0}`.".Fmt(stat.StatementType.ToString())); break;
-				}
+				Print(stat);
+				writer.NewLine();
 			}
 
 			writer.Unindent();
 			writer.WriteLine("}");
+		}
+
+		public void Print(ILsystemStatement stat, bool noDelimiter = false) {
+
+			switch (stat.StatementType) {
+
+				case LsystemStatementType.Constant:
+					Print((ConstantDefinition)stat);
+					break;
+				case LsystemStatementType.SymbolsConstant:
+					Print((SymbolsConstDefinition)stat);
+					break;
+				case LsystemStatementType.SymbolsInterpretation:
+					Print((SymbolsInterpretation)stat);
+					break;
+				case LsystemStatementType.Function:
+					Print((Function)stat);
+					return;  // never print delimiter
+				case LsystemStatementType.RewriteRule:
+					Print((RewriteRule)stat);
+					break;
+
+				default:
+					Debug.Fail("Unknown L-system statement type `{0}`.".Fmt(stat.StatementType.ToString()));
+					return;  // never print delimiter
+
+			}
+
+			if (!noDelimiter) {
+				writer.Write(";");
+			}
 		}
 
 		public void Print(BaseLsystem baseLsys) {
@@ -268,7 +293,6 @@ namespace Malsys.SourceCode.Printers {
 			writer.Write(constDef.Name);
 			writer.Write(" = ");
 			Print(constDef.Value);
-			writer.WriteLine(";");
 		}
 
 		public void Print(Function fun) {
@@ -282,7 +306,7 @@ namespace Malsys.SourceCode.Printers {
 			Print(fun.Statements);
 
 			writer.Unindent();
-			writer.WriteLine("}");
+			writer.Write("}");
 		}
 
 		public void Print(SymbolsConstDefinition symbolsDef) {
@@ -291,7 +315,6 @@ namespace Malsys.SourceCode.Printers {
 			writer.Write(symbolsDef.Name);
 			writer.Write(" = ");
 			PrintSeparated(symbolsDef.Symbols, s => Print(s), " ");
-			writer.WriteLine(";");
 		}
 
 		public void Print(RewriteRule rewriteRule) {
@@ -324,7 +347,8 @@ namespace Malsys.SourceCode.Printers {
 					});
 			}
 
-			if (rewriteRule.Condition.ExpressionType != ExpressionType.EmptyExpression) {
+			// do not print empty wheres or wheres with condition expressions equal to constant true
+			if (rewriteRule.Condition.ExpressionType != ExpressionType.EmptyExpression && !isTrue(rewriteRule.Condition)) {
 				writer.NewLine();
 				Print(Ast.Keyword.Where);
 				Print(rewriteRule.Condition);
@@ -341,11 +365,9 @@ namespace Malsys.SourceCode.Printers {
 					Print(Ast.Keyword.Or);
 				}
 
-
 				Print(replac);
 			}
 
-			writer.WriteLine(";");
 			writer.Unindent();
 		}
 
@@ -360,7 +382,7 @@ namespace Malsys.SourceCode.Printers {
 				PrintSeparated(rrReplacment.Replacement, s => Print(s), " ");
 			}
 
-			if (rrReplacment.Weight.ExpressionType != ExpressionType.EmptyExpression) {
+			if (rrReplacment.Weight.ExpressionType != ExpressionType.EmptyExpression && !isTrue(rrReplacment.Weight)) {
 				writer.Write(" ");
 				Print(Ast.Keyword.Weight);
 				Print(rrReplacment.Weight);
@@ -372,6 +394,12 @@ namespace Malsys.SourceCode.Printers {
 			Print(Ast.Keyword.Interpret);
 			PrintSeparated(symInt.Symbols, s => Print(s), " ");
 
+			if (!symInt.Parameters.IsEmpty) {
+				writer.Write("(");
+				PrintSeparated(symInt.Parameters, e => Print(e));
+				writer.Write(")");
+			}
+
 			writer.Write(" ");
 			Print(Ast.Keyword.As);
 
@@ -382,8 +410,6 @@ namespace Malsys.SourceCode.Printers {
 				PrintSeparated(symInt.InstructionParameters, e => Print(e));
 				writer.Write(")");
 			}
-
-			writer.WriteLine(";");
 		}
 
 
@@ -496,19 +522,26 @@ namespace Malsys.SourceCode.Printers {
 
 		#region Function statements
 
-		public void Print(ImmutableList<IFunctionStatement> funStats) {
-
+		public void Print(IEnumerable<IFunctionStatement> funStats) {
 			foreach (var stat in funStats) {
-				switch (stat.StatementType) {
-					case FunctionStatementType.ConstantDefinition: Print((ConstantDefinition)stat); break;
-					case FunctionStatementType.ReturnExpression:
-						Print(Ast.Keyword.Return);
-						Print(((FunctionReturnExpr)stat).ReturnValue);
-						writer.WriteLine(";");
-						break;
-					default: Debug.Fail("Unknown function statement type `{0}`.".Fmt(stat.StatementType.ToString())); break;
-				}
+				Print(stat);
+				writer.NewLine();
 			}
+		}
+
+		public void Print(IFunctionStatement stat) {
+
+			switch (stat.StatementType) {
+				case FunctionStatementType.ConstantDefinition:
+					Print((ConstantDefinition)stat);
+					break;
+				case FunctionStatementType.ReturnExpression:
+					Print(Ast.Keyword.Return);
+					Print(((FunctionReturnExpr)stat).ReturnValue);
+					break;
+				default: Debug.Fail("Unknown function statement type `{0}`.".Fmt(stat.StatementType.ToString())); break;
+			}
+			writer.Write(";");
 		}
 
 		#endregion
@@ -544,41 +577,6 @@ namespace Malsys.SourceCode.Printers {
 			writer.WriteLine("}");
 		}
 
-		public void Print(ProcessStatement procStat) {
-
-			Print(Ast.Keyword.Process);
-			if (string.IsNullOrEmpty(procStat.TargetLsystemName)) {
-				Print(Ast.Keyword.All, false);
-			}
-			else {
-				writer.Write(procStat.TargetLsystemName);
-			}
-
-			if (!procStat.Arguments.IsEmpty) {
-				writer.Write("(");
-				PrintSeparated(procStat.Arguments, x => Print(x));
-				writer.Write(")");
-			}
-
-			writer.Write(" ");
-
-			Print(Ast.Keyword.With);
-			writer.Write(procStat.ProcessConfiName);
-
-			writer.Indent();
-			foreach (var assign in procStat.ComponentAssignments) {
-				writer.NewLine();
-				Print(Ast.Keyword.Use);
-				writer.Write(assign.ComponentTypeName);
-				writer.Write(" ");
-				Print(Ast.Keyword.As);
-				writer.Write(assign.ContainerName);
-			}
-			writer.Unindent();
-
-			writer.WriteLine(";");
-		}
-
 		public void Print(ProcessStatementEvaled procStat) {
 
 			Print(Ast.Keyword.Process);
@@ -603,15 +601,23 @@ namespace Malsys.SourceCode.Printers {
 			writer.Indent();
 			foreach (var assign in procStat.ComponentAssignments) {
 				writer.NewLine();
-				Print(Ast.Keyword.Use);
-				writer.Write(assign.ComponentTypeName);
-				writer.Write(" ");
-				Print(Ast.Keyword.As);
-				writer.Write(assign.ContainerName);
+				Print(assign);
+			}
+			foreach (var lsysStat in procStat.AdditionalLsystemStatements) {
+				writer.NewLine();
+				Print(lsysStat, true);
 			}
 			writer.Unindent();
 
 			writer.WriteLine(";");
+		}
+
+		public void Print(ProcessComponentAssignment assign) {
+			Print(Ast.Keyword.Use);
+			writer.Write(assign.ComponentTypeName);
+			writer.Write(" ");
+			Print(Ast.Keyword.As);
+			writer.Write(assign.ContainerName);
 		}
 
 		public void Print(ProcessComponent component) {
@@ -636,6 +642,9 @@ namespace Malsys.SourceCode.Printers {
 		}
 
 		public void Print(ProcessComponentsConnection connection) {
+			if (connection.IsVirtual) {
+				Print(Ast.Keyword.Virtual);
+			}
 			Print(Ast.Keyword.Connect);
 			writer.Write(connection.SourceName);
 			writer.Write(" ");
@@ -647,6 +656,11 @@ namespace Malsys.SourceCode.Printers {
 		}
 
 		#endregion
+
+
+		private bool isTrue(IExpression expr){
+			return expr.ExpressionType == ExpressionType.Constant && ((Constant)expr).Value.EpsilonCompareTo(1) == 0;
+		}
 
 	}
 }

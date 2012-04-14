@@ -69,7 +69,7 @@ namespace Malsys.Web.Controllers {
 			model.Inputs = inputs.OrderByDescending(x => (float)x.RatingSum / ((float)x.RatingCount + 1) + x.RatingCount)
 				.AsPagination(page.Value, 10);
 
-			return View( model);
+			return View(model);
 		}
 
 		public virtual ActionResult Tags() {

@@ -96,6 +96,12 @@ namespace Malsys.Tests.Parsing {
 		}
 
 		[TestMethod]
+		public void SymbolsInterpretationsArgsTests() {
+			doTestAutoident("lsystem l {", "interpret X(a) as Action;", "}");
+			doTestAutoident("lsystem l {", "interpret X Y Z(a, b = 20) as Action;", "}");
+		}
+
+		[TestMethod]
 		public void LsystemInheritanceTests() {
 			doTestAutoident("lsystem l extends x {", "}");
 			doTestAutoident("lsystem l extends x, y {", "}");
@@ -133,14 +139,14 @@ namespace Malsys.Tests.Parsing {
 			doTest(input, output);
 		}
 
-		private void doTest(string input, string excpected = null) {
+		private void doTest(string input, string expected = null) {
 
-			if (excpected == null) {
-				excpected = input;
+			if (expected == null) {
+				expected = input;
 			}
 
 			string actual = TestUtils.Print(TestUtils.ParseLsystem(input)).TrimEnd();
-			Assert.AreEqual(excpected, actual);
+			Assert.AreEqual(expected, actual);
 		}
 
 	}

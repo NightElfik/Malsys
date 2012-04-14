@@ -22,7 +22,7 @@ namespace Malsys.Web.Areas.Help.Models {
 
 			var lines = SourceCodeTemplate.FmtInvariant(Args).SplitToLines();
 
-			return StringHelper.AppendLinesAutoIndent(' ', 4, lines);
+			return StringHelper.AppendLinesAutoIndent('\t', 1, lines);
 		}
 
 

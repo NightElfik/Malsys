@@ -36,13 +36,18 @@ namespace Malsys.Processing.Components.Renderers {
 		[UserSettable]
 		public Constant SmoothShading {
 			set {
-				smoothShading = !value.IsZero;
+				smoothShading = value.IsTrue;
 			}
 		}
 
 
 		public override void Initialize(ProcessContext ctxt) {
 			base.Initialize(ctxt);
+		}
+
+		public override void Cleanup() {
+			SmoothShading = Constant.False;
+			base.Cleanup();
 		}
 
 

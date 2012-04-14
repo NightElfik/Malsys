@@ -30,31 +30,28 @@ namespace Malsys.Processing.Components.Common {
 		}
 
 
-		public IEnumerator<Symbol<IValue>> GetEnumerator() {
-			return Symbols.GetEnumerator();
-		}
-
-
-		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
-			return Symbols.GetEnumerator();
-		}
+		public IMessageLogger Logger { get; set; }
 
 
 		public void Initialize(ProcessContext ctxt) { }
 
-		public void Cleanup() { }
+		public void Cleanup() { Symbols = ImmutableList<Symbol<IValue>>.Empty; }
 
 
-		#region IProcessComponent Members
-
-		public bool RequiresMeasure {
-			get { return false; }
-		}
+		public bool RequiresMeasure { get { return false; } }
 
 		public void BeginProcessing(bool measuring) { }
 
 		public void EndProcessing() { }
 
-		#endregion
+
+		public IEnumerator<Symbol<IValue>> GetEnumerator() {
+			return Symbols.GetEnumerator();
+		}
+
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
+			return Symbols.GetEnumerator();
+		}
+
 	}
 }

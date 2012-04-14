@@ -7,7 +7,6 @@ namespace Malsys.Evaluators {
 	/// </remarks>
 	public class FunctionData {
 
-
 		public readonly string Name;
 		public readonly ImmutableList<OptionalParameterEvaled> Parameters;
 		public readonly ImmutableList<IFunctionStatement> Statements;

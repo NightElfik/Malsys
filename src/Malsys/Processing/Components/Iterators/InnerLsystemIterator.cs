@@ -18,13 +18,19 @@ namespace Malsys.Processing.Components.RewriterIterators {
 		[UserSettableSybols(IsMandatory = true)]
 		public ImmutableList<Symbol<IValue>> Axiom { private get; set; }
 
+		/// <summary>
+		/// To allow not connecting AxiomProvider component.
+		/// </summary>
+		[UserConnectable(IsOptional=true)]
+		new public ISymbolProvider AxiomProvider { get; set; }
+
 
 		protected override void start(bool doMeasure) {
 			// never do measure pass
 			inBuffer.Clear();
 			inBuffer.AddRange(Axiom);
 
-			for (currIteration = 0; currIteration < iterations; currIteration++) {
+			for (currIteration = 0; currIteration < iterationsCount; currIteration++) {
 
 				rewriteIteration();
 				if (aborted) { return; }
@@ -41,12 +47,12 @@ namespace Malsys.Processing.Components.RewriterIterators {
 			foreach (var s in inBuffer) {
 
 				if (swDuration.Elapsed > timeout || aborting) {
-					logger.LogMessage(aborting ? Message.Abort : Message.Timeout, "interpreting");
+					Logger.LogMessage(aborting ? Message.Abort : Message.Timeout, "interpreting");
 					aborted = true;
 					return;
 				}
 
-				outProcessor.ProcessSymbol(s);
+				OutputProcessor.ProcessSymbol(s);
 			}
 
 		}

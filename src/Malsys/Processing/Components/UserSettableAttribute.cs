@@ -7,7 +7,7 @@ namespace Malsys.Processing.Components {
 	/// </summary>
 	/// <remarks>
 	/// Marked property must have public setter (public getter is not required).
-	/// Property type must be assignable to <see cref="Malsys.SemanticModel.Evaluated.IValue"/>.
+	/// Property type must be assignable to IValue.
 	/// </remarks>
 	[AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
 	public sealed class UserSettableAttribute : Attribute {
@@ -42,10 +42,10 @@ namespace Malsys.Processing.Components {
 	}
 
 	/// <summary>
-	/// Thrown by properties marked with <see cref="UserSettableAttribute"/> when value is invalid.
+	/// Thrown by properties marked with UserSettableAttribute when value is invalid.
 	/// </summary>
 	[Serializable]
-	public class InvalidUserValueException : Exception {
+	public class InvalidUserValueException : ComponentException {
 
 		public InvalidUserValueException() { }
 		public InvalidUserValueException(string message) : base(message) { }

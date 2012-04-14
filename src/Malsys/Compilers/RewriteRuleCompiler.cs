@@ -8,14 +8,14 @@ namespace Malsys.Compilers {
 	/// <remarks>
 	/// All public members are thread safe if supplied compilers are thread safe.
 	/// </remarks>
-	internal class RewriteRuleCompiler : IRewriteRuleCompiler {
+	public class RewriteRuleCompiler : IRewriteRuleCompiler {
 
-		private readonly IConstantDefinitionCompiler constDefCompiler;
-		private readonly IExpressionCompiler exprCompiler;
+		protected readonly IConstantDefinitionCompiler constDefCompiler;
+		protected readonly IExpressionCompiler exprCompiler;
 
 		// to be able separate the interfaces on ISymbolCompiler
-		private readonly PatternCompiler patternCompiler;
-		private readonly ReplacementCompiler symbolCompiler;
+		protected readonly PatternCompiler patternCompiler;
+		protected readonly ReplacementCompiler symbolCompiler;
 
 
 		public RewriteRuleCompiler(IConstantDefinitionCompiler constantDefCompiler, ISymbolCompiler iSymbolCompiler,

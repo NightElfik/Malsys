@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Malsys.Processing.Components.Common;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Evaluated;
@@ -15,25 +16,21 @@ namespace Malsys.Processing.Components.RewriterIterators {
 	/// <group>Iterators</group>
 	public class MemoryBufferedIterator : IIterator {
 
-		protected IMessageLogger logger;
-
-		protected ISymbolProvider symbolProvider;
-
-		protected ISymbolProcessor outProcessor;
-
 		protected List<Symbol<IValue>> inBuffer = new List<Symbol<IValue>>();
 		protected List<Symbol<IValue>> outBuffer = new List<Symbol<IValue>>();
 
-		protected bool interpretEveryIteration;
-		protected int interpretEveryIterationFrom = -1;
-		protected int iterations;
-		protected bool resetAfterEachIter;
+		protected int iterationsCount;
 		protected int currIteration;
 
 		protected Stopwatch swDuration = new Stopwatch();
 		protected TimeSpan timeout;
 		protected bool aborting = false;
 		protected bool aborted = false;
+
+		private HashSet<int> interpretFollowingIterationsCache = new HashSet<int>();
+
+
+		public IMessageLogger Logger { get; set; }
 
 
 		#region User gettable, settable and connectable properties
@@ -45,9 +42,9 @@ namespace Malsys.Processing.Components.RewriterIterators {
 		[AccessName("currentIteration")]
 		[UserGettable]
 		public Constant CurrentIteration {
-			get { return currIteration.ToConst(); }
+			get { return currentIteration; }
 		}
-
+		private Constant currentIteration;
 
 		/// <summary>
 		/// Number of iterations to do with current L-system.
@@ -55,31 +52,18 @@ namespace Malsys.Processing.Components.RewriterIterators {
 		/// <expected>Non-negative number representing number of iterations.</expected>
 		/// <default>0</default>
 		[AccessName("iterations", "i")]
+		[UserGettable]
 		[UserSettable]
 		public Constant Iterations {
+			get { return iterations; }
 			set {
-				if (!value.IsNaN && value.Value >= 0) {
-					iterations = value.RoundedIntValue;
-				}
-				else {
+				if (value.IsNaN || value.Value < 0) {
 					throw new InvalidUserValueException("Iterations value is invalid.");
 				}
+				iterations = value;
 			}
 		}
-
-		/// <summary>
-		/// If set to true resets random generator with random seed after each iteration.
-		/// This will cause that same sequence of random numbers will be generated each iteration.
-		/// </summary>
-		/// <expected>true or false</expected>
-		/// <default>false</default>
-		//[AccessName("resetRandomAfterEachIteration")]
-		//[UserSettable]
-		//public Constant ResetRandomAfterEachIteration {
-		//    set {
-		//        resetAfterEachIter = !value.IsZero;
-		//    }
-		//}
+		private Constant iterations;
 
 		/// <summary>
 		/// If set to true iterator will send symbols from all iterations to connected interpret.
@@ -89,12 +73,7 @@ namespace Malsys.Processing.Components.RewriterIterators {
 		/// <default>false</default>
 		[AccessName("interpretEveryIteration")]
 		[UserSettable]
-		public Constant InterpretEveryIteration {
-			set {
-				interpretEveryIteration = !value.IsZero;
-				interpretEveryIterationFrom = -1;
-			}
-		}
+		public Constant InterpretEveryIteration { get; set; }
 
 		/// <summary>
 		/// Sets interprets all iteration from given number.
@@ -103,11 +82,27 @@ namespace Malsys.Processing.Components.RewriterIterators {
 		/// <default>false</default>
 		[AccessName("interpretEveryIterationFrom")]
 		[UserSettable]
-		public Constant InterpretEveryIterationFrom {
+		public Constant InterpretEveryIterationFrom { get; set; }
+
+		/// <summary>
+		/// Array with numbers of iterations which will be interpreted.
+		/// </summary>
+		/// <expected>Array of numbers</expected>
+		/// <default>{} (empty array)</default>
+		[AccessName("interpretFollowingIterations")]
+		[UserSettable]
+		public ValuesArray InterpretFollowingIterations {
+			get {
+				return interpretFollowingIterations;
+			}
 			set {
-				interpretEveryIterationFrom = Math.Max(-1, value.RoundedIntValue);
+				if (!value.IsConstArray()) {
+					throw new InvalidUserValueException("All members of array are not numbers.");
+				}
+				interpretFollowingIterations = value;
 			}
 		}
+		private ValuesArray interpretFollowingIterations;
 
 
 		/// <summary>
@@ -116,9 +111,7 @@ namespace Malsys.Processing.Components.RewriterIterators {
 		/// This setup creates loop and iterator rewrites string of symbols every iteration.
 		/// </summary>
 		[UserConnectable]
-		public ISymbolProvider SymbolProvider {
-			set { symbolProvider = value; }
-		}
+		public ISymbolProvider SymbolProvider { get; set; }
 
 		/// <summary>
 		/// Axiom provider component provides initial string of symbols.
@@ -132,17 +125,14 @@ namespace Malsys.Processing.Components.RewriterIterators {
 		/// It should be InterpretrCaller who calls Interpreter and interprets symbols.
 		/// </summary>
 		[UserConnectable]
-		public ISymbolProcessor OutputProcessor {
-			set { outProcessor = value; }
-		}
+		public ISymbolProcessor OutputProcessor { get; set; }
 
 		/// <summary>
 		/// Connected RandomGeneratorProvider's random generator is rested after each iteration
 		/// if iterator is configured to do that (ResetRandomAfterEachIteration property is set to true).
 		/// </summary>
 		[UserConnectable(IsOptional = true)]
-		public RandomGeneratorProvider RandomGeneratorProvider { private get; set; }
-
+		public RandomGeneratorProvider RandomGeneratorProvider { get; set; }
 
 		#endregion
 
@@ -164,11 +154,20 @@ namespace Malsys.Processing.Components.RewriterIterators {
 		}
 
 		public void Initialize(ProcessContext ctxt) {
-			logger = ctxt.Logger;
 			timeout = ctxt.ProcessingTimeLimit;
+			iterationsCount = iterations.RoundedIntValue;
+			interpretFollowingIterationsCache.AddRange(interpretFollowingIterations.Select(x => ((Constant)x).RoundedIntValue));
 		}
 
-		public void Cleanup() { }
+		public void Cleanup() {
+			currentIteration = Constant.MinusOne;
+			Iterations = Constant.Zero;
+			InterpretEveryIteration = Constant.False;
+			InterpretEveryIterationFrom = Constant.MinusOne;
+			InterpretFollowingIterations = ValuesArray.Empty;
+			interpretFollowingIterationsCache.Clear();
+		}
+
 
 		public void BeginProcessing(bool measuring) { }
 
@@ -179,11 +178,11 @@ namespace Malsys.Processing.Components.RewriterIterators {
 
 			swDuration.Restart();
 
-			symbolProvider.BeginProcessing(true);
+			SymbolProvider.BeginProcessing(true);
 
 			start(doMeasure);
 
-			symbolProvider.EndProcessing();
+			SymbolProvider.EndProcessing();
 
 			swDuration.Stop();
 		}
@@ -193,18 +192,27 @@ namespace Malsys.Processing.Components.RewriterIterators {
 		}
 
 
+		private void setCurrentIteration(int value) {
+			currIteration = value;
+			currentIteration = value.ToConst();
+		}
+
 
 		private bool interpretCurrentIteration() {
 
-			if (interpretEveryIteration) {
+			if (InterpretEveryIteration.IsTrue) {
 				return true;
 			}
 
-			if (interpretEveryIterationFrom >= 0 && currIteration >= interpretEveryIterationFrom) {
+			if (InterpretEveryIterationFrom.Value >= 0 && currIteration >= InterpretEveryIterationFrom.Value) {
 				return true;
 			}
 
-			if (currIteration == iterations) {
+			if (interpretFollowingIterationsCache.Count > 0 && interpretFollowingIterationsCache.Contains(currIteration)) {
+				return true;
+			}
+
+			if (currIteration == iterationsCount) {
 				return true;
 			}
 
@@ -223,7 +231,7 @@ namespace Malsys.Processing.Components.RewriterIterators {
 			inBuffer.Clear();
 			inBuffer.AddRange(AxiomProvider);
 
-			for (currIteration = 0; currIteration <= iterations; currIteration++) {
+			for (currIteration = 0; currIteration <= iterationsCount; setCurrentIteration(currIteration + 1)) {
 
 				if (currIteration != 0) {
 					rewriteIteration();
@@ -247,10 +255,10 @@ namespace Malsys.Processing.Components.RewriterIterators {
 
 		protected void rewriteIteration() {
 
-			foreach (var symbol in symbolProvider) {
+			foreach (var symbol in SymbolProvider) {
 
 				if (swDuration.Elapsed > timeout || aborting) {
-					logger.LogMessage(aborting ? Message.Abort : Message.Timeout, "rewriting iteration {0} of {1}".Fmt(currIteration, iterations));
+					Logger.LogMessage(aborting ? Message.Abort : Message.Timeout, "rewriting iteration {0} of {1}".Fmt(currIteration, iterationsCount));
 					aborted = true;
 					return;
 				}
@@ -266,22 +274,22 @@ namespace Malsys.Processing.Components.RewriterIterators {
 
 		private void interpret(bool measuring) {
 
-			outProcessor.BeginProcessing(measuring);
+			OutputProcessor.BeginProcessing(measuring);
 
 			foreach (var s in inBuffer) {
 
 				if (swDuration.Elapsed > timeout || aborting) {
-					logger.LogMessage(aborting ? Message.Abort : Message.Timeout, measuring ? "measuring" : "interpreting");
+					Logger.LogMessage(aborting ? Message.Abort : Message.Timeout, measuring ? "measuring" : "interpreting");
 					aborted = true;
 
-					outProcessor.EndProcessing();
+					OutputProcessor.EndProcessing();
 					return;
 				}
 
-				outProcessor.ProcessSymbol(s);
+				OutputProcessor.ProcessSymbol(s);
 			}
 
-			outProcessor.EndProcessing();
+			OutputProcessor.EndProcessing();
 		}
 
 

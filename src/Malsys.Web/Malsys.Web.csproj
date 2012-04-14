@@ -271,6 +271,8 @@
     <Compile Include="Infrastructure\IAppSettingsProvider.cs" />
     <Compile Include="Infrastructure\MalsysHelper.cs" />
     <Compile Include="Infrastructure\UrlHelperExtensions.cs" />
+    <Compile Include="Models\MalsysStdLibSource.cs" />
+    <Compile Include="Models\ViewModels%27\GalleryThumbnailModel.cs" />
     <Compile Include="Models\ViewModels%27\GalleryModel.cs" />
     <Compile Include="Models\ViewModels%27\TagModel.cs" />
     <Compile Include="Models\ViewModels%27\InputDetail.cs" />
@@ -356,6 +358,7 @@
     <Content Include="Areas\Administration\Views\Tags\Index.cshtml" />
     <Content Include="Areas\Administration\Views\Tags\Edit.cshtml" />
     <Content Include="Areas\Administration\Views\Tags\Delete.cshtml" />
+    <Content Include="Areas\Help\Views\Home\StdLib.cshtml" />
     <None Include="Css\style.less.css" />
     <None Include="DatabaseScheme.sql" />
     <Content Include="Error.html" />
@@ -429,6 +432,7 @@
     <Content Include="Views\Gallery\Detail.cshtml" />
     <Content Include="Views\Gallery\Edit.cshtml" />
     <Content Include="Views\Gallery\Tags.cshtml" />
+    <Content Include="Views\Shared\GalleryThumbnailPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Areas\Administration\Views\Shared\" />

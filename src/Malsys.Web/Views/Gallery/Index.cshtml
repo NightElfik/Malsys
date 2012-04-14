@@ -1,6 +1,5 @@
 ﻿@model GalleryModel
 
-@using Malsys;
 @using Malsys.Processing;
 @using Malsys.Web.Models.Lsystem;
 
@@ -30,44 +29,13 @@
 
 <div class="gallery clearfix">
 @foreach (var input in Model.Inputs) {
-
-	var metadata = OutputMetadataHelper.DeserializeMetadata(input.OutputMetadata);
-
-	HtmlString linkStrBegin = new HtmlString("<a href=\"" + Url.Action(MVC.Gallery.Detail(input.UrlId)) + "\">");
-	HtmlString linkStrEnd = new HtmlString("</a>");
-
-	<div class="thn">
-	@linkStrBegin
-
-	@switch (input.MimeType) {
-
-		case MimeType.Image.SvgXml:
-			int width = OutputMetadataHelper.TryGetValue(metadata, OutputMetadataKeyHelper.OutputWidth, -1);
-			int height = OutputMetadataHelper.TryGetValue(metadata, OutputMetadataKeyHelper.OutputHeight, -1);
-			bool hasValidSize = width > 0 && height > 0;
-			if (hasValidSize) {
-				MathHelper.ScaleSizeToFit(ref width, ref height, thnMaxWidth, thnMaxHeight);
-			}
-			else {
-				height = thnMaxHeight;
-			}
-			<img src="@Url.Action(MVC.Gallery.GetThumbnail(input.UrlId))" @if (width > 0) { <text>width="@(width)px" </text> } height="@(height)px" alt="Thumbnail of @input.UrlId" />
-			break;
-
-		case MimeType.Application.Json:
-			loadThreeJs = true;
-			<div class="threeJsScene" data-scene="@Url.Action(MVC.Gallery.GetThumbnail(input.UrlId))" data-clear-color="FFFFFF" data-anti-alias="false"></div>
-			break;
-
-			default:
-				<p>Thumbnail for this type of output is not supported</p>
-				break;
-
-	}
-
-	@linkStrEnd
-	</div>
-
+	var thnModel = new GalleryThumbnailModel() {
+		SavedInput = input,
+		MaxWidth = thnMaxWidth,
+		MaxHeight = thnMaxHeight
+	};
+	@Html.Partial(MVC.Shared.Views.GalleryThumbnailPartial, thnModel);
+	loadThreeJs |= thnModel.NeedsThreeJs;
 }
 </div>
 

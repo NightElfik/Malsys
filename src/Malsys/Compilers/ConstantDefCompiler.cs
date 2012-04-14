@@ -4,9 +4,9 @@ namespace Malsys.Compilers {
 	/// <remarks>
 	/// All public members are thread safe if supplied compilers are thread safe.
 	/// </remarks>
-	internal class ConstantDefCompiler : IConstantDefinitionCompiler {
+	public class ConstantDefCompiler : IConstantDefinitionCompiler {
 
-		private readonly IExpressionCompiler exprCompiler;
+		protected readonly IExpressionCompiler exprCompiler;
 
 
 		public ConstantDefCompiler(IExpressionCompiler expressionCompiler) {

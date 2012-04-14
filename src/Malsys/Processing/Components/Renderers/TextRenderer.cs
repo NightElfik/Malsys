@@ -25,12 +25,7 @@ namespace Malsys.Processing.Components.Renderers {
 		private char[][] resultBuffer;
 
 
-		//[UserSettable]
-		//public Constant Compress {
-		//    set {
-		//        compress = !value.IsZero;
-		//    }
-		//}
+		public IMessageLogger Logger { get; set; }
 
 
 		#region IComponent Members
@@ -41,7 +36,9 @@ namespace Malsys.Processing.Components.Renderers {
 			context = ctxt;
 		}
 
-		public void Cleanup() { }
+		public void Cleanup() {
+			context = null;
+		}
 
 		public void BeginProcessing(bool measuring) {
 

@@ -59,5 +59,6 @@ namespace Malsys.SemanticModel.Evaluated {
 			RewriteRules = rRules;
 			AstNode = astNode;
 		}
+
 	}
 }

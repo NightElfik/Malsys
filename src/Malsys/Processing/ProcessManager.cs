@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Malsys.Compilers;
 using Malsys.Evaluators;
-using Malsys.Processing.Components.Common;
+using Malsys.Processing.Components;
 using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Collections;
@@ -39,7 +39,7 @@ namespace Malsys.Processing {
 					return null;
 				}
 
-				return evaluator.TryEvaluateInput(inCompiled, evaluator.ExpressionEvaluatorContext, logger);
+				return evaluator.EvaluateInput(inCompiled, evaluator.ExpressionEvaluatorContext, logger);
 			}
 
 		}
@@ -48,50 +48,84 @@ namespace Malsys.Processing {
 
 			foreach (var processStat in inBlockEvaled.ProcessStatements) {
 
-				var lsystemsToProcess = getLsystemsToProcess(processStat, inBlockEvaled, logger);
-				if (lsystemsToProcess == null) {
-					continue;
-				}
+				IEnumerable<LsystemEvaledParams> lsystemsToProcess;
+				FSharpMap<string, ConfigurationComponent> components;
+				ProcessConfigurationStatement processConfigStat;
 
-				// create components graph -- graph is same for all processed L-systems with this configuration
-				var compGraph = buildComponentsGraph(processStat, inBlockEvaled, logger);
-				if (compGraph == null) {
-					continue;
+				using (var errBlock = logger.StartErrorLoggingBlock()) {
+
+					lsystemsToProcess = getLsystemsToProcess(processStat, inBlockEvaled, logger);
+					if (lsystemsToProcess == null || errBlock.ErrorOccurred) {
+						continue;
+					}
+
+					// create components graph -- graph is same for all processed L-systems with this configuration
+					if (!inBlockEvaled.ProcessConfigurations.TryGetValue(processStat.ProcessConfiName, out processConfigStat)) {
+						logger.LogMessage(Message.UndefinedProcessConfig, processStat.AstNode.ProcessConfiNameId.Position, processStat.ProcessConfiName);
+						continue;
+					}
+
+					components = configBuilder.CreateComponents(processConfigStat.Components, processConfigStat.Containers,
+						processStat.ComponentAssignments, componentResolver, logger);
+
+					configBuilder.SetLogger(components, logger);
+
+					if (errBlock.ErrorOccurred) {
+						continue;
+					}
 				}
 
 				// add variables and functions from components that can be called before init to ExpressionEvaluatorContext
 				var eec = inBlockEvaled.ExpressionEvaluatorContext;
-				eec = configBuilder.AddComponentsGettableVariables(compGraph, eec, true);
-				eec = configBuilder.AddComponentsCallableFunctions(compGraph, eec, true);
+				eec = configBuilder.AddComponentsGettableVariables(components, eec, true);
+				eec = configBuilder.AddComponentsCallableFunctions(components, eec, true);
 
 				var baseResolver = new BaseLsystemResolver(inBlockEvaled.Lsystems);
-
+				var lsysEvaluator = evaluator.ResolveLsystemEvaluator();
 
 				foreach (var lsystem in lsystemsToProcess) {
 
 					ProcessConfiguration procConfig;
 					using (var errBlock = logger.StartErrorLoggingBlock()) {
+						// cleanup must be called before any usage of components
+						// also in previous run could occur exception and components can be in bad state
+						configBuilder.CleanupComponents(components, logger);
+						if (errBlock.ErrorOccurred) {
+							continue;
+						}
 
-						var lsysEvaled = evaluator.TryEvaluateLsystem(lsystem, processStat.Arguments, eec, baseResolver, logger);
+						configBuilder.ConnectComponentsAndCheck(components, processConfigStat.Connections, logger);
+
+						if (errBlock.ErrorOccurred) {
+							continue;
+						}
+
+						var lsysEvaled = lsysEvaluator.Evaluate(lsystem, processStat.Arguments, eec, baseResolver, logger);
+						if (errBlock.ErrorOccurred) {
+							continue;
+						}
+
+						// evaluate additional L-system statements from process statement
+						lsysEvaled = lsysEvaluator.EvaluateAdditionalStatements(lsysEvaled, processStat.AdditionalLsystemStatements, logger);
 						if (errBlock.ErrorOccurred) {
 							continue;
 						}
 
 						// set settable properties on components
-						configBuilder.SetAndCheckUserSettableProperties(compGraph, lsysEvaled.ComponentValuesAssigns, lsysEvaled.ComponentSymbolsAssigns, logger);
+						configBuilder.SetAndCheckUserSettableProperties(components, lsysEvaled.ComponentValuesAssigns, lsysEvaled.ComponentSymbolsAssigns, logger);
 
 						// add gettable variables which can not be get before initialization
 						var newEec = lsysEvaled.ExpressionEvaluatorContext;
-						newEec = configBuilder.AddComponentsGettableVariables(compGraph, newEec, false);
-						newEec = configBuilder.AddComponentsCallableFunctions(compGraph, newEec, false);
+						newEec = configBuilder.AddComponentsGettableVariables(components, newEec, false);
+						newEec = configBuilder.AddComponentsCallableFunctions(components, newEec, false);
 
 						var context = new ProcessContext(lsysEvaled, outputProvider, inBlockEvaled, evaluator,
-							newEec, componentResolver, timeout, compGraph, logger);
+							newEec, componentResolver, timeout, components, logger);
 
-						// initialize components with ExpressionEvaluatorContext -- components can call themselves
-						configBuilder.InitializeComponents(compGraph, context, logger);
+						// initialize components with ExpressionEvaluatorContext
+						configBuilder.InitializeComponents(components, context, logger);
 
-						procConfig = configBuilder.CreateConfiguration(compGraph, logger);
+						procConfig = configBuilder.CreateConfiguration(components, logger);
 						if (errBlock.ErrorOccurred) {
 							continue;
 						}
@@ -106,10 +140,13 @@ namespace Malsys.Processing {
 					catch (InterpretationException ex) {
 						logger.LogMessage(Message.InterpretError, lsystem.Name, ex.Message);
 					}
-
-					configBuilder.CleanupComponents(compGraph, logger);
+					catch (ComponentException ex) {
+						logger.LogMessage(Message.ComponentError, lsystem.Name, ex.Message);
+					}
 
 				}
+
+				configBuilder.CleanupComponents(components, logger);
 
 			}
 
@@ -132,19 +169,6 @@ namespace Malsys.Processing {
 
 		}
 
-		private FSharpMap<string, ConfigurationComponent> buildComponentsGraph(ProcessStatementEvaled processStat,
-				InputBlockEvaled inBlockEvaled, IMessageLogger logger) {
-
-			var maybeConfig = inBlockEvaled.ProcessConfigurations.TryFind(processStat.ProcessConfiName);
-			if (OptionModule.IsNone(maybeConfig)) {
-				logger.LogMessage(Message.UndefinedProcessConfig, processStat.AstNode.ProcessConfiNameId.Position, processStat.ProcessConfiName);
-				return null;
-			}
-
-			return configBuilder.BuildConfigurationComponentsGraph(maybeConfig.Value, processStat.ComponentAssignments, componentResolver, logger);
-
-		}
-
 
 		public enum Message {
 
@@ -159,6 +183,8 @@ namespace Malsys.Processing {
 			LsystemEvalFailed,
 			[Message(MessageType.Error, "Interpretation error occurred in L-system `{0}`. {1}")]
 			InterpretError,
+			[Message(MessageType.Error, "Component error occurred in L-system `{0}`. {1}")]
+			ComponentError,
 
 		}
 

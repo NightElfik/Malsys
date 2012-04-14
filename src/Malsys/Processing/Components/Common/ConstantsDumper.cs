@@ -17,6 +17,9 @@ namespace Malsys.Processing.Components.Common {
 
 		private ProcessContext context;
 
+
+		public IMessageLogger Logger { get; set; }
+
 		/// <summary>
 		/// Default behavior is to print only constants in main input.
 		/// If this is set to true all constants will be printed.
@@ -27,20 +30,15 @@ namespace Malsys.Processing.Components.Common {
 		public Constant DumpAllConstants { get; set; }
 
 
-		#region IComponent Members
-
 		public void Initialize(ProcessContext ctxt) {
 			context = ctxt;
 		}
 
 		public void Cleanup() {
 			context = null;
+			DumpAllConstants = Constant.False;
 		}
 
-		#endregion
-
-
-		#region IProcessStarter Members
 
 		public void Start(bool doMeasure) {
 			dumpConstants();
@@ -50,13 +48,11 @@ namespace Malsys.Processing.Components.Common {
 
 		}
 
-		#endregion
-
 
 		private void dumpConstants() {
 
 			var constants = context.InputData.ExpressionEvaluatorContext.GetAllStoredVariables().ToList();
-			bool dumpAll = DumpAllConstants != null && !DumpAllConstants.IsZero;
+			bool dumpAll = DumpAllConstants.IsTrue;
 
 			using (TextWriter writer = new StreamWriter(context.OutputProvider.GetOutputStream<ConstantsDumper>("Constants dump", MimeType.Text.Plain))) {
 

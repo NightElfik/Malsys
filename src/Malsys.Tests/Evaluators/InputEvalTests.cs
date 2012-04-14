@@ -99,28 +99,10 @@ namespace Malsys.Tests.Evaluators {
 				"lsystem b(x) {", "}");
 		}
 
-		[TestMethod]
-		public void LsystemInheritanceTests() {
-			doTestAutoidentOutput(
-				"lsystem c(x) extends b(1, 1), a(x) {} lsystem a {} lsystem b extends a {}",
-				"lsystem a {", "}",
-				"lsystem b extends a {", "}",
-				"lsystem c(x) extends b(1, 1), a(x) {", "}");
-		}
-
-		[TestMethod]
-		public void AbstractLsystemTests() {
-			doTestAutoidentOutput(
-				"abstract lsystem c {}",
-				"abstract lsystem c {", "}");
-		}
+		
 
 		[TestMethod]
 		public void ProcessConfigTests() {
-			doTestAutoidentOutput(
-				"configuration c { }",
-				"configuration c {",
-				"}");
 			doTestAutoidentOutput(
 				"configuration c { component b typeof x; component a typeof x; }",
 				"configuration c {",
@@ -148,26 +130,6 @@ namespace Malsys.Tests.Evaluators {
 				"container b typeof x default y;",
 				"connect a to b.c;",
 				"}");
-		}
-
-		[TestMethod]
-		public void ProcessStatementTests() {
-			doTestAutoidentOutput(
-				"process all with a;",
-				"process all with a;");
-			doTestAutoidentOutput(
-				"process LsystemName with Configuration;",
-				"process LsystemName with Configuration;");
-		}
-
-		[TestMethod]
-		public void ProcessStatementParamsTests() {
-			doTestAutoidentOutput(
-				"process all(0,1,2,3) with a;",
-				"process all(0, 1, 2, 3) with a;");
-			doTestAutoidentOutput(
-				"process LsystemName(0,{1}) with Configuration;",
-				"process LsystemName(0, {1}) with Configuration;");
 		}
 
 		[TestMethod]

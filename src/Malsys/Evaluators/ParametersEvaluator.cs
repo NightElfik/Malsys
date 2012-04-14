@@ -5,7 +5,7 @@ namespace Malsys.Evaluators {
 	/// <remarks>
 	/// All public members are thread safe.
 	/// </remarks>
-	internal class ParametersEvaluator : IParametersEvaluator {
+	public class ParametersEvaluator : IParametersEvaluator {
 
 
 		public ImmutableList<OptionalParameterEvaled> Evaluate(ImmutableList<OptionalParameter> optPrms, IExpressionEvaluatorContext exprEvalCtxt) {

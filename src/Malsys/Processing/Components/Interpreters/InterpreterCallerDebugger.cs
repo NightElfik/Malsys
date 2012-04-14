@@ -9,9 +9,10 @@ using InterpretActionParams = System.Tuple<System.Action<Malsys.Evaluators.ArgsS
 
 namespace Malsys.Processing.Components.Interpreters {
 	/// <summary>
-	/// Prints conversion from processed symbols to interpretation method name (ignores connected interpreter).
-	/// This is handy if you are not sure how symbols are interpreted
-	/// and what arguments were send to interpretation method.
+	/// Prints conversion from processed symbols to interpretation method name. If any interpreters are in configuration
+	/// it also calls appropriate interpretation methods thus this component can replace InterpreterCaller without
+	/// loosing functionality. This is handy if you are not sure how symbols are interpreted and what arguments were
+	/// sent to interpretation method.
 	/// </summary>
 	/// <name>Interpreter calls debugger</name>
 	/// <group>Interpreters</group>
@@ -21,16 +22,29 @@ namespace Malsys.Processing.Components.Interpreters {
 		private CanonicPrinter debugPrinter;
 		private IOutputProvider outProvider;
 
-		/// <summary>
-		/// Connectable interpreter property to allow replacing any interpreter in any configuration with this debugger.
-		/// This component is ignored.
-		/// </summary>
-		[UserConnectable(IsOptional = true)]
-		override public IInterpreter Interpreter {
-			set {
-				interpreter = value;
-			}
+
+		public override void Initialize(ProcessContext ctxt) {
+			outProvider = ctxt.OutputProvider;
+			base.Initialize(ctxt);
 		}
+
+		override public void BeginProcessing(bool measuring) {
+
+			itWriter = new IndentTextWriter(new StreamWriter(
+				outProvider.GetOutputStream<InterpreterCaller>("interpret calls debugger", MimeType.Text.Plain)));
+			debugPrinter = new CanonicPrinter(itWriter);
+
+			base.BeginProcessing(measuring);
+		}
+
+		override public void EndProcessing() {
+
+			itWriter.Dispose();
+
+			base.EndProcessing();
+		}
+
+
 
 		override public void ProcessSymbol(Symbol<IValue> symbol) {
 
@@ -52,7 +66,7 @@ namespace Malsys.Processing.Components.Interpreters {
 					mapSybolArgs(symbol, instr, ref eec);
 				}
 				catch (EvalException ex) {
-					debugPrinter.WriteLine("ERROR ({0})".Fmt(ex.Message));
+					debugPrinter.WriteLine("ERROR ({0})".Fmt(ex.GetFullMessage()));
 					return;
 				}
 				args.AddArgs(eec.EvaluateList(instr.InstructionParameters));
@@ -65,13 +79,13 @@ namespace Malsys.Processing.Components.Interpreters {
 				debugPrinter.Write(")");
 			}
 
-			if (interpreter == null) {
+			if (interpreters.Count == 0) {
 				debugPrinter.NewLine();
 				return;
 			}
 
 			InterpretActionParams iActionParams;
-			if (!instrToDel.TryGetValue(instr.InstructionName.ToLowerInvariant(), out iActionParams)) {
+			if (!instrToDel.TryGetValue(instr.InstructionName, out iActionParams)) {
 				debugPrinter.WriteLine("ERROR (undefined)");
 				return;
 			}
@@ -83,35 +97,8 @@ namespace Malsys.Processing.Components.Interpreters {
 
 			debugPrinter.NewLine();
 
-			iActionParams.Item1.Invoke(args);
+			iActionParams.Item1(args);
 		}
 
-		override public void Initialize(ProcessContext ctxt) {
-
-			outProvider = ctxt.OutputProvider;
-			exprEvalCtxt = ctxt.ExpressionEvaluatorContext;
-			symbolToInstr = ctxt.Lsystem.SymbolsInterpretation.ToDictionary(x => x.Key, x => x.Value);
-		}
-
-
-		override public void BeginProcessing(bool measuring) {
-
-			itWriter = new IndentTextWriter(new StreamWriter(
-				outProvider.GetOutputStream<InterpreterCaller>("interpret calls debugger", MimeType.Text.Plain)));
-			debugPrinter = new CanonicPrinter(itWriter);
-
-			if (interpreter != null) {
-				base.BeginProcessing(measuring);
-			}
-		}
-
-		override public void EndProcessing() {
-
-			itWriter.Dispose();
-
-			if (interpreter != null) {
-				base.EndProcessing();
-			}
-		}
 	}
 }

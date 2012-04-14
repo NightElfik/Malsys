@@ -29,32 +29,8 @@ namespace Malsys.Processing.Components.Renderers {
 
 
 
-		protected virtual void measure(Point3D pt) {
+		public IMessageLogger Logger { get; set; }
 
-			if (pt.X < currentMeasuredMin.X) {
-				currentMeasuredMin.X = pt.X;
-			}
-			else if (pt.X > currentMeasuredMax.X) {
-				currentMeasuredMax.X = pt.X;
-			}
-
-			if (pt.Y < currentMeasuredMin.Y) {
-				currentMeasuredMin.Y = pt.Y;
-			}
-			else if (pt.Y > currentMeasuredMax.Y) {
-				currentMeasuredMax.Y = pt.Y;
-			}
-
-			if (pt.Z < currentMeasuredMin.Z) {
-				currentMeasuredMin.Z = pt.Z;
-			}
-			else if (pt.Z > currentMeasuredMax.Z) {
-				currentMeasuredMax.Z = pt.Z;
-			}
-		}
-
-
-		#region IComponent Members
 
 		public abstract bool RequiresMeasure { get; }
 
@@ -68,6 +44,7 @@ namespace Malsys.Processing.Components.Renderers {
 		public virtual void Cleanup() {
 			context = null;
 		}
+
 
 		public virtual void BeginProcessing(bool measuring) {
 
@@ -84,7 +61,6 @@ namespace Malsys.Processing.Components.Renderers {
 
 		}
 
-		#endregion
 
 
 		#region IRenderer3D Members
@@ -139,6 +115,31 @@ namespace Malsys.Processing.Components.Renderers {
 		public abstract void DrawSphere(Point3D center, double radius, ColorF color, double quality);
 
 		#endregion
+
+
+		protected virtual void measure(Point3D pt) {
+
+			if (pt.X < currentMeasuredMin.X) {
+				currentMeasuredMin.X = pt.X;
+			}
+			else if (pt.X > currentMeasuredMax.X) {
+				currentMeasuredMax.X = pt.X;
+			}
+
+			if (pt.Y < currentMeasuredMin.Y) {
+				currentMeasuredMin.Y = pt.Y;
+			}
+			else if (pt.Y > currentMeasuredMax.Y) {
+				currentMeasuredMax.Y = pt.Y;
+			}
+
+			if (pt.Z < currentMeasuredMin.Z) {
+				currentMeasuredMin.Z = pt.Z;
+			}
+			else if (pt.Z > currentMeasuredMax.Z) {
+				currentMeasuredMax.Z = pt.Z;
+			}
+		}
 
 	}
 }

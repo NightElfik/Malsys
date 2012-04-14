@@ -17,7 +17,12 @@ namespace Malsys.Processing.Components.Renderers {
 	/// <group>Renderers</group>
 	public class SvgRenderer2D : IRenderer2D {
 
-		private const double invertY = -1;
+		public const string FileHeader = "<?xml version=\"1.0\" standalone=\"no\"?>\n"
+			+ "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">";
+		public const string SvgHeader = "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\""
+			+ " viewBox=\"{0:0.###} {1:0.###} {2:0.###} {3:0.###}\" width=\"{4:0.###}px\" height=\"{5:0.###}px\">";
+		public const string SvgFooter = "</svg>";
+
 
 		private ProcessContext context;
 		private FSharpMap<string, object> globalAdditionalData = MapModule.Empty<string, object>();
@@ -27,34 +32,20 @@ namespace Malsys.Processing.Components.Renderers {
 		private Stream outputStream;
 		private TextWriter writer;
 
-		private double scale = 1;
+		private double invertY = -1;
 
 		private double lastX, lastY;
 		private double lastWidth;
 		private ColorF lastColor;
-
-		private bool compress = true;  // compress by default
 
 		private double marginT = 2, marginR = 2, marginB = 2, marginL = 2;
 		private double measuredMinX, measuredMinY, measuredMaxX, measuredMaxY;
 		private double minX, minY, maxX, maxY;
 
 
-		public SvgRenderer2D() {
-
-			FileHeader = "<?xml version=\"1.0\" standalone=\"no\"?>\n" +
-				"<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">";
-			SvgHeader = "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" viewBox=\"{0:0.###} {1:0.###} {2:0.###} {3:0.###}\" width=\"{4:0.###}px\" height=\"{5:0.###}px\">";
-			SvgFooter = "</svg>";
-
-		}
+		public IMessageLogger Logger { get; set; }
 
 
-		public string FileHeader { get; set; }
-
-		public string SvgHeader { get; set; }
-
-		public string SvgFooter { get; set; }
 
 		/// <summary>
 		/// Margin of result image.
@@ -100,11 +91,7 @@ namespace Malsys.Processing.Components.Renderers {
 		/// <default>true</default>
 		[AccessName("compressSvg")]
 		[UserSettable]
-		public Constant CompressSvg {
-			set {
-				compress = !value.IsZero;
-			}
-		}
+		public Constant CompressSvg { get; set; }
 
 		/// <summary>
 		/// Scale of result image.
@@ -113,11 +100,7 @@ namespace Malsys.Processing.Components.Renderers {
 		/// <default>1</default>
 		[AccessName("scale")]
 		[UserSettable]
-		public Constant Scale {
-			set {
-				scale = Math.Max(0, value.Value);
-			}
-		}
+		public Constant Scale { get; set; }
 
 
 		#region IComponent Members
@@ -128,13 +111,18 @@ namespace Malsys.Processing.Components.Renderers {
 			context = ctxt;
 		}
 
-		public void Cleanup() { }
+		public void Cleanup() {
+			context = null;
+			Margin = new Constant(2d);
+			CompressSvg = Constant.True;
+			Scale = Constant.One;
+		}
 
 		public void BeginProcessing(bool measuring) {
 
 			this.measuring = measuring;
 			var localAdditionalData = globalAdditionalData;
-			if (compress) {
+			if (CompressSvg.IsTrue) {
 				localAdditionalData = localAdditionalData.Add(OutputMetadataKeyHelper.OutputIsGZipped, true);
 			}
 
@@ -144,8 +132,8 @@ namespace Malsys.Processing.Components.Renderers {
 			else {
 				double svgWidth = measuredMaxX - measuredMinX + marginL + marginR;
 				double svgHeight = measuredMaxY - measuredMinY + marginT + marginB;
-				double svgWidthScaled = svgWidth * scale;
-				double svgHeighScaled = svgHeight * scale;
+				double svgWidthScaled = svgWidth * Scale.Value;
+				double svgHeighScaled = svgHeight * Scale.Value;
 
 				localAdditionalData = localAdditionalData.Add(OutputMetadataKeyHelper.OutputWidth, (int)Math.Round(svgWidthScaled));
 				localAdditionalData = localAdditionalData.Add(OutputMetadataKeyHelper.OutputHeight, (int)Math.Round(svgHeighScaled));
@@ -154,7 +142,7 @@ namespace Malsys.Processing.Components.Renderers {
 					"SVG result from `{0}`".Fmt(context.Lsystem.Name),
 					MimeType.Image.SvgXml, false, localAdditionalData);
 
-				if (compress) {
+				if (CompressSvg.IsTrue) {
 					var gzipStream = new GZipStream(outputStream, CompressionMode.Compress);
 					writer = new StreamWriter(gzipStream);
 				}
@@ -189,6 +177,7 @@ namespace Malsys.Processing.Components.Renderers {
 		}
 
 		#endregion
+
 
 		#region IRenderer2D Members
 

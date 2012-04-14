@@ -8,14 +8,14 @@ namespace Malsys.Compilers {
 	/// <remarks>
 	/// All public members are thread safe if supplied compilers are thread safe.
 	/// </remarks>
-	internal class LsystemCompiler : ILsystemCompiler {
+	public class LsystemCompiler : ILsystemCompiler {
 
-		private readonly IConstantDefinitionCompiler constDefCompiler;
-		private readonly IFunctionDefinitionCompiler funDefCompiler;
-		private readonly IExpressionCompiler exprCompiler;
-		private readonly IParametersCompiler paramsCompiler;
-		private readonly IRewriteRuleCompiler rrCompiler;
-		private readonly ISymbolCompiler symbolCompiler;
+		protected readonly IConstantDefinitionCompiler constDefCompiler;
+		protected readonly IFunctionDefinitionCompiler funDefCompiler;
+		protected readonly IExpressionCompiler exprCompiler;
+		protected readonly IParametersCompiler paramsCompiler;
+		protected readonly IRewriteRuleCompiler rrCompiler;
+		protected readonly ISymbolCompiler symbolCompiler;
 
 
 		public LsystemCompiler(IConstantDefinitionCompiler constantDefCompiler, IFunctionDefinitionCompiler functionDefCompiler,
@@ -35,13 +35,62 @@ namespace Malsys.Compilers {
 
 			var prms = paramsCompiler.CompileList(lsysDef.Parameters, logger);
 			var baseLsys = compileBaseLsystems(lsysDef.BaseLsystems, logger);
-			var stats = compileLsystemStatements(lsysDef.Statements, logger);
+			var stats = CompileList(lsysDef.Statements, logger);
 
 			return new Lsystem(lsysDef.NameId.Name, lsysDef.IsAbstract, prms, baseLsys, stats, lsysDef);
 		}
 
+		public ILsystemStatement Compile(Ast.ILsystemStatement statement, IMessageLogger logger) {
+			switch (statement.StatementType) {
 
-		private ImmutableList<BaseLsystem> compileBaseLsystems(ImmutableList<Ast.BaseLsystem> baseLsys, IMessageLogger logger) {
+				case Ast.LsystemStatementType.EmptyStatement:
+					return null;
+
+				case Ast.LsystemStatementType.ConstantDefinition:
+					return constDefCompiler.Compile((Ast.ConstantDefinition)statement, logger);
+
+				case Ast.LsystemStatementType.SymbolsConstDefinition:
+					var symbolConstAst = (Ast.SymbolsConstDefinition)statement;
+					var symbolsConst = symbolCompiler.CompileList<Ast.LsystemSymbol, Symbol<IExpression>>(symbolConstAst.SymbolsList, logger);
+					return new SymbolsConstDefinition(symbolConstAst.NameId.Name, symbolsConst, symbolConstAst);
+
+				case Ast.LsystemStatementType.SymbolsInterpretDef:
+					var symIntDefAst = ((Ast.SymbolsInterpretDef)statement);
+					var symbolsInterpret = symIntDefAst.Symbols.Select(x => new Symbol<VoidStruct>(x.Name)).ToImmutableList();
+					var prms = paramsCompiler.CompileList(symIntDefAst.Parameters, logger);
+					var defVals = exprCompiler.CompileList(symIntDefAst.InstructionParameters, logger);
+					return new SymbolsInterpretation(symbolsInterpret, prms, symIntDefAst.Instruction.Name,
+						defVals, symIntDefAst.InstructionIsLsystemName, symIntDefAst.LsystemConfigName.Name, symIntDefAst);
+
+				case Ast.LsystemStatementType.FunctionDefinition:
+					return funDefCompiler.Compile((Ast.FunctionDefinition)statement, logger);
+
+				case Ast.LsystemStatementType.RewriteRule:
+					return rrCompiler.Compile((Ast.RewriteRule)statement, logger);
+
+				default:
+					Debug.Fail("Unknown L-system statement type `{0}`.".Fmt(statement.StatementType.ToString()));
+					return null;
+
+			}
+		}
+
+		public ImmutableList<ILsystemStatement> CompileList(IEnumerable<Ast.ILsystemStatement> statementsList, IMessageLogger logger) {
+
+			var compStats = new List<ILsystemStatement>();
+
+			foreach (var stat in statementsList) {
+				var cStat = Compile(stat, logger);
+				if (cStat != null) {
+					compStats.Add(cStat);
+				}
+			}
+
+			return new ImmutableList<ILsystemStatement>(compStats);
+		}
+
+
+		protected ImmutableList<BaseLsystem> compileBaseLsystems(ImmutableList<Ast.BaseLsystem> baseLsys, IMessageLogger logger) {
 
 			int length = baseLsys.Length;
 			BaseLsystem[] result = new BaseLsystem[length];
@@ -52,54 +101,6 @@ namespace Malsys.Compilers {
 			}
 
 			return new ImmutableList<BaseLsystem>(result, true);
-		}
-
-
-		private ImmutableList<ILsystemStatement> compileLsystemStatements(ImmutableList<Ast.ILsystemStatement> statements, IMessageLogger logger) {
-
-			var compStats = new List<ILsystemStatement>(statements.Count);
-
-			foreach (var stat in statements) {
-
-				switch (stat.StatementType) {
-
-					case Ast.LsystemStatementType.EmptyStatement:
-						break;
-
-					case Ast.LsystemStatementType.ConstantDefinition:
-						compStats.Add(constDefCompiler.Compile((Ast.ConstantDefinition)stat, logger));
-						break;
-
-					case Ast.LsystemStatementType.SymbolsConstDefinition:
-						var symbolConstAst = (Ast.SymbolsConstDefinition)stat;
-						var symbolsConst = symbolCompiler.CompileList<Ast.LsystemSymbol, Symbol<IExpression>>(symbolConstAst.SymbolsList, logger);
-						compStats.Add(new SymbolsConstDefinition(symbolConstAst.NameId.Name, symbolsConst));
-						break;
-
-					case Ast.LsystemStatementType.SymbolsInterpretDef:
-						var symIntDefAst = ((Ast.SymbolsInterpretDef)stat);
-						var symbolsInterpret = symIntDefAst.Symbols.Select(x => new Symbol<VoidStruct>(x.Name)).ToImmutableList();
-						var prms = paramsCompiler.CompileList(symIntDefAst.Parameters, logger);
-						var defVals = exprCompiler.CompileList(symIntDefAst.InstructionParameters, logger);
-						compStats.Add(new SymbolsInterpretation(symbolsInterpret, prms, symIntDefAst.Instruction.Name,
-							defVals, symIntDefAst.InstructionIsLsystemName, symIntDefAst.LsystemConfigName.Name, symIntDefAst));
-						break;
-
-					case Ast.LsystemStatementType.FunctionDefinition:
-						compStats.Add(funDefCompiler.Compile((Ast.FunctionDefinition)stat, logger));
-						break;
-
-					case Ast.LsystemStatementType.RewriteRule:
-						compStats.Add(rrCompiler.Compile((Ast.RewriteRule)stat, logger));
-						break;
-
-					default:
-						Debug.Fail("Unknown L-system statement type `{0}`.".Fmt(stat.StatementType.ToString()));
-						break;
-				}
-			}
-
-			return new ImmutableList<ILsystemStatement>(compStats);
 		}
 
 	}

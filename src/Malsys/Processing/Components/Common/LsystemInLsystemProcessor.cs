@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using Malsys.Evaluators;
 using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Collections;
@@ -19,79 +17,59 @@ namespace Malsys.Processing.Components.Common {
 
 		private readonly ProcessConfigurationBuilder configBuilder = new ProcessConfigurationBuilder();
 
-
-		private IInterpreter interpreter;
 		private ProcessContext ctxt;
 
-		private Dictionary<Tuple<LsystemEvaledParams, ProcessConfigurationStatement>, Stack<FSharpMap<string, ConfigurationComponent>>> configPool;
+		private Dictionary<Tuple<LsystemEvaledParams, ProcessConfigurationStatement>, Stack<FSharpMap<string, ConfigurationComponent>>> configPool
+			= new Dictionary<Tuple<LsystemEvaledParams, ProcessConfigurationStatement>, Stack<FSharpMap<string, ConfigurationComponent>>>();
 		private ConfigurationComponent myselfComp;
-		private ConfigurationComponent interpreterComp;
 		private FSharpMap<string, ConfigurationComponent> componentBase;
 
-		/// <summary>
-		/// Interpreter of main L-system.
-		/// All symbols from inner L-system should be processed with same interpreter as main L-system.
-		/// This connection is set to optional due to technical reasons but must be set to same interpreter component as
-		/// main L-system. Otherwise Exception is thrown.
-		/// </summary>
-		/// <remarks>
-		/// This connection is set to optional because this component is part of inner configuration when ProcessManager
-		/// is building inner configuration there is no interpreter component to no override main interpreter.
-		/// To avoid errors of unconnected connection this is optional.
-		/// Connection is set after creating inner process configuration from outside.
-		/// </remarks>
-		[UserConnectable(IsOptional = true)]
-		public IInterpreter Interpreter {
-			set { interpreter = value; }
-		}
 
+		public IMessageLogger Logger { get; set; }
 
-		#region IProcessComponent Members
 
 		public void Initialize(ProcessContext context) {
 
 			ctxt = context;
-			configPool = new Dictionary<Tuple<LsystemEvaledParams, ProcessConfigurationStatement>, Stack<FSharpMap<string, ConfigurationComponent>>>();
 
-			if (interpreter == null) {
-				throw new ComponentException("Interpreter is not set.");
+			var myslefKvp = ctxt.FindComponent(this);
+			if (myslefKvp == null) {
+				throw new ComponentException("Could not find components instances.");
 			}
 
-			myselfComp = ctxt.ComponentGraph.Where(x => x.Value.Component == this).Single().Value;
-			interpreterComp = ctxt.ComponentGraph.Where(x => x.Value.Component == interpreter).Single().Value;
+			myselfComp = myslefKvp.Value.Value;
 
 			componentBase = MapModule.Empty<string, ConfigurationComponent>()
-				.Add(myselfComp.Name, myselfComp)
-				.Add(interpreterComp.Name, interpreterComp);
+				.Add(myselfComp.Name, myselfComp);
 
 		}
 
 		public void Cleanup() {
 			ctxt = null;
+			myselfComp = null;
+			componentBase = null;
+			configPool.Clear();
 		}
 
-		#endregion
 
 
 		/// <remarks>
-		/// The given process configuration must have connections to "virtual" components type of
-		/// ILsystemInLsystemProcessor and IInterpreter called with same name as this component
-		/// and given interpreter. These two components are added to component graph builder to connect them to new
-		/// component graph.
+		/// The given process configuration must have connections to "virtual" component type of
+		/// ILsystemInLsystemProcessor called with same name as this component. This component is added to component
+		/// graph builder to connect it to new component graph.
 		/// </remarks>
 		public void ProcessLsystem(string name, string configName, IValue[] args) {
 
 			LsystemEvaledParams lsystem;
 			if (!ctxt.InputData.Lsystems.TryGetValue(name, out lsystem)) {
-				ctxt.Logger.LogMessage(Message.LsystemNotFound, name);
-				return;
+				throw new ComponentException("Failed to evaluate symbol as lsystem `{0}`. Required L-system is not defined.".Fmt(name));
 			}
 
 			ProcessConfigurationStatement configStat;
 			if (!ctxt.InputData.ProcessConfigurations.TryGetValue(configName, out configStat)) {
 				if (!ctxt.InputData.ProcessConfigurations.TryGetValue(DefaultProcessConfigName, out configStat)) {
-					ctxt.Logger.LogMessage(Message.NoProcessConfig, name, configName, DefaultProcessConfigName);
-					return;
+					throw new ComponentException("Failed to evaluate symbol as lsystem `{0}`. Required process configuration `{1}` is not defined and default process configuration `{2}` is not defined."
+						.Fmt(name, configName, DefaultProcessConfigName));
 				}
 			}
 
@@ -102,37 +80,57 @@ namespace Malsys.Processing.Components.Common {
 			Stack<FSharpMap<string, ConfigurationComponent>> pool;
 			if (!configPool.TryGetValue(configPoolKey, out pool) || pool.Count == 0) {
 				// create components graph, add this component and interpreter component to it
-				compGraph = configBuilder.BuildConfigurationComponentsGraph(configStat, new ProcessComponentAssignment[0], ctxt.ComponentResolver, ctxt.Logger, componentBase);
-				if (compGraph == null) {
-					return;
+				using (var errBlock = Logger.StartErrorLoggingBlock()) {
+					compGraph = configBuilder.CreateComponents(configStat.Components, configStat.Containers, new ProcessComponentAssignment[0],
+						ctxt.ComponentResolver, Logger, componentBase);
+					if (errBlock.ErrorOccurred) {
+						throw new ComponentException("Failed to evaluate symbol as lsystem `{0}`. Failed to create inner L-system component configuration `{1}`."
+							.Fmt(name, configStat.Name));
+					}
 				}
 			}
 			else {
 				compGraph = pool.Pop();
 			}
 
-
-			// to avoid setting of settable values and initialization of myself and interpreter, but they are already connected
-			var compGraphOnlyNew = compGraph.Remove(myselfComp.Name).Remove(interpreterComp.Name);
-
-			// add variables and functions from components that can be called before init to ExpressionEvaluatorContext
-			var eec = ctxt.InputData.ExpressionEvaluatorContext;
-			eec = configBuilder.AddComponentsGettableVariables(compGraph, eec, true);
-			eec = configBuilder.AddComponentsCallableFunctions(compGraph, eec, true);
-
-			var baseResolver = new BaseLsystemResolver(ctxt.InputData.Lsystems);
+			// to avoid setting of settable values and initialization of myself and interpreter
+			// they are already connected so we can remove them from this list
+			var compGraphOnlyNew = compGraph.Remove(myselfComp.Name);
+			configBuilder.SetLogger(compGraphOnlyNew, Logger);
 
 			ProcessConfiguration procConfig;
-			using (var errBlock = ctxt.Logger.StartErrorLoggingBlock()) {
-				// evaluate L-system
-				var lsysEvaled = ctxt.EvaluatorsContainer.TryEvaluateLsystem(lsystem, args, ctxt.ExpressionEvaluatorContext, baseResolver, ctxt.Logger);
+			using (var errBlock = Logger.StartErrorLoggingBlock()) {
+
+				// cleanup must be called before any usage of components
+				configBuilder.CleanupComponents(compGraphOnlyNew, Logger);
 				if (errBlock.ErrorOccurred) {
-					return;
+					throw new ComponentException("Failed to evaluate symbol as lsystem `{0}`. Failed to clean up components."
+						.Fmt(name, configStat.Name));
+				}
+
+				configBuilder.ConnectComponentsAndCheck(compGraph, configStat.Connections, Logger);
+				if (errBlock.ErrorOccurred) {
+					throw new ComponentException("Failed to evaluate symbol as lsystem `{0}`. Failed to connect inner L-system components `{1}`."
+						.Fmt(name, configStat.Name));
 				}
 
 
+				// add variables and functions from components that can be called before init to ExpressionEvaluatorContext
+				var eec = ctxt.InputData.ExpressionEvaluatorContext;
+				eec = configBuilder.AddComponentsGettableVariables(compGraph, eec, true);
+				eec = configBuilder.AddComponentsCallableFunctions(compGraph, eec, true);
+
+				var baseResolver = new BaseLsystemResolver(ctxt.InputData.Lsystems);
+
+				// evaluate L-system
+				var lsysEvaled = ctxt.EvaluatorsContainer.ResolveLsystemEvaluator().Evaluate(lsystem, args, ctxt.ExpressionEvaluatorContext, baseResolver, Logger);
+				if (errBlock.ErrorOccurred) {
+					throw new ComponentException("Failed to evaluate symbol as lsystem `{0}`. Failed to evaluate L-system `{1}`."
+						.Fmt(name, lsystem.Name));
+				}
+
 				// set settable properties on components
-				configBuilder.SetAndCheckUserSettableProperties(compGraphOnlyNew, lsysEvaled.ComponentValuesAssigns, lsysEvaled.ComponentSymbolsAssigns, ctxt.Logger);
+				configBuilder.SetAndCheckUserSettableProperties(compGraphOnlyNew, lsysEvaled.ComponentValuesAssigns, lsysEvaled.ComponentSymbolsAssigns, Logger);
 
 				// add gettable variables which can not be get before initialization (do it with full component graph)
 				var newEec = lsysEvaled.ExpressionEvaluatorContext;
@@ -140,50 +138,34 @@ namespace Malsys.Processing.Components.Common {
 				newEec = configBuilder.AddComponentsCallableFunctions(compGraph, newEec, false);
 
 				var newContext = new ProcessContext(lsysEvaled, ctxt.OutputProvider, ctxt.InputData, ctxt.EvaluatorsContainer,
-					newEec, ctxt.ComponentResolver, ctxt.ProcessingTimeLimit, ctxt.ComponentGraph, ctxt.Logger);
+					newEec, ctxt.ComponentResolver, ctxt.ProcessingTimeLimit, ctxt.ComponentGraph, Logger);
 
 				// initialize components with ExpressionEvaluatorContext -- components can call themselves
-				configBuilder.InitializeComponents(compGraphOnlyNew, newContext, ctxt.Logger);
+				configBuilder.InitializeComponents(compGraphOnlyNew, newContext, Logger);
 
-				procConfig = configBuilder.CreateConfiguration(compGraph, ctxt.Logger);
+				procConfig = configBuilder.CreateConfiguration(compGraph, Logger);
 				if (errBlock.ErrorOccurred) {
-					return;
+					throw new ComponentException("Failed to evaluate symbol as lsystem `{0}`.  Failed to initialize inner L-system component configuration `{1}`."
+						.Fmt(name, configStat.Name));
 				}
 			}
 
-			try {
-				procConfig.StarterComponent.Start(false);  // do not measure internally
-			}
-			catch (EvalException ex) {
-				ctxt.Logger.LogMessage(Message.LsystemEvalFailed, name, ex.GetFullMessage());
-			}
-			catch (InterpretationException ex) {
-				ctxt.Logger.LogMessage(Message.InterpretError, name, ex.Message);
-			}
+			// any exceptions are caught by main processor
+			procConfig.StarterComponent.Start(false);  // do not measure internally
 
-			configBuilder.CleanupComponents(compGraphOnlyNew, ctxt.Logger);
+
+			// cleanup components before saving them to cache
+			configBuilder.CleanupComponents(compGraphOnlyNew, Logger);
 
 			if (pool == null) {
 				configPool[configPoolKey] = pool = new Stack<FSharpMap<string, ConfigurationComponent>>();
 			}
 
+			// save components graph to pool
 			pool.Push(compGraph);
 
 		}
 
-
-		public enum Message {
-
-			[Message(MessageType.Error, "Failed to evaluate symbol as lsystem `{0}`. Required L-system is not defined.")]
-			LsystemNotFound,
-			[Message(MessageType.Error, "Failed to evaluate symbol as lsystem `{0}`. Required process configuration `{1}` is not defined and default process configuration `{2}` is not defined.")]
-			NoProcessConfig,
-			[Message(MessageType.Error, "Failed to evaluate symbol as lsystem `{0}`. {1}")]
-			LsystemEvalFailed,
-			[Message(MessageType.Error, "Failed to evaluate symbol as lsystem `{0}`. Interpretation error occurred. {1}")]
-			InterpretError,
-
-		}
 
 	}
 }

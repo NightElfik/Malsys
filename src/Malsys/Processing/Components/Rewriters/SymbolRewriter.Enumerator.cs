@@ -61,7 +61,7 @@ namespace Malsys.Processing.Components.Rewriters {
 			public SymbolRewriterEnumerator(SymbolRewriter parentSr) {
 
 				parent = parentSr;
-				logger = parent.context.Logger;
+				logger = parent.Logger;
 
 				rewriteRules = parent.rewriteRules;
 				exprEvalCtxt = parent.exprEvalCtxt;
@@ -351,7 +351,7 @@ namespace Malsys.Processing.Components.Rewriters {
 					}
 				}
 
-				parent.context.Logger.LogMessage(Message.NoRandomFunc, randomFuncName);
+				logger.LogMessage(Message.NoRandomFunc, randomFuncName);
 
 				emergencyRandomGenerator = new Random();
 				return emergencyRandomGenerator.NextDouble();

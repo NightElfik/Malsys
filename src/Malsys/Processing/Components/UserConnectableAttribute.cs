@@ -31,7 +31,7 @@ namespace Malsys.Processing.Components {
 	/// Thrown by properties marked with UserConnectableAttribute when value is invalid.
 	/// </summary>
 	[Serializable]
-	public class InvalidConnectedComponentException : Exception {
+	public class InvalidConnectedComponentException : ComponentException {
 
 		public InvalidConnectedComponentException() { }
 		public InvalidConnectedComponentException(string message) : base(message) { }
