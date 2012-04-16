@@ -86,6 +86,8 @@
     <CodeContractsReferenceAssembly>DoNotBuild</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
     <ExcludeApp_Data>true</ExcludeApp_Data>
+    <NoWarn>1591</NoWarn>
+    <DocumentationFile>bin\Malsys.Web.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Autofac">
@@ -219,7 +221,6 @@
     <Compile Include="Controllers\AuthenticationController.cs" />
     <Compile Include="Areas\Administration\Controllers\RolesController.cs" />
     <Compile Include="Areas\Administration\Controllers\UsersController.cs" />
-    <Compile Include="Controllers\ExamplesController.cs" />
     <Compile Include="Controllers\FeedbackController.cs" />
     <Compile Include="Controllers\GalleryController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -236,9 +237,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>MalsysDbModel.edmx</DependentUpon>
-    </Compile>
-    <Compile Include="ExamplesController.generated.cs">
-      <DependentUpon>T4MVC.tt</DependentUpon>
     </Compile>
     <Compile Include="FeedbackController.generated.cs">
       <DependentUpon>T4MVC.tt</DependentUpon>
@@ -331,6 +329,10 @@
     <Content Include="App_Data\MalsysDb_log.ldf">
       <DependentUpon>MalsysDb.mdf</DependentUpon>
     </Content>
+    <Content Include="App_Data\OldWeb\MalsysDb.mdf" />
+    <Content Include="App_Data\OldWeb\MalsysDb_log.ldf">
+      <DependentUpon>MalsysDb.mdf</DependentUpon>
+    </Content>
     <Content Include="Areas\Help\Views\Predefined\Components.cshtml" />
     <Content Include="Areas\Help\Views\Home\BasicInterpretation.cshtml" />
     <Content Include="Areas\Help\Views\Shared\ComponentPartial.cshtml" />
@@ -359,7 +361,7 @@
     <Content Include="Areas\Administration\Views\Tags\Edit.cshtml" />
     <Content Include="Areas\Administration\Views\Tags\Delete.cshtml" />
     <Content Include="Areas\Help\Views\Home\StdLib.cshtml" />
-    <None Include="Css\style.less.css" />
+    <Content Include="Css\style.less.css" />
     <None Include="DatabaseScheme.sql" />
     <Content Include="Error.html" />
     <Content Include="Global.asax" />
@@ -367,11 +369,49 @@
     <None Include="Js\jquery.validate.js" />
     <None Include="Js\jquery.js" />
     <None Include="Js\malsys.js" />
+    <None Include="Js\MinifyJs.log">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </None>
     <None Include="Js\modernizr.js" />
     <None Include="Js\ThreeJs\Detector.js" />
     <None Include="Js\ThreeJs\malsys.three.js" />
     <Content Include="humans.txt" />
-    <Content Include="Js\ThreeJs\Stats.js" />
+    <None Include="Js\ThreeJs\Stats.js" />
+    <Content Include="Js\jquery.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\jquery.old.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\jquery.textarea.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\jquery.unobtrusive-ajax.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\jquery.validate.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\jquery.validate.unobtrusive.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\malsys.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\modernizr.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\ThreeJs\Detector.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\ThreeJs\malsys.three.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\ThreeJs\Stats.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
     <Content Include="Js\ThreeJs\Three.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -422,17 +462,13 @@
     <Content Include="Views\Process\Load.cshtml" />
     <Content Include="Views\User\Index.cshtml" />
     <Content Include="Views\Feedback\List.cshtml" />
-    <Content Include="Views\Examples\Abop.cshtml" />
-    <Content Include="Views\Examples\FassCurves.cshtml" />
-    <Content Include="Views\Examples\Tilings.cshtml" />
-    <Content Include="Views\Examples\Other.cshtml" />
-    <Content Include="Views\Examples\Ascii.cshtml" />
-    <Content Include="Views\Examples\ThreeD.cshtml" />
     <Content Include="Views\Gallery\Index.cshtml" />
     <Content Include="Views\Gallery\Detail.cshtml" />
     <Content Include="Views\Gallery\Edit.cshtml" />
     <Content Include="Views\Gallery\Tags.cshtml" />
     <Content Include="Views\Shared\GalleryThumbnailPartial.cshtml" />
+    <Content Include="Views\Gallery\FullScreen.cshtml" />
+    <Content Include="Views\Shared\_FullScreenLayout.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Areas\Administration\Views\Shared\" />
@@ -495,9 +531,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Process\OutputPartial.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Examples\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Areas\Administration\Views\Stats\Input.cshtml" />

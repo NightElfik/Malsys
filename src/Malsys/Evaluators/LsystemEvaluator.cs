@@ -154,16 +154,16 @@ namespace Malsys.Evaluators {
 
 				case LsystemStatementType.Constant:
 					var cst = (ConstantDefinition)statement;
-					if (cst.IsComponentAssign) {
-						try {
+					try {
+						if (cst.IsComponentAssign) {
 							valAssigns = valAssigns.Add(cst.Name, exprEvalCtxt.Evaluate(cst.Value));
 						}
-						catch (EvalException ex) {
-							logger.LogMessage(Message.ConstDefEvalFailed, cst.AstNode.TryGetPosition(), cst.Name, lsystemName, ex.GetFullMessage());
+						else {
+							exprEvalCtxt = exprEvalCtxt.AddVariable(cst.Name, cst.Value, cst.AstNode);
 						}
 					}
-					else {
-						exprEvalCtxt = exprEvalCtxt.AddVariable(cst.Name, cst.Value, cst.AstNode);
+					catch (EvalException ex) {
+						logger.LogMessage(Message.ConstDefEvalFailed, cst.AstNode.TryGetPosition(), cst.Name, lsystemName, ex.GetFullMessage());
 					}
 					break;
 

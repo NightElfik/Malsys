@@ -6,16 +6,23 @@ namespace Malsys.Web.Infrastructure {
 	public static class HtmlHelperExtensions {
 
 		public static HtmlString Link(this HtmlHelper html, string link) {
-			return new HtmlString("<a href=\"{0}\">{0}</a>".Fmt(link));
+			return Link(html, link, link);
 		}
 
-		public static HtmlString Link(this HtmlHelper html, string text, string link) {
-			return new HtmlString("<a href=\"{1}\">{0}</a>".Fmt(text, link));
+		public static HtmlString Link(this HtmlHelper html, string text, string link, string title = null) {
+			var tb = new TagBuilder("a");
+			tb.SetInnerText(text);
+			tb.MergeAttribute("href", link);
+			if (title != null) {
+				tb.MergeAttribute("title", title);
+			}
+
+			return new HtmlString(tb.ToString());
 		}
 
 
-		public static HtmlString EmailLink(this HtmlHelper html, string email, string title = null) {
-			return new HtmlString("<a href=\"{1}\">{0}</a>".Fmt(title ?? email, "mailto:" + email));
+		public static HtmlString EmailLink(this HtmlHelper html, string email, string text = null, string title = null) {
+			return Link(html, text ?? email, "mailto:" + email, title);
 		}
 
 		public static MvcHtmlString SubmitButton(this HtmlHelper html, string name, string value) {

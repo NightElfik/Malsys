@@ -4,7 +4,10 @@ using System.IO;
 using System.Windows.Media.Media3D;
 using Malsys.IO;
 using Malsys.Media;
+using Malsys.Media.Triangulation;
+using Malsys.Resources;
 using Malsys.SemanticModel;
+using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Processing.Components.Renderers {
 	/// <summary>
@@ -16,14 +19,20 @@ namespace Malsys.Processing.Components.Renderers {
 	public class ThreeJsSceneRenderer3D : BaseRenderer3D {
 
 		private IndentTextWriter writer;
-
+		private Polygon3DTrianguler polygonTrianguler = new Polygon3DTrianguler();
+		Polygon3DTriangulerParameters polygonTriangulerParameters;
 
 		private bool smoothShading;
+
+		private int triangulationStrategy;
+
 
 		bool lineGeometryCreated;
 		private HashSet<string> createdMetarials = new HashSet<string>();
 		private HashSet<string> createdSphereGeomteries = new HashSet<string>();
 
+
+		#region User gettable & settable properties
 
 		/// <summary>
 		/// If set to true, triangles will be shaded smoothly.
@@ -40,13 +49,103 @@ namespace Malsys.Processing.Components.Renderers {
 			}
 		}
 
+		/// <summary>
+		/// Polygon triangulation strategy.
+		/// </summary>
+		/// <expected>
+		/// 0 for "fan from first point",
+		/// 1 triangles with minimal angle are prioritized,
+		/// 2 triangles with maximal angle are prioritized,
+		/// 3 triangles with maximal distance from all other points are prioritized,
+		/// 4 triangles with maximal distance from not-yet-triangulated points are prioritized</expected>
+		/// <default>2</default>
+		[AccessName("polygonTriangulationStrategy")]
+		[UserSettable]
+		public Constant PolygonTriangulationStrategy {
+			set {
+				triangulationStrategy = value.RoundedIntValue.Clamp(0, 4);
+			}
+		}
+
+		/// <summary>
+		/// Camera position. If not set it is counted automatically.
+		/// </summary>
+		/// <expected>Array 3 numbers representing x, y and z coordinate of camera position.</expected>
+		/// <default>counted dynamically</default>
+		[AccessName("cameraPosition")]
+		[UserSettable]
+		public ValuesArray CameraPosition {
+			get { return cameraPosition; }
+			set {
+				if (!value.IsConstArrayOfLength(3)) {
+					throw new InvalidUserValueException("Camera position must be array of 3 numbers representing x, y and z coordinate.");
+				}
+				cameraPosition = value;
+			}
+		}
+		private ValuesArray cameraPosition;
+
+		/// <summary>
+		/// Camera up vector.
+		/// </summary>
+		/// <expected>Array 3 numbers representing x, y and z up vector of camera.</expected>
+		/// <default>{0, 1, 0}</default>
+		[AccessName("cameraUpVector")]
+		[UserSettable]
+		public ValuesArray CameraUpVector {
+			get { return cameraUpVector; }
+			set {
+				if (!value.IsConstArrayOfLength(3)) {
+					throw new InvalidUserValueException("Camera up vector must be array of 3 numbers representing x, y and z coordinate.");
+				}
+				cameraUpVector = value;
+			}
+		}
+		private ValuesArray cameraUpVector;
+
+		/// <summary>
+		/// Camera target. If not set it is counted automatically.
+		/// </summary>
+		/// <expected>Array 3 numbers representing x, y and z coordinate of camera target.</expected>
+		/// <default>counted dynamically</default>
+		[AccessName("cameraTarget")]
+		[UserSettable]
+		public ValuesArray CameraTarget {
+			get { return cameraTarget; }
+			set {
+				if (!value.IsConstArrayOfLength(3)) {
+					throw new InvalidUserValueException("Camera target must be array of 3 numbers representing x, y and z coordinate.");
+				}
+				cameraTarget = value;
+			}
+		}
+		private ValuesArray cameraTarget;
+
+		#endregion
+
 
 		public override void Initialize(ProcessContext ctxt) {
+
+			var triangleEvalFun = getTriangleEvaluationFunction();
+
+			polygonTriangulerParameters = new Polygon3DTriangulerParameters() {
+				TriangleEvalDelegate = triangleEvalFun.EvalDelegate,
+				Ordering = triangleEvalFun.Ordering,
+				RecountMode = triangleEvalFun.RecountMode,
+				AttachedMultiplier = 1,
+				DetectPlanarPolygons = true,
+				MaxVarCoefOfDist = 0.1
+			};
+
 			base.Initialize(ctxt);
 		}
 
 		public override void Cleanup() {
 			SmoothShading = Constant.False;
+			PolygonTriangulationStrategy = new Constant(2d);
+			cameraPosition = null;
+			cameraUpVector = null;
+			cameraTarget = null;
 			base.Cleanup();
 		}
 
@@ -101,19 +200,19 @@ namespace Malsys.Processing.Components.Renderers {
 				writer.WriteLine("mesh = new THREE.Mesh({0}, {1});".Fmt(geometryName, materialName));
 
 				var middle = Math3D.CountMiddlePoint(endPoint, lastPoint);
-				writer.WriteLine("mesh.position.x = {0:0.000};".Fmt(middle.X));
-				writer.WriteLine("mesh.position.y = {0:0.000};".Fmt(middle.Y));
-				writer.WriteLine("mesh.position.z = {0:0.000};".Fmt(middle.Z));
+				writer.WriteLine("mesh.position.x = {0:0.###};".Fmt(middle.X));
+				writer.WriteLine("mesh.position.y = {0:0.###};".Fmt(middle.Y));
+				writer.WriteLine("mesh.position.z = {0:0.###};".Fmt(middle.Z));
 
 				var euclidRotation = rotation.ToEuclidRotation();
 				writer.WriteLine("mesh.eulerOrder = 'YZX';");
-				writer.WriteLine("mesh.rotation.x = {0:0.000};".Fmt(euclidRotation.X));
-				writer.WriteLine("mesh.rotation.y = {0:0.000};".Fmt(euclidRotation.Y));
-				writer.WriteLine("mesh.rotation.z = {0:0.000};".Fmt(euclidRotation.Z));
+				writer.WriteLine("mesh.rotation.x = {0:0.###};".Fmt(euclidRotation.X));
+				writer.WriteLine("mesh.rotation.y = {0:0.###};".Fmt(euclidRotation.Y));
+				writer.WriteLine("mesh.rotation.z = {0:0.###};".Fmt(euclidRotation.Z));
 
-				writer.WriteLine("mesh.scale.x = {0:0.000};".Fmt(Math3D.Distance(endPoint, lastPoint)));
-				writer.WriteLine("mesh.scale.y = {0:0.000};".Fmt(width));
-				writer.WriteLine("mesh.scale.z = {0:0.000};".Fmt(width));
+				writer.WriteLine("mesh.scale.x = {0:0.###};".Fmt(Math3D.Distance(endPoint, lastPoint)));
+				writer.WriteLine("mesh.scale.y = {0:0.###};".Fmt(width));
+				writer.WriteLine("mesh.scale.z = {0:0.###};".Fmt(width));
 
 				writer.WriteLine("mesh.updateMatrix();");
 				writer.WriteLine("mesh.matrixAutoUpdate = false;");
@@ -127,7 +226,35 @@ namespace Malsys.Processing.Components.Renderers {
 		}
 
 		public override void DrawPolygon(Polygon3D polygon) {
-			throw new NotImplementedException();
+			if (!measuring) {
+
+				if (polygon.Ponits.Count < 3) {
+					Logger.LogMessage(Message.InvalidPolygon, polygon.Ponits.Count);
+					return;
+				}
+
+				writer.WriteLine("geom = new THREE.Geometry();");
+
+				foreach (var pt in polygon.Ponits) {
+					writer.WriteLine("geom.vertices.push(new THREE.Vertex(new THREE.Vector3({0:0.###},{1:0.###},{2:0.###})));"
+						.Fmt(pt.X, pt.Y, pt.Z));
+					measure(pt);
+				}
+
+				var indices = polygonTrianguler.Triangularize(polygon.Ponits, polygonTriangulerParameters);
+				for (int i = 0; i < indices.Count; i += 3) {
+					writer.WriteLine("geom.faces.push(new THREE.Face3({0},{1},{2}));".Fmt(indices[i], indices[i + 1], indices[i + 2]));
+
+				}
+
+				writer.WriteLine("geom.computeFaceNormals();");
+				string materialName = createMaterial(polygon.Color);
+
+				writer.WriteLine("mesh = new THREE.Mesh(geom, {0});".Fmt(materialName));
+				writer.WriteLine("mesh.matrixAutoUpdate = false;");
+				writer.WriteLine("mesh.doubleSided = true;");
+				writer.WriteLine("objectHolder.add(mesh);");
+			}
 		}
 
 		public override void DrawSphere(Point3D center, double radius, ColorF color, double quality) {
@@ -136,14 +263,14 @@ namespace Malsys.Processing.Components.Renderers {
 				string materialName = createMaterial(color);
 				writer.WriteLine("mesh = new THREE.Mesh({0}, {1});".Fmt(geometryName, materialName));
 
-				writer.WriteLine("mesh.position.x = {0:0.000};".Fmt(center.X));
-				writer.WriteLine("mesh.position.y = {0:0.000};".Fmt(center.Y));
-				writer.WriteLine("mesh.position.z = {0:0.000};".Fmt(center.Z));
+				writer.WriteLine("mesh.position.x = {0:0.###};".Fmt(center.X));
+				writer.WriteLine("mesh.position.y = {0:0.###};".Fmt(center.Y));
+				writer.WriteLine("mesh.position.z = {0:0.###};".Fmt(center.Z));
 
 				if (radius.EpsilonCompareTo(1.0) != 0) {
-					writer.WriteLine("mesh.scale.x = {0:0.000};".Fmt(radius));
-					writer.WriteLine("mesh.scale.y = {0:0.000};".Fmt(radius));
-					writer.WriteLine("mesh.scale.z = {0:0.000};".Fmt(radius));
+					writer.WriteLine("mesh.scale.x = {0:0.###};".Fmt(radius));
+					writer.WriteLine("mesh.scale.y = {0:0.###};".Fmt(radius));
+					writer.WriteLine("mesh.scale.z = {0:0.###};".Fmt(radius));
 				}
 
 				writer.WriteLine("mesh.updateMatrix();");
@@ -210,45 +337,100 @@ namespace Malsys.Processing.Components.Renderers {
 			writer.WriteLine("var objectHolder = new THREE.Object3D();");
 			writer.WriteLine("scene.add(objectHolder);");
 
-			writer.WriteLine("var mesh; var material;");  // mesh for creating objects
+			writer.WriteLine("var mesh; var material; var geom;");  // mesh for creating objects
 
 		}
 
 		private void endFile() {
 
-			var cameraTarget = Math3D.CountMiddlePoint(measuredMin, measuredMax);
-			var cameraPos = Math3D.AddPoints(cameraTarget, measuredMax);
-			var cameraPosNorm = ((Vector3D)cameraPos);
-			cameraPosNorm.Normalize();
+			Point3D camTarget = Math3D.ZeroPoint;
+			if (cameraTarget != null) {
+				camTarget.X = ((Constant)cameraTarget[0]).Value;
+				camTarget.Y = ((Constant)cameraTarget[1]).Value;
+				camTarget.Z = ((Constant)cameraTarget[2]).Value;
+			}
+			else {
+				camTarget = Math3D.CountMiddlePoint(measuredMin, measuredMax);
+			}
 
-			// lights
-			//writer.WriteLine("var ambientLight = new THREE.AmbientLight(0x111111);");
-			//writer.WriteLine("scene.add(ambientLight);");
+			Point3D camPosition = Math3D.ZeroPoint;
+			if (cameraPosition != null) {
+				camPosition.X = ((Constant)cameraPosition[0]).Value;
+				camPosition.Y = ((Constant)cameraPosition[1]).Value;
+				camPosition.Z = ((Constant)cameraPosition[2]).Value;
+			}
+			else {
+				camPosition = Math3D.AddPoints(camTarget, measuredMax);
+			}
 
-			// main light from camera
-			writer.WriteLine("var directionalLight = new THREE.DirectionalLight(0xFFFFFF);");
-			writer.WriteLine("directionalLight.position.x = {0:0.000};".Fmt(cameraPosNorm.X));
-			writer.WriteLine("directionalLight.position.y = {0:0.000};".Fmt(cameraPosNorm.Y));
-			writer.WriteLine("directionalLight.position.z = {0:0.000};".Fmt(cameraPosNorm.Z));
+			Point3D camUp = Math3D.ZeroPoint;
+			if (cameraUpVector != null) {
+				camUp.X = ((Constant)cameraUpVector[0]).Value;
+				camUp.Y = ((Constant)cameraUpVector[1]).Value;
+				camUp.Z = ((Constant)cameraUpVector[2]).Value;
+			}
+			else {
+				camUp = new Point3D(0, 1, 0);
+			}
+
+			camUp.Normalize();
+
+
+			var light1 = new Vector3D(-0.9, -1.2, -1.1);
+			var light2 = new Vector3D(0, 1.2, 0.9);
+			var light3 = new Vector3D(1, 1.1, 0);
+
+			light1.Normalize();
+			light2.Normalize();
+			light3.Normalize();
+
+			writer.WriteLine("var directionalLight = new THREE.DirectionalLight(0xF0F0F0);");
+			writer.WriteLine("directionalLight.position.x = {0:0.###};".Fmt(light1.X));
+			writer.WriteLine("directionalLight.position.y = {0:0.###};".Fmt(light1.Y));
+			writer.WriteLine("directionalLight.position.z = {0:0.###};".Fmt(light1.Z));
 			writer.WriteLine("scene.add(directionalLight);");
 
-			// secondary light to avoid completely black sides (not directly against primaty light)
-			writer.WriteLine("directionalLight = new THREE.DirectionalLight(0x777777);");
-			writer.WriteLine("directionalLight.position.x = {0:0.000};".Fmt(-cameraPosNorm.Y));
-			writer.WriteLine("directionalLight.position.y = {0:0.000};".Fmt(-cameraPosNorm.X));
-			writer.WriteLine("directionalLight.position.z = {0:0.000};".Fmt(-cameraPosNorm.Z));
+			writer.WriteLine("directionalLight = new THREE.DirectionalLight(0x999999);");
+			writer.WriteLine("directionalLight.position.x = {0:0.###};".Fmt(light2.X));
+			writer.WriteLine("directionalLight.position.y = {0:0.###};".Fmt(light2.Y));
+			writer.WriteLine("directionalLight.position.z = {0:0.###};".Fmt(light2.Z));
 			writer.WriteLine("scene.add(directionalLight);");
+
+			writer.WriteLine("directionalLight = new THREE.DirectionalLight(0x999999);");
+			writer.WriteLine("directionalLight.position.x = {0:0.###};".Fmt(light3.X));
+			writer.WriteLine("directionalLight.position.y = {0:0.###};".Fmt(light3.Y));
+			writer.WriteLine("directionalLight.position.z = {0:0.###};".Fmt(light3.Z));
+			writer.WriteLine("scene.add(directionalLight);");
+
 
 			writer.WriteLine("return {");
 			writer.WriteLine("getScene: function() { return scene; },");
-			writer.WriteLine("getCameraPosition: function() {{ return new THREE.Vector3( {0:0.000}, {1:0.000}, {2:0.000} ); }},"
-				.Fmt(cameraPos.X, cameraPos.Y, cameraPos.Z));
-			writer.WriteLine("getCameraTarget: function() {{ return new THREE.Vector3( {0:0.000}, {1:0.000}, {2:0.000} ); }}"
-				.Fmt(cameraTarget.X, cameraTarget.Y, cameraTarget.Z));
+			writer.WriteLine("getCameraPosition: function() {{ return new THREE.Vector3( {0:0.###}, {1:0.###}, {2:0.###} ); }},"
+				.Fmt(camPosition.X, camPosition.Y, camPosition.Z));
+			writer.WriteLine("getCameraUpVector: function() {{ return new THREE.Vector3( {0:0.###}, {1:0.###}, {2:0.###} ); }},"
+				.Fmt(camUp.X, camUp.Y, camUp.Z));
+			writer.WriteLine("getCameraTarget: function() {{ return new THREE.Vector3( {0:0.###}, {1:0.###}, {2:0.###} ); }}"
+				.Fmt(camTarget.X, camTarget.Y, camTarget.Z));
 			writer.WriteLine("};");
 
 			writer.WriteLine("};");  // end of scope
 
+		}
+
+		private TriangleEvaluationFunction getTriangleEvaluationFunction() {
+			switch (triangulationStrategy) {
+				case 1: return TriangleEvaluationFunctions.MinAngle;
+				case 2: return TriangleEvaluationFunctions.MaxAngle;
+				case 3: return TriangleEvaluationFunctions.MaxDistanceAll;
+				case 4: return TriangleEvaluationFunctions.MaxDistanceRemaining;
+				default: return TriangleEvaluationFunctions.AsInInputAsc;
+			}
+		}
+
+
+		public enum Message {
+			[Message(MessageType.Warning, "Invalid polygon with {0} points ignored.")]
+			InvalidPolygon
 		}
 
 	}

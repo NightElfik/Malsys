@@ -7,7 +7,6 @@ using Malsys.Processing.Components;
 using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Collections;
-using Microsoft.FSharp.Core;
 
 namespace Malsys.Processing {
 	public class ProcessManager {
@@ -176,8 +175,6 @@ namespace Malsys.Processing {
 			UndefinedProcessConfig,
 			[Message(MessageType.Error, "Failed to evaluate process statement, L-system `{0}` is not defined.")]
 			LsysNotDefined,
-			[Message(MessageType.Error, "Failed to process L-system, `{0}` was thrown.")]
-			ExceptionThrownWhileProcessing,
 
 			[Message(MessageType.Error, "Evaluation of L-system `{0}` failed. {1}")]
 			LsystemEvalFailed,

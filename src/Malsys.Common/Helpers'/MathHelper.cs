@@ -11,7 +11,7 @@ namespace Malsys {
 		public const double PiHalf = Math.PI / 2;
 
 
-		public static int Clamp(int value, int min, int max) {
+		public static int Clamp(this int value, int min, int max) {
 			if (value < min) {
 				return min;
 			}
@@ -23,7 +23,7 @@ namespace Malsys {
 			}
 		}
 
-		public static float Clamp(float value, float min, float max) {
+		public static float Clamp(this float value, float min, float max) {
 			if (value < min) {
 				return min;
 			}
@@ -35,7 +35,7 @@ namespace Malsys {
 			}
 		}
 
-		public static double Clamp(double value, double min, double max) {
+		public static double Clamp(this double value, double min, double max) {
 			if (value < min) {
 				return min;
 			}
@@ -47,7 +47,7 @@ namespace Malsys {
 			}
 		}
 
-		public static float Clamp01(float value) {
+		public static float Clamp01(this float value) {
 			if (value < 0) {
 				return 0;
 			}
@@ -59,7 +59,7 @@ namespace Malsys {
 			}
 		}
 
-		public static double Clamp01(double value) {
+		public static double Clamp01(this double value) {
 			if (value < 0) {
 				return 0;
 			}

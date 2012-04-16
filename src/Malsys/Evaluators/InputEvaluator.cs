@@ -31,7 +31,12 @@ namespace Malsys.Evaluators {
 				switch (stat.StatementType) {
 					case InputStatementType.Constant:
 						var cst = (ConstantDefinition)stat;
-						exprEvalCtxt = exprEvalCtxt.AddVariable(cst.Name, cst.Value, cst.AstNode);
+						try {
+							exprEvalCtxt = exprEvalCtxt.AddVariable(cst.Name, cst.Value, cst.AstNode);
+						}
+						catch (EvalException ex) {
+							logger.LogMessage(Message.ConstDefEvalFailed, cst.AstNode.TryGetPosition(), cst.Name, ex.GetFullMessage());
+						}
 						break;
 
 					case InputStatementType.Function:
@@ -79,6 +84,8 @@ namespace Malsys.Evaluators {
 
 		public enum Message {
 
+			[Message(MessageType.Error, "Failed to evaluate constant definition `{0}`. {1}")]
+			ConstDefEvalFailed,
 			[Message(MessageType.Error, "Failed to evaluate default value of parameter of function definition `{0}`. {1}")]
 			FunDefEvalFailed,
 			[Message(MessageType.Error, "Failed to evaluate default value of parameter of L-system definition `{0}`. {1}")]

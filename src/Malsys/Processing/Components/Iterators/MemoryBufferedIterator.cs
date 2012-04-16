@@ -231,7 +231,7 @@ namespace Malsys.Processing.Components.RewriterIterators {
 			inBuffer.Clear();
 			inBuffer.AddRange(AxiomProvider);
 
-			for (currIteration = 0; currIteration <= iterationsCount; setCurrentIteration(currIteration + 1)) {
+			for (setCurrentIteration(0); currIteration <= iterationsCount; setCurrentIteration(currIteration + 1)) {
 
 				if (currIteration != 0) {
 					rewriteIteration();

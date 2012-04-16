@@ -1,8 +1,8 @@
-﻿using System.Web.Helpers;
+﻿using System;
+using System.Web.Helpers;
 using System.Web.Mvc;
 using Malsys.Web.Areas.Administration.Models;
 using Malsys.Web.Entities;
-using System;
 
 namespace Malsys.Web.Areas.Administration.Controllers {
 	[Authorize(Roles = UserRoles.Administrator)]
@@ -18,6 +18,10 @@ namespace Malsys.Web.Areas.Administration.Controllers {
 
 		public virtual ActionResult Index() {
 			return View();
+		}
+
+		public virtual ActionResult TryThrowException() {
+			throw new Exception("Test exception");
 		}
 
 		public virtual ActionResult TrySendMail() {

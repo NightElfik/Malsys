@@ -1,6 +1,5 @@
 ﻿@model InputDetail
 
-@using Malsys;
 @using Malsys.Processing;
 @using Malsys.Web.Models.Lsystem;
 
@@ -41,11 +40,13 @@
 		<div class="scrollBox">
 			<img src="@Url.Action(MVC.Gallery.GetOutput(Model.Input.UrlId))" @if (hasValidSize) { <text>width="@(width)px" height="@(height)px"</text> } alt="Process result" />
 		</div>
-																	break;
+		break;
+
 	case MimeType.Application.Json:
-		<div class="threeJsScene" data-scene="@Url.Action(MVC.Gallery.GetOutput(Model.Input.UrlId))" data-clear-color="FFFFFF" data-stats-display="true" data-anti-alias="true">
+		<div class="threeJsScene" data-scene="@Url.Action(MVC.Gallery.GetOutput(Model.Input.UrlId))" data-clear-color="FFFFFF" data-anti-alias="true">
 			<p class="webgl">WebGL is not supported by your browser. Please <a href="http://get.webgl.org/">get supported browser</a>.</p>
 			<p class="controls">Controls: Move mouse &amp; press LEFT/A: rotate, MIDDLE/S: zoom, RIGHT/D: pan</p>
+			<a href="@Url.Action(MVC.Gallery.FullScreen(Model.Input.UrlId))" class="fullscreen">Full screen</a>
 		</div>
 		<text>
 		@section scripts {
@@ -55,17 +56,17 @@
 			@Content.Js(Links.Js.ThreeJs.malsys_three_js)
 		}
 		</text>
-break;
+		break;
 
 	default:
 		<p class="outputTruncated">Unknown output type `@Model.Input.MimeType`.</p>
-											 break;
+		break;
 }
 
 @if (!string.IsNullOrWhiteSpace(Model.Input.Description)) {
 	<h3>Description</h3>
 
-	<p>@Model.Input.Description</p>
+	<p style="white-space: pre-line;">@Model.Input.Description</p>
 }
 
 <h3>Views & rating</h3>
@@ -122,5 +123,10 @@ else {
 
 <pre class="malsys box">
 @Model.Input.SourceCode
+@if (!string.IsNullOrWhiteSpace(Model.Input.ThumbnailSourceExtension)) {
+<text>
+// thumbnail extension</text>
+@Model.Input.ThumbnailSourceExtension
+}
 </pre>
 

@@ -22,7 +22,7 @@ namespace Malsys.Media {
 					nextColor = false;
 				}
 				else {
-					if (item.IsConstant) {
+					if (item.IsConstant && ((Constant)item).ConstantFormat != Ast.ConstantFormat.HashHexadecimal) {
 						var c = (Constant)item;
 						if (c.Value < 0) {
 							logger.LogMessage(Message.DistanceCantBeNegative, c.AstPosition);

@@ -19,11 +19,12 @@
 		LsystemProcessor = Model,
 		SourceCodeTemplate = StringHelper.JoinLines(
 			"lsystem SymbolExample{0:00} {{",
+			"set debugInterpretation = true;",
 			"set symbols axiom = {1};",
 			"{2}",
 			"}}",
-			"process all with InterpretationDebugger;"),
-		UnimportantLines = new int[] { 1, -1, -2 }
+			"process all with ThreeJsRenderer;"),
+		UnimportantLines = new int[] { 1, 2, -1, -2 }
 	};
 
 	int exampleId = 1;

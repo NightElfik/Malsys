@@ -33,6 +33,14 @@ namespace Malsys.SourceCode.Printers {
 			writer.NewLine();
 		}
 
+		public void Indent() {
+			writer.Indent();
+		}
+
+		public void Unindent() {
+			writer.Unindent();
+		}
+
 
 		public void Print(Ast.Keyword kw, bool includeSpace = true) {
 			writer.Write(EnumHelper.GetStringVal(kw));

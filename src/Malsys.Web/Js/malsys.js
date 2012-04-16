@@ -86,7 +86,7 @@
 		// format code
 		var code = highlightLsystemKeywords(lsystemCode);
 		code = highlightComments(code);
-		code = replaceTabs(code);
+		// = replaceTabs(code);
 
 		if ($(this).attr("data-unimportant-lines")) {
 			var lines = code.split(/\n/);
@@ -128,7 +128,7 @@
 
 		var newHtml = $(this).text().trim();
 		newHtml = highlightLsystemKeywords(newHtml);
-		newHtml = replaceTabs(newHtml);
+		//newHtml = replaceTabs(newHtml);
 
 		$(this).text("");
 		$(this).append(newHtml);

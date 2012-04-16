@@ -35,9 +35,9 @@
 		<div class="threeJsScene" data-scene="@Url.Action(MVC.Gallery.GetThumbnail(Model.SavedInput.UrlId))" data-clear-color="FFFFFF" data-anti-alias="false"></div>
 		break;
 
-		default:
-			<p>Thumbnail for this type of output is not supported</p>
-			break;
+	default:
+		<div style="width: @(Model.MaxWidth / 4)px; height: @(Model.MaxHeight)px;"><p>@Model.SavedInput.PublishName</p> Thumbnail for this type of output is not supported. Please click to see it.</div>
+		break;
 
 }
 

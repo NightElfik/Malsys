@@ -20,7 +20,7 @@ namespace Malsys.Processing.Components.Renderers {
 		public const string FileHeader = "<?xml version=\"1.0\" standalone=\"no\"?>\n"
 			+ "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">";
 		public const string SvgHeader = "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\""
-			+ " viewBox=\"{0:0.###} {1:0.###} {2:0.###} {3:0.###}\" width=\"{4:0.###}px\" height=\"{5:0.###}px\">";
+			+ " viewBox=\"{0:0.###} {1:0.###} {2:0.###} {3:0.###}\" width=\"{4:0.###}px\" height=\"{5:0.###}px\" style=\"stroke-linecap: {6}\">";
 		public const string SvgFooter = "</svg>";
 
 
@@ -102,6 +102,15 @@ namespace Malsys.Processing.Components.Renderers {
 		[UserSettable]
 		public Constant Scale { get; set; }
 
+		/// <summary>
+		/// Cap of each rendered line.
+		/// </summary>
+		/// <expected>0 for no caps, 1 for square caps, 2 for round caps</expected>
+		/// <default>2 (round caps)</default>
+		[AccessName("lineCap")]
+		[UserSettable]
+		public Constant LineCap { get; set; }
+
 
 		#region IComponent Members
 
@@ -116,6 +125,7 @@ namespace Malsys.Processing.Components.Renderers {
 			Margin = new Constant(2d);
 			CompressSvg = Constant.True;
 			Scale = Constant.One;
+			LineCap = new Constant(2d);
 		}
 
 		public void BeginProcessing(bool measuring) {
@@ -157,7 +167,8 @@ namespace Malsys.Processing.Components.Renderers {
 					svgWidth,
 					svgHeight,
 					svgWidthScaled,
-					svgHeighScaled));
+					svgHeighScaled,
+					getLineCapString(LineCap)));
 			}
 		}
 
@@ -249,7 +260,7 @@ namespace Malsys.Processing.Components.Renderers {
 				}
 			}
 			else {
-				writer.Write("<polygon fill=\"#{0}\" stroke-width=\"{1:0.###}px\" stroke=\"#{2}\" points=\""
+				writer.Write("<polygon fill=\"#{0}\" stroke-width=\"{1:0.###}\" stroke=\"#{2}\" points=\""
 					.FmtInvariant(polygon.Color.ToRgbHexString(), polygon.StrokeWidth, polygon.StrokeColor.ToRgbHexString()));
 
 				foreach (var pt in polygon.Ponits) {
@@ -276,6 +287,14 @@ namespace Malsys.Processing.Components.Renderers {
 
 		#endregion
 
+
+		private string getLineCapString(Constant c) {
+			switch (c.RoundedIntValue) {
+				case 1: return "square";
+				case 2: return "round";
+				default: return "butt";
+			}
+		}
 
 		private void measure(double x, double y) {
 			if (x < minX) {

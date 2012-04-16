@@ -69,24 +69,30 @@ namespace Malsys.Tests.Processing {
 		[TestMethod]
 		public void LsystemInterpretationsInheritanceTests() {
 			doTest("abstract lsystem Base { interpret A as X; interpret B as Y; }"
-				+ "lsystem Derived extends Base { interpret A as W; set symbols axiom = A B; }"
-				+ "process all with InterpretationDebugger;",
-				"A => W",
-				"B => Y");
+				+ "lsystem Derived extends Base { set debugInterpretation = true; interpret A as W; set symbols axiom = A B; }"
+				+ "process all with ThreeJsRenderer;",
+				"Begin processing",
+				"A => W ERROR (undefined)",
+				"B => Y ERROR (undefined)",
+				"End processing");
 		}
 
 		[TestMethod]
 		public void LsystemArgsInheritanceTests() {
 			doTest("abstract lsystem Base(a, b = 2) { interpret A as A(a); interpret B as B(b); }"
-				+ "lsystem Derived extends Base(1) { set symbols axiom = A B; }"
-				+ "process all with InterpretationDebugger;",
-				"A => A(1)",
-				"B => B(2)");
+				+ "lsystem Derived extends Base(1) { set debugInterpretation = true; set symbols axiom = A B; }"
+				+ "process all with ThreeJsRenderer;",
+				"Begin processing",
+				"A => A(1) ERROR (undefined)",
+				"B => B(2) ERROR (undefined)",
+				"End processing");
 			doTest("abstract lsystem Base(a, b = 2) { interpret A as A(a); interpret B as B(b); }"
-				+ "lsystem Derived(c) extends Base(c) { set symbols axiom = A B; }"
-				+ "process all (1) with InterpretationDebugger;",
-				"A => A(1)",
-				"B => B(2)");
+				+ "lsystem Derived(c) extends Base(c) { set debugInterpretation = true; set symbols axiom = A B; }"
+				+ "process all (1) with ThreeJsRenderer;",
+				"Begin processing",
+				"A => A(1) ERROR (undefined)",
+				"B => B(2) ERROR (undefined)",
+				"End processing");
 		}
 
 

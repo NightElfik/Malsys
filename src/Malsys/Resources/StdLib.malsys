@@ -4,13 +4,31 @@
 //==============================================================================
 
 //------------------------------------------------------------------------------
-// Constants.
+// General Constants.
 //------------------------------------------------------------------------------
 
 let pi = 3.14159265358979323846;
 let π = pi;  // Malsys supports Unicode! Yay!
 
 let e = 2.7182818284590452354;
+
+
+//------------------------------------------------------------------------------
+// Malsys specific constants.
+//------------------------------------------------------------------------------
+
+// line cap values of SvgRenderer2D.LineCap property.
+let none = 0;
+let square = 1;
+let round = 2;
+
+// Polygon triangulation strategies of
+// ThreeJsSceneRenderer3D.PolygonTriangulationStrategy property.
+let fanFromFirstPoint = 0;
+let minAngle = 1;
+let maxAngle = 2;
+let maxDistance = 3;
+let maxDistanceFromNonTriangulated = 4;
 
 
 //------------------------------------------------------------------------------
@@ -63,6 +81,7 @@ abstract lsystem StdLsystem3D {
 	interpret / as Roll(90);
 	interpret \(x = 90) as Roll(-x);
 
+
 	interpret < as StartPolygon;
 	interpret . as RecordPolygonVertex;
 	interpret > as EndPolygon;
@@ -83,6 +102,24 @@ abstract lsystem StdLsystem3D {
 abstract lsystem Branches {
 
 	// to allow rewriter recognize branches and check context correctly
+	set symbols startBranchSymbols = [;
+	set symbols endBranchSymbols = ];
+
+	interpret [ as StartBranch;
+	interpret ] as EndBranch;
+
+}
+
+/**
+ * Just correctly set branches and polygons.
+ */
+abstract lsystem Polygons {
+
+	interpret < as StartPolygon;
+	interpret . as RecordPolygonVertex;
+	interpret > as EndPolygon;
+
+
 	set symbols startBranchSymbols = [;
 	set symbols endBranchSymbols = ];
 
@@ -188,28 +225,6 @@ configuration ThreeJsRenderer {
 	connect InterpreterCaller to Iterator.OutputProcessor;
 	connect LsystemInLsystemProcessor to InterpreterCaller.LsystemInLsystemProcessor;
 	connect Renderer to Interpreter.Renderer;
-
-}
-
-/**
- * Prints conversion of symbols to interpretation methods.
- */
-configuration InterpretationDebugger {
-
-	component AxiomProvider typeof AxiomProvider;
-	component RandomGeneratorProvider typeof RandomGeneratorProvider;
-	component LsystemInLsystemProcessor typeof LsystemInLsystemProcessor;
-	component InterpreterCaller typeof InterpreterCallerDebugger;
-
-	container Rewriter typeof IRewriter default SymbolRewriter;
-	container Iterator typeof IIterator default MemoryBufferedIterator;
-
-	connect RandomGeneratorProvider to Iterator.RandomGeneratorProvider;
-	connect AxiomProvider to Iterator.AxiomProvider;
-	connect Iterator to Rewriter.SymbolProvider;
-	connect Rewriter to Iterator.SymbolProvider;
-	connect InterpreterCaller to Iterator.OutputProcessor;
-	connect LsystemInLsystemProcessor to InterpreterCaller.LsystemInLsystemProcessor;
 
 }
 

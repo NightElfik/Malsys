@@ -35,6 +35,7 @@ namespace Malsys.Web.Areas.Administration.Models {
 			Contract.Requires<InvalidOperationException>(tag.TagId == TagId);
 
 			tag.Name = Name;
+			tag.NameLowercase = Name.ToLower();
 			tag.Description = Description;
 		}
 

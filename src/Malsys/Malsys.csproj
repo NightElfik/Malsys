@@ -86,6 +86,7 @@
     <CodeContractsReferenceAssembly>DoNotBuild</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
     <DocumentationFile>bin\Release\Malsys.XML</DocumentationFile>
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Autofac, Version=2.6.1.841, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
@@ -116,6 +117,10 @@
     <Compile Include="Compilers\CompilerConstant.cs" />
     <Compile Include="Compilers\Interfaces%27\IOperatorsContainer.cs" />
     <Compile Include="Compilers\Interfaces%27\ICompilerConstantsContainer.cs" />
+    <Compile Include="Media\Triangulation\CyclicIndexedLinkedList.cs" />
+    <Compile Include="Media\Triangulation\Polygon3DTrianguler.cs" />
+    <Compile Include="Media\Triangulation\Polygon3DTriangulerParameters.cs" />
+    <Compile Include="Media\Triangulation\TriangleEvaluationFunction.cs" />
     <Compile Include="Processing\Components\Renderers\DebugRenderer2D.cs" />
     <Compile Include="Resources\MalsysConstantsAttribute.cs" />
     <Compile Include="Compilers\ConstantDefCompiler.cs" />
@@ -195,7 +200,6 @@
     <Compile Include="Processing\Components\Interpreters\IInterpreter3D.cs" />
     <Compile Include="Processing\Components\Interpreters\State3D.cs" />
     <Compile Include="Processing\Components\Interpreters\TurtleInterpreter.cs" />
-    <Compile Include="Processing\Components\Interpreters\InterpreterCallerDebugger.cs" />
     <Compile Include="Processing\Components\Interpreters\HexaAsciiInterpreter.cs" />
     <Compile Include="Processing\Components\Renderers\BaseRenderer3D.cs" />
     <Compile Include="Processing\Components\Renderers\DebugRenderer3D.cs" />
@@ -229,6 +233,7 @@
     <Compile Include="Resources\StdConstants.cs" />
     <Compile Include="Resources\StdFunctions.cs" />
     <Compile Include="Resources\StdOperators.cs" />
+    <Compile Include="Resources\TriangleEvaluationFunctions.cs" />
     <Compile Include="SemanticModel\Compiled\BaseLsystem.cs" />
     <Compile Include="SemanticModel\Compiled\ConstantDefinition.cs" />
     <Compile Include="SemanticModel\Compiled\Expressions\EmptyExpression.cs" />

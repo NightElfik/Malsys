@@ -5,13 +5,14 @@
 
 	var exampleModel = new LsystemExampleViewModel() {
 		LsystemProcessor = Model.SimpleLsystemProcessor,
-		UnimportantLines = new int[] { 1, -2, -1 },
+		UnimportantLines = new int[] { 1, 2, -2, -1 },
 		SourceCodeTemplate = string.Join(Environment.NewLine,
 			"lsystem {0} {{",
+			"set debugInterpretation = true;",
 			"set symbols axiom = {1};",
 			"{2}",
 			"}}",
-			"process all with InterpretationDebugger;")
+			"process all with ThreeJsRenderer;")
 	};
 
 	var processConfig = Model.StdLib.ProcessConfigurations["SvgRenderer"];
@@ -66,11 +67,11 @@
 	There can be specified more than one symbol to interpret with single action using syntax:
 		<code class="malsys">interpret <i>symbol1 symbol2 symbol3</i> … as <i>action</i>;</code>.
 	For example symbols <code>C A B</code> with interpretation definition <code class="malsys">interpret A B C as DrawForward;</code>
-		will interpret as <code>DrawForward DrawForward DrawForward</code>.
+		will interpret as <code>DrawForward(8) DrawForward(8) DrawForward(8)</code>.
 </p>
 
 @Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(
-		"InterpretationExample", "C A B", "interpret C A B as DrawForward;"))
+		"InterpretationExample", "C A B", "interpret C A B as DrawForward(8);"))
 
 
 <h4>Default parameters of action</h4>
@@ -118,9 +119,9 @@
 <pre class="malsys box">
 lsystem Plant {
 
-	set axiom = X;
-	let initialAngle = 90;
-	let iterations = 7;
+	set symbols axiom = X;
+	set initialAngle = 90;
+	set iterations = 7;
 
 	interpret F as DrawForward(3);
 	interpret + as TurnLeft(20);
@@ -131,7 +132,7 @@ lsystem Plant {
 	rewrite X to F [ + X ] F [ - X ] + X;
 	rewrite F to F F;
 
-	process with SvgRenderer;
-
 }
+
+process all with SvgRenderer;
 </pre>

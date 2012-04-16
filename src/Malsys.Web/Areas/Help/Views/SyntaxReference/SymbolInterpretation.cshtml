@@ -7,11 +7,12 @@
 		LsystemProcessor = Model,
 		SourceCodeTemplate = StringHelper.JoinLines(
 			"lsystem InterpretationExample{0:00} {{",
+			"set debugInterpretation = true;",
 			"set symbols axiom = {1};",
 			"{2}",
 			"}}",
-			"process all with InterpretationDebugger;"),
-		UnimportantLines = new int[] { 1, -1, -2 }
+			"process all with ThreeJsRenderer;"),
+		UnimportantLines = new int[] { 1, 2, -1, -2 }
 
 	};
 	int exampleId = 1;
@@ -21,7 +22,7 @@
 
 <p>
 	Defines interpretation action to set of symbols.
-	In following examples <code>InterpretationDebugger</code> render configuration is used to show actual calls on renderer.
+	In following examples <code>debugInterpretation</code> property is set to show actual calls on renderer.
 </p>
 
 <div id="toc"></div>
@@ -47,7 +48,7 @@
 
 @Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++,
 		"B A A C",
-		"interpret A B C as DrawForward;"))
+		"interpret A B C as DrawForward(8);"))
 
 
 @* ================================================================================================================== *@
@@ -166,17 +167,18 @@
 		SourceCodeTemplate = StringHelper.JoinLines(
 		"let three = 1 + 2;",
 		"lsystem InterpretationExample{0:00} {{",
+		"set debugInterpretation = true;",
 		"let six = three * 2;",
 		"set symbols axiom = {1};",
 		"{2}",
 		"}}",
-		"process all with InterpretationDebugger;"),
-		UnimportantLines = new int[] { 2, -1, -2 }};
+		"process all with ThreeJsRenderer;"),
+		UnimportantLines = new int[] { 2, 3, -1, -2 }};
 }
 
 @Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, specialModelArgs.WithArgs(exampleId++,
 		"A(1)  A(1, 2)  A(2, 3)",
-		"interpret A (a, b = 0)\n\t as Draw((a + three) * six, a + b * three);"))
+		"interpret A (a, b = 0)\n\t as DrawForward((a + three) * six, a + b * three);"))
 
 
 @* ================================================================================================================== *@
@@ -188,8 +190,8 @@
 
 @Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++,
 		"A B", StringHelper.JoinLines(
-		"interpret A B as DrawForward;",
-		"interpret B as MoveForward;")))
+		"interpret A B as StartBranch;",
+		"interpret B as Nothing;")))
 
 <hr />
 
@@ -207,16 +209,17 @@
 		"}}",
 		"lsystem InterpretationExample{0:00} extends Base {{",
 		"set symbols axiom = {1};",
+		"set debugInterpretation = true;",
 		"{3}",
 		"}}",
-		"process all with InterpretationDebugger;"),
+		"process all with ThreeJsRenderer;"),
 		UnimportantLines = new int[] {-1 }};
 }
 
 @Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, specialModelInt.WithArgs(exampleId++,
 		"A B",
-		"interpret A B as Draw;",
-		"interpret A as Move;"))
+		"interpret A B as StartBranch;",
+		"interpret A as Nothing;"))
 
 @* ================================================================================================================== *@
 <h3>Formal grammar</h3>

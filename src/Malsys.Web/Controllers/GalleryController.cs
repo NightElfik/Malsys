@@ -105,14 +105,18 @@ namespace Malsys.Web.Controllers {
 				Input = input,
 				CurrentUserIsOwner = owner,
 				UserVote = malsysInputRepository.GetUserVote(input.UrlId, User.Identity.Name),
-				FilePath = getFilePath(input.UrlId, input.MimeType, false),
-				ThnFilePath = getFilePath(input.UrlId, input.MimeType, true),
+				FilePath = getFilePath(input.UrlId, false),
+				ThnFilePath = getFilePath(input.UrlId, true),
 				Metadata = OutputMetadataHelper.DeserializeMetadata(input.OutputMetadata)
 			};
 
 			malsysInputRepository.InputDb.SaveChanges();
 
 			return View(model);
+		}
+
+		public virtual ActionResult FullScreen(string id) {
+			return Detail(id);
 		}
 
 
@@ -217,7 +221,7 @@ namespace Malsys.Web.Controllers {
 			}
 
 			string workDirFullPath;
-			string filePath = getFilePath(input.UrlId, input.MimeType, thumbnail, out workDirFullPath);
+			string filePath = getFilePath(input.UrlId, thumbnail, out workDirFullPath);
 
 			if (!System.IO.File.Exists(filePath)) {
 				if (tryGenerateInput(input, workDirFullPath, filePath, thumbnail)) {
@@ -245,12 +249,12 @@ namespace Malsys.Web.Controllers {
 
 
 
-		private string getFilePath(string urlId, string mimeType, bool thumbnail) {
+		private string getFilePath(string urlId, bool thumbnail) {
 			string workDirFullPath;
-			return getFilePath(urlId, mimeType, thumbnail, out workDirFullPath);
+			return getFilePath(urlId, thumbnail, out workDirFullPath);
 		}
 
-		private string getFilePath(string urlId, string mimeType, bool thumbnail, out string workDirFullPath) {
+		private string getFilePath(string urlId, bool thumbnail, out string workDirFullPath) {
 
 			string workDir = appSettingsProvider[AppSettingsKeys.GalleryWorkDir];
 			workDirFullPath = Server.MapPath(Url.Content(workDir));
@@ -259,7 +263,6 @@ namespace Malsys.Web.Controllers {
 			if (thumbnail) {
 				fileName += ".thn";
 			}
-			fileName += MimeType.ToFileExtension(mimeType);
 
 			return Path.Combine(workDirFullPath, fileName);
 		}
@@ -268,7 +271,7 @@ namespace Malsys.Web.Controllers {
 		private void ensureOutput(SavedInput input, bool thumbnail) {
 
 			string workDirFullPath;
-			string filePath = getFilePath(input.UrlId, input.MimeType, thumbnail, out workDirFullPath);
+			string filePath = getFilePath(input.UrlId, thumbnail, out workDirFullPath);
 
 			if (System.IO.File.Exists(filePath)) {
 				return;
@@ -287,7 +290,7 @@ namespace Malsys.Web.Controllers {
 		private bool tryGenerateInput(SavedInput input, bool thumbnail, IMessageLogger logger = null) {
 
 			string workDirFullPath;
-			string filePath = getFilePath(input.UrlId, input.MimeType, thumbnail, out workDirFullPath);
+			string filePath = getFilePath(input.UrlId, thumbnail, out workDirFullPath);
 
 			return tryGenerateInput(input, workDirFullPath, filePath, thumbnail, logger);
 		}

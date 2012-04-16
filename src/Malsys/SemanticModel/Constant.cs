@@ -49,6 +49,15 @@ namespace Malsys.SemanticModel {
 			AstNode = astNode;
 		}
 
+		public Ast.ConstantFormat ConstantFormat {
+			get {
+				if (AstNode == null) {
+					return Ast.ConstantFormat.Float;
+				}
+				return AstNode.Format;
+			}
+		}
+
 		/// <summary>
 		/// Returns true if value is not zero (with respect to epsilon).
 		/// </summary>

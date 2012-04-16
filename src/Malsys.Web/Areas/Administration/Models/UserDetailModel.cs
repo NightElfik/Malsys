@@ -36,6 +36,7 @@ namespace Malsys.Web.Areas.Administration.Models {
 			Contract.Requires<InvalidOperationException>(user.UserId == UserId);
 
 			user.Name = Name;
+			user.NameLowercase = Name.ToLower();
 			user.Email = Email;
 		}
 

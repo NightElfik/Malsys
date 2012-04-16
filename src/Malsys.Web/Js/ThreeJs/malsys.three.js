@@ -1,6 +1,7 @@
 ﻿/// <reference path="~/Js/jquery.js" />
 
 var controls = [];
+var threeJsScenes = [];
 
 (function ($) {
 
@@ -62,6 +63,7 @@ var controls = [];
 			var camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 10000);
 
 			camera.position = returnedScene.getCameraPosition();
+			camera.up = returnedScene.getCameraUpVector();
 
 			scene.add(camera);
 
@@ -69,6 +71,7 @@ var controls = [];
 			ctrl.staticMoving = false;
 			ctrl.target = target;
 			controls.push(ctrl);
+			threeJsScenes.push(domElement);
 
 			if (statsDisplay) {
 				stats = new Stats();
@@ -80,22 +83,40 @@ var controls = [];
 				ctrl.addEventListener('change', function() {
 					renderer.render(scene, camera);
 					stats.update();
+					update(domElement, ctrl);
 				});
 			}
 			else {
 				ctrl.addEventListener('change', function() {
 					renderer.render(scene, camera);
+					update(domElement, ctrl);
 				});
 			}
-
 
 		});
 
 	});
 
+	update = function(domElement, ctrl) {
+		domElement.children('.cameraPosition').each(function() {
+			var pos = ctrl.object.position;
+			$(this).text('set cameraPosition = {' + Math.round(pos.x) + ', ' + Math.round(pos.y) + ', ' + Math.round(pos.z) + '};');
+		});
+		domElement.children('.cameraUp').each(function() {
+			var pos = ctrl.object.up;
+			$(this).text('set cameraUpVector = {' + round(pos.x) + ', ' + round(pos.y) + ', ' + round(pos.z) + '};');
+		});
+		domElement.children('.cameraTarget').each(function() {
+			var pos = ctrl.target;
+			$(this).text('set cameraTarget = {' + Math.round(pos.x) + ', ' + Math.round(pos.y) + ', ' + Math.round(pos.z) + '};');
+		});
+	};
+
+	round = function(number) {
+		return Math.round(number * 100) / 100;
+	}
+
 } (jQuery));
-
-
 
 
 function animate() {
@@ -104,6 +125,7 @@ function animate() {
 	// update all controls
 	for (var i in controls) {
 		controls[i].update();
+		//controls[i].object
 	}
 	// do not render scene, scenes are rendered on camera move
 

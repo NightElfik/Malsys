@@ -28,6 +28,7 @@ namespace Malsys.Web.Areas.Administration.Models {
 			Contract.Requires<InvalidOperationException>(role.RoleId == RoleId);
 
 			role.Name = Name;
+			role.NameLowercase = Name.ToLower();
 		}
 
 	}

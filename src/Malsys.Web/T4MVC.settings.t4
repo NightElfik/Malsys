@@ -104,7 +104,12 @@ static class T4MVCHelpers {
 
     // Logic to determine if the app is running in production or dev environment
     public static bool IsProduction() {
-        return (HttpContext.Current != null && !HttpContext.Current.IsDebuggingEnabled);
+#if DEBUG
+		return false;
+#else
+		return true;
+#endif
+        //return (HttpContext.Current != null && !HttpContext.Current.IsDebuggingEnabled);
     }
 }
 

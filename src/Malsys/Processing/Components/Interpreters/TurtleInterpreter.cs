@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Windows.Media.Media3D;
 using Malsys.Evaluators;
 using Malsys.Media;
@@ -72,7 +73,7 @@ namespace Malsys.Processing.Components.Interpreters {
 		public IMessageLogger Logger { get; set; }
 
 
-		#region User settable variables
+		#region User gettable & settable properties
 
 		/// <summary>
 		/// Origin (start position) of "turtle".
@@ -86,7 +87,7 @@ namespace Malsys.Processing.Components.Interpreters {
 			get { return origin; }
 			set {
 				if (!value.IsConstArray() || (value.Length != 2 && value.Length != 3)) {
-					throw new InvalidUserValueException("Origin have to be array of 2 or 3 numbers representing x, y and optionally z coordinate.");
+					throw new InvalidUserValueException("Origin must be array of 2 or 3 numbers representing x, y and optionally z coordinate.");
 				}
 				origin = value;
 			}
@@ -138,7 +139,7 @@ namespace Malsys.Processing.Components.Interpreters {
 		public ValuesArray RotationQuaternion {
 			set {
 				if (!value.IsConstArrayOfLength(4)) {
-					throw new InvalidUserValueException("Rotation quaternion have to be array of 4 numbers representing direction quaternion.");
+					throw new InvalidUserValueException("Rotation quaternion must be array of 4 numbers representing direction quaternion.");
 				}
 				rotationQuaternion = value;
 			}
@@ -418,6 +419,7 @@ namespace Malsys.Processing.Components.Interpreters {
 
 			quatRotation.Quaternion = currState.Rotation;
 			currState.Position += tranform.Transform(fwdVect * length);
+			Debug.Assert(!double.IsNaN(currState.Position.X) && !double.IsNaN(currState.Position.Y) && !double.IsNaN(currState.Position.Z));
 
 			if (mode2D) {
 				renderer2D.MoveTo(currState.Position.ToPoint2D(), currState.Width, currState.Color);
@@ -445,6 +447,7 @@ namespace Malsys.Processing.Components.Interpreters {
 
 			quatRotation.Quaternion = currState.Rotation;
 			currState.Position += tranform.Transform(fwdVect * length);
+			Debug.Assert(!double.IsNaN(currState.Position.X) && !double.IsNaN(currState.Position.Y) && !double.IsNaN(currState.Position.Z));
 
 			colorEvents++;
 			if (mode2D) {
@@ -614,6 +617,8 @@ namespace Malsys.Processing.Components.Interpreters {
 		[SymbolInterpretation]
 		public void RecordPolygonVertex(ArgsStorage args) {
 
+			Debug.Assert(!double.IsNaN(currState.Position.X) && !double.IsNaN(currState.Position.Y) && !double.IsNaN(currState.Position.Z));
+
 			if (mode2D) {
 				if (currPolygon2d == null) {
 					throw new InterpretationException("Failed to record polygon vertex. No polygon is opened.");
@@ -625,7 +630,6 @@ namespace Malsys.Processing.Components.Interpreters {
 				if (currPolygon3d == null) {
 					throw new InterpretationException("Failed to record polygon vertex. No polygon is opened.");
 				}
-
 				currPolygon3d.Ponits.Add(currState.Position);
 			}
 		}
@@ -667,7 +671,13 @@ namespace Malsys.Processing.Components.Interpreters {
 
 		private double getArgumentAsDouble(ArgsStorage args, int index, double defaultValue = 0d) {
 			if (index < args.ArgsCount && args[index].IsConstant) {
-				return ((Constant)args[index]).Value;
+				double value = ((Constant)args[index]).Value;
+				if (double.IsNaN(value)) {
+					return defaultValue;
+				}
+				else {
+					return value;
+				}
 			}
 			else {
 				return defaultValue;

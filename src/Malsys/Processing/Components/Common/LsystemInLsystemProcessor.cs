@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Collections;
+using Malsys.Evaluators;
 
 namespace Malsys.Processing.Components.Common {
 	/// <summary>
@@ -24,6 +26,8 @@ namespace Malsys.Processing.Components.Common {
 		private ConfigurationComponent myselfComp;
 		private FSharpMap<string, ConfigurationComponent> componentBase;
 
+		private List<FunctionInfo> forwardedFunctions;
+
 
 		public IMessageLogger Logger { get; set; }
 
@@ -42,12 +46,18 @@ namespace Malsys.Processing.Components.Common {
 			componentBase = MapModule.Empty<string, ConfigurationComponent>()
 				.Add(myselfComp.Name, myselfComp);
 
+
+			forwardedFunctions = ctxt.ExpressionEvaluatorContext.GetAllStoredFunctions()
+				.Where(x => x.Name.ToLower() == "random")
+				.ToList();
+
 		}
 
 		public void Cleanup() {
 			ctxt = null;
 			myselfComp = null;
 			componentBase = null;
+			forwardedFunctions = null;
 			configPool.Clear();
 		}
 
@@ -115,15 +125,19 @@ namespace Malsys.Processing.Components.Common {
 				}
 
 
-				// add variables and functions from components that can be called before init to ExpressionEvaluatorContext
 				var eec = ctxt.InputData.ExpressionEvaluatorContext;
+				// add forwarded functions
+				foreach (var fun in forwardedFunctions) {
+					eec = eec.AddFunction(fun);
+				}
+				// add variables and functions from components that can be called before init
 				eec = configBuilder.AddComponentsGettableVariables(compGraph, eec, true);
 				eec = configBuilder.AddComponentsCallableFunctions(compGraph, eec, true);
 
 				var baseResolver = new BaseLsystemResolver(ctxt.InputData.Lsystems);
 
 				// evaluate L-system
-				var lsysEvaled = ctxt.EvaluatorsContainer.ResolveLsystemEvaluator().Evaluate(lsystem, args, ctxt.ExpressionEvaluatorContext, baseResolver, Logger);
+				var lsysEvaled = ctxt.EvaluatorsContainer.ResolveLsystemEvaluator().Evaluate(lsystem, args, eec, baseResolver, Logger);
 				if (errBlock.ErrorOccurred) {
 					throw new ComponentException("Failed to evaluate symbol as lsystem `{0}`. Failed to evaluate L-system `{1}`."
 						.Fmt(name, lsystem.Name));
