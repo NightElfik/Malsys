@@ -32,6 +32,17 @@
 	Check @Html.ActionLink("help pages", MVC.Help.Home.Index()) or examples in @Html.ActionLink("gallery", MVC.Gallery.Index()).
 </p>
 
+<h3>Gallery</h3>
+<p>
+	Gallery contains examples of many L-systems.
+	The most of them are 2D vector images (@Html.Link("SVG", "http://en.wikipedia.org/wiki/Scalable_Vector_Graphics", "Scalable Vector Graphics - Wikipedia")
+		which can be displayed with most of browsers.
+	However there are some amazing 3D L-systems which needs @Html.Link("WebGL", "http://en.wikipedia.org/wiki/WebGL", "WebGL - Wikipedia")
+		for proper display (see @Html.ActionLink("the comparison", MVC.Home.WhyWebgl())).
+	3D L-systems are rendered by your browser and you can rotate, zoom or pan them.
+	You can check whether your browser support WebGL at @Html.Link("http://get.webgl.org/").
+</p>
+
 @*
 <h3>Features</h3>
 

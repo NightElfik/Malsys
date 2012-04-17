@@ -304,6 +304,9 @@ namespace Malsys.SourceCode.Printers {
 
 			writer.Write(" ");
 			Print(Keyword.As);
+			if (symIntDef.InstructionIsLsystemName) {
+				Print(Ast.Keyword.Lsystem);
+			}
 
 			writer.Write(symIntDef.Instruction.Name);
 

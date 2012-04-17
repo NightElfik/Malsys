@@ -153,7 +153,23 @@ namespace Malsys.Tests.SourceCode {
 				"}");
 			doTestAutoident(
 				"lsystem l {",
-				"interpret a(a, b = 1) as c(x, y, 5);",
+				"interpret a b c as b;",
+				"}");
+			doTestAutoident(
+				"lsystem l {",
+				"interpret a b c(a, b = 1) as c(x, y, 5);",
+				"}");
+		}
+
+		[TestMethod]
+		public void LsystemLsystemInterpretTests() {
+			doTestAutoident(
+				"lsystem l {",
+				"interpret a b c as lsystem b;",
+				"}");
+			doTestAutoident(
+				"lsystem l {",
+				"interpret a b c(a, b = 1) as lsystem c(x, y, 5);",
 				"}");
 		}
 

@@ -1,0 +1,21 @@
+﻿@{
+	ViewBag.Title = "Why WebGL";
+}
+
+<h2>Why WebGL</h2>
+
+<p>
+	Some images of 3D L-systems are actually 3D scenes rendered by your browser and they can be rotated, zoomed or panned.
+	You may ask: "Why do I need @Html.Link("WebGL", "http://en.wikipedia.org/wiki/WebGL", "WebGL - Wikipedia") to view 3D L-systems?".
+	The answer is simple: It looks much better and the operations are is significantly faster!
+</p>
+
+<p>
+	If you do not have browser capable drawing with WebGL 3D scenes are drawn with simplified renderer which fakes 3D.
+	You can check whether your browser support WebGL at @Html.Link("http://get.webgl.org/").
+	Just look at following comparison.
+</p>
+
+<div class="center">
+	<img src="@Links.Img.Lilac_DiffWebGL_png"width="800px" height="600px" alt="Conparison between lilac rendered with and without WebGL" />
+</div>

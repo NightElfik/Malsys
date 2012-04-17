@@ -98,7 +98,13 @@ namespace Malsys.Tests.Parsing {
 		[TestMethod]
 		public void SymbolsInterpretationsArgsTests() {
 			doTestAutoident("lsystem l {", "interpret X(a) as Action;", "}");
-			doTestAutoident("lsystem l {", "interpret X Y Z(a, b = 20) as Action;", "}");
+			doTestAutoident("lsystem l {", "interpret X Y Z(a, b = 20) as Action(a, b);", "}");
+		}
+
+		[TestMethod]
+		public void SymbolsInterpretationsLsystemTests() {
+			doTestAutoident("lsystem l {", "interpret X(a) as lsystem Action;", "}");
+			doTestAutoident("lsystem l {", "interpret X Y Z(a, b = 20) as lsystem Action(a, b);", "}");
 		}
 
 		[TestMethod]

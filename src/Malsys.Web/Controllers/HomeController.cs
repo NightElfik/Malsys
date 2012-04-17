@@ -38,5 +38,9 @@ namespace Malsys.Web.Controllers {
 			return View();
 		}
 
+		public virtual ActionResult WhyWebgl() {
+			return View();
+		}
+
 	}
 }

@@ -379,6 +379,7 @@
     <None Include="Js\ThreeJs\malsys.three.js" />
     <Content Include="humans.txt" />
     <None Include="Js\ThreeJs\Stats.js" />
+    <Content Include="Img\Lilac-DiffWebGL.png" />
     <Content Include="Js\jquery.min.js">
       <DependentUpon>MinifyJs.tt</DependentUpon>
     </Content>
@@ -469,6 +470,7 @@
     <Content Include="Views\Shared\GalleryThumbnailPartial.cshtml" />
     <Content Include="Views\Gallery\FullScreen.cshtml" />
     <Content Include="Views\Shared\_FullScreenLayout.cshtml" />
+    <Content Include="Views\Home\WhyWebgl.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Areas\Administration\Views\Shared\" />

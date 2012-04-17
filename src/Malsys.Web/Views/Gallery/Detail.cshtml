@@ -44,10 +44,13 @@
 
 	case MimeType.Application.Json:
 		<div class="threeJsScene" data-scene="@Url.Action(MVC.Gallery.GetOutput(Model.Input.UrlId))" data-clear-color="FFFFFF" data-anti-alias="true">
-			<p class="webgl">WebGL is not supported by your browser. Please <a href="http://get.webgl.org/">get supported browser</a>.</p>
+			<p class="webgl">WebGL is not supported by your browser. Please @Html.Link("get supported browser", "http://get.webgl.org/", "get supported browser"). @Html.ActionLink("Why?", MVC.Home.WhyWebgl())</p>
 			<p class="controls">Controls: Move mouse &amp; press LEFT/A: rotate, MIDDLE/S: zoom, RIGHT/D: pan</p>
 			<a href="@Url.Action(MVC.Gallery.FullScreen(Model.Input.UrlId))" class="fullscreen">Full screen</a>
 		</div>
+		<p>
+			Note that L-systems is actual 3D scene rendered by your browser and you can rotate, zoom or pan with it.
+		</p>
 		<text>
 		@section scripts {
 			@Content.Js(Links.Js.ThreeJs.Three_js)
@@ -56,11 +59,11 @@
 			@Content.Js(Links.Js.ThreeJs.malsys_three_js)
 		}
 		</text>
-		break;
+break;
 
 	default:
 		<p class="outputTruncated">Unknown output type `@Model.Input.MimeType`.</p>
-		break;
+											 break;
 }
 
 @if (!string.IsNullOrWhiteSpace(Model.Input.Description)) {
@@ -97,10 +100,10 @@
 		<span class="vote">
 		@if (Model.UserVote == null || Model.UserVote != i) {
 			@Html.ActionLink(text, MVC.Gallery.Vote(Model.Input.UrlId, i))
-		}
-		else {
+  }
+  else {
 			@text
-		}
+  }
 		</span>
 	}
 	<span class="vote">best</span>
