@@ -1,5 +1,6 @@
 
 \chapwithtoc{Introduction}
+\label{sec:Introduction}
 
 \lsystem (also called Lindenmayer system) is mathematical formalism developed for plant growth modeling by Aristid Lindenmayer in 1968~\cite{Lin68}.
 In the simplest form an \lsystem is variant of regular or \mbox{context-free} grammar.
@@ -10,43 +11,50 @@ A different approach was taken by Przemyslaw Prusinkiewicz who interpreted \lsys
 	Logo controls cybernetic turtle which is drawing on 2D canvas.}~\cite{Pru85}.
 With this method he obtained more plant-like structures and fractals.~\cite{CD93}
 
-\begin{wrapfigure}{r}{0.42\textwidth}
+\begin{wrapfigure}{r}{0.5\textwidth}
 	\vspace{-20pt}
 	\begin{center}
-	\includegraphics[width=0.4\textwidth]{StochasticLsystemExample-NoStochasism}
+	\includegraphics[width=0.48\textwidth]{lilac}
 	\end{center}
-	\caption{Some image of plant}
+	\caption{Model of lilac}
 \end{wrapfigure}
 
 Over the time \lsystems were used in many areas.
-\lsystems were used to generate rivers in fractal mountains~\cite{PH93}, streets in virtual of cities~\cite{PM01} and to describe subdivision curves~\cite{PSSK03}.
+\lsystems were used to generate rivers in fractal mountains~\cite{PH93}, streets in virtual cities~\cite{PM01} and to describe subdivision curves~\cite{PSSK03}.
 \lsystems can be used in other fields than computer graphics for example in music generation~\cite{HCJ99, Man06}.
 They are still used in plant modeling.
 Plant models generated with \lsystems are used in modern video games or films, for example they were used to generate many plants and trees for famous film Avatar~\cite{Wor08, Dun10}.~\footnote{\citeauthor{SBM10} presented reverse method -- automatic generation of \lsystems from 2D model~\cite{SBM10}.}
 
 \lsystems has wide variety of interesting applications but it is hard to find some place to experiment with them.
-Web-based \lsystem generators are often too primitive and do not offer nothing more than generation of simple fractals.
-Most of desktop applications are specialized for some concrete \lsystem application and not easy to control.
-Also they may not be compatible with operating system you are using and some of them are not free.
-Goal of this work is to fill this gap and create online development environment for anybody who wants to experiment with \lsystems.
+There are two base types of \lsystem generators, web-based and desktop applications.
+
+Web-based \lsystem generators are easily accessible but they are often too primitive and do not offer nothing more than generation of simple fractals (see section \ref{sec:WebBasedGenerators}).
+Some of them do not work in the most used browsers.
+
+Desktop applications generally offers more options than web-based but most of them is also quite simple and do not offer advanced features of \lsystems.
+There are some complex applications that offers pretty good features but there are not free, it is hard to control them or they are old and not maintained (see section \ref{sec:DesktopGenerators}).
+Problem with desktop applications is also in compatibility with user's operating system, its version and installed libraries.
+
+Goal of this work is to take the good from both approaches and create online feature-rich development environment for anybody who wants to experiment with \lsystems.
 Development environment will be divided into two parts, web user interface and \lsystem processing library.
 
-User interface will be web site which offers great accessibility, anybody around the world can use it from any computer.
+User interface will be web site which offers great accessibility.
+Anybody around the world can use it from any device connected to the Internet like computers, laptops, tablets or smart phones.
 Interface should be friendly to new users and also offer advanced features for experienced users.
 Primary output format of web based \lsystem processor will be 2D images (vector and raster) but it will also be possible to create and display 3D outputs using modern HTML5 WebGL\footnote{
 	WebGL (Web-based Graphics Library) is a cross-platform, royalty-free web standard for a low-level 3D graphics API based on OpenGL ES 2.0, exposed through the HTML5 Canvas element as Document Object Model interfaces.
 	WebGL code executes on a computer display card's GPU (Graphics Processing Unit).} technology directly in browser.
 Part of the web site will be gallery of \lsystems.
-Any registered user can add his creation to gallery along with some description and others can rate it.
+Any registered user can add his \lsystem to gallery along with some description and others can rate it.
 This will help to create community of active users and it can also serve as learning tool for new users.
 
-Second part of work will be \lsystem processing library.
+Second part of application will be \lsystem processing library.
 Although it will be designed to support demands of web interface, it will be independent and it should be possible to use it in other application.
 During design of library great emphasis will be placed on easy extensibility to make the it as universal as possible.
 It should be possible to extend library with user written plugins.
 
 New syntax for input will be designed to improve user experience especially for new users.
-It will be clean, easy to learn and remember.
+It should be clean, easy to understand and remember.
 The syntax will cover all needs of library from defining \lsystems to configuring whole processing system.
 This will also ensure that whole input can be written in one file which will simplify source code sharing and saving.
 Parser generator will be used for creating robust and extensible parser.
@@ -54,12 +62,12 @@ Parser generator will be used for creating robust and extensible parser.
 
 \section*{Structure}
 
-In the first chapter are formally defined \lsystems, their rewriting principles and interpretation.
+In the first chapter are formally defined \lsystems, their rewriting and interpretation principles.
 Then there are described extending features of \lsystem rewriting and interpretation system.
 In second chapter is described the design of whole solution, subsections are describing individual parts.
 Third chapter is about implementation of designed system.
 
-All examples of \lsystems in this work are be in designed syntax and they can be tried on web.
+All examples of \lsystems in this work are in designed syntax and it is possible to render them on the web.
 See syntax reference in attachment ??.
 
 

@@ -29,6 +29,10 @@ namespace Malsys.Web.Areas.Help.Controllers {
 			return View();
 		}
 
+		public virtual ActionResult Sitemap() {
+			return View();
+		}
+
 		public virtual ActionResult Faq() {
 			return View(simpleLsystemProcessor);
 		}

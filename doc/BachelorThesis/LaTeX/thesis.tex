@@ -119,6 +119,9 @@
 	{\begin{enumerate}\setlength{\parskip}{0pt}}
 	{\end{enumerate}}
 
+\widowpenalties 1 10000
+\raggedbottom
+
 \begin{document}
 
 % A little freer hyphenation settings than the default.
@@ -133,6 +136,7 @@
 %\include{thanks}
 %\include{affidavit}
 
+\renewcommand{\lstlistingname}{Source code}
 
 
 \include{abstractcz}
@@ -141,17 +145,21 @@
 \openright
 \pagestyle{plain}
 \setcounter{page}{1}
-%\tableofcontents
+\tableofcontents
 
 \onehalfspacing
-\include{introduction}
 
-\include{lsystems}
+%\include{introduction}
 
+%\include{lsystems}
+%\include{relatedWorks}
+\include{design}
+% implementation
+% designed system and defined components
 
 \singlespacing
 \nocite{*}  % Show all Bib-entries
-%\printbibliography
+\printbibliography
 
 %\chapwithtoc{List of Figures}
 %\listoffigures

@@ -1,5 +1,5 @@
 ﻿<!doctype html>
-@* paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ *@
+@* http://paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ *@
 <!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
 <!--[if IE 7]>    <html class="no-js ie7 oldie" lang="en"> <![endif]-->
 <!--[if IE 8]>    <html class="no-js ie8 oldie" lang="en"> <![endif]-->
@@ -12,6 +12,9 @@
 	<meta name="keywords" content="L-system,generator,gallery,examples,SVG" />
 	<meta name="author" content="Marek Fišer" />
 	<link rel="author" href="/humans.txt" />
+	<link rel="shortcut icon" href="/favicon.ico" />
+	<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+	<link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
 
 	@* Mobile viewport optimized: h5bp.com/viewport *@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -29,8 +32,8 @@
 	@* All JavaScript at the bottom, except for Modernizr *@
 	@Content.Js(Links.Js.modernizr_js)
 
+
 	@* More ideas for your <head> here: h5bp.com/d/head-Tips *@
-	@* <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" /> *@
 </head>
 
 <body>
@@ -40,14 +43,14 @@
 	<div id="headerContainer">
 		<header class="wrapper">
 			<div class="titleContainer">
-				<a href="/" title="Home"><h1 id="title">Malsys<span class="cz">.cz</span></h1></a>
+				<a href="/" title="Home" tabindex="2"><h1 id="title">Malsys<span class="cz">.cz</span></h1></a>
 				<h4 id="subtitle">Mark's L-systems</h4>
 			</div>
 			<div class="logonBox">
 				@Html.Partial(MVC.Shared.Views.LogOnPartial)
 			</div>
 			<nav>
-				<a href="#main" tabindex="1" class="visuallyhidden focusable">Skip navigation</a>
+				<a id="skipNavigation" href="#main" tabindex="1" class="visuallyhidden focusable">Skip navigation</a>
 				@Html.Partial(MVC.Shared.Views.MenuPartial)
 			</nav>
 		</header>
@@ -62,8 +65,8 @@
 	<div id="footerContainer">
 		<footer class="wrapper">
 			<p class="center">
-				&copy; @Html.ActionLink("Marek Fišer", MVC.Feedback.EmailToAuthor(), new { title = "E-mail to author" }) 2011 &mdash; 2012
-				| @Html.ActionLink("Feedback", MVC.Feedback.Index(), new { title = "Send a feedback" })
+				&copy; @Html.ActionLink("Marek Fišer", MVC.Feedback.EmailToAuthor(), new { title = "E-mail to author", tabindex = 90 }) 2011 &mdash; 2012
+				| @Html.ActionLink("Feedback", MVC.Feedback.Index(), new { title = "Send a feedback", tabindex = 91 })
 				| thanks @Html.Link("MFF CUNI", "http://www.mff.cuni.cz/", "Faculty of Mathematics and Physics of Charles University in Prague") for hosting
 			</p>
 			<p class="right notImportant">This page was generated at @DateTime.Now.ToUniversalTime() (UTC)</p>

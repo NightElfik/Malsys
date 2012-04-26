@@ -18,6 +18,7 @@ namespace Malsys.Web.Controllers {
 
 			var input = inputDb.SavedInputs
 				.Where(x => x.IsPublished && !x.IsDeleted)
+				.Where(x => x.MimeType == MimeType.Image.SvgXml || x.MimeType == MimeType.Application.Javascript)
 				.Where(x => (double)x.RatingSum / ((double)x.RatingCount + 1) > 2)
 				.OrderBy(x => x.SavedInputId)
 				.RandomOrDefault();
@@ -39,6 +40,10 @@ namespace Malsys.Web.Controllers {
 		}
 
 		public virtual ActionResult WhyWebgl() {
+			return View();
+		}
+
+		public virtual ActionResult Sitemap() {
 			return View();
 		}
 

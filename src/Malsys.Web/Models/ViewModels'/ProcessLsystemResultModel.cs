@@ -9,6 +9,8 @@ namespace Malsys.Web.Models {
 
 		public string SourceCode { get; set; }
 
+		public string CompiledSourceCode { get; set; }
+
 		public int? ReferenceId { get; set; }
 
 		public MessageLogger Logger { get; set; }

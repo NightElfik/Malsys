@@ -1,18 +1,22 @@
-lsystem Plant {
+lsystem Plant3 {
 
-	set symbols axiom = X;
-	set iterations = 7;
+	set symbols axiom = A(100);
 	set initialAngle = 90;
+	set iterations = 4;
+	set interpretFollowingIterations = {1, 2};
 
-	interpret F(age) as DrawForward(2^age, age / 2);
-	interpret + as TurnLeft(20);
-	interpret - as TurnLeft(-20);
+	let length = 16;
+
+	interpret A as DrawForward(0, 2, #009900);
+	interpret F as DrawForward(0, 2, #302010);
+	interpret + as TurnLeft(45);
+	interpret - as TurnLeft(-45);
 	interpret [ as StartBranch;
 	interpret ] as EndBranch;
 
-	rewrite F(age) to F(age + 1);
-	rewrite X to F(1) [ + X ] F(1) [ - X ] + X;
-
+	rewrite A(x)
+		with y = x/2
+		to F(y) [ + A(y) ] [ - A(y) ] F(y) A(y);
 }
 
 process all with SvgRenderer;

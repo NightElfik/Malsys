@@ -1,5 +1,5 @@
 ﻿<!doctype html>
-@* paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ *@
+@* http://paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ *@
 <!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
 <!--[if IE 7]>    <html class="no-js ie7 oldie" lang="en"> <![endif]-->
 <!--[if IE 8]>    <html class="no-js ie8 oldie" lang="en"> <![endif]-->
@@ -12,32 +12,24 @@
 	<meta name="keywords" content="L-system,generator,gallery,examples,SVG" />
 	<meta name="author" content="Marek Fišer" />
 	<link rel="author" href="/humans.txt" />
+	<link rel="shortcut icon" href="/favicon.ico" />
+	<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
 	@* Mobile viewport optimized: h5bp.com/viewport *@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-	@* IE9 Pinned Sites *@
-	<meta name="application-name" content="Malsys" />
-	<meta name="msapplication-tooltip" content="Modern L-system processor and gallery" />
-	<meta name="msapplication-starturl" content="@Url.ActionAbsolute(MVC.Home.Index())"/>
-	<meta name="msapplication-task" content="name=Process L-system;action-uri=@Url.ActionAbsolute(MVC.Process.Index());icon-uri=" />
-	<meta name="msapplication-task" content="name=Gallery of L-systems;action-uri=@Url.ActionAbsolute(MVC.Gallery.Index());icon-uri=" />
-	<meta name="msapplication-task" content="name=Help index;action-uri=@Url.ActionAbsolute(MVC.Help.Home.Index());icon-uri=" />
 
 	@Content.Css(Links.Css.style_less_css)
 
 	@* All JavaScript at the bottom, except for Modernizr *@
 	@Content.Js(Links.Js.modernizr_js)
 
-	@* More ideas for your <head> here: h5bp.com/d/head-Tips *@
-	@* <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" /> *@
 </head>
 
 <body class="fullScreen">
 	@* Prompt IE 6 users to install Chrome Frame. *@
 	<!--[if lt IE 7]><p class=chromeframe>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
 
-	<div id="main" role="main">
+	<div id="main" role="main" class="fullScreen">
 		@RenderBody()
 	</div>
 

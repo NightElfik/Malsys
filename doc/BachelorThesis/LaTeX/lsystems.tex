@@ -1,9 +1,10 @@
 
 \chapter{\lsystem}
 
-History of \lsystem was mentioned in introduction.
-This chapter will describe \lsystem formally.
-First we will describe \lsystem in general and then we describe some special features of \lsystem.
+Brief history of \lsystem was mentioned in introduction.
+In this chapter we will describe \lsystems formally followed by explanation of rewriting and interpretation principles of \lsystems.
+Then will summary of \lsystem types.
+At the end of this chapter is list of related applications.
 
 
 \section{Formal definition of \lsystem}
@@ -11,9 +12,9 @@ First we will describe \lsystem in general and then we describe some special fea
 \lsystem $L$ is formally triplet $L = (\Sigma, \omega, R)$, where
 
 \begin{itemize*}
-	\item $\Sigma$ is alphabet, non-empty set of symbols ($\Sigma^{*}$ is set of all words over the alphabet $\Sigma$, $\Sigma^{+}$ is set of all non-empty words over the alphabet $\Sigma$),
-	\item $\omega \in \Sigma^{+}$ is axiom (also called seed), word defining the initial state of the \lsystem,
-	\item $R \subset \Sigma \times \Sigma^{*}$ is finite set of rewrite rules (production rules), rewrite rule defining rewriting symbol $s \in \Sigma$ to word $w \in \Sigma^{*}$ is written as $s \rightarrow w$.
+	\item $\Sigma$ is \emph{alphabet}, non-empty set of symbols ($\Sigma^{*}$ is set of all words\footnote{Word is a sequence of symbols.} over the alphabet $\Sigma$, $\Sigma^{+}$ is set of all non-empty words over the alphabet $\Sigma$),
+	\item $\omega \in \Sigma^{+}$ is \emph{axiom} (also called seed), word defining the initial state of the \lsystem,
+	\item $R \subset \Sigma \times \Sigma^{*}$ is finite set of \emph{rewrite rules} (production rules), rewrite rule defining rewriting symbol $s \in \Sigma$ to word $w \in \Sigma^{*}$ is written as $s \rightarrow w$.
 \end{itemize*}
 
 For any symbol $s \in \Sigma$ which does not appear on the left hand side of any rewrite rule in $R$, the identity rewrite rule $s \rightarrow s$ is assumed.
@@ -28,29 +29,25 @@ The biggest difference is in rewriting principles which is described is followin
 
 \subsection{Rewriting principles of \lsystem}
 
-\lsystem is developing in iterations.
-Rewrite rules of the \lsystem grammar are applied iteratively starting from the initial state.
-In each iteration is all symbols are rewritten.
-This is possible because all symbols are on left side of some rewrite rule (if symbol would not be on left side of some rewrite rule, identity rule will be defined).
-There is only one way how to rewrite iteration thus rewriting is deterministic.
-
+Starting with axiom (0th iteration) in each iteration \emph{all} symbols are rewritten with rewrite rules forming next iteration.
+All symbols can be rewritten because every symbol is on the left side of some rewrite rule.
+% (if symbol have not been on the left side of some rewrite rule, identity rule would be defined).
+There is only one way how to rewrite symbols in iteration thus rewriting is deterministic, result depends only on axiom.
 
 Rewriting of symbols is parallel (all symbols are rewritten at once).
 This means that if some symbol is rewritten, resulting symbols are not rewritten again in the same iteration.
-[Example]
 
-Described rewriting mechanics distinguishes \lsystem and formal grammar.
-In grammar there is not mandatory to rewrite all possible symbols.
+Described rewriting principles distinguishes \lsystem and formal grammar.
+In grammar there is not mandatory to rewrite all possible symbols (derivation of start state can result in more different derivations).
 Thus, \lsystems are strict subsets of languages.
 
-\lsystem in figure \ref{fig:rrExample} produces strings shown in table \ref{fig:rrExampleResult}.
-\lsystem starts with axiom $A$ and two rewrite rules $A \rightarrow B$ and $B \rightarrow A B$.
-In first iteration axiom $A$ is rewritten by first rewrite rule to $B$.
-In second iteration is $B$ rewritten with second rewrite rule to symbols $A B$.
-In third iteration is first symbol $A$ rewritten to $B$ and second symbol $B$ rewritten to $A B$ which gives string $B A B$ ...
+\lsystem \ref{lsys:rrExample} produces strings shown in table \ref{fig:rrExampleResult}.
+\lsystem starts with axiom $A$ and two rewrite rules $A \rightarrow B$ and $B \rightarrow A, B$.
+In the first iteration axiom $A$ is rewritten by first rewrite rule to $B$.
+In the second iteration is $B$ rewritten with second rewrite rule to symbols $A, B$.
+In the third iteration is first symbol $A$ rewritten to $B$ and second symbol $B$ rewritten to $A, B$ which gives string $B, A, B$ and so on.
 
-\begin{figure}[ht]
-	\begin{Lsystem}
+\begin{Lsystem}[label=lsys:rrExample,caption={Simple \lsystem as example of rewriting principles}]
 lsystem RewritingExample {
 	set symbols axiom = A;
 	set iterations = 6;
@@ -59,10 +56,7 @@ lsystem RewritingExample {
 	rewrite B to A B;
 }
 process all with SymbolPrinter;
-	\end{Lsystem}
-	\caption{Simple \lsystem as example of rewriting principles}
-	\label{fig:rrExample}
-\end{figure}
+\end{Lsystem}
 
 \begin{table}[ht]
 	\centering
@@ -79,33 +73,75 @@ process all with SymbolPrinter;
 		6 & A B B A B B A B A B B A B \\
 		\bottomrule
 	\end{tabular}
-	\caption{Result of \lsystem from figure \ref{fig:rrExample}}
+	\caption{Result of \lsystem \ref{lsys:rrExample}}
 	\label{fig:rrExampleResult}
 \end{table}
 
-\lsystem in figure \ref{fig:rrExample} has also some interesting properties.
-String of symbols in every iteration (expect the axiom) is suffix of string in following iteration.
-Also count of symbols in iterations gives Fibonacci sequence\footnote{Fibonacci sequence is defined by following the recurrence relation $F_n = F_{n-1} + F_{n-2}$ where $F_0 = F_1 = 1$.} 1, 1, 2, 3, 5, 8, 13,~...
 
 \subsection{Interpretation of \lsystem symbols}
 
-Result of \lsystem rewriting is string of symbols, we can interpret symbols in any way we want.
-Most common and the simplest interpretation of \lsystem symbols is interpret them as 2D graphics elements like lines or polygons.
-The first who came with this type of interpretation was Przemyslaw Prusinkiewicz who interpreted \lsystem symbols with Logo-like turtle~\cite{Pru85}.
-Logo is programming language that controls cybernetic turtle which is drawing on 2D canvas.
-This can be easily extended into 3D.
+Result of \lsystem rewriting is string of symbols.
+As it was mentioned in the \nameref{sec:Introduction} we can interpret string of symbols in any way for example as computer graphics or music.
 
-Interpretation of symbols can arbitrary. [maybe write something more here]
-%Symbols can be interpreted as music~\cite{HCJ99, Man06}.
+The most common and the simplest interpretation of \lsystem symbols is interpret them as 2D graphics elements like lines or polygons.
+This interpretation is often called \emph{turtle graphics} and it will be used in most \lsystems in this thesis.
+This approach can be easily extended into 3D.
+
+In source code \ref{lsys:intExampleCode} symbol $F$ is interpreted as \emph{draw line forward} (initial direction is to the right), symbol $+$ is interpreted as \emph{turn left} by 85 degrees and symbol $-$ as \emph{turn right} by 85 degrees (equally as \emph{turn left} by $-85$ degrees).
+Result of interpretation of the first, second and fourth iteration is on figure \ref{fig:intExample}.
+
+\begin{Lsystem}[label=lsys:intExampleCode,caption={Symbol interpretation example}]
+lsystem InterpretationExample {
+	set symbols axiom = F;
+	set iterations = 4;
+	interpret F as DrawForward(10);
+	interpret + as TurnLeft(85);
+	interpret - as TurnLeft(-85);
+	rewrite F to F + F - - F + F;
+}
+process all with SvgRenderer;
+\end{Lsystem}
+
+\begin{figure}[ht]
+	\centering
+	\subfloat[First iteration]{
+		\label{fig:randComparisonNo}
+		\includegraphics[width=0.3\textwidth]{Interpretation1}
+	} ~
+	\subfloat[Second iteration]{
+		\label{fig:randComparisonInt}
+		\includegraphics[width=0.3\textwidth]{Interpretation2}
+	} ~
+	\subfloat[Fourth iteration]{
+		\label{fig:randComparisonBoth}
+		\includegraphics[width=0.3\textwidth]{Interpretation3}
+	}
+	\caption{The first, second and fourth iteration of Cesaro curve \lsystem \ref{lsys:intExampleCode}}
+	\label{fig:intExample}
+\end{figure}
 
 
-\section{\lsystem features}
+\section{\lsystem types}
 
-In this section we will describe extending features of \lsystem rewriting and interpreting system.
-Some features may require extension of described formal definition of \lsystem but it will be omitted.
+In this section we will describe different types of \lsystems.
+Some types may require extension of described formal definition of \lsystem but it will be omitted.
+
+\lsystems described so far are called \emph{deterministic \lsystems} because their rewriting system is deterministic.
+\emph{Bracketed \lsystems} allows to save and load state of interpretation.
+This can be used to model branches of plants more easily.
+\emph{Stochastic \lsystems} can randomize result model to suppress its artificiality.
+\emph{Context-sensitive \lsystems} allows to rewrite symbol depending on its context (symbols around it).
+Symbols in \emph{parametric \lsystems} can hols any number of arguments which can be used while rewriting or interpreting symbol.
+
+Any of described types can be combined together.
 
 
-\subsection{Basic \lsystem}
+
+\subsection{Deterministic \lsystems}
+
+\newcommand{\dzerolsystem}{\mbox{D0L-system}\xspace}
+\newcommand{\dlsystem}{\mbox{dL-system}\xspace}
+
 
 \begin{wrapfigure}{r}{0.5\textwidth}
 	\vspace{-40pt}
@@ -117,17 +153,12 @@ Some features may require extension of described formal definition of \lsystem b
 \end{wrapfigure}
 
 
-\newcommand{\dzerolsystem}{\mbox{D0L-system}\xspace}
-\newcommand{\dlsystem}{\mbox{dL-system}\xspace}
+Basic \lsystem type described by previous formal definition is called \dzerolsystem{}\footnote{\dzerolsystem is also called just \dlsystem~\cite{Zar04}.}, \emph{D} means that rewriting is deterministic and \emph{0} means it is context-free.
 
-Basic \lsystem is called \dzerolsystem{}\footnote{\dzerolsystem is also called just \dlsystem~\cite{Zar04}}, \emph{D} stands for deterministic and \emph{0} means it is context-free.
-Deterministic \lsystems have rewrite rules which have just one way how to rewrite symbol.
-Because of rewriting principle which rewrites all symbols in each iteration the whole rewriting process is deterministic -- result depends only on axiom.
+This type of \lsystem is often used to generate fractal curves.
+By using \dzerolsystem \ref{fig:basicLsystem} we can generate Dragon curve that you can see in fig. \ref{lsys:basicLsystemSrc}.
 
-Figure \ref{fig:basicLsystem} shows Dragon curve generated by \dzerolsystem \ref{fig:basicLsystemSrc}.
-
-\begin{figure}[ht]
-	\begin{Lsystem}
+\begin{Lsystem}[label=lsys:basicLsystemSrc,caption={Basic \dzerolsystem for generation of Dragon curve (fig. \ref{fig:basicLsystem})}]
 lsystem DragonCurve {
 	set symbols axiom = L;
 	set iterations = 12;
@@ -139,62 +170,80 @@ lsystem DragonCurve {
 }
 
 process all with SvgRenderer;
-	\end{Lsystem}
-	\caption{Basic \dzerolsystem for generation of Dragon curve (fig. \ref{fig:basicLsystem})}
-	\label{fig:basicLsystemSrc}
-\end{figure}
+\end{Lsystem}
 
 
-%\newpage
-\subsection{Branching system}
+\subsection{Bracketed \lsystems}
 
-\begin{wrapfigure}{r}{0.32\textwidth}
-	\vspace{-50pt}
-	\begin{center}
-	\includegraphics[width=0.3\textwidth]{Branching}
-	\end{center}
-	\caption{Plant}
-	\label{fig:branching}
-\end{wrapfigure}
+First and important extension to \dzerolsystem is branching system.
+This type of \lsystem is called Bracketed \lsystem\cite{PL91}.
+Branching is so fundamental feature that Bracketed \lsystems are often called just \lsystems.
 
-First and important extension to \lsystems is branching system.
-This type of \lsystems are called Bracketed \lsystems\cite{PL91} but it is so fundamental feature that it is not explicitly mentioned.
-It extends linear string of symbols to the tree structure.
+Branching system extends symbol interpretation by two commands \emph{start branch} and \emph{end branch}.
+These commands are nearly always represented as symbols of brackets (from which bracketed \lsystems got their name).
+Open bracket "\texttt{[}" as start branch and close bracket "\texttt{]}" as close branch.
+
+Start branch command saves the state of interpretation which can be loaded by end branch command later.
+In turtle graphics interpretation state is position, orientation and drawing color of turtle.
+More than one states can be saved at the same time, last saved state will be loaded first.
+This behavior is natural and could be compared to pairing of brackets.
+
+Branching extends linear string of symbols to the tree structure.
 Individual branches do not affect each other nor their root.
 This allows to model plants more easily and create more complex models.
 
-Branching is achieved by allowing saving and loading the state of \lsystem.
-By state we mean state of interpretation like position, orientation, color or width.
-Saving and loading operations can be assigned to any symbols but most common are brackets.
+Bracketed \lsystem \ref{lsys:branchingSrc} demonstrates usage of branching system to produce plant-like model which you can see on figure \ref{fig:branching}.
+Note that color of segments indicates their type and age.
+Brown segments are drawn with symbol \texttt{F} and they represent segments from previous iteration.
+Green segments are drawn with symbol \texttt{A} and they are new compared to the previous iteration.
 
-\begin{figure}[ht]
-	\begin{Lsystem}
-lsystem BranchingExample {
-	set symbols axiom = X;
-	set iterations = 7;
+\begin{Lsystem}[label=lsys:branchingSrc,caption={Bracketed \lsystem which creates plant-like model on fig. \ref{fig:branching}}]
+lsystem PythagorasTree {
+	set symbols axiom = A;
 	set initialAngle = 90;
-	interpret F(age) as DrawForward(2^age, age / 2);
-	interpret + as TurnLeft(20);
-	interpret - as TurnLeft(-20);
+	set iterations = 4;	
+	interpret A F as DrawForward(16);
+	interpret + as TurnLeft(45);
+	interpret - as TurnLeft(-45);
 	interpret [ as StartBranch;
 	interpret ] as EndBranch;
-	rewrite F(age) to F(age + 1);
-	rewrite X to F(1) [ + X ] F(1) [ - X ] + X;
+	rewrite A to F [ + A ] [ - A ] F A;
+	rewrite F to F F;
 }
 process all with SvgRenderer;
-	\end{Lsystem}
-	\caption{Example of usage of branches to create plant-like model (fig. \ref{fig:branching})}
-	\label{fig:branchingSrc}
+\end{Lsystem}
+
+\begin{figure}[ht]
+	\centering
+	\subfloat[First iteration]{
+		~
+		\includegraphics[scale=1]{Branching1}
+		~
+	} ~
+	\subfloat[Second iteration]{
+		\includegraphics[scale=1]{Branching2}
+	} ~
+	\subfloat[Third iteration]{
+		\includegraphics[scale=1]{Branching3}
+	} ~
+	\subfloat[Fourth iteration]{
+		\includegraphics[scale=1]{Branching4}
+	}
+	\caption{First four iterations of bracketed \lsystem \ref{lsys:branchingSrc}}
+	\label{fig:branching}
 \end{figure}
 
 
 
 \subsection{Stochastic \lsystems}
 
+\newcommand{\zerolsystem}{\mbox{0L-system}\xspace}
+\newcommand{\zerolsystems}{\mbox{0L-systems}\xspace}
+
 All plants generated by same deterministic \lsystem are identical.
-Forest made by trees which are identical looks artificial.
-Stochastic \lsystems solves this problem.
-Stochastic \lsystems are called 0L-systems where \emph{0} means they are context-free.
+Forest made by trees which are identical looks artificial and can not be used in films or video games.
+Stochastic \lsystems solves this problem because they can produce randomized model.
+Stochastic \lsystems are called \zerolsystem where 0 means they are context-free.
 
 Randomization of model produced by \lsystem can be done in two places, in rewrite rules or in interpretation of symbols (or in both).
 Randomization in interpretation can only change properties of interpreted symbols such as lengths of lines or turning angles, the topology of plant remains unchanged.
@@ -203,11 +252,11 @@ Rewrite rule randomization is done by defining more replacements for one rewrite
 Rewriting system will pick random replacement if rewrite rule is applied.
 Each replacement can have different probability to be picked.
 
-On figure \ref{fig:randComparison} are shown 3 models of plant generated by \lsystems.
+On figure \ref{fig:randComparison} are shown 3 models of plant generated by stochastic \lsystems.
 First image \ref{fig:randComparisonNo} was generated without any randomization.
 Second image \ref{fig:randComparisonInt} was generated with interpretation randomization of line lengths and angles.
 For last image \ref{fig:randComparisonBoth} was also added topology randomization with rewrite rule randomization.
-Source code for last image is shown in figure \ref{fig:randExample}.
+Source code for the last image is shown in figure \ref{fig:randExample}.
 
 \begin{figure}[ht]
 	\centering
@@ -229,15 +278,14 @@ Source code for last image is shown in figure \ref{fig:randExample}.
 	\label{fig:randComparison}
 \end{figure}
 
-\begin{figure}[ht]
-	\begin{Lsystem}
+\begin{Lsystem}[label=lsys:randExample,caption={Example of stochastic \lsystem with randomized rewrite rules and interpretation}]
 lsystem StochasticLsystemExample {
 	set symbols axiom = X;
 	set initialAngle = 90;
 	set iterations = 8;
 	set randomSeed = 1036793868;
 
-	interpret F(age) as DrawForward(1.8^age * random(0.5, 1.5), age / 2);
+	interpret F(age) as DrawForward(1.8^age*random(0.5,1.5), age/2);
 	interpret + as TurnLeft(45 + random(-20, 20));
 	interpret - as TurnLeft(-45 + random(-20, 20));
 	interpret [ as StartBranch;
@@ -246,30 +294,30 @@ lsystem StochasticLsystemExample {
 	rewrite F(age) to F(age + 1);
 	rewrite X
 		to F(1) [ + X ] [ - X ] F(1) X  weight 4 or
-		to F(1) [ + X ] F(1) X          weight 1 or
-		to F(1) [ - X ] F(1) X          weight 1;
+		to F(1) [ + X ]         F(1) X  weight 1 or
+		to F(1)         [ - X ] F(1) X  weight 1;
 }
 process all with SvgRenderer;
-	\end{Lsystem}
-	\caption{Example or stochastic \lsystems with randomized rewrite rules and interpretation}
-	\label{fig:randExample}
-\end{figure}
+\end{Lsystem}
 
-\begin{comment}
-\subsection{Context rewriting}
+
+\subsection{Context-sensitive \lsystems}
 
 \newcommand{\onelsystems}{\mbox{1L-systems}\xspace}
 \newcommand{\twolsystems}{\mbox{2L-systems}\xspace}
 
-Context sensitive rewrite rules allows to rewrite symbol depending on the context (symbols around it).
+Rewriting of symbols in \zerolsystems is context-free, rewrite rules are applied on the symbols regrades of their context (symbols around it).
+However rewriting of symbol can also depend on its context.
+This is useful in simulating the flow of signals (nutrients or hormones) in plant model~\citep{PL91}.
+
 Formally there are two types of context sensitive L-systems, \onelsystems and \twolsystems.
-Rewrite rules of \onelsystems check context only on one side (left or right) whereas rewrite rules of \twolsystems check context on both sides.
+Rewrite rules of \onelsystems checks context only on one side (left or right) whereas rewrite rules of \twolsystems checks context on both sides.
 Since \onelsystems are just \twolsystems with one context empty we will consider context sensitive \lsystems as \twolsystems.
 
-Context sensitive \lsystems can be used for simulating signal propagation in string of symbols.
+Context sensitive \lsystem \ref{lsys:signalPropagarionSrc} shows simulation of signal propagation in the string of symbols.
+Result is in table \ref{fig:signalPropagarion}.
 
-\begin{figure}[ht]
-	\begin{Lsystem}
+\begin{Lsystem}[label=lsys:signalPropagarionSrc,caption={Context-sensitive \lsystems simulating signal propagation}]
 lsystem RewritingExample {
 	set symbols axiom = B A A A A A;
 	set iterations = 6;
@@ -278,10 +326,7 @@ lsystem RewritingExample {
 	rewrite     B {A} to A;
 }
 process all with SymbolPrinter;
-	\end{Lsystem}
-	\caption{\lsystem simulating signal propagation}
-	\label{fig:signalPropagarionSrc}
-\end{figure}
+\end{Lsystem}
 
 \begin{table}[ht]
 	\centering
@@ -298,21 +343,24 @@ process all with SymbolPrinter;
 		6 & A A A A A A \\
 		\bottomrule
 	\end{tabular}
-	\caption{Result of \lsystem from figure \ref{fig:signalPropagarionSrc}}
+	\caption{Axiom and first 6 iterations of \lsystem \ref{lsys:signalPropagarionSrc} showing signal propagation in the string of symbols}
 	\label{fig:signalPropagarion}
 \end{table}
 
-Context search in bracketed \lsystems is more difficult.
-The context matching procedure is searching context with respect to following rules:
+
+\subsubsection{Context-sensitive bracketed \lsystems}
+
+If we add context-sensitive rewrite rule to bracketed \lsystems situation will be more difficult.
+The context matching procedure must take into account branches.
+Following rules defines natural behavior of context between branches:
 \begin{enumerate*}
 	\item \label{enum:ctxRule1} two symbols are neighbors even if there are some branches between them,
 	\item \label{enum:ctxRule2} left neighbor of first symbol in branch is symbol before branch,
 	\item \label{enum:ctxRule3} last symbol in branch do not have right neighbor,
-	\item \label{enum:ctxRule4} unmatched symbols at end of branch are ignored,
+	\item \label{enum:ctxRule4} unmatched symbols at the end of branch are ignored,
 	\item \label{enum:ctxRule5} order of branches is insignificant.
 \end{enumerate*}
 
-These rules defines natural behavior of context between branches.
 Table \ref{tbl:bracketCtxt} shows examples of context matching in bracketed \lsystems with references to according rules.
 
 \begin{table}[ht]
@@ -340,42 +388,42 @@ Context in bracketed \lsystems can be used for propagation of signals through tr
 There are two basic types of signals.
 First is \emph{acropetal} signal which spreads from root to branches and second is \emph{basipetal} which spreads in other way i.e. from branches to root.
 This can be used well in plant modeling.
-Following figures shows context \lsystems for simulating acropetal (\ref{fig:acropetalSignal}) and basipetal (\ref{fig:basipetalSignal}) signals in static plant-like structure.
-Segments with signal are marked bolder.
+
+Figure \ref{fig:signalPropagation} shows simulation of acropetal (\ref{fig:acropetalSignal}) and basipetal (\ref{fig:basipetalSignal}) signals in static plant-like structure.
+Each figure shows first 5 iterations and segments with signal are marked bolder.
 
 \begin{figure}[ht]
 	\centering
-	\subfloat{\includegraphics[height=100pt]{AcropetalSignal1}} ~
-	\subfloat{\includegraphics[height=100pt]{AcropetalSignal2}} ~
-	\subfloat{\includegraphics[height=100pt]{AcropetalSignal3}} ~
-	\subfloat{\includegraphics[height=100pt]{AcropetalSignal4}} ~
-	\subfloat{\includegraphics[height=100pt]{AcropetalSignal5}}
-	\caption{Acropetal signal propagation}
-	\label{fig:acropetalSignal}
-\end{figure}
-
-\begin{figure}[ht]
-	\centering
-	\subfloat{\includegraphics[height=100pt]{BasipetalSignal1}} ~
-	\subfloat{\includegraphics[height=100pt]{BasipetalSignal2}} ~
-	\subfloat{\includegraphics[height=100pt]{BasipetalSignal3}} ~
-	\subfloat{\includegraphics[height=100pt]{BasipetalSignal4}} ~
-	\subfloat{\includegraphics[height=100pt]{BasipetalSignal5}}
-	\caption{Basipetal signal propagation}
-	\label{fig:basipetalSignal}
+	\subfloat[Acropetal signal propagation]{
+		\includegraphics[scale=0.5]{AcropetalSignal1}\hspace{1mm}
+		\includegraphics[scale=0.5]{AcropetalSignal2}\hspace{1mm}
+		\includegraphics[scale=0.5]{AcropetalSignal3}\hspace{1mm}
+		\includegraphics[scale=0.5]{AcropetalSignal4}\hspace{1mm}
+		\includegraphics[scale=0.5]{AcropetalSignal5}
+		\label{fig:acropetalSignal}
+	}
+	\hfill
+	\subfloat[Basipetal signal propagation]{
+		\includegraphics[scale=0.5]{BasipetalSignal1}\hspace{2mm}
+		\includegraphics[scale=0.5]{BasipetalSignal2}\hspace{2mm}
+		\includegraphics[scale=0.5]{BasipetalSignal3}\hspace{2mm}
+		\includegraphics[scale=0.5]{BasipetalSignal4}\hspace{2mm}
+		\includegraphics[scale=0.5]{BasipetalSignal5}
+		\label{fig:basipetalSignal}
+	}
+	\caption{Signal propagation simulated with context-sensitive bracketed \lsystems}
+	\label{fig:signalPropagation}
 \end{figure}
 
 
 \subsection{Parametric \lsystems}
 
 Symbols in parametric \lsystems can hold any number of arguments.
-Arguments are floating point numbers.
+Arguments are often floating point numbers but they can be more complicated structures.
 Arguments can be used in interpretation definition to send values like length of line or color to interpretation routine.
 Arguments can be also used in rewrite rules to determine whether rewrite symbol or not and to determine new arguments for rewritten symbols.
-In context \twolsystems is also possible to get arguments from symbols in context and use them in rewrite rule.
+In context \twolsystems is also possible to get arguments from symbols in context and use them in rewrite rules.
 
-
-\end{comment}
 
 
 

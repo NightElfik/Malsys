@@ -112,7 +112,7 @@ namespace Malsys.Processing.Components.Renderers {
 
 		public abstract void DrawPolygon(Polygon3D polygon);
 
-		public abstract void DrawSphere(Point3D center, double radius, ColorF color, double quality);
+		public abstract void DrawSphere(Point3D center, Quaternion rotation, double radius, ColorF color, double quality);
 
 		#endregion
 

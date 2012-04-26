@@ -29,6 +29,20 @@
 	</ul>
 }
 
+@if (Model.CompiledSourceCode != null) {
+	if (Model.Logger.ErrorOccurred) {
+		<p class="errorBlock">
+			Compilation was not successful.
+		</p>
+	}
+	else {
+		<p class="okBlock">
+			Compilation was successful.
+			See compiled source code at the end of page.
+		</p>
+	}
+}
+
 @if (Model.OutputFiles != null && Model.OutputFiles.Count > 0) {
 	<p>
 		Processing of input created @Model.OutputFiles.Count result(s) in @Math.Round(Model.ProcessDuration.TotalSeconds, 2) second(s).
@@ -48,19 +62,28 @@ else {
 		<th>Message</th>
 		<th style="width: 160px;">Position</th>
 	</tr>
-	@foreach (var msg in Model.Logger) {
+@foreach (var msgGroup in Model.Logger.GroupBy(x => x.MessageStr)) {
+	var count = msgGroup.Count();
+	var messages = msgGroup.Aggregate(new System.Text.StringBuilder(), (sb, m) => sb.AppendLine(m.GetFullMessage())).ToString();
+	var msg = msgGroup.First();
 	<tr class="@msg.Type.ToString().ToLower()">
 		<td class="center"><abbr title="@msg.Type (@msg.Id)">@msg.Type.ToString()[0]</abbr></td>
-		<td><p class="malsysMsg">@msg.MessageStr</p></td>
+		<td>
+			@if (count > 1) {
+				<p class="malsysMsg"><abbr title="@messages">[@(count)x]</abbr> @MalsysHelper.SimplifyMessage(msg.MessageStr)</p>
+   }
+   else {
+				<p class="malsysMsg">@MalsysHelper.SimplifyMessage(msg.MessageStr)</p>
+   }
+		</td>
 		<td>
 			@if (!msg.Position.IsUnknown) {
 				@:ln: @msg.Position.BeginLine
 				@:col: @msg.Position.BeginColumn
-				@:src: @msg.Position.SourceName
 			}
 		</td>
 	</tr>
- }
+}
 	</table>
 	<hr />
 }
@@ -92,7 +115,7 @@ else {
 	bool loadThreeJs = false;
 	if (Model.OutputFiles != null) {
 		foreach (var result in Model.OutputFiles) {
-			if (result.MimeType == Malsys.MimeType.Application.Json) {
+			if (result.MimeType == Malsys.MimeType.Application.Javascript) {
 				// TODO: this should be returned from partial view somehow
 				// the condition is on two places => place for mistakes
 				loadThreeJs = true;
@@ -102,6 +125,15 @@ else {
 			</div>
 		}
 	}
+}
+
+@if (Model.CompiledSourceCode != null) {
+	<div class="floating_box">
+		<h3>Compiled source code</h3>
+		<pre class="malsys box">
+		@Model.CompiledSourceCode
+		</pre>
+	</div>
 }
 
 </div>

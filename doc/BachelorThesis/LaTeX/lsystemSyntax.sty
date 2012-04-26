@@ -63,12 +63,19 @@
 	backgroundcolor=\color{clr_code_bg},
 	showstringspaces=false,
 	%xleftmargin=20pt,
-	escapechar=`
+	framexleftmargin=8pt,
+	escapechar=`,
+	captionpos=b
 }
 
-\lstnewenvironment{Lsystem}
-{\lstset{language=Lsystem}}
-{}
+\lstnewenvironment{Lsystem}[1][]%
+{ % http://tex.stackexchange.com/questions/10141/how-to-prevent-lstlisting-from-splitting-code-between-pages
+	\noindent
+	\minipage{\linewidth}
+	\vspace{0.5\baselineskip}
+	\lstset{language=Lsystem,#1}
+}
+{\endminipage}
 
 
 

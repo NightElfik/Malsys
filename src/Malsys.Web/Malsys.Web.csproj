@@ -325,6 +325,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="404.html" />
+    <Content Include="apple-touch-icon.png" />
     <Content Include="App_Data\MalsysDb.mdf" />
     <Content Include="App_Data\MalsysDb_log.ldf">
       <DependentUpon>MalsysDb.mdf</DependentUpon>
@@ -364,6 +365,7 @@
     <Content Include="Css\style.less.css" />
     <None Include="DatabaseScheme.sql" />
     <Content Include="Error.html" />
+    <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <None Include="Js\jquery.textarea.js" />
     <None Include="Js\jquery.validate.js" />
@@ -377,6 +379,7 @@
     <None Include="Js\modernizr.js" />
     <None Include="Js\ThreeJs\Detector.js" />
     <None Include="Js\ThreeJs\malsys.three.js" />
+    <Content Include="google4412977e75e1f8f1.html" />
     <Content Include="humans.txt" />
     <None Include="Js\ThreeJs\Stats.js" />
     <Content Include="Img\Lilac-DiffWebGL.png" />
@@ -414,6 +417,7 @@
       <DependentUpon>MinifyJs.tt</DependentUpon>
     </Content>
     <Content Include="Js\ThreeJs\Three.js" />
+    <Content Include="robots.txt" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -471,6 +475,9 @@
     <Content Include="Views\Gallery\FullScreen.cshtml" />
     <Content Include="Views\Shared\_FullScreenLayout.cshtml" />
     <Content Include="Views\Home\WhyWebgl.cshtml" />
+    <Content Include="Views\Home\Sitemap.cshtml" />
+    <Content Include="Views\Gallery\Sitemap.cshtml" />
+    <Content Include="Areas\Help\Views\Home\Sitemap.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Areas\Administration\Views\Shared\" />

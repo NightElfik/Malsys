@@ -34,6 +34,16 @@ namespace Malsys.Web.Controllers {
 
 		}
 
+		public virtual ActionResult Sitemap() {
+
+			var inputs = malsysInputRepository.InputDb.SavedInputs
+				.Where(x => x.IsPublished && !x.IsDeleted)
+				.OrderByDescending(x => (float)x.RatingSum / ((float)x.RatingCount + 1) + x.RatingCount)
+				.Take(100);
+
+			return View(inputs);
+		}
+
 
 		public virtual ActionResult Index(string user = null, string tag = null, int? page = null) {
 
@@ -228,7 +238,7 @@ namespace Malsys.Web.Controllers {
 					if (!System.IO.File.Exists(filePath)) {
 						ErrorSignal.FromCurrentContext().Raise(new Exception("Generation of input `{0}` in gallery returned true but file `{1}` not found."
 							.Fmt(input.UrlId, filePath)));
-						return HttpNotFound(); ;
+						return HttpNotFound();
 					}
 					malsysInputRepository.InputDb.SaveChanges();
 				}
@@ -334,8 +344,14 @@ namespace Malsys.Web.Controllers {
 				input.OutputMetadata = meta;
 			}
 
-			System.IO.File.Delete(outputFilePath);
-			System.IO.File.Copy(output.FilePath, outputFilePath);
+			try {
+				System.IO.File.Delete(outputFilePath);
+				System.IO.File.Copy(output.FilePath, outputFilePath);
+			}
+			catch (Exception ex) {
+				Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("Failed to delete old output file or copy new one.", ex));
+				return false;
+			}
 
 			foreach (var o in outputs) {
 				try {
@@ -343,6 +359,7 @@ namespace Malsys.Web.Controllers {
 				}
 				catch (Exception ex) {
 					Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("Failed to delete temp gallery file.", ex));
+					return false;
 				}
 			}
 

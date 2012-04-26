@@ -65,6 +65,20 @@ namespace Malsys.Web {
 
 			routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
+
+			routes.MapRoute(
+				"Main sitemap",
+				"sitemap.xml",
+				new { controller = MVC.Home.Name, action = "sitemap" },
+				new string[] { "Malsys.Web.Controllers" }
+			);
+			routes.MapRoute(
+				"Sitemaps",
+				"{controller}/sitemap.xml",
+				new { controller = MVC.Home.Name, action = "sitemap" },
+				new string[] { "Malsys.Web.Controllers" }
+			);
+
 			routes.MapRoute(
 				"Permalink",
 				MVC.Permalink.Name.ToLower() + "/{id}",

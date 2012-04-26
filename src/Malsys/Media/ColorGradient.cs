@@ -29,7 +29,7 @@ namespace Malsys.Media {
 		public uint Length { get { return length; } }
 
 		public ColorF this[uint distance] { get { return GetColor(distance); } }
-		public ColorF this[float percent] { get { return GetColor((uint)(percent * (length - 1))); } }
+		public ColorF this[double distance] { get { return GetColor((uint)distance); } }
 
 
 		public ColorF GetColor(uint distance) {
@@ -60,6 +60,10 @@ namespace Malsys.Media {
 				lowerColor.R * lowerMultiplier + upperColor.R * upperMultiplier,
 				lowerColor.G * lowerMultiplier + upperColor.G * upperMultiplier,
 				lowerColor.B * lowerMultiplier + upperColor.B * upperMultiplier);
+		}
+
+		public ColorF GetColorbyPercentage(double percentage) {
+			return GetColor((uint)(percentage * (length - 1)));
 		}
 
 	}

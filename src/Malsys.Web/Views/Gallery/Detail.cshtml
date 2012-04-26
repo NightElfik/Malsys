@@ -27,10 +27,12 @@
 @switch (Model.Input.MimeType) {
 
 	case MimeType.Text.Plain:
-		using (var sr = fi.OpenText()) {
+		<a class="noUnderline" href="@Url.Action(MVC.Gallery.GetOutput(Model.Input.UrlId))" title="@Model.Input.PublishName">
+		@using (var sr = fi.OpenText()) {
 			bool asciiArt = OutputMetadataHelper.TryGetValue(Model.Metadata, OutputMetadataKeyHelper.OutputIsAsciiArt, false);
 			<pre class="box @(asciiArt ? "asciiArt" : "")">@sr.ReadToEnd()</pre>
 		}
+		</a>
 		break;
 
 	case MimeType.Image.SvgXml:
@@ -38,11 +40,13 @@
 		int height = OutputMetadataHelper.TryGetValue(Model.Metadata, OutputMetadataKeyHelper.OutputHeight, -1);
 		bool hasValidSize = width > 0 && height > 0;
 		<div class="scrollBox">
-			<img src="@Url.Action(MVC.Gallery.GetOutput(Model.Input.UrlId))" @if (hasValidSize) { <text>width="@(width)px" height="@(height)px"</text> } alt="Process result" />
+			<a href="@Url.Action(MVC.Gallery.GetOutput(Model.Input.UrlId))" title="@Model.Input.PublishName">
+			<img src="@Url.Action(MVC.Gallery.GetOutput(Model.Input.UrlId))" @if (hasValidSize) { <text>width="@(width)px" height="@(height)px"</text> } alt="@Model.Input.PublishName" />
+			</a>
 		</div>
 		break;
 
-	case MimeType.Application.Json:
+	case MimeType.Application.Javascript:
 		<div class="threeJsScene" data-scene="@Url.Action(MVC.Gallery.GetOutput(Model.Input.UrlId))" data-clear-color="FFFFFF" data-anti-alias="true">
 			<p class="webgl">WebGL is not supported by your browser. Please @Html.Link("get supported browser", "http://get.webgl.org/", "get supported browser"). @Html.ActionLink("Why?", MVC.Home.WhyWebgl())</p>
 			<p class="controls">Controls: Move mouse &amp; press LEFT/A: rotate, MIDDLE/S: zoom, RIGHT/D: pan</p>
@@ -50,6 +54,7 @@
 		</div>
 		<p>
 			Note that L-systems is actual 3D scene rendered by your browser and you can rotate, zoom or pan with it.
+			@Html.ActionLink("Download JavaScript source code", MVC.Gallery.GetOutput(Model.Input.UrlId)).
 		</p>
 		<text>
 		@section scripts {

@@ -33,6 +33,10 @@ namespace Malsys.Processing.Components.Interpreters {
 
 		private bool measuring;
 
+		private bool applyTropism;
+		private double tropismCoef;
+		private Vector3D tropismVect;
+
 		private uint colorEvents;
 		private uint colorEventsMeasured;
 
@@ -63,8 +67,6 @@ namespace Malsys.Processing.Components.Interpreters {
 
 
 		public TurtleInterpreter() {
-
-
 			quatRotation = new QuaternionRotation3D();
 			tranform = new RotateTransform3D(quatRotation, 0, 0, 0);
 		}
@@ -194,6 +196,32 @@ namespace Malsys.Processing.Components.Interpreters {
 		[UserSettable]
 		public Constant ReversePolygonOrder { get; set; }
 
+		/// <summary>
+		/// Tropism vector affects drawn or moved lines to derive to tropism vector.
+		/// </summary>
+		/// <expected>Array of 3 constants representing x, y and z coordinate.</expected>
+		/// <default>{0, 1, 0}</default>
+		[AccessName("tropismVector")]
+		[UserSettable]
+		public ValuesArray TropismVector {
+			get { return tropismVector; }
+			set {
+				if (!value.IsConstArrayOfLength(3)) {
+					throw new InvalidUserValueException("Tropism vector value must be array of 3 numbers representing x, y and z coordinate.");
+				}
+				tropismVector = value;
+			}
+		}
+		private ValuesArray tropismVector;
+
+		/// <summary>
+		/// Tropism coefficient affects speed of derivation to tropism vector.
+		/// </summary>
+		/// <expected>Number.</expected>
+		/// <default>0</default>
+		[AccessName("tropismCoefficient")]
+		[UserSettable]
+		public Constant TropismCoefficient { get; set; }
 
 		#endregion
 
@@ -298,6 +326,24 @@ namespace Malsys.Processing.Components.Interpreters {
 				reversePolygonOrder = reversePoly;
 			}
 
+			applyTropism = !TropismCoefficient.IsZero;
+			if (applyTropism) {
+				tropismCoef = TropismCoefficient.Value;
+				if (double.IsNaN(tropismCoef) || double.IsInfinity(tropismCoef)) {
+					applyTropism = false;
+					Logger.LogMessage(Message.InvalidTropismCoefValue);
+				}
+
+				tropismVect.X = ((Constant)tropismVector[0]).Value;
+				tropismVect.Y = ((Constant)tropismVector[1]).Value;
+				tropismVect.Z = ((Constant)tropismVector[2]).Value;
+
+				if (double.IsNaN(tropismVect.Length) || tropismVect.Length.EpsilonCompareTo(0) == 0) {
+					applyTropism = false;
+					Logger.LogMessage(Message.InvalidTropismVectValue);
+				}
+			}
+
 		}
 
 		public void Cleanup() {
@@ -310,6 +356,8 @@ namespace Malsys.Processing.Components.Interpreters {
 			ContinuousColoring = Constant.False;
 			ReversePolygonOrder = Constant.False;
 			RotationQuaternion = new ValuesArray(Constant.One, Constant.Zero, Constant.Zero, Constant.Zero);
+			TropismVector = new ValuesArray(Constant.Zero, Constant.One, Constant.Zero);
+			TropismCoefficient = Constant.Zero;
 		}
 
 		public void BeginProcessing(bool measuring) {
@@ -418,7 +466,9 @@ namespace Malsys.Processing.Components.Interpreters {
 			double length = getArgumentAsDouble(args, 0);
 
 			quatRotation.Quaternion = currState.Rotation;
-			currState.Position += tranform.Transform(fwdVect * length);
+			Vector3D moveVector = tranform.Transform(fwdVect * length);
+			currState.Position += moveVector;
+
 			Debug.Assert(!double.IsNaN(currState.Position.X) && !double.IsNaN(currState.Position.Y) && !double.IsNaN(currState.Position.Z));
 
 			if (mode2D) {
@@ -426,6 +476,10 @@ namespace Malsys.Processing.Components.Interpreters {
 			}
 			else {
 				renderer3D.MoveTo(currState.Position, currState.Rotation, currState.Width, currState.Color);
+			}
+
+			if (applyTropism) {
+				rotateByTropism(moveVector);
 			}
 		}
 
@@ -446,7 +500,9 @@ namespace Malsys.Processing.Components.Interpreters {
 			ColorF color = getArgumentAsColor(args, 2);
 
 			quatRotation.Quaternion = currState.Rotation;
-			currState.Position += tranform.Transform(fwdVect * length);
+			Vector3D moveVector = tranform.Transform(fwdVect * length);
+			currState.Position += moveVector;
+
 			Debug.Assert(!double.IsNaN(currState.Position.X) && !double.IsNaN(currState.Position.Y) && !double.IsNaN(currState.Position.Z));
 
 			colorEvents++;
@@ -456,6 +512,10 @@ namespace Malsys.Processing.Components.Interpreters {
 			else {
 				double quality = getArgumentAsDouble(args, 3);
 				renderer3D.DrawTo(currState.Position, currState.Rotation, width, color, quality);
+			}
+
+			if (applyTropism) {
+				rotateByTropism(moveVector);
 			}
 		}
 
@@ -491,7 +551,7 @@ namespace Malsys.Processing.Components.Interpreters {
 			}
 			else {
 				double quality = getArgumentAsDouble(args, 2);
-				renderer3D.DrawSphere(currState.Position, radius, color, quality);
+				renderer3D.DrawSphere(currState.Position, currState.Rotation, radius, color, quality);
 			}
 		}
 
@@ -687,7 +747,7 @@ namespace Malsys.Processing.Components.Interpreters {
 		private ColorF getArgumentAsColor(ArgsStorage args, int index) {
 
 			if (colorContinously) {
-				return colorGradient[(float)colorEvents / colorEventsMeasured];
+				return colorGradient.GetColorbyPercentage((double)colorEvents / (double)colorEventsMeasured);
 			}
 			else if (index < args.ArgsCount) {
 				ColorF color;
@@ -700,6 +760,19 @@ namespace Malsys.Processing.Components.Interpreters {
 		}
 
 
+		private void rotateByTropism(Vector3D moveVector) {
+
+			Vector3D axis = Vector3D.CrossProduct(moveVector, tropismVect);
+			double angle = axis.Length * tropismCoef;
+			if (angle.EpsilonCompareTo(0) == 0) {
+				return;
+			}
+
+			axis.Normalize();
+			currState.Rotation = new Quaternion(axis, angle) * currState.Rotation;
+		}
+
+
 		public enum Message {
 
 			[Message(MessageType.Warning, "Some branches were not closed while interpretation ended.")]
@@ -708,6 +781,10 @@ namespace Malsys.Processing.Components.Interpreters {
 			PolygonNotClosedAtEnd,
 			[Message(MessageType.Warning, "Reversing polygon order has no sense in 3D, ignoring value.")]
 			ReversePolyIn3d,
+			[Message(MessageType.Warning, "Invalid tropism coefficient value, ignoring tropism.")]
+			InvalidTropismCoefValue,
+			[Message(MessageType.Warning, "Invalid tropism vector value, ignoring tropism.")]
+			InvalidTropismVectValue,
 
 		}
 	}

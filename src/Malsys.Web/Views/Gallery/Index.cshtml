@@ -10,13 +10,14 @@
 	int thnMaxWidth = 512;
 	int thnMaxHeight = 256;
 	bool loadThreeJs = false;
+	IHtmlString pager = Html.Pager(Model.Inputs);
 }
 
 <div class="right">@Html.ActionLink("list of tags", MVC.Gallery.Tags())</div>
 <h2>Gallery of L-systems</h2>
 
 <div class="clearfix">
-@Html.Pager(Model.Inputs)
+@pager
 </div>
 
 @if (!string.IsNullOrWhiteSpace(Model.UserFilter)) {
@@ -39,14 +40,19 @@
 }
 </div>
 
-<p>
-	Images on this page are just thumbnails. Click them to see larger image, details, ratings and their L-system source code.
+<div class="clearfix">
+@pager
+</div>
+
+<p class="note">
+	Images on this page are just thumbnails.
+	Click them to see the original image, details, ratings and their L-system source code.
 </p>
 
 @if (loadThreeJs) {
-<p>
-	Note that thumbnails of L-systems in 3D are actual 3D scenes rendered by your browser and you can rotate, zoom or pan them.
-</p>
+	<p class="note">
+		Note that thumbnails of L-systems in 3D are actual 3D scenes rendered by your browser and you can rotate, zoom or pan them.
+	</p>
 	<text>
 	@section scripts {
 		@Content.Js(Links.Js.ThreeJs.Three_js)

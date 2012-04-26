@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Web.Mvc;
-using Malsys.Processing;
+using Malsys.IO;
 using Malsys.Processing.Output;
 using Malsys.SemanticModel.Evaluated;
+using Malsys.SourceCode.Printers;
 using Malsys.Web.Infrastructure;
 using Malsys.Web.Models;
 using Malsys.Web.Models.Lsystem;
@@ -94,6 +95,17 @@ namespace Malsys.Web.Controllers {
 			sw.Stop();
 
 			resultModel.ProcessDuration = sw.Elapsed;
+
+			if (compileOnly) {
+				if (evaledInput != null) {
+					var writer = new IndentStringWriter();
+					new CanonicPrinter(writer).Print(evaledInput);
+					resultModel.CompiledSourceCode = writer.GetResult();
+				}
+				else {
+					resultModel.CompiledSourceCode = "";
+				}
+			}
 
 			if (compileOnly || !result) {
 				return View(Views.Index, resultModel);

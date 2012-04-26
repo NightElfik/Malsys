@@ -8,11 +8,19 @@ namespace Malsys.Web.Areas.Help {
 		}
 
 		public override void RegisterArea(AreaRegistrationContext context) {
+
 			context.MapRoute(
-				"Help_default",
-				"Help/{controller}/{action}/{id}",
-				new { action = "Index", id = UrlParameter.Optional }
+				"Help sitemap",
+				"Help/sitemap.xml",
+				new { controller = MVC.Help.Home.Name, action = MVC.Help.Home.ActionNames.Sitemap }
 			);
+
+			context.MapRoute(
+				"Help default",
+				"Help/{controller}/{action}/{id}",
+				new { controller = MVC.Help.Home.Name, action = "Index", id = UrlParameter.Optional }
+			);
+
 		}
 
 	}

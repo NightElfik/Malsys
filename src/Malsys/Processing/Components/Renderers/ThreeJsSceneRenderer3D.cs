@@ -166,7 +166,7 @@ namespace Malsys.Processing.Components.Renderers {
 
 				outputStream = context.OutputProvider.GetOutputStream<ThreeJsSceneRenderer3D>(
 					"3D result from `{0}`".Fmt(context.Lsystem.Name),
-					MimeType.Application.Json, false, globalAdditionalData);
+					MimeType.Application.Javascript, false, globalAdditionalData);
 
 				writer = new IndentTextWriter(new StreamWriter(outputStream));
 
@@ -257,7 +257,7 @@ namespace Malsys.Processing.Components.Renderers {
 			}
 		}
 
-		public override void DrawSphere(Point3D center, double radius, ColorF color, double quality) {
+		public override void DrawSphere(Point3D center, Quaternion rotation, double radius, ColorF color, double quality) {
 			if (!measuring) {
 				string geometryName = createSphereGeometry(quality);
 				string materialName = createMaterial(color);
@@ -266,6 +266,12 @@ namespace Malsys.Processing.Components.Renderers {
 				writer.WriteLine("mesh.position.x = {0:0.###};".Fmt(center.X));
 				writer.WriteLine("mesh.position.y = {0:0.###};".Fmt(center.Y));
 				writer.WriteLine("mesh.position.z = {0:0.###};".Fmt(center.Z));
+
+				var euclidRotation = rotation.ToEuclidRotation();
+				writer.WriteLine("mesh.eulerOrder = 'YZX';");
+				writer.WriteLine("mesh.rotation.x = {0:0.###};".Fmt(euclidRotation.X));
+				writer.WriteLine("mesh.rotation.y = {0:0.###};".Fmt(euclidRotation.Y));
+				writer.WriteLine("mesh.rotation.z = {0:0.###};".Fmt(euclidRotation.Z));
 
 				if (radius.EpsilonCompareTo(1.0) != 0) {
 					writer.WriteLine("mesh.scale.x = {0:0.###};".Fmt(radius));

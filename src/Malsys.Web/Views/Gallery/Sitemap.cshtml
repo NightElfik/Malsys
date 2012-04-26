@@ -1,0 +1,28 @@
+﻿@model IEnumerable<SavedInput>
+
+@{
+	Layout = null;
+}
+
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+
+	<url>
+		<loc>@Url.ActionAbsolute(MVC.Gallery.Index())</loc>
+		<changefreq>daily</changefreq>
+		<priority>0.9</priority>
+	</url>
+@foreach (var input in Model) {
+	<url>
+		<loc>@Url.ActionAbsolute(MVC.Gallery.Detail(input.UrlId))</loc>
+		<lastmod>@input.EditDate.ToString("yyyy-MM-dd")</lastmod>
+	@if (input.MimeType == MimeType.Image.SvgXml) {
+		<image:image>
+			<image:loc>@Url.ActionAbsolute(MVC.Gallery.GetOutput(input.UrlId))</image:loc>
+			<image:caption>@input.PublishName</image:caption>
+		</image:image>
+	}
+	</url>
+}
+
+</urlset>

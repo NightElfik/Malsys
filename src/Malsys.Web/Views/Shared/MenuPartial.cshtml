@@ -2,18 +2,18 @@
 
 <ul>
 
-<li>@Html.ActionLink("L-system processor", MVC.Process.Index())</li>
-<li>@Html.ActionLink("Gallery of L-systems", MVC.Gallery.Index())</li>
-<li>@Html.ActionLink("Help", MVC.Help.Home.Index())</li>
+<li>@Html.ActionLink("L-system processor", MVC.Process.Index(), new { tabindex = 10 })</li>
+<li>@Html.ActionLink("Gallery of L-systems", MVC.Gallery.Index(), new { tabindex = 11 })</li>
+<li>@Html.ActionLink("Help", MVC.Help.Home.Index(), new { tabindex = 12 })</li>
 
 @if (Request.IsAuthenticated) {
 
 	if (User.IsInRole(UserRoles.ViewStats)) {
-		<li>@Html.ActionLink("S", MVC.Administration.Stats.Index())</li>
+		<li>@Html.ActionLink("S", MVC.Administration.Stats.Index(), new { tabindex = 18 })</li>
 	}
 
 	if (User.IsInRole(UserRoles.Administrator)) {
-		<li>@Html.ActionLink("A", MVC.Administration.Home.Index())</li>
+		<li>@Html.ActionLink("A", MVC.Administration.Home.Index(), new { tabindex = 19 })</li>
 	}
 }
 

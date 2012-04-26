@@ -11,6 +11,9 @@ namespace Malsys {
 		private static Regex terminalList = new Regex(@"\[([^'\-<\]]+)\]", RegexOptions.Compiled);
 		private static Regex quantifier = new Regex("([^'])([?+*])", RegexOptions.Compiled);
 
+		private static Regex fullName = new Regex(@"`(([a-zA-Z0-9\+]+\.)+([a-zA-Z0-9\+]+))`", RegexOptions.Compiled);
+		private static Regex quoted = new Regex(@"`(.+?)`", RegexOptions.Compiled);
+
 
 		public static HtmlString TocLink(bool autoHide = false) {
 			return new HtmlString("<div class=\"clearfix\"><a href=\"#toc\" class=\"tocLink" + (autoHide ? " autoHide" : "")
@@ -32,6 +35,13 @@ namespace Malsys {
 			code = highlightGrammar(code);
 			return new HtmlString("<pre class=\"grammar box\">" + code + "</pre>");
 
+		}
+
+		public static HtmlString SimplifyMessage(string msg) {
+			msg = HtmlEncode(msg);
+			msg = fullName.Replace(msg, "`<abbr title=\"$1\">$3</abbr>`");
+			msg = quoted.Replace(msg, "`<span class=\"quoted\">$1</span>`");
+			return new HtmlString(msg);
 		}
 
 
@@ -70,6 +80,8 @@ namespace Malsys {
 			return sb.ToString();
 		}
 
+
+
 		private static string highlightGrammar(string code) {
 
 			code = terminal.Replace(code, "<span class=\"grTerminal\">$1</span>");
@@ -80,6 +92,7 @@ namespace Malsys {
 			return code;
 
 		}
+
 
 	}
 }

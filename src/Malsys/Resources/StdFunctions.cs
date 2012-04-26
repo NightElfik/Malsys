@@ -398,16 +398,30 @@ namespace Malsys.Resources {
 		);
 
 		/// <summary>
-		/// Converts array represented as color gradient to array of colors.
+		/// Converts array representing color gradient to array of colors.
 		/// </summary>
 		/// <group>Other functions</group>
 		[AccessName("toColorGradient")]
 		public static readonly FunctionCore ToColorGradient = new FunctionCore(1,
 			FunctionInfo.ArrayParamsTypes,
 			(a, e) => {
-				var logger = new MessageLogger();  // TODO: use dummy logger
+				var logger = new DullMessageLogger();
 				var gFac = new Malsys.Media.ColorGradientFactory();
 				var gradient = gFac.CreateFromValuesArray((ValuesArray)a[0], logger);
+				return gFac.ToValuesArray(gradient);
+			});
+
+		/// <summary>
+		/// Converts arguments representing color gradient to array of colors.
+		/// </summary>
+		/// <group>Other functions</group>
+		[AccessName("toColorGradient")]
+		public static readonly FunctionCore ToColorGradientArr = new FunctionCore(FunctionInfo.AnyParamsCount,
+			FunctionInfo.ConstantParamsTypes,
+			(a, e) => {
+				var logger = new DullMessageLogger();
+				var gFac = new Malsys.Media.ColorGradientFactory();
+				var gradient = gFac.CreateFromValuesArray(a, logger);
 				return gFac.ToValuesArray(gradient);
 			});
 

@@ -9,7 +9,7 @@ namespace Malsys.Media {
 
 		private ColorParser clrParser = new ColorParser();
 
-		public ColorGradient CreateFromValuesArray(ValuesArray array, IMessageLogger logger) {
+		public ColorGradient CreateFromValuesArray(IList<IValue> array, IMessageLogger logger) {
 
 			var colors = new List<ColorF>();
 			var dists = new List<uint>();

@@ -188,29 +188,6 @@ namespace Malsys.Tests.Process {
 					toId(ProcessConfigurationBuilder.Message.ComponentCtorException) });
 		}
 
-#if !DEBUG  // this test is testing throwing general exception which is not caught in DEBUG configuration
-		[TestMethod]
-		public void ExceptionInInitTests() {
-			doTest(string.Join("\n", "configuration Config {",
-					"component GoodDevil typeof ErrorInInitComponent;",
-					"component Starter typeof StarterComponent;",
-					"}"),
-				"process all with Config;",
-				new string[] {
-					"StarterComponent",
-					toId(ProcessConfigurationBuilder.Message.ComponentInitializationError) });
-
-			doTest(string.Join("\n", "configuration Config {",
-					"component BadDevil typeof ExceptionInInitComponent;",
-					"component Starter typeof StarterComponent;",
-					"}"),
-				"process all with Config;",
-				new string[] {
-					"StarterComponent",
-					toId(ProcessConfigurationBuilder.Message.ComponentInitializationException) });
-		}
-#endif
-
 		[TestMethod]
 		public void SettableVariableTests() {
 

@@ -12,6 +12,9 @@
 @themeColorDarker: darken(@themeColor, 10%);
 @themeColorDarkerDarker: darken(@themeColor, 20%);
 
+@textColor: #111;
+@textNoteColor: #555;
+
 @bodyBgColor: #FFF;
 @bgColor: lighten(@themeColor, 5%);
 @bgColorLight: lighten(@themeColor, 50%);
@@ -69,7 +72,7 @@ audio:not([controls]) { display: none; }
  * 2. Prevent iOS text size adjust on device orientation change, without disabling user zoom: h5bp.com/g
  */
 html { font-size: 100%; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
-body, button, input, select, textarea { font-family: sans-serif; color: #222; }
+body, button, input, select, textarea { font-family: sans-serif; color: @textColor; }
 body { margin: 0; font-size: 1em; line-height: 1.4; }
 
 /*
@@ -321,9 +324,11 @@ header {
 	}
 }
 
+#skipNavigation { position: absolute; top: 0; left: 0; }
+
 /* Main ===================================================================== */
 
-#main { margin-bottom: 32px; }
+#main { margin-bottom: 32px; background-color: @bodyBgColor; }
 #main.fullScreen { margin: 0; padding: 0; overflow: hidden; }
 
 input[type="submit"] { padding: 0.5em 1em; }
@@ -369,9 +374,13 @@ footer {
 .left { float: left; }
 .right { float: right; text-align: left; }
 .bg { background-color: @bodyBgColor; }
+.note { font-size: 80%; color: @textNoteColor; }
 .box {
 	.malsysBox();
 	margin-bottom: 0.5em;
+}
+a.noUnderline:hover {
+	text-decoration: none;
 }
 
 .leftHalf {
@@ -610,6 +619,8 @@ p.malsysMsg {
 .error { background-color: #FFDDDD; }
 .errorBlock { background-color: #FFDDDD; padding: 0.5em; border: 1px solid #FF0000; }
 .warning { background-color: #FBEC5D; }
+
+.okBlock { background-color: #DDFFDD; padding: 0.5em; border: 1px solid #00FF00; }
 
 .monospace { font-family: @monospaceFonts; }
 

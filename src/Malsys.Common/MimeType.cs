@@ -29,6 +29,11 @@ namespace Malsys {
 			public const string XGzip = "application/x-gzip";
 
 			/// <summary>
+			/// JavaScript.
+			/// </summary>
+			public const string Javascript = "application/javascript";
+
+			/// <summary>
 			/// Json (JavaScript Object Notation).
 			/// </summary>
 			public const string Json = "application/json";
@@ -84,6 +89,7 @@ namespace Malsys {
 			switch (mimeType) {
 				case Application.Zip: return ".zip";
 				case Application.XGzip: return ".gz";
+				case Application.Javascript: return ".js";
 				case Application.Json: return ".js";
 				case Image.Gif: return ".gif";
 				case Image.Jpeg: return ".jpg";

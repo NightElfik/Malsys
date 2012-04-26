@@ -6,7 +6,8 @@
 @{
 	var metadata = OutputMetadataHelper.DeserializeMetadata(Model.SavedInput.OutputMetadata);
 
-	HtmlString linkStrBegin = new HtmlString("<a href=\"" + Url.Action(MVC.Gallery.Detail(Model.SavedInput.UrlId)) + "\">");
+	HtmlString linkStrBegin = new HtmlString("<a href=\"" + Url.Action(MVC.Gallery.Detail(Model.SavedInput.UrlId))
+		+ "\" title=\"" + Model.SavedInput.PublishName + " \">");
 	HtmlString linkStrEnd = new HtmlString("</a>");
 
 	Model.NeedsThreeJs = false;
@@ -27,16 +28,19 @@
 		else {
 			height = Model.MaxHeight;
 		}
-		<img src="@Url.Action(MVC.Gallery.GetThumbnail(Model.SavedInput.UrlId))" @if (width > 0) { <text>width="@(width)px" </text> } height="@(height)px" alt="Thumbnail of @Model.SavedInput.PublishName" />
+		<img src="@Url.Action(MVC.Gallery.GetThumbnail(Model.SavedInput.UrlId))" @if (width > 0) { <text>width="@(width)px" </text> } height="@(height)px" alt="@Model.SavedInput.PublishName" />
 		break;
 
-	case MimeType.Application.Json:
+	case MimeType.Application.Javascript:
 		Model.NeedsThreeJs = true;
 		<div class="threeJsScene" data-scene="@Url.Action(MVC.Gallery.GetThumbnail(Model.SavedInput.UrlId))" data-clear-color="FFFFFF" data-anti-alias="false"></div>
 		break;
 
 	default:
-		<div style="width: @(Model.MaxWidth / 4)px; height: @(Model.MaxHeight)px;"><p>@Model.SavedInput.PublishName</p> Thumbnail for this type of output is not supported. Please click to see it.</div>
+		<div style="width: @(Model.MaxWidth / 3)px; height: @(Model.MaxHeight)px;">
+			<p>@Model.SavedInput.PublishName</p>
+			<p>Thumbnail for this type of output is not supported. Please click to see the output.</p>
+		</div>
 		break;
 
 }
