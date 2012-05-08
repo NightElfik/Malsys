@@ -1,0 +1,89 @@
+
+\section{Processing system}
+
+As discussed in the previous chapter processing system of the library relies on components.
+Core of the library will be responsible just for creating and running component graph.
+Component graph is responsible for processing of input and producing results.
+This gives absolute freedom to user in implementing process system.
+
+However it is hard to design and implement whole \lsystem processing system from scratch.
+Library will contain set of predefined components from which can be created many component graphs and which will be easily extensible.
+This will offer user to reuse or extend existing components to add new functionality.
+
+The system of predefined components will be responsible for processing input for web user interface but it will contain components for general usage in \lsystem processing.
+
+
+
+\subsection{Component system}
+
+Component system designed in this section will be primarily used for processing \lsystems to produce 2D and 3D graphics in web interface but it will be designed to be extensible to any output type.
+\lsystems are generally processed in two phases.
+First phase is rewriting where axiom (initial string of symbols) is rewritten by rewrite rules many times and second phase is interpreting result string of symbols.
+This can be done with two components, rewriter which is responsible for rewriting the \lsystem to given iteration and interpreter which is responsible for interpreting symbols and producing output.
+This component system is shown in figure \ref{fig:simpleSystem}.
+
+\begin{figure}[h]
+	\centering
+	\begin{tikzpicture}[auto, node distance=3cm]
+		\node (in) [coord] {};
+		\node (rw) [block, right of=in] {Rewriter};
+		\node (int) [block, right of=rw] {Interpreter};
+		\node (out) [coord, right of=int] {};
+		
+		\draw [->] (in) -- node {input} (rw);
+		\draw [->] (rw) -- node {} (int);
+		\draw [->] (int) -- node {output} (out);
+	\end{tikzpicture}
+	\caption{Simple \lsystem processing system}
+	\label{fig:simpleSystem}
+\end{figure}
+
+Components in system \ref{fig:simpleSystem} have too much tasks to do thus they will be complicated to implement and hard to extend and test.
+System in figure \ref{fig:advancedSystem} was created by subdivision of previous system.
+Rewriter component was split to rewriter and iterator.
+Rewriter will do just rewriting of given symbols and iterator will control iterating.
+Interpreter component was split to interpreter and renderer.
+Interpreter will do interpreting of symbols (keep position of virtual turtle in space and renderer will procude the output.
+If we need to create different output type we have to implement only new renderer component and rest of the system will remain untouched.
+
+\begin{figure}[h]
+	\centering
+	\begin{tikzpicture}[auto, node distance=3cm]
+		\node (rw) [block] {Rewriter};
+		\node (iter) [block, right of=rw] {Iterator};
+		\node (in) [coord, above of=iter, node distance=15mm] {};
+		\node (inter) [block, right of=iter] {Interpreter};
+		\node (rend) [block, right of=inter] {Renderer};
+		\node (out) [coord, right of=rend] {};
+		
+		\draw [->] (rw) edge[bend left=40] node[above] {} (iter);
+		\draw [->] (iter) edge[bend left=40] node[below] {} (rw);
+		\draw [->] (in) -- node {input} (iter);
+		\draw [->] (iter) -- node {} (inter);
+		\draw [->] (inter) -- node {} (rend);
+		\draw [->] (rend) -- node {output} (out);
+	\end{tikzpicture}
+	\caption{Subdivided \lsystem processing system}
+	\label{fig:advancedSystem}
+\end{figure}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

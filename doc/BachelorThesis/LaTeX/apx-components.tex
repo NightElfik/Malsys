@@ -1,0 +1,32 @@
+
+\chapter{Components and interfaces}
+\label{chap:components}
+
+This appendix contains list of nearly\footnote{Components for debugging are omitted.} all implemented components with their comprehensive description.
+All components are in the main project called \emph{Malsys} int the namespace \emph{Malsys.Processing.Components}.
+If component is in sub-namespace the path from main namespace is in the bracket after component type.
+
+All listed components can be accessed in process configurations by type name or full name (type name with all namespaces).
+For example component called \nameref{Malsys.Processing.Components.Interpreters.TurtleInterpreter} can be accessed by name \texttt{TurtleInterpreter} or full name \texttt{Malsys.Processing.Components.Interpreters.TurtleInterpreter}.
+
+\section{Legend}
+\begin{description*}
+	\item[abstract]
+		Components marked as \emph{abstract} can not be instantiated.
+		They can be used in the same way as interfaces (only as container type).
+	\item[run-time only]
+		Gettable properties (or callable functions) marked as \emph{run-time only} can be get (called) only while L-system is processed (in rewrite rules or interpretation methods).
+		Especially they can not be get (called) in L-system let or set statements.
+	\item[mandatory]
+		Value of settable properties (and settable symbol properties) marked as \emph{mandatory} must be set in L-system definition.
+		Parameters of interpretation method marked as \emph{mandatory} must be supplied to interpretation method.
+	\item[optional]
+		Connectable properties marked as \emph{optional} may not be connected by process configuration (by default they must be connected).
+	\item[allowed multiple]
+		More components can be connected to connectable properties marked as \emph{allowed multiple} (by default only one component can be connected).
+		
+\end{description*}
+
+
+\input{apx-components-generated}
+

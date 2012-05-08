@@ -152,7 +152,7 @@ namespace Malsys.Processing.Components.Common {
 				newEec = configBuilder.AddComponentsCallableFunctions(compGraph, newEec, false);
 
 				var newContext = new ProcessContext(lsysEvaled, ctxt.OutputProvider, ctxt.InputData, ctxt.EvaluatorsContainer,
-					newEec, ctxt.ComponentResolver, ctxt.ProcessingTimeLimit, ctxt.ComponentGraph, Logger);
+					newEec, ctxt.ComponentResolver, ctxt.ProcessingTimeLimit, ctxt.ComponentGraph);
 
 				// initialize components with ExpressionEvaluatorContext -- components can call themselves
 				configBuilder.InitializeComponents(compGraphOnlyNew, newContext, Logger);

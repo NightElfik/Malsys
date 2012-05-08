@@ -244,7 +244,6 @@ namespace Malsys.Tests.Rewriters {
 
 			string input = "lsystem l {{ set symbols axiom = {0}; {1} }}".Fmt(inputSymbols, rewriteRules);
 
-			var msgs = new MessageLogger();
 			var inBlockEvaled = TestUtils.EvaluateInput(input);
 
 			if (inBlockEvaled.Lsystems.Count != 1) {
@@ -257,7 +256,7 @@ namespace Malsys.Tests.Rewriters {
 
 			var fm = new FileOutputProvider("./");
 			var context = new ProcessContext(lsystem, fm, inBlockEvaled, evaluator,
-				TestUtils.ExpressionEvaluatorContext, null, TimeSpan.MaxValue, null, msgs);
+				TestUtils.ExpressionEvaluatorContext, null, TimeSpan.MaxValue, null);
 
 			var rewriter = new SymbolRewriter();
 			rewriter.Cleanup();

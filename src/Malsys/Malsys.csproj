@@ -301,10 +301,6 @@
     <Compile Include="Processing\Components\Interfaces%27\ISymbolProcessor.cs" />
     <Compile Include="SemanticModel\Compiled\ILsystemStatement.cs" />
     <Compile Include="SemanticModel\Compiled\Lsystem.cs" />
-    <Compile Include="SourceCode\Highlighters\MarksCollector.cs" />
-    <Compile Include="SourceCode\Highlighters\MarkType.cs" />
-    <Compile Include="SourceCode\Highlighters\PositionMark.cs" />
-    <Compile Include="SourceCode\Highlighters\StringHighlighter.cs" />
     <Compile Include="SourceCode\Printers\CanonicAstPrinter.cs" />
     <Compile Include="SourceCode\Printers\CanonicPrinter.cs" />
   </ItemGroup>
@@ -322,9 +318,7 @@
       <Name>Malsys.Parsing</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="SourceCode\Formatters\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <EmbeddedResource Include="Resources\StdLib.malsys" />
   </ItemGroup>

@@ -267,6 +267,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Infrastructure\IAppSettingsProvider.cs" />
+    <Compile Include="Infrastructure\LatexHelper.cs" />
     <Compile Include="Infrastructure\MalsysHelper.cs" />
     <Compile Include="Infrastructure\UrlHelperExtensions.cs" />
     <Compile Include="Models\MalsysStdLibSource.cs" />
@@ -363,6 +364,8 @@
     <Content Include="Areas\Administration\Views\Tags\Delete.cshtml" />
     <Content Include="Areas\Help\Views\Home\StdLib.cshtml" />
     <Content Include="Css\style.less.css" />
+    <Content Include="Areas\Help\Views\Predefined\ComponentsLatex.cshtml" />
+    <Content Include="Areas\Help\Views\Predefined\ComponentLatexPartial.cshtml" />
     <None Include="DatabaseScheme.sql" />
     <Content Include="Error.html" />
     <Content Include="favicon.ico" />

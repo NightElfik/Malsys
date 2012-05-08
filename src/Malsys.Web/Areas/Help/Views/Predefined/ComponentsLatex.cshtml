@@ -1,0 +1,41 @@
+﻿@model IEnumerable<ComponentModel>
+
+@{
+	Layout = null;
+
+	var excludedTypes = new HashSet<Type>() {
+		typeof(Malsys.Processing.Components.Renderers.DebugRenderer2D),
+		typeof(Malsys.Processing.Components.Renderers.DebugRenderer3D),
+		typeof(Malsys.Processing.Components.Common.SymbolsMemoryBuffer),
+		typeof(Malsys.Processing.Components.Renderers.DebugRendererBase)};
+
+	var components = Model
+		.Where(c => !c.Metadata.ComponentType.IsInterface)
+		.Where(c => !excludedTypes.Contains(c.Metadata.ComponentType))
+		.OrderBy(c => c.Metadata.HumanReadableName);
+	var interfaces = Model
+		.Where(c => c.Metadata.ComponentType.IsInterface)
+		.Where(c => !excludedTypes.Contains(c.Metadata.ComponentType))
+		.OrderBy(c => c.Metadata.HumanReadableName);
+}
+
+
+\section{Components}
+
+@foreach (var comp in components) {
+	@:
+	@:% ======== @comp.Metadata.ComponentType.Name =====================================================================
+	Html.RenderPartial(MVC.Help.Predefined.Views.ComponentLatexPartial, comp);
+}
+
+
+% ======================================================================================================================
+% ======================================================================================================================
+% ======================================================================================================================
+\section{Interfaces}
+
+@foreach (var comp in interfaces) {
+	@:
+	@:% ======== @comp.Metadata.ComponentType.Name =====================================================================
+	Html.RenderPartial(MVC.Help.Predefined.Views.ComponentLatexPartial, comp);
+}

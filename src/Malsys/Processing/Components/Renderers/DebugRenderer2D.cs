@@ -3,10 +3,10 @@ using Malsys.Media;
 
 namespace Malsys.Processing.Components.Renderers {
 	/// <summary>
-	/// Prints called commands instead of creating some 3D output.
-	/// This is handy if 3D scene renderer is debugged.
+	/// Prints called commands instead of creating some 2D output.
+	/// This is handy if 2D renderer is debugged.
 	/// </summary>
-	/// <name>3D renderer debugger</name>
+	/// <name>2D renderer debugger</name>
 	/// <group>Renderers</group>
 	public class DebugRenderer2D : DebugRendererBase, IRenderer2D {
 

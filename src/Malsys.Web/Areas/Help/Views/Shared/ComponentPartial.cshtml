@@ -5,7 +5,7 @@
 	var data = Model.Metadata;
 	var baseComp = Model.BaseTypes.Where(t => !t.IsInterface).ToList();
 	var baseInt = Model.BaseTypes.Where(t => t.IsInterface).ToList();
-	var derComp = Model.DerivedTypes.Where(t => t.IsInterface).ToList();
+	var derComp = Model.DerivedTypes.Where(t => !t.IsInterface).ToList();
 	var derInt = Model.DerivedTypes.Where(t => t.IsInterface).ToList();
 
 	var anchorLink = Html.AnchorLink("↑ " + data.HumanReadableName, MVC.Help.Predefined.Components(), data.ComponentType.FullName, true, true);
@@ -16,6 +16,7 @@
 @Html.AnchorLink("#", MVC.Help.Predefined.Components(), data.ComponentType.FullName, true)
 <h4 id="@data.ComponentType.FullName">
 	@data.HumanReadableName @Html.TypeLink(data.ComponentType)
+	@if (!Model.Metadata.ComponentType.IsInterface && Model.Metadata.ComponentType.IsAbstract) { <span class="flag">{abstract}</span> }
 </h4>
 
 @if (!string.IsNullOrEmpty(data.SummaryDoc)) {

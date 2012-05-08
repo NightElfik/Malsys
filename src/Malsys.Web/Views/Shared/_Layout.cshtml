@@ -8,7 +8,7 @@
 	<meta charset="utf-8" />
 
 	<title>@ViewBag.Title</title>
-	<meta name="description" content="Modern L-system processor and gallery" />
+	<meta name="description" content="Modern L-system generator and gallery" />
 	<meta name="keywords" content="L-system,generator,gallery,examples,SVG" />
 	<meta name="author" content="Marek Fišer" />
 	<link rel="author" href="/humans.txt" />
@@ -41,7 +41,8 @@
 	<!--[if lt IE 7]><p class=chromeframe>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
 
 	<div id="headerContainer">
-		<header class="wrapper">
+		<div class="wrapper">
+		<header id="header">
 			<div class="titleContainer">
 				<a href="/" title="Home" tabindex="2"><h1 id="title">Malsys<span class="cz">.cz</span></h1></a>
 				<h4 id="subtitle">Mark's L-systems</h4>
@@ -49,35 +50,40 @@
 			<div class="logonBox">
 				@Html.Partial(MVC.Shared.Views.LogOnPartial)
 			</div>
-			<nav>
+			<nav class="navigation">
 				<a id="skipNavigation" href="#main" tabindex="1" class="visuallyhidden focusable">Skip navigation</a>
 				@Html.Partial(MVC.Shared.Views.MenuPartial)
 			</nav>
 		</header>
+		</div>
 	</div>
 
-	<div id="main" role="main" class="@ViewBag.MainClass">
+	<div id="mainContainer" class="@ViewBag.MainClass">
 		<div class="wrapper">
+		<div id="main" role="main">
 			@RenderBody()
+		</div>
 		</div>
 	</div>
 
 	<div id="footerContainer">
-		<footer class="wrapper">
+		<div class="wrapper">
+		<footer id="footer">
 			<p class="center">
 				&copy; @Html.ActionLink("Marek Fišer", MVC.Feedback.EmailToAuthor(), new { title = "E-mail to author", tabindex = 90 }) 2011 &mdash; 2012
 				| @Html.ActionLink("Feedback", MVC.Feedback.Index(), new { title = "Send a feedback", tabindex = 91 })
 				| thanks @Html.Link("MFF CUNI", "http://www.mff.cuni.cz/", "Faculty of Mathematics and Physics of Charles University in Prague") for hosting
 			</p>
-			<p class="right notImportant">This page was generated at @DateTime.Now.ToUniversalTime() (UTC)</p>
-			<p class="left notImportant">
-				Web version: <abbr title="@Malsys.Web.MalsysWebVersion.CompiledWith">@Malsys.Web.MalsysWebVersion.LinkedWith</abbr>
-				Library version: <abbr title="@MalsysVersion.CompiledWith">@MalsysVersion.LinkedWith</abbr>
-			</p>
+			<div class="note clearfix">
+				<p class="right">This page was generated at @DateTime.Now.ToUniversalTime() (UTC)</p>
+				<p class="left">
+					Web version: <abbr title="Compiled with @Malsys.Web.MalsysWebVersion.CompiledWith, linked with @Malsys.Web.MalsysWebVersion.LinkedWith">@Malsys.Web.MalsysWebVersion.LinkedWith</abbr>
+					Library version: <abbr title="Compiled with @MalsysVersion.CompiledWith, linked with @MalsysVersion.LinkedWith">@MalsysVersion.LinkedWith</abbr>
+				</p>
+			</div>
 		</footer>
+		</div>
 	</div>
-
-
 
 	@* JavaScript at the bottom for fast page loading
 	   Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if necessary *@

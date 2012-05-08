@@ -1,41 +1,64 @@
+% xelatex -synctex=1 -interaction=nonstopmode -output-driver="xdvipdfmx -V 5" %.tex
 
 %% Version for one sided printing:
 % margins: left 40mm, right 25mm, top and bottom 25mm
 % (BUT LaTeX adds automaticly 1in)
-\documentclass[12pt,a4paper]{report}
+% \openright makes following text start on right side of book
+%\documentclass[12pt,a4paper]{report}
+%\setlength\textwidth{145mm}
+%\setlength\textheight{247mm}
+%\setlength\oddsidemargin{15mm}
+%\setlength\evensidemargin{15mm}
+%\setlength\topmargin{0mm}
+%\setlength\headsep{0mm}
+%\setlength\headheight{0mm}
+%\let\openright=\clearpage
+
+%% Version for two sided printing:
+\documentclass[12pt,a4paper,twoside,openright]{report}
 \setlength\textwidth{145mm}
 \setlength\textheight{247mm}
 \setlength\oddsidemargin{15mm}
-\setlength\evensidemargin{15mm}
+\setlength\evensidemargin{0mm}
 \setlength\topmargin{0mm}
 \setlength\headsep{0mm}
 \setlength\headheight{0mm}
-% \openright makes following text start on right side of book
-\let\openright=\clearpage
+\let\openright=\cleardoublepage
 
-%% Version for two sided printing:
-% \documentclass[12pt,a4paper,twoside,openright]{report}
-% \setlength\textwidth{145mm}
-% \setlength\textheight{247mm}
-% \setlength\oddsidemargin{15mm}
-% \setlength\evensidemargin{0mm}
-% \setlength\topmargin{0mm}
-% \setlength\headsep{0mm}
-% \setlength\headheight{0mm}
-% \let\openright=\cleardoublepage
-
+%\usepackage[utf8]{inputenc}
+\usepackage[czech,english]{babel}
 %\usepackage[T1]{fontenc}
-\usepackage[utf8]{inputenc}
 %\usepackage[american]{babel}
 
+\usepackage{fontspec}
+\newfontfamily\consolas{Consolas}
+%\defaultfontfeatures{Mapping=tex-text}
+%\setmonofont{Consolas}
+%\usepackage{xunicode}
+%\usepackage{xltxtra}
+
+
 \usepackage{comment}
-\usepackage{setspace}
+%\usepackage{setspace}
+%\usepackage{parskip}
 
 \usepackage{subfig}
 \usepackage{wrapfig}
 \usepackage{graphicx}
 %\usepackage{amsthm}
-\usepackage{booktabs}
+\usepackage{booktabs}  % nicer tables
+\usepackage[bottom]{footmisc}  % footnotes at the bottom of page
+
+\usepackage[titletoc]{appendix}
+
+\usepackage{tikz}
+\usetikzlibrary{positioning,shapes,arrows,trees}
+\usetikzlibrary{decorations.pathmorphing} % for snake lines
+
+\tikzstyle{block} = [draw, fill=blue!20, rectangle, minimum height=3em, minimum width=6em]
+\tikzstyle{blockx} = [draw, fill=green!20, rectangle, minimum height=3em, minimum width=6em]
+\tikzstyle{coord} = [coordinate]
+\tikzstyle{snakeline} = [decorate, decoration={pre length=0mm, post length=1mm, snake, amplitude=1mm, segment length=3mm}, ->]
 
 
 \usepackage[autostyle]{csquotes}
@@ -47,7 +70,7 @@
 	backref=true,
 %	backrefstyle=all+,
 	natbib=true,
-	url=false, % url field of @online entries is always printed
+	url=false,  % url field of @online entries is always printed
 	doi=false,
 	eprint=false
 ]{biblatex}
@@ -55,19 +78,21 @@
 \addbibresource{bibliography.bib}
 
 \usepackage{color}
-\definecolor{linkClr}{RGB}{127,0,0}  % dark red
-\definecolor{citeClr}{RGB}{0,127,0}  % dark green
-\definecolor{urlClr}{RGB}{0,0,127}  % dark blue
+\definecolor{linkClr}{RGB}{64,0,0}  % dark red
+\definecolor{citeClr}{RGB}{0,64,0}  % dark green
+\definecolor{urlClr}{RGB}{0,0,64}  % dark blue
 
 \usepackage{listings}  % \lstlisting enviroment - source code highliting
 
-\usepackage{lsystemSyntax}  % uses packages color and listings
 
-\usepackage[unicode]{hyperref}  % after all other packages
+\usepackage{syntaxHighlighters}  % needs packages color and listings
+
+\usepackage{hyperref}  % after all other packages
 \hypersetup{
+	%unicode=true,
 	pdftitle=L-systems online,
 	pdfauthor=Marek Fišer,
-	pdfkeywords={keyword1} {key2},
+	pdfkeywords={L-system}{generator}{online}{universal}{library},
 	colorlinks=true,
 	linkcolor=linkClr,
 	citecolor=citeClr,
@@ -92,7 +117,7 @@
 }}
 \makeatother
 
-% Definition of chapter macro. Chapters are not numbered but they are in TOC.
+% Definition of chapter macro for chapters that are not numbered but they are in TOC.
 \def\chapwithtoc#1{
 \chapter*{#1}
 \addcontentsline{toc}{chapter}{#1}
@@ -105,11 +130,8 @@
 \newcommand{\lsystem}{\mbox{L-system}\xspace}
 \newcommand{\lsystems}{\mbox{L-systems}\xspace}
 
-% for carons with t, d
-\newcommand{\varcaron}{\hspace{-1.5pt}'\hspace{-1pt}}
 
-\renewcommand{\ttdefault}{pcr}  % to allow bold in tt font
-
+% less spavec in lists
 \newenvironment{itemize*}
 	{\begin{itemize}
 		%\setlength{\itemsep}{0pt}
@@ -118,53 +140,71 @@
 \newenvironment{enumerate*}
 	{\begin{enumerate}\setlength{\parskip}{0pt}}
 	{\end{enumerate}}
+\newenvironment{description*}
+	{\begin{description}\setlength{\parskip}{0pt}}
+	{\end{description}}
 
-\widowpenalties 1 10000
+% do not break in paragraph
+%\widowpenalties 1 10000
 \raggedbottom
+
+\renewcommand{\lstlistingname}{Source code}
+\renewcommand{\lstlistlistingname}{List of source codes}
+
+% debugging
+\includeonly{design}
+
 
 \begin{document}
 
-% A little freer hyphenation settings than the default.
-%\lefthyphenmin=2
-%\righthyphenmin=2
-
-%\include{frontpage}
+\include{frontpage}
 
 %%% Následuje vevázaný list -- kopie podepsaného "Zadání bakalářské práce".
 %%% Toto zadání NENÍ součástí elektronické verze práce, nescanovat.
 
-%\include{thanks}
-%\include{affidavit}
+\openright
+\include{thanks}
 
-\renewcommand{\lstlistingname}{Source code}
+\include{abstract}
+%\include{abstractcz}
 
-
-\include{abstractcz}
-
-\singlespacing
 \openright
 \pagestyle{plain}
 \setcounter{page}{1}
 \tableofcontents
 
-\onehalfspacing
 
-%\include{introduction}
+\include{introduction}
 
-%\include{lsystems}
-%\include{relatedWorks}
+\include{lsystems}
 \include{design}
-% implementation
-% designed system and defined components
+\include{implementation}
+\include{results}
 
-\singlespacing
+\include{conclusion}
+
 \nocite{*}  % Show all Bib-entries
 \printbibliography
 
-%\chapwithtoc{List of Figures}
+%\addcontentsline{toc}{chapter}{List of Figures}
 %\listoffigures
 
-%\chapwithtoc{Attachments}
+%\addcontentsline{toc}{chapter}{List of Tables}
+%\listoftables
+
+%\addcontentsline{toc}{chapter}{List of source codes}
+%\lstlistoflistings
+
 
 \openright
+\begin{appendices}
+
+\include{apx-attachedCd}
+\include{apx-inputSyntax}
+\include{apx-aboutFigures}
+\include{apx-components}
+
+\end{appendices}
+
+
 \end{document}

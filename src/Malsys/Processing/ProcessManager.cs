@@ -119,7 +119,7 @@ namespace Malsys.Processing {
 						newEec = configBuilder.AddComponentsCallableFunctions(components, newEec, false);
 
 						var context = new ProcessContext(lsysEvaled, outputProvider, inBlockEvaled, evaluator,
-							newEec, componentResolver, timeout, components, logger);
+							newEec, componentResolver, timeout, components);
 
 						// initialize components with ExpressionEvaluatorContext
 						configBuilder.InitializeComponents(components, context, logger);

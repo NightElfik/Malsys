@@ -50,7 +50,7 @@ namespace Malsys.Processing.Components.Renderers {
 		/// <summary>
 		/// Margin of result image.
 		/// </summary>
-		/// <expected>One number (ao array with one number) for all margins, array of two numbers for vertical and horizontal margin
+		/// <expected>One number (or array with one number) for all margins, array of two numbers for vertical and horizontal margins
 		/// or array of four numbers as top, right, bottom and left margin respectively.</expected>
 		/// <default>2</default>
 		[AccessName("margin")]

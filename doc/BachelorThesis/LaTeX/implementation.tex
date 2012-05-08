@@ -1,0 +1,107 @@
+
+\chapter{Implementation}
+\label{chap:implementation}
+
+In this chapter will be described implementation of designed system.
+[TODO]
+
+
+\section{Choice of development environment}
+
+As development environment was chosen .NET because of following reasons.
+
+\begin{description*}
+	\item[Multiplatformity]
+		Thanks to Mono project\footnote{Mono is an open source implementation of Microsoft's .NET Framework \url{http://www.mono-project.com}}
+			.NET libraries and executables can be used not only on Windows but also on Linux, Mac and many other operating systems.
+	\item[Development tools]
+		Visual Studio is powerful integrated development environment (IDE) with many integrated tools (like inteli-sense, unit testing or T4 templates) and useful downloadable plugins.
+	\item[Reflection]
+		Reflection is the ability to examine types and work with meta-data, properties and functions of an object at runtime.
+		Reflection can be used to load various plugins or data at runtime and help extensibility in great way.
+	\item[Parser generator]
+		FsLex and FsYacc are lexer and parser generators written in F\# with good support by Visual Studio.
+		Generated lexer and parser are also in F\# thus they can be easily used in any .NET project.
+	\item[Web framework]
+		ASP.NET MVC is a lightweight presentation framework for creating web applications in .NET.
+\end{description*}
+
+The most of code will be written in C\# expect input lexer and parser which will be in F\#. 
+
+
+\section{Solution structure}
+
+The solution is divided into 6 projects: \lsystem processing library (Malsys), web user interface (Malsys.Web), abstract syntax tree (Malsys.Ast), syntax parser (Malsys.Paring), common functionality (Malsys.Common) and project with tests (Malsys.Tests).
+
+The main reason why solution do not contain lower amount of projects is because syntax parser is written in F\# which is also language from .NET family but it is not possible to compile F\# and C\# into single DLL.
+Abstract syntax tree (AST) is separated from parser because AST will be compiled by compilers written in C\# and it is desirable to have AST data structures written in C\#.
+It is also more comfortable to design AST classes in C\# because F\# is functional language and syntax of classes definition is quite complex.
+Common functionality is separated into single project because it will be needed in all projects and solution can not have circular dependencies of projects.
+Web project is separated from main project intentionally to allow usage of \lsystem processing library independently.
+And finally test project is separated to be possible to test all projects independently.
+Dependencies of projects in solution are shown in the figure \ref{fig:solutionDependencies}.
+
+\begin{figure}[h]
+	\centering
+	\begin{tikzpicture}[auto, node distance=1cm,>=latex']
+		\node (c) [block] {Malsys.Common};
+		\node (m) [block, below=of c] {Malsys};
+		\node (a) [block, right=of m] {Malsys.Ast};
+		\node (p) [blockx, right=of a] {Malsys.Parsing};
+		\node (w) [block, left=of m] {Malsys.Web};
+		\node (t) [block, below=of m] {Malsys.Tests};
+		\node (cSharp) [block, minimum width=1em, minimum height=1em, below=1.5cm of p] {C\#};
+		\node (fSharp) [blockx, minimum width=1em, minimum height=1em, right=0.5cm of cSharp] {F\#};
+		
+		\draw [->] (a) edge node {} (c);
+		
+		\draw [->] (p) edge[bend right=10] node {} (c);
+		\draw [->] (p) edge node {} (a);
+		
+		\draw [->] (m) edge node {} (c);
+		\draw [->] (m) edge[bend right] node {} (p);
+		\draw [->] (m) edge node {} (a);
+		
+		\draw [->] (w) edge[bend left=20] node {} (c);
+		\draw [->] (w) edge node {} (m);
+		\draw [->] (w) edge[bend right=25] node {} (a);
+		
+		\draw [->] (t) edge[bend left=56] node {} (c);
+		\draw [->] (t) edge node {} (m);
+		\draw [->] (t) edge[bend right=20] node {} (p);
+		\draw [->] (t) edge[bend right=20] node {} (a);
+		\draw [->] (t) edge[bend left=20] node {} (w);
+	\end{tikzpicture}
+	\caption{Dependencies of projects in solution}
+	\label{fig:solutionDependencies}
+\end{figure}
+
+
+
+
+
+Input source code needs to be parsed to \emph{abstract syntax tree} further called AST.
+Generally there are two approaches how to parse it.
+Write parser from scratch or use third-party parser generator.
+Because syntax is 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -111,6 +111,11 @@
 
 	$(".collapseSwitch").trigger('click');
 
+//	$('form').submit(function () {
+//		$(':submit', this).each(function () {
+//			$(this).attr("disabled", true);
+//		});
+//	});
 
 
 } (jQuery));

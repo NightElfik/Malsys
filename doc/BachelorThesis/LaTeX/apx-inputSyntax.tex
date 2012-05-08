@@ -1,0 +1,346 @@
+
+\chapter{Input syntax reference}
+\label{chap:syntax}
+
+This appendix contains formal definition of designed syntax.
+Syntax will be described with regular expressions which will be explained in the first section.
+Syntax will be described from most general parts to concrete parts.
+
+\section{Regular expressions}
+\label{sec:regexps}
+
+Table \ref{tbl:regexpExplanation} explains syntax of regular expressions used for description of input syntax.
+
+\begin{table}[ht]
+	\centering
+	\begin{tabular}{c p{160pt} p{170pt}}
+   		\toprule
+   		Regexp & Definition & Example \\
+   		\midrule
+		\texttt{' '} & matches the text between quotes (and nothing else) & \texttt{'let'} matches only string \texttt{let} \\ \hline
+		\texttt{[ ]} & matches one of any characters enclosed in brackets & \texttt{[ab]} matches only \texttt{a} or \texttt{b} \\ \hline
+		\texttt{[ - ]} & matches single character between two specified characters (inclusive) & \texttt{[0-9]} matches any digit from \texttt{0} to \texttt{9} \\ \hline
+		\texttt{|} & matches regexp on the right \emph{OR} on the left of pipe & \texttt{'gray'|'grey'} matches only \texttt{gray} or \texttt{grey} \\ \hline
+		\texttt{?} & preceding regexp must match zero or one times & \texttt{'colo' 'u'? 'r'} matches only \texttt{color} or \texttt{colour} \\ \hline
+		\texttt{+} & preceding regexp must match one or more times & \texttt{[0-9]+} matches any non-negative integer like \texttt{5} or \texttt{42} \\ \hline
+		\texttt{*} & preceding regexp must match zero or more times & \texttt{'b' 'e'*} matches \texttt{b}, \texttt{be} or \texttt{beee} \\
+		\bottomrule
+	\end{tabular}
+	\caption{Meaning of syntax of regular expressions}
+	\label{tbl:regexpExplanation}
+\end{table}
+
+
+\section{Tokens}
+
+Token is atomic element of grammar.
+In token can not be any white-space character however white-space characters are often used to separate individual tokens.
+Tokens names will be upper-case to distinguish them from grammar rules.
+
+
+\subsection{Identifier}
+\begin{Grammar}
+ID = (ALPHA_CHAR | '_') (ALPHA_CHAR | DIGIT | '_')* '\''*
+\end{Grammar}
+
+\texttt{ID} token represents identifier which starts with alphabetic character (letter) or underscore and may also contain digits.
+At the end can be apostrophes to allow identifiers like \texttt{a'} or \texttt{a''}.
+
+Note that regular expression is simplified by ALPHA\_CHAR and DIGIT to avoid using characters groups in unicode.
+ALPHA\_CHAR matches any letter and DIGIT matches any digit character.
+
+
+\subsection{Number}
+\begin{Grammar}
+NUMBER = [0-9]+ ('.' [0-9]+)? ([eE] ('+'|'-')? [0-9]+)?
+	| '0'[bB] [01]+
+	| '0'[oO] [0-7]+
+	| '0'[xX] ([0-9] | [a-f] | [A-F])+
+	| '#' ([0-9] | [a-f] | [A-F])+
+\end{Grammar}
+
+\texttt{NUMBER} token represents number literal.
+Number can be specified in 5 formats: floating-point, binary, octal and hexadecimal prefixed \texttt{0x} or \texttt{\#}.
+
+
+\subsection{Operator}
+\begin{Grammar}
+OPERATOR = (firstOpChar opChar*) | '==' | '/'
+
+firstOpChar = [!$%&\<>@^|~:-] | '?' | '+' | '*'
+opChar = firstOpChar | '=' | '/'
+\end{Grammar}%$
+
+\texttt{NUMBER} token represents number operator in mathematical expression.
+Operators will be not recognized by parser but by compiler thus operator token definition allows any combination of characters.
+
+
+
+\section{Input syntax}
+
+Syntax will be described with regular expressions explained in section \ref{sec:regexps}.
+Regular expressions can contain literals, tokens or other regular expressions.
+Input grammar will be white-space independent, between any two regular expression members can be any number of white-space characters.
+
+In each subsection the first line of formal specification is regular expression for described statement.
+Next lines are describing regular expressions in the main definition.
+
+
+\subsection{Input}
+\begin{Grammar}
+input = inputStatement*
+
+inputStatement = emptyStatement
+	| constantDef
+	| functionDef
+	| lsystemDef
+	| processStatement
+	| processConfigDef
+\end{Grammar}
+
+Input is start rule of input syntax.
+Input can contain constant, function and \lsystem definitions, process statements and process configuration definitions.
+Empty statement allows redundant semicolons between statements.
+
+
+\subsection{Empty statement}
+
+\begin{Grammar}
+emptyStatement = ';'
+\end{Grammar}
+
+Empty statement allows redundant semicolons in syntax.
+
+
+\subsection{Constant definition}
+\begin{Grammar}
+constantDef = 'let' ID '=' expression ';'
+\end{Grammar}
+
+Defines constant with name represented by \texttt{ID} with value represented by \texttt{expression}.
+
+
+\subsection{Function definition}
+\begin{Grammar}
+functionDef = 'fun' ID paramsDefValListParens
+	'{' constantDef* 'return' expression ';' '}'
+\end{Grammar}
+
+Defines function with name represented by \texttt{ID}, parameters (with optional default values) \texttt{paramsDefValListParens},
+	local constants \texttt{constantDef} and return value \texttt{expression}.
+
+
+\subsection{\lsystem definition}
+\begin{Grammar}
+lsystemDef = 'abstract'? 'lsystem' ID paramsDefValListParens?
+	baseLsystems? '{' lsystemStatement* '}'
+
+baseLsystems = 'extends' baseLsystemsList
+baseLsystemsList = ID exprListParens? (',' baseLsystemsList)?
+lsystemStatement = emptyStatement
+	| constantDef
+	| functionDef
+	| componentPropertyAssign
+	| symbolsInterpretationDef
+	| rewriteRule
+\end{Grammar}
+
+Defines \lsystem with name represented by \texttt{ID}, optional parameters (with optional default values) \texttt{paramsDefValListParens},
+	base \lsystems \texttt{baseLsystems} and \lsystem statements \texttt{lsystemStatement}.
+Arguments can be supplied to each base \lsystem.
+\lsystem statement can be constant, function and symbols interpretation definition, component property assign and rewrite rule.
+
+
+\subsubsection{Component property assign}
+\begin{Grammar}
+componentPropertyAssign = 'set' ID '=' expression ';'
+	| 'set' 'symbols' ID '=' symbolExprArgs* ';'
+\end{Grammar}
+
+Defines component property assign of property with name represented by \texttt{ID} to value represented by \texttt{expression} (value properties)
+	or to list of symbols \texttt{symbolExprArgs} (symbol properties). 
+
+
+\subsubsection{Symbols interpretation definition}
+\begin{Grammar}
+symbolsInterpretationDef = 'interpret'
+	symbol+ paramsDefValListParens? 'as' ID exprListParens? ';'
+\end{Grammar}
+
+Defines interpretation method with name represented by \texttt{ID} to symbols \texttt{symbol}.
+If parameters \texttt{paramsDefValListParens} are specified values of arguments of interpreted symbols are matched to parameters and they can be used as variables in interpretation method arguments \texttt{exprListParens}.
+
+
+\subsubsection{Rewrite rule definition}
+\begin{Grammar}
+rewriteRule = 'rewrite' rrPattern rrConsts? rrCondition?
+	'to' rrReplacement ';'
+\end{Grammar}
+
+Defines rewrite rule for symbol (and its context) specified in \texttt{rrPattern} to symbols \texttt{rrReplacement}.
+Optionally there can be specified local constants \texttt{rrConsts} and condition \texttt{rrCondition}.
+
+
+\subsubsection{Rewrite rule pattern}
+\begin{Grammar}
+rrPattern = rrContext? symbolOptParams rrContext?
+
+symbolOptParams = SYMBOL symbol_params?
+symbol_params = '(' ( ID (',' ID)* )? ')'
+rrContext = '{' symbolPptParams* '}'
+\end{Grammar}
+
+Defines pattern of rewrite rule which defines rewriting of the symbol represented by \texttt{symbolOptParams}.
+First \texttt{rrContext} represents left context of main symbol \texttt{symbolOptParams} and second \texttt{rrContext} represents right context.
+Main symbol and every symbol in context can have specified parameters names.
+Actual arguments of matched symbols will be set to specified parameters.
+
+
+\subsubsection{Rewrite rule constants definition}
+\begin{Grammar}
+rrConsts = 'with' rrCostDefsList
+
+rrCostDefsList = ID '=' expression  (',' rrCostDefsList)?
+\end{Grammar}
+
+Defines local variables in rewrite rule separated by comma.
+Syntax is similar to constant definition but there is no let keyword at the beginning and no semicolon at the end.
+
+
+\subsubsection{Rewrite rule condition}
+\begin{Grammar}
+rrCondition = 'where' expression
+\end{Grammar}
+
+Defines rewrite rule condition.
+
+
+\subsubsection{Rewrite rule replacement}
+\begin{Grammar}
+rrReplacements = 'nothing'
+	| symbolExprArgs* rrWeight? ('or'? 'to' rrReplacements)?
+
+rrWeight = 'weight' expression
+\end{Grammar}
+
+Defines one or more replacements for rewrite rule.
+Each replacement can have probability weight.
+
+
+
+\subsubsection{\lsystem symbol}
+\begin{Grammar}
+symbol = ID | OPERATOR | '[' | ']' | '.'
+symbolExprArgs = symbol exprListParens?
+\end{Grammar}
+
+
+\subsection{Process configuration definition}
+\begin{Grammar}
+processConfigDef = 'configuration' ID '{' processConfigStatement* '}'
+
+processConfigStatement = emptyStatement
+	| procConfComponentDef
+	| procConfContainerDef
+	| procConfConnectionDef
+\end{Grammar}
+
+Defines process configuration with name represented by \texttt{ID} with statements \texttt{processConfigStatement}.
+Statements can be component, container or connection definition.
+
+
+\subsubsection{Process configuration component definition}
+\begin{Grammar}
+procConfComponentDef = 'component' ID 'typeof' typeId ';'
+\end{Grammar}
+
+Defines component with name represented by \texttt{ID} with type \texttt{typeId}.
+
+
+\subsubsection{Process configuration container definition}
+\begin{Grammar}
+procConfContainerDef =
+	'container' ID 'typeof' typeId 'default' typeId ';'
+\end{Grammar}
+
+Defines container with name represented by \texttt{ID} with type \texttt{typeId} (first) with default component with type \texttt{typeId} (second).
+
+
+\subsubsection{Process configuration connection definition}
+\begin{Grammar}
+procConfConnectionDef = 'virtual'? 'connect' ID 'to' ID '.' ID ';'
+\end{Grammar}
+
+Defines connection of component with name represented by \texttt{ID} (first) to property with name \texttt{ID} (third) of component with name \texttt{ID} (second).
+
+
+\subsection{Process statement}
+\begin{Grammar}
+processStatement = 'process' name exprListParens?
+	'with' ID useComponents* ';'
+
+name = 'all' | ID
+useComponents = 'use' ID 'as' ID
+\end{Grammar}
+
+Defines processing of one or all \lsystems represented by \texttt{name} with parameters \texttt{exprListParens} with process configuration \texttt{ID}.
+At the end or process statement can be specified usage of extra components in containers in configuration.
+
+
+
+\subsection{Mathematical expression}
+
+\begin{Grammar}
+expression = exprMember+
+
+exprMember = NUMBER
+	| ID
+	| OPERATOR
+	| exprIndexer
+	| exprArray
+	| exprFunction
+	| '(' expression ')'
+exprIndexer = '[' expression ']'
+exprArray = '{' exprList? '}'
+exprFunction = ID exprListParens
+\end{Grammar}
+
+Expression consists of list of members.
+\texttt{ID} token represents variable.
+Rest of members are clear from their names.
+Grammar of expression is not strict, correctness of expression will ensure compiler.
+Parser can not parse expression as tree because operators are not defined on parsing.
+This allows to define operators by user.
+
+
+\subsection{Common rules}
+
+\subsubsection{Mathematical expression list}
+\begin{Grammar}
+exprList = expression (',' expression)*
+exprListParens = '(' exprList? ')'
+\end{Grammar}
+
+
+\subsubsection{List of parameters with default values}
+\begin{Grammar}
+paramsDefValList = ID ('=' expression)?  (',' paramsDefValList)?
+paramsDefValListParens = '(' paramsDefValList? ')'
+\end{Grammar}
+
+
+\subsubsection{Type identifier}
+\begin{Grammar}
+typeId = ID ('.' ID)*
+\end{Grammar}
+
+Represents fully qualified type identifier.
+
+
+
+
+
+
+
+
+

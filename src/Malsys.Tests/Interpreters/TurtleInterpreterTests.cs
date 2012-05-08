@@ -278,7 +278,7 @@ namespace Malsys.Tests.Interpreters {
 			var componentsGraph = MapModule.Empty<string, ConfigurationComponent>().Add(component.Name, component);
 
 			var context = new ProcessContext(lsystem, outProvider, null, evaluator,
-				TestUtils.ExpressionEvaluatorContext, null, TimeSpan.MaxValue, componentsGraph, logger);
+				TestUtils.ExpressionEvaluatorContext, null, TimeSpan.MaxValue, componentsGraph);
 
 			var caller = new InterpreterCaller();
 			caller.Cleanup();

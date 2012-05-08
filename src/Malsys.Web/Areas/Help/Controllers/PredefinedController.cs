@@ -71,7 +71,7 @@ namespace Malsys.Web.Areas.Help.Controllers {
 				var meta = compGroup.First().Value;
 				var type = meta.ComponentType;
 				var baseT = (type.BaseType != null ? type.GetInterfaces().Concat(new Type[] { type.BaseType }) : type.GetInterfaces())
-					.Where(y => typeof(Malsys.Processing.Components.IComponent).IsAssignableFrom(y)).OrderBy(z => z.FullName);
+					.Where(t => typeof(Malsys.Processing.Components.IComponent).IsAssignableFrom(t)).OrderBy(t => t.FullName);
 				var derivedT = allTypes.Where(t => type != t && type.IsAssignableFrom(t)).OrderBy(t => t.FullName);
 
 				return new ComponentModel() {
@@ -84,6 +84,10 @@ namespace Malsys.Web.Areas.Help.Controllers {
 
 
 			return View(components);
+		}
+
+		public virtual ActionResult ComponentsLatex() {
+			return Components();
 		}
 
 		public virtual ActionResult Configurations() {

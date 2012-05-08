@@ -1,0 +1,174 @@
+﻿@model ComponentModel
+@using Malsys.SemanticModel.Evaluated;
+
+@{
+var data = Model.Metadata;
+var baseComp = Model.BaseTypes.Where(t => !t.IsInterface).ToList();
+var baseInt = Model.BaseTypes.Where(t => t.IsInterface).ToList();
+var derComp = Model.DerivedTypes.Where(t => !t.IsInterface).ToList();
+var derInt = Model.DerivedTypes.Where(t => t.IsInterface).ToList();
+
+string fullNameWoNamespace = data.ComponentType.FullName.Replace("Malsys.Processing.Components.", "");
+
+
+@:\subsection{@data.HumanReadableName}
+@:\label{@data.ComponentType.FullName}
+
+if (!string.IsNullOrEmpty(data.SummaryDoc)) {
+	@LatexHelper.Print(data.SummaryDoc)
+}
+
+if (!Model.Metadata.ComponentType.IsInterface && Model.Metadata.ComponentType.IsAbstract) {
+	@:\paragraph{Abstract component} (can not be instantiated)
+}
+
+@:\paragraph{Type name}
+@data.ComponentType.Name if(data.ComponentType.Name != fullNameWoNamespace) { <text>(@fullNameWoNamespace)</text> }
+
+if (baseComp.Count > 0) {
+	@:\paragraph{Base components}
+	bool first = true;
+	foreach (var type in baseComp) {
+		if (first) { first = false; } else {<text>, </text>}
+		@:\hyperref[@type.FullName]{@type.Name}%
+	}
+}
+
+if (derComp.Count> 0) {
+	@:\paragraph{Derived components}
+	bool first = true;
+	foreach (var type in derComp) {
+		if (first) { first = false; } else {<text>, </text>}
+		@:\hyperref[@type.FullName]{@type.Name}%
+	}
+}
+
+if (baseInt.Count > 0) {
+	@:\paragraph{@(data.IsInstantiable ? "Assignable to" : "Derived") interfaces}
+	bool first = true;
+	foreach (var type in baseInt) {
+		if (first) { first = false; } else {<text>, </text>}
+		@:\hyperref[@type.FullName]{@type.Name}%
+	}
+}
+
+if (derInt.Count > 0) {
+	@:\paragraph{Derived interfaces}
+	bool first = true;
+	foreach (var type in derInt) {
+		if (first) { first = false; } else {<text>, </text>}
+		@:\hyperref[@type.FullName]{@type.Name}%
+	}
+}
+
+if (data.GettableProperties.Length > 0) {
+	@:\paragraph{Gettable properties}\textcolor{gray}{of @data.HumanReadableName}
+	@:\begin{description*}
+	foreach (var prop in data.GettableProperties) {
+		@:\item[@string.Join(", ", prop.Names)]
+		if (!prop.IsGettableBeforeInitialiation) { <text>\textit{run-time only}</text> }
+		@:(returns @prop.ExpressionValueType.ToTypeString())
+		if (!string.IsNullOrEmpty(prop.SummaryDoc)) {
+			@:-- @LatexHelper.Print(prop.SummaryDoc)
+		}
+	}
+	@:\end{description*}
+}
+
+if (data.SettableProperties.Length > 0) {
+	@:\paragraph{Settable properties}\textcolor{gray}{of @data.HumanReadableName}
+	@:\begin{description*}
+	foreach (var prop in data.SettableProperties) {
+		@:\item[@string.Join(", ", prop.Names)]
+		if (prop.IsMandatory) { <text>\textit{mandatory}</text> }
+		@:(accepts @prop.ExpressionValueType.ToTypeString())
+		if (!string.IsNullOrEmpty(prop.SummaryDoc)) {
+			@:-- @LatexHelper.Print(prop.SummaryDoc)
+		}
+		if (!string.IsNullOrEmpty(prop.ExpectedValueDoc)) {
+			@:\\ Expected value: @LatexHelper.Print(prop.ExpectedValueDoc)
+		}
+		if (!string.IsNullOrEmpty(prop.DefaultValueDoc)) {
+			@:\\ Default value: @LatexHelper.Print(prop.DefaultValueDoc)
+		}
+	}
+	@:\end{description*}
+}
+
+if (data.SettableSymbolsProperties.Length > 0) {
+	@:\paragraph{Settable symbol properties}\textcolor{gray}{of @data.HumanReadableName}
+	@:\begin{description*}
+	foreach (var prop in data.SettableSymbolsProperties) {
+		@:\item[@string.Join(", ", prop.Names)]
+		if (prop.IsMandatory) { <text>\textit{mandatory}</text> }
+		if (!string.IsNullOrEmpty(prop.SummaryDoc)) {
+			@:-- @LatexHelper.Print(prop.SummaryDoc)
+		}
+	}
+	@:\end{description*}
+}
+
+if (data.ConnectableProperties.Length > 0) {
+	@:\paragraph{Connectable properties}\textcolor{gray}{of @data.HumanReadableName}
+	@:\begin{description*}
+	foreach (var prop in data.ConnectableProperties) {
+		@:\item[@string.Join(", ", prop.Names)]
+		if (prop.IsOptional) { <text>\textit{optional}</text> }
+		if (prop.AllowMultiple) { <text>\textit{allowed multiple}</text> }
+		@:(type \hyperref[@prop.PropertyType.FullName]{@prop.PropertyType.Name})
+		if (!string.IsNullOrEmpty(prop.SummaryDoc)) {
+			@:-- @LatexHelper.Print(prop.SummaryDoc)
+		}
+	}
+	@:\end{description*}
+}
+
+if (data.CallableFunctions.Length > 0) {
+	@:\paragraph{Callable functions}\textcolor{gray}{of @data.HumanReadableName}
+	@:\begin{description*}
+	foreach (var fun in data.CallableFunctions) {
+		@:\item[@string.Join(", ", fun.Names)]
+		if (!fun.IsGettableBeforeInitialiation) { <text>\textit{run-time only}</text> }
+		@:(returns @fun.ExpressionValueReturnType.ToTypeString())
+		if (!string.IsNullOrEmpty(fun.SummaryDoc)) {
+			@:-- @LatexHelper.Print(fun.SummaryDoc)
+		}
+
+		@:\\ Parameters: @fun.ParamsCount
+		if (fun.ParamsCount > 0) {
+			var paramsDoc = fun.ParamsDoc.SplitToLines().ToList();
+			@:\begin{enumerate}
+			for (int i = 0; i < fun.ParamsCount; i++) {
+				@:\item @if (i < paramsDoc.Count) { @LatexHelper.Print(paramsDoc[i]) }
+			}
+			@:\end{enumerate}
+		}
+	}
+	@:\end{description*}
+}
+
+if (data.InterpretationMethods.Length > 0) {
+	@:\paragraph{Interpretation methods}\textcolor{gray}{of @data.HumanReadableName}
+	@:\begin{description*}
+	foreach (var intMethod in data.InterpretationMethods) {
+		@:\item[@string.Join(", ", intMethod.Names)]
+		if (!string.IsNullOrEmpty(intMethod.SummaryDoc)) {
+			@:-- @LatexHelper.Print(intMethod.SummaryDoc)
+		}
+
+		@:\\ Parameters: @intMethod.ParamsCount @if(intMethod.ParamsCount != 0) { <text>(@intMethod.MandatoryParamsCount mandatory)</text> }
+		if (intMethod.ParamsCount > 0) {
+			var paramsDoc = intMethod.ParamsDoc.SplitToLines().ToList();
+			@:\begin{enumerate}
+			for (int i = 0; i < intMethod.ParamsCount; i++) {
+				@:\item
+				if (i < paramsDoc.Count) { @LatexHelper.Print(paramsDoc[i]) }
+				if (i < intMethod.MandatoryParamsCount) { <text>(\textit{mandatory})</text> }
+			}
+			@:\end{enumerate}
+		}
+	}
+	@:\end{description*}
+}
+
+}

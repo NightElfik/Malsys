@@ -246,7 +246,13 @@ body {
 	font-size: 120%;
 	font-family: "Trebuchet MS", Helvetica, Arial, sans-serif;
 	background: @bodyBgColor;
+	min-width: @baseWidth;
 }
+
+/* Layout =================================================================== */
+
+.wrapper { margin: 0 auto; padding: 0; width: @baseWidth; }
+
 
 /* Header =================================================================== */
 
@@ -256,8 +262,7 @@ html, #headerContainer, #footerContainer {
 
 #headerContainer {
 	height: 128px;
-	margin-bottom: 32px;
-	.box-shadow(0, 40px, 40px, -40px, #888);
+	.box-shadow(0, 40px, 40px, -40px, #777);
 }
 
 .titleContainer {
@@ -279,13 +284,11 @@ html, #headerContainer, #footerContainer {
 
 #subtitle { color: @themeColorDarkerDarker; font-size: 0.6em; line-height: 1; letter-spacing: 0.65em; }
 
-.wrapper { margin: 0 auto; width: @baseWidth; padding: 0 20px; }
-
-header {
-	nav {
+#header {
+	margin: 0 10px;
+	.navigation {
 		float: right;
 		margin-top: 32px;
-		width: 700px;
 		ul { float: right; }
 		li { display: inline; font-weight: bolder; }
 		a {
@@ -311,7 +314,7 @@ header {
 	.logonBox {
 		float: right;
 		margin-top: 8px;
-		width: 700px;
+		width: 400px;
 		color: #FFF;
 		font-size: 0.8em;
 		text-align: right;
@@ -328,8 +331,7 @@ header {
 
 /* Main ===================================================================== */
 
-#main { margin-bottom: 32px; background-color: @bodyBgColor; }
-#main.fullScreen { margin: 0; padding: 0; overflow: hidden; }
+#main { margin: 32px 20px; }
 
 input[type="submit"] { padding: 0.5em 1em; }
 
@@ -342,14 +344,12 @@ h2, h3 {
 /* Footer =================================================================== */
 
 #footerContainer {
-	height: 256px;
-	margin-bottom: 50px;
-
-	.box-shadow(0, -40px, 40px, -40px, #888);
+	.box-shadow(0, -40px, 40px, -40px, #777);
 }
 
-footer {
-	&.wrapper { padding: 20px; }
+#footer {
+	margin: 0 20px;
+	padding: 10px 0 40px 0;
 	p { font-size: 0.8em; }
 	a {
 		color: #000;
@@ -357,7 +357,7 @@ footer {
 		&:link { color: #000; }
 		&:visited { color: #000; }
 	}
-	.notImportant { font-size: 0.7em; color: @themeColorDarker; }
+	.note { font-size: 0.7em; color: @themeColorDarker; }
 }
 
 

@@ -25,12 +25,10 @@ namespace Malsys.Processing {
 
 		public readonly TimeSpan ProcessingTimeLimit;
 
-		//public readonly IMessageLogger Logger;
-
 
 		public ProcessContext(LsystemEvaled lsystem, IOutputProvider outputProvider, InputBlockEvaled data, IEvaluatorsContainer evaluatorsContainer,
 				IExpressionEvaluatorContext exprEvalCtxt, IComponentMetadataResolver componentResolver, TimeSpan processingTimeLimit,
-				FSharpMap<string, ConfigurationComponent> componentGraph, IMessageLogger logger) {
+				FSharpMap<string, ConfigurationComponent> componentGraph) {
 
 			Lsystem = lsystem;
 			OutputProvider = outputProvider;
@@ -40,8 +38,6 @@ namespace Malsys.Processing {
 			ComponentResolver = componentResolver;
 			ProcessingTimeLimit = processingTimeLimit;
 			ComponentGraph = componentGraph;
-			//Logger = logger;
-
 		}
 
 

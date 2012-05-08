@@ -166,6 +166,10 @@
       <Project>{8CAA0257-FE49-4CD8-97C1-86185F44E08C}</Project>
       <Name>Malsys.Parsing</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Malsys.Web\Malsys.Web.csproj">
+      <Project>{8969E30F-5C13-4FCB-A75C-E01EBCE82B1F}</Project>
+      <Name>Malsys.Web</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Malsys\Malsys.csproj">
       <Project>{E80C526F-83F8-4899-B5DE-1F584E2C3D77}</Project>
       <Name>Malsys</Name>

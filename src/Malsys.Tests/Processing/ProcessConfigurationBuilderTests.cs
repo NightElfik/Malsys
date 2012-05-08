@@ -476,7 +476,7 @@ namespace Malsys.Tests.Process {
 			procCompBuilder.SetAndCheckUserSettableProperties(compGraph, lsystem.ComponentValuesAssigns, lsystem.ComponentSymbolsAssigns, logger);
 
 			var ctxt = new ProcessContext(lsystem, new InMemoryOutputProvider(), input, new EvaluatorsContainer(lsystem.ExpressionEvaluatorContext),
-				lsystem.ExpressionEvaluatorContext, resolver, TimeSpan.MaxValue, compGraph, logger);
+				lsystem.ExpressionEvaluatorContext, resolver, TimeSpan.MaxValue, compGraph);
 
 			if (logger.ErrorOccurred) {
 				goto results;

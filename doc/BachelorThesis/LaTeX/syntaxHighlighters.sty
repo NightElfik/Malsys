@@ -1,7 +1,4 @@
-\ProvidesPackage{lsystemSyntax}
-
-%\addto\captionsczech{\def\lstlistingname{Kód}}
-%\addto\captionsczech{\def\lstlistlistingname{Seznam ukázek kódů}}
+\ProvidesPackage{syntaxHighlighters}
 
 \definecolor{clr_code_bg}{rgb}{0.95,0.95,0.95}
 \definecolor{clr_keyword}{rgb}{0,0,1}
@@ -12,7 +9,7 @@
 \definecolor{clr_string}{rgb}{0.64,0.08,0.08}
 
 \lstdefinelanguage{Csharp}{
-	basicstyle=\footnotesize{}\ttfamily,
+	basicstyle=\footnotesize\ttfamily\consolas,
 	keywords={
 		abstract,event,new,struct,as,explicit,null,switch,base,extern,object,this,bool,false,operator,throw,
 		break,finally,out,true,byte,fixed,override,try,case,float,params,typeof,catch,for,get,private,uint,char,foreach,protected,ulong,
@@ -46,27 +43,25 @@
 
 
 \lstdefinelanguage{Lsystem}{
-	basicstyle=\ttfamily\footnotesize,
-	keywords={
-		all,as,component,configuration,connect,consider,container,default,fun,interpret,let,lsystem,
-		nothing,or,process,return,rewrite,set,symbols,this,to,typeof,use,virtual,weight,with,where},
+	basicstyle=\ttfamily\footnotesize\consolas,
+	keywords={abstract,all,as,component,configuration,connect,consider,container,default,extends,fun,interpret,
+		let,lsystem,nothing,or,process,return,rewrite,set,symbols,this,to,typeof,use,virtual,weight,with,where},
 	keywordstyle=\color{clr_keyword_ls}\bfseries,
 	comment=[l]{//},
 	morecomment=[s]{/*}{*/},
 	commentstyle=\color{clr_comment}\itshape,
 	extendedchars=true,
-	%numbers=left,
-	%numbersep=4pt,
 	tabsize=4,
 	frame=lines,
 	captionpos=t,
 	backgroundcolor=\color{clr_code_bg},
 	showstringspaces=false,
-	%xleftmargin=20pt,
 	framexleftmargin=8pt,
 	escapechar=`,
 	captionpos=b
 }
+
+\lstnewenvironment{LsystemBreak}[1][]{\lstset{language=Lsystem,#1}}{}
 
 \lstnewenvironment{Lsystem}[1][]%
 { % http://tex.stackexchange.com/questions/10141/how-to-prevent-lstlisting-from-splitting-code-between-pages
@@ -75,6 +70,45 @@
 	\vspace{0.5\baselineskip}
 	\lstset{language=Lsystem,#1}
 }
+{\endminipage}
+
+\lstnewenvironment{Lsystem50}[1][]%
+{ % http://tex.stackexchange.com/questions/10141/how-to-prevent-lstlisting-from-splitting-code-between-pages
+	\noindent
+	\minipage{0.49\linewidth}
+	\vspace{0.5\baselineskip}
+	\lstset{language=Lsystem,#1}
+}
+{\endminipage}
+
+
+\newcommand{\grammarquant}[1]{\bfseries{#1}}
+
+\lstdefinelanguage{Grammar}{
+	basicstyle=\ttfamily\footnotesize\consolas,
+	literate=
+		{?}{{\grammarquant{?}}}1
+		{+}{{\grammarquant{+}}}1
+		{*}{{\grammarquant{*}}}1,
+	extendedchars=true,
+	string=[b]',
+	stringstyle=\color{clr_string},
+	tabsize=4,
+	frame=lines,
+	captionpos=t,
+	backgroundcolor=\color{clr_code_bg},
+	showstringspaces=false,
+	framexleftmargin=8pt,
+	escapechar=`,
+	captionpos=b
+}
+
+\lstnewenvironment{Grammar}[1][]%
+{ % http://tex.stackexchange.com/questions/10141/how-to-prevent-lstlisting-from-splitting-code-between-pages
+	\noindent
+	\minipage{\linewidth}
+	\vspace{0.5\baselineskip}
+	\lstset{language=Grammar,#1}}
 {\endminipage}
 
 

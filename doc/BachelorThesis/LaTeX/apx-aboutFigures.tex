@@ -1,0 +1,114 @@
+
+\newcommand{\figCaption}[1]{\paragraph{Figure \ref{#1}} [page \pageref{#1}]}
+
+\chapter{About figures}
+\label{chap:aboutFigures}
+
+[TODO]
+
+
+\figCaption{fig:introductionLilac} 3D model of lilac
+
+\begin{LsystemBreak}
+lsystem LilacInflorescences extends Branches {	
+	// A(energy, branchEnergy)
+	set symbols axiom = F(50) A(12, 5);
+	set iterations = 12;
+	set cameraPosition = {232, 130, 202};
+	set cameraUpVector = {0.6, 0.78, -0.2};
+	set cameraTarget = {221, 4, 7};
+
+	interpret F as DrawForward(10, 2, #00AA00);
+	interpret K(age) as lsystem Bloom(age);
+	interpret + as Pitch(60);
+	interpret - as Pitch(-60);
+	interpret / as Roll(90);
+
+	rewrite A(energy) where energy <= 0 to K(1);
+	rewrite A(energy, branchEnergy) to [ - / K(1) ] [ + / K(1) ]
+		I(0, branchEnergy) / A(energy - 1, branchEnergy);
+	rewrite I(t, energy) where energy <= 0 to nothing;
+	rewrite I(t, energy) with e = energy - 1, be = energy where t==2
+		to I(t + 1, e) [ - F F A(e, be) ] [ + F F A(e, be) ];
+	rewrite I(t, e) to F I(t + 1, e - 1);
+	rewrite K(age) to K(age + 1);
+}
+
+abstract lsystem Bloom(age = 4) extends Polygons {
+	let color = #d649ff;
+	let leafCount = round(random(3.5, 5.5));
+	let angle = 150 / leafCount;
+	let size = min(4, age);
+
+	set symbols axiom = F [ G(1.5) K ] leaf;
+	set iterations = leafCount;
+
+	interpret F as DrawForward(size * 2.5, 1 + size / 4, color);
+	interpret G as MoveForward(size * 2.5);
+	interpret K as DrawSphere(size / 2, #ffff00);
+	interpret + as Yaw(angle);
+	interpret - as Yaw(-angle);
+	interpret | as Yaw(180);
+	interpret / as Roll;
+	interpret ^ as Pitch(-15);
+
+	rewrite leaf to
+		/(360 / leafCount) [ ^(40 + 10*size) <(color) .
+		+ ^ G . - ^ G . - ^ G . + | +   G . - ^ G .  > ] leaf;
+}
+
+process all with ThreeJsRenderer;
+\end{LsystemBreak}
+
+
+\figCaption{fig:introductionHTree} H-tree fractal
+
+\begin{LsystemBreak}
+lsystem Htree(R = sqrt(2)) extends Branches {
+	set symbols axiom = + A(1);
+	set iterations = 11;
+	set lineCap = none;
+
+	interpret F(x) as DrawForward(
+		R^x * 2 ^ -(currentIteration / 2) * 256, x);
+	interpret + as TurnLeft(90);
+	interpret - as TurnLeft(-90);
+
+	rewrite A to F(1) [+A] [-A];
+	rewrite F(x) to F(x + 1);
+}
+
+process all with SvgRenderer;
+\end{LsystemBreak}
+
+
+\figCaption{fig:introMengerSponge} Menger sponge
+
+\begin{LsystemBreak}
+lsystem MengerSponge {
+	set iterations = 3;
+	set symbols axiom = F;
+
+	interpret F as DrawForward(10, 10, #FFFFFF);
+	interpret f as MoveForward(5);
+	interpret + as Yaw(90);
+	interpret - as Yaw(-90);
+	interpret ^ as Pitch(90);
+	interpret & as Pitch(-90);
+
+	rewrite F to
+		- f f + & f f ^ F F F +f+f- F F +f+f- F F +f+f- F
+		-f+f+f^f F F &f&f^ F F &f&f^ F ^ ^ f f f & + f F F &f&f^ F
+		^ ^ f f f & + f F F &f&f^ F ^ ^ f f f & + f F f & f f ^ +
+		+ f f - f f f f f;
+	rewrite f to f f f;
+}
+
+process all with ThreeJsRenderer;
+\end{LsystemBreak}
+
+
+
+
+
+

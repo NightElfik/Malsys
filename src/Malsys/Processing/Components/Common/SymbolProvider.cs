@@ -6,7 +6,7 @@ namespace Malsys.Processing.Components.Common {
 	/// <summary>
 	///	Standard implementation of ISymbolProvider interface.
 	/// </summary>
-	/// <name>Symbol provider component</name>
+	/// <name>Symbol provider</name>
 	/// <group>Common</group>
 	public class SymbolProvider : ISymbolProvider {
 
