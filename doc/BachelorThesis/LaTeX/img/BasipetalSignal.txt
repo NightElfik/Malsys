@@ -1,13 +1,25 @@
-lsystem BasipetalSignal {
+lsystem Generator extends Branches {
+
+	set symbols axiom = [ + A(0) ] X;
+	set iterations = 4;
+
+	interpret F as MoveForward(90);
+	interpret B as DrawSphere(8);
+	interpret + as TurnLeft(90);
+
+	interpret A(i) as lsystem BasipetalSignal(i);
+
+	rewrite X to F [ + A(currentIteration) ] X;
+}
+
+abstract lsystem BasipetalSignal(i) {
 
 	set symbols axiom = A [ + A ] A [ - A ] A [ + A ] A X;
 	set symbols contextIgnore = + -;  // ignored in context search
 	set symbols startBranchSymbols = [;
 	set symbols endBranchSymbols = ];
 
-	set iterations = 5;
-	set initialAngle = 90;
-	set interpretEveryIteration = true;
+	set iterations = i;
 
 	interpret A as DrawForward(50, 2);
 	interpret B as DrawForward(50, 4);
@@ -21,4 +33,5 @@ lsystem BasipetalSignal {
 	rewrite A { X } to B;
 
 }
+
 process all with SvgRenderer;

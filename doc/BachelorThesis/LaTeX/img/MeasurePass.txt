@@ -1,0 +1,17 @@
+lsystem WeirdKochCurve {
+
+	set symbols axiom = F +(-120) F +(-120) F;
+	set iterations = 5;
+	set randomSeed = 2;
+	set continuousColoring = true;
+
+	// normalize line length to have (result image will have always same size)
+	interpret F as DrawForward(2 ^ -(currentIteration * 3 / 2) * 300);
+	interpret + as TurnLeft;
+
+	rewrite F
+		to F +(60) F     +(-120)     F +(60) F
+		to F +(90) F +(-90) F +(-90) F +(90) F;
+}
+
+process all with SvgRenderer;

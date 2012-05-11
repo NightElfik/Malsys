@@ -1,0 +1,300 @@
+
+\chapter{Standard library source code}
+\label{chap:stdLib}
+
+The Standard library was created for easier creation of inputs.
+It contains useful constants, \lsystems for inheritance and predefined process configurations.
+Standard library source code is prepended to all processed inputs in the web user interface.
+
+Source code is divided into logical sections.
+Each section contains short comment and explanation of source code.
+
+
+\section{General Constants}
+
+\begin{LsystemBreak}
+let pi = 3.14159265358979323846;
+let π = pi;
+let e = 2.7182818284590452354;
+\end{LsystemBreak}
+
+
+\section{Component specific constants}
+
+Constants defined in this section helps to add semantic meaning to numeric values which are used for configuring components.
+
+\subsection{Svg renderer}
+
+Following constants represent line cap values of \emph{LineCap} property of \hyperref[Malsys.Processing.Components.Renderers.SvgRenderer2D]{\emph{SvgRenderer2D}} component.
+
+\begin{LsystemBreak}
+let none = 0;
+let square = 1;
+let round = 2;
+\end{LsystemBreak}
+
+
+\subsection{ThreeJs renderer}
+
+Following constants represent triangulation strategies which are set to \emph{PolygonTriangulationStrategy} property of \hyperref[Malsys.Processing.Components.Renderers.ThreeJsSceneRenderer3D]{\emph{ThreeJsSceneRenderer3D}} component.
+
+\begin{LsystemBreak}
+let fanFromFirstPoint = 0;
+let minAngle = 1;
+let maxAngle = 2;
+let maxDistance = 3;
+let maxDistanceFromNonTriangulated = 4;
+\end{LsystemBreak}
+
+
+\section{Abstract L-systems}
+
+\lsystems defined in this section are intended to use as base \lsystems for \lsystems defined by user (for inheritance).
+They are defined as \emph{abstract} to exclude them from processing with \emph{all} keyword.
+
+
+\subsection{Standard \lsystem 2D}
+
+\lsystem called \texttt{StdLsystem} defines interpretation for usual symbols and correctly defines branches.
+
+\begin{LsystemBreak}
+abstract lsystem StdLsystem {
+	interpret A B C D E F G as DrawForward(8);
+	interpret a b c d e f g as MoveForward(8);
+
+	interpret + as TurnLeft(90);
+	interpret -(x = 90) as TurnLeft(-x);
+	interpret | as TurnLeft(180);
+	interpret / as Roll(180); // switches meaning of + and - symbols
+
+	interpret < as StartPolygon;
+	interpret . as RecordPolygonVertex;
+	interpret > as EndPolygon;
+
+	set symbols startBranchSymbols = [;
+	set symbols endBranchSymbols = ];
+
+	interpret [ as StartBranch;
+	interpret ] as EndBranch;
+}
+\end{LsystemBreak}
+
+
+\subsection{Standard \lsystem 3D}
+
+\lsystem called \texttt{StdLsystem3D} defines interpretation for usual symbols and correctly defines branches.
+The only difference between \texttt{StdLsystem3D} and \texttt{StdLsystem} is in interpretation of + and - symbols.
+2D image must be rendered in XY plane thus + and - symbols must do Pitch but in 3D for pitch is more intuitive to use \^{} and \& symbols.
+
+\begin{LsystemBreak}
+abstract lsystem StdLsystem3D {
+	interpret A B C D E F G as DrawForward(8);
+	interpret a b c d e f g as MoveForward(8);
+
+	interpret + as Yaw(90);
+	interpret -(x = 90) as Yaw(-x);
+	interpret | as Yaw(180);
+
+	interpret ^ as Pitch(90);
+	interpret &(x = 90) as Pitch(-x);
+
+	interpret / as Roll(90);
+	interpret \(x = 90) as Roll(-x);
+
+	interpret < as StartPolygon;
+	interpret . as RecordPolygonVertex;
+	interpret > as EndPolygon;
+
+	set symbols startBranchSymbols = [;
+	set symbols endBranchSymbols = ];
+
+	interpret [ as StartBranch;
+	interpret ] as EndBranch;
+}
+\end{LsystemBreak}
+
+
+\subsection{Branches}
+
+\lsystem \texttt{Branches} defines branches correctly.
+To be able to do context rewriting correctly the Rewriter component must know what symbols start and end branches.
+This should be the same symbol as supplied to interpreter.
+
+\begin{LsystemBreak}
+abstract lsystem Branches {
+	set symbols startBranchSymbols = [;
+	set symbols endBranchSymbols = ];
+
+	interpret [ as StartBranch;
+	interpret ] as EndBranch;
+}
+\end{LsystemBreak}
+
+
+\subsection{Polygons and branches}
+
+\lsystem \texttt{Polygons} defines polygons and branches.
+
+\begin{LsystemBreak}
+abstract lsystem Polygons {
+	interpret < as StartPolygon;
+	interpret . as RecordPolygonVertex;
+	interpret > as EndPolygon;
+
+	set symbols startBranchSymbols = [;
+	set symbols endBranchSymbols = ];
+
+	interpret [ as StartBranch;
+	interpret ] as EndBranch;
+}
+\end{LsystemBreak}
+
+
+\section{Process configurations}
+
+\begin{LsystemBreak}
+/**
+ * Prints symbols to string.
+ */
+configuration SymbolPrinter {
+	component AxiomProvider typeof AxiomProvider;
+	component RandomGeneratorProvider
+		typeof RandomGeneratorProvider;
+
+	container Rewriter typeof IRewriter default SymbolRewriter;
+	container Iterator typeof IIterator
+		default MemoryBufferedIterator;
+	container SymbolProcessor typeof ISymbolProcessor
+		default SymbolsSaver;
+
+	connect RandomGeneratorProvider
+		to Iterator.RandomGeneratorProvider;
+	connect AxiomProvider to Iterator.AxiomProvider;
+	connect Iterator to Rewriter.SymbolProvider;
+	connect Rewriter to Iterator.SymbolProvider;
+	connect SymbolProcessor to Iterator.OutputProcessor;
+}
+
+/**
+ * Renders symbols as SVG vector image.
+ */
+configuration SvgRenderer {
+	component AxiomProvider typeof AxiomProvider;
+	component RandomGeneratorProvider
+		typeof RandomGeneratorProvider;
+	component LsystemInLsystemProcessor
+		typeof LsystemInLsystemProcessor;
+
+	container Rewriter typeof IRewriter default SymbolRewriter;
+	container Iterator typeof IIterator
+		default MemoryBufferedIterator;
+	container InterpreterCaller typeof IInterpreterCaller
+		default InterpreterCaller;
+	container Interpreter typeof IInterpreter
+		default TurtleInterpreter;
+	container Renderer typeof IRenderer default SvgRenderer2D;
+
+	connect RandomGeneratorProvider
+		to Iterator.RandomGeneratorProvider;
+	connect AxiomProvider to Iterator.AxiomProvider;
+	connect Iterator to Rewriter.SymbolProvider;
+	connect Rewriter to Iterator.SymbolProvider;
+	connect InterpreterCaller to Iterator.OutputProcessor;
+	connect LsystemInLsystemProcessor
+		to InterpreterCaller.LsystemInLsystemProcessor;
+	connect Renderer to Interpreter.Renderer;
+}
+
+/**
+ * Renders symbols as lines from ASCII characters in hexagonal grid.
+ */
+configuration HexAsciiRenderer {
+	component AxiomProvider typeof AxiomProvider;
+	component RandomGeneratorProvider
+		typeof RandomGeneratorProvider;
+	component LsystemInLsystemProcessor
+		typeof LsystemInLsystemProcessor;
+
+	container Rewriter typeof IRewriter default SymbolRewriter;
+	container Iterator typeof IIterator
+		default MemoryBufferedIterator;
+	container InterpreterCaller typeof IInterpreterCaller
+		default InterpreterCaller;
+	container Interpreter typeof IInterpreter
+		default HexaAsciiInterpreter;
+	container Renderer typeof IRenderer default TextRenderer;
+
+	connect RandomGeneratorProvider
+		to Iterator.RandomGeneratorProvider;
+	connect AxiomProvider to Iterator.AxiomProvider;
+	connect Iterator to Rewriter.SymbolProvider;
+	connect Rewriter to Iterator.SymbolProvider;
+	connect InterpreterCaller to Iterator.OutputProcessor;
+	connect LsystemInLsystemProcessor
+		to InterpreterCaller.LsystemInLsystemProcessor;
+	connect Renderer to Interpreter.Renderer;
+}
+
+/**
+ * Renders symbols as 3D scene for Three.js engine.
+ */
+configuration ThreeJsRenderer {
+	component AxiomProvider typeof AxiomProvider;
+	component RandomGeneratorProvider
+		typeof RandomGeneratorProvider;
+	component LsystemInLsystemProcessor
+		typeof LsystemInLsystemProcessor;
+
+	container Rewriter typeof IRewriter default SymbolRewriter;
+	container Iterator typeof IIterator
+		default MemoryBufferedIterator;
+	container InterpreterCaller typeof IInterpreterCaller
+		default InterpreterCaller;
+	container Interpreter typeof IInterpreter
+		default TurtleInterpreter;
+	container Renderer typeof IRenderer
+		default ThreeJsSceneRenderer3D;
+
+	connect RandomGeneratorProvider
+		to Iterator.RandomGeneratorProvider;
+	connect AxiomProvider to Iterator.AxiomProvider;
+	connect Iterator to Rewriter.SymbolProvider;
+	connect Rewriter to Iterator.SymbolProvider;
+	connect InterpreterCaller to Iterator.OutputProcessor;
+	connect LsystemInLsystemProcessor
+		to InterpreterCaller.LsystemInLsystemProcessor;
+	connect Renderer to Interpreter.Renderer;
+}
+
+/**
+ * Special process configuration for processing inner L-systems.
+ */
+configuration InnerLsystemConfig {
+	component Rewriter typeof SymbolRewriter;
+	component Iterator typeof InnerLsystemIterator;
+	component InterpreterCaller typeof InterpreterCaller;
+
+	connect Iterator to Rewriter.SymbolProvider;
+	connect Rewriter to Iterator.SymbolProvider;
+	connect InterpreterCaller to Iterator.OutputProcessor;
+
+	// this connection is virtual because LsystemInLsystemProcessor
+	// component will be added to process configuration from main
+	// process configuration
+	virtual connect LsystemInLsystemProcessor
+		to InterpreterCaller.LsystemInLsystemProcessor;
+}
+
+/**
+ * Dummy L-system for processing ConstantDumper.
+ * Usage: process Constants with ConstantDumper;
+ */
+abstract lsystem Constants { }
+
+configuration ConstantDumper {
+	component Dumper typeof ConstantsDumper;
+}
+\end{LsystemBreak}
+
+
+

@@ -1,0 +1,28 @@
+lsystem IntExample1 {
+
+	set symbols axiom = F + F - - F + F;
+
+	interpret F as DrawForward(50);
+	interpret + as TurnLeft(60);
+	interpret - as TurnLeft(-60);
+}
+
+lsystem IntExample2 {
+
+	set symbols axiom = F + F - F - F + F;
+
+	interpret F as DrawForward(50);
+	interpret + as TurnLeft(90);
+	interpret - as TurnLeft(-90);
+}
+
+lsystem IntExample3 {
+
+	set symbols axiom = F + F + + F - F - - F F - F +;
+
+	interpret F as DrawForward(40);
+	interpret + as TurnLeft(60);
+	interpret - as TurnLeft(-60);
+}
+
+process all with SvgRenderer;

@@ -1,0 +1,88 @@
+lsystem HybridPythagorasTree(angle = 50, i = 10, minSize = 3) extends Branches {
+
+	set symbols axiom = /(45) F(64, 0);
+	set iterations = i;
+	set randomSeed = 3;
+	let gradient = toColorGradient(#7B3C12, i, #00FF00);
+
+	set cameraPosition = {192, 48, 272};
+	set cameraUpVector = {1, -0.05, -0.12};
+	set cameraTarget = {130, -53, 25};
+
+	let angleComp = 90 - angle;  // angle complement
+	let sinAngle = sin(deg2rad(angle));
+	let sinAngleComp = sin(deg2rad(angleComp));
+
+	interpret E(x, i) as lsystem MengerSponge(x, gradient[i]);
+	interpret m as MoveForward;
+	interpret + as Yaw(angle);
+	interpret - as Yaw(-angleComp);
+	interpret / as Roll;
+
+	rewrite F(x, i)
+		with left = x * sinAngle, right = x * sinAngleComp
+		where x > minSize
+		to E(x, i)
+			[ + m(left / 2) F(right, i + 1) ]
+			  - m(right / 2) F(left, i + 1);
+}
+
+abstract lsystem MengerSponge(size = 1, color = #FFFFFF) extends Branches {
+
+	let iters = if(size > 60, 3,
+		if(size > 25, 2,
+		if(size > 10, 1, 0)));
+
+	let cubeSize = size * (1/3)^iters;
+	let halfSize = cubeSize / 2;
+
+	let renderBlooms = iters == 0;
+	let iters = iters + if(renderBlooms, 1, 0);  // to render blossoms
+
+	set iterations = iters;
+	set symbols axiom = F;
+
+	interpret F as DrawForward(cubeSize, cubeSize, color);
+	interpret f as MoveForward(halfSize);
+	interpret B as lsystem Bloom(cubeSize);
+	interpret + as Yaw(90);
+	interpret - as Yaw(-90);
+	interpret ^ as Pitch(90);
+	interpret & as Pitch(-90);
+
+	rewrite F where renderBlooms to F [ ^ f B ];
+	rewrite F to
+		- f f + & f f ^ F F F +f+f- F F +f+f- F F +f+f- F
+		-f+f+f^f F F &f&f^ F F &f&f^ F ^ ^ f f f & + f F F &f&f^ F
+		^ ^ f f f & + f F F &f&f^ F ^ ^ f f f & + f F f & f f ^ +
+		+ f f - f f f f f;
+	rewrite f to f f f;
+}
+
+abstract lsystem Bloom(size = 1) extends Polygons {
+
+	let color = #d649ff;
+	let leafCount = floor(random(4, 7));
+	let angle = 150 / leafCount;
+
+	set symbols axiom = F [ G(size/8) K ] leaf;
+	set iterations = leafCount;
+
+	interpret F as DrawForward(size * 0.5, size * 0.2, color);
+	interpret G as MoveForward(size * 0.5);
+	interpret K as DrawSphere(size / 6, #ffff00);
+
+	interpret + as Yaw(angle);
+	interpret - as Yaw(-angle);
+	interpret | as Yaw(180);
+	interpret / as Roll;
+
+	interpret ^ as Pitch(-15);
+
+	rewrite leaf to
+		/(360 / leafCount) [ ^(90) <(color) .
+		+ ^ G . - ^ G . - ^ G . + |
+		+   G . - ^ G .  > ] leaf;
+}
+
+process all with ThreeJsRenderer;

@@ -48,9 +48,9 @@ namespace Malsys.Compilers {
 
 		public enum Message {
 
-			[Message(MessageType.Error, "Parameter name `{0}` is not unique. See also {1}.")]
-			RequiredParamAfterOptional,
 			[Message(MessageType.Error, "Optional parameters must appear after all required parameters, but required parameter `{0}` is after optional.")]
+			RequiredParamAfterOptional,
+			[Message(MessageType.Error, "Parameter name `{0}` is not unique. See also {1}.")]
 			ParamNameNotUnique,
 
 		}

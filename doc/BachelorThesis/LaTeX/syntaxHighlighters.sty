@@ -8,6 +8,27 @@
 \definecolor{clr_class}{rgb}{0.17,0.57,0.69}
 \definecolor{clr_string}{rgb}{0.64,0.08,0.08}
 
+
+\newenvironment{btHighlight}[1][]
+{\begingroup\tikzset{bt@Highlight@par/.style={#1}}\begin{lrbox}{\@tempboxa}}
+{\end{lrbox}\bt@HL@box[bt@Highlight@par]{\@tempboxa}\endgroup}
+
+\newcommand\btHL[1][]{%
+	\begin{btHighlight}[#1]\bgroup\aftergroup\bt@HL@endenv%
+}
+\def\bt@HL@endenv{%
+	\end{btHighlight}%   
+	\egroup
+}
+\newcommand{\bt@HL@box}[2][]{%
+	\tikz[#1]{%
+		\pgfpathrectangle{\pgfpoint{1pt}{0pt}}{\pgfpoint{\wd #2}{\ht #2}}%
+		\pgfusepath{use as bounding box}%
+		\node[anchor=base west, fill=yellow!40,outer sep=0pt,inner xsep=1pt, inner ysep=0pt, rounded corners=3pt, minimum height=\ht\strutbox+1pt,#1]{\raisebox{1pt}{\strut}\strut\usebox{#2}};
+	}%
+}
+
+
 \lstdefinelanguage{Csharp}{
 	basicstyle=\footnotesize\ttfamily\consolas,
 	keywords={
@@ -47,6 +68,7 @@
 	keywords={abstract,all,as,component,configuration,connect,consider,container,default,extends,fun,interpret,
 		let,lsystem,nothing,or,process,return,rewrite,set,symbols,this,to,typeof,use,virtual,weight,with,where},
 	keywordstyle=\color{clr_keyword_ls}\bfseries,
+	literate={-}{{-}}1,  % to avoid replacment of - to "minus"
 	comment=[l]{//},
 	morecomment=[s]{/*}{*/},
 	commentstyle=\color{clr_comment}\itshape,
@@ -58,7 +80,8 @@
 	showstringspaces=false,
 	framexleftmargin=8pt,
 	escapechar=`,
-	captionpos=b
+	captionpos=b,
+    moredelim=**[is][\btHL]{@}{@}
 }
 
 \lstnewenvironment{LsystemBreak}[1][]{\lstset{language=Lsystem,#1}}{}

@@ -46,17 +46,19 @@
 \usepackage{wrapfig}
 \usepackage{graphicx}
 %\usepackage{amsthm}
+\usepackage{float}  % \begin{figure}[H]
 \usepackage{booktabs}  % nicer tables
 \usepackage[bottom]{footmisc}  % footnotes at the bottom of page
 
 \usepackage[titletoc]{appendix}
 
 \usepackage{tikz}
-\usetikzlibrary{positioning,shapes,arrows,trees}
+\usetikzlibrary{positioning,shapes,arrows,trees,fit}
 \usetikzlibrary{decorations.pathmorphing} % for snake lines
 
 \tikzstyle{block} = [draw, fill=blue!20, rectangle, minimum height=3em, minimum width=6em]
-\tikzstyle{blockx} = [draw, fill=green!20, rectangle, minimum height=3em, minimum width=6em]
+\tikzstyle{blockx} = [draw, fill=green!20, rectangle, minimum height=3em, minimum width=6em, rounded corners=1mm]
+\tikzstyle{area} = [draw, rectangle, rounded corners=2mm]
 \tikzstyle{coord} = [coordinate]
 \tikzstyle{snakeline} = [decorate, decoration={pre length=0mm, post length=1mm, snake, amplitude=1mm, segment length=3mm}, ->]
 
@@ -152,8 +154,9 @@
 \renewcommand{\lstlistlistingname}{List of source codes}
 
 % debugging
-\includeonly{design}
-
+%\includeonly{lsystems}
+%\includeonly{design}
+%\includeonly{apx-stdLib}
 
 \begin{document}
 
@@ -173,6 +176,16 @@
 \setcounter{page}{1}
 \tableofcontents
 
+%\addcontentsline{toc}{chapter}{List of Figures}
+%\listoffigures
+
+%\addcontentsline{toc}{chapter}{List of Tables}
+%\listoftables
+
+%\addcontentsline{toc}{chapter}{List of source codes}
+%\lstlistoflistings
+
+
 
 \include{introduction}
 
@@ -186,16 +199,6 @@
 \nocite{*}  % Show all Bib-entries
 \printbibliography
 
-%\addcontentsline{toc}{chapter}{List of Figures}
-%\listoffigures
-
-%\addcontentsline{toc}{chapter}{List of Tables}
-%\listoftables
-
-%\addcontentsline{toc}{chapter}{List of source codes}
-%\lstlistoflistings
-
-
 \openright
 \begin{appendices}
 
@@ -203,6 +206,7 @@
 \include{apx-inputSyntax}
 \include{apx-aboutFigures}
 \include{apx-components}
+\include{apx-stdLib}
 
 \end{appendices}
 

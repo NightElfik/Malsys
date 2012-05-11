@@ -52,10 +52,10 @@
 			<p class="controls">Controls: Move mouse &amp; press LEFT/A: rotate, MIDDLE/S: zoom, RIGHT/D: pan</p>
 			<a href="@Url.Action(MVC.Gallery.FullScreen(Model.Input.UrlId))" class="fullscreen">Full screen</a>
 		</div>
-		<p>
-			Note that L-systems is actual 3D scene rendered by your browser and you can rotate, zoom or pan with it.
-			@Html.ActionLink("Download JavaScript source code", MVC.Gallery.GetOutput(Model.Input.UrlId)).
+		<p class="note">
+			Rendered L-system is not plain image, it is actual 3D scene rendered by your browser and you can rotate, zoom or pan with it.
 		</p>
+		<p>@Html.ActionLink("Download JavaScript source code", MVC.Gallery.GetOutput(Model.Input.UrlId))</p>
 		<text>
 		@section scripts {
 			@Content.Js(Links.Js.ThreeJs.Three_js)
@@ -105,10 +105,10 @@ break;
 		<span class="vote">
 		@if (Model.UserVote == null || Model.UserVote != i) {
 			@Html.ActionLink(text, MVC.Gallery.Vote(Model.Input.UrlId, i))
-  }
-  else {
+		}
+		else {
 			@text
-  }
+		}
 		</span>
 	}
 	<span class="vote">best</span>
@@ -133,8 +133,12 @@ else {
 @Model.Input.SourceCode
 @if (!string.IsNullOrWhiteSpace(Model.Input.ThumbnailSourceExtension)) {
 <text>
-// thumbnail extension</text>
+// thumbnail extension
+/*</text>
 @Model.Input.ThumbnailSourceExtension
+<text>
+*/
+</text>
 }
 </pre>
 

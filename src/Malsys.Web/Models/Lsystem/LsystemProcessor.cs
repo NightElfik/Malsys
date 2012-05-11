@@ -21,20 +21,21 @@ namespace Malsys.Web.Models.Lsystem {
 		public bool TryProcess(string sourceCode, TimeSpan timeout, FileOutputProvider fileMgr, IMessageLogger logger,
 				out InputBlockEvaled evaledInput, bool cleanupFilesOnError = true, bool compileOnly = false) {
 
+#if !DEBUG
 			try {
+#endif
 				evaledInput = processManager.CompileAndEvaluateInput(sourceCode, "webInput", logger);
+#if !DEBUG
 			}
 			catch (Exception ex) {
 				ErrorSignal.FromCurrentContext().Raise(ex);
 				logger.LogMessage(Message.ExceptionThrownWhileProcessingInput, ex.GetType().Name);
 				evaledInput = null;
 				return false;
-#if DEBUG
-				throw ex;
-#endif
 			}
+#endif
 
-			if (compileOnly || logger.ErrorOccurred) {
+				if (compileOnly || logger.ErrorOccurred) {
 				return !logger.ErrorOccurred;
 			}
 
@@ -42,17 +43,18 @@ namespace Malsys.Web.Models.Lsystem {
 			var inputAndStdLib = stdLib.JoinWith(evaledInput);
 
 			if (inputAndStdLib.ProcessStatements.Count > 0) {
+#if !DEBUG
 				try {
+#endif
 					processManager.ProcessInput(inputAndStdLib, fileMgr, logger, timeout);
+#if !DEBUG
 				}
 				catch (Exception ex) {
 					ErrorSignal.FromCurrentContext().Raise(ex);
 					logger.LogMessage(Message.ExceptionThrownWhileProcessingInput, ex.GetType().Name);
 					return false;
-#if DEBUG
-					throw ex;
-#endif
 				}
+#endif
 			}
 
 			fileMgr.CloseAllOutputStreams();
@@ -78,7 +80,7 @@ namespace Malsys.Web.Models.Lsystem {
 
 		public enum Message {
 
-			[Message(MessageType.Error, "Failed to process input, `{1}` was thrown.")]
+			[Message(MessageType.Error, "Failed to process input, `{0}` was thrown.")]
 			ExceptionThrownWhileProcessingInput,
 
 		}
