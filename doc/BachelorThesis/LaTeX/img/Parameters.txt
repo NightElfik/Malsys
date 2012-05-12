@@ -1,0 +1,17 @@
+lsystem Circles extends Branches {
+
+	set symbols axiom = +(45) [ X ] + [ X ] + [ X ] + X;
+
+	set iterations = 7;
+
+	interpret F as MoveForward;
+	interpret K as DrawCircle;
+	interpret + as TurnLeft(90);
+	interpret - as TurnLeft(-90);
+
+	rewrite K(n) to K(2*n);
+	rewrite F(n) to F(2*n);
+	rewrite X to K(2) F(3) [ + X ] [ - X ] X;
+}
+
+process all with SvgRenderer;

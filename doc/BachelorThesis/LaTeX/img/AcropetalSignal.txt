@@ -16,8 +16,6 @@ abstract lsystem AcropetalSignal(i) extends Branches {
 
 	set symbols axiom = B [ + A Y ] A [ - A Y ] A [ + A Y ] A Y;
 	set symbols contextIgnore = + -;  // ignored in context search
-	set symbols startBranchSymbols = [;
-	set symbols endBranchSymbols = ];
 
 	set iterations = i;
 

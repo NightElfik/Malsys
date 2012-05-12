@@ -55,7 +55,7 @@ They are defined as \emph{abstract} to exclude them from processing with \emph{a
 
 \subsection{Standard \lsystem 2D}
 
-\lsystem called \texttt{StdLsystem} defines interpretation for usual symbols and correctly defines branches.
+\lsystem called \emph{StdLsystem} defines interpretation for usual symbols and correctly defines branches.
 
 \begin{LsystemBreak}
 abstract lsystem StdLsystem {
@@ -82,7 +82,7 @@ abstract lsystem StdLsystem {
 
 \subsection{Standard \lsystem 3D}
 
-\lsystem called \texttt{StdLsystem3D} defines interpretation for usual symbols and correctly defines branches.
+\lsystem called \emph{StdLsystem3D} defines interpretation for usual symbols and correctly defines branches.
 The only difference between \texttt{StdLsystem3D} and \texttt{StdLsystem} is in interpretation of + and - symbols.
 2D image must be rendered in XY plane thus + and - symbols must do Pitch but in 3D for pitch is more intuitive to use \^{} and \& symbols.
 
@@ -116,7 +116,7 @@ abstract lsystem StdLsystem3D {
 
 \subsection{Branches}
 
-\lsystem \texttt{Branches} defines branches correctly.
+\lsystem \emph{Branches} defines interpretation for branches correctly.
 To be able to do context rewriting correctly the Rewriter component must know what symbols start and end branches.
 This should be the same symbol as supplied to interpreter.
 
@@ -133,7 +133,7 @@ abstract lsystem Branches {
 
 \subsection{Polygons and branches}
 
-\lsystem \texttt{Polygons} defines polygons and branches.
+\lsystem \emph{Polygons} defines interpretation for polygons and branches.
 
 \begin{LsystemBreak}
 abstract lsystem Polygons {
@@ -151,11 +151,15 @@ abstract lsystem Polygons {
 
 
 \section{Process configurations}
+\label{sec:stdLibProcessConfigurations}
+
+\subsection{Symbol printer}
+
+Process configuration \emph{SymbolPrinter} prints rewrited symbols as text.
+It can be used to familiarize with \lsystem principles.
+Advanced users can use is while "debugging" some more complex \lsystem.
 
 \begin{LsystemBreak}
-/**
- * Prints symbols to string.
- */
 configuration SymbolPrinter {
 	component AxiomProvider typeof AxiomProvider;
 	component RandomGeneratorProvider
@@ -174,10 +178,18 @@ configuration SymbolPrinter {
 	connect Rewriter to Iterator.SymbolProvider;
 	connect SymbolProcessor to Iterator.OutputProcessor;
 }
+\end{LsystemBreak}
 
-/**
- * Renders symbols as SVG vector image.
- */
+
+\subsection{Svg renderer}
+\label{configurationSvgRenderer}
+
+Process configuration \emph{SvgRenderer} interprets symbols with \hyperref[Malsys.Processing.Components.Interpreters.TurtleInterpreter]{\emph{TurtleInterpreter}} component
+	and renders the with \hyperref[Malsys.Processing.Components.Renderers.SvgRenderer2D]{\emph{SvgRenderer2D}} component to SVG (Scalable Vector Graphics).
+However this process configuration is relatively universal and it can be used any 2D or 3D renderer component in the \emph{Renderer} container.
+Note that \lsystem in interpreted in 3D but z-coordinate from data sent to \hyperref[Malsys.Processing.Components.Renderers.SvgRenderer2D]{\emph{SvgRenderer2D}} is cut off.
+
+\begin{LsystemBreak}
 configuration SvgRenderer {
 	component AxiomProvider typeof AxiomProvider;
 	component RandomGeneratorProvider
@@ -204,40 +216,17 @@ configuration SvgRenderer {
 		to InterpreterCaller.LsystemInLsystemProcessor;
 	connect Renderer to Interpreter.Renderer;
 }
+\end{LsystemBreak}
 
-/**
- * Renders symbols as lines from ASCII characters in hexagonal grid.
- */
-configuration HexAsciiRenderer {
-	component AxiomProvider typeof AxiomProvider;
-	component RandomGeneratorProvider
-		typeof RandomGeneratorProvider;
-	component LsystemInLsystemProcessor
-		typeof LsystemInLsystemProcessor;
 
-	container Rewriter typeof IRewriter default SymbolRewriter;
-	container Iterator typeof IIterator
-		default MemoryBufferedIterator;
-	container InterpreterCaller typeof IInterpreterCaller
-		default InterpreterCaller;
-	container Interpreter typeof IInterpreter
-		default HexaAsciiInterpreter;
-	container Renderer typeof IRenderer default TextRenderer;
+\subsection{ThreeJs renderer}
+\label{configurationThreeJsRenderer}
 
-	connect RandomGeneratorProvider
-		to Iterator.RandomGeneratorProvider;
-	connect AxiomProvider to Iterator.AxiomProvider;
-	connect Iterator to Rewriter.SymbolProvider;
-	connect Rewriter to Iterator.SymbolProvider;
-	connect InterpreterCaller to Iterator.OutputProcessor;
-	connect LsystemInLsystemProcessor
-		to InterpreterCaller.LsystemInLsystemProcessor;
-	connect Renderer to Interpreter.Renderer;
-}
+Process configuration \emph{ThreeJsRenderer} is very similar to \hyperref[configurationSvgRenderer]{\emph{SvgRenderer}}.
+Only difference is in used renderer component in the \emph{Renderer} container.
+This process configuration uses \hyperref[Malsys.Processing.Components.Renderers.ThreeJsSceneRenderer3D]{\emph{ThreeJsSceneRenderer3D}} to render 3D scene for Three.js engine [\ref{sec:ThreeJs}].
 
-/**
- * Renders symbols as 3D scene for Three.js engine.
- */
+\begin{LsystemBreak}
 configuration ThreeJsRenderer {
 	component AxiomProvider typeof AxiomProvider;
 	component RandomGeneratorProvider
@@ -265,10 +254,57 @@ configuration ThreeJsRenderer {
 		to InterpreterCaller.LsystemInLsystemProcessor;
 	connect Renderer to Interpreter.Renderer;
 }
+\end{LsystemBreak}
 
-/**
- * Special process configuration for processing inner L-systems.
- */
+
+\subsection{Hexagonal ASCII renderer}
+
+Process configuration \emph{HexAsciiRenderer} interpret symbols with special \hyperref[Malsys.Processing.Components.Interpreters.HexaAsciiInterpreter]{\emph{HexaAsciiInterpreter}}
+	which can move forward by fixed steps (not by any distance) and it can turn only by multiples of sixty degrees thus result will be in hexagonal grid.
+\hyperref[Malsys.Processing.Components.Interpreters.HexaAsciiInterpreter]{\emph{HexaAsciiInterpreter}} can communicate only with  is supposed to communicate with
+	\hyperref[Malsys.Processing.Components.Renderers.TextRenderer]{\emph{TextRenderer}} component which is used to generate ASCII art-style output.
+
+\begin{LsystemBreak}
+configuration HexAsciiRenderer {
+	component AxiomProvider typeof AxiomProvider;
+	component RandomGeneratorProvider
+		typeof RandomGeneratorProvider;
+	component LsystemInLsystemProcessor
+		typeof LsystemInLsystemProcessor;
+
+	container Rewriter typeof IRewriter default SymbolRewriter;
+	container Iterator typeof IIterator
+		default MemoryBufferedIterator;
+	container InterpreterCaller typeof IInterpreterCaller
+		default InterpreterCaller;
+	container Interpreter typeof IInterpreter
+		default HexaAsciiInterpreter;
+	container Renderer typeof IRenderer default TextRenderer;
+
+	connect RandomGeneratorProvider
+		to Iterator.RandomGeneratorProvider;
+	connect AxiomProvider to Iterator.AxiomProvider;
+	connect Iterator to Rewriter.SymbolProvider;
+	connect Rewriter to Iterator.SymbolProvider;
+	connect InterpreterCaller to Iterator.OutputProcessor;
+	connect LsystemInLsystemProcessor
+		to InterpreterCaller.LsystemInLsystemProcessor;
+	connect Renderer to Interpreter.Renderer;
+}
+\end{LsystemBreak}
+
+
+\subsection{Inner \lsystem process configuration}
+\label{sec:innerLsystemConfig}
+
+The \emph{InnerLsystemConfig} process configuration is used by the \hyperref[Malsys.Processing.Components.Common.ILsystemInLsystemProcessor]{\emph{ILsystemInLsystemProcessor}}
+	component to interpret symbols as another \lsystem (\ref{sec:innerLsystem}).
+
+Last connection is virtual because the \hyperref[Malsys.Processing.Components.Common.ILsystemInLsystemProcessor]{\emph{ILsystemInLsystemProcessor}} component will be artificially added
+	to process configuration by itself (the \hyperref[Malsys.Processing.Components.Common.ILsystemInLsystemProcessor]{\emph{ILsystemInLsystemProcessor}} component).
+
+
+\begin{LsystemBreak}
 configuration InnerLsystemConfig {
 	component Rewriter typeof SymbolRewriter;
 	component Iterator typeof InnerLsystemIterator;
@@ -277,23 +313,30 @@ configuration InnerLsystemConfig {
 	connect Iterator to Rewriter.SymbolProvider;
 	connect Rewriter to Iterator.SymbolProvider;
 	connect InterpreterCaller to Iterator.OutputProcessor;
-
-	// this connection is virtual because LsystemInLsystemProcessor
-	// component will be added to process configuration from main
-	// process configuration
+	
 	virtual connect LsystemInLsystemProcessor
 		to InterpreterCaller.LsystemInLsystemProcessor;
 }
+\end{LsystemBreak}
 
-/**
- * Dummy L-system for processing ConstantDumper.
- * Usage: process Constants with ConstantDumper;
- */
-abstract lsystem Constants { }
 
+\subsection{Constant dumper}
+
+The \emph{ConstantDumper} process configuration contains single component, the \hyperref[Malsys.Processing.Components.Common.ConstantsDumper]{\emph{ConstantsDumper}} which just prints all defined global constants as text.
+This can be used to experiment with expressions.
+
+Even though \hyperref[Malsys.Processing.Components.Common.ConstantsDumper]{\emph{ConstantsDumper}} do not need any \lsystems to prints constants (\lsystems are actually ignored), process system of the library can process only \lsystems.
+To over come this restriction with no effort the \emph{Constants} \lsystem is defined to be used in the process statement as follows:
+
+\noindent
+\texttt{process Constants with ConstantDumper}
+
+\begin{LsystemBreak}
 configuration ConstantDumper {
 	component Dumper typeof ConstantsDumper;
 }
+
+abstract lsystem Constants { }
 \end{LsystemBreak}
 
 

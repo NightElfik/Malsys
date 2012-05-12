@@ -1,0 +1,122 @@
+
+\chapter{Used third-party libraries}
+\label{chap:thirdParty}
+
+\section{F\# PowerPack}
+\label{sec:FSharpPowerPack}
+\srcurl{http://fsharppowerpack.codeplex.com/}
+
+\noindent
+The F\# PowerPack is a collection of libraries and tools for use with the F\# programming language provided by the F\# team at Microsoft.
+PowerPack includes F\# versions of these lexer and parser generation tools (FsLex and FsYacc), along with MSBuild tasks to incorporate them in the build process.
+
+The FsLex and FsYacc are used for parsing of input.
+
+
+\section{HTML5 boilerplate}
+\label{sec:HTML5boilerplate}
+\srcurl{http://html5boilerplate.com/}
+
+\noindent
+HTML5 Boilerplate is the professional frontend developers's base HTML/CSS/JS template for a fast, robust and future-safe site.
+
+It was used as cornerstone of HTML and CSS in the web user interface.
+
+
+\section{Three.js}
+\label{sec:ThreeJs}
+\srcurl{http://github.com/mrdoob/three.js/}
+
+\noindent
+Three.js is lightweight JavaScript 3D library (3D engine) for rendering 3D scenes directly in web browser.
+
+It is used to render 3D models produced by the \hyperref[Malsys.Processing.Components.Renderers.ThreeJsSceneRenderer3D]{\emph{ThreeJsSceneRenderer3D}} component.
+
+
+\section{jQuery}
+\label{sec:jQuery}
+\srcurl{http://jquery.com/}
+
+\noindent
+jQuery is a fast and concise JavaScript Library that simplifies HTML document traversing, event handling, animating, and Ajax interactions for rapid web development.
+
+All custom JavaScript win web user interface was written with the help of jQuery.
+
+
+\section{Modernizr}
+\label{sec:Modernizr}
+\srcurl{http://modernizr.com/}
+
+\noindent
+Modernizr is an open-source JavaScript library that helps you build the next generation of HTML5 and CSS3-powered websites.
+
+Cool HTML5 and CSS3 features can be used in web user interface thanks to Modernizr.
+
+
+\section{Code Contracts}
+\label{sec:CodeContracts}
+\srcurl{http://research.microsoft.com/en-us/projects/contracts/}
+
+\noindent
+Code Contracts provide a language-agnostic way to express coding assumptions in .NET programs.
+The contracts take the form of preconditions, postconditions, and object invariants.
+Contracts act as checked documentation of your external and internal APIs.
+The contracts are used to improve testing via runtime checking, enable static contract verification, and documentation generation.
+
+Code Contracts are used in many methods across all projects.
+Contract checking is turned on while solution is built on debug settings but because of performance reasons they are turned off in release.
+
+In Source code \ref{cs:contracts} are defined four preconditions checking validity of arguments and two postconditions ensuring output format.
+From contracts is clear that method must be supplied with at least 3 points in list and number of returned indices will be divisible by 3 (without reminder).
+It makes sense because every 3 indices specifies a triangle.
+
+
+
+\begin{Csharp}[label=cs:contracts,caption={Example of code contracts in the \emph{Triangularize} method of the \emph{Polygon3DTrianguler} class.}]
+public List<int> Triangularize(IList<Point3D> points,
+		Polygon3DTriangulerParameters prms) {
+		
+	Contract.Requires<ArgumentNullException>(points != null);
+	Contract.Requires<ArgumentNullException>(prms != null);
+	Contract.Requires<ArgumentException>(points.Count >= 3);
+	Contract.Requires<ArgumentException>(
+		prms.TriangleEvalDelegate != null);
+		
+	Contract.Ensures(Contract.Result<List<int>>() != null);
+	Contract.Ensures(Contract.Result<List<int>>().Count % 3 == 0);
+
+	...	
+}
+\end{Csharp}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

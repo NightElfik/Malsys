@@ -12,12 +12,10 @@ lsystem Generator extends Branches {
 	rewrite X to F [ + A(currentIteration) ] X;
 }
 
-abstract lsystem BasipetalSignal(i) {
+abstract lsystem BasipetalSignal(i) extends Branches {
 
 	set symbols axiom = A [ + A ] A [ - A ] A [ + A ] A X;
 	set symbols contextIgnore = + -;  // ignored in context search
-	set symbols startBranchSymbols = [;
-	set symbols endBranchSymbols = ];
 
 	set iterations = i;
 
@@ -26,8 +24,6 @@ abstract lsystem BasipetalSignal(i) {
 	interpret X as DrawCircle(8);
 	interpret + as TurnLeft(45);
 	interpret - as TurnLeft(-45);
-	interpret [ as StartBranch;
-	interpret ] as EndBranch;
 
 	rewrite A { B } to B;
 	rewrite A { X } to B;

@@ -1,0 +1,171 @@
+
+@article{Lin68,
+	title = {Mathematical models for cellular interactions in development.},
+	author = {Lindenmayer, A.},
+	journal = {Journal of theoretical biology Parts I and II},
+	volume = {18},
+	number = {3},
+	pages = {280--315},
+	year = {1968},
+	publisher = {Elsevier}
+}
+
+@online{HCJ99,
+	author = {Hazard, C. and Catherine, K. and Johnson, D.},
+	title = {Fractal Music},
+	year = {1999},
+	url = {http://www.tursiops.cc/fm/}
+}
+
+@article{Man06,
+	title = {Musical L-systems},
+	author = {Manousakis, S.},
+	journal = {Unpublished master thesis, Institute of Sonology, The Hague},
+	year = {2006}
+}
+
+@online{Wor08,
+	author = {Worrall, D.},
+	title = {Lyndenmeyer Systems Tutorial},
+	month = {May},
+	year = {2008},
+	url = {http://worrall.avatar.com.au/courses/Lsystems/index.html}
+}
+
+@online{Dun10,
+	author = {Dunlop, R.},
+	title = {Avatar},
+	month = {May},
+	year = {2010},
+	url = {http://cgsociety.org/index.php/CGSFeatures/CGSFeatureSpecial/avatar}
+}
+
+@inproceedings{PM01,
+	title = {Procedural modeling of cities},
+	author = {Parish, Y.I.H. and M{\"u}ller, P.},
+	booktitle = {Proceedings of the 28th annual conference on Computer graphics and interactive techniques},
+	pages = {301--308},
+	year = {2001},
+	organization = {ACM},
+  	ISBN = "1-58113-374-X",
+  	url = "http://doi.acm.org/10.1145/383259.383292"
+}
+	
+@article{CD93,
+	title = {L-systems and mutually recursive function systems},
+	author = {Culik, K. and Dube, S.},
+	journal = {Acta Informatica},
+	volume = {30},
+	number = {3},
+	pages = {279--302},
+	year = {1993},
+	publisher = {Springer},
+	ISSN = "0001-5903",
+  	url = "http://dx.doi.org/10.1007/BF01179375"
+}
+
+@book{Pru85,
+	title = {Graphical applications of L-systems},
+	author = {Prusinkiewicz, P.},
+	year = {1985},
+	publisher = {Department of Computer Science, University of Regina}
+}
+
+@inproceedings{PH93,
+	title = {A fractal model of mountains and rivers},
+	author = {Prusinkiewicz, P. and Hammel, M.},
+	booktitle = {Graphics Interface},
+	volume = {93},
+	pages = {174--180},
+	year = {1993},
+	organization = {Canadian Information Processing Society}
+}
+
+@article{PSSK03,
+	title = {L-system description of subdivision curves},
+	author = {Prusinkiewicz, P. and Samavati, F. and Smith, C. and Karwowski, R.},
+	journal = {International Journal of Shape Modeling},
+	volume = {9},
+	number = {1},
+	pages = {41--59},
+	year = {2003}
+}
+
+@inproceedings{SBM10,
+	title = {Inverse Procedural Modeling by Automatic Generation of L-systems},
+	author = {{\v{S}}{\v{t}}ava, O. and Bene{\v{s}}, B. and M{\v{e}}ch, R. and Aliaga, D.G. and Kri{\v{s}}tof, P.},
+	booktitle = {Computer Graphics Forum},
+	volume = {29},
+	number = {2},
+	pages = {665--674},
+	year = {2010},
+	organization = {Wiley Online Library}
+}
+
+@online{Khr12,
+	labelalpha = {Khr12},
+	author = {Khronos Group},
+	title = {WebGL -- OpenGL ES 2.0 for the Web},
+	year = {2012},
+	url = {http://www.khronos.org/webgl/},
+	urldate = {2012-03-20}
+}
+
+@book{Zar04,
+	title = {Modern{\'i} po{\v{c}}{\'i}ta{\v{c}}ov{\'a} grafika},
+	author = {{\v{Z}}{\'a}ra, J. and Bene{\v{s}}, B. and Sochor, J. and Felkel, P.},
+	year = {2004},
+	publisher = {Computer press}
+}
+
+@book{PL91,
+	title = {The algorithmic beauty of plants},
+	author = {Prusinkiewicz, P. and Lindenmayer, A.},
+	year = {1991},
+	publisher = {Springer}
+}
+
+@inproceedings{MP96,
+	title = {Visual models of plants interacting with their environment},
+	author = {M{\v{e}}ch, R. and Prusinkiewicz, P.},
+	booktitle = {Proceedings of the 23rd annual conference on Computer graphics and interactive techniques},
+	pages = {397--410},
+	year = {1996},
+	organization = {ACM}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

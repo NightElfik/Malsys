@@ -1,0 +1,18 @@
+lsystem RowOfTrees {
+
+	set symbols axiom = F(1, 0);
+	set iterations = 11;
+
+	let p = 0.3;
+	let q = 1-p;
+	let h = (p*q)^0.5;
+
+	interpret F(x) as DrawForward(x * 2 ^ -(currentIteration / 10) * 1024,1);
+	interpret + as TurnLeft(86);
+	interpret - as TurnLeft(-86);
+
+	rewrite F(x,t) where t == 0 to F(x*p,2) + F(x*h,1) - - F(x*h,1) + F(x*q,0);
+	rewrite F(x,t) to F(x,t-1) ;
+}
+
+process all with SvgRenderer;

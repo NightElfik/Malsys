@@ -39,7 +39,7 @@
 		double,lock,stackalloc,else,long,static,enum,namespace,string},
 	keywordstyle=\color{clr_keyword},
 	classoffset=1,  % new class offset
-	morekeywords={Console,Type,Dictionary,Assembly,ILocalizable,ILocalizableData,PropertyInfo,IRenderer,IVirtualMachine,InitialState,MeasureResult},
+	morekeywords={ArgumentException,ArgumentNullException,Contract,List,IList,Point3D,Polygon3DTriangulerParameters},
 	keywordstyle=\color{clr_class},
 	classoffset=0,  % restore default class offset
 	sensitive=true,
@@ -49,18 +49,16 @@
 	string=[b]",
 	stringstyle=\color{clr_string},
 	extendedchars=true,
-	numbers=left,
-	numbersep=4pt,
 	tabsize=4,
+	framexleftmargin=4pt,
 	frame=lines,
 	captionpos=t,
 	backgroundcolor=\color{clr_code_bg},
+	captionpos=b,
 	showstringspaces=false
 }
 
-\lstnewenvironment{Csharp}
-{\lstset{language=Csharp}}
-{}
+\lstnewenvironment{Csharp}[1][]{\lstset{language=Csharp,#1}}{}
 
 
 \lstdefinelanguage{Lsystem}{
@@ -78,8 +76,8 @@
 	captionpos=t,
 	backgroundcolor=\color{clr_code_bg},
 	showstringspaces=false,
-	framexleftmargin=8pt,
-	escapechar=`,
+	framexleftmargin=4pt,
+	%escapechar=`,
 	captionpos=b,
     moredelim=**[is][\btHL]{@}{@}
 }

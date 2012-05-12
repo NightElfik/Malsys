@@ -3,25 +3,25 @@
 \label{sec:Introduction}
 
 \lsystem (also called Lindenmayer system) is mathematical formalism developed for plant growth modeling by Aristid Lindenmayer in 1968~\cite{Lin68}.
-An example of plant modeled by \lsystem is on the figure \ref{fig:introductionLilac}.
+An example of plant modeled by \lsystem is in \autoref{fig:introLilac}.
 In the simplest form an \lsystem is variant of regular or \mbox{context-free} grammar.
 By rewriting (deriving) initial string of symbols (also called axiom) with rewrite rules from grammar \lsystem produces string of symbols which can be interpreted in many different ways.
 In first \lsystems by Lindenmayer were symbols interpreted as cells of algae.
 A different approach was taken by Przemyslaw Prusinkiewicz who interpreted \lsystem symbols with \mbox{Logo-like} turtle\footnote{
 	Logo is computer programming language developed for use in education of programming for children.
 	Logo controls cybernetic turtle which is drawing on 2D canvas.}~\cite{Pru85}.
-With this method he obtained more plant-like structures and fractals.~\cite{CD93}
-On the figure \ref{fig:introductionHTree} you can see H-tree fractal created by \lsystem.
+With this method he obtained more plant-like structures and fractals~\cite{CD93}.
+In \autoref{fig:introHTree} you can see H-tree fractal created by \lsystem.
 
 \begin{figure}[ht]
 	\centering
 	\subfloat[Model of lilac panicle]{
 		\includegraphics[width=0.48\textwidth]{lilac}
-		\label{fig:introductionLilac}
+		\label{fig:introLilac}
 	} ~
 	\subfloat[H-tree fractal]{
 		\includegraphics[width=0.48\textwidth]{HTree}
-		\label{fig:introductionHTree}
+		\label{fig:introHTree}
 	}
 	\caption{Examples of models created by \lsystem}
 \end{figure}
@@ -35,20 +35,18 @@ Plant models generated with \lsystems are used in modern video games or films, f
 
 \lsystems has wide variety of interesting applications but it is hard to find some place to experiment with them.
 There are two base types of \lsystem generators, web-based and desktop applications.
-Web-based \lsystem generators are easily accessible but they are often too primitive and do not offer nothing more than generation of simple fractals (see section \ref{sec:WebBasedGenerators}).
+Web-based \lsystem generators are easily accessible but they are often too primitive and do not offer nothing more than generation of simple fractals (see \autoref{sec:WebBasedGenerators}).
 Some of them do not work in the most used browsers.
 
 Desktop applications generally offers more options than web-based but most of them is also quite simple and do not offer advanced features of \lsystems.
-There are some complex applications that offers pretty good features but there are not free, it is hard to control them or they are old and not maintained (see section \ref{sec:DesktopGenerators}).
+There are some complex applications that offers pretty good features but there are not free, it is hard to control them or they are old and not maintained (see \autoref{sec:DesktopGenerators}).
 Problem with desktop applications is also in compatibility with user's operating system, its version and installed libraries.
 
 The main goal of this work is to take the good from both approaches and create online feature-rich development environment for anybody who wants to experiment with \lsystems.
 Development environment will be divided into two parts, web user interface and \lsystem processing library.
 
 \begin{wrapfigure}{r}{0.5\textwidth}
-	\begin{center}
-		\includegraphics[width=0.48\textwidth]{MengerSponge}
-	\end{center}
+	\includegraphics[width=\linewidth]{MengerSponge}
 	\caption{Menger sponge created by \lsystem}
 	\label{fig:introMengerSponge}
 \end{wrapfigure}
@@ -59,7 +57,7 @@ Interface should be friendly to new users and also offer advanced features for e
 Primary output format of web based \lsystem processor will be 2D images but it will also be possible to create and display 3D outputs using modern HTML5 WebGL\footnote{
 	WebGL (Web-based Graphics Library) is a cross-platform, royalty-free web standard for a low-level 3D graphics API based on OpenGL ES 2.0, exposed through the HTML5 Canvas element as Document Object Model interfaces.
 	WebGL code executes on a computer display card's GPU (Graphics Processing Unit).} technology directly in browser.
-On the figure \ref{fig:introMengerSponge} is print-screen of Menger Sponge model displayed by WebGL.
+In \autoref{fig:introMengerSponge} is print-screen of Menger Sponge model displayed by WebGL.
 Part of the web site will be gallery of \lsystems.
 Any registered user can add his \lsystems to gallery along with some description and others can rate it.
 This will help to create community of active users and it can also serve as learning tool for new users.
@@ -85,9 +83,9 @@ At the end on the first chapter is list of related \lsystem generators.
 The second chapter is devoted to the ... [to be continued].
 
 All source codes of \lsystems in this thesis are in designed syntax and it is possible to process them on the web.
-Syntax reference can be found in the attachment \ref{chap:syntax}.
+Syntax reference can be found in Attachment \ref{chap:syntax}.
 All figures of plants or fractals in this thesis (if not stated otherwise) are produced by created program.
-More information about figures and their source codes is in the attachment \ref{chap:aboutFigures}.
+More information about figures and their source codes is in Attachment \ref{chap:aboutFigures}.
 
 
 

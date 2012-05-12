@@ -43,12 +43,16 @@
 %\usepackage{parskip}
 
 \usepackage{subfig}
+\newcommand{\subfigureautorefname}{\figureautorefname}
+
 \usepackage{wrapfig}
 \usepackage{graphicx}
 %\usepackage{amsthm}
 \usepackage{float}  % \begin{figure}[H]
 \usepackage{booktabs}  % nicer tables
 \usepackage[bottom]{footmisc}  % footnotes at the bottom of page
+
+\usepackage{rotating}
 
 \usepackage[titletoc]{appendix}
 
@@ -77,6 +81,11 @@
 	eprint=false
 ]{biblatex}
 \renewcommand{\labelalphaothers}{*}
+\DeclareFieldFormat[article,inbook,incollection,inproceedings,patent,thesis,unpublished]
+	{title}{\mkbibemph{#1\isdot}}
+\DeclareFieldFormat{journaltitle}{#1}
+\DeclareFieldFormat{booktitle}{#1}
+%\DeclareFieldFormat{issuetitle}{#1}
 \addbibresource{bibliography.bib}
 
 \usepackage{color}
@@ -132,7 +141,6 @@
 \newcommand{\lsystem}{\mbox{L-system}\xspace}
 \newcommand{\lsystems}{\mbox{L-systems}\xspace}
 
-
 % less spavec in lists
 \newenvironment{itemize*}
 	{\begin{itemize}
@@ -153,10 +161,23 @@
 \renewcommand{\lstlistingname}{Source code}
 \renewcommand{\lstlistlistingname}{List of source codes}
 
+\newcommand{\srcurl}[1]{
+	\vspace{-10pt}
+	{\footnotesize \url{#1}}
+	\vspace{10pt}
+}
+
+%\begin{comment}
 % debugging
-%\includeonly{lsystems}
-%\includeonly{design}
-%\includeonly{apx-stdLib}
+\includeonly{
+%abstract,
+%lsystems,
+design,
+%apx-stdLib,
+%apx-3rdParty,
+%conclusion
+}
+%\end{comment}
 
 \begin{document}
 
@@ -169,22 +190,11 @@
 \include{thanks}
 
 \include{abstract}
-%\include{abstractcz}
 
 \openright
 \pagestyle{plain}
 \setcounter{page}{1}
 \tableofcontents
-
-%\addcontentsline{toc}{chapter}{List of Figures}
-%\listoffigures
-
-%\addcontentsline{toc}{chapter}{List of Tables}
-%\listoftables
-
-%\addcontentsline{toc}{chapter}{List of source codes}
-%\lstlistoflistings
-
 
 
 \include{introduction}
@@ -199,14 +209,25 @@
 \nocite{*}  % Show all Bib-entries
 \printbibliography
 
+%\addcontentsline{toc}{chapter}{List of Figures}
+%\listoffigures
+
+%\addcontentsline{toc}{chapter}{List of Tables}
+%\listoftables
+
+%\addcontentsline{toc}{chapter}{List of source codes}
+%\lstlistoflistings
+
+
 \openright
 \begin{appendices}
 
 \include{apx-attachedCd}
-\include{apx-inputSyntax}
 \include{apx-aboutFigures}
-\include{apx-components}
+\include{apx-3rdParty}
+\include{apx-inputSyntax}
 \include{apx-stdLib}
+\include{apx-components}
 
 \end{appendices}
 

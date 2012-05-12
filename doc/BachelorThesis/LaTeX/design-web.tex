@@ -1,60 +1,98 @@
 
 \section{Web user interface}
 
-[TODO]
-... example of usage of designed library.
+The user interface is very important part of whole project.
+To basic forms of user interface was considered, desktop application and web site.
+The web was chosen because of following reasons.
 
-\subsection{Advantages and disadvantages}
+\begin{description*}
+	\item[Accessibility]
+		Web is accessible on wide range of operating systems where desktop application can not be ported easily.
+		Besides usual desktop systems it is possible to browse it on mobile devices like smart phones or tablets.		
+	\item[No installation]
+		End-user do not install anything, the application does not depend on user's OS.
+		The solution is not easy to setup because it has many dependencies to third-party libraries.
+		Web application is installed by experienced administrator and everything is set up properly.
+	\item[Community]
+		Users can share and discuss their work on the same place where they create it.
+		This helps to create community which is important to all projects.
+	\item[Up to date]
+		Web user interface is always up to date.
+		All updates are instantly applied for all users.
+		Errors can be logged and administrator can fix them as soon as possible.		
+\end{description*}
 
-Web user interface have many advantages over desktop application.
-The biggest advantage is no need of installation with is connected with no requirements of user operation system and its version, installed runtime environment and libraries.
-User do not have to install and configure anything and start using it immediately.
-Web can be displayed even on mobile devices like smart phones or tablets.
+\begin{wrapfigure}{r}{0.4\textwidth}
+	\vspace{-20pt}
+	\includegraphics[width=\linewidth]{Sunflower}
+	\caption{Logo of the web}
+	\label{fig:logo}
+	\vspace{-20pt}
+\end{wrapfigure}
 
-Next big advantage is concentration of community.
-Users can share and discuss their work on the same place where they create it.
+Web user interface also serve as comprehensive example of \lsystem processing library and its usage and capabilities.
+Sunflower model in \autoref{fig:logo} was produced by the web site and because of its shape which fits in rectangle and good recognizability even as $32 \times 32$ pixels image it was chosen as the logo of the web page.
 
-Web user interface is always up-to date.
-All updates are instantly applied for all users.
-All errors can be logged and administrator can fix them as soon as possible.
-Configuration of whole system is done and tested by administrators with excludes compatibility errors of library.
+Web page have four main parts. First three parts, namely \emph{\lsystem processor}, \emph{Gallery of \lsystems} and \emph{Help} are accessible to anyone.
+Fourth part is the \emph{Administration} and it is accessible only to administrators.
 
-However web user interface have also disadvantages.
-The first and the most obvious disadvantage is need of connection to internet.
-Also connection speed can play significant role in quality of work.
-Large images or models can be loaded slowly.
-Web have to be adapted to the most of web browser to display content right.
+\subsection{\lsystem processor}
+
+Main functionality of the web is processing of user's input (source code) and showing results.
+For this purpose there is web page with big text area where the source code can be written.
+There is three possibilities how to submit the source code.
+
+First is processing source code and showing all results (or list of errors).
+If there are too many outputs they are packed to one ZIP file.
+All results can be downloaded.
+
+Second possibility is to just compile source code and see compiled source code (no results are showed).
+This is intended for debugging of errors in the input.
+
+Last possibility which is available only for registered users is to save the source code.
+To be able to save the source code successfully it must be without compilation errors.
+For each saved source code unique is generated and it can be accessed by permanent link.
+Saved inputs can be published in gallery.
 
 
-\subsection{Processing of input}
+\subsection{Gallery of \lsystems}
 
-Main functionality of the web will be processing user's input source code and showing results.
-For this purpose there will be web page with big text area where input source code can be written.
-After submitting the source code all results will be listed if processing was successful or list of errors if not.
-If there will be too many outputs they will be packed to one file.
-All results will be available for download and some of them which can be display will be displayed.
-
-
-\subsection{Gallery}
-
-Important part of the web will be gallery of results.
 The gallery will serve as showcase of capabilities of \lsystems for new users as well as learning material.
-All entries in gallery will have their source code included and anybody can try to process it and alter it.
+All entries in gallery will have their source code included and anybody can try to process and customize it.
+Registered users can rate other gallery entries.
 
 Every registered user may contribute to gallery with their own creation.
-Registered users can also rate other gallery entries.
+To \lsystem into gallery user have to save and publish source code via \lsystem processor.
+It is possible to alter thumbnail \lsystem over original \lsystem.
+This allows to simplify images in thumbnail and show complex model in detail.
+
+Tags can be assigned to each \lsystem in gallery.
+Tag is short keyword, term or abbreviation which helps to describe \lsystem and allows it to be found again.
+List of all tags can be listed and list of \lsystems filtered by specific tag can be shown.
+Tag can contain short description of its meaning.
+The description can be edited only by special user group.
+
+\lsystems can be filtered also by user name.
 
 
 \subsection{Help}
 
-Last major part of the web will be help.
-Help will contain basic topics and FAQ (frequently asked questions) for new users and reference of all content.
-In help will be many examples and hyperlinks to related topics.
+Important part of the web is the help.
+Help contains few basic topics and FAQ (frequently asked questions) for new users.
+Then there is list of predefined components, process configurations, constants, functions and operators.
+Last part of the help is detailed syntax reference.
 
 
 \subsection{Administration}
 
-Administration section of the web will be accessible to restricted group of users.
+Administration section of the web is accessible to restricted group of users.
+There is more administrators group every with different privileges.
+
+The main administrators group is able to manage roles for all users, manage user groups (roles) and explore error logs.
+
+Next group is able to explore all processed inputs on site, see all saved inputs and export input database to text file.
+
+Last group can see list of submitted feedbacks and if the new feedback is submitted all users from this group will receive it via e-mail.
 
 
 

@@ -4,8 +4,7 @@ lsystem CesaroCurve {
 	set iterations = 6;
 	set interpretEveryIteration = true;
 
-	// normalize line length to have (result image will have always same size)
-	interpret F as DrawForward(2 ^ -(currentIteration) * 512);
+	interpret F as DrawForward(2 ^ -(currentIteration) * 256);
 	interpret + as TurnLeft(85);
 	interpret - as TurnLeft(-85);
 
