@@ -1,9 +1,13 @@
-﻿using System;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System;
 using System.Linq;
-using Malsys.SemanticModel;
-using Malsys.SemanticModel.Evaluated;
 using Malsys.Evaluators;
 using Malsys.Media;
+using Malsys.SemanticModel;
+using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Resources {
 	[MalsysFunctions]

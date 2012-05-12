@@ -1,4 +1,8 @@
-﻿namespace Malsys.Parsing
+﻿(**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ *)
+namespace Malsys.Parsing
 
 open System.Reflection
 open System.Runtime.CompilerServices
@@ -9,7 +13,7 @@ open System.Runtime.InteropServices
 [<assembly: AssemblyConfiguration("")>]
 [<assembly: AssemblyCompany("Marek Fišer")>]
 [<assembly: AssemblyProduct("Malsys.Parsing")>]
-[<assembly: AssemblyCopyright("Copyright © Marek Fišer 2012")>]
+[<assembly: AssemblyCopyright("Copyright © Marek Fišer 2012 All rights reserved.")>]
 [<assembly: AssemblyTrademark("")>]
 
 [<assembly: ComVisible(false)>]

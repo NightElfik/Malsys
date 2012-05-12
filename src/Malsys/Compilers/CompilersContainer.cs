@@ -1,6 +1,8 @@
-﻿using Autofac;
-using Malsys.Resources;
-using Malsys.Reflection;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using Autofac;
 
 namespace Malsys.Compilers {
 	/// <summary>

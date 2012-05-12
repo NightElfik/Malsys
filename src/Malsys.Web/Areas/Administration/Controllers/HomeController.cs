@@ -1,4 +1,8 @@
-﻿using System;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System;
 using System.Web.Helpers;
 using System.Web.Mvc;
 using Malsys.Web.Areas.Administration.Models;

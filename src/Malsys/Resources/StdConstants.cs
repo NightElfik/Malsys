@@ -1,5 +1,7 @@
-﻿using System;
-using Malsys.Compilers;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
 
 namespace Malsys.Resources {
 	[MalsysConstants]

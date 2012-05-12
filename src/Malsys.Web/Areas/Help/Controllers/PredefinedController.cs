@@ -1,4 +1,8 @@
-﻿using System;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
@@ -6,9 +10,9 @@ using Malsys.Compilers;
 using Malsys.Evaluators;
 using Malsys.Processing;
 using Malsys.Reflection.Components;
+using Malsys.Resources;
 using Malsys.SemanticModel.Evaluated;
 using Malsys.Web.Areas.Help.Models;
-using Malsys.Resources;
 using Malsys.Web.Models.Lsystem;
 
 namespace Malsys.Web.Areas.Help.Controllers {

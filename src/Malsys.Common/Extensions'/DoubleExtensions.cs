@@ -1,4 +1,8 @@
-﻿using System.Globalization;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System.Globalization;
 
 namespace Malsys {
 	public static class DoubleExtensions {

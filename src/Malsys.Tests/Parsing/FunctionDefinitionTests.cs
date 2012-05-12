@@ -1,8 +1,8 @@
-﻿using System;
-using Malsys.IO;
-using Malsys.Parsing;
-using Malsys.SourceCode.Printers;
-using Microsoft.FSharp.Text.Lexing;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Malsys.Tests.Parsing {

@@ -1,4 +1,8 @@
-﻿using System;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System;
 using Malsys.Evaluators;
 using Malsys.IO;
 using Malsys.Processing;
@@ -7,8 +11,8 @@ using Malsys.Processing.Components.RewriterIterators;
 using Malsys.Processing.Components.Rewriters;
 using Malsys.Processing.Output;
 using Malsys.SemanticModel;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Malsys.SourceCode.Printers;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Malsys.Tests.Rewriters {
 	[TestClass]

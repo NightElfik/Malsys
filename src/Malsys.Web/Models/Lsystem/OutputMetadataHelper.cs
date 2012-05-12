@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using Microsoft.FSharp.Collections;

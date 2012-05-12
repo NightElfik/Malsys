@@ -1,4 +1,7 @@
-﻿using Malsys.SemanticModel.Compiled.Expressions;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
 
 namespace Malsys.SemanticModel.Compiled {
 

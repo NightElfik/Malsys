@@ -1,4 +1,7 @@
-﻿using Malsys.SemanticModel.Evaluated;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
 
 namespace Malsys.Processing.Components {
 	/// <summary>

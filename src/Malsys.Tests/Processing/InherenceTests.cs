@@ -1,8 +1,11 @@
-﻿using System;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Malsys.Compilers;
 using Malsys.Evaluators;
 using Malsys.Processing;
 using Malsys.Processing.Output;

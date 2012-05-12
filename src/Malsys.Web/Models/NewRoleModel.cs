@@ -1,4 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System.ComponentModel.DataAnnotations;
 
 namespace Malsys.Web.Models {
 	public class NewRoleModel {

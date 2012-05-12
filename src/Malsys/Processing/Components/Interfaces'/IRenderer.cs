@@ -1,4 +1,8 @@
-﻿
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+
 namespace Malsys.Processing.Components {
 	/// <summary>
 	///	Renderer components are usually connected to interpreters and they produce actual output.

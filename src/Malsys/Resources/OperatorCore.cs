@@ -1,7 +1,10 @@
-﻿using System;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System;
 using System.Diagnostics.Contracts;
 using Malsys.SemanticModel.Evaluated;
-using System.Reflection;
 
 namespace Malsys.Resources {
 	/// <summary>

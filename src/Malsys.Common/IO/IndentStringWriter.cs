@@ -1,4 +1,8 @@
-﻿using System.Text;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System.Text;
 
 namespace Malsys.IO {
 	public class IndentStringWriter : IndentWriter {

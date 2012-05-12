@@ -1,5 +1,10 @@
-﻿using System;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.IO;
@@ -7,7 +12,6 @@ using System.IO.Packaging;
 using System.Linq;
 using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Collections;
-using System.Diagnostics;
 
 namespace Malsys.Processing.Output {
 	public class FileOutputProvider : IOutputProvider, IDisposable {

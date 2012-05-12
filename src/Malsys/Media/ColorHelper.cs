@@ -1,6 +1,10 @@
-﻿using Malsys.SemanticModel;
+﻿using System;
+/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using Malsys.SemanticModel;
 using Malsys.SemanticModel.Evaluated;
-using System;
 
 namespace Malsys.Media {
 	public static class ColorHelper {

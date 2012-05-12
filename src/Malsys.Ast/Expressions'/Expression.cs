@@ -1,4 +1,8 @@
-﻿using System.Collections;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Malsys.Ast {

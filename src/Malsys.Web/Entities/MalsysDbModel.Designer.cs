@@ -8,12 +8,12 @@
 //------------------------------------------------------------------------------
 
 using System;
+using System.ComponentModel;
+using System.Data.EntityClient;
 using System.Data.Objects;
 using System.Data.Objects.DataClasses;
-using System.Data.EntityClient;
-using System.ComponentModel;
-using System.Xml.Serialization;
 using System.Runtime.Serialization;
+using System.Xml.Serialization;
 
 [assembly: EdmSchemaAttribute()]
 #region EDM Relationship Metadata
@@ -35,14 +35,14 @@ using System.Runtime.Serialization;
 namespace Malsys.Web.Entities
 {
     #region Contexts
-    
+
     /// <summary>
     /// No Metadata Documentation available.
     /// </summary>
     public partial class MalsysDb : ObjectContext
     {
         #region Constructors
-    
+
         /// <summary>
         /// Initializes a new MalsysDb object using the connection string found in the 'MalsysDb' section of the application configuration file.
         /// </summary>
@@ -51,7 +51,7 @@ namespace Malsys.Web.Entities
             this.ContextOptions.LazyLoadingEnabled = true;
             OnContextCreated();
         }
-    
+
         /// <summary>
         /// Initialize a new MalsysDb object.
         /// </summary>
@@ -60,7 +60,7 @@ namespace Malsys.Web.Entities
             this.ContextOptions.LazyLoadingEnabled = true;
             OnContextCreated();
         }
-    
+
         /// <summary>
         /// Initialize a new MalsysDb object.
         /// </summary>
@@ -69,17 +69,17 @@ namespace Malsys.Web.Entities
             this.ContextOptions.LazyLoadingEnabled = true;
             OnContextCreated();
         }
-    
+
         #endregion
-    
+
         #region Partial Methods
-    
+
         partial void OnContextCreated();
-    
+
         #endregion
-    
+
         #region ObjectSet Properties
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -95,7 +95,7 @@ namespace Malsys.Web.Entities
             }
         }
         private ObjectSet<CanonicInput> _CanonicInputs;
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -111,7 +111,7 @@ namespace Malsys.Web.Entities
             }
         }
         private ObjectSet<Feedback> _Feedbacks;
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -127,7 +127,7 @@ namespace Malsys.Web.Entities
             }
         }
         private ObjectSet<InputProcess> _InputProcesses;
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -143,7 +143,7 @@ namespace Malsys.Web.Entities
             }
         }
         private ObjectSet<ProcessOutput> _ProcessOutputs;
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -159,7 +159,7 @@ namespace Malsys.Web.Entities
             }
         }
         private ObjectSet<Role> _Roles;
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -175,7 +175,7 @@ namespace Malsys.Web.Entities
             }
         }
         private ObjectSet<SavedInput> _SavedInputs;
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -191,7 +191,7 @@ namespace Malsys.Web.Entities
             }
         }
         private ObjectSet<SavedInputVote> _SavedInputVotes;
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -207,7 +207,7 @@ namespace Malsys.Web.Entities
             }
         }
         private ObjectSet<Tag> _Tags;
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -226,7 +226,7 @@ namespace Malsys.Web.Entities
 
         #endregion
         #region AddTo Methods
-    
+
         /// <summary>
         /// Deprecated Method for adding a new object to the CanonicInputs EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
         /// </summary>
@@ -234,7 +234,7 @@ namespace Malsys.Web.Entities
         {
             base.AddObject("CanonicInputs", canonicInput);
         }
-    
+
         /// <summary>
         /// Deprecated Method for adding a new object to the Feedbacks EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
         /// </summary>
@@ -242,7 +242,7 @@ namespace Malsys.Web.Entities
         {
             base.AddObject("Feedbacks", feedback);
         }
-    
+
         /// <summary>
         /// Deprecated Method for adding a new object to the InputProcesses EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
         /// </summary>
@@ -250,7 +250,7 @@ namespace Malsys.Web.Entities
         {
             base.AddObject("InputProcesses", inputProcess);
         }
-    
+
         /// <summary>
         /// Deprecated Method for adding a new object to the ProcessOutputs EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
         /// </summary>
@@ -258,7 +258,7 @@ namespace Malsys.Web.Entities
         {
             base.AddObject("ProcessOutputs", processOutput);
         }
-    
+
         /// <summary>
         /// Deprecated Method for adding a new object to the Roles EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
         /// </summary>
@@ -266,7 +266,7 @@ namespace Malsys.Web.Entities
         {
             base.AddObject("Roles", role);
         }
-    
+
         /// <summary>
         /// Deprecated Method for adding a new object to the SavedInputs EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
         /// </summary>
@@ -274,7 +274,7 @@ namespace Malsys.Web.Entities
         {
             base.AddObject("SavedInputs", savedInput);
         }
-    
+
         /// <summary>
         /// Deprecated Method for adding a new object to the SavedInputVotes EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
         /// </summary>
@@ -282,7 +282,7 @@ namespace Malsys.Web.Entities
         {
             base.AddObject("SavedInputVotes", savedInputVote);
         }
-    
+
         /// <summary>
         /// Deprecated Method for adding a new object to the Tags EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
         /// </summary>
@@ -290,7 +290,7 @@ namespace Malsys.Web.Entities
         {
             base.AddObject("Tags", tag);
         }
-    
+
         /// <summary>
         /// Deprecated Method for adding a new object to the Users EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
         /// </summary>
@@ -301,12 +301,12 @@ namespace Malsys.Web.Entities
 
         #endregion
     }
-    
+
 
     #endregion
-    
+
     #region Entities
-    
+
     /// <summary>
     /// No Metadata Documentation available.
     /// </summary>
@@ -316,7 +316,7 @@ namespace Malsys.Web.Entities
     public partial class CanonicInput : EntityObject
     {
         #region Factory Method
-    
+
         /// <summary>
         /// Create a new CanonicInput object.
         /// </summary>
@@ -338,7 +338,7 @@ namespace Malsys.Web.Entities
 
         #endregion
         #region Primitive Properties
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -365,7 +365,7 @@ namespace Malsys.Web.Entities
         private global::System.Int32 _CanonicInputId;
         partial void OnCanonicInputIdChanging(global::System.Int32 value);
         partial void OnCanonicInputIdChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -389,7 +389,7 @@ namespace Malsys.Web.Entities
         private global::System.Byte[] _Hash;
         partial void OnHashChanging(global::System.Byte[] value);
         partial void OnHashChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -413,7 +413,7 @@ namespace Malsys.Web.Entities
         private global::System.String _SourceCode;
         partial void OnSourceCodeChanging(global::System.String value);
         partial void OnSourceCodeChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -437,7 +437,7 @@ namespace Malsys.Web.Entities
         private global::System.Int32 _SourceSize;
         partial void OnSourceSizeChanging(global::System.Int32 value);
         partial void OnSourceSizeChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -463,9 +463,9 @@ namespace Malsys.Web.Entities
         partial void OnOutputSizeChanged();
 
         #endregion
-    
+
         #region Navigation Properties
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -490,7 +490,7 @@ namespace Malsys.Web.Entities
 
         #endregion
     }
-    
+
     /// <summary>
     /// No Metadata Documentation available.
     /// </summary>
@@ -500,7 +500,7 @@ namespace Malsys.Web.Entities
     public partial class Feedback : EntityObject
     {
         #region Factory Method
-    
+
         /// <summary>
         /// Create a new Feedback object.
         /// </summary>
@@ -522,7 +522,7 @@ namespace Malsys.Web.Entities
 
         #endregion
         #region Primitive Properties
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -549,7 +549,7 @@ namespace Malsys.Web.Entities
         private global::System.Int32 _FeedbackId;
         partial void OnFeedbackIdChanging(global::System.Int32 value);
         partial void OnFeedbackIdChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -573,7 +573,7 @@ namespace Malsys.Web.Entities
         private Nullable<global::System.Int32> _UserId;
         partial void OnUserIdChanging(Nullable<global::System.Int32> value);
         partial void OnUserIdChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -597,7 +597,7 @@ namespace Malsys.Web.Entities
         private global::System.String _Subject;
         partial void OnSubjectChanging(global::System.String value);
         partial void OnSubjectChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -621,7 +621,7 @@ namespace Malsys.Web.Entities
         private global::System.DateTime _SubmitDate;
         partial void OnSubmitDateChanging(global::System.DateTime value);
         partial void OnSubmitDateChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -645,7 +645,7 @@ namespace Malsys.Web.Entities
         private global::System.String _Email;
         partial void OnEmailChanging(global::System.String value);
         partial void OnEmailChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -669,7 +669,7 @@ namespace Malsys.Web.Entities
         private global::System.String _Message;
         partial void OnMessageChanging(global::System.String value);
         partial void OnMessageChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -695,9 +695,9 @@ namespace Malsys.Web.Entities
         partial void OnIsNewChanged();
 
         #endregion
-    
+
         #region Navigation Properties
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -738,7 +738,7 @@ namespace Malsys.Web.Entities
 
         #endregion
     }
-    
+
     /// <summary>
     /// No Metadata Documentation available.
     /// </summary>
@@ -748,7 +748,7 @@ namespace Malsys.Web.Entities
     public partial class InputProcess : EntityObject
     {
         #region Factory Method
-    
+
         /// <summary>
         /// Create a new InputProcess object.
         /// </summary>
@@ -770,7 +770,7 @@ namespace Malsys.Web.Entities
 
         #endregion
         #region Primitive Properties
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -797,7 +797,7 @@ namespace Malsys.Web.Entities
         private global::System.Int32 _InputProcessId;
         partial void OnInputProcessIdChanging(global::System.Int32 value);
         partial void OnInputProcessIdChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -821,7 +821,7 @@ namespace Malsys.Web.Entities
         private Nullable<global::System.Int32> _ParentInputProcessId;
         partial void OnParentInputProcessIdChanging(Nullable<global::System.Int32> value);
         partial void OnParentInputProcessIdChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -845,7 +845,7 @@ namespace Malsys.Web.Entities
         private global::System.Int32 _ChainLength;
         partial void OnChainLengthChanging(global::System.Int32 value);
         partial void OnChainLengthChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -869,7 +869,7 @@ namespace Malsys.Web.Entities
         private global::System.Int32 _CanonicInputId;
         partial void OnCanonicInputIdChanging(global::System.Int32 value);
         partial void OnCanonicInputIdChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -893,7 +893,7 @@ namespace Malsys.Web.Entities
         private Nullable<global::System.Int32> _UserId;
         partial void OnUserIdChanging(Nullable<global::System.Int32> value);
         partial void OnUserIdChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -917,7 +917,7 @@ namespace Malsys.Web.Entities
         private global::System.DateTime _ProcessDate;
         partial void OnProcessDateChanging(global::System.DateTime value);
         partial void OnProcessDateChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -943,9 +943,9 @@ namespace Malsys.Web.Entities
         partial void OnDurationChanged();
 
         #endregion
-    
+
         #region Navigation Properties
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -983,7 +983,7 @@ namespace Malsys.Web.Entities
                 }
             }
         }
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -1005,7 +1005,7 @@ namespace Malsys.Web.Entities
                 }
             }
         }
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -1043,7 +1043,7 @@ namespace Malsys.Web.Entities
                 }
             }
         }
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -1081,7 +1081,7 @@ namespace Malsys.Web.Entities
                 }
             }
         }
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -1103,7 +1103,7 @@ namespace Malsys.Web.Entities
                 }
             }
         }
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -1128,7 +1128,7 @@ namespace Malsys.Web.Entities
 
         #endregion
     }
-    
+
     /// <summary>
     /// No Metadata Documentation available.
     /// </summary>
@@ -1138,7 +1138,7 @@ namespace Malsys.Web.Entities
     public partial class ProcessOutput : EntityObject
     {
         #region Factory Method
-    
+
         /// <summary>
         /// Create a new ProcessOutput object.
         /// </summary>
@@ -1158,7 +1158,7 @@ namespace Malsys.Web.Entities
 
         #endregion
         #region Primitive Properties
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -1185,7 +1185,7 @@ namespace Malsys.Web.Entities
         private global::System.Int32 _ProcessOutputId;
         partial void OnProcessOutputIdChanging(global::System.Int32 value);
         partial void OnProcessOutputIdChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -1209,7 +1209,7 @@ namespace Malsys.Web.Entities
         private Nullable<global::System.Int32> _InputProcessId;
         partial void OnInputProcessIdChanging(Nullable<global::System.Int32> value);
         partial void OnInputProcessIdChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -1233,7 +1233,7 @@ namespace Malsys.Web.Entities
         private global::System.String _FileName;
         partial void OnFileNameChanging(global::System.String value);
         partial void OnFileNameChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -1257,7 +1257,7 @@ namespace Malsys.Web.Entities
         private global::System.DateTime _CreationDate;
         partial void OnCreationDateChanging(global::System.DateTime value);
         partial void OnCreationDateChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -1281,7 +1281,7 @@ namespace Malsys.Web.Entities
         private global::System.DateTime _LastOpenDate;
         partial void OnLastOpenDateChanging(global::System.DateTime value);
         partial void OnLastOpenDateChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -1307,9 +1307,9 @@ namespace Malsys.Web.Entities
         partial void OnMetadataChanged();
 
         #endregion
-    
+
         #region Navigation Properties
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -1350,7 +1350,7 @@ namespace Malsys.Web.Entities
 
         #endregion
     }
-    
+
     /// <summary>
     /// No Metadata Documentation available.
     /// </summary>
@@ -1360,7 +1360,7 @@ namespace Malsys.Web.Entities
     public partial class Role : EntityObject
     {
         #region Factory Method
-    
+
         /// <summary>
         /// Create a new Role object.
         /// </summary>
@@ -1378,7 +1378,7 @@ namespace Malsys.Web.Entities
 
         #endregion
         #region Primitive Properties
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -1405,7 +1405,7 @@ namespace Malsys.Web.Entities
         private global::System.Int32 _RoleId;
         partial void OnRoleIdChanging(global::System.Int32 value);
         partial void OnRoleIdChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -1429,7 +1429,7 @@ namespace Malsys.Web.Entities
         private global::System.String _Name;
         partial void OnNameChanging(global::System.String value);
         partial void OnNameChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -1455,9 +1455,9 @@ namespace Malsys.Web.Entities
         partial void OnNameLowercaseChanged();
 
         #endregion
-    
+
         #region Navigation Properties
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -1482,7 +1482,7 @@ namespace Malsys.Web.Entities
 
         #endregion
     }
-    
+
     /// <summary>
     /// No Metadata Documentation available.
     /// </summary>
@@ -1492,7 +1492,7 @@ namespace Malsys.Web.Entities
     public partial class SavedInput : EntityObject
     {
         #region Factory Method
-    
+
         /// <summary>
         /// Create a new SavedInput object.
         /// </summary>
@@ -1532,7 +1532,7 @@ namespace Malsys.Web.Entities
 
         #endregion
         #region Primitive Properties
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -1559,7 +1559,7 @@ namespace Malsys.Web.Entities
         private global::System.Int32 _SavedInputId;
         partial void OnSavedInputIdChanging(global::System.Int32 value);
         partial void OnSavedInputIdChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -1583,7 +1583,7 @@ namespace Malsys.Web.Entities
         private global::System.String _UrlId;
         partial void OnUrlIdChanging(global::System.String value);
         partial void OnUrlIdChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -1607,7 +1607,7 @@ namespace Malsys.Web.Entities
         private Nullable<global::System.Int32> _ParentInputProcessId;
         partial void OnParentInputProcessIdChanging(Nullable<global::System.Int32> value);
         partial void OnParentInputProcessIdChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -1631,7 +1631,7 @@ namespace Malsys.Web.Entities
         private global::System.Int32 _CreationUserId;
         partial void OnCreationUserIdChanging(global::System.Int32 value);
         partial void OnCreationUserIdChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -1655,7 +1655,7 @@ namespace Malsys.Web.Entities
         private global::System.DateTime _CreationDate;
         partial void OnCreationDateChanging(global::System.DateTime value);
         partial void OnCreationDateChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -1679,7 +1679,7 @@ namespace Malsys.Web.Entities
         private global::System.DateTime _EditDate;
         partial void OnEditDateChanging(global::System.DateTime value);
         partial void OnEditDateChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -1703,7 +1703,7 @@ namespace Malsys.Web.Entities
         private global::System.Boolean _IsPublished;
         partial void OnIsPublishedChanging(global::System.Boolean value);
         partial void OnIsPublishedChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -1727,7 +1727,7 @@ namespace Malsys.Web.Entities
         private global::System.Boolean _IsDeleted;
         partial void OnIsDeletedChanging(global::System.Boolean value);
         partial void OnIsDeletedChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -1751,7 +1751,7 @@ namespace Malsys.Web.Entities
         private global::System.String _PublishName;
         partial void OnPublishNameChanging(global::System.String value);
         partial void OnPublishNameChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -1775,7 +1775,7 @@ namespace Malsys.Web.Entities
         private global::System.Int32 _Views;
         partial void OnViewsChanging(global::System.Int32 value);
         partial void OnViewsChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -1799,7 +1799,7 @@ namespace Malsys.Web.Entities
         private global::System.Int32 _SourceSize;
         partial void OnSourceSizeChanging(global::System.Int32 value);
         partial void OnSourceSizeChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -1823,7 +1823,7 @@ namespace Malsys.Web.Entities
         private global::System.Int64 _OutputSize;
         partial void OnOutputSizeChanging(global::System.Int64 value);
         partial void OnOutputSizeChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -1847,7 +1847,7 @@ namespace Malsys.Web.Entities
         private global::System.Int64 _Duration;
         partial void OnDurationChanging(global::System.Int64 value);
         partial void OnDurationChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -1871,7 +1871,7 @@ namespace Malsys.Web.Entities
         private global::System.String _MimeType;
         partial void OnMimeTypeChanging(global::System.String value);
         partial void OnMimeTypeChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -1895,7 +1895,7 @@ namespace Malsys.Web.Entities
         private global::System.String _SourceCode;
         partial void OnSourceCodeChanging(global::System.String value);
         partial void OnSourceCodeChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -1919,7 +1919,7 @@ namespace Malsys.Web.Entities
         private global::System.String _ThumbnailSourceExtension;
         partial void OnThumbnailSourceExtensionChanging(global::System.String value);
         partial void OnThumbnailSourceExtensionChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -1943,7 +1943,7 @@ namespace Malsys.Web.Entities
         private global::System.String _Description;
         partial void OnDescriptionChanging(global::System.String value);
         partial void OnDescriptionChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -1967,7 +1967,7 @@ namespace Malsys.Web.Entities
         private global::System.Byte[] _OutputMetadata;
         partial void OnOutputMetadataChanging(global::System.Byte[] value);
         partial void OnOutputMetadataChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -1991,7 +1991,7 @@ namespace Malsys.Web.Entities
         private global::System.Byte[] _OutputThnMetadata;
         partial void OnOutputThnMetadataChanging(global::System.Byte[] value);
         partial void OnOutputThnMetadataChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -2015,7 +2015,7 @@ namespace Malsys.Web.Entities
         private global::System.Int32 _RatingSum;
         partial void OnRatingSumChanging(global::System.Int32 value);
         partial void OnRatingSumChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -2041,9 +2041,9 @@ namespace Malsys.Web.Entities
         partial void OnRatingCountChanged();
 
         #endregion
-    
+
         #region Navigation Properties
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -2081,7 +2081,7 @@ namespace Malsys.Web.Entities
                 }
             }
         }
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -2119,7 +2119,7 @@ namespace Malsys.Web.Entities
                 }
             }
         }
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -2141,7 +2141,7 @@ namespace Malsys.Web.Entities
                 }
             }
         }
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -2166,7 +2166,7 @@ namespace Malsys.Web.Entities
 
         #endregion
     }
-    
+
     /// <summary>
     /// No Metadata Documentation available.
     /// </summary>
@@ -2176,7 +2176,7 @@ namespace Malsys.Web.Entities
     public partial class SavedInputVote : EntityObject
     {
         #region Factory Method
-    
+
         /// <summary>
         /// Create a new SavedInputVote object.
         /// </summary>
@@ -2194,7 +2194,7 @@ namespace Malsys.Web.Entities
 
         #endregion
         #region Primitive Properties
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -2221,7 +2221,7 @@ namespace Malsys.Web.Entities
         private global::System.Int32 _SavedInputId;
         partial void OnSavedInputIdChanging(global::System.Int32 value);
         partial void OnSavedInputIdChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -2248,7 +2248,7 @@ namespace Malsys.Web.Entities
         private global::System.Int32 _UserId;
         partial void OnUserIdChanging(global::System.Int32 value);
         partial void OnUserIdChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -2274,9 +2274,9 @@ namespace Malsys.Web.Entities
         partial void OnRatingChanged();
 
         #endregion
-    
+
         #region Navigation Properties
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -2314,7 +2314,7 @@ namespace Malsys.Web.Entities
                 }
             }
         }
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -2355,7 +2355,7 @@ namespace Malsys.Web.Entities
 
         #endregion
     }
-    
+
     /// <summary>
     /// No Metadata Documentation available.
     /// </summary>
@@ -2365,7 +2365,7 @@ namespace Malsys.Web.Entities
     public partial class Tag : EntityObject
     {
         #region Factory Method
-    
+
         /// <summary>
         /// Create a new Tag object.
         /// </summary>
@@ -2383,7 +2383,7 @@ namespace Malsys.Web.Entities
 
         #endregion
         #region Primitive Properties
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -2410,7 +2410,7 @@ namespace Malsys.Web.Entities
         private global::System.Int32 _TagId;
         partial void OnTagIdChanging(global::System.Int32 value);
         partial void OnTagIdChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -2434,7 +2434,7 @@ namespace Malsys.Web.Entities
         private global::System.String _Name;
         partial void OnNameChanging(global::System.String value);
         partial void OnNameChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -2458,7 +2458,7 @@ namespace Malsys.Web.Entities
         private global::System.String _NameLowercase;
         partial void OnNameLowercaseChanging(global::System.String value);
         partial void OnNameLowercaseChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -2484,9 +2484,9 @@ namespace Malsys.Web.Entities
         partial void OnDescriptionChanged();
 
         #endregion
-    
+
         #region Navigation Properties
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -2511,7 +2511,7 @@ namespace Malsys.Web.Entities
 
         #endregion
     }
-    
+
     /// <summary>
     /// No Metadata Documentation available.
     /// </summary>
@@ -2521,7 +2521,7 @@ namespace Malsys.Web.Entities
     public partial class User : EntityObject
     {
         #region Factory Method
-    
+
         /// <summary>
         /// Create a new User object.
         /// </summary>
@@ -2553,7 +2553,7 @@ namespace Malsys.Web.Entities
 
         #endregion
         #region Primitive Properties
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -2580,7 +2580,7 @@ namespace Malsys.Web.Entities
         private global::System.Int32 _UserId;
         partial void OnUserIdChanging(global::System.Int32 value);
         partial void OnUserIdChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -2604,7 +2604,7 @@ namespace Malsys.Web.Entities
         private global::System.String _Name;
         partial void OnNameChanging(global::System.String value);
         partial void OnNameChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -2628,7 +2628,7 @@ namespace Malsys.Web.Entities
         private global::System.String _NameLowercase;
         partial void OnNameLowercaseChanging(global::System.String value);
         partial void OnNameLowercaseChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -2652,7 +2652,7 @@ namespace Malsys.Web.Entities
         private global::System.Byte[] _PasswordHash;
         partial void OnPasswordHashChanging(global::System.Byte[] value);
         partial void OnPasswordHashChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -2676,7 +2676,7 @@ namespace Malsys.Web.Entities
         private global::System.Byte[] _PasswordSalt;
         partial void OnPasswordSaltChanging(global::System.Byte[] value);
         partial void OnPasswordSaltChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -2700,7 +2700,7 @@ namespace Malsys.Web.Entities
         private global::System.String _Email;
         partial void OnEmailChanging(global::System.String value);
         partial void OnEmailChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -2724,7 +2724,7 @@ namespace Malsys.Web.Entities
         private global::System.DateTime _RegistrationDate;
         partial void OnRegistrationDateChanging(global::System.DateTime value);
         partial void OnRegistrationDateChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -2748,7 +2748,7 @@ namespace Malsys.Web.Entities
         private global::System.DateTime _LastLoginDate;
         partial void OnLastLoginDateChanging(global::System.DateTime value);
         partial void OnLastLoginDateChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -2772,7 +2772,7 @@ namespace Malsys.Web.Entities
         private global::System.DateTime _LastActivityDate;
         partial void OnLastActivityDateChanging(global::System.DateTime value);
         partial void OnLastActivityDateChanged();
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -2798,9 +2798,9 @@ namespace Malsys.Web.Entities
         partial void OnLastPwdChangeDateChanged();
 
         #endregion
-    
+
         #region Navigation Properties
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -2822,7 +2822,7 @@ namespace Malsys.Web.Entities
                 }
             }
         }
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -2844,7 +2844,7 @@ namespace Malsys.Web.Entities
                 }
             }
         }
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -2866,7 +2866,7 @@ namespace Malsys.Web.Entities
                 }
             }
         }
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -2888,7 +2888,7 @@ namespace Malsys.Web.Entities
                 }
             }
         }
-    
+
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
@@ -2915,5 +2915,5 @@ namespace Malsys.Web.Entities
     }
 
     #endregion
-    
+
 }

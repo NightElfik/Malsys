@@ -1,4 +1,8 @@
-﻿using System;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -9,7 +13,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Marek Fišer")]
 [assembly: AssemblyProduct("Malsys")]
-[assembly: AssemblyCopyright("Copyright © Marek Fišer 2012")]
+[assembly: AssemblyCopyright("Copyright © Marek Fišer 2012 All rights reserved.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

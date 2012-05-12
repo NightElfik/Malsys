@@ -1,4 +1,8 @@
-﻿using System.Windows.Media.Media3D;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System.Windows.Media.Media3D;
 using Malsys.Media;
 
 namespace Malsys.Processing.Components.Renderers {

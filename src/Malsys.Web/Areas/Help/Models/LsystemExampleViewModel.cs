@@ -1,4 +1,8 @@
-﻿using Malsys.Web.Models.Lsystem;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using Malsys.Web.Models.Lsystem;
 
 namespace Malsys.Web.Areas.Help.Models {
 	public class LsystemExampleViewModel {

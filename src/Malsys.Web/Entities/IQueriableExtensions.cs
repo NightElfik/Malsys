@@ -1,4 +1,8 @@
-﻿using System;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System;
 using System.Data.Objects;
 using System.Linq;
 using System.Linq.Expressions;

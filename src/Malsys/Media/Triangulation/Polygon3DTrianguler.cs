@@ -1,6 +1,9 @@
-﻿using System;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Windows;
@@ -55,8 +58,11 @@ namespace Malsys.Media.Triangulation {
 		/// </summary>
 		public List<int> Triangularize(IList<Point3D> points, Polygon3DTriangulerParameters prms) {
 
+			Contract.Requires<ArgumentNullException>(points != null);
+			Contract.Requires<ArgumentNullException>(prms != null);
 			Contract.Requires<ArgumentException>(points.Count >= 3);
 			Contract.Requires<ArgumentException>(prms.TriangleEvalDelegate != null);
+			Contract.Ensures(Contract.Result<List<int>>() != null);
 			Contract.Ensures(Contract.Result<List<int>>().Count % 3 == 0);
 
 			if (prms.DetectPlanarPolygons) {

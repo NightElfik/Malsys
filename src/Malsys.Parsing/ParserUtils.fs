@@ -1,4 +1,8 @@
-﻿module Malsys.Parsing.ParserUtils
+﻿(**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ *)
+module Malsys.Parsing.ParserUtils
 
 open Microsoft.FSharp.Text.Lexing
 open Lexer

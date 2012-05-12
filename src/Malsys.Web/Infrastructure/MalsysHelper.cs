@@ -1,4 +1,8 @@
-﻿using System.Globalization;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;

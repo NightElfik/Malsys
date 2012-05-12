@@ -1,4 +1,8 @@
-﻿using System.Web.Mvc;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System.Web.Mvc;
 
 namespace Malsys.Web.Controllers {
 	public partial class PermalinkController : Controller {

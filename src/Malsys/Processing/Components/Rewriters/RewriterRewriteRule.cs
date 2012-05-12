@@ -1,5 +1,9 @@
-﻿using System.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System.Linq;
 using Malsys.Processing.Context;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Compiled;

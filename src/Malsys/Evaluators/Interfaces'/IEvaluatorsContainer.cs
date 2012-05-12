@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using Malsys.SemanticModel.Compiled;
+/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
 using Malsys.SemanticModel.Evaluated;
-using Malsys.SemanticModel.Compiled;
 
 namespace Malsys.Evaluators {
 

@@ -1,4 +1,8 @@
-﻿using System;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Globalization;
@@ -37,6 +41,7 @@ namespace Malsys {
 		/// <summary>
 		/// Returns a copy of a specified substring of this instance.
 		/// </summary>
+		/// <param name="str">The string instance.</param>
 		/// <param name="beginIndex">Zero-based inclusive starting character index of a substring.</param>
 		/// <param name="endIndex">Zero-based exclusive ending character index of a substring.</param>
 		public static string SubstringPos(this string str, int beginIndex, int endIndex) {
@@ -54,6 +59,7 @@ namespace Malsys {
 		/// Returns a copy of a specified substring of this instance. If this string do not have enough
 		/// characters in given range, spaces are used to fill it.
 		/// </summary>
+		/// <param name="str">The string instance.</param>
 		/// <param name="beginIndex">Zero-based inclusive starting character index of a substring.</param>
 		/// <param name="endIndex">Zero-based exclusive ending character index of a substring.</param>
 		public static string SubstringSpaceFill(this string str, int beginIndex, int endIndex) {
@@ -118,6 +124,8 @@ namespace Malsys {
 		/// <summary>
 		/// Appends a copy of a specified substring to the end of this instance.
 		/// </summary>
+		/// <param name="sb">The StringBuilder instance.</param>
+		/// <param name="str">The string to append.</param>
 		/// <param name="beginIndex">Zero-based inclusive starting character index of a substring.</param>
 		/// <param name="endIndex">Zero-based exclusive ending character index of a substring.</param>
 		public static void AppendPos(this StringBuilder sb, string str, int beginIndex, int endIndex) {
@@ -136,6 +144,8 @@ namespace Malsys {
 		/// Appends a copy of a specified substring to the end of this instance. If given string do not have enough
 		/// characters in given range, spaces are used to fill it.
 		/// </summary>
+		/// <param name="sb">The StringBuilder instance.</param>
+		/// <param name="str">The string to append.</param>
 		/// <param name="beginIndex">Zero-based inclusive starting character index of a substring.</param>
 		/// <param name="endIndex">Zero-based exclusive ending character index of a substring.</param>
 		public static void AppendSpaceFill(this StringBuilder sb, string str, int beginIndex, int endIndex) {

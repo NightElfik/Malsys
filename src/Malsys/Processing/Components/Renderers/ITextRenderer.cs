@@ -1,4 +1,8 @@
-﻿
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+
 namespace Malsys.Processing.Components.Renderers {
 	/// <summary>
 	/// Provides commands for rendering plain text.

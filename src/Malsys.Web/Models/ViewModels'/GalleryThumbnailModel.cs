@@ -1,4 +1,8 @@
-﻿using Malsys.Web.Entities;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using Malsys.Web.Entities;
 
 namespace Malsys.Web.Models {
 	public class GalleryThumbnailModel {

@@ -1,4 +1,8 @@
-﻿using System.Linq;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System.Linq;
 using System.Web.Mvc;
 using Malsys.Web.Models;
 using Malsys.Web.Security;

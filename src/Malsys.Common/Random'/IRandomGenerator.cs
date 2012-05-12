@@ -1,4 +1,8 @@
-﻿
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+
 namespace Malsys {
 	public interface IRandomGenerator {
 
@@ -33,6 +37,7 @@ namespace Malsys {
 		/// <summary>
 		/// Returns a random number within a specified range.
 		/// </summary>
+		/// <param name="randomProvider">The random provider instance.</param>
 		/// <param name="minValue">The inclusive lower bound of the random number returned.</param>
 		/// <param name="maxValue">The exclusive upper bound of the random number returned.</param>
 		public static int Next(this IRandomGenerator randomProvider, int minValue, int maxValue) {

@@ -1,21 +1,27 @@
-﻿using System;
-using System.Linq;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using Malsys.Evaluators;
 using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Collections;
-using Malsys.Evaluators;
 
 namespace Malsys.Processing.Components.Common {
 	/// <summary>
 	///	This is special component for interpreting L-system symbol as another L-system.
-	///	It caches process components for processing inner L-system to optimize speed of processing.
+	///	Inner component systems used to process system must be defined under the name "InnerLsystemConfig".
+	///	It caches component systems for processing inner L-system to optimize speed of repetitive processing.
 	/// </summary>
 	/// <name>Inner L-system processor</name>
 	/// <group>Special</group>
 	public class LsystemInLsystemProcessor : ILsystemInLsystemProcessor {
 
-		public const string DefaultProcessConfigName = "InnerLsystemConfig";
+		protected string DefaultProcessConfigName = "InnerLsystemConfig";
+
 
 		private readonly ProcessConfigurationBuilder configBuilder = new ProcessConfigurationBuilder();
 

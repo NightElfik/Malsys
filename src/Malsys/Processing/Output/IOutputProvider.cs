@@ -1,5 +1,9 @@
-﻿using System.IO;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System.IO;
 
 namespace Malsys.Processing {
 	public interface IOutputProvider {

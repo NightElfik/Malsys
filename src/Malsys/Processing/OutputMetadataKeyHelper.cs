@@ -1,4 +1,8 @@
-﻿
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+
 namespace Malsys.Processing {
 	/// <summary>
 	/// Helper class to avoid typos in output metadata keys and values.

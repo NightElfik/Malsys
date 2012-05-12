@@ -1,8 +1,11 @@
-﻿using System;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
 using System.Collections.Generic;
+using Malsys.SemanticModel;
 using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Evaluated;
-using Malsys.SemanticModel;
 
 namespace Malsys.Evaluators {
 	/// <summary>

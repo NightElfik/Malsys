@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System.Collections.Generic;
 using System.Text;
 
 namespace Malsys.SemanticModel.Evaluated {

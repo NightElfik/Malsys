@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Media.Media3D;
-using System.Windows;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System;
 using System.Diagnostics;
+using System.Windows;
+using System.Windows.Media.Media3D;
 
 namespace Malsys.Media {
 	/// <remarks>

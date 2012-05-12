@@ -1,23 +1,24 @@
-﻿using System;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Malsys.Compilers;
 using Malsys.Evaluators;
 using Malsys.IO;
-using Malsys.Parsing;
 using Malsys.Processing;
 using Malsys.Processing.Components;
 using Malsys.Processing.Components.Interpreters;
+using Malsys.Processing.Output;
+using Malsys.Reflection.Components;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Compiled;
+using Malsys.SemanticModel.Compiled.Expressions;
 using Malsys.SemanticModel.Evaluated;
 using Malsys.SourceCode.Printers;
 using Microsoft.FSharp.Collections;
-using Microsoft.FSharp.Text.Lexing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Malsys.SemanticModel.Compiled.Expressions;
-using Malsys.Processing.Output;
-using Malsys.Reflection.Components;
 
 namespace Malsys.Tests.Interpreters {
 	[TestClass]

@@ -1,6 +1,10 @@
-﻿using System;
-using System.Linq;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Microsoft.FSharp.Collections;
 

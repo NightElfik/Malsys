@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System.Collections.Generic;
 using Symbol = Malsys.SemanticModel.Symbol<Malsys.SemanticModel.Evaluated.IValue>;
 
 namespace Malsys.Processing.Components.Common {

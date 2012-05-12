@@ -1,4 +1,8 @@
-﻿
+﻿@**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ *@
+
 @if (Request.IsAuthenticated) {
 	@Html.ActionLink("Saved inputs", MVC.Gallery.Index(user: User.Identity.Name), new { tabindex = 20 })
 	@:|

@@ -1,4 +1,8 @@
-﻿using System.Reflection;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System.Reflection;
 using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Reflection.Components {

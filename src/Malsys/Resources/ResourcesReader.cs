@@ -1,4 +1,8 @@
-﻿using System.IO;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System.IO;
 using System.Reflection;
 
 namespace Malsys.Resources {

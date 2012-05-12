@@ -1,4 +1,8 @@
-﻿using System.Web;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System.Web;
 
 namespace Malsys.Web.Infrastructure {
 	public static class LatexHelper {

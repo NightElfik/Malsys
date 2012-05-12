@@ -1,4 +1,8 @@
-﻿using System;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System;
 using Malsys.Media;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using UintColorF = System.Tuple<uint, Malsys.Media.ColorF>;

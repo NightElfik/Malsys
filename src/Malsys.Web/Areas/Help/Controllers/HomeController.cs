@@ -1,9 +1,13 @@
-﻿using System.Web.Mvc;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System.Web.Mvc;
 using Malsys.Processing;
 using Malsys.SemanticModel.Evaluated;
 using Malsys.Web.Areas.Help.Models;
-using Malsys.Web.Models.Lsystem;
 using Malsys.Web.Models;
+using Malsys.Web.Models.Lsystem;
 
 namespace Malsys.Web.Areas.Help.Controllers {
 	[OutputCache(CacheProfile = "HelpCache")]

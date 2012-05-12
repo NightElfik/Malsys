@@ -1,16 +1,20 @@
-﻿using System;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Malsys.Evaluators;
+using Malsys.IO;
 using Malsys.Processing.Components.Common;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Evaluated;
-using InterpretActionParams = System.Tuple<System.Action<Malsys.Evaluators.ArgsStorage>, int>;
-using Malsys.IO;
 using Malsys.SourceCode.Printers;
-using System.IO;
+using InterpretActionParams = System.Tuple<System.Action<Malsys.Evaluators.ArgsStorage>, int>;
 
 
 namespace Malsys.Processing.Components.Interpreters {

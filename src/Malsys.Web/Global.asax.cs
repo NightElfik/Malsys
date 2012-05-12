@@ -1,4 +1,8 @@
-﻿using System;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System;
 using System.Configuration;
 using System.Globalization;
 using System.IO;
@@ -16,7 +20,6 @@ using Malsys.Evaluators;
 using Malsys.Processing;
 using Malsys.Reflection;
 using Malsys.Resources;
-using Malsys.SemanticModel.Evaluated;
 using Malsys.Web.Entities;
 using Malsys.Web.Infrastructure;
 using Malsys.Web.Models;

@@ -1,4 +1,8 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Malsys.Tests.Evaluators {
 	[TestClass]

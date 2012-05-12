@@ -1,4 +1,8 @@
-﻿using System.Windows;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System.Windows;
 using Malsys.Media;
 
 namespace Malsys.Processing.Components.Renderers {

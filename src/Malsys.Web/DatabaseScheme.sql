@@ -1,3 +1,7 @@
+/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
 /****** Object:  Table [dbo].[Users]    Script Date: 04/12/2012 17:35:33 ******/
 SET ANSI_NULLS ON
 GO

@@ -1,4 +1,8 @@
-﻿using Malsys.Evaluators;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using Malsys.Evaluators;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Evaluated;
 

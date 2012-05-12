@@ -1,4 +1,8 @@
-﻿using Malsys.SemanticModel;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using Malsys.SemanticModel;
 
 namespace Malsys.Processing.Components {
 	/// <summary>

@@ -1,12 +1,9 @@
-﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.FSharp.Text.Lexing;
-using Malsys.Parsing;
-using Malsys.IO;
-using Malsys.SourceCode.Printers;
 
 namespace Malsys.Tests.Parsing {
 	[TestClass]

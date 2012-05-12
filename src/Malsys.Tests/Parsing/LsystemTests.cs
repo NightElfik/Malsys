@@ -1,4 +1,8 @@
-﻿using System;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Malsys.Tests.Parsing {

@@ -1,4 +1,8 @@
-﻿using System.Data.Objects.DataClasses;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System.Data.Objects.DataClasses;
 using System.Linq;
 
 namespace Malsys.Web.Entities {

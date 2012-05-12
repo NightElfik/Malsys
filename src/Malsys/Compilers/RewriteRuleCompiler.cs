@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System.Collections.Generic;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Compiled;
 using PatternCompiler = Malsys.Compilers.ICompiler<Malsys.Ast.LsystemSymbol, Malsys.SemanticModel.Symbol<string>>;

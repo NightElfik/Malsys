@@ -1,4 +1,8 @@
-﻿using System;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -7,7 +11,6 @@ using Malsys.Evaluators;
 using Malsys.IO;
 using Malsys.Parsing;
 using Malsys.Processing;
-using Malsys.Processing.Components;
 using Malsys.Reflection;
 using Malsys.Resources;
 using Malsys.SemanticModel;

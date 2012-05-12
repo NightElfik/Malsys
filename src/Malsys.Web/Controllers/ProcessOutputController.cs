@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.IO;
+/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using Malsys.Web.Models;
 using Malsys.Web.Infrastructure;
-using System.IO;
+using Malsys.Web.Models;
 
 namespace Malsys.Web.Controllers {
 	public partial class ProcessOutputController : Controller {

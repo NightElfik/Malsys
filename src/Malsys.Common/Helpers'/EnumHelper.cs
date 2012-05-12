@@ -1,6 +1,10 @@
-﻿using System.Diagnostics;
-using System.Diagnostics.Contracts;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
 using System;
+using System.Diagnostics;
+using System.Diagnostics.Contracts;
 
 namespace Malsys {
 	public static class EnumHelper {

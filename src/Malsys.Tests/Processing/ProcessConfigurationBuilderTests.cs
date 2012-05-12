@@ -1,13 +1,15 @@
-﻿using System;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System;
 using System.Linq;
+using Malsys.Evaluators;
 using Malsys.Processing;
 using Malsys.Processing.Output;
-using Malsys.SemanticModel.Evaluated;
-using Microsoft.FSharp.Core;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Malsys.SemanticModel.Compiled;
-using Malsys.Reflection.Components;
-using Malsys.Evaluators;
+using Malsys.SemanticModel.Evaluated;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Malsys.Tests.Process {
 	[TestClass]

@@ -1,5 +1,9 @@
-﻿using System.IO;
-using System;
+﻿using System;
+/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System.IO;
 
 namespace Malsys.IO {
 	public class IndentTextWriter : IndentWriter, IDisposable {

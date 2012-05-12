@@ -1,9 +1,13 @@
-﻿using System.Linq;
+﻿using System.IO;
+/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System.Linq;
 using System.Web.Mvc;
 using Malsys.Web.Areas.Administration.Models;
 using Malsys.Web.Entities;
 using MvcContrib.Pagination;
-using System.IO;
 
 namespace Malsys.Web.Areas.Administration.Controllers {
 	[Authorize(Roles = UserRoles.ViewStats)]

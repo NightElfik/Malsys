@@ -1,4 +1,8 @@
-﻿using Malsys.SemanticModel.Evaluated;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.SemanticModel.Compiled {
 	public class LsystemEvaledParams {

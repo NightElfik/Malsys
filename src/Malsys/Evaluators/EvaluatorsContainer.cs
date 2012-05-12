@@ -1,4 +1,8 @@
-﻿using Autofac;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using Autofac;
 
 namespace Malsys.Evaluators {
 	/// <summary>

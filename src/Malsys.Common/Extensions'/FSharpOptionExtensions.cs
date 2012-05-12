@@ -1,4 +1,8 @@
-﻿using Microsoft.FSharp.Core;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using Microsoft.FSharp.Core;
 
 namespace Malsys {
 	public static class FSharpOptionExtensions {

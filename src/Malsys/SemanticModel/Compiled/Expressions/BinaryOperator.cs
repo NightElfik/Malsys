@@ -1,5 +1,8 @@
-﻿using System;
-using Malsys.Evaluators;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System;
 using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.SemanticModel.Compiled.Expressions {

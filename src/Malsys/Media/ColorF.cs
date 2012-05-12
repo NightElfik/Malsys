@@ -1,4 +1,7 @@
-﻿using System;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
 
 namespace Malsys.Media {
 	public struct ColorF {

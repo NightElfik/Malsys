@@ -1,4 +1,8 @@
-﻿
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+
 namespace Malsys.SemanticModel.Compiled.Expressions {
 	/// <summary>
 	/// Immutable singleton (quite unusual :).

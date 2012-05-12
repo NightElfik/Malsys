@@ -1,8 +1,11 @@
-﻿using System;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Microsoft.FSharp.Collections;
 
 namespace Malsys.Processing.Output {
 	public class InMemoryOutputProvider : IOutputProvider {

@@ -1,4 +1,8 @@
-﻿using System.Configuration;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System.Configuration;
 
 namespace Malsys.Web.Infrastructure {
 	public class AppSettingsProvider : IAppSettingsProvider {

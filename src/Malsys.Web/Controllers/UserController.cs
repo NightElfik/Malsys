@@ -1,4 +1,8 @@
-﻿using System.Web.Mvc;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System.Web.Mvc;
 using Malsys.Web.Models;
 
 namespace Malsys.Web.Controllers {

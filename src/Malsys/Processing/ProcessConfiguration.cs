@@ -1,4 +1,8 @@
-﻿using Malsys.Processing.Components;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using Malsys.Processing.Components;
 using Microsoft.FSharp.Collections;
 
 namespace Malsys.Processing {

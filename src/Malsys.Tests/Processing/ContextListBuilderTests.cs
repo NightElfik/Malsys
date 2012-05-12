@@ -1,4 +1,8 @@
-﻿using System.Text;
+﻿/**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
+using System.Text;
 using Malsys.Processing;
 using Malsys.Processing.Context;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

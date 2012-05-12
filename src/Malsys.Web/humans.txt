@@ -12,7 +12,7 @@
 
 /* TEAM */
 Developer & Maintainer: Marek Fišer
-E-mail: see bottom of actual web
+E-mail: see the bottom of actual web
 Location: Hradec Králové (Prague), Czech Republic
 
 
@@ -25,6 +25,7 @@ ASP.NET MVC 3 (web)
 C# .NET (rest -- L-system processing)
 F# power pack's fslex & fsyacc for input parsing http://fsharppowerpack.codeplex.com/
 HTML5 ✰ boilerplate http://html5boilerplate.com
+three.js http://github.com/mrdoob/three.js/
 jQuery http://jquery.com/
 Modernizr http://modernizr.com/
 Code contracts for better code http://research.microsoft.com/en-us/projects/contracts/
