@@ -52,7 +52,7 @@ namespace Malsys.SemanticModel.Evaluated {
 
 		public ExpressionValueType Type { get { return ExpressionValueType.Array; } }
 
-		public Position AstPosition { get { return AstNode == null ? Position.Unknown : AstNode.Position; } }
+		public PositionRange AstPosition { get { return AstNode == null ? PositionRange.Unknown : AstNode.Position; } }
 
 
 

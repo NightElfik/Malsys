@@ -10,12 +10,12 @@ namespace Malsys.Ast {
 	public class ExpressionsArray : ImmutableListPos<Expression>, IExpressionMember {
 
 
-		public ExpressionsArray(Position pos)
+		public ExpressionsArray(PositionRange pos)
 			: base(ImmutableList<Expression>.Empty, pos) {
 
 		}
 
-		public ExpressionsArray(ImmutableListPos<Expression> vals, Position beginSep, Position endSep)
+		public ExpressionsArray(ImmutableListPos<Expression> vals, PositionRange beginSep, PositionRange endSep)
 			: base(vals, beginSep, endSep, vals.Position) {
 
 		}

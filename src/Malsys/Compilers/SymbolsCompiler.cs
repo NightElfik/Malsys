@@ -24,11 +24,11 @@ namespace Malsys.Compilers {
 			string[] names = new string[symbol.Arguments.Length];
 
 			for (int i = 0; i < symbol.Arguments.Length; i++) {
-					if (symbol.Arguments[i].Members.Length != 1 || !(symbol.Arguments[i].Members[0] is Ast.Identificator)) {
+					if (symbol.Arguments[i].Members.Length != 1 || !(symbol.Arguments[i].Members[0] is Ast.Identifier)) {
 						logger.LogMessage(Message.PatternParamCanBeOnlyId, symbol.Arguments[i].Position);
 					}
 
-					names[i] = ((Ast.Identificator)symbol.Arguments[i].Members[0]).Name;
+					names[i] = ((Ast.Identifier)symbol.Arguments[i].Members[0]).Name;
 
 			}
 

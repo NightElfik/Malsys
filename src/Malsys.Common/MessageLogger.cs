@@ -21,7 +21,7 @@ namespace Malsys {
 
 		public bool ErrorOccurred { get { return errorOccurred; } }
 
-		public void LogMessage(string msgId, MessageType type, Position pos, string message) {
+		public void LogMessage(string msgId, MessageType type, PositionRange pos, string message) {
 			AddMessage(new Message(msgId, type, message, pos, DateTime.Now));
 		}
 

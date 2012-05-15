@@ -10,12 +10,12 @@ namespace Malsys.Ast {
 	public class EmptyStatement : IStatement, IInputStatement, ILsystemStatement, IProcessConfigStatement {
 
 
-		public EmptyStatement(Position pos) {
+		public EmptyStatement(PositionRange pos) {
 			Position = pos;
 		}
 
 
-		public Position Position { get; private set; }
+		public PositionRange Position { get; private set; }
 
 
 

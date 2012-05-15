@@ -7,15 +7,15 @@ namespace Malsys.Ast {
 	/// <remarks>
 	/// Immutable.
 	/// </remarks>
-	public abstract class NameParamsStatements<TStatement> : IToken where TStatement : IToken {
+	public abstract class NameParamsStatements<TStatement> : IAstNode where TStatement : IAstNode {
 
-		public readonly Identificator NameId;
+		public readonly Identifier NameId;
 		public readonly ImmutableListPos<OptionalParameter> Parameters;
 		public readonly ImmutableListPos<TStatement> Statements;
 
 
-		public NameParamsStatements(Identificator name, ImmutableListPos<OptionalParameter> prms,
-				ImmutableListPos<TStatement> statements, Position pos) {
+		public NameParamsStatements(Identifier name, ImmutableListPos<OptionalParameter> prms,
+				ImmutableListPos<TStatement> statements, PositionRange pos) {
 
 			NameId = name;
 			Parameters = prms;
@@ -24,7 +24,7 @@ namespace Malsys.Ast {
 		}
 
 
-		public Position Position { get; private set; }
+		public PositionRange Position { get; private set; }
 
 	}
 }

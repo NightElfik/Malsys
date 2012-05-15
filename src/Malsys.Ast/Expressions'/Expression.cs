@@ -11,19 +11,19 @@ namespace Malsys.Ast {
 	/// </remarks>
 	public class Expression : IEnumerable<IExpressionMember>, IFunctionStatement {
 
-		public static readonly Expression Empty = new Expression(Position.Unknown);
+		public static readonly Expression Empty = new Expression(PositionRange.Unknown);
 
 
 		public readonly ImmutableList<IExpressionMember> Members;
 
 
-		public Expression(Position pos) {
+		public Expression(PositionRange pos) {
 
 			Members = ImmutableList<IExpressionMember>.Empty;
 			Position = pos;
 		}
 
-		public Expression(IEnumerable<IExpressionMember> mmbrs, Position pos) {
+		public Expression(IEnumerable<IExpressionMember> mmbrs, PositionRange pos) {
 
 			Members = new ImmutableList<IExpressionMember>(mmbrs);
 			Position = pos;
@@ -38,7 +38,7 @@ namespace Malsys.Ast {
 
 
 
-		public Position Position { get; private set; }
+		public PositionRange Position { get; private set; }
 
 
 		IEnumerator IEnumerable.GetEnumerator() {

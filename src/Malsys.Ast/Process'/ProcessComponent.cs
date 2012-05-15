@@ -9,11 +9,11 @@ namespace Malsys.Ast {
 	/// </remarks>
 	public class ProcessComponent : IProcessConfigStatement {
 
-		public readonly Identificator NameId;
-		public readonly Identificator TypeNameId;
+		public readonly Identifier NameId;
+		public readonly Identifier TypeNameId;
 
 
-		public ProcessComponent(Identificator name, Identificator typeName, Position pos) {
+		public ProcessComponent(Identifier name, Identifier typeName, PositionRange pos) {
 
 			NameId = name;
 			TypeNameId = typeName;
@@ -22,7 +22,7 @@ namespace Malsys.Ast {
 		}
 
 
-		public Position Position { get; private set; }
+		public PositionRange Position { get; private set; }
 
 
 		public ProcessConfigStatementType StatementType {

@@ -13,11 +13,11 @@ namespace Malsys {
 		public readonly string Id;
 		public readonly string MessageStr;
 		public readonly MessageType Type;
-		public readonly Position Position;
+		public readonly PositionRange Position;
 		public readonly DateTime Time;
 
 
-		public Message(string id, MessageType type, string message, Position position, DateTime time) {
+		public Message(string id, MessageType type, string message, PositionRange position, DateTime time) {
 
 			Id = id;
 			MessageStr = message;

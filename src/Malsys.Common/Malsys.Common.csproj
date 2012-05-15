@@ -126,7 +126,7 @@
     <Compile Include="DataStructures%27\ImmutableList.cs" />
     <Compile Include="DataStructures%27\IndexableQueue.cs" />
     <Compile Include="DataStructures%27\IndexableStack.cs" />
-    <Compile Include="DataStructures%27\Position.cs" />
+    <Compile Include="DataStructures%27\PositionRange.cs" />
     <Compile Include="Extensions%27\DoubleExtensions.cs" />
     <Compile Include="Extensions%27\FSharpMapExtensions.cs" />
     <Compile Include="Helpers%27\SwapHelper.cs" />

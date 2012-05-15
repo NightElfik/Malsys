@@ -9,15 +9,15 @@ namespace Malsys.Ast {
 	/// </remarks>
 	public class EmptyExpression : IExpressionMember {
 
-		public static readonly EmptyExpression Instance = new EmptyExpression(Position.Unknown);
+		public static readonly EmptyExpression Instance = new EmptyExpression(PositionRange.Unknown);
 
 
-		public EmptyExpression(Position pos) {
+		public EmptyExpression(PositionRange pos) {
 			Position = pos;
 		}
 
 
-		public Position Position { get; private set; }
+		public PositionRange Position { get; private set; }
 
 
 		public ExpressionMemberType MemberType {

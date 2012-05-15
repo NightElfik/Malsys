@@ -9,6 +9,6 @@ namespace Malsys.Ast {
 	/// For easier implementation of parser.
 	/// Rules returning various statement types can return this type.
 	/// </remarks>
-	public interface IStatement : IToken { }
+	public interface IStatement : IAstNode { }
 
 }

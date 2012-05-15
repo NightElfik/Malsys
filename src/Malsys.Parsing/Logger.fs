@@ -13,7 +13,7 @@ open Malsys.Parsing
 type internal ThreadStatic() =
 
     [<System.ThreadStatic;DefaultValue>]
-    static val mutable private lastErrorPos : Malsys.Position
+    static val mutable private lastErrorPos : Malsys.PositionRange
 
     [<System.ThreadStatic;DefaultValue>]
     static val mutable private logger : Malsys.IMessageLogger
@@ -27,10 +27,10 @@ type internal ThreadStatic() =
         and set(v) = ThreadStatic.logger <- v
 
 
-let logMessagePos msgType (pos : Position) args =
+let logMessagePos msgType (pos : PositionRange) args =
     ThreadStatic.MessageLogger.LogMessage(msgType, pos, args)
 
-let setErrPos (pos : Malsys.Position) =
+let setErrPos (pos : Malsys.PositionRange) =
     ThreadStatic.LastErrorPos <- pos
 
 let getLastErrPos =

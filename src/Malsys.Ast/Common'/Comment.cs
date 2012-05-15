@@ -7,18 +7,18 @@ namespace Malsys.Ast {
 	/// <remarks>
 	/// Immutable.
 	/// </remarks>
-	public class Comment : IToken {
+	public class Comment : IAstNode {
 
 		public readonly string Text;
 
 
-		public Comment(string text, Position pos) {
+		public Comment(string text, PositionRange pos) {
 			Text = text;
 			Position = pos;
 		}
 
 
-		public Position Position { get; private set; }
+		public PositionRange Position { get; private set; }
 
 	}
 }

@@ -85,11 +85,11 @@ namespace Malsys.Evaluators {
 
 		}
 
-		public static IExpressionEvaluatorContext AddVariable(this IExpressionEvaluatorContext eec, string name, IValue value, Ast.IToken astNode = null, bool rewrite = true) {
+		public static IExpressionEvaluatorContext AddVariable(this IExpressionEvaluatorContext eec, string name, IValue value, Ast.IAstNode astNode = null, bool rewrite = true) {
 			return eec.AddVariable(new VariableInfo(name, () => value, astNode), rewrite);
 		}
 
-		public static IExpressionEvaluatorContext AddVariable(this IExpressionEvaluatorContext eec, string name, IExpression value, Ast.IToken astNode = null, bool rewrite = true) {
+		public static IExpressionEvaluatorContext AddVariable(this IExpressionEvaluatorContext eec, string name, IExpression value, Ast.IAstNode astNode = null, bool rewrite = true) {
 			var val = eec.Evaluate(value);
 			return eec.AddVariable(new VariableInfo(name, () => val, astNode), rewrite);
 		}

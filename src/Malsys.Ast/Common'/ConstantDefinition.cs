@@ -9,21 +9,21 @@ namespace Malsys.Ast {
 	/// </remarks>
 	public class ConstantDefinition : IInputStatement, ILsystemStatement, IFunctionStatement {
 
-		public readonly Identificator NameId;
+		public readonly Identifier NameId;
 
 		public readonly Expression ValueExpr;
 
 		public readonly bool IsComponentAssign;
 
 
-		public ConstantDefinition(Identificator name, Expression value, Position pos) {
+		public ConstantDefinition(Identifier name, Expression value, PositionRange pos) {
 			NameId = name;
 			ValueExpr = value;
 			IsComponentAssign = false;
 			Position = pos;
 		}
 
-		public ConstantDefinition(Identificator name, Expression value, bool isComponentAssign, Position pos) {
+		public ConstantDefinition(Identifier name, Expression value, bool isComponentAssign, PositionRange pos) {
 			NameId = name;
 			ValueExpr = value;
 			IsComponentAssign = isComponentAssign;
@@ -31,7 +31,7 @@ namespace Malsys.Ast {
 		}
 
 
-		public Position Position { get; private set; }
+		public PositionRange Position { get; private set; }
 
 
 		InputStatementType IInputStatement.StatementType {

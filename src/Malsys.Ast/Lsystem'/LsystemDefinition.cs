@@ -14,8 +14,8 @@ namespace Malsys.Ast {
 		public readonly ImmutableListPos<BaseLsystem> BaseLsystems;
 
 
-		public LsystemDefinition(Identificator name, bool isAbstract, ImmutableListPos<OptionalParameter> prms,
-				ImmutableListPos<BaseLsystem> baseLsystems, ImmutableListPos<ILsystemStatement> statements, Position pos)
+		public LsystemDefinition(Identifier name, bool isAbstract, ImmutableListPos<OptionalParameter> prms,
+				ImmutableListPos<BaseLsystem> baseLsystems, ImmutableListPos<ILsystemStatement> statements, PositionRange pos)
 			: base(name, prms, statements, pos) {
 
 			IsAbstract = isAbstract;

@@ -9,29 +9,29 @@ namespace Malsys.Ast {
 	/// </remarks>
 	public class SymbolsInterpretDef : ILsystemStatement {
 
-		public readonly ImmutableListPos<Identificator> Symbols;
+		public readonly ImmutableListPos<Identifier> Symbols;
 		public readonly ImmutableListPos<OptionalParameter> Parameters;
-		public readonly Identificator Instruction;
+		public readonly Identifier Instruction;
 		public readonly ImmutableListPos<Expression> InstructionParameters;
 
 		public readonly bool InstructionIsLsystemName;
-		public readonly Identificator LsystemConfigName;
+		public readonly Identifier LsystemConfigName;
 
 
-		public SymbolsInterpretDef(ImmutableListPos<Identificator> symbols, ImmutableListPos<OptionalParameter> prms,
-				Identificator instr, ImmutableListPos<Expression> instrParams, Position pos) {
+		public SymbolsInterpretDef(ImmutableListPos<Identifier> symbols, ImmutableListPos<OptionalParameter> prms,
+				Identifier instr, ImmutableListPos<Expression> instrParams, PositionRange pos) {
 
 			Symbols = symbols;
 			Parameters = prms;
 			Instruction = instr;
 			InstructionParameters = instrParams;
 			InstructionIsLsystemName = false;
-			LsystemConfigName = Identificator.Empty;
+			LsystemConfigName = Identifier.Empty;
 		}
 
-		public SymbolsInterpretDef(ImmutableListPos<Identificator> symbols, ImmutableListPos<OptionalParameter> prms,
-				Identificator instr, ImmutableListPos<Expression> instrParams, bool instructionIsLsystemName,
-				Identificator lsystemConfigName, Position pos) {
+		public SymbolsInterpretDef(ImmutableListPos<Identifier> symbols, ImmutableListPos<OptionalParameter> prms,
+				Identifier instr, ImmutableListPos<Expression> instrParams, bool instructionIsLsystemName,
+				Identifier lsystemConfigName, PositionRange pos) {
 
 			Symbols = symbols;
 			Parameters = prms;
@@ -42,7 +42,7 @@ namespace Malsys.Ast {
 		}
 
 
-		public Position Position { get; private set; }
+		public PositionRange Position { get; private set; }
 
 
 		public LsystemStatementType StatementType {

@@ -12,7 +12,7 @@ namespace Malsys {
 
 		public bool ErrorOccurred { get { return false; } }
 
-		public void LogMessage(string msgId, MessageType type, Position pos, string message) { }
+		public void LogMessage(string msgId, MessageType type, PositionRange pos, string message) { }
 
 		public IMessageLoggerBlock StartErrorLoggingBlock() {
 			return block;

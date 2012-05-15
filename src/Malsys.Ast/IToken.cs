@@ -5,9 +5,9 @@
 using System.Diagnostics.Contracts;
 
 namespace Malsys.Ast {
-	public interface IToken {
+	public interface IAstNode {
 
-		Position Position { get; }
+		PositionRange Position { get; }
 
 	}
 }
@@ -17,21 +17,21 @@ namespace Malsys {
 	/// <summary>
 	/// This class is in Malsys namespace to be callable without including Malsys.Ast namespace.
 	/// </summary>
-	public static class ITokenExtensions {
+	public static class IAstNodeExtensions {
 
 		/// <summary>
 		/// Tries to get position from instance.
 		/// Returns unknown position even if instance is null or position in instance is null.
 		/// </summary>
-		public static Position TryGetPosition(this Ast.IToken instance) {
+		public static PositionRange TryGetPosition(this Ast.IAstNode instance) {
 
-			Contract.Ensures(Contract.Result<Position>() != null);
+			Contract.Ensures(Contract.Result<PositionRange>() != null);
 
 			if (instance != null) {
-				return instance.Position ?? Position.Unknown;
+				return instance.Position ?? PositionRange.Unknown;
 			}
 			else {
-				return Position.Unknown;
+				return PositionRange.Unknown;
 			}
 		}
 

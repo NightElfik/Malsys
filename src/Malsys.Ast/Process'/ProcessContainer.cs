@@ -9,12 +9,12 @@ namespace Malsys.Ast {
 	/// </remarks>
 	public class ProcessContainer : IProcessConfigStatement {
 
-		public readonly Identificator NameId;
-		public readonly Identificator TypeNameId;
-		public readonly Identificator DefaultTypeNameId;
+		public readonly Identifier NameId;
+		public readonly Identifier TypeNameId;
+		public readonly Identifier DefaultTypeNameId;
 
 
-		public ProcessContainer(Identificator name, Identificator typeName, Identificator defaultTypeName, Position pos) {
+		public ProcessContainer(Identifier name, Identifier typeName, Identifier defaultTypeName, PositionRange pos) {
 
 			NameId = name;
 			TypeNameId = typeName;
@@ -24,7 +24,7 @@ namespace Malsys.Ast {
 		}
 
 
-		public Position Position { get; private set; }
+		public PositionRange Position { get; private set; }
 
 
 		public ProcessConfigStatementType StatementType {

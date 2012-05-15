@@ -396,7 +396,7 @@ namespace Malsys.SourceCode.Printers {
 				case ExpressionMemberType.ExpressionIndexer: Print((Ast.ExpressionIndexer)member); break;
 				case ExpressionMemberType.ExpressionsArray: Print((Ast.ExpressionsArray)member); break;
 				case ExpressionMemberType.FloatConstant: Print((Ast.FloatConstant)member); break;
-				case ExpressionMemberType.Identificator: Print((Ast.Identificator)member); break;
+				case ExpressionMemberType.Identifier: Print((Ast.Identifier)member); break;
 				case ExpressionMemberType.Operator: Print((Ast.Operator)member); break;
 				default: Debug.Fail("Unknown expression member type `{0}`.".Fmt(member.MemberType.ToString())); break;
 			}
@@ -436,7 +436,7 @@ namespace Malsys.SourceCode.Printers {
 			writer.Write(floatConstant.ToString());
 		}
 
-		public void Print(Identificator variable) {
+		public void Print(Identifier variable) {
 			writer.Write(variable.Name);
 		}
 

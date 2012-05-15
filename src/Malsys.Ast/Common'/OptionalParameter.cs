@@ -7,13 +7,13 @@ namespace Malsys.Ast {
 	/// <remarks>
 	/// Immutable.
 	/// </remarks>
-	public class OptionalParameter : IToken {
+	public class OptionalParameter : IAstNode {
 
-		public readonly Identificator NameId;
+		public readonly Identifier NameId;
 		public readonly Expression DefaultValue;
 
 
-		public OptionalParameter(Identificator name, Expression defValue, Position pos) {
+		public OptionalParameter(Identifier name, Expression defValue, PositionRange pos) {
 			NameId = name;
 			DefaultValue = defValue;
 			Position = pos;
@@ -23,7 +23,7 @@ namespace Malsys.Ast {
 		public bool IsOptional { get { return !DefaultValue.IsEmpty; } }
 
 
-		public Position Position { get; private set; }
+		public PositionRange Position { get; private set; }
 
 	}
 }

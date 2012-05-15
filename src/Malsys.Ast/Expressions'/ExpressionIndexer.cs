@@ -12,14 +12,14 @@ namespace Malsys.Ast {
 		public readonly Expression Index;
 
 
-		public ExpressionIndexer(Expression index, Position pos) {
+		public ExpressionIndexer(Expression index, PositionRange pos) {
 			Index = index;
 			Position = pos;
 		}
 
 
 
-		public Position Position { get; private set; }
+		public PositionRange Position { get; private set; }
 
 
 		public ExpressionMemberType MemberType {

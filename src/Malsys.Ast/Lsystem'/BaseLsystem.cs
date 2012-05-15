@@ -7,13 +7,13 @@ namespace Malsys.Ast {
 	/// <remarks>
 	/// Immutable.
 	/// </remarks>
-	public class BaseLsystem : IToken {
+	public class BaseLsystem : IAstNode {
 
-		public readonly Identificator NameId;
+		public readonly Identifier NameId;
 		public readonly ImmutableListPos<Expression> Arguments;
 
 
-		public BaseLsystem(Identificator name, ImmutableListPos<Expression> args, Position pos) {
+		public BaseLsystem(Identifier name, ImmutableListPos<Expression> args, PositionRange pos) {
 			NameId = name;
 			Arguments = args;
 
@@ -21,7 +21,7 @@ namespace Malsys.Ast {
 		}
 
 
-		public Position Position { get; private set; }
+		public PositionRange Position { get; private set; }
 
 	}
 }

@@ -147,12 +147,12 @@ namespace Malsys.Compilers {
 						}
 						break;
 
-					case Ast.ExpressionMemberType.Identificator:
-						var variable = (Ast.Identificator)member;
+					case Ast.ExpressionMemberType.Identifier:
+						var variable = (Ast.Identifier)member;
 						compileVariable(variable, operandsStack);
 
 						if (state == expectingOperator) {
-							if (previousMember is Ast.FloatConstant || previousMember is Ast.Identificator) {
+							if (previousMember is Ast.FloatConstant || previousMember is Ast.Identifier) {
 								// implicit multiplication in situation like: 5 x => 5*x  or  x y => x*y
 								optorsStack.Push(new OperatorCoreAst(StdOperators.Multiply, new Ast.Operator(null, variable.Position.GetBeginPos())));
 							}
@@ -225,7 +225,7 @@ namespace Malsys.Compilers {
 
 
 
-		private void compileVariable(Ast.Identificator variable, Stack<IExpression> operandsStack) {
+		private void compileVariable(Ast.Identifier variable, Stack<IExpression> operandsStack) {
 
 			CompilerConstant cnst;
 			if (knownConstants.TryGetConstant(variable.Name, out cnst)) {

@@ -9,12 +9,12 @@ namespace Malsys.Ast {
 	/// </remarks>
 	public class ProcessConfigurationDefinition : IInputStatement {
 
-		public readonly Identificator NameId;
+		public readonly Identifier NameId;
 
 		public readonly ImmutableListPos<IProcessConfigStatement> Statements;
 
 
-		public ProcessConfigurationDefinition(Identificator name, ImmutableListPos<IProcessConfigStatement> statements, Position pos) {
+		public ProcessConfigurationDefinition(Identifier name, ImmutableListPos<IProcessConfigStatement> statements, PositionRange pos) {
 
 			NameId = name;
 			Statements = statements;
@@ -23,7 +23,7 @@ namespace Malsys.Ast {
 		}
 
 
-		public Position Position { get; private set; }
+		public PositionRange Position { get; private set; }
 
 
 		public InputStatementType StatementType {

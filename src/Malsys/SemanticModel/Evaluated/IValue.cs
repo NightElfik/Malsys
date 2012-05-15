@@ -16,7 +16,7 @@ namespace Malsys.SemanticModel.Evaluated {
 
 		ExpressionValueType Type { get; }
 
-		Position AstPosition { get; }
+		PositionRange AstPosition { get; }
 
 	}
 

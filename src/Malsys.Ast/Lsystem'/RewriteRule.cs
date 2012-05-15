@@ -21,7 +21,7 @@ namespace Malsys.Ast {
 
 
 		public RewriteRule(LsystemSymbol pattern, ImmutableListPos<LsystemSymbol> lctxt, ImmutableListPos<LsystemSymbol> rctxt,
-				ImmutableListPos<ConstantDefinition> localConsts, Expression cond, ImmutableListPos<RewriteRuleReplacement> replacs, Position pos) {
+				ImmutableListPos<ConstantDefinition> localConsts, Expression cond, ImmutableListPos<RewriteRuleReplacement> replacs, PositionRange pos) {
 
 			LeftContext = lctxt;
 			Pattern = pattern;
@@ -35,7 +35,7 @@ namespace Malsys.Ast {
 
 
 
-		public Position Position { get; private set; }
+		public PositionRange Position { get; private set; }
 
 
 		public LsystemStatementType StatementType {

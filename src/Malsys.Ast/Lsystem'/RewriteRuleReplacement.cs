@@ -7,13 +7,13 @@ namespace Malsys.Ast {
 	/// <remarks>
 	/// Immutable.
 	/// </remarks>
-	public class RewriteRuleReplacement : IToken {
+	public class RewriteRuleReplacement : IAstNode {
 
 		public readonly ImmutableListPos<LsystemSymbol> Replacement;
 		public readonly Expression Weight;
 
 
-		public RewriteRuleReplacement(ImmutableListPos<LsystemSymbol> replac, Expression wei, Position pos) {
+		public RewriteRuleReplacement(ImmutableListPos<LsystemSymbol> replac, Expression wei, PositionRange pos) {
 
 			Replacement = replac;
 			Weight = wei;
@@ -22,7 +22,7 @@ namespace Malsys.Ast {
 		}
 
 
-		public Position Position { get; private set; }
+		public PositionRange Position { get; private set; }
 
 	}
 }

@@ -9,10 +9,9 @@ namespace Malsys {
 	/// <remarks>
 	/// Immutable.
 	/// </remarks>
-	// TODO: rename to something better like range
-	public class Position {
+	public class PositionRange {
 
-		public static readonly Position Unknown = new Position(-1, -1, -1, -1);
+		public static readonly PositionRange Unknown = new PositionRange(-1, -1, -1, -1);
 
 
 		public readonly int BeginLine;
@@ -23,7 +22,7 @@ namespace Malsys {
 		public readonly string SourceName;
 
 
-		public Position(int beginLine, int beginColumn, int endLine, int endColumn, string sourceName = "") {
+		public PositionRange(int beginLine, int beginColumn, int endLine, int endColumn, string sourceName = "") {
 			BeginLine = beginLine;
 			BeginColumn = beginColumn;
 			EndLine = endLine;
@@ -31,7 +30,7 @@ namespace Malsys {
 			SourceName = sourceName;
 		}
 
-		public Position(LexPos begin, LexPos end) {
+		public PositionRange(LexPos begin, LexPos end) {
 			BeginLine = begin.Line;
 			BeginColumn = begin.Column;
 			EndLine = end.Line;
@@ -39,7 +38,7 @@ namespace Malsys {
 			SourceName = begin.FileName;
 		}
 
-		public Position(Tuple<LexPos, LexPos> range) {
+		public PositionRange(Tuple<LexPos, LexPos> range) {
 			BeginLine = range.Item1.Line;
 			BeginColumn = range.Item1.Column;
 			EndLine = range.Item2.Line;
@@ -60,21 +59,21 @@ namespace Malsys {
 			}
 		}
 
-		public Position ToNonZeroLength() {
+		public PositionRange ToNonZeroLength() {
 			if (IsUnknown || !IsZeroLength) {
 				return this;
 			}
 
-			return new Position(BeginLine, BeginColumn, EndLine, EndColumn + 1);
+			return new PositionRange(BeginLine, BeginColumn, EndLine, EndColumn + 1);
 		}
 
 
-		public Position GetBeginPos() {
-			return new Position(BeginLine, BeginColumn, BeginLine, BeginColumn, SourceName);
+		public PositionRange GetBeginPos() {
+			return new PositionRange(BeginLine, BeginColumn, BeginLine, BeginColumn, SourceName);
 		}
 
-		public Position GetEndPos() {
-			return new Position(EndLine, EndColumn, EndLine, EndColumn, SourceName);
+		public PositionRange GetEndPos() {
+			return new PositionRange(EndLine, EndColumn, EndLine, EndColumn, SourceName);
 		}
 
 		public override string ToString() {

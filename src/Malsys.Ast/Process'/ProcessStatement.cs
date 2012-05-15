@@ -9,19 +9,19 @@ namespace Malsys.Ast {
 	/// </remarks>
 	public class ProcessStatement : IInputStatement {
 
-		public readonly Identificator TargetLsystemNameId;
+		public readonly Identifier TargetLsystemNameId;
 
 		public readonly ImmutableListPos<Expression> Arguments;
 
-		public readonly Identificator ProcessConfiNameId;
+		public readonly Identifier ProcessConfiNameId;
 
 		public readonly ImmutableListPos<ProcessComponentAssignment> ComponentAssignments;
 
 		public readonly ImmutableListPos<ILsystemStatement> AdditionalLsystemStatements;
 
 
-		public ProcessStatement(Identificator targetLsystemName, ImmutableListPos<Expression> arguments, Identificator processConfiNameId,
-				ImmutableListPos<ProcessComponentAssignment> componentAssignments, ImmutableListPos<ILsystemStatement> additionalLsystemStatements, Position pos) {
+		public ProcessStatement(Identifier targetLsystemName, ImmutableListPos<Expression> arguments, Identifier processConfiNameId,
+				ImmutableListPos<ProcessComponentAssignment> componentAssignments, ImmutableListPos<ILsystemStatement> additionalLsystemStatements, PositionRange pos) {
 
 			TargetLsystemNameId = targetLsystemName;
 			Arguments = arguments;
@@ -33,7 +33,7 @@ namespace Malsys.Ast {
 		}
 
 
-		public Position Position { get; private set; }
+		public PositionRange Position { get; private set; }
 
 		public InputStatementType StatementType {
 			get { return InputStatementType.ProcessStatement; }

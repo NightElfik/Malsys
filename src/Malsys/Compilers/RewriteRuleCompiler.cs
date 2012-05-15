@@ -38,7 +38,7 @@ namespace Malsys.Compilers {
 			var lCtxt = patternCompiler.CompileList(rRuleAst.LeftContext, logger);
 			var rCtxt = patternCompiler.CompileList(rRuleAst.RightContext, logger);
 
-			var usedNames = new Dictionary<string, Position>();
+			var usedNames = new Dictionary<string, PositionRange>();
 			checkPatternParams(lCtxt, usedNames, logger);
 			checkPatternParams(ptrn, usedNames, logger);
 			checkPatternParams(rCtxt, usedNames, logger);
@@ -60,7 +60,7 @@ namespace Malsys.Compilers {
 		}
 
 
-		private bool checkPatternParams(Symbol<string> symbol, Dictionary<string, Position> usedNames, IMessageLogger logger) {
+		private bool checkPatternParams(Symbol<string> symbol, Dictionary<string, PositionRange> usedNames, IMessageLogger logger) {
 
 			bool allAreUnique = true;
 
@@ -82,7 +82,7 @@ namespace Malsys.Compilers {
 			return allAreUnique;
 		}
 
-		private bool checkPatternParams(ImmutableList<Symbol<string>> symbolsList, Dictionary<string, Position> usedNames, IMessageLogger logger) {
+		private bool checkPatternParams(ImmutableList<Symbol<string>> symbolsList, Dictionary<string, PositionRange> usedNames, IMessageLogger logger) {
 
 			bool allAreUnique = true;
 

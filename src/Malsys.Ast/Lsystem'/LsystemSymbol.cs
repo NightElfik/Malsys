@@ -7,13 +7,13 @@ namespace Malsys.Ast {
 	/// <remarks>
 	/// Immutable.
 	/// </remarks>
-	public class LsystemSymbol : IToken {
+	public class LsystemSymbol : IAstNode {
 
 		public readonly string Name;
 		public readonly ImmutableListPos<Expression> Arguments;
 
 
-		public LsystemSymbol(string name, ImmutableListPos<Expression> args, Position pos) {
+		public LsystemSymbol(string name, ImmutableListPos<Expression> args, PositionRange pos) {
 			Name = name;
 			Arguments = args;
 
@@ -21,7 +21,7 @@ namespace Malsys.Ast {
 		}
 
 
-		public Position Position { get; private set; }
+		public PositionRange Position { get; private set; }
 
 	}
 }

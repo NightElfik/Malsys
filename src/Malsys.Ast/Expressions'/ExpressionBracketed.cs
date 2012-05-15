@@ -11,13 +11,13 @@ namespace Malsys.Ast {
 
 		public readonly Expression Expression;
 
-		public ExpressionBracketed(Expression expression, Position pos) {
+		public ExpressionBracketed(Expression expression, PositionRange pos) {
 			Expression = expression;
 			Position = pos;
 		}
 
 
-		public Position Position { get; private set; }
+		public PositionRange Position { get; private set; }
 
 
 		public ExpressionMemberType MemberType {

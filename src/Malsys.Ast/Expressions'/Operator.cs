@@ -15,14 +15,14 @@ namespace Malsys.Ast {
 		public readonly string Syntax;
 
 
-		public Operator(string syntax, Position pos) {
+		public Operator(string syntax, PositionRange pos) {
 			Syntax = syntax;
 			Position = pos;
 		}
 
 
 
-		public Position Position { get; private set; }
+		public PositionRange Position { get; private set; }
 
 
 		public ExpressionMemberType MemberType {

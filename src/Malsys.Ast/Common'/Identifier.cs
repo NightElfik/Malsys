@@ -9,14 +9,14 @@ namespace Malsys.Ast {
 	/// <remarks>
 	/// Immutable.
 	/// </remarks>
-	public class Identificator : IToken, IExpressionMember {
+	public class Identifier : IAstNode, IExpressionMember {
 
-		public static readonly Identificator Empty = new Identificator("", Position.Unknown);
+		public static readonly Identifier Empty = new Identifier("", PositionRange.Unknown);
 
 		public readonly string Name;
 
 
-		public Identificator(string name, Position pos) {
+		public Identifier(string name, PositionRange pos) {
 
 			Contract.Requires<ArgumentNullException>(name != null);
 
@@ -39,11 +39,11 @@ namespace Malsys.Ast {
 		}
 
 
-		public Position Position { get; private set; }
+		public PositionRange Position { get; private set; }
 
 
 		public ExpressionMemberType MemberType {
-			get { return ExpressionMemberType.Identificator; }
+			get { return ExpressionMemberType.Identifier; }
 		}
 
 	}

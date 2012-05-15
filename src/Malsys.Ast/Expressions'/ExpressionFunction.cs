@@ -9,18 +9,18 @@ namespace Malsys.Ast {
 	/// </remarks>
 	public class ExpressionFunction : IExpressionMember {
 
-		public readonly Identificator NameId;
+		public readonly Identifier NameId;
 		public readonly ImmutableListPos<Expression> Arguments;
 
 
-		public ExpressionFunction(Identificator name, ImmutableListPos<Expression> args, Position pos) {
+		public ExpressionFunction(Identifier name, ImmutableListPos<Expression> args, PositionRange pos) {
 			NameId = name;
 			Arguments = args;
 			Position = pos;
 		}
 
 
-		public Position Position { get; private set; }
+		public PositionRange Position { get; private set; }
 
 
 		public ExpressionMemberType MemberType {

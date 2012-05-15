@@ -32,12 +32,12 @@ let newline (lexbuf : LexBuffer<_>) = lexbuf.EndPos <- lexbuf.EndPos.NextLine
 
 
 let logMsg msgType (lexbuf : LexBuffer<_>) args =
-    logMessagePos msgType (new Position(lexbuf.StartPos, lexbuf.EndPos)) args;
+    logMessagePos msgType (new PositionRange(lexbuf.StartPos, lexbuf.EndPos)) args;
     ()
 
 /// Adds given string as comment into comments list in args.
 let addComment (_, cmtList : ResizeArray<Comment>) sb bPos ePos =
-    cmtList.Add(new Comment(sb, new Position(bPos, ePos)));
+    cmtList.Add(new Comment(sb, new PositionRange(bPos, ePos)));
     ()
 
 /// Appends current string from given lexbuf to given stringbuilder.
@@ -235,7 +235,7 @@ and multiLineComment args bPos sb nest = parse
 
     | eof
       { addComment args (sb.ToString()) bPos lexbuf.StartPos;
-        logMessagePos LexerMessage.UnterminatedMultilineComment (new Position(bPos, lexbuf.StartPos)) Array.empty;
+        logMessagePos LexerMessage.UnterminatedMultilineComment (new PositionRange(bPos, lexbuf.StartPos)) Array.empty;
         EOF }
 
     | _

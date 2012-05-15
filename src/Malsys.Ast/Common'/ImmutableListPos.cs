@@ -8,13 +8,13 @@ namespace Malsys.Ast {
 	/// <remarks>
 	/// Immutable.
 	/// </remarks>
-	public class ImmutableListPos<T> : ImmutableList<T>, IToken where T : IToken {
+	public class ImmutableListPos<T> : ImmutableList<T>, IAstNode where T : IAstNode {
 
-		new public static readonly ImmutableListPos<T> Empty = new ImmutableListPos<T>(Position.Unknown);
+		new public static readonly ImmutableListPos<T> Empty = new ImmutableListPos<T>(PositionRange.Unknown);
 
 
-		public readonly Position BeginSeparator;
-		public readonly Position EndSeparator;
+		public readonly PositionRange BeginSeparator;
+		public readonly PositionRange EndSeparator;
 
 		#region Constructors
 
@@ -26,7 +26,7 @@ namespace Malsys.Ast {
 				Position = immutableValuesPos.Position;
 		}
 
-		public ImmutableListPos(ImmutableList<T> immutableValues, Position beginSep, Position endSep, Position pos)
+		public ImmutableListPos(ImmutableList<T> immutableValues, PositionRange beginSep, PositionRange endSep, PositionRange pos)
 			: base(immutableValues) {
 
 			BeginSeparator = beginSep;
@@ -34,23 +34,23 @@ namespace Malsys.Ast {
 			Position = pos;
 		}
 
-		public ImmutableListPos(ImmutableList<T> immutableValues, Position pos)
-			: this(immutableValues, Position.Unknown, Position.Unknown, pos) {
+		public ImmutableListPos(ImmutableList<T> immutableValues, PositionRange pos)
+			: this(immutableValues, PositionRange.Unknown, PositionRange.Unknown, pos) {
 		}
 
-		public ImmutableListPos(Position pos)
-			: this(ImmutableList<T>.Empty, Position.Unknown, Position.Unknown, pos) {
+		public ImmutableListPos(PositionRange pos)
+			: this(ImmutableList<T>.Empty, PositionRange.Unknown, PositionRange.Unknown, pos) {
 		}
 
-		public ImmutableListPos(Position beginSep, Position endSep, Position pos)
+		public ImmutableListPos(PositionRange beginSep, PositionRange endSep, PositionRange pos)
 			: this(ImmutableList<T>.Empty, beginSep, endSep, pos) {
 		}
 
-		public ImmutableListPos(List<T> vals, Position pos)
-			: this(vals, Position.Unknown, Position.Unknown, pos) {
+		public ImmutableListPos(List<T> vals, PositionRange pos)
+			: this(vals, PositionRange.Unknown, PositionRange.Unknown, pos) {
 		}
 
-		public ImmutableListPos(List<T> vals, Position beginSep, Position endSep, Position pos)
+		public ImmutableListPos(List<T> vals, PositionRange beginSep, PositionRange endSep, PositionRange pos)
 			: base(vals) {
 
 			BeginSeparator = beginSep;
@@ -62,16 +62,16 @@ namespace Malsys.Ast {
 
 
 
-		public ImmutableListPos<T> AddSeparators(Position beginSep, Position endSep) {
+		public ImmutableListPos<T> AddSeparators(PositionRange beginSep, PositionRange endSep) {
 			return new ImmutableListPos<T>(this, beginSep, endSep, this.Position);
 		}
 
-		public ImmutableListPos<T> AddSeparators(Position beginSep, Position endSep, Position pos) {
+		public ImmutableListPos<T> AddSeparators(PositionRange beginSep, PositionRange endSep, PositionRange pos) {
 			return new ImmutableListPos<T>(this, beginSep, endSep, pos);
 		}
 
 
-		public Position Position { get; private set; }
+		public PositionRange Position { get; private set; }
 
 	}
 }

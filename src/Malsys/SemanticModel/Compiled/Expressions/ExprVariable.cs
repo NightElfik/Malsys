@@ -11,10 +11,10 @@ namespace Malsys.SemanticModel.Compiled.Expressions {
 
 		public readonly string Name;
 
-		public readonly Ast.Identificator AstNode;
+		public readonly Ast.Identifier AstNode;
 
 
-		public ExprVariable(string name, Ast.Identificator astNode) {
+		public ExprVariable(string name, Ast.Identifier astNode) {
 			Name = name;
 			AstNode = astNode;
 		}

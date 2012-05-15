@@ -10,7 +10,7 @@ namespace Malsys {
 
 		bool ErrorOccurred { get; }
 
-		void LogMessage(string msgId, MessageType type, Position pos, string message);
+		void LogMessage(string msgId, MessageType type, PositionRange pos, string message);
 
 
 		IMessageLoggerBlock StartErrorLoggingBlock();
@@ -27,22 +27,22 @@ namespace Malsys {
 	public static class IMessageLoggerExtensions {
 
 		public static void LogInfo(this IMessageLogger logger, string msgId, string message, params object[] args) {
-			logger.LogMessage(msgId, MessageType.Info, Position.Unknown, message.Fmt(args));
+			logger.LogMessage(msgId, MessageType.Info, PositionRange.Unknown, message.Fmt(args));
 		}
 
 		public static void LogError(this IMessageLogger logger, string msgId, string message, params object[] args) {
-			logger.LogMessage(msgId, MessageType.Error, Position.Unknown, message.Fmt(args));
+			logger.LogMessage(msgId, MessageType.Error, PositionRange.Unknown, message.Fmt(args));
 		}
 
-		public static void LogError(this IMessageLogger logger, string msgId, Position pos, string message, params object[] args) {
+		public static void LogError(this IMessageLogger logger, string msgId, PositionRange pos, string message, params object[] args) {
 			logger.LogMessage(msgId, MessageType.Error, pos, message.Fmt(args));
 		}
 
 		public static void LogMessage<TEnum>(this IMessageLogger logger, TEnum msgIdEnum, params object[] args) where TEnum : struct {
-			LogMessage(logger, msgIdEnum, Position.Unknown, args);
+			LogMessage(logger, msgIdEnum, PositionRange.Unknown, args);
 		}
 
-		public static void LogMessage<TEnum>(this IMessageLogger logger, TEnum msgIdEnum, Position pos, params object[] args) where TEnum : struct {
+		public static void LogMessage<TEnum>(this IMessageLogger logger, TEnum msgIdEnum, PositionRange pos, params object[] args) where TEnum : struct {
 
 			Contract.Requires<ArgumentException>(typeof(TEnum).IsEnum, "T must be an enumerated type.");
 

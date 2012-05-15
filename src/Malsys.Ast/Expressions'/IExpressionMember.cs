@@ -8,7 +8,7 @@ namespace Malsys.Ast {
 	/// <remarks>
 	/// All expression members should be immutable.
 	/// </remarks>
-	public interface IExpressionMember : IToken {
+	public interface IExpressionMember : IAstNode {
 
 		ExpressionMemberType MemberType { get; }
 
@@ -23,7 +23,7 @@ namespace Malsys.Ast {
 		ExpressionIndexer,
 		ExpressionsArray,
 		FloatConstant,
-		Identificator,
+		Identifier,
 		Operator,
 
 	}

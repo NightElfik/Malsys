@@ -19,14 +19,14 @@ open Malsys.Ast
 // This function is called by the generated parser code. Returning initiates error recovery.
 // Saves last error position to thread-static message logger.
 let parse_error_rich = Some (fun (ctxt: ParseErrorContext<_>) ->
-   Logger.setErrPos (new Position(ctxt.ParseState.ResultRange))  )
+   Logger.setErrPos (new PositionRange(ctxt.ParseState.ResultRange))  )
 
 
 let getLastErrorPos = Logger.getLastErrPos
 
 
 let logMsg msgType (parserState : IParseState) =
-    logMessagePos msgType (new Position(parserState.ResultRange)) Array.empty;
+    logMessagePos msgType (new PositionRange(parserState.ResultRange)) Array.empty;
     ()
 
 let logMsgPos msgType pos =
@@ -35,27 +35,27 @@ let logMsgPos msgType pos =
 
 
 let getPos (parserState : IParseState) =
-    new Position(parserState.ResultRange)
+    new PositionRange(parserState.ResultRange)
 
 let getPosI (parserState : IParseState) index =
-    new Position(parserState.InputRange(index))
+    new PositionRange(parserState.InputRange(index))
 
 let getPosRange (parserState : IParseState) fromI toI =
-    new Position((fst (parserState.InputRange(fromI)), snd (parserState.InputRange(toI))))
+    new PositionRange((fst (parserState.InputRange(fromI)), snd (parserState.InputRange(toI))))
 
-let getPosFromTo (fromPos : Position) (toPos : Position) =
-    new Position(fromPos.BeginLine, fromPos.BeginColumn, toPos.EndLine, toPos.EndColumn, fromPos.SourceName)
+let getPosFromTo (fromPos : PositionRange) (toPos : PositionRange) =
+    new PositionRange(fromPos.BeginLine, fromPos.BeginColumn, toPos.EndLine, toPos.EndColumn, fromPos.SourceName)
 
 let getPosBetween (parserState : IParseState) fromI toI =
-    new Position((snd (parserState.InputRange(fromI)), fst (parserState.InputRange(toI))))
+    new PositionRange((snd (parserState.InputRange(fromI)), fst (parserState.InputRange(toI))))
 
 let getStartPos (parserState : IParseState) =
     let startPos = fst parserState.ResultRange
-    new Position(startPos, startPos)
+    new PositionRange(startPos, startPos)
 
 let getEndPos (parserState : IParseState) =
     let endPos = snd parserState.ResultRange
-    new Position(endPos, endPos)
+    new PositionRange(endPos, endPos)
 
 let getInpuFile (parserState : IParseState) =
     (fst parserState.ResultRange).FileName
@@ -284,10 +284,10 @@ ComponentSymbolsAssignDefNoDelim:
 
 SymbolsInterpretDefNoDelim:
     | INTERPRET LsystemSymbolNoParamsList OptParams AS Id OptExpressionsListParen
-      { let symbolsImm = new ImmutableListPos<Identificator>($2 :> ResizeArray<Identificator>, getPosI parseState 2) in
+      { let symbolsImm = new ImmutableListPos<Identifier>($2 :> ResizeArray<Identifier>, getPosI parseState 2) in
         new SymbolsInterpretDef(symbolsImm, $3, $5, $6, getPos parseState) :> ILsystemStatement }
     | INTERPRET LsystemSymbolNoParamsList OptParams AS LSYSTEM Id OptExpressionsListParen OptWithId
-      { let symbolsImm = new ImmutableListPos<Identificator>($2 :> ResizeArray<Identificator>, getPosI parseState 2) in
+      { let symbolsImm = new ImmutableListPos<Identifier>($2 :> ResizeArray<Identifier>, getPosI parseState 2) in
         new SymbolsInterpretDef(symbolsImm, $3, $6, $7, true, $8, getPos parseState) :> ILsystemStatement }
     | INTERPRET error
       { logMsgPos ParsserMessage.SymbolsInterpretationInvalid (getPos parseState);
@@ -295,7 +295,7 @@ SymbolsInterpretDefNoDelim:
 
 OptWithId:
     |
-      { Identificator.Empty }
+      { Identifier.Empty }
     | WITH Id
       { $2 }
 
@@ -424,10 +424,10 @@ LsystemSymbolListNonEmpty:
 
 LsystemSymbolNoParamsList:
     | Symbol
-      { let sym = new Identificator($1, getPos parseState) in
-        let mutable x = new ResizeArray<Identificator>() in x.Add(sym); x }
+      { let sym = new Identifier($1, getPos parseState) in
+        let mutable x = new ResizeArray<Identifier>() in x.Add(sym); x }
     | LsystemSymbolNoParamsList Symbol
-      { $1.Add(new Identificator($2, getPosI parseState 1)); $1 }
+      { $1.Add(new Identifier($2, getPosI parseState 1)); $1 }
 
 Symbol:
     | ID
@@ -543,7 +543,7 @@ ExprIndexer:
 // explicit ID to avoid shift/reduce conflict, don't know how to do just with `Id` (already tried `%prec ID` in many places)
 ExprFun:
     | ID LPAREN ExpressionsList RPAREN
-      { let id = new Identificator($1, getPos parseState) in
+      { let id = new Identifier($1, getPos parseState) in
         let args = $3.AddSeparators(getPosI parseState 2, getPosI parseState 4)
         new ExpressionFunction(id, args, getPos parseState) :> IExpressionMember }
 
@@ -609,9 +609,9 @@ OptVirtual:
 
 FullyQualifiedTypeId:
     | ID
-      { new Identificator($1, getPos parseState) }
+      { new Identifier($1, getPos parseState) }
     | FullyQualifiedTypeId DOT ID
-      { new Identificator($1.Name + "." + $3, getPos parseState) }
+      { new Identifier($1.Name + "." + $3, getPos parseState) }
 
 
 //------------------------------------------------------------------------------
@@ -626,7 +626,7 @@ ProcessStatement:
 
 AllOrId:
     | ALL
-      { Identificator.Empty }
+      { Identifier.Empty }
     | Id
       { $1 }
 
@@ -653,16 +653,16 @@ ProcessComponentLsysStatementList:
 
 Id:
     | ID
-      { new Identificator($1, getPos parseState) }
+      { new Identifier($1, getPos parseState) }
 
 IdsCommaList:
     |
-      { new ImmutableListPos<Identificator>(getPos parseState) }
+      { new ImmutableListPos<Identifier>(getPos parseState) }
     | IdsCommaListNonEmpty
-      { new ImmutableListPos<Identificator>($1 :> ResizeArray<Identificator>, getPos parseState) }
+      { new ImmutableListPos<Identifier>($1 :> ResizeArray<Identifier>, getPos parseState) }
 
 IdsCommaListNonEmpty:
     | Id
-      { let mutable x = new ResizeArray<Identificator>() in x.Add($1); x }
+      { let mutable x = new ResizeArray<Identifier>() in x.Add($1); x }
     | IdsCommaListNonEmpty COMMA Id
       { $1.Add($3); $1 }

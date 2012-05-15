@@ -121,7 +121,7 @@
     <Compile Include="Expressions%27\ExpressionIndexer.cs" />
     <Compile Include="Expressions%27\FloatConstant.cs" />
     <Compile Include="Common%27\FunctionDefinition.cs" />
-    <Compile Include="Common%27\Identificator.cs" />
+    <Compile Include="Common%27\Identifier.cs" />
     <Compile Include="Expressions%27\IExpressionMember.cs" />
     <Compile Include="Common%27\ImmutableListPos.cs" />
     <Compile Include="Input%27\InputBlock.cs" />

@@ -9,8 +9,8 @@ namespace Malsys.Ast {
 	/// </remarks>
 	public class FunctionDefinition : NameParamsStatements<IFunctionStatement>, IInputStatement, ILsystemStatement {
 
-		public FunctionDefinition(Identificator name, ImmutableListPos<OptionalParameter> prms,
-				ImmutableListPos<IFunctionStatement> statements, Position pos)
+		public FunctionDefinition(Identifier name, ImmutableListPos<OptionalParameter> prms,
+				ImmutableListPos<IFunctionStatement> statements, PositionRange pos)
 			: base(name, prms, statements, pos) { }
 
 

@@ -14,7 +14,7 @@ namespace Malsys.Ast {
 		public readonly ConstantFormat Format;
 
 
-		public FloatConstant(double value, ConstantFormat cf, Position pos) {
+		public FloatConstant(double value, ConstantFormat cf, PositionRange pos) {
 			Value = value;
 			Format = cf;
 			Position = pos;
@@ -39,7 +39,7 @@ namespace Malsys.Ast {
 
 
 
-		public Position Position { get; private set; }
+		public PositionRange Position { get; private set; }
 
 
 		public ExpressionMemberType MemberType {

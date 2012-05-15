@@ -95,7 +95,7 @@ namespace Malsys.SemanticModel {
 
 		public long RoundedLongValue { get { return (long)Math.Round(Value); } }
 
-		public Position AstPosition { get { return AstNode == null ? Position.Unknown : AstNode.Position; } }
+		public PositionRange AstPosition { get { return AstNode == null ? PositionRange.Unknown : AstNode.Position; } }
 
 
 		public static implicit operator double(Constant c) {
