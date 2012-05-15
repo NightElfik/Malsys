@@ -53,6 +53,8 @@ namespace Malsys.Processing.Components.Rewriters {
 			/// </summary>
 			private readonly int rightCtxtMaxLen;
 
+			private readonly bool processContext;
+
 			private ContextListNode<IValue> contextRootNode;
 			private ContextListNode<IValue> currentSombolInContext;
 
@@ -75,6 +77,8 @@ namespace Malsys.Processing.Components.Rewriters {
 
 				leftCtxtMaxLen = parent.leftCtxtMaxLen;
 				rightCtxtMaxLen = parent.rightCtxtMaxLen;
+
+				processContext = leftCtxtMaxLen > 0 || rightCtxtMaxLen > 0;
 
 				inputBuffer = new IndexableQueue<Symbol>(rightCtxtMaxLen + 4);
 				// optimal output buffer length is max length of any replacement

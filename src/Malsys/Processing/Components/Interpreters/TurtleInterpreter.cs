@@ -473,7 +473,9 @@ namespace Malsys.Processing.Components.Interpreters {
 			Vector3D moveVector = tranform.Transform(fwdVect * length);
 			currState.Position += moveVector;
 
-			Debug.Assert(!double.IsNaN(currState.Position.X) && !double.IsNaN(currState.Position.Y) && !double.IsNaN(currState.Position.Z));
+			if (double.IsNaN(currState.Position.X) || double.IsNaN(currState.Position.Y) || double.IsNaN(currState.Position.Z)) {
+				return;
+			}
 
 			if (mode2D) {
 				renderer2D.MoveTo(currState.Position.ToPoint2D(), currState.Width, currState.Color);
@@ -507,7 +509,9 @@ namespace Malsys.Processing.Components.Interpreters {
 			Vector3D moveVector = tranform.Transform(fwdVect * length);
 			currState.Position += moveVector;
 
-			Debug.Assert(!double.IsNaN(currState.Position.X) && !double.IsNaN(currState.Position.Y) && !double.IsNaN(currState.Position.Z));
+			if (double.IsNaN(currState.Position.X) || double.IsNaN(currState.Position.Y) || double.IsNaN(currState.Position.Z)) {
+				return;
+			}
 
 			colorEvents++;
 			if (mode2D) {
@@ -681,7 +685,9 @@ namespace Malsys.Processing.Components.Interpreters {
 		[SymbolInterpretation]
 		public void RecordPolygonVertex(ArgsStorage args) {
 
-			Debug.Assert(!double.IsNaN(currState.Position.X) && !double.IsNaN(currState.Position.Y) && !double.IsNaN(currState.Position.Z));
+			if (double.IsNaN(currState.Position.X) || double.IsNaN(currState.Position.Y) || double.IsNaN(currState.Position.Z)) {
+				return;
+			}
 
 			if (mode2D) {
 				if (currPolygon2d == null) {

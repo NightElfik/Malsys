@@ -1,0 +1,20 @@
+//
+// File and path settings
+//
+PathExport 't:\svg'
+PathClear false
+FileFormat pdf
+FilePrefix 
+
+//
+// Export settings settings
+//
+ExportArea canvas
+
+//
+// Execute Converter
+//
+Loop 121 3
+FileSvg T:\svg\Index.svg
+FileName Index
+Convert

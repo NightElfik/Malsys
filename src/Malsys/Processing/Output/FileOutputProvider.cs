@@ -12,6 +12,7 @@ using System.IO.Packaging;
 using System.Linq;
 using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Collections;
+using System.Threading;
 
 namespace Malsys.Processing.Output {
 	public class FileOutputProvider : IOutputProvider, IDisposable {
@@ -193,16 +194,20 @@ namespace Malsys.Processing.Output {
 
 			Contract.Ensures(Contract.Result<string>().StartsWith(root));
 
+			int tryNumber = 0;
 			string filePath;
 			do {
-				string timeStamp = DateTime.Now.ToString("yyyy-MM-dd--HH-mm-ss", CultureInfo.InvariantCulture.DateTimeFormat);
-				int randInt = rndGenerator.Next(0, maxRandInt);
-				string fileName = "{0}{1}.{2:000}{3}".Fmt(FilesPrefix, timeStamp, randInt, suffix);
+				string timeStamp = DateTime.Now.ToString("yyyy-MM-dd--HH-mm-ss-fffff", CultureInfo.InvariantCulture.DateTimeFormat);
+				string fileName = "{0}{1}{2}".Fmt(FilesPrefix, timeStamp, suffix);
 				filePath = Path.Combine(root, fileName);
 				filePath = Path.GetFullPath(filePath);
 				if (!filePath.StartsWith(root)) {
-					throw new Exception("");
+					throw new Exception("File path escaped from root directory.");
 				}
+				if (tryNumber++ > 16) {
+					throw new Exception("Unable to find unique file name.");
+				}
+				Thread.Sleep(1);  // DateTime.Now is not as detailed as I expected
 			} while (File.Exists(filePath));
 
 			return filePath;

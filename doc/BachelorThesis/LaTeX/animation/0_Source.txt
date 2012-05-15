@@ -1,0 +1,114 @@
+lsystem MycelisMuralis extends Branches {
+
+	let color = #DDDDDD;
+
+	set symbols axiom = I(18) F A(0);
+	set iterations = 80;
+	set initialAngle = 90;
+	set scale = 4;
+	set canvasOriginSize = {-50, -110, 90, 108};
+	set interpretEveryIterationFrom = 70;
+	set initialColor = color;
+	//set interpretFollowingIterations = {20,30,40,50,60,70,80,90};
+	set tropismVector = {0, -1, 0};
+	set tropismCoefficient = 2.2;
+
+	set symbols contextIgnore = + / F W I K;
+
+	interpret K(x) as lsystem Organ(x, color);
+	interpret F as DrawForward(8, 1.5);
+	interpret G as DrawForward(8, 1);
+	interpret + as TurnLeft(30);
+	interpret / as Roll(180);
+
+	rewrite {S} A to T V K(0);
+	rewrite {V} A to T V K(0);
+
+	rewrite A(t) where t > 0 to A(t-1);
+	rewrite A(t)             to M [ + G ] F / A(2);
+
+	rewrite {S} M     to S;
+	rewrite     S {T} to T;
+	rewrite {T} G     to F A(2);
+	rewrite {V} M     to S;
+	rewrite     T {V} to W;
+	rewrite     W     to V;
+
+	rewrite I(t) where t > 0 to I(t - 1);
+	rewrite I                to S;
+
+	rewrite K(t) to K(t+1);
+
+}
+
+abstract lsystem Organ(age, color) extends Polygons {
+
+	set symbols axiom = S;
+	set iterations = 1;
+
+	let color = darken(color, 0.1);
+
+
+	interpret K(x) as DrawCircle(x, color);
+	interpret B(x) as lsystem Bloom(x, color);
+	interpret P(x) as lsystem Seed(x, color);
+	interpret f as MoveForward(4);
+	interpret + as TurnLeft;
+
+	rewrite S where age > 11 to
+		<(color, 0) . [ +(30) f . ] [ +(-30) f . ] >;
+	rewrite S where age > 6 to
+		P(age - 6);
+	rewrite S where age > 3 to
+		B(age - 3);
+	rewrite S to
+		K(1 + age / 4);
+
+}
+
+abstract lsystem Bloom(age = 2, color = #AAAAAA) extends Polygons {
+
+	let leafCount = floor(random(5, 7));
+	let angle = 120 / leafCount;
+	let size = 1.5 + age / 3;
+
+	set symbols axiom = + leaf;
+	set iterations = leafCount;
+
+	interpret G as MoveForward(size);
+
+	interpret + as TurnLeft(angle);
+	interpret - as TurnLeft(-angle);
+	interpret | as TurnLeft(180);
+
+	rewrite leaf to +(360 / leafCount)
+		[ <(color, 0) . + G . - - G . + |
+		+  G . > ] leaf;
+}
+
+abstract lsystem Seed(age = 2, color = #AAAAAA) extends Polygons {
+
+	set symbols axiom = <(color, 0) . + f . - - f . + X(7) [ F ] | + f . >;
+	set iterations = age;
+	let size = 2 + age / 4;
+
+	interpret F as DrawForward(size * 0.8, 0.2);
+	interpret f as MoveForward(size);
+
+	interpret + as TurnLeft(30);
+	interpret - as TurnLeft(-30);
+	interpret | as TurnLeft(180);
+
+	rewrite X(a) to [+(a) F] [+(-a) F] X(a + 15);
+	rewrite Y to Y ;
+}
+
+//process Bloom with SvgRenderer;
+//process Seed with SvgRenderer;
+//process all with SvgRenderer;
+//process all with SymbolPrinter;
+
+process all with SvgRenderer
+	set iterations = 82
+	set interpretEveryIteration = true
+	set compressSvg = false;

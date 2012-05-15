@@ -1,4 +1,7 @@
-% xelatex -synctex=1 -interaction=nonstopmode -output-driver="xdvipdfmx -V 5" %.tex
+% xelatex -synctex=1 -interaction=nonstopmode %.tex
+
+\newcommand{\debugging}{true}
+%\newcommand{\corneranim}{true}
 
 %% Version for one sided printing:
 % margins: left 40mm, right 25mm, top and bottom 25mm
@@ -27,8 +30,8 @@
 
 %\usepackage[utf8]{inputenc}
 \usepackage[czech,english]{babel}
+\usepackage[dmyyyy]{datetime}
 %\usepackage[T1]{fontenc}
-%\usepackage[american]{babel}
 
 \usepackage{fontspec}
 \newfontfamily\consolas{Consolas}
@@ -52,16 +55,18 @@
 \usepackage{booktabs}  % nicer tables
 \usepackage[bottom]{footmisc}  % footnotes at the bottom of page
 
+\usepackage{afterpage}  %http://tex.stackexchange.com/questions/55653/placing-figure-on-an-even-odd-page
+
 \usepackage{rotating}
 
 \usepackage[titletoc]{appendix}
 
 \usepackage{tikz}
-\usetikzlibrary{positioning,shapes,arrows,trees,fit}
+\usetikzlibrary{positioning,shapes,arrows,trees,fit,intersections}
 \usetikzlibrary{decorations.pathmorphing} % for snake lines
 
-\tikzstyle{block} = [draw, fill=blue!20, rectangle, minimum height=3em, minimum width=6em]
-\tikzstyle{blockx} = [draw, fill=green!20, rectangle, minimum height=3em, minimum width=6em, rounded corners=1mm]
+\tikzstyle{block} = [draw, fill=blue!12, rectangle, minimum height=3em, minimum width=6em]
+\tikzstyle{blockx} = [draw, fill=green!12, rectangle, minimum height=3em, minimum width=6em, rounded corners=1mm]
 \tikzstyle{area} = [draw, rectangle, rounded corners=2mm]
 \tikzstyle{coord} = [coordinate]
 \tikzstyle{snakeline} = [decorate, decoration={pre length=0mm, post length=1mm, snake, amplitude=1mm, segment length=3mm}, ->]
@@ -98,12 +103,22 @@
 
 \usepackage{syntaxHighlighters}  % needs packages color and listings
 
+\ifdefined\corneranim
+	\usepackage{eso-pic}
+	\AddToShipoutPictureBG{%
+		\AtPageLowerLeft{\ifodd\thepage\else
+			\ifnum\thepage>5\relax
+				\includegraphics[width=2cm]{\thepage}%
+			\else\fi
+		\fi}}%
+\else\fi
+
 \usepackage{hyperref}  % after all other packages
 \hypersetup{
 	%unicode=true,
 	pdftitle=L-systems online,
 	pdfauthor=Marek Fišer,
-	pdfkeywords={L-system}{generator}{online}{universal}{library},
+	pdfkeywords={Lindenmayer systems}{L-system}{plant}{modelling}{component system}{SVG}{WebGL},
 	colorlinks=true,
 	linkcolor=linkClr,
 	citecolor=citeClr,
@@ -114,28 +129,28 @@
 
 % These macros remove white space above headers of chapters.
 \makeatletter
-\def\@makechapterhead#1{
-  {\parindent \z@ \raggedright \normalfont
-   \Huge\bfseries \thechapter. #1
-   \par\nobreak
-   \vskip 20\p@
+\def\@makechapterhead#1{%
+	{\parindent \z@ \raggedright \normalfont
+		\Huge\bfseries \thechapter. #1%
+		\par\nobreak
+		\vskip 20\p@
 }}
-\def\@makeschapterhead#1{
-  {\parindent \z@ \raggedright \normalfont
-   \Huge\bfseries #1
-   \par\nobreak
-   \vskip 20\p@
+\def\@makeschapterhead#1{%
+	{\parindent \z@ \raggedright \normalfont
+		\Huge\bfseries #1
+		\par\nobreak
+		\vskip 20\p@
 }}
 \makeatother
 
 % Definition of chapter macro for chapters that are not numbered but they are in TOC.
-\def\chapwithtoc#1{
-\chapter*{#1}
-\addcontentsline{toc}{chapter}{#1}
+\def\chapwithtoc#1{%
+	\chapter*{#1}%
+	\addcontentsline{toc}{chapter}{#1}%
 }
 
 % default path for graphics
-\graphicspath{{img/}}
+\graphicspath{{img/}{animation/}}
 
 % macros for L-system to avoid hyphenation of it.
 \newcommand{\lsystem}{\mbox{L-system}\xspace}
@@ -167,27 +182,36 @@
 	\vspace{10pt}
 }
 
-%\begin{comment}
+\ifdefined\debugging
 % debugging
 \includeonly{
+%frontpage,
+%thanks,
 %abstract,
+%introduction,
 %lsystems,
-design,
+%design,
+implementation,
+%results,
+%conclusion,
 %apx-stdLib,
 %apx-3rdParty,
-%conclusion
+%apx-userDoc,
 }
-%\end{comment}
+\else
+\fi
+
+%==============================================================================================================================
+%==============================================================================================================================
 
 \begin{document}
 
 \include{frontpage}
 
-%%% Následuje vevázaný list -- kopie podepsaného "Zadání bakalářské práce".
-%%% Toto zadání NENÍ součástí elektronické verze práce, nescanovat.
-
 \openright
+\setcounter{page}{1}  % to avoid placing animation in the corner
 \include{thanks}
+
 
 \include{abstract}
 
@@ -215,7 +239,7 @@ design,
 %\addcontentsline{toc}{chapter}{List of Tables}
 %\listoftables
 
-%\addcontentsline{toc}{chapter}{List of source codes}
+%\addcontentsline{toc}{chapter}{List of Source codes}
 %\lstlistoflistings
 
 
@@ -224,6 +248,7 @@ design,
 
 \include{apx-attachedCd}
 \include{apx-aboutFigures}
+\include{apx-userDoc}
 \include{apx-3rdParty}
 \include{apx-inputSyntax}
 \include{apx-stdLib}

@@ -1,15 +1,53 @@
 
 \chapwithtoc{Conclusion}
 
+The goal of this work was to create online feature-rich development environment for anybody who wants to experiment with \lsystems.
+This goal was achieved and the result can be seen at \url{http://malsys.cz}.
+However it was created more than just web based \lsystem processor.
 
-
-\begin{wrapfigure}{r}{0.4\textwidth}
-	\includegraphics[width=\linewidth]{malsys_cz}
-	\caption{\url{http://malsys.cz}}
-	\label{fig:malsysQr}
+\begin{wrapfigure}{r}{0.5\textwidth}
+	\includegraphics[width=\linewidth]{HexaGosperNeedlework}
+	\caption{Needlework of Hexa-Gosper curve}
+	\label{fig:HexaGosperNeedlework}
 \end{wrapfigure}
 
+As part of the solution was created standalone modular \lsystem processing library which process \lsystems with components.
+Component system is defined in input together with \lsystems.
+Individual components can be configured using statements in \lsystems.
+Components can be created or extended by user which brings great extensibility to \lsystem processing.
+Many components are already part of the library.
+They are used on web to process \lsystems and produce 2D images and 3D scenes or even ASCII art.
+
+Component is piece of program thus it can do anything.
+For example it is possible to create special component which will interpret \lsystem symbols as commands for some CNC%
+	\footnote{CNC stands for Computer Numerical Control and refers specifically to a computer \emph{controller} which drives the powered mechanical device
+		which for instance uses number of different tools-drills, saws, etc. for fabricating materials like metal or wood.} 
+	sewing machine which can sew an ornament on T-shirt, carpet or curtain (\autoref{fig:HexaGosperNeedlework}).
+If stochastic \lsystem will be used no two T-shirts will have the same ornament on it.
+This example is relatively bizarre but it reflects extensibility of the library well.
+
+Part of the created web interface is the gallery of \lsystems with more than 50 inserted \lsystems (in time of publishing this thesis) and it is slowly becoming unique database of all basic \lsystems.
+Any registered user can save their \lsystems and publish them to the gallery.
+Published \lsystems can be rated.
 [TODO]
+[There should be written little more...]
+
+
+\section*{Future work}
+
+Web user interface does not provide any way for communication between users.
+A great improvement will be possibility to add comments to the gallery entries and write personal messages to other users.
+Also some dimple forum could be helpful.
+
+The \lsystem processing library was written with emphasis on functionality and simplicity, not performance.
+The performance for web processing is enough because it is even not possible to display large outputs in web browsers.
+However there are many areas where improvements can be made.
+For example compiler can optimize expression trees to eliminate static expressions ($1 + 2 \rightarrow 3$).
+
+Because of component-based design of the \lsystem processing library it is possible to extend it with minimal effort.
+The plan was to create renderer which renderes the scene with the PovRay ray-tracer but there was no time for it.
+
+
 
 
 

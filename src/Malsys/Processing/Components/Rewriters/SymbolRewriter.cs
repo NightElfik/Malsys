@@ -23,6 +23,7 @@ namespace Malsys.Processing.Components.Rewriters {
 	/// <group>Rewriters</group>
 	/// <remarks>
 	/// Context is not freed yet.
+	/// The problem occurs when trying to check context of symbol which is ignored from context.
 	/// </remarks>
 	public partial class SymbolRewriter : IRewriter {
 

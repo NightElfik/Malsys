@@ -358,7 +358,7 @@ namespace Malsys.Resources {
 		#endregion
 
 
-		#region Other functions -- abs, sign, deg2Rad, rad2deg, toColorGradient
+		#region Other functions -- abs, sign, deg2rad, rad2deg, toColorGradient
 
 		/// <summary>
 		/// Returns the absolute value of given number.

@@ -76,7 +76,8 @@ namespace Malsys.Web.Models.Repositories {
 			}
 
 			// make sure that parent ID is valid
-			if (inputDb.InputProcesses.SingleOrDefault(ip => ip.InputProcessId == parentId) == null) {
+			var parentEntity = inputDb.InputProcesses.SingleOrDefault(ip => ip.InputProcessId == parentId);
+			if (parentEntity == null) {
 				parentId = null;
 			}
 
@@ -87,6 +88,7 @@ namespace Malsys.Web.Models.Repositories {
 				ParentInputProcessId = parentId,
 				User = user,
 				ProcessDate = now,
+				ChainLength = parentEntity == null ? 0 : parentEntity.ChainLength + 1,
 				Duration = duration.Ticks
 			};
 
@@ -98,7 +100,7 @@ namespace Malsys.Web.Models.Repositories {
 					InputProcess = inputProcess,
 					FileName = Path.GetFileName(output.FilePath),
 					CreationDate = now,
-					LastOpenDate = now,
+					LastOpenDate = now - TimeSpan.FromMinutes(1),
 					Metadata = OutputMetadataHelper.SerializeMetadata(output.Metadata)
 				};
 

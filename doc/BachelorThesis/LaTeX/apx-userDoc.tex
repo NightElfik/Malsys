@@ -1,0 +1,46 @@
+
+
+\chapter{User documentation}
+\label{chap:userDoc}
+
+\begin{figure}[ht]
+	\centering
+\begin{tikzpicture}[scale=4]
+	\clip (-0.5,-0.3) rectangle (1.5,0.7);
+	%\draw[step=.5cm,gray,very thin] (-1,-1.4) grid (2,1.4);
+	
+	
+	\fill (0,0) rectangle (1,-1);
+	\fill [rotate=40] (0,0) rectangle (0.7666,0.7666);
+	\fill [xshift=1cm,yshift=0] [rotate=40] (0,0) rectangle (0.643,0.643);
+	
+	\draw [draw=black] (-3mm,0mm) ;
+	
+	\filldraw [fill=green!20,draw=green!50!black] (0,0) -- (3mm,0mm) arc (0:40:3mm) -- cycle;
+	\draw [green!50!black] (0.2,0.07) node {$\alpha$};
+	
+	\filldraw [fill=red!20,draw=red!50!black] (1,0) -- (7mm,0mm) arc (180:130:3mm) -- cycle;
+	\draw [red!50!black] (0.8,0.09) node {$\beta$};
+	
+	\draw [red,very thick] (0,0) -- (40:0.7666cm);
+	\draw [red!50!black,very thick] (40:0.45cm) ++(130:2mm) node[below=2pt,fill=white] {$b$} (0,0);
+	\draw [red,thick, dashed] (0.5,0) -- +(40:0.3833);
+	\draw [red!50!black,very thick] (0.6,0.19) node {$\frac{b}{2}$};
+	
+	\draw [green,very thick] (40:0.7666cm) -- (1,0);
+	\draw [green!50!black,very thick] (40:1cm) ++(-50:2.5mm) node[below=2pt,fill=white] {$a$} (0,0);
+	\draw [green,thick, dashed] (0.5,0) -- +(130:0.3215);
+	\draw [green!50!black,very thick] (0.43,0.18) node {$\frac{a}{2}$};
+	
+	\draw [blue,very thick] (0,0) -- (1,0);
+	\draw [blue!50!black,very thick] (0.5, -0.05) node [below=2pt,fill=white] {$c$} (0,0);
+	
+	\draw [xshift=0.586cm,yshift=0.492cm,black,thin] (-50:1.5mm) arc (-50:-140:1.5mm);
+	\fill [xshift=0.586cm,yshift=0.492cm,black] (-95:0.8mm) circle (0.1mm);
+	
+	\draw [draw=white,dashed,very thick] (10mm,0mm) arc (0:180:5mm);	
+	
+\end{tikzpicture}
+	\caption{sdf}
+	\label{fig:sfd}
+\end{figure}

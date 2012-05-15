@@ -87,7 +87,7 @@
 \lstnewenvironment{Lsystem}[1][]%
 { % http://tex.stackexchange.com/questions/10141/how-to-prevent-lstlisting-from-splitting-code-between-pages
 	\noindent
-	\minipage{\linewidth}
+	\minipage{\linewidth}%
 	\vspace{0.5\baselineskip}
 	\lstset{language=Lsystem,#1}
 }
@@ -96,7 +96,7 @@
 \lstnewenvironment{Lsystem50}[1][]%
 { % http://tex.stackexchange.com/questions/10141/how-to-prevent-lstlisting-from-splitting-code-between-pages
 	\noindent
-	\minipage{0.49\linewidth}
+	\minipage{0.49\linewidth}%
 	\vspace{0.5\baselineskip}
 	\lstset{language=Lsystem,#1}
 }
@@ -127,11 +127,50 @@
 \lstnewenvironment{Grammar}[1][]%
 { % http://tex.stackexchange.com/questions/10141/how-to-prevent-lstlisting-from-splitting-code-between-pages
 	\noindent
-	\minipage{\linewidth}
+	\minipage{\linewidth}%
 	\vspace{0.5\baselineskip}
 	\lstset{language=Grammar,#1}}
 {\endminipage}
 
+
+\lstdefinelanguage{Fsharp}{
+	basicstyle=\footnotesize\ttfamily\consolas,
+	keywords={let, new, match, with, rec, open, module, namespace, type, of, member, and, for, in, do, begin, end, fun, function, try, mutable, if, then, else},
+	keywordstyle=\color{clr_keyword},
+	classoffset=1,  % new class offset
+	morekeywords={rule}, % fslex
+	keywordstyle=\color{clr_keyword},
+	classoffset=2,  % new class offset
+	morekeywords={ConstantDefinition,FunctionDefinition,ImmutableListPos,IFunctionStatement,ResizeArray},
+	keywordstyle=\color{clr_class},
+	classoffset=3,  % new class offset
+	morekeywords={LET,EQUALS,SEMI,LBRACE,RBRACE,RETURN,FUN,ID}, %fsyacc
+	keywordstyle=\color{clr_string},
+	classoffset=0,  % restore default class offset
+	sensitive=true,
+	comment=[l]{//},
+	morecomment=[s]{(*}{*)},
+	commentstyle=\color{clr_comment}\itshape,
+	string=[b]",
+	morestring=[b]',
+	stringstyle=\color{clr_string},
+	extendedchars=true,
+	tabsize=4,
+	framexleftmargin=4pt,
+	frame=lines,
+	captionpos=t,
+	backgroundcolor=\color{clr_code_bg},
+	captionpos=b,
+	showstringspaces=false
+}
+
+\lstnewenvironment{Fsharp}[1][]%
+{ % http://tex.stackexchange.com/questions/10141/how-to-prevent-lstlisting-from-splitting-code-between-pages
+	\noindent
+	\minipage{\linewidth}%
+	\vspace{0.5\baselineskip}
+	\lstset{language=Fsharp,#1}}
+{\endminipage}
 
 
 

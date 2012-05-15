@@ -95,6 +95,220 @@ Next group is able to explore all processed inputs on site, see all saved inputs
 Last group can see list of submitted feedbacks and if the new feedback is submitted all users from this group will receive it via e-mail.
 
 
+\subsection{Database}
+
+The database will serve for saving all necessary data.
+Figures \ref{fig:dbSchema1} and \ref{fig:dbSchema2} shows database scheme.
+\emph{PK} after name means primary key and \emph{FK} foreign key.
+
+
+\tikzstyle{db} = [draw, fill=blue!12, rectangle split, rectangle split parts=2]
+\begin{figure}[p]
+	\centering
+	\begin{tikzpicture}[auto,>=latex]
+		\node (user) [db, text width=6cm] {\textbf{User} \nodepart{second}
+			UserId [Int32] (PK)\\
+			Name [String] \\
+			NameLowercase [String] \\
+			PasswordHash [Binary] \\
+			PasswordSalt [Binary] \\
+			Email [String] \\
+			RegistrationDate [DateTime] \\
+			LastLoginDate [DateTime] \\
+			LastActivityDate [DateTime] \\
+			LastPwdChangeDate [DateTime]
+		};
+			
+		\node (feedback) [db, below of=user, node distance=7cm, text width=6cm] {\textbf{Feedback} \nodepart{second}
+			FeedbackId [Int32] (PK) \\
+			UserId [String] (FK) \\
+			Subject [String] \\
+			SubmitDate [DateTime] \\
+			Email [String] \\
+			Message [String] \\
+			IsNew [Bool]
+		};
+			
+		\node (role) [db, above of=user, node distance=6cm, text width=6cm] {\textbf{Role} \nodepart{second}
+			RoleId [Int32] (PK) \\
+			Name [String] (FK) \\
+			NameLowercase [String]
+		};		
+		
+		\node (x) [coord, above right of=user, node distance=8cm] {};
+		
+		\node (vote) [db, above of=x, node distance=4cm, text width=6cm] {\textbf{Saved input vote} \nodepart{second}
+			SavedInputId [Int32] (PK) \\
+			UserId [Int32] (PK) \\
+			Rating [Int32]
+		};
+		
+		
+		\draw [<-] (user) -- (feedback) node[pos=0.2]{0..1}  node[pos=0.55]{UserId}  node[pos=0.85]{*};
+		\draw (role) -- (user) node[pos=0.2]{*}  node[pos=0.8]{*};
+		\draw (vote) -- (x) node[pos=0.2]{*};
+		\draw [->] (x) -- (user) node[pos=0.5]{UserId}  node[pos=0.8]{1};
+		
+		\draw [->] (x.east) -- +(3cm,0)  node[below,pos=0.5]{SavedInputId}  node[pos=0.8]{1}   node [xshift=1.5cm] {Saved inputs};
+		\draw [<-] (user.east) ++(0,1cm) -- +(4cm,0) node[pos=0.2]{1}  node[below,pos=0.5]{CreationUserId}  node[pos=0.8]{*}   node [xshift=1.5cm] {Saved inputs};
+		\draw [<-] (user.east) ++(0,-2cm) -- +(4cm,0) node[pos=0.2]{0..1}  node[below,pos=0.5]{UserId}  node[pos=0.8]{0..1}   node [xshift=1.5cm] {Input process};
+		
+	\end{tikzpicture}
+	\caption{First half of the database scheme of the web}
+	\label{fig:dbSchema1}
+\end{figure}
+
+\begin{figure}[p]
+	\centering
+	\begin{tikzpicture}[auto,>=latex]
+		\node (input) [db, text width=6.5cm] {\textbf{Saved inputs} \nodepart{second}
+			SavedInputId [Int32] (PK)\\
+			UrlId [String] \\
+			ParentInputProcessId [Int32] (FK) \\
+			CreationUserId [Int32] (FK) \\
+			CreationDate [DateTime] \\
+			EditDate [DateTime] \\
+			IsPublished [Bool] \\
+			IsDeleted [Bool] \\
+			PublishName [String] \\
+			Views [Int32] \\
+			SourceSize [Int32] \\
+			OutputSize [Int64] \\
+			Duration [Int64] \\
+			MimeType [String] \\
+			SourceCode [String] \\
+			ThumbnailSourceExtension [String] \\
+			Description [String] \\
+			OutputMetadata [Binary] \\
+			OutputThnMetadata [Binary] \\
+			RatingSum [Int32] \\
+			RatingCount [Int32]
+		};
+			
+		\node (tag) [db, left of=input, node distance=7.5cm, text width=4.5cm] {\textbf{Tag} \nodepart{second}
+			TagId [Int32] (PK) \\
+			Name [String] \\
+			NameLowercase [String] \\
+			Description [String]
+		};
+			
+		\node (proc) [db, below of=input, node distance=10cm, text width=6.3cm] {\textbf{Input process} \nodepart{second}
+			InputProcessId [Int32] (PK) \\
+			ParentInputProcessId [Int32] (FK) \\
+			ChainLength [Int32] \\
+			CanonicInputId [Int32] (FK) \\
+			UserId [Int32] (FK) \\
+			ProcessDate [DateTime] \\
+			Duration [Int64]
+		};
+		
+		\node (output) [db, below of=proc, node distance=6cm, text width=6cm] {\textbf{Process output} \nodepart{second}
+			ProcessOutputId [Int32] (PK) \\
+			InputProcessId [Int32] (FK) \\
+			FileName [String] \\
+			CreationDate [DateTime] \\
+			LastOpenDate [DateTime] \\
+			Metadata [Binary]
+		};
+		
+		\node (canonic) [db, xshift=-1cm,  below left of=proc, node distance=8.5cm, text width=5.3cm] {\textbf{Canonic input} \nodepart{second}
+			CanonicInputId [Int32] (PK) \\
+			Hash [Int32] \\
+			SourceCode [String] \\
+			SourceSize [DateTime] \\
+			OutputSize [DateTime]
+		};
+		
+		
+		\draw (input) -- (tag)  node[pos=0.2]{*}  node[pos=0.8]{*};
+		\draw [->] (input) -- (proc)  node[pos=0.2]{*}  node[pos=0.5]{ParentInputProcessId}  node[pos=0.8]{0..1};
+		\draw [<-] (proc) -- (output)  node[pos=0.2]{0..1}  node[pos=0.6]{InputProcessId}   node[pos=0.9]{*};
+		\draw [->] (proc) -- (canonic)  node[pos=0.08]{*}  node[pos=0.35]{CanonicInputId}   node[pos=0.65]{1};
+		\draw [->] (proc) edge [in=180,out=190,loop] node[pos=0.15]{0..1}  node[pos=0.5]{ParentInputProcessId}   node[pos=0.9]{*} ();
+		
+		\draw [<-] (input.west) ++(0,4cm) -- +(-4cm,0) node[above,pos=0.2]{1}  node[below,pos=0.5]{SavedInputId}  node[above,pos=0.8]{*}   node [xshift=-2cm] {Saved input vote};
+		\draw [->] (input.west) ++(0,-4cm) -- +(-4cm,0) node[above,pos=0.2]{1}  node[below,pos=0.5]{CreationUserId}  node[above,pos=0.8]{*}   node [xshift=-1cm] {User};
+		\draw [->] (proc.west) ++(0,1cm) -- +(-4cm,0) node[above,pos=0.2]{0..1}  node[below,pos=0.5]{UserId}  node[above,pos=0.8]{0..1}   node [xshift=-1cm] {User};
+	\end{tikzpicture}
+	\caption{Second half of the database scheme of the web}
+	\label{fig:dbSchema2}
+\end{figure}
+
+
+In the left part of the scheme (\autoref{fig:dbSchema1}) are tables \emph{User} and \emph{Roles} with relation \emph{n} to \emph{n} (any user can be in any number of roles).
+both tables table contains column called \emph{NameLowercase} for canonical representation of user names for easier searching.
+\emph{Feedback} table for saving posted feedback have foreign key to \emph{Users} (if registered user submit a feedback).
+
+The right part of the scheme is (\autoref{fig:dbSchema2}) more complicated.
+Every processed input is saved to the \emph{Input process} table.
+To optimize size of the database the source code is not saved for every input process but it is canonicalized and saved to the \emph{Canonic input} table.
+Hash is counted for every saved canonical input to speed up lookup for identical inputs.
+This system ensures that in the database will not be saved two identical source codes.
+One might thing that the probability of processing two identical source codes is very low but it is not true.
+The most users trying to process \lsystems from gallery and do minor changes to them like changing number of iterations.
+
+Results of processing (like images) are not saved directly to database because they are relatively big.
+They are saved to local disk to working directory (which can be configured).
+To ensure correct cleaning of files in the working directory there is table called \emph{Process output}.
+Record of each produced file is saved into this table.
+If file is viewed by user the \emph{LastOpenDate} entry is updated.
+If the number of stored files exceeds maximum (which can be configured) the files with the longest time before last opening are deleted.
+This mechanism allows to keep alive old but viewed files with no need to saving them permanently (for example for sharing with friend).
+
+Moreover the new files are saved with the \emph{LastOpenDate} lowered by one minute over the \emph{CreationDate}.
+This will cause that deleting of non-viewed files is likely than viewed ones.
+It can protect wiping all input from database by some bot who do not open processed outputs.
+
+Lets get back to saving of all processed inputs to the \emph{Input process} table.
+If user is creating \lsystem the process is iterative.
+Parent input processes are saved (in \emph{ParentInputProcessId}) as user develops the \lsystem.
+This set of processes forms a chain.
+The longer the chain of processes is the better can be expected.
+The length of a chain can be counted by searching the database an resolving the \emph{ParentInputProcessId} column.
+However this process can take very long time because the \emph{Input process} table will likely have many rows.
+To be possible to easily find longest chains the chain length is counting for each row in column \emph{ChainLength}.
+
+If new input is about to save to the \emph{Input process} table and it do not have parent (for example first process after opening the page) the \emph{Canonic input} table is searched for corresponding input.
+If the canonical input it is found the oldest\footnote{More input process entries can share one canonical input entry.} corresponding input process is selected as the parent.
+
+
+\subsubsection{Saved inputs}
+
+Registered users can save their inputs.
+They are saved to the \emph{Saved inputs} table which also serves as table for the gallery.
+For every saved input is generated unique ID stored in the \emph{UrlId} column.
+This is is used in the permanent link which allows permanent access to all saved inputs.
+
+Saved inputs can be edited by owner but more importantly the can be published to the gallery.
+In the gallery inputs can be rated.
+For this is table \emph{Saved input vote}.
+Primary key to this table is pair of \emph{SavedInputId} and \emph{UserId} allowing each user to vote to every input just once (of course the vote can be changed).
+
+Published entries in the \emph{Saved inputs} table are sorted by average rating taking into account total number of votes (the more votes the better).
+To speed the sorting and eliminate joining with the \emph{Saved input vote} table the sum and the count of votes is stored directly in the \emph{Saved inputs} table.
+
+Source code of saved inputs is saved as is (without any canonicalization) to preserve comments and formatting.
+To allow generating thumbnail different from the original image and to save space and user effort the thumbnail is generated by adding content of the \emph{ThumbnailSourceExtension} to the \emph{SourceCode}.
+Because the last result is saved the source code in the \emph{ThumbnailSourceExtension} can produce thumbnail easily with usage of next process statement.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

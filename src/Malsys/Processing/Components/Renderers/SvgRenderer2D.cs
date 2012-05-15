@@ -87,6 +87,23 @@ namespace Malsys.Processing.Components.Renderers {
 		}
 
 		/// <summary>
+		/// When set it overrides measured dimensions of image and uses given values.
+		/// </summary>
+		/// <expected>Four numbers representing x, y, width and height of canvas.</expected>
+		/// <default>none</default>
+		[AccessName("canvasOriginSize")]
+		[UserSettable]
+		public ValuesArray CanvasOriginSize {
+			set {
+				if (!value.IsConstArrayOfLength(4)) {
+					throw new InvalidUserValueException("CanvasOriginSize must be array of 4 constants.");
+				}
+				canvasOriginSize = value;
+			}
+		}
+		private ValuesArray canvasOriginSize;
+
+		/// <summary>
 		/// If set to true result SBG image is compressed by GZip.
 		/// GZipped SVG images are standard and all programs supporting SVG should be able to open it.
 		/// GZipping SVG significantly reduces its size.
@@ -118,7 +135,12 @@ namespace Malsys.Processing.Components.Renderers {
 
 		#region IComponent Members
 
-		public bool RequiresMeasure { get { return true; } }
+		public bool RequiresMeasure {
+			get {
+				// do not measure when canvas size is already known
+				return canvasOriginSize == null;
+			}
+		}
 
 		public void Initialize(ProcessContext ctxt) {
 			context = ctxt;
@@ -130,6 +152,7 @@ namespace Malsys.Processing.Components.Renderers {
 			CompressSvg = Constant.True;
 			Scale = Constant.One;
 			LineCap = new Constant(2d);
+			canvasOriginSize = null;
 		}
 
 		public void BeginProcessing(bool measuring) {
@@ -144,6 +167,12 @@ namespace Malsys.Processing.Components.Renderers {
 				writer = null;
 			}
 			else {
+				if (canvasOriginSize != null) {
+					measuredMinX = ((Constant)canvasOriginSize[0]).Value;
+					measuredMinY = ((Constant)canvasOriginSize[1]).Value;
+					measuredMaxX = measuredMinX + ((Constant)canvasOriginSize[2]);
+					measuredMaxY = measuredMinY + ((Constant)canvasOriginSize[3]);
+				}
 				double svgWidth = measuredMaxX - measuredMinX + marginL + marginR;
 				double svgHeight = measuredMaxY - measuredMinY + marginT + marginB;
 				double svgWidthScaled = svgWidth * Scale.Value;

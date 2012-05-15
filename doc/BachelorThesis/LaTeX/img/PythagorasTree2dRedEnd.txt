@@ -1,0 +1,43 @@
+lsystem PythagorasTree(angle = 39) extends Branches {
+
+	let i = 40;
+	let treshold = 2;
+
+	set symbols axiom = S(0);
+	set iterations = i;
+	set initialAngle = 90;
+	set lineCap = none;
+
+	let gradient = toColorGradient(#FF0000, #00FF00, i - 4, #0);
+	let angleComp = 90 - angle;  // angle complement
+	let sinAngle = sin(deg2rad(angle));
+	let sinAngleComp = sin(deg2rad(angleComp));
+
+	interpret E(x, t) as DrawForward(x, x, gradient[t]);
+	interpret m as MoveForward;
+	interpret + as TurnLeft(angle);
+	interpret - as TurnLeft(-angleComp);
+
+	rewrite S(t)
+		to [ F(128, t) ] S(t + 1);
+
+	rewrite F(x, t)
+		with left = x * sinAngle, right = x * sinAngleComp
+		where t > 0 && right > treshold && left > treshold
+		to m(x) [ + m(left / 2) F(right, t-1) ] - m(right / 2) F(left, t-1);
+	rewrite F(x, t)
+		with left = x * sinAngle, right = x * sinAngleComp
+		where currentIteration == i
+		to m(x) [ + m(left / 2) E(right, 0) ] - m(right / 2) E(left, 0);
+	rewrite F(x, t)
+		where t == 0
+		to E(x, 0);
+	rewrite F(x, t)
+		to nothing;
+
+	rewrite E(x, t)
+		to E(x, t+1);
+}
+
+process all with SvgRenderer;
+//process all with SymbolPrinter;

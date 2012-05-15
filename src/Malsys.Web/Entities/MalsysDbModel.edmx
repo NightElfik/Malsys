@@ -841,73 +841,65 @@
     </Options>
     <!-- Diagram content (shape and connector positions) -->
     <Diagrams>
-      <Diagram Name="MalsysDbModel">
-        <EntityTypeShape EntityType="MalsysDbEntities.CanonicInput" Width="1.5" PointX="6" PointY="2.5" Height="2.1725878906249996" />
-        <EntityTypeShape EntityType="MalsysDbEntities.Feedback" Width="1.5" PointX="5.25" PointY="6.25" Height="2.5571907552083317" />
-        <EntityTypeShape EntityType="MalsysDbEntities.InputProcess" Width="1.5" PointX="8.25" PointY="5.75" Height="3.5186979166666674" />
-        <EntityTypeShape EntityType="MalsysDbEntities.ProcessOutput" Width="1.5" PointX="10.5" PointY="6.375" Height="2.3648893229166674" />
-        <EntityTypeShape EntityType="MalsysDbEntities.Role" Width="1.5" PointX="0.75" PointY="6.625" Height="1.7879850260416665" />
-        <EntityTypeShape EntityType="MalsysDbEntities.SavedInput" Width="1.5" PointX="13.5" PointY="4.625" Height="5.8263151041666674" />
-        <EntityTypeShape EntityType="MalsysDbEntities.SavedInputVote" Width="1.5" PointX="15.75" PointY="6.625" Height="1.9802864583333388" />
-        <EntityTypeShape EntityType="MalsysDbEntities.Tag" Width="1.5" PointX="15.75" PointY="9.25" Height="1.9802864583333388" />
-        <EntityTypeShape EntityType="MalsysDbEntities.User" Width="1.5" PointX="3" PointY="5.625" Height="3.903300781249996" />
+      <Diagram Name="MalsysDbModel" ZoomLevel="96" DisplayType="true" ShowGrid="false">
+        <EntityTypeShape EntityType="MalsysDbEntities.CanonicInput" Width="1.75" PointX="13.25" PointY="6.5" Height="1.9802864583333335" />
+        <EntityTypeShape EntityType="MalsysDbEntities.Feedback" Width="1.875" PointX="1.875" PointY="7.125" Height="2.3648893229166656" />
+        <EntityTypeShape EntityType="MalsysDbEntities.InputProcess" Width="2.125" PointX="10.375" PointY="7.875" Height="2.3648893229166656" />
+        <EntityTypeShape EntityType="MalsysDbEntities.ProcessOutput" Width="2" PointX="13.375" PointY="8.875" Height="2.1725878906249996" />
+        <EntityTypeShape EntityType="MalsysDbEntities.Role" Width="1.875" PointX="1.875" PointY="1.75" Height="1.59568359375" />
+        <EntityTypeShape EntityType="MalsysDbEntities.SavedInput" Width="2.5" PointX="10.375" PointY="2.125" Height="5.057109375" />
+        <EntityTypeShape EntityType="MalsysDbEntities.SavedInputVote" Width="1.625" PointX="3.875" PointY="1.75" Height="1.59568359375" />
+        <EntityTypeShape EntityType="MalsysDbEntities.Tag" Width="1.875" PointX="8" PointY="1.75" Height="1.7879850260416657" />
+        <EntityTypeShape EntityType="MalsysDbEntities.User" Width="2.375" PointX="2.5" PointY="3.75" Height="2.9417936197916656" />
         <AssociationConnector Association="MalsysDbEntities.FK_InputProcesses_CanonicInputs" >
-          <ConnectorPoint PointX="7.15625" PointY="4.672587890625" />
-          <ConnectorPoint PointX="7.15625" PointY="5.96875" />
-          <ConnectorPoint PointX="8.25" PointY="5.96875" />
+          <ConnectorPoint PointX="13.25" PointY="8.1776432291666659" />
+          <ConnectorPoint PointX="12.5" PointY="8.1776432291666659" />
         </AssociationConnector>
         <AssociationConnector Association="MalsysDbEntities.FK_Feedbacks_Users" >
-          <ConnectorPoint PointX="4.5" PointY="7.5285953776041659" />
-          <ConnectorPoint PointX="5.25" PointY="7.5285953776041659" />
+          <ConnectorPoint PointX="3.125" PointY="6.6917936197916656" />
+          <ConnectorPoint PointX="3.125" PointY="7.125" />
         </AssociationConnector>
         <AssociationConnector Association="MalsysDbEntities.FK_InputProcesses_InputProcesses" >
-          <ConnectorPoint PointX="8.7819230769230767" PointY="9.2686979166666674" />
-          <ConnectorPoint PointX="8.7819230769230767" PointY="9.5186979166666674" />
-          <ConnectorPoint PointX="9.2284615384615378" PointY="9.5186979166666674" />
-          <ConnectorPoint PointX="9.2284615384615378" PointY="9.2686979166666674" />
+          <ConnectorPoint PointX="10.375" PointY="9.8532828799780159" />
+          <ConnectorPoint PointX="10.125" PointY="9.8532828799780159" />
+          <ConnectorPoint PointX="10.125" PointY="9.0574446614583337" />
+          <ConnectorPoint PointX="10.375" PointY="9.0574446614583337" />
         </AssociationConnector>
         <AssociationConnector Association="MalsysDbEntities.FK_InputProcesses_Users" >
-          <ConnectorPoint PointX="4.5" PointY="9.0691943359375" />
-          <ConnectorPoint PointX="8.25" PointY="9.0691943359375" />
+          <ConnectorPoint PointX="4.34375" PointY="6.6917936197916656" />
+          <ConnectorPoint PointX="4.34375" PointY="10.077838601447336" />
+          <ConnectorPoint PointX="10.375" PointY="10.077838601447336" />
         </AssociationConnector>
         <AssociationConnector Association="MalsysDbEntities.FK_ProcessOutputs_InputProcesses" >
-          <ConnectorPoint PointX="9.75" PointY="7.5574446614583337" />
-          <ConnectorPoint PointX="10.5" PointY="7.5574446614583337" />
+          <ConnectorPoint PointX="12.5" PointY="9.5574446614583337" />
+          <ConnectorPoint PointX="13.375" PointY="9.5574446614583337" />
         </AssociationConnector>
         <AssociationConnector Association="MalsysDbEntities.FK_SavedInputs_InputProcesses" >
-          <ConnectorPoint PointX="9.75" PointY="6.03125" />
-          <ConnectorPoint PointX="13.5" PointY="6.03125" />
+          <ConnectorPoint PointX="11.4375" PointY="7.875" />
+          <ConnectorPoint PointX="11.4375" PointY="7.182109375" />
         </AssociationConnector>
         <AssociationConnector Association="MalsysDbEntities.FK_SavedInputs_Users" >
-          <ConnectorPoint PointX="4.5" PointY="9.3624479166666674" />
-          <ConnectorPoint PointX="8.6985897435897428" PointY="9.3624479166666674" />
-          <ConnectorPoint PointX="8.86525641025641" PointY="9.3624479166666674" />
-          <ConnectorPoint PointX="9.1451282051282039" PointY="9.3624479166666674" />
-          <ConnectorPoint PointX="9.3117948717948718" PointY="9.3624479166666674" />
-          <ConnectorPoint PointX="13.5" PointY="9.3624479166666674" />
+          <ConnectorPoint PointX="4.875" PointY="5.2208968098958328" />
+          <ConnectorPoint PointX="5.135416666666667" PointY="5.2208968098958319" />
+          <ConnectorPoint PointX="5.302083333333333" PointY="5.2208968098958328" />
+          <ConnectorPoint PointX="10.375" PointY="5.2208968098958328" />
         </AssociationConnector>
         <AssociationConnector Association="MalsysDbEntities.FK_SavedInputsVoes_SavedInputs" >
-          <ConnectorPoint PointX="15" PointY="7.6151432291666694" />
-          <ConnectorPoint PointX="15.291666666666666" PointY="7.6151432291666685" />
-          <ConnectorPoint PointX="15.458333333333334" PointY="7.6151432291666694" />
-          <ConnectorPoint PointX="15.75" PointY="7.6151432291666694" />
+          <ConnectorPoint PointX="10.375" PointY="6.9682014973958326" />
+          <ConnectorPoint PointX="5.21875" PointY="6.9682014973958326" />
+          <ConnectorPoint PointX="5.21875" PointY="3.34568359375" />
         </AssociationConnector>
         <AssociationConnector Association="MalsysDbEntities.FK_SavedInputsVoes_Users" >
-          <ConnectorPoint PointX="3.75" PointY="9.528300781249996" />
-          <ConnectorPoint PointX="3.75" PointY="10.701315104166667" />
-          <ConnectorPoint PointX="15.375" PointY="10.701315104166667" />
-          <ConnectorPoint PointX="15.375" PointY="7.0888196145833344" />
-          <ConnectorPoint PointX="15.75" PointY="7.0888196145833344" />
+          <ConnectorPoint PointX="4.375" PointY="3.75" />
+          <ConnectorPoint PointX="4.375" PointY="3.34568359375" />
         </AssociationConnector>
         <AssociationConnector Association="MalsysDbEntities.TaggedSavedInputs" >
-          <ConnectorPoint PointX="15" PointY="9.8506575520833337" />
-          <ConnectorPoint PointX="15.291666666666666" PointY="9.8506575520833337" />
-          <ConnectorPoint PointX="15.458333333333334" PointY="9.8506575520833337" />
-          <ConnectorPoint PointX="15.75" PointY="9.8506575520833337" />
+          <ConnectorPoint PointX="10.375" PointY="2.8314925130208328" />
+          <ConnectorPoint PointX="9.875" PointY="2.8314925130208328" />
         </AssociationConnector>
         <AssociationConnector Association="MalsysDbEntities.UsersInRoles" >
-          <ConnectorPoint PointX="2.25" PointY="7.5189925130208337" />
-          <ConnectorPoint PointX="3" PointY="7.5189925130208337" />
+          <ConnectorPoint PointX="3.125" PointY="3.34568359375" />
+          <ConnectorPoint PointX="3.125" PointY="3.75" />
         </AssociationConnector>
       </Diagram>
     </Diagrams>
