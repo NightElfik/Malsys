@@ -71,8 +71,13 @@ namespace Malsys.Processing.Components.Common {
 		/// <summary>
 		/// Resets random generator to initial state.
 		/// </summary>
-		public void Reset() {
-			localRandomGenerator = null;
+		public void Reset(int? seed = null) {
+			if (!TrueRandom.IsTrue) {
+				if (seed == null) {
+					ensureSeed();
+				}
+				localRandomGenerator = new PseudoRandomGenerator(seed ?? RandomSeed.RoundedIntValue); ;
+			}
 		}
 
 
@@ -93,16 +98,21 @@ namespace Malsys.Processing.Components.Common {
 			}
 			else {
 				if (RandomSeed.Value < 0) {
-					// no random seed set, generate random one
-					Random r = new Random();
-					int seed = r.Next();
-
-					Logger.LogMessage(Message.NoSeed, seed);
-					RandomSeed = seed.ToConst();
+					ensureSeed();
 				}
 
 				return new PseudoRandomGenerator(RandomSeed.RoundedIntValue);
 			}
+		}
+
+		public double Random() {
+
+			if (localRandomGenerator == null) {
+				localRandomGenerator = GetRandomGenerator();
+			}
+
+			return localRandomGenerator.NextDouble();
+
 		}
 
 		/// <summary>
@@ -144,6 +154,19 @@ namespace Malsys.Processing.Components.Common {
 
 			return (localRandomGenerator.NextDouble() * (upper - lower) + lower).ToConst();
 
+		}
+
+		private void ensureSeed() {
+			if (RandomSeed != null && !double.IsInfinity(RandomSeed.Value) && RandomSeed.Value >= 0) {
+				return;  // coveres also NaN
+			}
+
+			// no random seed set, generate random one
+			Random r = new Random();
+			int seed = r.Next();
+
+			Logger.LogMessage(Message.NoSeed, seed);
+			RandomSeed = seed.ToConst();
 		}
 
 

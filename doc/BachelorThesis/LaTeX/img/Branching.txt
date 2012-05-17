@@ -3,12 +3,12 @@ lsystem Plant3 {
 	set symbols axiom = A(100);
 	set initialAngle = 90;
 	set iterations = 4;
-	set interpretFollowingIterations = {1, 2};
+	set interpretEveryIteration = true;
 
 	let length = 16;
 
-	interpret A as DrawForward(0, 2, #009900);
-	interpret F as DrawForward(0, 2, #302010);
+	interpret A as DrawForward(0, 2, #008800);
+	interpret F as DrawForward(0, 2, #0);
 	interpret + as TurnLeft(45);
 	interpret - as TurnLeft(-45);
 	interpret [ as StartBranch;
@@ -16,7 +16,8 @@ lsystem Plant3 {
 
 	rewrite A(x)
 		with y = x/2
-		to F(y) [ + A(y) ] [ - A(y) ] F(y) A(y);
+		to F(y,2) [ + A(y) ] [ - A(y) ] F(y,2) A(y);
+	rewrite F(y, z) to F(y, z + 1);
 }
 
 process all with SvgRenderer;

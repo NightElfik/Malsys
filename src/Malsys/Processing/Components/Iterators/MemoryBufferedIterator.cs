@@ -223,9 +223,18 @@ namespace Malsys.Processing.Components.RewriterIterators {
 			return false;
 		}
 
-		private void resetRendomGenerator() {
+		private int resetRendomGenerator() {
 			if (RandomGeneratorProvider != null) {
+				int seed = (int)(RandomGeneratorProvider.Random() * int.MaxValue);
 				RandomGeneratorProvider.Reset();
+				return seed;
+			}
+			return -1;
+		}
+
+		private void resetRendomGenerator(int seed) {
+			if (RandomGeneratorProvider != null) {
+				RandomGeneratorProvider.Reset(seed);
 			}
 		}
 
@@ -244,9 +253,10 @@ namespace Malsys.Processing.Components.RewriterIterators {
 
 				if (interpretCurrentIteration()) {
 					if (doMeasure) {
-						resetRendomGenerator();
+						// measure
+						int seed = resetRendomGenerator();
 						interpret(true);
-						resetRendomGenerator();
+						resetRendomGenerator(seed);
 						if (aborted) { return; }
 					}
 

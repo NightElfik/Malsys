@@ -7,11 +7,11 @@ using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Processing.Components.Common {
 	/// <summary>
-	///	Provides symbols set by user to Axiom property.
+	///	Provides symbol property called Axiom which serve as initial string of symbols of L-system.
 	/// </summary>
 	/// <name>Axiom provider</name>
 	/// <group>Common</group>
-	public class AxiomProvider : SymbolProvider, ISymbolProvider {
+	public class AxiomProvider : SymbolProvider {
 
 
 		/// <summary>

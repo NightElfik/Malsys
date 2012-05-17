@@ -23,15 +23,15 @@ This can be done with two components, the Rewriter which is responsible for rewr
 
 \begin{figure}[h!]
 	\centering
-	\begin{tikzpicture}[auto, node distance=3cm, >=latex]
+	\begin{tikzpicture}[->,auto,node distance=3cm,>=latex,shorten >=2pt]
 		\node (in) [coord] {};
 		\node (rw) [block, right of=in] {Rewriter};
-		\node (int) [block, right of=rw] {Interpreter};
+		\node (int) [block, right=1cm of rw] {Interpreter};
 		\node (out) [coord, right of=int] {};
 		
-		\draw [->] (in) -- node {input} (rw);
-		\draw [->] (rw) -- node {} (int);
-		\draw [->] (int) -- node {output} (out);
+		\draw (in) -- node {input} (rw);
+		\draw (rw) -- (int);
+		\draw (int) -- node {output} (out);
 	\end{tikzpicture}
 	\caption{Simple \lsystem processing system}
 	\label{fig:simpleSystem}
@@ -49,7 +49,7 @@ If we need to create different output type we have to implement only new rendere
 
 \begin{figure}[h!]
 	\centering
-	\begin{tikzpicture}[auto, node distance=3cm, >=latex]
+	\begin{tikzpicture}[->,auto,node distance=3cm,>=latex,shorten >=2pt]
 		\node (rw) [block] {Rewriter};
 		\node (iter) [block, right of=rw] {Iterator};
 		\node (in) [coord, above of=iter, node distance=15mm] {};
@@ -57,12 +57,12 @@ If we need to create different output type we have to implement only new rendere
 		\node (rend) [block, right of=inter] {Renderer};
 		\node (out) [coord, right of=rend] {};
 		
-		\draw [->] (rw) edge[bend left=40] node[above] {} (iter);
-		\draw [->] (iter) edge[bend left=40] node[below] {} (rw);
-		\draw [->] (in) -- node {input} (iter);
-		\draw [->] (iter) -- node {} (inter);
-		\draw [->] (inter) -- node {} (rend);
-		\draw [->] (rend) -- node {output} (out);
+		\draw (rw) to[bend left=40] (iter);
+		\draw (iter) to[bend left=40] (rw);
+		\draw (in) -- node {input} (iter);
+		\draw (iter) -- (inter);
+		\draw (inter) -- (rend);
+		\draw (rend) -- node {output} (out);
 	\end{tikzpicture}
 	\caption{Subdivided \lsystem processing system}
 	\label{fig:advancedSystem}
@@ -81,7 +81,7 @@ One interpreter actual model ant the second interprets environment.
 
 \begin{figure}[h!]
 	\centering
-	\begin{tikzpicture}[auto, node distance=3cm, >=latex]
+	\begin{tikzpicture}[->,auto,node distance=3cm,>=latex,shorten >=2pt]
 		\node (iter) [block] {Iterator};
 		\node (in) [coord, above of=iter, node distance=15mm] {};
 		\node (rw) [block, below of=iter, node distance=20mm] {Rewriter};
@@ -91,15 +91,15 @@ One interpreter actual model ant the second interprets environment.
 		\node (rend) [block, right of=inter] {Renderer};
 		\node (out) [coord, right of=rend] {};
 		
-		\draw [->] (rw) edge[bend left=40] node[above] {} (iter);
-		\draw [->] (iter) edge[bend left=40] node[below] {} (rw);
-		\draw [->] (in) -- node {input} (iter);
-		\draw [->] (iter) -- node {} (caller);
-		\draw [dashed,->] (caller) -- node {} (inter);
-		\draw [dashed,->] (caller) -- node {} (env);
-		\draw [->] (inter) -- node {} (rend);
-		\draw [->] (env) -- node {} (rw);
-		\draw [->] (rend) -- node {output} (out);
+		\draw (rw) to[bend left=40] (iter);
+		\draw (iter) to[bend left=40] (rw);
+		\draw (in) -- node {input} (iter);
+		\draw (iter) -- (caller);
+		\draw [dashed] (caller) -- (inter);
+		\draw [dashed] (caller) -- (env);
+		\draw (inter) -- (rend);
+		\draw (env) -- (rw);
+		\draw (rend) -- node {output} (out);
 	\end{tikzpicture}
 	\caption{Advantage of Interpreter caller component which can automatically call more interpreters}
 	\label{fig:callerComponent}
@@ -119,7 +119,7 @@ The Iterator is designed generally to take axiom from any component implementing
 
 \begin{figure}[h!]
 	\centering
-	\begin{tikzpicture}[auto, node distance=3cm, >=latex]
+	\begin{tikzpicture}[->,auto,node distance=3cm,>=latex,shorten >=2pt]
 		\node (iter) [block] {Iterator};
 		\node (rw) [block, left of=iter] {Main rewriter};
 		\node (rw2) [blockx, above of=iter, node distance=20mm] {Input rewriter};
@@ -129,14 +129,14 @@ The Iterator is designed generally to take axiom from any component implementing
 		\node (rend) [block, right of=inter] {Renderer};
 		\node (out) [coord, right of=rend] {};
 		
-		\draw [->] (rw) edge[bend left=40] node[above] {} (iter);
-		\draw [->] (iter) edge[bend left=40] node[below] {} (rw);
-		\draw [->] (rw2) -- (iter);
-		\draw [->] (in) -- node {input} (rw2);
-		\draw [->] (iter) -- (caller);
-		\draw [dashed,->] (caller) -- (inter);
-		\draw [->] (inter) -- (rend);
-		\draw [->] (rend) -- node {output} (out);
+		\draw (rw) to[bend left=40] (iter);
+		\draw (iter) to[bend left=40] (rw);
+		\draw (rw2) -- (iter);
+		\draw (in) -- node {input} (rw2);
+		\draw (iter) -- (caller);
+		\draw [dashed] (caller) -- (inter);
+		\draw (inter) -- (rend);
+		\draw (rend) -- node {output} (out);
 	\end{tikzpicture}
 	\caption{Input of iterator can be supplied by another component}
 	\label{fig:inputProvider}
@@ -167,7 +167,7 @@ The creation of inner component graph is relatively complex operation but the cr
 
 \begin{figure}[h!]
 	\centering
-	\begin{tikzpicture}[auto, node distance=3cm, >=latex]
+	\begin{tikzpicture}[->,auto,node distance=3cm,>=latex,shorten >=2pt]
 		\node (it) [block] {Iterator};
 		\node (in) [coord, above of=it, node distance=15mm] {};
 		\node (rw) [block, left of=it] {Rewriter};
@@ -182,21 +182,21 @@ The creation of inner component graph is relatively complex operation but the cr
 		
 		\node (innerArea) [area,fit=(innerIt) (innerRw) (innerCaller), label=above left:Inner component graph] {};
 		
-		\draw [->] (rw) edge[bend left=40] node[above] {} (it);
-		\draw [->] (it) edge[bend left=40] node[below] {} (rw);
-		\draw [->] (in) -- node {input} (it);
-		\draw [->] (it) -- (caller);
-		\draw [->] (caller) -- (inner);
-		\draw [dashed,->] (caller) -- (inter);
-		\draw [->] (inter) -- (rend);
-		\draw [->] (rend) -- node {output} (out);
+		\draw (rw) to[bend left=40] (it);
+		\draw (it) to[bend left=40] (rw);
+		\draw (in) -- node {input} (it);
+		\draw (it) -- (caller);
+		\draw (caller) -- (inner);
+		\draw [dashed] (caller) -- (inter);
+		\draw (inter) -- (rend);
+		\draw (rend) -- node {output} (out);
 		
 		\draw [snakeline] (inner) -- (innerArea);
-		\draw [->] (innerRw) edge[bend left=20] node[above] {} (innerIt);
-		\draw [->] (innerIt) edge[bend left=20] node[below] {} (innerRw);
-		\draw [->] (innerIt) -- (innerCaller);
-		\draw [->] (innerCaller) -- (inner);
-		\draw [dashed,->] (innerCaller) edge[bend right] (inter);
+		\draw (innerRw) to[bend left=20] (innerIt);
+		\draw (innerIt) to[bend left=20] (innerRw);
+		\draw (innerIt) -- (innerCaller);
+		\draw (innerCaller) -- (inner);
+		\draw [dashed] (innerCaller) to[bend right] (inter);
 	\end{tikzpicture}
 	\caption{Component system for interpretation symbol as another \lsystem}
 	\label{fig:innerSystem}
@@ -285,12 +285,12 @@ process HybridPythagorasTree with ThreeJsRenderer;
 
 Final component system uses all described functionality.
 Component graph is shown in \autoref{fig:finalSystem}.
-Two main process configurations uses this scheme, namely the \hyperref[configurationSvgRenderer]{\emph{SvgRenderer}} and the \hyperref[configurationThreeJsRenderer]{\emph{ThreeJsRenderer}}
-	(see Standard library appendix, section \ref{sec:stdLibProcessConfigurations}).
+Two main \emph{process configurations} defined in the standard library uses this scheme, namely the \hyperref[configurationSvgRenderer]{\emph{SvgRenderer}} and the \hyperref[configurationThreeJsRenderer]{\emph{ThreeJsRenderer}}
+	(see appendix \ref{sec:stdLibProcessConfigurations}).
 
 \begin{figure}[h!]
 	\centering
-	\begin{tikzpicture}[auto, node distance=3cm, >=latex]
+	\begin{tikzpicture}[->,auto, node distance=3cm,>=latex,shorten >=2pt]
 		\node (it) [block] {Iterator};
 		\node (in) [block, above of=it, node distance=20mm] {Axiom provider};
 		\node (rand) [block, below left of=it, node distance=28.284mm] {Random generator provider};
@@ -301,15 +301,15 @@ Two main process configurations uses this scheme, namely the \hyperref[configura
 		\node (out) [coord, right of=rend] {};
 		\node (inner) [block, below of=caller, node distance=20mm] {Inner L-system processor};
 				
-		\draw [->] (rw) edge[bend left=40] node[above] {} (it);
-		\draw [->] (it) edge[bend left=40] node[below] {} (rw);
-		\draw [->] (in) -- (it);
-		\draw [->] (it) -- (caller);
-		\draw [->] (it) -- (rand);
-		\draw [->] (caller) -- (inner);
-		\draw [dashed,->] (caller) -- (inter);
-		\draw [->] (inter) -- (rend);
-		\draw [->] (rend) -- node {output} (out);
+		\draw (rw) to[bend left=40] (it);
+		\draw (it) to[bend left=40] (rw);
+		\draw (in) -- (it);
+		\draw (it) -- (caller);
+		\draw (it) -- (rand);
+		\draw (caller) -- (inner);
+		\draw [dashed] (caller) -- (inter);
+		\draw (inter) -- (rend);
+		\draw (rend) -- node {output} (out);
 	\end{tikzpicture}
 	\caption{Final component system}
 	\label{fig:finalSystem}

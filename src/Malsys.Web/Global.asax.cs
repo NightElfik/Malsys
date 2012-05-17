@@ -143,8 +143,15 @@ namespace Malsys.Web {
 
 			var logger = new MessageLogger();
 
-			new MalsysLoader().LoadMalsysStuffFromAssembly(Assembly.GetAssembly(typeof(MalsysLoader)),
+			var loader = new MalsysLoader();
+			loader.LoadMalsysStuffFromAssembly(Assembly.GetAssembly(typeof(MalsysLoader)),
 				knownStuffProvider, knownStuffProvider, ref eec, componentResolver, logger, xmlDocReader);
+
+			Assembly plugin;
+			if (tryLoadPlugin("~/bin/ExamplePlugin.dll", out plugin)) {
+				loader.LoadMalsysStuffFromAssembly(plugin,
+					knownStuffProvider, knownStuffProvider, ref eec, componentResolver, logger, xmlDocReader);
+			}
 
 			if (logger.ErrorOccurred) {
 				throw new Exception("Failed to load Malsys stuff" + logger.AllMessagesToFullString());
@@ -194,6 +201,28 @@ namespace Malsys.Web {
 			builder.Register(x => stdLib).SingleInstance();
 
 		}
+
+
+
+		private bool tryLoadPlugin(string path, out Assembly plugin, bool pathIsVirtual = true) {
+			if (pathIsVirtual) {
+				path = Server.MapPath(path);
+			}
+			try {
+				if (File.Exists(path)) {
+					plugin = Assembly.LoadFile(path);
+					return true;
+				}
+				plugin = null;
+				return false;
+			}
+			catch (Exception ex) {
+				Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+				plugin = null;
+				return false;
+			}
+		}
+
 		/// <summary>
 		/// Checks whether DB contains all well-known user roles and at least one user.
 		/// Missing things are added.

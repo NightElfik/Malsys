@@ -17,6 +17,38 @@ In the third section is described design of online web user interface.
 It uses library and components to process input so it will also serve as an example of usage.
 
 
+\section{Choice of development environment}
+
+As development environment was chosen the .NET framework because of following reasons.
+
+\begin{description*}
+	\item[Multiplatformity]
+		Thanks to the Mono project\footnote{Mono is an open source implementation of Microsoft's .NET Framework (\url{http://www.mono-project.com}).}
+			.NET libraries and executables can be used not only on Windows but also on Linux, Mac and many other operating systems.
+	\item[Development tools]
+		Visual Studio 2010 is powerful integrated development environment (IDE) with many integrated tools (like inteli-sense, NuGet package system or T4 templates) and useful downloadable plugins.
+		Visual Studio has built-in support for unit testing which helps to test especially non-runnable code like libraries easily.
+		\nomenclature{IDE}{integrated development environment}
+		\nomenclature{T4}{text template transformation toolkit}
+	\item[Reflection]
+		Reflection is the ability to examine types and work with meta-data, properties and functions of an object at runtime.
+		Reflection can be used to load various plugins or data at runtime and help extensibility in great way.
+	\item[Parser generator]
+		FsLex and FsYacc are lexer and parser generators written in F\# with good support by Visual Studio.
+		Generated lexer and parser are also in F\# thus they can be easily used in any .NET project.
+	\item[Web framework]
+		ASP.NET MVC is a lightweight presentation framework for creating web applications in .NET.
+		ASP.NET MVC 3 is using the Razor view engine which helps to do the web very easily.
+		\nomenclature{MVC}{model-view-controller (design pattern)}
+	\item[Database and object mapping]
+		MsSQL server offers to create database stored as a file directly in the application folder.
+		Access to the database can be done using ADO.NET Entity Framework (EF) which can do an object-relational mapping (ORM) of the database.
+		\nomenclature{MsSQL}{Microsoft SQL (server)}
+		\nomenclature{SQL}{structured query language}
+		\nomenclature{EF}{Entity framework}
+		\nomenclature{ORM}{object-relational mapping}
+\end{description*}
+
 
 \input{design-library}
 

@@ -10,7 +10,7 @@ The web was chosen because of following reasons.
 		Web is accessible on wide range of operating systems where desktop application can not be ported easily.
 		Besides usual desktop systems it is possible to browse it on mobile devices like smart phones or tablets.		
 	\item[No installation]
-		End-user do not install anything, the application does not depend on user's OS.
+		End-user do not install anything, the application does not depend on user's OS. \nomenclature{OS}{operating system}
 		The solution is not easy to setup because it has many dependencies to third-party libraries.
 		Web application is installed by experienced administrator and everything is set up properly.
 	\item[Community]
@@ -105,7 +105,7 @@ Figures \ref{fig:dbSchema1} and \ref{fig:dbSchema2} shows database scheme.
 \tikzstyle{db} = [draw, fill=blue!12, rectangle split, rectangle split parts=2]
 \begin{figure}[p]
 	\centering
-	\begin{tikzpicture}[auto,>=latex]
+	\begin{tikzpicture}[auto,>=latex,shorten >=2pt]
 		\node (user) [db, text width=6cm] {\textbf{User} \nodepart{second}
 			UserId [Int32] (PK)\\
 			Name [String] \\
@@ -144,14 +144,14 @@ Figures \ref{fig:dbSchema1} and \ref{fig:dbSchema2} shows database scheme.
 		};
 		
 		
-		\draw [<-] (user) -- (feedback) node[pos=0.2]{0..1}  node[pos=0.55]{UserId}  node[pos=0.85]{*};
-		\draw (role) -- (user) node[pos=0.2]{*}  node[pos=0.8]{*};
-		\draw (vote) -- (x) node[pos=0.2]{*};
+		\draw [->] (feedback) -- (user)  node[pos=0.2]{*}  node[pos=0.55]{UserId}  node[pos=0.85]{0..1};
+		\draw [shorten >=0] (role) -- (user) node[pos=0.2]{*}  node[pos=0.8]{*};
+		\draw [shorten >=0] (vote) -- (x) node[pos=0.2]{*};
 		\draw [->] (x) -- (user) node[pos=0.5]{UserId}  node[pos=0.8]{1};
 		
 		\draw [->] (x.east) -- +(3cm,0)  node[below,pos=0.5]{SavedInputId}  node[pos=0.8]{1}   node [xshift=1.5cm] {Saved inputs};
-		\draw [<-] (user.east) ++(0,1cm) -- +(4cm,0) node[pos=0.2]{1}  node[below,pos=0.5]{CreationUserId}  node[pos=0.8]{*}   node [xshift=1.5cm] {Saved inputs};
-		\draw [<-] (user.east) ++(0,-2cm) -- +(4cm,0) node[pos=0.2]{0..1}  node[below,pos=0.5]{UserId}  node[pos=0.8]{0..1}   node [xshift=1.5cm] {Input process};
+		\draw [<-,shorten >=0,shorten <=2pt] (user.east) ++(0,1cm) -- +(4cm,0) node[pos=0.2]{1}  node[below,pos=0.5]{CreationUserId}  node[pos=0.8]{*}   node [xshift=1.5cm] {Saved inputs};
+		\draw [<-,shorten >=0,shorten <=2pt] (user.east) ++(0,-2cm) -- +(4cm,0) node[pos=0.2]{0..1}  node[below,pos=0.5]{UserId}  node[pos=0.8]{0..1}   node [xshift=1.5cm] {Input process};
 		
 	\end{tikzpicture}
 	\caption{First half of the database scheme of the web}
@@ -160,7 +160,7 @@ Figures \ref{fig:dbSchema1} and \ref{fig:dbSchema2} shows database scheme.
 
 \begin{figure}[p]
 	\centering
-	\begin{tikzpicture}[auto,>=latex]
+	\begin{tikzpicture}[auto,>=latex,shorten >=2pt]
 		\node (input) [db, text width=6.5cm] {\textbf{Saved inputs} \nodepart{second}
 			SavedInputId [Int32] (PK)\\
 			UrlId [String] \\
@@ -220,13 +220,13 @@ Figures \ref{fig:dbSchema1} and \ref{fig:dbSchema2} shows database scheme.
 		};
 		
 		
-		\draw (input) -- (tag)  node[pos=0.2]{*}  node[pos=0.8]{*};
+		\draw [shorten >=0] (input) -- (tag)  node[pos=0.2]{*}  node[pos=0.8]{*};
 		\draw [->] (input) -- (proc)  node[pos=0.2]{*}  node[pos=0.5]{ParentInputProcessId}  node[pos=0.8]{0..1};
-		\draw [<-] (proc) -- (output)  node[pos=0.2]{0..1}  node[pos=0.6]{InputProcessId}   node[pos=0.9]{*};
+		\draw [->] (output) -- (proc)  node[pos=0.2,right]{*}  node[pos=0.5,right]{InputProcessId}   node[pos=0.8,right]{0..1};
 		\draw [->] (proc) -- (canonic)  node[pos=0.08]{*}  node[pos=0.35]{CanonicInputId}   node[pos=0.65]{1};
 		\draw [->] (proc) edge [in=180,out=190,loop] node[pos=0.15]{0..1}  node[pos=0.5]{ParentInputProcessId}   node[pos=0.9]{*} ();
 		
-		\draw [<-] (input.west) ++(0,4cm) -- +(-4cm,0) node[above,pos=0.2]{1}  node[below,pos=0.5]{SavedInputId}  node[above,pos=0.8]{*}   node [xshift=-2cm] {Saved input vote};
+		\draw [<-,shorten >=0,shorten <=2pt] (input.west) ++(0,4cm) -- +(-4cm,0) node[above,pos=0.2]{1}  node[below,pos=0.5]{SavedInputId}  node[above,pos=0.8]{*}   node [xshift=-2cm] {Saved input vote};
 		\draw [->] (input.west) ++(0,-4cm) -- +(-4cm,0) node[above,pos=0.2]{1}  node[below,pos=0.5]{CreationUserId}  node[above,pos=0.8]{*}   node [xshift=-1cm] {User};
 		\draw [->] (proc.west) ++(0,1cm) -- +(-4cm,0) node[above,pos=0.2]{0..1}  node[below,pos=0.5]{UserId}  node[above,pos=0.8]{0..1}   node [xshift=-1cm] {User};
 	\end{tikzpicture}

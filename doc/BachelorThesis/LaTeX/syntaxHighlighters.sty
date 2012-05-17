@@ -5,6 +5,7 @@
 \definecolor{clr_keyword_ls}{rgb}{0.5,0,0.2}
 \definecolor{clr_string}{rgb}{0.64,0.08,0.08}
 \definecolor{clr_comment}{rgb}{0,0.5,0}
+\definecolor{clr_doc}{rgb}{0.3,0.3,0.3}
 \definecolor{clr_class}{rgb}{0.17,0.57,0.69}
 \definecolor{clr_string}{rgb}{0.64,0.08,0.08}
 
@@ -30,22 +31,26 @@
 
 
 \lstdefinelanguage{Csharp}{
-	basicstyle=\footnotesize\ttfamily\consolas,
+	basicstyle=\ttfamily\consolas\scriptsize,
 	keywords={
 		abstract,event,new,struct,as,explicit,null,switch,base,extern,object,this,bool,false,operator,throw,
 		break,finally,out,true,byte,fixed,override,try,case,float,params,typeof,catch,for,get,private,uint,char,foreach,protected,ulong,
 		checked,goto,public,unchecked,class,if,readonly,unsafe,const,implicit,ref,ushort,continue,in,return,using,
 		decimal,int,sbyte,set,virtual,default,interface,sealed,volatile,delegate,internal,short,void,do,is,sizeof,while,
-		double,lock,stackalloc,else,long,static,enum,namespace,string},
+		double,lock,stackalloc,else,long,static,enum,namespace,string,var},
 	keywordstyle=\color{clr_keyword},
 	classoffset=1,  % new class offset
-	morekeywords={ArgumentException,ArgumentNullException,Contract,List,IList,Point3D,Polygon3DTriangulerParameters},
+	morekeywords={ArgumentException,ArgumentNullException,Contract,List,IList,Point3D,Polygon3DTriangulerParameters,ICompiler,IExpressionCompiler,
+		Expression,IExpression,IMessageLogger,ExpressionCompiler,ConstantDefinition,IConstantDefinitionCompiler,ConstantDefCompiler,CompilersContainer,
+		IContainer,InputCompiler,IInputCompiler,ICompilersContainer,IEvaluatorsContainer,ProcessManager,InputBlockEvaled,IOutputProvider,IComponentMetadataResolver,
+		TimeSpan,IComponent,ProcessContext,AxiomProvider,SymbolProvider,SymbolInterpretation,ArgsStorage,Quaternion,Vector3D},
 	keywordstyle=\color{clr_class},
 	classoffset=0,  % restore default class offset
 	sensitive=true,
-	comment=[l]{//},
-	morecomment=[s]{/*}{*/},
+	comment=[s]{/*}{*/},
+	morecomment=[l][\color{clr_doc}]{//},
 	commentstyle=\color{clr_comment}\itshape,
+	morecomment=[l][\color{clr_doc}]{///},
 	string=[b]",
 	stringstyle=\color{clr_string},
 	extendedchars=true,
@@ -55,10 +60,20 @@
 	captionpos=t,
 	backgroundcolor=\color{clr_code_bg},
 	captionpos=b,
-	showstringspaces=false
+	showstringspaces=false,
+    moredelim=**[is][\btHL]{@}{@}
 }
 
-\lstnewenvironment{Csharp}[1][]{\lstset{language=Csharp,#1}}{}
+\lstnewenvironment{Csharp}[1][]%
+{ % http://tex.stackexchange.com/questions/10141/how-to-prevent-lstlisting-from-splitting-code-between-pages
+	\noindent
+	\minipage{\linewidth}%
+	\vspace{0.5\baselineskip}
+	\lstset{language=Csharp,#1}
+}
+{\endminipage}
+
+\lstnewenvironment{CsharpBreak}[1][]{\lstset{language=Csharp,#1}}{}
 
 
 \lstdefinelanguage{Lsystem}{
@@ -141,7 +156,7 @@
 	morekeywords={rule}, % fslex
 	keywordstyle=\color{clr_keyword},
 	classoffset=2,  % new class offset
-	morekeywords={ConstantDefinition,FunctionDefinition,ImmutableListPos,IFunctionStatement,ResizeArray},
+	morekeywords={ConstantDefinition,FunctionDefinition,ImmutableListPos,IFunctionStatement,ResizeArray,Identifier},
 	keywordstyle=\color{clr_class},
 	classoffset=3,  % new class offset
 	morekeywords={LET,EQUALS,SEMI,LBRACE,RBRACE,RETURN,FUN,ID}, %fsyacc

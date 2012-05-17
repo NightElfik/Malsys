@@ -62,12 +62,12 @@ namespace Malsys.Processing {
 						continue;
 					}
 
-					// create components graph -- graph is same for all processed L-systems with this configuration
 					if (!inBlockEvaled.ProcessConfigurations.TryGetValue(processStat.ProcessConfiName, out processConfigStat)) {
 						logger.LogMessage(Message.UndefinedProcessConfig, processStat.AstNode.ProcessConfiNameId.Position, processStat.ProcessConfiName);
 						continue;
 					}
 
+					// create components graph -- graph is same for all processed L-systems with this configuration
 					components = configBuilder.CreateComponents(processConfigStat.Components, processConfigStat.Containers,
 						processStat.ComponentAssignments, componentResolver, logger);
 

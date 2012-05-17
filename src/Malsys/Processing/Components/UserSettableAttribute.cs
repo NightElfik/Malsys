@@ -8,6 +8,7 @@ using System.Runtime.Serialization;
 namespace Malsys.Processing.Components {
 	/// <summary>
 	/// Indicates that marked property value can be set by user from input code.
+	/// If the value is invalid setter can throw InvalidUserValueException.
 	/// </summary>
 	/// <remarks>
 	/// Marked property must have public setter (public getter is not required).
@@ -28,6 +29,7 @@ namespace Malsys.Processing.Components {
 
 	/// <summary>
 	/// Indicates that marked property value can be set by user from input code.
+	/// If the value is invalid setter can throw InvalidUserValueException.
 	/// </summary>
 	/// <remarks>
 	/// Marked property must have public setter.

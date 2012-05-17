@@ -10,32 +10,11 @@ Thus root namespace is called \emph{Malsys}.
 [TODO]
 
 
-\section{Choice of development environment}
-
-As development environment was chosen .NET because of following reasons.
-
-\begin{description*}
-	\item[Multiplatformity]
-		Thanks to Mono project\footnote{Mono is an open source implementation of Microsoft's .NET Framework \url{http://www.mono-project.com}}
-			.NET libraries and executables can be used not only on Windows but also on Linux, Mac and many other operating systems.
-	\item[Development tools]
-		Visual Studio is powerful integrated development environment (IDE) with many integrated tools (like inteli-sense, unit testing or T4 templates) and useful downloadable plugins.
-	\item[Reflection]
-		Reflection is the ability to examine types and work with meta-data, properties and functions of an object at runtime.
-		Reflection can be used to load various plugins or data at runtime and help extensibility in great way.
-	\item[Parser generator]
-		FsLex and FsYacc are lexer and parser generators written in F\# with good support by Visual Studio.
-		Generated lexer and parser are also in F\# thus they can be easily used in any .NET project.
-	\item[Web framework]
-		ASP.NET MVC is a lightweight presentation framework for creating web applications in .NET.
-\end{description*}
-
-The most of code will be written in C\# expect input lexer and parser which will be in F\#. 
 
 
 \section{Solution structure}
 
-The solution is divided into 6 projects: \lsystem processing library (Malsys), web user interface (Malsys.Web), abstract syntax tree (Malsys.Ast), syntax parser (Malsys.Paring), common functionality (Malsys.Common) and project with tests (Malsys.Tests).
+The solution is divided into 6 projects: \lsystem processing library (Malsys), web user interface (Malsys.Web), abstract syntax tree (Malsys.Ast), syntax parser (Malsys.Parsing), common functionality (Malsys.Common) and project with tests (Malsys.Tests).
 
 The main reason why solution do not contain lower amount of projects is because syntax parser is written in F\# which is also language from .NET family but it is not possible to compile F\# and C\# into single DLL.
 Abstract syntax tree (AST) is separated from parser because AST will be compiled by compilers written in C\# and it is desirable to have AST data structures written in C\#.
@@ -44,31 +23,38 @@ Common functionality is separated into single project because it will be needed 
 Web project is separated from main project intentionally to allow usage of \lsystem processing library independently.
 And finally test project is separated to be possible to test all projects independently.
 Dependencies of projects in solution are shown in the \autoref{fig:solutionDependencies}.
-The \emph{Malsys.Tests} project is not in the diagram because it has dependencies to all projects.
+The \emph{Malsys.Tests} project has dependencies to all other projects.
 
 \begin{figure}[h]
 	\centering
-	\begin{tikzpicture}[node distance=1cm,>=latex]
+	\begin{tikzpicture}[->,>=latex,shorten >=2pt]
 		\node (c) [block] {Malsys.Common};
 		\node (m) [block, below=of c] {Malsys};
 		\node (a) [block, right=of m] {Malsys.Ast};
 		\node (p) [blockx, right=of a] {Malsys.Parsing};
 		\node (w) [block, left=of m] {Malsys.Web};
+		\node (t) [block, below=2cm of m, xshift=2cm] {Malsys.Tests};
 		\node (cSharp) [block, minimum width=1em, minimum height=1em, above=1cm of p] {C\#};
 		\node (fSharp) [blockx, minimum width=1em, minimum height=1em, right=0.5cm of cSharp] {F\#};
 		
-		\draw [->] (a) edge node {} (c);
+		\draw (a) -- (c);
 		
-		\draw [->] (p) edge[bend right=10] node {} (c);
-		\draw [->] (p) edge node {} (a);
+		\draw (p) to[bend right=10] (c);
+		\draw (p) -- (a);
 		
-		\draw [->] (m) edge node {} (c);
-		\draw [->] (m) edge[bend right] node {} (p);
-		\draw [->] (m) edge node {} (a);
+		\draw (m) -- (c);
+		\draw (m) to[bend right=30] (p);
+		\draw (m) -- (a);
 		
-		\draw [->] (w) edge[bend left=20] node {} (c);
-		\draw [->] (w) edge node {} (m);
-		\draw [->] (w) edge[bend right] node {} (a);
+		\draw (w) to[bend left=20] (c);
+		\draw (w) -- (m);
+		\draw (w) to[bend right=30] (a);
+		
+		\draw [shorten >=3.4cm] (t) -- (c);
+		\draw [shorten >=1.2cm] (t) -- (a);
+		\draw [shorten >=2cm] (t) -- (w.south);
+		\draw [shorten >=1.2cm] (t) -- (m);
+		\draw [shorten >=2cm] (t) -- (p.south);
 	\end{tikzpicture}
 	\caption{Dependencies of projects in solution}
 	\label{fig:solutionDependencies}
@@ -76,6 +62,7 @@ The \emph{Malsys.Tests} project is not in the diagram because it has dependencie
 
 
 \section{Input parsing}
+\label{sec:parsingImplementaion}
 
 Input parsing is in the \emph{Malsys.parsing} project and it have two phases, lexing and parsing.
 Lexing phase uses the lexer to convert input source codes to stream of \emph{tokens} (basic blocks of input) from which the parser parses the abstract syntax tree (AST).
@@ -106,6 +93,9 @@ rule tokenize args = parse
 
 After lexing comes parsing.
 Parser is generated by \emph{FsYacc} tool [\ref{sec:FSharpPowerPack}] from definition file (\emph{Parser.fsy} in the \emph{Malsys.parsing} project).
+Parser is written to parse input to the abstract syntax tree (defined in \emph{Malsys.ast}.
+All data structures in AST are immutable\footnote{Immutable data structures can not be changed after creation} which helps to robustness of the project.
+It is impossible to change value of some node of AST by mistake.
 \autoref{code:fsl} shows an example of parser definition.
 
 \begin{Fsharp}[label=code:fsy,caption={Example of definition file for \emph{FsYacc}}]
@@ -134,13 +124,604 @@ FunStatement:
 // identifier
 Id:
     | ID
-      { new Identificator($1, getPos parseState) }
+      { new Identifier($1, getPos parseState) }
 \end{Fsharp}
 
+Both \emph{FsLex} and \emph{FsYacc} tools are automatically run on build of the project in Visual studio.
+
+
+\section{Compilation and evaluation}
+
+Compilation of the abstract syntax tree is done by set of compilers defined in the \emph{Compilers} namespace in the \emph{Malsys} project.
+There are defined specialized compilers for each part of the AST.
+Compilers uses each other to compile the AST.
+For example \emph{Input compiler} uses \emph{\lsystem compiler} which uses \emph{Constant definition compiler} etc.
+\autoref{fig:compilers} shows the hierarchy of compilers.
+To keep the figure clear arrows to \emph{Expression compiler} was shortened (every compiler uses the \emph{Expression compiler}).
+
+\begin{figure}[h]
+	\centering
+	\begin{tikzpicture}[->,>=latex,shorten >=2pt]
+		\node (in) [block] {Input comp.};
+		\node (fd) [block, below=of in] {Function def. comp.};
+		\node (ls) [block, left=of fd] {Lsystem comp.};
+		\node (cd) [block, right=of fd] {Constant def. comp.};
+		\node (ps) [block, left=of in] {Process stat. comp.};
+		\node (pa) [block, below=of fd] {Parameters comp.};
+		\node (rr) [block, below=of pa] {Rewrite rule comp.};
+		\node (sy) [block, below=2cm of ls] {Symbols comp.};
+		\node (ex) [block, below right=3cm of fd] {Expression comp.};
+		
+		
+		\draw (in) -- (cd);
+		\draw (in) -- (fd);
+		\draw (in) -- (ls);
+		\draw (in) -- (ps);
+		
+		\draw (fd) -- (cd);
+		\draw (fd) -- (pa);		
+		
+		\draw (ls) to [bend left=21] (cd);
+		\draw (ls) -- (fd);
+		\draw (ls) -- (pa);
+		\draw (ls) to [bend right=10] (rr);
+		\draw (ls) -- (sy);
+		
+		\draw (ps) -- (ls);
+		
+		\draw (rr) to [bend right=10] (cd);
+				
+		\draw (cd) -- (ex);
+		\draw (rr) -- (ex);
+		\draw [shorten <=1cm] (pa) -- (ex);
+		\draw [shorten <=3cm] (fd) -- (ex);
+		\draw [shorten <=5.5cm] (sy) -- (ex);
+		\draw [shorten <=6.5cm] (ls) -- (ex);
+		\draw [shorten <=5cm] (in) -- (ex);
+		\draw [shorten <=8.5cm] (ps.south) -- (ex);
+	\end{tikzpicture}
+	\caption{Hierarchy of compilers}
+	\label{fig:compilers}
+\end{figure}
+
+
+Compilers are not bound to the graph statically.
+All compilers implements general interface and they requires other compilers through the interfaces (\autoref{code:compIfaces}).
+Each compiler takes all dependent compilers as parameters of the constructor.
+
+\begin{Csharp}[label=code:compIfaces,caption={General interface for compilers, interface for the constant definition compiler and its implementation}]
+// general interface for simplifying definition of compilers interfaces
+public interface ICompiler<TSource, TResult> {
+	TResult Compile(TSource obj, IMessageLogger logger);
+}
+
+// constant definition compiler compiles Ast.ConstantDefinition to ConstantDefinition
+public interface IConstantDefinitionCompiler
+	: ICompiler<Ast.ConstantDefinition, ConstantDefinition> {}
+
+// concrete implementation of constant definition compiler interface	
+public class ConstantDefCompiler : IConstantDefinitionCompiler {
+		// constructor
+		public ConstantDefCompiler(@IExpressionCompiler expressionCompiler@) { ... }
+		// compile method
+		public ConstantDefinition Compile(Ast.ConstantDefinition constDefAst,
+			IMessageLogger logger) { ... }
+}
+\end{Csharp}
+
+Inversion of control (IOC) \nomenclature{IOC}{inversion of control} container is used to instantiate all compilers [\ref{sec:autofac}].
+All types of compilers are registered to the IOC container then it is possible to resolve instances and all dependencies are resolved by the container.
+This approach also bring great simplicity and extensibility.
+\autoref{code:compCont} shows implementation of the compilers container and its possible usage.
+
+\begin{Csharp}[label=code:compCont,caption={General interface for compilers and interface for the expression compiler}]
+public class CompilersContainer : ICompilersContainer {
+	protected IContainer container;  // the IOC container	
+
+	public CompilersContainer() {
+		var builder = new ContainerBuilder();
+		builder.@RegisterType<InputCompiler>().As<IInputCompiler>()@.SingleInstance();
+		...  // registration of all other compilers
+		container = builder.Build();
+	}
+
+	public T Resolve<T>() {
+		return container.Resolve<T>();
+	}
+}
+
+// possible usage
+var inputContainer = new CompilersContainer().@Resolve<IInputCompiler>()@;
+\end{Csharp}
+
+The result of compilation is a semantic tree.
+The semantic tree is as well as AST immutable.
+
+All compilation errors are logged sing the \emph{IMessageLogger} class.
+No exceptions are thrown which helps performance and error recovery (compile can continue even after non fatal errors). 
+
+\subsubsection*{Evaluation}
+
+Evaluation of semantic tree is implemented in the same way as the compilation.
+There is set of evaluators and IOC container links them together.
+
+
+
+\section{Components members}
+\label{sec:compImplementaion}
+
+Component is .NET class.
+All components must implement the \emph{IComponent} interface (\autoref{code:IComponent}) and they must have parameter-less constructor.
+
+\begin{Csharp}[label=code:IComponent,caption={Interface of the \emph{ProcessManager} class}]
+public interface IComponent {
+	IMessageLogger Logger { set; }
+	void Initialize(ProcessContext context);
+	void Cleanup();
+}
+\end{Csharp}
+
+According to \autoref{sec:components} components can have settable properties, settable symbol properties, gettable properties, connection properties, callable functions and interpretation methods.
+All of them must be marked with special attribute to be possible to distinguish from other class properties and methods.
+The access name of all members is the same as their real name.
+However the \emph{AccessName} attribute can be used to change it.
+
+\subsubsection{Component lifetime}
+\label{sec:componentLifetime}
+
+The \emph{IComponent} have two basic methods, the \emph{Initialize} and \emph{Cleanup}.
+Following list shows the order of individual operation during creation of the component graph.
+
+\begin{itemize*}
+	\item instantiation (using required parameter-less constructor),
+	\item set of \emph{Logger} property \lsystem:
+	\item for each processed \lsystem:
+	\begin{itemize*}
+		\item reset (cleanup) with \emph{Cleanup} method, it should be used for setting component to default state
+		\item connecting other components (setting connection properties)
+		\item setting of settable (symbol) properties
+		\item initialization with \emph{Initialize} method
+		\item processing of \lsystem
+	\end{itemize*}
+	\item cleanup with \emph{Cleanup} method.
+\end{itemize*}
+
+
+
+\subsubsection{Settable properties}
+
+Settable properties (and settable symbol properties) are properties of the component class marked with the \emph{UserSettable} (\emph{UserSettableSybols}) attribute.
+Properties must have public setter (getter is not required).
+Settable properties must have type assignable to the \emph{IValue} which covers two base types, numbers (\emph{Constant} type) and arrays (\emph{ValuesArray} type).
+Settable symbol properties must have type \emph{ImmutableList<Symbol<IValue>{}>}.
+
+By default all settable (symbol) properties are optional which means that their value may not be set.
+By setting the \emph{IsMandatory} property of the \emph{UserSettable} (\emph{UserSettableSybols}) attribute to true is the property marked as mandatory and error will be thrown if no value is set to it.
+
+Setter of settable (symbol) properties can throw \emph{InvalidUserValueException} if supplied value is invalid.
+The text of the exception will be shown as an error to the user.
+
+
+
+\subsubsection{Gettable properties}
+
+Similarly as settable properties, gettable properties are properties of the component class marked with the \emph{UserGettable} attribute.
+Properties must have public getter (setter is not required) and they must have type assignable to the \emph{IValue}.
+
+By default values of gettable properties can be get after the initialization of the component.
+In that time all the \lsystem in already evaluated thus they can not be used in \lsystem statements.
+However it is possible to set the \emph{IsGettableBeforeInitialiation} property of the \emph{UserGettable} attribute to allow getting of property before initialization and to use its value in \lsystem statement.
+
+
+\subsubsection{Connection properties}
+
+Connection properties are for connecting of other components.
+They are properties of the component class marked with the \emph{UserConnectable} attribute.
+Properties must have public setter (getter is not required) and their type must be assignable to the \emph{IComponent} type.
+
+Connection of some component to connection properties is by default mandatory but it is possible to set the \emph{IsOptional} property of the \emph{UserConnectable} attribute to allow leaving property unconnected (\emph{null}).
+By default only one component can be assigned (connected) to each connection property but this can be changed by the \emph{AllowMultiple} property of the \emph{UserConnectable} attribute.
+
+Setter of connection property can throw \emph{InvalidConnectedComponentException} if supplied value of component is invalid.
+The text of the exception will be shown as an error to the user.
+
+
+\subsubsection{Callable functions}
+
+Callable functions serves to allow calling of component methods in \lsystem code (in statements, rewrite rules etc.).
+Callable functions are method of the component class marked with the \emph{UserCallableFunction} attribute.
+The underlying method must have a parameter of type \emph{IValue[]} and they must return type assignable to the \emph{IValue}.
+
+Similarly as gettable properties callable functions can be by default called after the initialization of the component but it is possible to set the \emph{IsCallableBeforeInitialiation} property of the \emph{UserCallableFunction} attribute to allow calling the function before initialization.
+
+
+\subsubsection{Interpretation methods}
+
+Interpretation methods are specialized methods used for interpretation of symbols.
+Interpretation methods must be marked with the \emph{SymbolInterpretation} attribute, they must have a parameter of type \emph{ArgsStorage} and \emph{void} return type.
+
+
+\subsection{Documentation of members}
+
+To simplify documentation of component and their members is is used standard XmlDoc with custom elements.
+Documentation is loaded automatically if the XML file with documentation in included with DLL where the component is.
+
+To document the component standard \emph{summary} tag is used.
+The user readable name for the component can be written in the \emph{name} tag and for group to which component belongs is tag called \emph{group}.
+Example of documentation of component is in \autoref{code:docExample}.
+
+\begin{Csharp}[label=code:docExample,caption={Example of usage XmlDoc for documentation of component}]
+/// <summary>
+///	Provides symbol property called Axiom which serve as
+/// initial string of symbols of L-system.
+/// </summary>
+/// <name>Axiom provider</name>
+/// <group>Common</group>
+public class AxiomProvider : SymbolProvider {
+	...
+}
+\end{Csharp}
+
+
+
+\subsubsection{Settable (symbol) properties}
+
+Basic documentation is of settable property is loaded from \emph{summary} tag.
+Expected valued description can be put into \emph{expected} and for the default value of settable property is \emph{default} tag.
+
+For settable symbol property is loaded only \emph{summary} tag
+
+
+\subsubsection{Gettable and connection properties}
+
+Documentation for gettable  and connection properties is loaded from standard \emph{summary} tag.
+
+
+\subsubsection{Callable functions and interpretation methods}
+
+In addition to standard \emph{summary} tag for general documentation callable functions (and interpretation methods) can be documented with \emph{parameters} tag where on each line should be documentation for each parameter. 
+
+
+\subsection{Example}
+
+The example of implementation and documentation of component is in appendix \ref{chap:componentExample}.
+
+
+\section{Input processing}
+
+Component graph creation is the core of the \lsystem processing library.
+The class responsible for that is called \emph{ProcessManager} (\autoref{code:procMan}).
+
+It uses the class \emph{ProcessConfigurationBuilder} for creation and configuration of the component graph.
+For resolving component types the \emph{ProcessManager} uses the \emph{IComponentMetadataResolver}.
+It works in similar way as IOC container but components do not have any dependencies.
+Components are registered by user directly using the \emph{IComponentMetadataResolver} implementation or with helper class called \emph{MalsysLoader}.
+
+\begin{Csharp}[label=code:procMan,caption={Interface of the \emph{ProcessManager} class}]
+public class ProcessManager {
+
+	public ProcessManager(ICompilersContainer compIoc,
+		IEvaluatorsContainer evalIoc, @IComponentMetadataResolver compResolver@) {
+
+	public InputBlockEvaled CompileAndEvaluateInput(string sourceCode,
+		string sourcName, IMessageLogger logger) { ... }
+		
+	public void @ProcessInput@(InputBlockEvaled inBlock, IOutputProvider outProvider,
+		IMessageLogger logger, TimeSpan timeout) { ... }
+}
+\end{Csharp}
+
+\emph{ProcessManager} does following steps in the method \emph{ProcessInput}.
+notice the similarities with compoennt lifetime (\autoref{sec:componentLifetime}).
+
+For each process statement in the input do:
+\begin{enumerate*}
+	\item instantiate all components in the Process configuration (specified by process statement),
+	\item \label{procStep2} save gettable properties and callable functions from components which can be get and called before initialization,
+	\item for each \lsystem (specified by process statement) do:
+	\begin{enumerate*}
+		\item reset (clean) all components,
+		\item connect components to graph (resetting may disconnect them),
+		\item evaluate \lsystem, gettable properties and callable functions from step \ref{procStep2} can be used to evaluate \lsystem statements,
+		\item evaluate additional \lsystem statements from process statement,
+		\item set settable properties of all components (from evaluated \lsystem statements),
+		\item save rest of gettable properties and callable functions from components,
+		\item initialize all components,
+		\item find starter component and start it,
+	\end{enumerate*}
+	\item reset (clean) all components.
+\end{enumerate*}
+
+
+\section{Immutable data structures as scoped storage}
+\label{sec:immutableDs}
+
+In many places in the \lsystem processing library there is need for temporary addition of constants to a collection.
+As an example can be evaluation of function.
+Parameters of the function are added as constants to the collection but this addition can overlay already defined constants.
+After evaluation the collection should be in the same state as before (parameters and local variables must not remain).
+This problem can be solved by complex mutable data structures or by defensive copying of collections which can lead to serious performance issues (there can be hundreds of defined constants).
+
+\emph{Immutable data structures} offers clean solution to this problem.
+Immutable data structure is data structure which can not be changed (muted) like \emph{string} in C\#.
+They can not be changed thus there is no need for creation of defensive copies.
+If method passes an immutable collection of defined constants to function evaluation method it can not be changed by it.
+
+But if immutable data structures can not be changed how is possible to add new items to them?
+It is not possible because they are immutable but it is possible to create new copy with added item.
+Interestingly enough addition to immutable tree has the same asymptotic complexity as insertion to mutable tree.
+
+Each node of immutable tree is immutable.
+If we want to add new node we will find place in the tree where it should be.
+Now we need to connect it to the parent but the parent is immutable so we will create new parent (copying value from old one) but with new connections.
+Old children (if any) can be connected without re-creating them.
+So we need to re-create only nodes on the path to the root so complexity is logarithmic ($log_2(n)$ new nodes).
+Insertion to immutable tree is illustrated in \autoref{fig:immAdd}.
+
+There is no need for implementation if immutable tree because he F\# contains it as class \emph{FSharpMap<TKey, TValue>} and the \emph{MapModule} class provides methods for the work with it.
+
+This system ensures that global variables will be accessible and can be temporarily overlayed by more local definitions.
+It is used in may places including evaluation of \lsystems (local constants and functions overlays local ones), evaluation of user-defined functions (parameters and local variables)
+	and rewrite rules (parameters of symbols are mapped as local variables).
+	
+
+
+\tikzstyle{tree} = [draw, fill=blue!12, circle, minimum size=9mm]
+\tikzstyle{treex} = [draw,thick, fill=red!12, circle, minimum size=9mm]
+
+\begin{figure}[h!]
+	\centering
+	\subfloat[Original tree]{
+	\begin{tikzpicture}[child anchor=north,>=latex,level/.style={sibling distance=30mm/#1},level distance=11mm]
+		\node [tree] {50}
+			child { node [tree] {24}
+				child {node [tree] {10}
+					child { node [tree] {9} }
+					child { node [tree] {21} }
+				}
+				child { node  [tree] {31} }
+			}
+			child { node [tree] {88}
+				child { node [tree] {56}
+					child { node [tree] {52} }
+					child [missing] {}
+				}
+				child { node [tree] {95}
+					child [missing] {}
+					child { node [tree] {99} }
+				}
+			}
+			;
+	\end{tikzpicture}
+	} \hfill
+	\subfloat[Tree with inserted node 71]{
+	\begin{tikzpicture}[child anchor=north,>=latex,level/.style={sibling distance=30mm/#1},level distance=11mm]
+		\node [treex] {50}
+			child { node [tree] {24}
+				child {node [tree] {10}
+					child { node [tree] {9} }
+					child { node [tree] {21} }
+				}
+				child { node  [tree] {31} }
+			}
+			child { node [treex] {88}
+				child { node [treex] {56}
+					child { node [tree] {52} }
+					child { node [treex] {71} }
+				}
+				child { node [tree] {95}
+					child [missing] {}
+					child { node [tree] {99} }
+				}
+			}
+			;
+	\end{tikzpicture}
+	}
+	\caption{Example of addition to immutable tree, red nodes are newly created}
+	\label{fig:immAdd}
+\end{figure}
+
+
+\section{Implemented components}
+
+There are many implemented components in the \lsystem processing library.
+In this section is described implementation details of some of them.
+
+
+\subsection{Symbol rewriter}
+
+The core of \lsystem processing is rewriteing of \lsystem symbols.
+The \emph{SymbolRewriter} component is responsible just for that.
+Its implementation supports all \lsystem types described in \autoref{sec:lsysTypes}.
+
+The most complicated part is the context checking (in context rewrite rules) which satisfies rules about context checking defined in \autoref{sec:bracketedLsystems}.
+It can not be implemented by naive approach which will search context symbols one by one because branches must be skipped and they can be very long.
+\autoref{lsys:longContext} demonstrates an \lsystem where naive implementation will not be able to work well.
+It uses symbol $S$ to generate random color index as its parameter.
+Symbol $S$ is "linked" using context to every symbol $X$ which is rewritten to new branches with color index from base symbol $S$.
+This causes that all lines in one iteration have same color but colors between iterations differs.
+First five iterations with random seed set to 0 are in \autoref{fig:longContext}.
+
+\begin{Lsystem}[label=lsys:longContext,caption={\lsystem }]
+lsystem LongContext extends Branches {
+	set symbols axiom = S(0) X;
+	set symbols @contextIgnore = + - F@;
+	set iterations = 5;
+	set initialAngle = 90;	
+	interpret F(c) as DrawForward(32, 2, c * #001100);
+	interpret + as TurnLeft(20);
+	interpret - as TurnLeft(-20);
+	rewrite @{S(c)} X@ to [ + F(c) X ] - F(c) X;
+	rewrite S to S(floor(random(0,16)));
+}
+process all with SvgRenderer;
+\end{Lsystem}
+
+\begin{figure}[h]
+	\subfloat{\includegraphics[scale=0.9]{LongContext1}} \hfill
+	\subfloat{\includegraphics[scale=0.85]{LongContext2}} \hfill
+	\subfloat{\includegraphics[scale=0.8]{LongContext3}} \hfill
+	\subfloat{\includegraphics[scale=0.75]{LongContext4}} \hfill
+	\subfloat{\includegraphics[scale=0.7]{LongContext5}}
+	\caption{Result of \lsystem in \autoref{lsys:longContext}}
+	\label{fig:longContext}
+\end{figure}
+
+
+In following list are strings of symbols of first five iterations of \lsystem in \autoref{lsys:longContext}.
+Ignored symbols $+$, $-$ and $F$ are omitted.
+Every symbol $X$ needs to search for the very first symbol to match the context correctly.
+Now you can see why naive implementation can not be used.
+
+\begin{enumerate*}
+	\item S(0) X
+	\item S(11) [ X ] X
+	\item S(13) [ [ X ] X ] [ X ] X
+	\item S(12) [ [ [ X ] X ] [ X ] X ] [ [ X ] X ] [ X ] X 
+	\item S(8) [ [ [ [ X ] X ] [ X ] X ] [ [ X ] X ] [ X ] X ] [ [ [ X ] X ] [ X ] X ] [ [ X ] X ] [ X ] X 
+\end{enumerate*}
+
+The symbol rewrite component builds the tree from context which allows to skip branches quickly.
+Tree nodes at the same level are interlinked to allow search for left and right context effectively.
+The pointer to current symbol is updated after each processed symbol.
+The tree is dynamically loaded as right context needs more symbols.
+Three node is represented by class \emph{ContextListNode<T>}.
+Class \emph{ContextListBuilder} helps to build the tree correctly symbol by symbol.
+
+The search tries all possible ways to match the context but number of possible ways is relatively low.
+\autoref{fig:contextChecking} shows an example of context search in tree built from fourth iteration of \lsystem in \autoref{lsys:longContext}.
+Red path shows search for left context $S$ of symbol $X$ and green path shows search for right context $[X]$ of symbol $X$.
+The search methods are located in the \emph{ContextChecker} class.
+
+\tikzstyle{arr} = [draw, fill=blue!12, rectangle, minimum height=2em, minimum width=2em]
+\tikzstyle{sym} = [draw, fill=red!12, rectangle, minimum height=2em, rounded corners=1mm]
+\tikzstyle{arrow} = [draw=gray,<->,dashed,shorten >=2pt,shorten <=2pt]
+\tikzstyle{path} = [draw=red,thick,->,shorten >=1pt]
+\tikzstyle{path2} = [draw=green,thick,->,shorten >=1pt]
+
+\begin{figure}[h!]
+	\centering
+	\begin{tikzpicture}[child anchor=north,>=latex,level/.style={sibling distance=33mm/#1}]
+		\node [arr,] {root}
+			child { node (a) [sym,draw=red, thick] {S(12)} }
+			child { node (b) [arr] {[ ]}
+				child { node (ba) [arr] {[ ]}
+					child { node (baa) [arr] {[ ]}
+						child { node (baaa) [sym] {X} }
+					}
+					child { node (bab) [sym] {X} }
+				}
+				child { node (bb) [arr] {[ ]}
+					child { node (bba) [sym,draw=green, thick] {X} }
+				}
+				child { node (bc) [sym,draw=red, thick] {X} }
+			}
+			child { node (c) [arr] {[ ]}
+				child { node (ca) [arr] {[ ]}
+					child { node (caa) [sym] {X} }
+				}
+				child { node (cb) [sym] {X} }
+			}
+			child { node (d) [arr] {[ ]}
+				child { node (da) [sym] {X} }
+			}
+			child { node(e) [sym] {X} }
+			;
+		\draw [arrow] (a) -- (b);
+		\draw [arrow] (b) -- (c);
+		\draw [arrow] (c) -- (d);
+		\draw [arrow] (d) -- (e);
+		
+		\draw [arrow] (ba) -- (bb);
+		\draw [arrow] (bb) -- (bc);
+		
+		\draw [arrow,dashed,shorten >=0,shorten <=0] (baa) -- (bab);
+		
+		\draw [arrow] (ca) -- (cb);
+		
+		\draw [draw=red,<-,thick,shorten <=2pt] (bc) -- +(0,-2cm);
+		\draw [path] (bc) to[bend right=20] (bb);
+		\draw [path] (bb) to[bend right=20] (ba);
+		\draw [path,dashed] (ba) to[bend right=20] +(-1.2cm,0);
+		\draw [path] (ba.north) ++(-0.2,0) to[bend left=20] (b);
+		\draw [path] (b) to[bend right=20] (a);
+		
+		
+		\draw [draw=green,<-,thick,shorten <=2pt] (bba) -- +(0,-2cm);
+		\draw [path2] (bba) to[bend right=20] (bb);
+		\draw [path2, dashed] (bb) to[bend right=20] (bc);
+		\draw [path2] (bb) to[bend right=20] (b);
+		\draw [path2] (b) to[bend left=20] (c);
+		\draw [path2,dashed] (c) to[bend right=20] (ca);
+		\draw [path2] (c) to[bend left=20] (d);
+		\draw [path2] (d) to[bend right=20] (da);
+		
+		\node [area,fit=(d) (da),thick,green] {};
+	\end{tikzpicture}
+	\caption{Context search tree built from fourth iteration of \lsystem in \autoref{lsys:longContext}}
+	\label{fig:contextChecking}
+\end{figure}
+
+As context matching method finds matching symbol it also maps its parameters to named variables.
+Because context matching is done by back-track and mapped symbols can be invalid immutable data structures are used for saving mapped variables and roll-back to old values can be done with no cost (see \autoref{sec:immutableDs}).
+Described algorithm is not optimal but it is sufficient for the most cases.
+Production \lsystem have rarely context longer than one.
+
+Context checking is tested by many unit tests in the \emph{Malsys.Tests} project which ensures correctness of implemented algorithm.
+
+
+\subsection{Turtle graphics interpreter}
+
+Turtle graphics interpreter implemented by class \emph{TurtleInterpreter} is universal interpreter for both 2D and 3D renderers.
+It interprets symbols as turtle graphics in 3D but if 2D interpreter is connected it omits the Z coordinate.
+This allows to use 3D commands in output rendered by 2D renderer which brings many advantages.
+For example the \emph{Roll} (rotation by direction axis) by $180^{\circ}$ can be used for the inversion of turning directions in 2D.
+
+Interpreter allows to use three basic rotations: pitch, yaw and roll.
+Pitch operation turns up around right-hand vector, yaw turns left around up vector axis and roll operation rolls clock-wise around forward vector axis.
+The up, right and forward vectors can be set using user settable properties allowing changes to coordinate system.
+
+The rotation of turtle is represented as the \emph{Quaternion}.
+This has many advantages because quaternions represent rotation around axis which is exactly what basic operations do.
+In the contrast to representation of rotation by the rotation matrix the quaternion allows to is easy to pitch, yaw and roll by axes which are relative to current orientation.
+Also the storage size of rotation represented by the quaternion is the smallest possible since quaternion is represented as four numbers.
+Composition of two quaternion rotations is equal to multiplying them.
+\autoref{code:yaw} shows code snippet of the \emph{Yaw} interpretation method of the \emph{TurtleInterpreter}.
+
+%!!!!!!!!!!!!!!!Composition?
+
+\begin{Csharp}[label=code:yaw,caption={Implementation of the \emph{Yaw} method of the \emph{TurtleInterpreter}}]
+[SymbolInterpretation(1)]
+public void Yaw(ArgsStorage args) {
+	double angle = getArgumentAsDouble(args, 0);
+	currState.Rotation *= new Quaternion(upVect, angle);
+}
+\end{Csharp}
+
+
+The \emph{TurtleInterpreter} can simulate the tropism\footnote{A tropism is a biological phenomenon, indicating growth or turning movement of a biological organism, usually a plant, in response to an environmental stimulus.(\url{http://en.wikipedia.org/wiki/Tropism})}.
+This is easily done by quaternions too because tropism is simulated as physical force which is applied to the line \cite[p.~58]{PL91} (\autoref{code:tropismImpl}).
+
+\begin{Csharp}[label=code:tropismImpl,caption={Implementation of the tropism which is applied after each line}]
+private void rotateByTropism(Vector3D moveVector) {
+	Vector3D axis = Vector3D.CrossProduct(moveVector, tropismVect);
+	double angle = axis.Length * tropismCoef;
+	if (angle.EpsilonCompareTo(0) == 0) {
+		return;
+	}
+	axis.Normalize();
+	currState.Rotation = new Quaternion(axis, angle) * currState.Rotation;
+}
+\end{Csharp}
+
+
+\section{Triangulation of 3D objects}
 
 
 
 
+
+\section{Web user interface}
 
 
 

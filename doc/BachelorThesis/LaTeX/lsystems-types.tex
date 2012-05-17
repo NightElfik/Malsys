@@ -73,8 +73,8 @@ This allows to model plants more easily and create more complex models.
 
 Bracketed \lsystem in \autoref{lsys:branchingSrc} demonstrates usage of branching system to produce plant-like model which you can see in \autoref{fig:branching}.
 Note that color of segments indicates their type and age.
-Brown segments are drawn with symbol \texttt{F} and they represent segments from previous iteration.
-Green segments are drawn with symbol \texttt{A} and they are new compared to the previous iteration.
+Black segments are drawn with symbol $F$ and they represent segments from previous iteration.
+Green segments are drawn with symbol $A$ and they are new compared to the previous iteration.
 
 \begin{Lsystem}[label=lsys:branchingSrc,caption={Bracketed \lsystem which creates plant-like model (\autoref{fig:branching})}]
 lsystem PythagorasTree {
@@ -216,6 +216,7 @@ process all with SymbolPrinter;
 
 
 \subsubsection{Context-sensitive bracketed \lsystems}
+\label{sec:bracketedLsystems}
 
 If we add context-sensitive rewrite rule to bracketed \lsystems the situation will be more difficult.
 The context matching procedure must take into account the branches.

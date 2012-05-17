@@ -1,4 +1,6 @@
 % xelatex -synctex=1 -interaction=nonstopmode %.tex
+% makeindex %.nlo -s nomencl.ist -o %.nls
+% biber %
 
 \newcommand{\debugging}{true}
 %\newcommand{\corneranim}{true}
@@ -40,6 +42,10 @@
 %\usepackage{xunicode}
 %\usepackage{xltxtra}
 
+\usepackage[intoc,refpage]{nomencl}
+\renewcommand{\nomname}{List of Abbreviations}
+\makenomenclature
+
 
 \usepackage{comment}
 %\usepackage{setspace}
@@ -60,6 +66,10 @@
 \usepackage{rotating}
 
 \usepackage[titletoc]{appendix}
+
+%\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
 
 \usepackage{tikz}
 \usetikzlibrary{positioning,shapes,arrows,trees,fit,intersections}
@@ -232,6 +242,8 @@ implementation,
 
 \nocite{*}  % Show all Bib-entries
 \printbibliography
+
+\printnomenclature
 
 %\addcontentsline{toc}{chapter}{List of Figures}
 %\listoffigures

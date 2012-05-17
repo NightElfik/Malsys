@@ -491,6 +491,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ExamplePlugin\ExamplePlugin.csproj">
+      <Project>{A45E7E3C-3AEE-4110-B8CC-9B1419FE40AF}</Project>
+      <Name>ExamplePlugin</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Malsys.Ast\Malsys.Ast.csproj">
       <Project>{4DE67417-39CA-4AEC-AC75-9584112268F0}</Project>
       <Name>Malsys.Ast</Name>
