@@ -1,7 +1,8 @@
 
 \chapter{Results}
 
-This section summarizes results
+This section summarizes the results and shows rendered images of \lsystems.
+
 
 \section{Web user interface}
 
@@ -11,7 +12,7 @@ This section summarizes results
 	\label{fig:malsysQr}
 \end{wrapfigure}
 
-The web user interface was deployed and it is accessible at address \emph{http://malsys.cz}.
+The web user interface was deployed and it is accessible at address \url{http://malsys.cz}.
 The main function of the web is to process \lsystems.
 Detailed instructions can be found in appendix \ref{chap:userDoc}.
 Web site includes \lsystem gallery and help.
@@ -22,12 +23,16 @@ Registered users can save and publish their \lsystems to public gallery and they
 Web page is displayed correctly in the most common web browsers namely Google Chrome, Opera, Firefox, Internet Explorer and Safari.
 It is possible to browse it in smart phones or tablets.
 \autoref{fig:galleryInDevices} shows print-screens of the first page of the gallery on various operating systems.
-Web page is supports pinning to Windows taskbar (\autoref{fig:pinIe}). 
+
+If the browser window is wider than 1900 px the layout of the \lsystem process page splits to two columns to allow to see the source code and the result simultaneously.
+This feature is done purely in CSS 3.
+
+The web page is supports pinning to the Windows taskbar (\autoref{fig:pinIe}). 
 
 \begin{figure}[h]
 	\centering
-	\subfloat{\includegraphics[scale=0.5]{JumpList}} ~
-	\subfloat{\includegraphics[scale=0.5]{PinnedIeHeader}}
+	\subfloat{\includegraphics[scale=0.54]{JumpList}} ~
+	\subfloat{\includegraphics[scale=0.7]{PinnedIeHeader}}
 	\caption{Jump-list of pinned site and header of opened Internet Explorer 9 using pinned shortcut}
 	\label{fig:galleryInDevices}
 \end{figure}
@@ -37,7 +42,7 @@ Web page is supports pinning to Windows taskbar (\autoref{fig:pinIe}).
 	\centering
 	\subfloat[Windows 7 (Google Chrome)]{\includegraphics[width=\linewidth]{GalleryInChrome}}
 	\\
-	\subfloat[Android OS (Firefox)]{\includegraphics[height=7cm]{GalleryOnAndroid}} ~
+	\subfloat[Android ICS (default browser)]{\includegraphics[height=7cm]{GalleryOnAndroid}} ~
 	\subfloat[Windows Phone (IE9 mobile)]{\includegraphics[height=7cm]{GalleryOnWindowsPhone}} ~
 	\subfloat[Amazon Kindle 3]{\includegraphics[height=7cm]{GalleryOnKindle}}
 	\caption{The first page of the gallery displayed on various operating systems}
@@ -193,7 +198,7 @@ Also note that help pages with \emph{predefined stuff} in the web are generated 
 		.cs & C\# & > 30 000 &  \\ \hline
 		.fs, .fsy, .fls & F\# & > 1 000 & F\# files together with lexer and parser definitions \\ \hline
 		.cshtml & Razor & > 10 000 & views of the razor view engine\\ \hline
-		.generated.cs, .designer.cs & C\# & > 5 000 & automatically generated files \\ \hline
+		.generated.cs, .designer.cs & C\# & > 5 000 & automatically generated files \\
 		\bottomrule
 	\end{tabular}
 	\caption{Number of lines of code written by hand (if not stated otherwise) based on file types}

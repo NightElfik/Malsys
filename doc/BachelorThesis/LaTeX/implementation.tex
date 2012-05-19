@@ -2,14 +2,13 @@
 \chapter{Implementation}
 \label{chap:implementation}
 
-In this chapter is described implementation of designed system.
+In this chapter are described implementation details of the project.
+Sections in this chapters explains individual problems and their solutions.
+The text accompanies actual source code snippets and diagrams for better explanation.
 
-Initially the project was names as \emph{Malsys} which stands for \emph{Marks \lsystems} and this name preserved till now.
+
+Initially the project was named as \emph{Malsys} which stands for \emph{Mark's \lsystems} and this name preserved till now.
 Thus root namespace is called \emph{Malsys}.
-
-[TODO]
-
-
 
 
 \section{Solution structure}
@@ -342,6 +341,7 @@ Interpretation methods must be marked with the \emph{SymbolInterpretation} attri
 
 
 \subsection{Documentation of members}
+\label{sec:componentDoc}
 
 To simplify documentation of component and their members is is used standard XmlDoc with custom elements.
 Documentation is loaded automatically if the XML file with documentation in included with DLL where the component is.
@@ -388,6 +388,7 @@ The example of implementation and documentation of component is in appendix \ref
 
 
 \section{Input processing}
+\label{sec:implInputProcessing}
 
 Component graph creation is the core of the \lsystem processing library.
 The class responsible for that is called \emph{ProcessManager} (\autoref{code:procMan}).
@@ -715,17 +716,494 @@ private void rotateByTropism(Vector3D moveVector) {
 \end{Csharp}
 
 
-\section{Triangulation of 3D objects}
+\section{Triangulation of 3D polygons}
+
+Turtle graphics interpretation of \lsystems can generate polygons which are points in space that defines perimeter of an object.
+In 2D tey form polygon which is easy to render even if its shape is complex (crossing edges etc.).
+But in 3D the situation is much more complex because.
+Lets call the object specified by points on its perimeter 3D polygon even if it is not 100\% technically correct.
+3D polygon is specified by points on its perimeter but they does not say anything about the shape itself.
+There is more possible interpretations even of basic polygons (example for 4 points is in \autoref{fig:3dSquare}).
+
+\begin{figure}[h!]
+	\hfill
+	\subfloat{\includegraphics[width=0.3\linewidth]{3dSquare1}}
+	\hfill
+	\subfloat{\includegraphics[width=0.3\linewidth]{3dSquare2}}
+	\hfill ~
+	\caption{Ambiguous triangulation of four points}
+	\label{fig:3dSquare}
+\end{figure}
+
+Because of the ambiguity in triangulation there can not exist ideal triangulation algorithm.
+With this in the mind was written trianguler in \lsystem processing library.
+It is possible to configure triangulation strategies.
+
+Triangulation algorithm works on the \emph{cutting-ear} base.
+From each point of the polygon can be created a triangle (called \emph{ear}) by connecting the point to its two neighbors.
+Then one ear is picked (by strategy which is given by the user) and \emph{cut off} which means that triangle is sent to output and.
+Remains a polygon with one less point and this is repeated until 3 points remains.
+
+The only thing which can be affect by user is the order of cutting of ears but it is quite enough.
+This algorithm is implemented in the \emph{Polygon3DTrianguler} class and the triangulation method takes as an argument (besides actual points) \emph{triangulation parameters} which specifies
+	\begin{inparaenum}[{\itshape a})]
+		\item evaluation delegate which is used for evaluation of ears,
+		\item ordering of ears' scores (ascending or descending) which specifies whether minimal or maximal score is the best,
+		\item recount mode which can be set to never, neighbors or all and specifies what ears are recounted after cutting one and
+		\item attached multiplier, after cutting an ear scores of neighbors are multiplied with it.
+	\end{inparaenum}
+The algorithm also have support for detection of planar polygons because turtle graphic tends to produce planar polygons in the 3D space.
+It tries to find a plane where the polygon is planar by finding some plane and counting the coefficient of variation of distance from the plane to all points
+	(the ratio of the standard deviation $\sigma$ to the mean $\mu$).
+If the coefficient is under threshold (given by the user) the polygon is projected on found plane and standard Delaunay triangulation algorithm is used for robust triangulation.
 
 
+The triangulation algorithm is very versatile but to simplify its usage there is defined 5 strategies.
 
+\begin{description*}
+	\item[As in input] -- cuts ear one by one from the first to the last point without any sorting
+	\item[Minimal angle] -- triangles with minimal angles are triangulated first
+	\item[Maximal angle] -- triangles with maximal angles are triangulated first
+	\item[Maximal distance] -- triangles with maximal distance from all points are triangulated first
+	\item[Maximal distance from non-triangulated] -- triangles with maximal distance from non-triangulated points are triangulated first
+\end{description*}
+
+The user can pick one that gives the best results to their polygon type.
+The choice can be done by setting the \emph{polygonTriangulationStrategy} property of the \emph{ThreeJsSceneRenderer3D} component.
+Standard library contains constant which can be used instead of numbers to keep the code readable (appendix \ref{sec:stdLibThreeJs}).
+\autoref{fig:triangulationSpiral} shows complex 3D polygon triangulated with three different strategies.
+
+\begin{figure}[h!]
+	\subfloat[Maximal angle]{\includegraphics[width=0.3\linewidth]{SpiralErr1}}
+	\hfill
+	\subfloat[Minimal angle]{\includegraphics[width=0.3\linewidth]{SpiralErr2}}
+	\hfill
+	\subfloat[Maximal distance from non-triangulated]{\includegraphics[width=0.3\linewidth]{SpiralOk}}
+	\caption{Complex 3D polygon triangulated with three different strategies}
+	\label{fig:triangulationSpiral}
+\end{figure}
 
 
 \section{Web user interface}
 
+An an web framework is used ASP.NET MVC 3.
+It work on model-view-controller (MVC) design pattern where
+
+\begin{description*}
+	\item[Controller] translates user input into operations on the model and view,
+	\item[Model] represents the application logic and data structures,
+	\item[View] generates output to the users (\autoref{fig:mvc}).
+\end{description*}
+
+\tikzstyle{mvc} = [draw, fill=blue!12, ellipse, minimum size=15mm]
+
+\begin{figure}[h!]
+	\centering
+	\begin{tikzpicture}[->,child anchor=north,>=latex,sibling distance=3cm,level distance=15mm,shorten >=2pt]
+		\node (c) [mvc] {Controller};
+		\node (m) [mvc, below left=of c] {Model};
+		\node (v) [mvc, below right=of c] {View};		
+		
+		\draw (c) -- (v);
+		\draw (c) -- (m);
+		\draw (v) -- (m);
+	\end{tikzpicture}
+	\caption{MVC design pattern}
+	\label{fig:mvc}
+\end{figure}
+
+The model in out case is the \lsystem processing library and database access layer.
+Views are written in the Razor view engine which allows to mix HTML and C\# code thus generate pages effectively.
+Controllers are classes and theirs methods represent actions.
+The routing engine automatically translates request URLs to the controller method by given rules.\nomenclature{URL}{uniform resource locator (a reference to an Internet resource)}
+Example of routes definition is in \autoref{code:routes}.
+The first rule called \emph{Permalink} translates URLs in the format "permalink/{id}" to the call of the \emph{Index} method of the \emph{Permalink} controller (class).
+The second rule is default rule which is used in the most cases and to translates URLs like "http://malsys.cz/Gallery/Detail/7qe7iF9P" to the call of the \emph{Detail} method of the \emph{Gallery} controller with in \emph{id} parameter set to \emph{7qe7iF9P} (\autoref{code:controller}).
+The view is called at the end of the controller action method (\autoref{code:view}).
+
+
+\begin{Csharp}[label=code:routes,caption={Example of routes definition}]
+routes.MapRoute("Permalink",
+	"permalink/{id}",
+	new { controller = "Permalink", action = "Index" }
+);
+
+routes.MapRoute("Default",
+	 "{controller}/{action}/{id}",
+	 new { controller = "Home", action = "Index", id = UrlParameter.Optional }
+);
+\end{Csharp}
+
+\begin{Csharp}[label=code:controller,caption={The \emph{Detail} method of the \emph{Gallery} controller}]
+public class GalleryController : Controller {
+	...
+	public ActionResult Detail(string id) {
+		var model = malsysInputRepository.InputDb.SavedInputs
+			.Where(input => input.UrlId == id && !input.IsDeleted)
+			.SingleOrDefault();
+		...
+		@return View(model);@
+	}
+	...
+}
+\end{Csharp}
+
+\begin{Razor}[label=code:view,caption={Gallery \emph{detail} view demonstrating the Razor syntax}]
+@model InputDetail
+
+<div class="right">permalink: @Html.InputPermaLink(Model.Input.UrlId)</div>
+<h2>@Model.Input.PublishName</h2>
+...
+@if (Model.Input.Tags.Count > 0) {
+	<h3>Tags</h3>
+	foreach (var tag in Model.Input.Tags) {
+		@Html.Tag(tag.Name)
+	}
+}
+...
+\end{Razor}
+
+\subsection{Inversion of control}
+
+Controllers needs references to models.
+Every controller can instantiate models of its own this approach statically binds models to controllers and it is not possible to share models between controllers.
+For example model for database access should be instantiated only once per HTTP request and shared between all entities who wants DB access.
+\nomenclature{DB}{database}
+\nomenclature{HTTP}{Hypertext transfer protocol}
+
+ASP.NET MVC 3 framework has built-in support for the inversion for control (IOC) container which can supply controllers with models they want.
+The big advantage of this approach is that IOC container can control the lifetime of models.
+Some models can be shared as single instance between all controllers, some can be shared in one HTTP request.
+Also concrete models implementation is "hidden" under interface thus change of model implementation can be done at one place where models are registered to the IOC container.
+
+As IOC container is used Autofac with ASP.NET MVC 3 integration [\ref{sec:autofac}].
+\autoref{code:iocRegistration} shows registration of the Autofac IOC container as default dependency resolver for MVC and its configuration.
+
+\begin{Csharp}[label=code:iocRegistration,caption={Registration of dependency container and its configuration}]
+protected void Application_Start() {
+	var resolver = buildDependencyResolver();
+	@DependencyResolver.SetResolver(resolver);@
+	...
+}
+
+private IDependencyResolver buildDependencyResolver() {
+	var builder = new ContainerBuilder();
+	// registers all MVC controllers in this assembly
+	builder.RegisterControllers(typeof(MvcApplication).Assembly);
+	
+	builder.RegisterType<StandardDateTimeProvider>()
+		.As<IDateTimeProvider>().SingleInstance();
+	builder.RegisterType<Sha512PasswordHasher>()
+		.As<IPasswordHasher>().SingleInstance();
+
+	builder.RegisterType<MalsysDb>()
+		.As<IUsersDb>()
+		.As<IInputDb>()
+		.As<IFeedbackDb>()
+		.InstancePerHttpRequest();
+	...
+	return new AutofacDependencyResolver(builder.Build());
+}
+\end{Csharp}
+
+
+\subsection{Removal of magic strings with T4MVC}
+
+ASP.NET MVC 3 framework contains many "magic" strings.
+Those strings are used for calling controller's action methods and views.
+The problem is that these magic strings must exactly match to the names of class members or files names.
+This brings big problem when these names are changed because values of "magic" are not checked by compilation but the run error will occur.
+Also when "magic" strings have to be written by hand, there is no intelli-sense for them and it is hard to erite them correctly in larger application.
+Also it is easy to misspell a "magic" string.
+
+The \emph{MvcContrib} project offers T4 template called \emph{T4MVC} which solves this problem [\ref{sec:mvcContrib}].
+T4 template generates static class in the \emph{MVC} namespace which contains hierarchy of static classes which contains constants for all "magic" strings.
+\autoref{fig:T4MVCnotUsed} shows code snippets with "magic" strings and in \autoref{fig:T4MVCused} are replaced by generated equivalents.
+
+\begin{figure}[h!]
+	\begin{Csharp}
+public virtual ActionResult Edit(string id, EditSavedInputModel model) {
+	...
+	return RedirectToAction("Detail", input.UrlId);
+}
+	\end{Csharp}
+	
+	\begin{Csharp}
+routes.MapRoute("Permalink",
+	"permalink/{id}",
+	new { controller = "Permalink", action = "Index" }
+);
+	\end{Csharp}
+	
+	\begin{Razor}
+<p>... is the @Html.ActionLink("gallery", "Index", "Gallery") ...</p>
+	\end{Razor}
+	
+	\begin{Razor}
+@Content.Css("~/Css/style.less.css")
+	\end{Razor}
+	
+	\begin{Razor}
+<div class="logonBox">
+	@Html.Partial("~/Views/Shared/LogOnPartial.cshtml")
+</div>
+	\end{Razor}
+	
+	\caption{Code snippets showing "magic" strings in ASP.NET MVC 3}
+	\label{fig:T4MVCnotUsed}
+\end{figure}
 
 
 
+\begin{figure}[h!]
+	\begin{Csharp}
+public virtual ActionResult Edit(string id, EditSavedInputModel model) {
+	...
+	return RedirectToAction(Actions.Detail(input.UrlId));
+}
+	\end{Csharp}
+	
+	\begin{Csharp}
+routes.MapRoute("Permalink",
+	MVC.Permalink.Name.ToLower() + "/{id}",
+	new { controller = MVC.Permalink.Name, action = MVC.Permalink.ActionNames.Index }
+);
+	\end{Csharp}
+	
+	
+	\begin{Razor}
+<p>... is the @Html.ActionLink("gallery", MVC.Gallery.Index()) ...</p>
+	\end{Razor}
+	
+	\begin{Razor}
+@Content.Css(Links.Css.style_less_css)
+	\end{Razor}
+	
+	\begin{Razor}
+<div class="logonBox">
+	@Html.Partial(MVC.Shared.Views.LogOnPartial)
+</div>
+	\end{Razor}
+	
+	\caption{Code snippets with "magic" strings replaced by generated equivalents}
+	\label{fig:T4MVCused}
+\end{figure}
+
+
+\subsection{Generated help pages}
+
+The web site contains extensive help which is crucial for processing \lsystems.
+The most of pages are written by hand but reference pages which lists all defined components, process configurations, defined constants and functions are generated automatically.
+This is possible because defined members are documented directly in the code using XmlDoc (see \autoref{sec:componentDoc}).
+
+For example help page with all defined components is geenrated from all loaded components.
+This have advantage over static help because it describes exactly what can user use.
+If new component is defined it automatically appears in the help.
+\autoref{code:genHelp} shows to action methods of the \emph{PredefinedController} which lists all defined functions and components.
+
+\begin{Csharp}[label=code:genHelp,caption={Example of action methods of which lists all defined functions and components}]
+public class PredefinedController : Controller {
+	public ActionResult Functions() {
+		return View(expressionEvaluatorContext.GetAllStoredFunctions());
+	}
+	public ActionResult Components() {
+		var components = componentContainer.GetAllRegisteredComponents();
+		...
+		return View(components);
+	}
+	...
+}
+\end{Csharp}
+
+
+\subsection{Caching and compression}
+
+Caching and compression is important to minimize amount of transferred data and to minimize the load of the server.
+This causes faster response and shorter loading times for the user.
+
+
+\subsubsection{Server-side caching}
+
+Server caches all pages with static content.
+This is important because some of static pages takes relatively long time to generate (for example generated help).
+
+Static pages are not the same if some user is logged in.
+In the header of the web page is his name and other buttons.
+This is why cache must vary by logged in user.
+
+Setting up caching in the ASP.NET MVC 3 framework is done by marking the action or controller with the \emph{OutputCache} attribute.
+It can be specified cache profile which is configured in the \emph{Web.config}.
+\autoref{fig:cache} shows snippets of described caching setup.
+The last snippet is the implementation of varying the cache by logged user.
+
+
+\begin{figure}[h!]
+	\begin{Csharp}
+[OutputCache(CacheProfile = "HelpCache")]
+public class PredefinedController : Controller { ... }
+	\end{Csharp}
+
+	\begin{XML}
+<outputCacheProfiles>
+	<add name="HelpCache" duration="86400" varyByParam="user" />
+</outputCacheProfiles>
+	\end{XML}
+
+	\begin{Csharp}
+public override string GetVaryByCustomString(HttpContext context, string custom) {
+	if (custom == "user") {
+		if (context.User.Identity.IsAuthenticated) {
+			return context.User.Identity.Name.ToLower();
+		}
+		else {
+			return "";
+		}
+	}
+	return base.GetVaryByCustomString(context, custom);
+}
+	\end{Csharp}
+	
+	\caption{Marking of controller with cache attribute, configuration of cache profile and implementation of varying cache by logged user}
+	\label{fig:cache}
+\end{figure}
+
+
+\subsubsection{Client-side caching}
+
+Some static files are not necessary to be transferred more than once.
+These are for example CSS definitions, JavaScript scripts and images.
+Web is configured to send these files with headers which says that client should cache them for up to 30 days.
+This minimizes number of requests to the server.
+
+This heavy caching is possible because after URL of each static file is automatically placed hash from its date of last change.
+If static file changes its URL will also change and user will immediately download newer version.
+
+The cache is especially important in the gallery where are many static files.
+In \autoref{fig:cacheDt} is print-screen of Google Chrome developer.
+On the left image is the first-time loaded page whereas on the right is showed subsequent loading of the same page.
+The bottom bar shows total number of downloaded bytes, you can see that without caching the page needs 2.8 MB to fully load but with cache it loads only 8.3 KB (that's about $350 \times$ less).
+Also only 1 connection to the server was established instead of 20.
+
+\begin{figure}[h!]
+	\subfloat[First-time loading]{\includegraphics[width=0.49\linewidth]{CacheExampleFirst}}
+	\hfill
+	\subfloat[Subsequent loading]{\includegraphics[width=0.49\linewidth]{CacheExampleSecond}}
+	\caption{Google Chrome developer tools showing difference between first and subsequent loading of the page}
+	\label{fig:cacheDt}
+\end{figure}
+
+
+\subsubsection{Compression}
+
+To minimize amount of data transferred by from the server static files are automatically compressed by \emph{GZip} compression (\autoref{code:compression}).
+\nomenclature{GZip}{GNU zip (software for file compression and decompression)}
+
+\begin{XML}[label=code:compression,caption={Compression part of the \emph{Web.config}}]
+<httpCompression minFileSizeForComp="1024">
+<scheme name="gzip" dll="%Windir%\system32\inetsrv\gzip.dll" />
+	<staticTypes>
+		<add mimeType="text/*" enabled="true" />
+		<add mimeType="message/*" enabled="true" />
+		<add mimeType="application/javascript" enabled="true" />
+		<add mimeType="*/*" enabled="false" />
+	</staticTypes>
+</httpCompression>
+\end{XML}
+
+
+\subsection{Error logging}
+
+For error logging is used third-party library called \emph{Elmah} [\ref{sec:elmah}].
+Elmah is configured for automatically logging all unhandled exceptions to XML file.
+The error log contains all information needed to trace the exception including stack trace, url, and all other data about HTTP request like GET and POST data.
+Elmah offers HTTP module accessible on URL \emph{/Elmah.axd} with list of errors (\autoref{fig:elmahList}).
+This page is accessible only on the localhost or by users in the Administrators role.
+
+\begin{figure}[h!]
+	\includegraphics[width=\linewidth]{ErrorLog}
+	\caption{Error log provided by Elmah}
+	\label{fig:elmahList}
+\end{figure}
+
+The unhandled exceptions raised by \lsystem processing library are caught and logged using Elmah manually.
+This ensures that user do not looses the processed input (because of redirect to error page in case of unhandled exception), just error message is showed.
+
+\begin{Csharp}[label=code:elmahCode,caption={...}]
+public bool TryProcess(string sourceCode, IMessageLogger logger, ...) {
+	try {
+		var input = processManager.CompileAndEvaluateInput(sourceCode, ...);
+		...
+		processManager.ProcessInput(input, logger, ...);
+	}
+	catch (Exception ex) {
+		@ErrorSignal.FromCurrentContext().Raise(ex);@  // log exception by Elmah
+		logger.LogMessage(Message.ExceptionWhileProcessingInput, ex.GetType().Name);
+		return false;
+	}
+}
+\end{Csharp}
+
+
+
+\subsection{Cascading style sheets}
+
+\nomenclature{CSS}{Cascading style sheets}
+The \emph{LESS} library~[\ref{sec:lesscss}] was used to simplify work with Cascading style sheets (CSS).
+LESS extends CSS with dynamic behavior such as variables, mixins, operations and functions.
+This allows to write more simple, maintainable and clear definitions of CSS.
+
+\autoref{code:less} shows LESS source code and in \autoref{code:lessCss} is the same code compiled to the CSS.
+
+\begin{Css}[label=code:less,caption={Example of LESS source code}]
+@themeColor: #0F4D92;
+@baseWidth: 960px;
+...
+.box-shadow-inset (@x: 0, @y: 0, @blur: 1px, @spread: 0, @color: #000) {
+	box-shadow: @arguments inset;
+	-moz-box-shadow: @arguments inset;
+	-webkit-box-shadow: @arguments inset;
+}
+...
+body { min-width: @baseWidth; ... }
+...
+#header {
+	margin: 0 10px;
+	.navigation {
+		float: right;
+		a {
+			font-size: 1.25em;
+			&:hover { .box-shadow-inset(0, 0, 8px, 0, #FFF); ... } ...
+		} ...
+	} ...
+}
+\end{Css}
+
+\begin{Css}[label=code:lessCss,caption={Compiled LESS code (\autoref{code:less}) to CSS}]
+body { min-width: 960px; }
+#header { margin: 0 10px; }
+#header .navigation { float: right; }
+#header .navigation a { font-size: 1.25em; }
+#header .navigation a:hover {
+	box-shadow: 0 0 8px 0 #ffffff inset;
+	-moz-box-shadow: 0 0 8px 0 #ffffff inset;
+	-webkit-box-shadow: 0 0 8px 0 #ffffff inset;
+}
+\end{Css}
+
+
+The compilation of LESS is automatic thanks to HTTP handler from the library \emph{.LESS} (pronounced dot-less).
+The handler implicitly compiles LESS code into CSS, the configuration is in \autoref{code:lessCssConfig}.
+
+
+\begin{XML}[label=code:lessCssConfig,caption={Configuration of implicit LESS files compilation in \emph{Web.config}}]
+<system.web>
+	<httpHandlers>
+		<add path="*.less.css" verb="GET"
+			type="dotless.Core.LessCssHttpHandler, dotless.Core" />
+	</httpHandlers>
+</system.web>
+<dotless minifyCss="true" cache="true" web="false" />
+\end{XML}
 
 
 

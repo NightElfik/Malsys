@@ -1,10 +1,13 @@
 
 
 
+
+
 \section{Components}
 
 	
 	% ======== SvgRenderer2D =====================================================================
+
 
 \subsection{2D SVG renderer}
 \label{Malsys.Processing.Components.Renderers.SvgRenderer2D}
@@ -24,6 +27,11 @@ SvgRenderer2D (Renderers.SvgRenderer2D) 	\paragraph{Assignable to interfaces}
 			\\ Expected value: One number (or array with one number) for all margins, array of two numbers for vertical and horizontal margins
             or array of four numbers as top, right, bottom and left margin respectively.
 			\\ Default value: 2
+		\item[canvasOriginSize]
+		(accepts array)
+			-- When set it overrides measured dimensions of image and uses given values.
+			\\ Expected value: Four numbers representing x, y, width and height of canvas.
+			\\ Default value: none
 		\item[compressSvg]
 		(accepts value)
 			-- If set to true result SBG image is compressed by GZip.
@@ -45,6 +53,7 @@ SvgRenderer2D (Renderers.SvgRenderer2D) 	\paragraph{Assignable to interfaces}
 	
 	% ======== BaseRenderer3D =====================================================================
 
+
 \subsection{3D renderer base}
 \label{Malsys.Processing.Components.Renderers.BaseRenderer3D}
 Provides commands for rendering 3D scene and also
@@ -59,6 +68,7 @@ BaseRenderer3D (Renderers.BaseRenderer3D) 	\paragraph{Derived components}
 , 		\hyperref[Malsys.Processing.Components.Renderers.IRenderer3D]{IRenderer3D}%
 	
 	% ======== ThreeJsSceneRenderer3D =====================================================================
+
 
 \subsection{3D Three.js renderer}
 \label{Malsys.Processing.Components.Renderers.ThreeJsSceneRenderer3D}
@@ -108,9 +118,10 @@ ThreeJsSceneRenderer3D (Renderers.ThreeJsSceneRenderer3D) 	\paragraph{Base compo
 	
 	% ======== AxiomProvider =====================================================================
 
+
 \subsection{Axiom provider}
 \label{Malsys.Processing.Components.Common.AxiomProvider}
-Provides symbols set by user to Axiom property.\paragraph{Type name}
+Provides symbol property called Axiom which serve as initial string of symbols of L-system.\paragraph{Type name}
 AxiomProvider (Common.AxiomProvider) 	\paragraph{Base components}
 		\hyperref[Malsys.Processing.Components.Common.SymbolProvider]{SymbolProvider}%
 	\paragraph{Assignable to interfaces}
@@ -127,6 +138,7 @@ AxiomProvider (Common.AxiomProvider) 	\paragraph{Base components}
 	\end{description*}
 	
 	% ======== ConstantsDumper =====================================================================
+
 
 \subsection{Constants dumper}
 \label{Malsys.Processing.Components.Common.ConstantsDumper}
@@ -150,6 +162,7 @@ ConstantsDumper (Common.ConstantsDumper) 	\paragraph{Assignable to interfaces}
 	\end{description*}
 	
 	% ======== HexaAsciiInterpreter =====================================================================
+
 
 \subsection{Hexagonal ASCII interpreter}
 \label{Malsys.Processing.Components.Interpreters.HexaAsciiInterpreter}
@@ -176,7 +189,7 @@ HexaAsciiInterpreter (Interpreters.HexaAsciiInterpreter) 	\paragraph{Assignable 
 	\paragraph{Connectable properties}\textcolor{gray}{of Hexagonal ASCII interpreter}
 	\begin{description*}
 		\item[Renderer]
-		(type \hyperref[Malsys.Processing.Components.IRenderer]{IRenderer})
+		(connectable type:  \hyperref[Malsys.Processing.Components.IRenderer]{IRenderer})
 			-- Render for rendering of ASCII art.
             Connected renderer must implement ITextRenderer interface.
 	\end{description*}
@@ -209,6 +222,7 @@ HexaAsciiInterpreter (Interpreters.HexaAsciiInterpreter) 	\paragraph{Assignable 
 	\end{description*}
 	
 	% ======== InnerLsystemIterator =====================================================================
+
 
 \subsection{Inner L-system iterator}
 \label{Malsys.Processing.Components.RewriterIterators.InnerLsystemIterator}
@@ -265,34 +279,37 @@ InnerLsystemIterator (RewriterIterators.InnerLsystemIterator) 	\paragraph{Base c
 	\paragraph{Connectable properties}\textcolor{gray}{of Inner L-system iterator}
 	\begin{description*}
 		\item[AxiomProvider]
- \textit{optional} 		(type \hyperref[Malsys.Processing.Components.ISymbolProvider]{ISymbolProvider})
+ \textit{optional} 		(connectable type:  \hyperref[Malsys.Processing.Components.ISymbolProvider]{ISymbolProvider})
 			-- To allow not connecting AxiomProvider component.
 		\item[SymbolProvider]
-		(type \hyperref[Malsys.Processing.Components.ISymbolProvider]{ISymbolProvider})
+		(connectable type:  \hyperref[Malsys.Processing.Components.ISymbolProvider]{ISymbolProvider})
 			-- Iterator iterates symbols by reading all symbols from SymbolProvider every iteration.
             Rewriter should be connected as SymbolProvider and rewriters's SymbolProvider should be this Iterator.
             This setup creates loop and iterator rewrites string of symbols every iteration.
 		\item[OutputProcessor]
-		(type \hyperref[Malsys.Processing.Components.ISymbolProcessor]{ISymbolProcessor})
+		(connectable type:  \hyperref[Malsys.Processing.Components.ISymbolProcessor]{ISymbolProcessor})
 			-- Result string of symbols is sent to connected output processor.
             It should be InterpretrCaller who calls Interpreter and interprets symbols.
 		\item[RandomGeneratorProvider]
- \textit{optional} 		(type \hyperref[Malsys.Processing.Components.Common.RandomGeneratorProvider]{RandomGeneratorProvider})
+ \textit{optional} 		(connectable type:  \hyperref[Malsys.Processing.Components.Common.RandomGeneratorProvider]{RandomGeneratorProvider})
 			-- Connected RandomGeneratorProvider's random generator is rested after each iteration
             if iterator is configured to do that (ResetRandomAfterEachIteration property is set to true).
 	\end{description*}
 	
 	% ======== LsystemInLsystemProcessor =====================================================================
 
+
 \subsection{Inner L-system processor}
 \label{Malsys.Processing.Components.Common.LsystemInLsystemProcessor}
 This is special component for interpreting L-system symbol as another L-system.
-            It caches process components for processing inner L-system to optimize speed of processing.\paragraph{Type name}
+            Inner component systems used to process system must be defined under the name "InnerLsystemConfig".
+            It caches component systems for processing inner L-system to optimize speed of repetitive processing.\paragraph{Type name}
 LsystemInLsystemProcessor (Common.LsystemInLsystemProcessor) 	\paragraph{Assignable to interfaces}
 		\hyperref[Malsys.Processing.Components.Common.ILsystemInLsystemProcessor]{ILsystemInLsystemProcessor}%
 , 		\hyperref[Malsys.Processing.Components.IComponent]{IComponent}%
 	
 	% ======== InterpreterCaller =====================================================================
+
 
 \subsection{Interpreter caller}
 \label{Malsys.Processing.Components.Interpreters.InterpreterCaller}
@@ -314,11 +331,12 @@ InterpreterCaller (Interpreters.InterpreterCaller) 	\paragraph{Assignable to int
 	\paragraph{Connectable properties}\textcolor{gray}{of Interpreter caller}
 	\begin{description*}
 		\item[LsystemInLsystemProcessor]
- \textit{optional} 		(type \hyperref[Malsys.Processing.Components.Common.ILsystemInLsystemProcessor]{ILsystemInLsystemProcessor})
+ \textit{optional} 		(connectable type:  \hyperref[Malsys.Processing.Components.Common.ILsystemInLsystemProcessor]{ILsystemInLsystemProcessor})
 			-- Specialized component to allow interpret L-system symbol as another L-system.
 	\end{description*}
 	
 	% ======== MemoryBufferedIterator =====================================================================
+
 
 \subsection{Memory-buffered iterator}
 \label{Malsys.Processing.Components.RewriterIterators.MemoryBufferedIterator}
@@ -369,25 +387,26 @@ MemoryBufferedIterator (RewriterIterators.MemoryBufferedIterator) 	\paragraph{De
 	\paragraph{Connectable properties}\textcolor{gray}{of Memory-buffered iterator}
 	\begin{description*}
 		\item[SymbolProvider]
-		(type \hyperref[Malsys.Processing.Components.ISymbolProvider]{ISymbolProvider})
+		(connectable type:  \hyperref[Malsys.Processing.Components.ISymbolProvider]{ISymbolProvider})
 			-- Iterator iterates symbols by reading all symbols from SymbolProvider every iteration.
             Rewriter should be connected as SymbolProvider and rewriters's SymbolProvider should be this Iterator.
             This setup creates loop and iterator rewrites string of symbols every iteration.
 		\item[AxiomProvider]
-		(type \hyperref[Malsys.Processing.Components.ISymbolProvider]{ISymbolProvider})
+		(connectable type:  \hyperref[Malsys.Processing.Components.ISymbolProvider]{ISymbolProvider})
 			-- Axiom provider component provides initial string of symbols.
             All symbols are read at begin of processing.
 		\item[OutputProcessor]
-		(type \hyperref[Malsys.Processing.Components.ISymbolProcessor]{ISymbolProcessor})
+		(connectable type:  \hyperref[Malsys.Processing.Components.ISymbolProcessor]{ISymbolProcessor})
 			-- Result string of symbols is sent to connected output processor.
             It should be InterpretrCaller who calls Interpreter and interprets symbols.
 		\item[RandomGeneratorProvider]
- \textit{optional} 		(type \hyperref[Malsys.Processing.Components.Common.RandomGeneratorProvider]{RandomGeneratorProvider})
+ \textit{optional} 		(connectable type:  \hyperref[Malsys.Processing.Components.Common.RandomGeneratorProvider]{RandomGeneratorProvider})
 			-- Connected RandomGeneratorProvider's random generator is rested after each iteration
             if iterator is configured to do that (ResetRandomAfterEachIteration property is set to true).
 	\end{description*}
 	
 	% ======== RandomGeneratorProvider =====================================================================
+
 
 \subsection{Random generator provider}
 \label{Malsys.Processing.Components.Common.RandomGeneratorProvider}
@@ -439,13 +458,36 @@ RandomGeneratorProvider (Common.RandomGeneratorProvider) 	\paragraph{Assignable 
 		(returns value)
 			-- Returns random value within specified range.
 		\\ Parameters: 2
-			\begin{enumerate}
+			\begin{enumerate*}
 				\item The inclusive lower bound of the random number returned.
 				\item             The exclusive upper bound of the random number returned.
-			\end{enumerate}
+			\end{enumerate*}
+	\end{description*}
+	
+	% ======== SymbolFilter =====================================================================
+
+
+\subsection{Symbol fileter}
+\label{ExamplePlugin.Components.SymbolFilter}
+Filters symbol stream.\paragraph{Type name}
+SymbolFilter (ExamplePlugin.Components.SymbolFilter) 	\paragraph{Assignable to interfaces}
+		\hyperref[Malsys.Processing.Components.IComponent]{IComponent}%
+, 		\hyperref[Malsys.Processing.Components.IProcessComponent]{IProcessComponent}%
+, 		\hyperref[Malsys.Processing.Components.ISymbolProcessor]{ISymbolProcessor}%
+	\paragraph{Settable symbol properties}\textcolor{gray}{of Symbol fileter}
+	\begin{description*}
+		\item[ignore]
+			-- List of ignored symbols
+	\end{description*}
+	\paragraph{Connectable properties}\textcolor{gray}{of Symbol fileter}
+	\begin{description*}
+		\item[Output]
+		(connectable type:  \hyperref[Malsys.Processing.Components.ISymbolProcessor]{ISymbolProcessor})
+			-- Components to which filtered symbols are sent.
 	\end{description*}
 	
 	% ======== SymbolProvider =====================================================================
+
 
 \subsection{Symbol provider}
 \label{Malsys.Processing.Components.Common.SymbolProvider}
@@ -463,6 +505,7 @@ SymbolProvider (Common.SymbolProvider) 	\paragraph{Derived components}
 	\end{description*}
 	
 	% ======== SymbolRewriter =====================================================================
+
 
 \subsection{Symbol rewriter}
 \label{Malsys.Processing.Components.Rewriters.SymbolRewriter}
@@ -490,10 +533,11 @@ SymbolRewriter (Rewriters.SymbolRewriter) 	\paragraph{Assignable to interfaces}
 	\paragraph{Connectable properties}\textcolor{gray}{of Symbol rewriter}
 	\begin{description*}
 		\item[SymbolProvider]
-		(type \hyperref[Malsys.Processing.Components.ISymbolProvider]{ISymbolProvider})
+		(connectable type:  \hyperref[Malsys.Processing.Components.ISymbolProvider]{ISymbolProvider})
 	\end{description*}
 	
 	% ======== SymbolsSaver =====================================================================
+
 
 \subsection{Symbols saver}
 \label{Malsys.Processing.Components.Common.SymbolsSaver}
@@ -505,6 +549,7 @@ SymbolsSaver (Common.SymbolsSaver) 	\paragraph{Assignable to interfaces}
 	
 	% ======== TextRenderer =====================================================================
 
+
 \subsection{Text renderer}
 \label{Malsys.Processing.Components.Renderers.TextRenderer}
 Provides commands for rendering plain text ASCII art.\paragraph{Type name}
@@ -515,6 +560,7 @@ TextRenderer (Renderers.TextRenderer) 	\paragraph{Assignable to interfaces}
 , 		\hyperref[Malsys.Processing.Components.Renderers.ITextRenderer]{ITextRenderer}%
 	
 	% ======== TurtleInterpreter =====================================================================
+
 
 \subsection{Turtle interpreter}
 \label{Malsys.Processing.Components.Interpreters.TurtleInterpreter}
@@ -600,7 +646,7 @@ TurtleInterpreter (Interpreters.TurtleInterpreter) 	\paragraph{Assignable to int
 	\paragraph{Connectable properties}\textcolor{gray}{of Turtle interpreter}
 	\begin{description*}
 		\item[Renderer]
-		(type \hyperref[Malsys.Processing.Components.IRenderer]{IRenderer})
+		(connectable type:  \hyperref[Malsys.Processing.Components.IRenderer]{IRenderer})
 			-- All render events will be called on connected renderer.
             Both IRenderer2D or IRenderer3D can be connected.
 	\end{description*}
@@ -612,57 +658,57 @@ TurtleInterpreter (Interpreters.TurtleInterpreter) 	\paragraph{Assignable to int
 		\item[MoveForward]
 			-- Moves forward in current direction (without drawing) by distance equal to value of the first parameter.
 		\\ Parameters: 1  (1 mandatory) 
-			\begin{enumerate}
+			\begin{enumerate*}
 				\item
-Moved distance. (\textit{mandatory}) 			\end{enumerate}
+Moved distance. (\textit{mandatory}) 			\end{enumerate*}
 		\item[DrawForward]
 			-- Draws line in current direction with length equal to value of first parameter.
 		\\ Parameters: 4  (1 mandatory) 
-			\begin{enumerate}
+			\begin{enumerate*}
 				\item
 Length of line. (\textit{mandatory}) 				\item
             Width of line.				\item
             Color of line. Can be ARGB number in range from 0 to 2\^32 - 1 or array with 3 (RGB) or 4 (ARGB) items in range from 0.0 to 1.0.				\item
-            Quality of rendered line in 3D.			\end{enumerate}
+            Quality of rendered line in 3D.			\end{enumerate*}
 		\item[DrawCircle]
 			-- Draws circle with center in current position and radius equal to value of the first parameter.
 		\\ Parameters: 2  (1 mandatory) 
-			\begin{enumerate}
+			\begin{enumerate*}
 				\item
 Radius of circle. (\textit{mandatory}) 				\item
-            Color of circle.			\end{enumerate}
+            Color of circle.			\end{enumerate*}
 		\item[DrawSphere]
 			-- Draws sphere with center in current position and radius equal to value of the first parameter.
 		\\ Parameters: 3  (1 mandatory) 
-			\begin{enumerate}
+			\begin{enumerate*}
 				\item
 Radius of sphere. (\textit{mandatory}) 				\item
             Color of sphere.				\item
-            Quality of sphere (number of triangles).			\end{enumerate}
+            Quality of sphere (number of triangles).			\end{enumerate*}
 		\item[TurnLeft]
 			-- Turns left by value of the first parameter (in degrees) (in X-Y plane, around axis Z).
 		\\ Parameters: 1  (0 mandatory) 
-			\begin{enumerate}
+			\begin{enumerate*}
 				\item
-Angle in degrees.			\end{enumerate}
+Angle in degrees.			\end{enumerate*}
 		\item[Yaw]
 			-- Turns left around up vector axis (default Y axis [0, 1, 0]) by value given in the first parameter (in degrees).
 		\\ Parameters: 1  (0 mandatory) 
-			\begin{enumerate}
+			\begin{enumerate*}
 				\item
-Angle in degrees.			\end{enumerate}
+Angle in degrees.			\end{enumerate*}
 		\item[Pitch]
 			-- Turns up around right-hand vector axis (default Z axis [0, 0, 1]) by value given in the first parameter (in degrees).
 		\\ Parameters: 1  (0 mandatory) 
-			\begin{enumerate}
+			\begin{enumerate*}
 				\item
-Angle in degrees.			\end{enumerate}
+Angle in degrees.			\end{enumerate*}
 		\item[Roll]
 			-- Rolls clock-wise around forward vector axis (default X axis [1, 0, 0]) by value given in the first parameter (in degrees).
 		\\ Parameters: 1  (0 mandatory) 
-			\begin{enumerate}
+			\begin{enumerate*}
 				\item
-Angle in degrees.			\end{enumerate}
+Angle in degrees.			\end{enumerate*}
 		\item[StartBranch]
 			-- Saves current state (on stack).
 		\\ Parameters: 0 
@@ -673,11 +719,11 @@ Angle in degrees.			\end{enumerate}
 			-- Starts to record polygon vertices (do not saves current position as first vertex).
             If another polygon is opened, its state is saved and will be restored after closing of current polygon.
 		\\ Parameters: 3  (0 mandatory) 
-			\begin{enumerate}
+			\begin{enumerate*}
 				\item
 Color of polygon.				\item
             Stroke width.				\item
-            Stroke color.			\end{enumerate}
+            Stroke color.			\end{enumerate*}
 		\item[RecordPolygonVertex]
 			-- Records current position to opened polygon.
 		\\ Parameters: 0 
@@ -686,382 +732,3 @@ Color of polygon.				\item
 		\\ Parameters: 0 
 	\end{description*}
 
-
-% ======================================================================================================================
-% ======================================================================================================================
-% ======================================================================================================================
-\section{Interfaces}
-
-	
-	% ======== IInterpreter2D =====================================================================
-
-\subsection{2D interpreter interface}
-\label{Malsys.Processing.Components.Interpreters.IInterpreter2D}
-2D interpreters interprets L-system symbols as image on 2D canvas.\paragraph{Type name}
-IInterpreter2D (Interpreters.IInterpreter2D) 	\paragraph{Derived components}
-		\hyperref[Malsys.Processing.Components.Interpreters.TurtleInterpreter]{TurtleInterpreter}%
-	\paragraph{Derived interfaces}
-		\hyperref[Malsys.Processing.Components.IComponent]{IComponent}%
-, 		\hyperref[Malsys.Processing.Components.IInterpreter]{IInterpreter}%
-, 		\hyperref[Malsys.Processing.Components.IProcessComponent]{IProcessComponent}%
-	\paragraph{Interpretation methods}\textcolor{gray}{of 2D interpreter interface}
-	\begin{description*}
-		\item[Nothing]
-			-- Symbol is ignored.
-		\\ Parameters: 0 
-		\item[MoveForward]
-			-- Moves forward in current direction (without drawing).
-		\\ Parameters: 0 
-		\item[DrawForward]
-			-- Draws line in current direction.
-		\\ Parameters: 0 
-		\item[DrawCircle]
-			-- Draws circle with center in current position.
-		\\ Parameters: 0 
-		\item[TurnLeft]
-			-- Turns left.
-		\\ Parameters: 0 
-		\item[StartBranch]
-			-- Saves current state (on stack).
-		\\ Parameters: 0 
-		\item[EndBranch]
-			-- Loads previously saved state (returns to last saved position).
-		\\ Parameters: 0 
-		\item[StartPolygon]
-			-- Starts to record polygon vertices.
-		\\ Parameters: 0 
-		\item[RecordPolygonVertex]
-			-- Records current position to opened polygon.
-		\\ Parameters: 0 
-		\item[EndPolygon]
-			-- Ends current polygon.
-		\\ Parameters: 0 
-	\end{description*}
-	
-	% ======== IRenderer2D =====================================================================
-
-\subsection{2D renderer interface}
-\label{Malsys.Processing.Components.Renderers.IRenderer2D}
-Provides commands for rendering of 2D image.\paragraph{Type name}
-IRenderer2D (Renderers.IRenderer2D) 	\paragraph{Derived components}
-		\hyperref[Malsys.Processing.Components.Renderers.DebugRenderer2D]{DebugRenderer2D}%
-, 		\hyperref[Malsys.Processing.Components.Renderers.SvgRenderer2D]{SvgRenderer2D}%
-	\paragraph{Derived interfaces}
-		\hyperref[Malsys.Processing.Components.IComponent]{IComponent}%
-, 		\hyperref[Malsys.Processing.Components.IProcessComponent]{IProcessComponent}%
-, 		\hyperref[Malsys.Processing.Components.IRenderer]{IRenderer}%
-	
-	% ======== IInterpreter3D =====================================================================
-
-\subsection{3D interpreter interface}
-\label{Malsys.Processing.Components.Interpreters.IInterpreter3D}
-3D interpreters interprets L-system symbols as scene in 3D space.\paragraph{Type name}
-IInterpreter3D (Interpreters.IInterpreter3D) 	\paragraph{Derived components}
-		\hyperref[Malsys.Processing.Components.Interpreters.TurtleInterpreter]{TurtleInterpreter}%
-	\paragraph{Derived interfaces}
-		\hyperref[Malsys.Processing.Components.IComponent]{IComponent}%
-, 		\hyperref[Malsys.Processing.Components.IInterpreter]{IInterpreter}%
-, 		\hyperref[Malsys.Processing.Components.IProcessComponent]{IProcessComponent}%
-	\paragraph{Interpretation methods}\textcolor{gray}{of 3D interpreter interface}
-	\begin{description*}
-		\item[Nothing]
-			-- Symbol is ignored.
-		\\ Parameters: 0 
-		\item[MoveForward]
-			-- Moves forward in current direction (without drawing).
-		\\ Parameters: 0 
-		\item[DrawForward]
-			-- Draws line in current direction.
-		\\ Parameters: 0 
-		\item[DrawSphere]
-			-- Draws sphere with center in current position.
-		\\ Parameters: 0 
-		\item[Yaw]
-			-- Turns left around up vector axis.
-		\\ Parameters: 0 
-		\item[Pitch]
-			-- Turns up around right-hand vector axis.
-		\\ Parameters: 0 
-		\item[Roll]
-			-- Rolls clock-wise around forward vector axis.
-		\\ Parameters: 0 
-		\item[StartBranch]
-			-- Saves current state (on stack).
-		\\ Parameters: 0 
-		\item[EndBranch]
-			-- Loads previously saved state (returns to last saved position).
-		\\ Parameters: 0 
-		\item[StartPolygon]
-			-- Starts to record polygon vertices.
-		\\ Parameters: 0 
-		\item[RecordPolygonVertex]
-			-- Records current position to opened polygon.
-		\\ Parameters: 0 
-		\item[EndPolygon]
-			-- Ends current polygon.
-		\\ Parameters: 0 
-	\end{description*}
-	
-	% ======== IRenderer3D =====================================================================
-
-\subsection{3D renderer interface}
-\label{Malsys.Processing.Components.Renderers.IRenderer3D}
-Provides commands for rendering of 3D scene.\paragraph{Type name}
-IRenderer3D (Renderers.IRenderer3D) 	\paragraph{Derived components}
-		\hyperref[Malsys.Processing.Components.Renderers.BaseRenderer3D]{BaseRenderer3D}%
-, 		\hyperref[Malsys.Processing.Components.Renderers.DebugRenderer3D]{DebugRenderer3D}%
-, 		\hyperref[Malsys.Processing.Components.Renderers.ThreeJsSceneRenderer3D]{ThreeJsSceneRenderer3D}%
-	\paragraph{Derived interfaces}
-		\hyperref[Malsys.Processing.Components.IComponent]{IComponent}%
-, 		\hyperref[Malsys.Processing.Components.IProcessComponent]{IProcessComponent}%
-, 		\hyperref[Malsys.Processing.Components.IRenderer]{IRenderer}%
-	
-	% ======== IComponent =====================================================================
-
-\subsection{Component interface}
-\label{Malsys.Processing.Components.IComponent}
-General component interface. All components must implement this interface.\paragraph{Type name}
-IComponent	\paragraph{Derived components}
-		\hyperref[Malsys.Processing.Components.Common.AxiomProvider]{AxiomProvider}%
-, 		\hyperref[Malsys.Processing.Components.Common.ConstantsDumper]{ConstantsDumper}%
-, 		\hyperref[Malsys.Processing.Components.Common.LsystemInLsystemProcessor]{LsystemInLsystemProcessor}%
-, 		\hyperref[Malsys.Processing.Components.Common.RandomGeneratorProvider]{RandomGeneratorProvider}%
-, 		\hyperref[Malsys.Processing.Components.Common.SymbolProvider]{SymbolProvider}%
-, 		\hyperref[Malsys.Processing.Components.Common.SymbolsMemoryBuffer]{SymbolsMemoryBuffer}%
-, 		\hyperref[Malsys.Processing.Components.Common.SymbolsSaver]{SymbolsSaver}%
-, 		\hyperref[Malsys.Processing.Components.Interpreters.HexaAsciiInterpreter]{HexaAsciiInterpreter}%
-, 		\hyperref[Malsys.Processing.Components.Interpreters.InterpreterCaller]{InterpreterCaller}%
-, 		\hyperref[Malsys.Processing.Components.Interpreters.TurtleInterpreter]{TurtleInterpreter}%
-, 		\hyperref[Malsys.Processing.Components.Renderers.BaseRenderer3D]{BaseRenderer3D}%
-, 		\hyperref[Malsys.Processing.Components.Renderers.DebugRenderer2D]{DebugRenderer2D}%
-, 		\hyperref[Malsys.Processing.Components.Renderers.DebugRenderer3D]{DebugRenderer3D}%
-, 		\hyperref[Malsys.Processing.Components.Renderers.DebugRendererBase]{DebugRendererBase}%
-, 		\hyperref[Malsys.Processing.Components.Renderers.SvgRenderer2D]{SvgRenderer2D}%
-, 		\hyperref[Malsys.Processing.Components.Renderers.TextRenderer]{TextRenderer}%
-, 		\hyperref[Malsys.Processing.Components.Renderers.ThreeJsSceneRenderer3D]{ThreeJsSceneRenderer3D}%
-, 		\hyperref[Malsys.Processing.Components.RewriterIterators.InnerLsystemIterator]{InnerLsystemIterator}%
-, 		\hyperref[Malsys.Processing.Components.RewriterIterators.MemoryBufferedIterator]{MemoryBufferedIterator}%
-, 		\hyperref[Malsys.Processing.Components.Rewriters.SymbolRewriter]{SymbolRewriter}%
-	\paragraph{Derived interfaces}
-		\hyperref[Malsys.Processing.Components.Common.ILsystemInLsystemProcessor]{ILsystemInLsystemProcessor}%
-, 		\hyperref[Malsys.Processing.Components.IInterpreter]{IInterpreter}%
-, 		\hyperref[Malsys.Processing.Components.IInterpreterCaller]{IInterpreterCaller}%
-, 		\hyperref[Malsys.Processing.Components.IIterator]{IIterator}%
-, 		\hyperref[Malsys.Processing.Components.Interpreters.IInterpreter2D]{IInterpreter2D}%
-, 		\hyperref[Malsys.Processing.Components.Interpreters.IInterpreter3D]{IInterpreter3D}%
-, 		\hyperref[Malsys.Processing.Components.IProcessComponent]{IProcessComponent}%
-, 		\hyperref[Malsys.Processing.Components.IProcessStarter]{IProcessStarter}%
-, 		\hyperref[Malsys.Processing.Components.IRenderer]{IRenderer}%
-, 		\hyperref[Malsys.Processing.Components.IRewriter]{IRewriter}%
-, 		\hyperref[Malsys.Processing.Components.ISymbolProcessor]{ISymbolProcessor}%
-, 		\hyperref[Malsys.Processing.Components.ISymbolProvider]{ISymbolProvider}%
-, 		\hyperref[Malsys.Processing.Components.Renderers.IRenderer2D]{IRenderer2D}%
-, 		\hyperref[Malsys.Processing.Components.Renderers.IRenderer3D]{IRenderer3D}%
-, 		\hyperref[Malsys.Processing.Components.Renderers.ITextRenderer]{ITextRenderer}%
-	
-	% ======== ILsystemInLsystemProcessor =====================================================================
-
-\subsection{Inner L-system processor interface}
-\label{Malsys.Processing.Components.Common.ILsystemInLsystemProcessor}
-This is special interface component for interpreting L-system symbol as another L-system.\paragraph{Type name}
-ILsystemInLsystemProcessor (Common.ILsystemInLsystemProcessor) 	\paragraph{Derived components}
-		\hyperref[Malsys.Processing.Components.Common.LsystemInLsystemProcessor]{LsystemInLsystemProcessor}%
-	\paragraph{Derived interfaces}
-		\hyperref[Malsys.Processing.Components.IComponent]{IComponent}%
-	
-	% ======== IInterpreterCaller =====================================================================
-
-\subsection{Interpreter caller interface}
-\label{Malsys.Processing.Components.IInterpreterCaller}
-Interpreter callers are responsible for converting symbols for calls of interpreter methods.\paragraph{Type name}
-IInterpreterCaller	\paragraph{Derived components}
-		\hyperref[Malsys.Processing.Components.Interpreters.InterpreterCaller]{InterpreterCaller}%
-	\paragraph{Derived interfaces}
-		\hyperref[Malsys.Processing.Components.IComponent]{IComponent}%
-, 		\hyperref[Malsys.Processing.Components.IProcessComponent]{IProcessComponent}%
-, 		\hyperref[Malsys.Processing.Components.ISymbolProcessor]{ISymbolProcessor}%
-	
-	% ======== IInterpreter =====================================================================
-
-\subsection{Interpreter interface}
-\label{Malsys.Processing.Components.IInterpreter}
-Interpreters are responsible for interpreting symbols of L-system.\paragraph{Type name}
-IInterpreter	\paragraph{Derived components}
-		\hyperref[Malsys.Processing.Components.Interpreters.HexaAsciiInterpreter]{HexaAsciiInterpreter}%
-, 		\hyperref[Malsys.Processing.Components.Interpreters.TurtleInterpreter]{TurtleInterpreter}%
-	\paragraph{Derived interfaces}
-		\hyperref[Malsys.Processing.Components.IComponent]{IComponent}%
-, 		\hyperref[Malsys.Processing.Components.IProcessComponent]{IProcessComponent}%
-	\paragraph{Derived interfaces}
-		\hyperref[Malsys.Processing.Components.Interpreters.IInterpreter2D]{IInterpreter2D}%
-, 		\hyperref[Malsys.Processing.Components.Interpreters.IInterpreter3D]{IInterpreter3D}%
-	
-	% ======== IIterator =====================================================================
-
-\subsection{Iterator interface}
-\label{Malsys.Processing.Components.IIterator}
-Iterators are responsible for iterating L-system to desired number of iterations.\paragraph{Type name}
-IIterator	\paragraph{Derived components}
-		\hyperref[Malsys.Processing.Components.RewriterIterators.InnerLsystemIterator]{InnerLsystemIterator}%
-, 		\hyperref[Malsys.Processing.Components.RewriterIterators.MemoryBufferedIterator]{MemoryBufferedIterator}%
-	\paragraph{Derived interfaces}
-		\hyperref[Malsys.Processing.Components.IComponent]{IComponent}%
-, 		\hyperref[Malsys.Processing.Components.IProcessComponent]{IProcessComponent}%
-, 		\hyperref[Malsys.Processing.Components.IProcessStarter]{IProcessStarter}%
-, 		\hyperref[Malsys.Processing.Components.ISymbolProvider]{ISymbolProvider}%
-	\paragraph{Settable properties}\textcolor{gray}{of Iterator interface}
-	\begin{description*}
-		\item[Iterations]
-		(accepts value)
-			-- Number of iterations to do with current L-system.
-	\end{description*}
-	\paragraph{Connectable properties}\textcolor{gray}{of Iterator interface}
-	\begin{description*}
-		\item[SymbolProvider]
-		(type \hyperref[Malsys.Processing.Components.ISymbolProvider]{ISymbolProvider})
-			-- Iterator iterates symbols by reading all symbols from SymbolProvider every iteration.
-            Usually Rewriter is connected as SymbolProvider and rewriters's SymbolProvider is Iterator.
-            This setup creates loop and iterator rewrites string of symbols every iteration.
-		\item[AxiomProvider]
-		(type \hyperref[Malsys.Processing.Components.ISymbolProvider]{ISymbolProvider})
-			-- Axiom provider component provides initial string of symbols.
-		\item[OutputProcessor]
-		(type \hyperref[Malsys.Processing.Components.ISymbolProcessor]{ISymbolProcessor})
-			-- Result string of symbols is sent to connected output processor.
-            Usually it is InterpretrCaller who calls Interpreter and interprets symbols.
-	\end{description*}
-	
-	% ======== IProcessComponent =====================================================================
-
-\subsection{Process component interface}
-\label{Malsys.Processing.Components.IProcessComponent}
-Process components should be connected to other components and they
-            	receives signals of begin and end of processing.\paragraph{Type name}
-IProcessComponent	\paragraph{Derived components}
-		\hyperref[Malsys.Processing.Components.Common.AxiomProvider]{AxiomProvider}%
-, 		\hyperref[Malsys.Processing.Components.Common.SymbolProvider]{SymbolProvider}%
-, 		\hyperref[Malsys.Processing.Components.Common.SymbolsMemoryBuffer]{SymbolsMemoryBuffer}%
-, 		\hyperref[Malsys.Processing.Components.Common.SymbolsSaver]{SymbolsSaver}%
-, 		\hyperref[Malsys.Processing.Components.Interpreters.HexaAsciiInterpreter]{HexaAsciiInterpreter}%
-, 		\hyperref[Malsys.Processing.Components.Interpreters.InterpreterCaller]{InterpreterCaller}%
-, 		\hyperref[Malsys.Processing.Components.Interpreters.TurtleInterpreter]{TurtleInterpreter}%
-, 		\hyperref[Malsys.Processing.Components.Renderers.BaseRenderer3D]{BaseRenderer3D}%
-, 		\hyperref[Malsys.Processing.Components.Renderers.DebugRenderer2D]{DebugRenderer2D}%
-, 		\hyperref[Malsys.Processing.Components.Renderers.DebugRenderer3D]{DebugRenderer3D}%
-, 		\hyperref[Malsys.Processing.Components.Renderers.DebugRendererBase]{DebugRendererBase}%
-, 		\hyperref[Malsys.Processing.Components.Renderers.SvgRenderer2D]{SvgRenderer2D}%
-, 		\hyperref[Malsys.Processing.Components.Renderers.TextRenderer]{TextRenderer}%
-, 		\hyperref[Malsys.Processing.Components.Renderers.ThreeJsSceneRenderer3D]{ThreeJsSceneRenderer3D}%
-, 		\hyperref[Malsys.Processing.Components.RewriterIterators.InnerLsystemIterator]{InnerLsystemIterator}%
-, 		\hyperref[Malsys.Processing.Components.RewriterIterators.MemoryBufferedIterator]{MemoryBufferedIterator}%
-, 		\hyperref[Malsys.Processing.Components.Rewriters.SymbolRewriter]{SymbolRewriter}%
-	\paragraph{Derived interfaces}
-		\hyperref[Malsys.Processing.Components.IComponent]{IComponent}%
-	\paragraph{Derived interfaces}
-		\hyperref[Malsys.Processing.Components.IInterpreter]{IInterpreter}%
-, 		\hyperref[Malsys.Processing.Components.IInterpreterCaller]{IInterpreterCaller}%
-, 		\hyperref[Malsys.Processing.Components.IIterator]{IIterator}%
-, 		\hyperref[Malsys.Processing.Components.Interpreters.IInterpreter2D]{IInterpreter2D}%
-, 		\hyperref[Malsys.Processing.Components.Interpreters.IInterpreter3D]{IInterpreter3D}%
-, 		\hyperref[Malsys.Processing.Components.IRenderer]{IRenderer}%
-, 		\hyperref[Malsys.Processing.Components.IRewriter]{IRewriter}%
-, 		\hyperref[Malsys.Processing.Components.ISymbolProcessor]{ISymbolProcessor}%
-, 		\hyperref[Malsys.Processing.Components.ISymbolProvider]{ISymbolProvider}%
-, 		\hyperref[Malsys.Processing.Components.Renderers.IRenderer2D]{IRenderer2D}%
-, 		\hyperref[Malsys.Processing.Components.Renderers.IRenderer3D]{IRenderer3D}%
-, 		\hyperref[Malsys.Processing.Components.Renderers.ITextRenderer]{ITextRenderer}%
-	
-	% ======== IRenderer =====================================================================
-
-\subsection{Renderer component interface}
-\label{Malsys.Processing.Components.IRenderer}
-Renderer components are usually connected to interpreters and they produce actual output.\paragraph{Type name}
-IRenderer	\paragraph{Derived components}
-		\hyperref[Malsys.Processing.Components.Renderers.BaseRenderer3D]{BaseRenderer3D}%
-, 		\hyperref[Malsys.Processing.Components.Renderers.DebugRenderer2D]{DebugRenderer2D}%
-, 		\hyperref[Malsys.Processing.Components.Renderers.DebugRenderer3D]{DebugRenderer3D}%
-, 		\hyperref[Malsys.Processing.Components.Renderers.DebugRendererBase]{DebugRendererBase}%
-, 		\hyperref[Malsys.Processing.Components.Renderers.SvgRenderer2D]{SvgRenderer2D}%
-, 		\hyperref[Malsys.Processing.Components.Renderers.TextRenderer]{TextRenderer}%
-, 		\hyperref[Malsys.Processing.Components.Renderers.ThreeJsSceneRenderer3D]{ThreeJsSceneRenderer3D}%
-	\paragraph{Derived interfaces}
-		\hyperref[Malsys.Processing.Components.IComponent]{IComponent}%
-, 		\hyperref[Malsys.Processing.Components.IProcessComponent]{IProcessComponent}%
-	\paragraph{Derived interfaces}
-		\hyperref[Malsys.Processing.Components.Renderers.IRenderer2D]{IRenderer2D}%
-, 		\hyperref[Malsys.Processing.Components.Renderers.IRenderer3D]{IRenderer3D}%
-, 		\hyperref[Malsys.Processing.Components.Renderers.ITextRenderer]{ITextRenderer}%
-	
-	% ======== IProcessStarter =====================================================================
-
-\subsection{Starter component interface}
-\label{Malsys.Processing.Components.IProcessStarter}
-Process starters are specialized components that starts processing.
-            This type of component can by only one per process configuration.\paragraph{Type name}
-IProcessStarter	\paragraph{Derived components}
-		\hyperref[Malsys.Processing.Components.Common.ConstantsDumper]{ConstantsDumper}%
-, 		\hyperref[Malsys.Processing.Components.RewriterIterators.InnerLsystemIterator]{InnerLsystemIterator}%
-, 		\hyperref[Malsys.Processing.Components.RewriterIterators.MemoryBufferedIterator]{MemoryBufferedIterator}%
-	\paragraph{Derived interfaces}
-		\hyperref[Malsys.Processing.Components.IComponent]{IComponent}%
-	\paragraph{Derived interfaces}
-		\hyperref[Malsys.Processing.Components.IIterator]{IIterator}%
-	
-	% ======== ISymbolProcessor =====================================================================
-
-\subsection{Symbol processor component interface}
-\label{Malsys.Processing.Components.ISymbolProcessor}
-Symbol processors are components that are called to process symbols.
-            Processing is passive, their work is initiated by sending L-system symbols to them.\paragraph{Type name}
-ISymbolProcessor	\paragraph{Derived components}
-		\hyperref[Malsys.Processing.Components.Common.SymbolsMemoryBuffer]{SymbolsMemoryBuffer}%
-, 		\hyperref[Malsys.Processing.Components.Common.SymbolsSaver]{SymbolsSaver}%
-, 		\hyperref[Malsys.Processing.Components.Interpreters.InterpreterCaller]{InterpreterCaller}%
-	\paragraph{Derived interfaces}
-		\hyperref[Malsys.Processing.Components.IComponent]{IComponent}%
-, 		\hyperref[Malsys.Processing.Components.IProcessComponent]{IProcessComponent}%
-	\paragraph{Derived interfaces}
-		\hyperref[Malsys.Processing.Components.IInterpreterCaller]{IInterpreterCaller}%
-	
-	% ======== ISymbolProvider =====================================================================
-
-\subsection{Symbol provider component interface}
-\label{Malsys.Processing.Components.ISymbolProvider}
-Symbol providers are components that are called to receive symbols.
-            Processing is passive, their work is initiated by asking for L-system symbols.\paragraph{Type name}
-ISymbolProvider	\paragraph{Derived components}
-		\hyperref[Malsys.Processing.Components.Common.AxiomProvider]{AxiomProvider}%
-, 		\hyperref[Malsys.Processing.Components.Common.SymbolProvider]{SymbolProvider}%
-, 		\hyperref[Malsys.Processing.Components.RewriterIterators.InnerLsystemIterator]{InnerLsystemIterator}%
-, 		\hyperref[Malsys.Processing.Components.RewriterIterators.MemoryBufferedIterator]{MemoryBufferedIterator}%
-, 		\hyperref[Malsys.Processing.Components.Rewriters.SymbolRewriter]{SymbolRewriter}%
-	\paragraph{Derived interfaces}
-		\hyperref[Malsys.Processing.Components.IComponent]{IComponent}%
-, 		\hyperref[Malsys.Processing.Components.IProcessComponent]{IProcessComponent}%
-	\paragraph{Derived interfaces}
-		\hyperref[Malsys.Processing.Components.IIterator]{IIterator}%
-, 		\hyperref[Malsys.Processing.Components.IRewriter]{IRewriter}%
-	
-	% ======== IRewriter =====================================================================
-
-\subsection{Symbol rewriter interface}
-\label{Malsys.Processing.Components.IRewriter}
-Rewriters are responsible for rewriting L-system symbols by defined rewrite rules.\paragraph{Type name}
-IRewriter	\paragraph{Derived components}
-		\hyperref[Malsys.Processing.Components.Rewriters.SymbolRewriter]{SymbolRewriter}%
-	\paragraph{Derived interfaces}
-		\hyperref[Malsys.Processing.Components.IComponent]{IComponent}%
-, 		\hyperref[Malsys.Processing.Components.IProcessComponent]{IProcessComponent}%
-, 		\hyperref[Malsys.Processing.Components.ISymbolProvider]{ISymbolProvider}%
-	
-	% ======== ITextRenderer =====================================================================
-
-\subsection{Text renderer interface}
-\label{Malsys.Processing.Components.Renderers.ITextRenderer}
-Provides commands for rendering plain text.\paragraph{Type name}
-ITextRenderer (Renderers.ITextRenderer) 	\paragraph{Derived components}
-		\hyperref[Malsys.Processing.Components.Renderers.TextRenderer]{TextRenderer}%
-	\paragraph{Derived interfaces}
-		\hyperref[Malsys.Processing.Components.IComponent]{IComponent}%
-, 		\hyperref[Malsys.Processing.Components.IProcessComponent]{IProcessComponent}%
-, 		\hyperref[Malsys.Processing.Components.IRenderer]{IRenderer}%

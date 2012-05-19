@@ -23,13 +23,27 @@
 <h2 id="toc">Predefined process configurations</h2>
 
 <ul class="clean">
-@foreach (var configModel in Model) {
+@foreach (var configModel in configs) {
 	<li>@Html.AnchorLink(configModel.ProcessConfiguration.Name, MVC.Help.Predefined.Configurations(), configModel.ProcessConfiguration.Name)</li>
 }
 </ul>
 
+<h3>Legend</h3>
 
-@foreach (var configModel in Model) {
+<ul class="component">
+	<li><span class="flag">{abstract}</span> – components marked as <i>abstract</i> can not be instantiated, they can be used in the same way as interfaces only as container type</li>
+	<li><span class="flag">{run-time only}</span> – gettable properties (or callable functions) marked as <i>run-time only</i>
+		can be get (called) only while L-system is processed (in rewrite rules or interpretation methods), not in L-system let or set statements</li>
+	<li><span class="flag">{mandatory}</span> – settable (symbol) properties marked as <i>mandatory</i> must be set in L-system definition,
+		parameters of interpretation method marked as <i>mandatory</i> must be supplied to interpretation method</li>
+	<li><span class="flag">{optional}</span> – connectable properties marked as <i>optional</i> may not be connected by process configuration (by default they must be connected)</li>
+	<li><span class="flag">{allowed multiple}</span> – more components can be connected to connectable properties marked as <i>allowed multiple</i>
+		(by default only one component can be connected)</li>
+	<li><span class="flag">{virtual}</span> – connections marked as <i>virtual</i> are not checked by compiler if they connects defined components</li>
+</ul>
+
+
+@foreach (var configModel in configs) {
 	Html.RenderPartial(MVC.Help.Shared.Views.ConfigurationPartial, configModel);
 	@MalsysHelper.TocLink(true);
 }

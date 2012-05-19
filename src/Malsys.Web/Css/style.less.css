@@ -632,18 +632,10 @@ p.malsysMsg {
 
 /* Media queries ============================================================ */
 
-@media only screen and (min-width: 480px) {
-
-}
-
-@media only screen and (min-width: 768px) {
-
-}
-
-@media (min-width: 1900px) {
-	#main.twoColumns {
+@media (min-width: 1880px) {
+	#mainContainer.twoColumns {
 		.wrapper { width: 1840px; }
-		.floating_box { display: inline; float: left; text-align: left; width: 900px; padding-right: 8px; }
+		.floating_box { display: inline; float: left; text-align: left; width: 890px; padding-right: 8px; }
 		.floating_container { text-align: center; }
 	}
 }

@@ -14,7 +14,7 @@ namespace Malsys.Evaluators {
 
 
 		public Symbol<IValue> Evaluate(Symbol<IExpression> symbol, IExpressionEvaluatorContext exprEvalCtxt) {
-			return new Symbol<IValue>(symbol.Name, exprEvalCtxt.EvaluateList(symbol.Arguments));
+			return new Symbol<IValue>(symbol.Name, exprEvalCtxt.EvaluateList(symbol.Arguments), symbol.AstNode);
 		}
 
 

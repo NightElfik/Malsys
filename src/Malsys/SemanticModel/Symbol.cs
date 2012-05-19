@@ -14,7 +14,7 @@ namespace Malsys.SemanticModel {
 		public readonly string Name;
 		public readonly ImmutableList<T> Arguments;
 
-		public readonly Ast.LsystemSymbol AstSymbol;
+		public readonly Ast.LsystemSymbol AstNode;
 
 
 		public Symbol(string name) {
@@ -27,15 +27,10 @@ namespace Malsys.SemanticModel {
 			Arguments = new ImmutableList<T>(args);
 		}
 
-		public Symbol(string name, ImmutableList<T> args) {
+		public Symbol(string name, ImmutableList<T> args, Ast.LsystemSymbol astNode = null) {
 			Name = name;
 			Arguments = args;
-		}
-
-		public Symbol(string name, ImmutableList<T> args, Ast.LsystemSymbol astSymbol) {
-			Name = name;
-			Arguments = args;
-			AstSymbol = astSymbol;
+			AstNode = astNode;
 		}
 	}
 }

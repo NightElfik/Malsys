@@ -6,7 +6,7 @@
                      |___/
  M a r k ' s   L - s y s t e m s
 
-/* Online L-system processing system and gallery */
+/* Online L-system generator and gallery */
 /* malsys.cz (malsys.projekty.ms.mff.cuni.cz) */
 
 

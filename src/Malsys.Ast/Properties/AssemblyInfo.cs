@@ -25,7 +25,7 @@ using System.Runtime.InteropServices;
 namespace Malsys.Ast {
 	public static class MalsysAstVersion {
 
-		public const string CompiledWith = "1.0.0.0";
+		public const string CompiledWith = "1.0.0";
 		public static readonly string LinkedWith = CompiledWith;
 
 		public static Version CompiledWithVersion { get { return new Version(CompiledWith); } }

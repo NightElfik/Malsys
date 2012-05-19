@@ -263,6 +263,7 @@
       <DependentUpon>T4MVC.tt</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\AppSettingsProvider.cs" />
+    <Compile Include="Infrastructure\DateTimeExtensions.cs" />
     <Compile Include="Infrastructure\HtmlHelperExtensions.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -331,10 +332,6 @@
     <Content Include="App_Data\MalsysDb_log.ldf">
       <DependentUpon>MalsysDb.mdf</DependentUpon>
     </Content>
-    <Content Include="App_Data\OldWeb\MalsysDb.mdf" />
-    <Content Include="App_Data\OldWeb\MalsysDb_log.ldf">
-      <DependentUpon>MalsysDb.mdf</DependentUpon>
-    </Content>
     <Content Include="Areas\Help\Views\Predefined\Components.cshtml" />
     <Content Include="Areas\Help\Views\Home\BasicInterpretation.cshtml" />
     <Content Include="Areas\Help\Views\Shared\ComponentPartial.cshtml" />
@@ -366,6 +363,8 @@
     <Content Include="Css\style.less.css" />
     <Content Include="Areas\Help\Views\Predefined\ComponentsLatex.cshtml" />
     <Content Include="Areas\Help\Views\Predefined\ComponentLatexPartial.cshtml" />
+    <Content Include="Areas\Help\Views\Predefined\ConfigurationsLatex.cshtml" />
+    <Content Include="Areas\Help\Views\Predefined\ConfigurationLatexPartial.cshtml" />
     <None Include="DatabaseScheme.sql" />
     <Content Include="Error.html" />
     <Content Include="favicon.ico" />

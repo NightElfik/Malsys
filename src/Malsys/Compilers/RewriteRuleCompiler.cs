@@ -72,11 +72,11 @@ namespace Malsys.Compilers {
 
 				if (usedNames.ContainsKey(name)) {
 					var otherPos = usedNames[name];
-					logger.LogMessage(Message.PatternsParamNameNotUnique, symbol.AstSymbol.Arguments[i].Position, name, symbol.Name, otherPos);
+					logger.LogMessage(Message.PatternsParamNameNotUnique, symbol.AstNode.Arguments[i].Position, name, symbol.Name, otherPos);
 					allAreUnique = false;
 				}
 
-				usedNames.Add(name, symbol.AstSymbol.Arguments[i].Position);
+				usedNames.Add(name, symbol.AstNode.Arguments[i].Position);
 			}
 
 			return allAreUnique;

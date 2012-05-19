@@ -1,0 +1,32 @@
+
+\chapter{Process configurations}
+\label{chap:configurations}
+
+In order to save space in the printed version of the thesis this appendix contains reference for the only process configuration called \emph{SvgRenderer}.
+The reference also contains consolidated list of all members of all components used in the process configuration (default components are considered for containers).
+
+\section{Legend}
+
+Explanation of tags which describes special properties of some members.
+
+\begin{description*}
+	\item[abstract]
+		Components marked as \emph{abstract} can not be instantiated.
+		They can be used in the same way as interfaces (only as container type).
+	\item[run-time only]
+		Gettable properties (or callable functions) marked as \emph{run-time only} can be get (called) only while L-system is processed (in rewrite rules or interpretation methods).
+		Especially they can not be get (called) in L-system let or set statements.
+	\item[mandatory]
+		Value of settable properties (and settable symbol properties) marked as \emph{mandatory} must be set in L-system definition.
+		Parameters of interpretation method marked as \emph{mandatory} must be supplied to interpretation method.
+	\item[optional]
+		Connectable properties marked as \emph{optional} may not be connected by process configuration (by default they must be connected).
+	\item[allowed multiple]
+		More components can be connected to connectable properties marked as \emph{allowed multiple} (by default only one component can be connected).
+	\item[virtual]
+		Connections marked as virtual are not checked by compiler if they connects defined components.
+\end{description*}
+
+
+\input{apx-configurations-generated}
+

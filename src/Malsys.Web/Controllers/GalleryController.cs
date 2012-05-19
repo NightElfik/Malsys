@@ -16,6 +16,7 @@ using Malsys.Web.Infrastructure;
 using Malsys.Web.Models;
 using Malsys.Web.Models.Lsystem;
 using MvcContrib.Pagination;
+using System.Web.UI;
 
 namespace Malsys.Web.Controllers {
 	public partial class GalleryController : Controller {
@@ -101,7 +102,7 @@ namespace Malsys.Web.Controllers {
 				.Where(x => x.UrlId == id && !x.IsDeleted)
 				.SingleOrDefault();
 
-			if (input == null || input.IsDeleted) {
+			if (input == null) {
 				return HttpNotFound();
 			}
 
@@ -216,11 +217,13 @@ namespace Malsys.Web.Controllers {
 			return RedirectToAction(Actions.Detail(input.UrlId));
 		}
 
-		public virtual ActionResult GetOutput(string id) {
+		[OutputCache(CacheProfile = "GalleryCache")]
+		public virtual ActionResult GetOutput(string id, string t = null) {
 			return getOutput(id, false);
 		}
 
-		public virtual ActionResult GetThumbnail(string id) {
+		[OutputCache(CacheProfile = "GalleryCache")]
+		public virtual ActionResult GetThumbnail(string id, string t = null) {
 			return getOutput(id, true);
 		}
 

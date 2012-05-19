@@ -32,12 +32,12 @@
 		else {
 			height = Model.MaxHeight;
 		}
-		<img src="@Url.Action(MVC.Gallery.GetThumbnail(Model.SavedInput.UrlId))" @if (width > 0) { <text>width="@(width)px" </text> } height="@(height)px" alt="@Model.SavedInput.PublishName" />
+		<img src="@Url.Action(MVC.Gallery.GetThumbnail(Model.SavedInput.UrlId, Model.SavedInput.EditDate.Hash()))" @if (width > 0) { <text>width="@(width)px" </text> } height="@(height)px" alt="@Model.SavedInput.PublishName" />
 		break;
 
 	case MimeType.Application.Javascript:
 		Model.NeedsThreeJs = true;
-		<div class="threeJsScene" data-scene="@Url.Action(MVC.Gallery.GetThumbnail(Model.SavedInput.UrlId))" data-clear-color="FFFFFF" data-anti-alias="false"></div>
+		<div class="threeJsScene" data-scene="@Url.Action(MVC.Gallery.GetThumbnail(Model.SavedInput.UrlId, Model.SavedInput.EditDate.Hash()))" data-clear-color="FFFFFF" data-anti-alias="false"></div>
 		break;
 
 	default:

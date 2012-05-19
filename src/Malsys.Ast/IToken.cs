@@ -20,8 +20,9 @@ namespace Malsys {
 	public static class IAstNodeExtensions {
 
 		/// <summary>
-		/// Tries to get position from instance.
-		/// Returns unknown position even if instance is null or position in instance is null.
+		/// Tries to get position from the AstNode.
+		/// Because this is extension method it is safe to call it on potentially null object.
+		/// Returns unknown position even if instance is null or if position in instance is null.
 		/// </summary>
 		public static PositionRange TryGetPosition(this Ast.IAstNode instance) {
 

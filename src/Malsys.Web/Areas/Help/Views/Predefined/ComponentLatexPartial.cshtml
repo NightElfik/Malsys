@@ -119,7 +119,7 @@ if (data.ConnectableProperties.Length > 0) {
 		@:\item[@string.Join(", ", prop.Names)]
 		if (prop.IsOptional) { <text>\textit{optional}</text> }
 		if (prop.AllowMultiple) { <text>\textit{allowed multiple}</text> }
-		@:(type \hyperref[@prop.PropertyType.FullName]{@prop.PropertyType.Name})
+		@:(connectable type:  \hyperref[@prop.PropertyType.FullName]{@prop.PropertyType.Name})
 		if (!string.IsNullOrEmpty(prop.SummaryDoc)) {
 			@:-- @LatexHelper.Print(prop.SummaryDoc)
 		}
@@ -141,11 +141,11 @@ if (data.CallableFunctions.Length > 0) {
 		@:\\ Parameters: @fun.ParamsCount
 		if (fun.ParamsCount > 0) {
 			var paramsDoc = fun.ParamsDoc.SplitToLines().ToList();
-			@:\begin{enumerate}
+			@:\begin{enumerate*}
 			for (int i = 0; i < fun.ParamsCount; i++) {
 				@:\item @if (i < paramsDoc.Count) { @LatexHelper.Print(paramsDoc[i]) }
 			}
-			@:\end{enumerate}
+			@:\end{enumerate*}
 		}
 	}
 	@:\end{description*}
@@ -163,13 +163,13 @@ if (data.InterpretationMethods.Length > 0) {
 		@:\\ Parameters: @intMethod.ParamsCount @if(intMethod.ParamsCount != 0) { <text>(@intMethod.MandatoryParamsCount mandatory)</text> }
 		if (intMethod.ParamsCount > 0) {
 			var paramsDoc = intMethod.ParamsDoc.SplitToLines().ToList();
-			@:\begin{enumerate}
+			@:\begin{enumerate*}
 			for (int i = 0; i < intMethod.ParamsCount; i++) {
 				@:\item
 				if (i < paramsDoc.Count) { @LatexHelper.Print(paramsDoc[i]) }
 				if (i < intMethod.MandatoryParamsCount) { <text>(\textit{mandatory})</text> }
 			}
-			@:\end{enumerate}
+			@:\end{enumerate*}
 		}
 	}
 	@:\end{description*}

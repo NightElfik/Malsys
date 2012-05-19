@@ -20,7 +20,7 @@
 @switch (Model.Input.MimeType) {
 
 	case MimeType.Application.Javascript:
-		<div class="threeJsScene" data-scene="@Url.Action(MVC.Gallery.GetOutput(Model.Input.UrlId))" data-clear-color="FFFFFF" data-anti-alias="true">
+		<div class="threeJsScene" data-scene="@Url.Action(MVC.Gallery.GetOutput(Model.Input.UrlId, Model.Input.EditDate.Hash()))" data-clear-color="FFFFFF" data-anti-alias="true">
 			<p class="webgl">WebGL is not supported by your browser. Please @Html.Link("get supported browser", "http://get.webgl.org/", "get supported browser"). @Html.ActionLink("Why?", MVC.Home.WhyWebgl())</p>
 			<p class="controls">Controls: Move mouse &amp; press LEFT/A: rotate, MIDDLE/S: zoom, RIGHT/D: pan</p>
 		</div>

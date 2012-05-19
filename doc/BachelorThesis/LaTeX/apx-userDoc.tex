@@ -3,7 +3,41 @@
 \chapter{User documentation}
 \label{chap:userDoc}
 
-\begin{figure}[ht]
+In this appendix is explained how to process \lsystems in web user interface.
+There is also step-by-step tutorial how to create an \lsystem -- the Pthagoras tree.
+
+\section{How to process \lsystem}
+
+Processing of the input on the web is fairly easy.
+Following explanation will be referring to \autoref{fig:processScreenExplained}.
+
+To process \lsystem click on the \emph{\lsystem processor} link (A) in the main menu of the web, enter the \lsystem code into the text area (C) and click \emph{Process \& display results} button.
+Then you will see results (D) and eventually warnings or errors (B).
+
+\begin{figure}[p]
+	\centering
+	\includegraphics[width=0.93\linewidth]{ProcessScreenExplained}
+	\caption{\lsystem processing interface}
+	\label{fig:processScreenExplained}
+\end{figure}
+
+
+\section{Creation of the Pythagoras tree}
+
+The creation of actual \lsystem is little bit harder.
+Lets start with explanation of the Pythagoras tree itself.
+
+The Pythagoras tree is binary tree which starts from root at the bottom\footnote{With root at the bottom (note for computer scientists).}.
+From each branch (including the root) grows two other branches.
+It is named by Pythagoras because if we denote length of the base branch as $c$ and length of branches raised from the base branch as $a$ and $b$ Pythagorean theorem describes theirs relation as $c^2 = a^2 + b^2$.
+If the branches are drawn as squares the formula also says that area of the base square is equal to sum of areas of its child squares.
+The relation applies to all squares in the tree.
+
+Pythagoras can be easily built from squares, the angle of branches determines the size of squares.
+The branching setup is shown in \autoref{fig:pythagorasExplained}.
+If we denote left angle of triangle as $\alpha$ and length of the edge of the base square as $c$ then length of the edge of the left branch is equal to $b = c \cdot \cos(\alpha)$ and similarly for right branch  $a = c \cdot \sin(\alpha)$
+
+\begin{figure}[H]
 	\centering
 \begin{tikzpicture}[scale=4]
 	\clip (-0.5,-0.3) rectangle (1.5,0.7);
@@ -41,6 +75,315 @@
 	\draw [draw=white,dashed,very thick] (10mm,0mm) arc (0:180:5mm);	
 	
 \end{tikzpicture}
-	\caption{sdf}
-	\label{fig:sfd}
+	\caption{The branching in Pythagoras tree with branches as squares}
+	\label{fig:pythagorasExplained}
 \end{figure}
+
+
+Lets try to draw similar scheme using \lsystem.
+For drawing we will use the \emph{SvgRenderer} process configuration which renders \lsystems as 2D turtle graphics.
+%The actual component responsible for rendering is the \emph{SvgRenderer2D} component (this can be found in the definition of the \emph{SvgRenderer} process configuration).
+
+First we need to draw a square.
+The simplest square is a line with the same width as length.
+If we look in consolidated documentation of the \emph{SvgRenderer} process configuration (appendix \ref{chap:configurations}) in the section \emph{Interpretation methods} we can see that there is method called \emph{DrawForward} which  is exactly what we need.
+
+Lets write first code.
+We start with \lsystem called \emph{PythagorasTree} with axiom containing single symbol which will be interpreted as square.
+Also we set the scale to 100 (to be able to see the result well) and initial angle to $90{\circ}$ to start to move up (instead of right).
+These properties can be found in the section \emph{Settable properties} of mentioned documentation (appendix \ref{chap:configurations}).
+The code and its result is in \autoref{fig:userDoc1}
+
+\newsavebox{\lstBoxUserDocA}
+\begin{lrbox}{\lstBoxUserDocA}
+\begin{Lsystem60}
+lsystem PythagorasTree {
+	set symbols axiom = S;
+	set scale = 100;
+	set initialAngle = 90;
+	interpret S as DrawForward(1, 1);
+}
+process PythagorasTree with SvgRenderer;
+\end{Lsystem60}
+\end{lrbox}
+
+\begin{figure}[h!]
+	\subfloat{
+		\usebox{\lstBoxUserDocA}
+	} \hfill
+	\subfloat{
+		\minipage{0.37\linewidth}\noindent\centering
+		\includegraphics[width=0.3\textwidth]{UserDoc1}
+		\endminipage
+	}
+	\caption{Source code and its result.}
+	\label{fig:userDoc1}
+\end{figure}
+
+The first problem is obvious at the first sight.
+By default lines have round caps.
+After quick look in the documentation there is property called \emph{lineCap}.
+Its value 0 will remove caps.
+To keep source code more readable we ca use predefined constant \emph{none} for it (see appendix \ref{sec:stdLibSvgRenderer}).
+
+\begin{Lsystem}
+set lineCap = none;
+\end{Lsystem}
+
+Now we need an angle for counting the sizes of branches.
+Lets define a local variable called \emph{alpha} with vale of $90{30}$.
+The value of $\beta$ angle (in \autoref{fig:pythagorasExplained}) is obviously $90 - \alpha$ so we can define it as local variable too.
+
+\begin{Lsystem}
+let alpha = 30;
+let beta = 90 - alpha;
+\end{Lsystem}
+
+To be able to turn by these angles we must define interpretation methods.
+Lets define the symbol $+$ as turn left by $\alpha$ and symbol $-$ as turn right by $\beta$ (equally as turn left by $-\beta$).
+
+\begin{Lsystem}
+interpret + as TurnLeft(alpha);
+interpret - as TurnLeft(-beta);
+\end{Lsystem}
+
+We need to be able to draw branches easily.
+For this are \emph{Bracketed \lsystems} which allows saving and loading of the interpretation state.
+We can define interpretation on our ow by following code.
+
+\begin{Lsystem}
+interpret [ as StartBranch;
+interpret ] as EndBranch;
+\end{Lsystem}
+
+However it is much easier to just inherit the \emph{Branches} \lsystem which will do the trick.
+
+\begin{Lsystem}
+lsystem PythagorasTree extends Branches {
+\end{Lsystem}
+
+To be able to draw squares with any size we will upgrade the interpretation rule to take single parameter from interpreting symbol and use it as line length and width.
+
+\begin{Lsystem}
+interpret S(size) as DrawForward(size, size);
+\end{Lsystem}
+
+The last thing we need is to skip the space between base square and the branch (mark as dotted line in \autoref{fig:pythagorasExplained}).
+For this we have the interpretation method \emph{MoveForward}.
+We do not need to define explicit parameters because all parameters from interpreted symbol are automatically forwarded to the interpretation method.
+
+\begin{Lsystem}
+interpret m as MoveForward;
+\end{Lsystem}
+
+
+Now we can draw squares, move without drawing, we can turn and we can do branches so lets put it all together.
+To draw branch we need to
+	\begin{inparaenum}[{\itshape a})]
+		\item start branch,
+		\item turn left,
+		\item move without drawing by half of the size of the other branch than we are drawing,
+		\item draw square and
+		\item end branch.
+	\end{inparaenum}
+Likewise with the right branch.
+
+\begin{Lsystem}
+set symbols axiom = S(1) // base
+	 // left branch
+	[ + m(1 * sin(deg2rad(alpha)) / 2) S(1 * cos(deg2rad(alpha))) ]
+	 // right branch
+	[ - m(1 * cos(deg2rad(alpha)) / 2) S(1 * sin(deg2rad(alpha))) ];
+\end{Lsystem}
+
+\autoref{fig:userDoc2} shows result of putting everything together along with the result.
+
+\newsavebox{\lstBoxUserDocB}
+\begin{lrbox}{\lstBoxUserDocB}
+\begin{Lsystem60}
+lsystem PythagorasTree extends Branches{
+	let alpha = 30;
+	let beta = 90 - alpha;
+
+	set symbols axiom = S(1)
+	[ + m(1 * sin(deg2rad(alpha)) / 2)
+		S(1 * cos(deg2rad(alpha))) ]
+	[ - m(1 * cos(deg2rad(alpha)) / 2) 
+		S(1 * sin(deg2rad(alpha))) ];
+	
+	set scale = 100;
+	set initialAngle = 90;
+	set lineCap = none;
+	
+	interpret S(x) as DrawForward(x, x);
+	interpret m as MoveForward;
+	interpret + as TurnLeft(alpha);
+	interpret - as TurnLeft(-beta);
+}
+process PythagorasTree with SvgRenderer;
+\end{Lsystem60}
+\end{lrbox}
+
+\begin{figure}[h!]
+	\subfloat{
+		\usebox{\lstBoxUserDocB}
+	} \hfill
+	\subfloat{
+		\minipage{0.37\linewidth}\noindent\centering
+		\includegraphics[width=\textwidth]{UserDoc2}
+		\endminipage
+	}
+	\caption{Source code and its result.}
+	\label{fig:userDoc2}
+\end{figure}
+
+This was the hard part.
+Now \lsystems will do the hard work for us.
+We need to apply the creation of new branches to again and again.
+
+Because we need to rewrite only last level of branches we will define new symbol $X$ for already rewritten square.
+We can add it to existing interpretation rule.
+
+\begin{Lsystem}
+interpret S X (size) as DrawForward(size, size);
+\end{Lsystem}
+
+Now for the rewrite rule.
+All we need to do is to copy the axiom as the rewrite rule and use the parameter of rewritten symbol as base value.
+
+\begin{Lsystem}
+rewrite S(x) to X(x)
+	[ + m(x * sin(deg2rad(alpha)) / 2) S(x * cos(deg2rad(alpha))) ]
+	[ - m(x * cos(deg2rad(alpha)) / 2) S(x * sin(deg2rad(alpha))) ];
+\end{Lsystem}
+
+To simplify rewrite rule we can define local variables.
+
+\begin{Lsystem}
+rewrite S(x)
+	with a = x * sin(deg2rad(alpha)), b = x * cos(deg2rad(alpha))
+	to X(x) [ + m(a / 2) S(b) ] [ - m(b / 2) S(a) ];
+\end{Lsystem}
+
+To rewrite \lsystem we need to set number of iterations.
+We will use lower number like 2 to see if it is working.
+
+\begin{Lsystem}
+set iterations = 2;
+\end{Lsystem}
+
+Voilà, the Pythagoras tree is growing
+
+\newsavebox{\lstBoxUserDocC}
+\begin{lrbox}{\lstBoxUserDocC}
+\begin{Lsystem60}
+lsystem PythagorasTree extends Branches{
+	let alpha = 30;
+	let beta = 90 - alpha;
+
+	set symbols axiom = S(1);
+	
+	set scale = 100;
+	set initialAngle = 90;
+	set lineCap = none;
+	set iterations = 2;
+	
+	interpret S X(x) as DrawForward(x,x);
+	interpret m as MoveForward;
+	interpret + as TurnLeft(alpha);
+	interpret - as TurnLeft(-beta);
+	
+	rewrite S(x)
+		with a = x*sin(deg2rad(alpha)),
+			b = x*cos(deg2rad(alpha))
+		to X(x) [ + m(a / 2) S(b) ]
+			[ - m(b / 2) S(a) ];
+}
+process PythagorasTree with SvgRenderer;
+\end{Lsystem60}
+\end{lrbox}
+
+\begin{figure}[h!]
+	\subfloat{
+		\usebox{\lstBoxUserDocC}
+	} \hfill
+	\subfloat{
+		\minipage{0.37\linewidth}\noindent\centering
+		\includegraphics[width=\textwidth]{UserDoc3}
+		\endminipage
+	}
+	\caption{Source code and its result.}
+	\label{fig:userDoc3}
+\end{figure}
+
+If we weant to generate many Pythagoras trees with different angles we can add it as a parameter to the \lsystem and remove the local variable.
+
+\begin{Lsystem}
+lsystem PythagorasTree(alpha = 30) extends Branches{
+\end{Lsystem}
+
+To process more \lsystems at once with different parameters we can add more process statements.
+
+\begin{Lsystem}
+process PythagorasTree(30) with SvgRenderer;
+process PythagorasTree(35) with SvgRenderer;
+process PythagorasTree(40) with SvgRenderer;
+process PythagorasTree(45) with SvgRenderer;
+\end{Lsystem}
+
+Final \lsystem in in \autoref{lsys:userDocFinal} and its results are in \autoref{fig:userDocFinal}
+
+\begin{Lsystem}[label=lsys:userDocFinal,caption={Final \lsystem of the Pythagoras tree}]
+lsystem PythagorasTree(alpha = 30) extends Branches{
+	let beta = 90 - alpha;
+	set symbols axiom = S(1);
+	set scale = 100;
+	set initialAngle = 90;
+	set lineCap = none;
+	set iterations = 10;
+	interpret S X(x) as DrawForward(x,x);
+	interpret m as MoveForward;
+	interpret + as TurnLeft(alpha);
+	interpret - as TurnLeft(-beta);
+	rewrite S(x)
+		with a = x*sin(deg2rad(alpha)), b = x*cos(deg2rad(alpha))
+		to X(x) [ + m(a / 2) S(b) ] [ - m(b / 2) S(a) ];
+}
+process PythagorasTree(30) with SvgRenderer;
+process PythagorasTree(35) with SvgRenderer;
+process PythagorasTree(40) with SvgRenderer;
+process PythagorasTree(45) with SvgRenderer;
+\end{Lsystem}
+
+\begin{figure}[h!]
+	\centering
+	\subfloat[$\alpha = 30$]{\includegraphics[scale=0.37]{UserDocFinal30}} \hspace{5mm}
+	\subfloat[$\alpha = 35$]{\includegraphics[scale=0.37]{UserDocFinal35}}
+	\\
+	\subfloat[$\alpha = 40$]{\includegraphics[scale=0.37]{UserDocFinal40}} \hspace{5mm}
+	\subfloat[$\alpha = 45$]{\includegraphics[scale=0.37]{UserDocFinal45}}
+	\caption{Results of finished \lsystem of the Pythagoras tree}
+	\label{fig:userDocFinal}
+\end{figure}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

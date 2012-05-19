@@ -135,5 +135,9 @@ namespace Malsys.Web.Areas.Help.Controllers {
 			return View(componentModels.ToList());
 		}
 
+		public virtual ActionResult ConfigurationsLatex() {
+			return Configurations();
+		}
+
 	}
 }

@@ -32,7 +32,7 @@ namespace Malsys.Web.Models.Lsystem {
 #if !DEBUG
 			}
 			catch (Exception ex) {
-				ErrorSignal.FromCurrentContext().Raise(ex);
+				ErrorSignal.FromCurrentContext().Raise(ex);  // log exception by Elmah
 				logger.LogMessage(Message.ExceptionThrownWhileProcessingInput, ex.GetType().Name);
 				evaledInput = null;
 				return false;
@@ -54,7 +54,7 @@ namespace Malsys.Web.Models.Lsystem {
 #if !DEBUG
 				}
 				catch (Exception ex) {
-					ErrorSignal.FromCurrentContext().Raise(ex);
+					ErrorSignal.FromCurrentContext().Raise(ex);  // log exception by Elmah
 					logger.LogMessage(Message.ExceptionThrownWhileProcessingInput, ex.GetType().Name);
 					return false;
 				}

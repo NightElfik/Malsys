@@ -113,8 +113,9 @@ namespace Malsys.Processing.Components.RewriterIterators {
 		/// Iterator iterates symbols by reading all symbols from SymbolProvider every iteration.
 		/// Rewriter should be connected as SymbolProvider and rewriters's SymbolProvider should be this Iterator.
 		/// This setup creates loop and iterator rewrites string of symbols every iteration.
+		/// When number of iterations is set to 0 (of left default as 0) only axiom is used and this that case this property can be left unconnected.
 		/// </summary>
-		[UserConnectable]
+		[UserConnectable(IsOptional=true)]
 		public ISymbolProvider SymbolProvider { get; set; }
 
 		/// <summary>
@@ -181,12 +182,15 @@ namespace Malsys.Processing.Components.RewriterIterators {
 		public void Start(bool doMeasure) {
 
 			swDuration.Restart();
-
-			SymbolProvider.BeginProcessing(true);
+			if (SymbolProvider != null) {
+				SymbolProvider.BeginProcessing(false);
+			}
 
 			start(doMeasure);
 
-			SymbolProvider.EndProcessing();
+			if (SymbolProvider != null) {
+				SymbolProvider.EndProcessing();
+			}
 
 			swDuration.Stop();
 		}
@@ -226,7 +230,7 @@ namespace Malsys.Processing.Components.RewriterIterators {
 		private int resetRendomGenerator() {
 			if (RandomGeneratorProvider != null) {
 				int seed = (int)(RandomGeneratorProvider.Random() * int.MaxValue);
-				RandomGeneratorProvider.Reset();
+				RandomGeneratorProvider.Reset(seed);
 				return seed;
 			}
 			return -1;
@@ -268,6 +272,10 @@ namespace Malsys.Processing.Components.RewriterIterators {
 		}
 
 		protected void rewriteIteration() {
+
+			if (SymbolProvider == null) {
+				throw new ComponentException("SymbolProvider is not set.");
+			}
 
 			foreach (var symbol in SymbolProvider) {
 

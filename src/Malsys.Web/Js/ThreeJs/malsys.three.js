@@ -7,6 +7,19 @@
 var controls = [];
 var threeJsScenes = [];
 
+// http://api.jquery.com/jQuery.getScript/
+jQuery.cachedScript = function (url, options) {
+	// allow user to set any option except for dataType, cache, and url
+	options = $.extend(options || {}, {
+		dataType: "script",
+		cache: true,
+		url: url
+	});
+	// Use $.ajax() since it is more flexible than $.getScript
+	// Return the jqXHR object so we can chain callbacks
+	return jQuery.ajax(options);
+};
+
 (function ($) {
 
 	$('.threeJsScene').each(function (i) {
@@ -53,7 +66,7 @@ var threeJsScenes = [];
 
 		var statsDisplay = domElement.attr('data-stats-display');
 
-		$.getScript(sceneUrl, function() {
+		$.cachedScript(sceneUrl).done(function(script, textStatus) {
 
 			if (!Scene) {
 				return;

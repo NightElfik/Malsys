@@ -1,15 +1,20 @@
 
-\chapter{Components and interfaces}
+\chapter{Components}
 \label{chap:components}
 
-This appendix contains list of nearly\footnote{Components for debugging are omitted.} all implemented components with their comprehensive description.
+This appendix contains list of all important\footnote{Components for debugging are omitted.} components with their comprehensive description.
+In order to save space in the printed version of the thesis the list of interfaces is available only int the web user interface.
+
 All components are in the main project called \emph{Malsys} int the namespace \emph{Malsys.Processing.Components}.
-If component is in sub-namespace the path from main namespace is in the bracket after component type.
+If some component is in sub-namespace, then the path from the main namespace is in the bracket after component type.
 
 All listed components can be accessed in process configurations by type name or full name (type name with all namespaces).
 For example component called \nameref{Malsys.Processing.Components.Interpreters.TurtleInterpreter} can be accessed by name \texttt{TurtleInterpreter} or full name \texttt{Malsys.Processing.Components.Interpreters.TurtleInterpreter}.
 
 \section{Legend}
+
+Explanation of tags which describes special properties of some members.
+
 \begin{description*}
 	\item[abstract]
 		Components marked as \emph{abstract} can not be instantiated.

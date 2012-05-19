@@ -1,0 +1,332 @@
+
+
+
+
+	
+	% ======== SvgRenderer ================================================================
+
+
+\subsection{SvgRenderer}
+\label{SvgRenderer}
+	\paragraph{Components}
+	\begin{description*}
+		\item[AxiomProvider] \hyperref[Malsys.Processing.Components.Common.AxiomProvider]{AxiomProvider}
+		\item[RandomGeneratorProvider] \hyperref[Malsys.Processing.Components.Common.RandomGeneratorProvider]{RandomGeneratorProvider}
+		\item[LsystemInLsystemProcessor] \hyperref[Malsys.Processing.Components.Common.LsystemInLsystemProcessor]{LsystemInLsystemProcessor}
+	\end{description*}
+	\paragraph{Containers}
+	\begin{description*}
+		\item[Rewriter] \hyperref[Malsys.Processing.Components.IRewriter]{IRewriter} (default \hyperref[Malsys.Processing.Components.Rewriters.SymbolRewriter]{SymbolRewriter})
+		\item[Iterator] \hyperref[Malsys.Processing.Components.IIterator]{IIterator} (default \hyperref[Malsys.Processing.Components.RewriterIterators.MemoryBufferedIterator]{MemoryBufferedIterator})
+		\item[InterpreterCaller] \hyperref[Malsys.Processing.Components.IInterpreterCaller]{IInterpreterCaller} (default \hyperref[Malsys.Processing.Components.Interpreters.InterpreterCaller]{InterpreterCaller})
+		\item[Interpreter] \hyperref[Malsys.Processing.Components.IInterpreter]{IInterpreter} (default \hyperref[Malsys.Processing.Components.Interpreters.TurtleInterpreter]{TurtleInterpreter})
+		\item[Renderer] \hyperref[Malsys.Processing.Components.IRenderer]{IRenderer} (default \hyperref[Malsys.Processing.Components.Renderers.SvgRenderer2D]{SvgRenderer2D})
+	\end{description*}
+	\paragraph{Connections}
+	\begin{itemize*}
+		\item RandomGeneratorProvider \textbf{to} Iterator.RandomGeneratorProvider
+		\item AxiomProvider \textbf{to} Iterator.AxiomProvider
+		\item Iterator \textbf{to} Rewriter.SymbolProvider
+		\item Rewriter \textbf{to} Iterator.SymbolProvider
+		\item InterpreterCaller \textbf{to} Iterator.OutputProcessor
+		\item LsystemInLsystemProcessor \textbf{to} InterpreterCaller.LsystemInLsystemProcessor
+		\item Renderer \textbf{to} Interpreter.Renderer
+	\end{itemize*}
+	\paragraph{Gettable properties}\textcolor{gray}{of SvgRenderer}
+	\begin{description*}
+		\item[trueRandom] of \hyperref[Malsys.Processing.Components.Common.RandomGeneratorProvider]{RandomGeneratorProvider}
+ \textit{run-time only} 		(returns value)
+			-- If set to true as random generator will be used
+            true-random (cryptographic random) generator.
+            For this random generator can not be set any seed and numbers are
+            always unpredictably random.
+            If set to false as random generator will be used pseudo-random generator.
+		\item[randomSeed] of \hyperref[Malsys.Processing.Components.Common.RandomGeneratorProvider]{RandomGeneratorProvider}
+		(returns value)
+			-- If set pseudo-random generator will generate always same sequence of random numbers.
+            Do not work if TrueRandom property is set.
+		\item[currentIteration] of \hyperref[Malsys.Processing.Components.RewriterIterators.MemoryBufferedIterator]{MemoryBufferedIterator}
+ \textit{run-time only} 		(returns value)
+			-- Number of current iteration. Zero is axiom (no iteration was done), first iteration have number 1
+            and last is equal to number of all iterations specified by Iterations property.
+		\item[iterations, i] of \hyperref[Malsys.Processing.Components.RewriterIterators.MemoryBufferedIterator]{MemoryBufferedIterator}
+ \textit{run-time only} 		(returns value)
+			-- Number of iterations to do with current L-system.
+		\item[origin] of \hyperref[Malsys.Processing.Components.Interpreters.TurtleInterpreter]{TurtleInterpreter}
+		(returns array)
+			-- Origin (start position) of "turtle".
+		\item[forwardVector] of \hyperref[Malsys.Processing.Components.Interpreters.TurtleInterpreter]{TurtleInterpreter}
+		(returns array)
+			-- Forward vector of "turtle".
+		\item[upVector] of \hyperref[Malsys.Processing.Components.Interpreters.TurtleInterpreter]{TurtleInterpreter}
+		(returns array)
+			-- Up vector of "turtle".
+	\end{description*}
+	\paragraph{Settable properties}\textcolor{gray}{of SvgRenderer}
+	\begin{description*}
+		\item[trueRandom] of \hyperref[Malsys.Processing.Components.Common.RandomGeneratorProvider]{RandomGeneratorProvider}
+		(accepts value)
+			-- If set to true as random generator will be used
+            true-random (cryptographic random) generator.
+            For this random generator can not be set any seed and numbers are
+            always unpredictably random.
+            If set to false as random generator will be used pseudo-random generator.
+			\\ Expected value: true or false
+			\\ Default value: false
+		\item[randomSeed] of \hyperref[Malsys.Processing.Components.Common.RandomGeneratorProvider]{RandomGeneratorProvider}
+		(accepts value)
+			-- If set pseudo-random generator will generate always same sequence of random numbers.
+            Do not work if TrueRandom property is set.
+			\\ Expected value: Non-negative integer.
+			\\ Default value: random
+		\item[iterations, i] of \hyperref[Malsys.Processing.Components.RewriterIterators.MemoryBufferedIterator]{MemoryBufferedIterator}
+		(accepts value)
+			-- Number of iterations to do with current L-system.
+			\\ Expected value: Non-negative number representing number of iterations.
+			\\ Default value: 0
+		\item[interpretEveryIteration] of \hyperref[Malsys.Processing.Components.RewriterIterators.MemoryBufferedIterator]{MemoryBufferedIterator}
+		(accepts value)
+			-- If set to true iterator will send symbols from all iterations to connected interpret.
+            Otherwise only result of last iteration is interpreted.
+			\\ Expected value: true or false
+			\\ Default value: false
+		\item[interpretEveryIterationFrom] of \hyperref[Malsys.Processing.Components.RewriterIterators.MemoryBufferedIterator]{MemoryBufferedIterator}
+		(accepts value)
+			-- Sets interprets all iteration from given number.
+			\\ Expected value: true or false
+			\\ Default value: false
+		\item[interpretFollowingIterations] of \hyperref[Malsys.Processing.Components.RewriterIterators.MemoryBufferedIterator]{MemoryBufferedIterator}
+		(accepts array)
+			-- Array with numbers of iterations which will be interpreted.
+			\\ Expected value: Array of numbers
+			\\ Default value: \{\} (empty array)
+		\item[debugInterpretation] of \hyperref[Malsys.Processing.Components.Interpreters.InterpreterCaller]{InterpreterCaller}
+		(accepts value)
+			-- True if print debug information about interpretation converting.
+			\\ Expected value: true or false
+			\\ Default value: false
+		\item[origin] of \hyperref[Malsys.Processing.Components.Interpreters.TurtleInterpreter]{TurtleInterpreter}
+		(accepts array)
+			-- Origin (start position) of "turtle".
+			\\ Expected value: Array of 2 or 3 numbers representing x, y and optionally z coordinate.
+			\\ Default value: \{0, 0, 0\}
+		\item[forwardVector] of \hyperref[Malsys.Processing.Components.Interpreters.TurtleInterpreter]{TurtleInterpreter}
+		(accepts array)
+			-- Forward vector of "turtle".
+			\\ Expected value: Array of 3 numbers representing x, y and z coordinate.
+			\\ Default value: \{1, 0, 0\}
+		\item[upVector] of \hyperref[Malsys.Processing.Components.Interpreters.TurtleInterpreter]{TurtleInterpreter}
+		(accepts array)
+			-- Up vector of "turtle".
+			\\ Expected value: Array of 3 constants representing x, y and z coordinate.
+			\\ Default value: \{0, 1, 0\}
+		\item[rotationQuaternion] of \hyperref[Malsys.Processing.Components.Interpreters.TurtleInterpreter]{TurtleInterpreter}
+		(accepts array)
+		\item[initialAngle] of \hyperref[Malsys.Processing.Components.Interpreters.TurtleInterpreter]{TurtleInterpreter}
+		(accepts value)
+			-- Initial angle (in degrees) in 2D mode (angle in plane given by forward and up vectors).
+			\\ Expected value: Number representing angle in degrees.
+			\\ Default value: 0
+		\item[initialLineWidth] of \hyperref[Malsys.Processing.Components.Interpreters.TurtleInterpreter]{TurtleInterpreter}
+		(accepts value)
+			-- Initial width of drawn line.
+			\\ Expected value: Number representing width. Unit of value depends on used renderer.
+			\\ Default value: 2
+		\item[initialColor] of \hyperref[Malsys.Processing.Components.Interpreters.TurtleInterpreter]{TurtleInterpreter}
+		(accepts value or array)
+			-- Initial color of drawn line.
+			\\ Expected value: Number representing ARGB color (in range from 0 to 2\^32 - 1) or array of numbers (in range from 0.0 to 1.0) with length of 3 (RGB) or 4 (ARGB).
+			\\ Default value: 0 (black)
+		\item[continuousColoring] of \hyperref[Malsys.Processing.Components.Interpreters.TurtleInterpreter]{TurtleInterpreter}
+		(accepts value or array)
+			-- Continuous coloring gradient.
+            If enabled all colors will be ignored and given gradient (or default gradient of rainbow) will be used to continuously color all objects.
+			\\ Expected value: Boolean false disables continuous coloring, true uses default rainbow gradient to continuous coloring.
+            	Array representing color gradient can be also set (see documentation or examples for syntax).
+			\\ Default value: false
+		\item[reversePolygonOrder] of \hyperref[Malsys.Processing.Components.Interpreters.TurtleInterpreter]{TurtleInterpreter}
+		(accepts value)
+			-- Reverses order of drawn polygons from first-opened last-drawn to first-opened first-drawn.
+            This in only valid when 2D renderer is attached (in 3D is order insignificant).
+			\\ Expected value: true or false
+			\\ Default value: false
+		\item[tropismVector] of \hyperref[Malsys.Processing.Components.Interpreters.TurtleInterpreter]{TurtleInterpreter}
+		(accepts array)
+			-- Tropism vector affects drawn or moved lines to derive to tropism vector.
+			\\ Expected value: Array of 3 constants representing x, y and z coordinate.
+			\\ Default value: \{0, 1, 0\}
+		\item[tropismCoefficient] of \hyperref[Malsys.Processing.Components.Interpreters.TurtleInterpreter]{TurtleInterpreter}
+		(accepts value)
+			-- Tropism coefficient affects speed of derivation to tropism vector.
+			\\ Expected value: Number.
+			\\ Default value: 0
+		\item[margin] of \hyperref[Malsys.Processing.Components.Renderers.SvgRenderer2D]{SvgRenderer2D}
+		(accepts value or array)
+			-- Margin of result image.
+			\\ Expected value: One number (or array with one number) for all margins, array of two numbers for vertical and horizontal margins
+            or array of four numbers as top, right, bottom and left margin respectively.
+			\\ Default value: 2
+		\item[canvasOriginSize] of \hyperref[Malsys.Processing.Components.Renderers.SvgRenderer2D]{SvgRenderer2D}
+		(accepts array)
+			-- When set it overrides measured dimensions of image and uses given values.
+			\\ Expected value: Four numbers representing x, y, width and height of canvas.
+			\\ Default value: none
+		\item[compressSvg] of \hyperref[Malsys.Processing.Components.Renderers.SvgRenderer2D]{SvgRenderer2D}
+		(accepts value)
+			-- If set to true result SBG image is compressed by GZip.
+            GZipped SVG images are standard and all programs supporting SVG should be able to open it.
+            GZipping SVG significantly reduces its size.
+			\\ Expected value: true or false
+			\\ Default value: true
+		\item[scale] of \hyperref[Malsys.Processing.Components.Renderers.SvgRenderer2D]{SvgRenderer2D}
+		(accepts value)
+			-- Scale of result image.
+			\\ Expected value: Positive number.
+			\\ Default value: 1
+		\item[lineCap] of \hyperref[Malsys.Processing.Components.Renderers.SvgRenderer2D]{SvgRenderer2D}
+		(accepts value)
+			-- Cap of each rendered line.
+			\\ Expected value: 0 for no caps, 1 for square caps, 2 for round caps
+			\\ Default value: 2 (round caps)
+	\end{description*}
+	\paragraph{Settable symbol properties}\textcolor{gray}{of SvgRenderer}
+	\begin{description*}
+		\item[axiom] of \hyperref[Malsys.Processing.Components.Common.AxiomProvider]{AxiomProvider}
+			-- Storage for axiom.
+            Value is provided to connected component.
+		\item[Symbols] of \hyperref[Malsys.Processing.Components.Common.AxiomProvider]{AxiomProvider}
+			-- Symbol string which is provided.
+		\item[contextIgnore] of \hyperref[Malsys.Processing.Components.Rewriters.SymbolRewriter]{SymbolRewriter}
+			-- List of symbols which are ignored in context checking.
+		\item[startBranchSymbols] of \hyperref[Malsys.Processing.Components.Rewriters.SymbolRewriter]{SymbolRewriter}
+			-- List of symbols which are indicating start of branch.
+            This symbols should be identical to symbols which are interpreted as start branch.
+		\item[endBranchSymbols] of \hyperref[Malsys.Processing.Components.Rewriters.SymbolRewriter]{SymbolRewriter}
+			-- List of symbols which are indicating end of branch.
+            This symbols should be identical to symbols which are interpreted as end branch.
+	\end{description*}
+	\paragraph{Connectable properties}\textcolor{gray}{of SvgRenderer}
+	\begin{description*}
+		\item[SymbolProvider] of \hyperref[Malsys.Processing.Components.Rewriters.SymbolRewriter]{SymbolRewriter}
+		(connectable type: \hyperref[Malsys.Processing.Components.ISymbolProvider]{ISymbolProvider})
+		\item[SymbolProvider] of \hyperref[Malsys.Processing.Components.RewriterIterators.MemoryBufferedIterator]{MemoryBufferedIterator}
+		(connectable type: \hyperref[Malsys.Processing.Components.ISymbolProvider]{ISymbolProvider})
+			-- Iterator iterates symbols by reading all symbols from SymbolProvider every iteration.
+            Rewriter should be connected as SymbolProvider and rewriters's SymbolProvider should be this Iterator.
+            This setup creates loop and iterator rewrites string of symbols every iteration.
+		\item[AxiomProvider] of \hyperref[Malsys.Processing.Components.RewriterIterators.MemoryBufferedIterator]{MemoryBufferedIterator}
+		(connectable type: \hyperref[Malsys.Processing.Components.ISymbolProvider]{ISymbolProvider})
+			-- Axiom provider component provides initial string of symbols.
+            All symbols are read at begin of processing.
+		\item[OutputProcessor] of \hyperref[Malsys.Processing.Components.RewriterIterators.MemoryBufferedIterator]{MemoryBufferedIterator}
+		(connectable type: \hyperref[Malsys.Processing.Components.ISymbolProcessor]{ISymbolProcessor})
+			-- Result string of symbols is sent to connected output processor.
+            It should be InterpretrCaller who calls Interpreter and interprets symbols.
+		\item[RandomGeneratorProvider] of \hyperref[Malsys.Processing.Components.RewriterIterators.MemoryBufferedIterator]{MemoryBufferedIterator}
+ \textit{optional} 		(connectable type: \hyperref[Malsys.Processing.Components.Common.RandomGeneratorProvider]{RandomGeneratorProvider})
+			-- Connected RandomGeneratorProvider's random generator is rested after each iteration
+            if iterator is configured to do that (ResetRandomAfterEachIteration property is set to true).
+		\item[LsystemInLsystemProcessor] of \hyperref[Malsys.Processing.Components.Interpreters.InterpreterCaller]{InterpreterCaller}
+ \textit{optional} 		(connectable type: \hyperref[Malsys.Processing.Components.Common.ILsystemInLsystemProcessor]{ILsystemInLsystemProcessor})
+			-- Specialized component to allow interpret L-system symbol as another L-system.
+		\item[Renderer] of \hyperref[Malsys.Processing.Components.Interpreters.TurtleInterpreter]{TurtleInterpreter}
+		(connectable type: \hyperref[Malsys.Processing.Components.IRenderer]{IRenderer})
+			-- All render events will be called on connected renderer.
+            Both IRenderer2D or IRenderer3D can be connected.
+	\end{description*}
+	\paragraph{Callable functions}\textcolor{gray}{of SvgRenderer}
+	\begin{description*}
+		\item[random] of \hyperref[Malsys.Processing.Components.Common.RandomGeneratorProvider]{RandomGeneratorProvider}
+		(returns value)
+			-- Returns random value from 0.0 (inclusive) to 1.0 (exclusive).
+		\\ Parameters: 0
+		\item[random] of \hyperref[Malsys.Processing.Components.Common.RandomGeneratorProvider]{RandomGeneratorProvider}
+		(returns value)
+			-- Returns random value within specified range.
+		\\ Parameters: 2
+			\begin{enumerate*}
+				\item The inclusive lower bound of the random number returned.
+				\item             The exclusive upper bound of the random number returned.
+			\end{enumerate*}
+	\end{description*}
+	\paragraph{Interpretation methods}\textcolor{gray}{of SvgRenderer}
+	\begin{description*}
+		\item[Nothing] of \hyperref[Malsys.Processing.Components.Interpreters.TurtleInterpreter]{TurtleInterpreter}
+			-- Symbol is ignored.
+		\\ Parameters: 0 
+		\item[MoveForward] of \hyperref[Malsys.Processing.Components.Interpreters.TurtleInterpreter]{TurtleInterpreter}
+			-- Moves forward in current direction (without drawing) by distance equal to value of the first parameter.
+		\\ Parameters: 1  (1 mandatory) 
+			\begin{enumerate*}
+				\item
+Moved distance. (\textit{mandatory}) 			\end{enumerate*}
+		\item[DrawForward] of \hyperref[Malsys.Processing.Components.Interpreters.TurtleInterpreter]{TurtleInterpreter}
+			-- Draws line in current direction with length equal to value of first parameter.
+		\\ Parameters: 4  (1 mandatory) 
+			\begin{enumerate*}
+				\item
+Length of line. (\textit{mandatory}) 				\item
+            Width of line.				\item
+            Color of line. Can be ARGB number in range from 0 to 2\^32 - 1 or array with 3 (RGB) or 4 (ARGB) items in range from 0.0 to 1.0.				\item
+            Quality of rendered line in 3D.			\end{enumerate*}
+		\item[DrawCircle] of \hyperref[Malsys.Processing.Components.Interpreters.TurtleInterpreter]{TurtleInterpreter}
+			-- Draws circle with center in current position and radius equal to value of the first parameter.
+		\\ Parameters: 2  (1 mandatory) 
+			\begin{enumerate*}
+				\item
+Radius of circle. (\textit{mandatory}) 				\item
+            Color of circle.			\end{enumerate*}
+		\item[DrawSphere] of \hyperref[Malsys.Processing.Components.Interpreters.TurtleInterpreter]{TurtleInterpreter}
+			-- Draws sphere with center in current position and radius equal to value of the first parameter.
+		\\ Parameters: 3  (1 mandatory) 
+			\begin{enumerate*}
+				\item
+Radius of sphere. (\textit{mandatory}) 				\item
+            Color of sphere.				\item
+            Quality of sphere (number of triangles).			\end{enumerate*}
+		\item[TurnLeft] of \hyperref[Malsys.Processing.Components.Interpreters.TurtleInterpreter]{TurtleInterpreter}
+			-- Turns left by value of the first parameter (in degrees) (in X-Y plane, around axis Z).
+		\\ Parameters: 1  (0 mandatory) 
+			\begin{enumerate*}
+				\item
+Angle in degrees.			\end{enumerate*}
+		\item[Yaw] of \hyperref[Malsys.Processing.Components.Interpreters.TurtleInterpreter]{TurtleInterpreter}
+			-- Turns left around up vector axis (default Y axis [0, 1, 0]) by value given in the first parameter (in degrees).
+		\\ Parameters: 1  (0 mandatory) 
+			\begin{enumerate*}
+				\item
+Angle in degrees.			\end{enumerate*}
+		\item[Pitch] of \hyperref[Malsys.Processing.Components.Interpreters.TurtleInterpreter]{TurtleInterpreter}
+			-- Turns up around right-hand vector axis (default Z axis [0, 0, 1]) by value given in the first parameter (in degrees).
+		\\ Parameters: 1  (0 mandatory) 
+			\begin{enumerate*}
+				\item
+Angle in degrees.			\end{enumerate*}
+		\item[Roll] of \hyperref[Malsys.Processing.Components.Interpreters.TurtleInterpreter]{TurtleInterpreter}
+			-- Rolls clock-wise around forward vector axis (default X axis [1, 0, 0]) by value given in the first parameter (in degrees).
+		\\ Parameters: 1  (0 mandatory) 
+			\begin{enumerate*}
+				\item
+Angle in degrees.			\end{enumerate*}
+		\item[StartBranch] of \hyperref[Malsys.Processing.Components.Interpreters.TurtleInterpreter]{TurtleInterpreter}
+			-- Saves current state (on stack).
+		\\ Parameters: 0 
+		\item[EndBranch] of \hyperref[Malsys.Processing.Components.Interpreters.TurtleInterpreter]{TurtleInterpreter}
+			-- Loads previously saved state (returns to last saved position).
+		\\ Parameters: 0 
+		\item[StartPolygon] of \hyperref[Malsys.Processing.Components.Interpreters.TurtleInterpreter]{TurtleInterpreter}
+			-- Starts to record polygon vertices (do not saves current position as first vertex).
+            If another polygon is opened, its state is saved and will be restored after closing of current polygon.
+		\\ Parameters: 3  (0 mandatory) 
+			\begin{enumerate*}
+				\item
+Color of polygon.				\item
+            Stroke width.				\item
+            Stroke color.			\end{enumerate*}
+		\item[RecordPolygonVertex] of \hyperref[Malsys.Processing.Components.Interpreters.TurtleInterpreter]{TurtleInterpreter}
+			-- Records current position to opened polygon.
+		\\ Parameters: 0 
+		\item[EndPolygon] of \hyperref[Malsys.Processing.Components.Interpreters.TurtleInterpreter]{TurtleInterpreter}
+			-- Ends current polygon (do not saves current position as last vertex).
+		\\ Parameters: 0 
+	\end{description*}

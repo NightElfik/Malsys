@@ -1,0 +1,163 @@
+﻿@**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ *@
+@model ConfigurationModel
+@using Malsys.SemanticModel.Evaluated;
+
+@{
+var config = Model.ProcessConfiguration;
+var reolver = Model.ComponentMetadataResolver;
+
+@:\subsection{@config.Name}
+@:\label{@config.Name}
+
+if (config.Components.Length > 0) {
+	@:\paragraph{Components}
+	@:\begin{description*}
+	foreach (var comp in config.Components) {
+		var type = reolver.ResolveComponentMetadata(comp.TypeName).ComponentType;
+		@:\item[@comp.Name] \hyperref[@type.FullName]{@type.Name}
+	}
+	@:\end{description*}
+}
+
+if (config.Containers.Length > 0) {
+	@:\paragraph{Containers}
+	@:\begin{description*}
+	foreach (var cont in config.Containers) {
+		var type = reolver.ResolveComponentMetadata(cont.TypeName).ComponentType;
+		var defType = reolver.ResolveComponentMetadata(cont.DefaultTypeName).ComponentType;
+		@:\item[@cont.Name] \hyperref[@type.FullName]{@type.Name} (default \hyperref[@defType.FullName]{@defType.Name})
+	}
+	@:\end{description*}
+}
+
+
+if (config.Connections.Length > 0) {
+	@:\paragraph{Connections}
+	@:\begin{itemize*}
+	foreach (var conn in config.Connections) {
+		@:\item @conn.SourceName \textbf{to} @conn.TargetName.@conn.TargetInputName
+		if (conn.IsVirtual) { <text>\textit{virtual}</text> }
+	}
+	@:\end{itemize*}
+}
+
+if (Model.GettableProperties.Count > 0) {
+	@:\paragraph{Gettable properties}\textcolor{gray}{of @config.Name}
+	@:\begin{description*}
+	foreach (var metaGettPropKvp in Model.GettableProperties) {
+		var prop = metaGettPropKvp.Value;
+		@:\item[@string.Join(", ", prop.Names)] of \hyperref[@metaGettPropKvp.Key.ComponentType.FullName]{@metaGettPropKvp.Key.ComponentType.Name}
+		if (!prop.IsGettableBeforeInitialiation) { <text>\textit{run-time only}</text> }
+		@:(returns @prop.ExpressionValueType.ToTypeString())
+		if (!string.IsNullOrEmpty(prop.SummaryDoc)) {
+			@:-- @LatexHelper.Print(prop.SummaryDoc)
+		}
+	}
+	@:\end{description*}
+}
+
+if (Model.SettableProperties.Count > 0) {
+	@:\paragraph{Settable properties}\textcolor{gray}{of @config.Name}
+	@:\begin{description*}
+	foreach (var metaSettPropKvp in Model.SettableProperties) {
+		var prop = metaSettPropKvp.Value;
+		@:\item[@string.Join(", ", prop.Names)] of \hyperref[@metaSettPropKvp.Key.ComponentType.FullName]{@metaSettPropKvp.Key.ComponentType.Name}
+		if (prop.IsMandatory) { <text>\textit{mandatory}</text> }
+		@:(accepts @prop.ExpressionValueType.ToTypeString())
+		if (!string.IsNullOrEmpty(prop.SummaryDoc)) {
+			@:-- @LatexHelper.Print(prop.SummaryDoc)
+		}
+		if (!string.IsNullOrEmpty(prop.ExpectedValueDoc)) {
+			@:\\ Expected value: @LatexHelper.Print(prop.ExpectedValueDoc)
+		}
+		if (!string.IsNullOrEmpty(prop.DefaultValueDoc)) {
+			@:\\ Default value: @LatexHelper.Print(prop.DefaultValueDoc)
+		}
+	}
+	@:\end{description*}
+}
+
+if (Model.SettableSymbolProperties.Count > 0) {
+	@:\paragraph{Settable symbol properties}\textcolor{gray}{of @config.Name}
+	@:\begin{description*}
+	foreach (var metaSettPropKvp in Model.SettableSymbolProperties) {
+		var prop = metaSettPropKvp.Value;
+		@:\item[@string.Join(", ", prop.Names)] of \hyperref[@metaSettPropKvp.Key.ComponentType.FullName]{@metaSettPropKvp.Key.ComponentType.Name}
+		if (prop.IsMandatory) { <text>\textit{mandatory}</text> }
+		if (!string.IsNullOrEmpty(prop.SummaryDoc)) {
+			@:-- @LatexHelper.Print(prop.SummaryDoc)
+		}
+	}
+	@:\end{description*}
+}
+
+if (Model.ConnectableProperties.Count > 0) {
+	@:\paragraph{Connectable properties}\textcolor{gray}{of @config.Name}
+	@:\begin{description*}
+	foreach (var metaConnPropKvp in Model.ConnectableProperties) {
+		var prop = metaConnPropKvp.Value;
+		@:\item[@string.Join(", ", prop.Names)] of \hyperref[@metaConnPropKvp.Key.ComponentType.FullName]{@metaConnPropKvp.Key.ComponentType.Name}
+		if (prop.IsOptional) { <text>\textit{optional}</text> }
+		if (prop.AllowMultiple) { <text>\textit{allowed multiple}</text> }
+		@:(connectable type: \hyperref[@prop.PropertyType.FullName]{@prop.PropertyType.Name})
+		if (!string.IsNullOrEmpty(prop.SummaryDoc)) {
+			@:-- @LatexHelper.Print(prop.SummaryDoc)
+		}
+	}
+	@:\end{description*}
+}
+
+if (Model.CallableFunctions.Count > 0) {
+	@:\paragraph{Callable functions}\textcolor{gray}{of @config.Name}
+	@:\begin{description*}
+	foreach (var metaFunKvp in Model.CallableFunctions) {
+		var fun = metaFunKvp.Value;
+		@:\item[@string.Join(", ", fun.Names)] of \hyperref[@metaFunKvp.Key.ComponentType.FullName]{@metaFunKvp.Key.ComponentType.Name}
+		if (!fun.IsGettableBeforeInitialiation) { <text>\textit{run-time only}</text> }
+		@:(returns @fun.ExpressionValueReturnType.ToTypeString())
+		if (!string.IsNullOrEmpty(fun.SummaryDoc)) {
+			@:-- @LatexHelper.Print(fun.SummaryDoc)
+		}
+
+		@:\\ Parameters: @fun.ParamsCount
+		if (fun.ParamsCount > 0) {
+			var paramsDoc = fun.ParamsDoc.SplitToLines().ToList();
+			@:\begin{enumerate*}
+			for (int i = 0; i < fun.ParamsCount; i++) {
+				@:\item @if (i < paramsDoc.Count) { @LatexHelper.Print(paramsDoc[i]) }
+			}
+			@:\end{enumerate*}
+		}
+	}
+	@:\end{description*}
+}
+
+if (Model.InterpretationMethods.Count > 0) {
+	@:\paragraph{Interpretation methods}\textcolor{gray}{of @config.Name}
+	@:\begin{description*}
+	foreach (var metaIntMethonKvp in Model.InterpretationMethods) {
+		var intMethod = metaIntMethonKvp.Value;
+		@:\item[@string.Join(", ", intMethod.Names)] of \hyperref[@metaIntMethonKvp.Key.ComponentType.FullName]{@metaIntMethonKvp.Key.ComponentType.Name}
+		if (!string.IsNullOrEmpty(intMethod.SummaryDoc)) {
+			@:-- @LatexHelper.Print(intMethod.SummaryDoc)
+		}
+
+		@:\\ Parameters: @intMethod.ParamsCount @if(intMethod.ParamsCount != 0) { <text>(@intMethod.MandatoryParamsCount mandatory)</text> }
+		if (intMethod.ParamsCount > 0) {
+			var paramsDoc = intMethod.ParamsDoc.SplitToLines().ToList();
+			@:\begin{enumerate*}
+			for (int i = 0; i < intMethod.ParamsCount; i++) {
+				@:\item
+				if (i < paramsDoc.Count) { @LatexHelper.Print(paramsDoc[i]) }
+				if (i < intMethod.MandatoryParamsCount) { <text>(\textit{mandatory})</text> }
+			}
+			@:\end{enumerate*}
+		}
+	}
+	@:\end{description*}
+}
+
+}

@@ -40,7 +40,7 @@
 %\defaultfontfeatures{Mapping=tex-text}
 %\setmonofont{Consolas}
 %\usepackage{xunicode}
-%\usepackage{xltxtra}
+\usepackage{xltxtra}  %\XeLaTeX
 
 \usepackage[intoc,refpage]{nomencl}
 \renewcommand{\nomname}{List of Abbreviations}
@@ -53,6 +53,8 @@
 
 \usepackage{subfig}
 \newcommand{\subfigureautorefname}{\figureautorefname}
+
+\usepackage{paralist}  % \begin{inparaenum} -- inline lists
 
 \usepackage{wrapfig}
 \usepackage{graphicx}
@@ -201,15 +203,21 @@
 %introduction,
 %lsystems,
 %design,
-implementation,
+%implementation,
 %results,
 %conclusion,
+%apx-attachedCd,
+%apx-aboutFigures,
+%apx-userDoc,
+%apx-componentCreation,
+apx-publish,
 %apx-stdLib,
 %apx-3rdParty,
-%apx-userDoc,
+%apx-components,
+%apx-configurations,
 }
-\else
 \fi
+
 
 %==============================================================================================================================
 %==============================================================================================================================
@@ -217,6 +225,10 @@ implementation,
 \begin{document}
 
 \include{frontpage}
+\clearpage
+~
+\vfill
+\hfill Typesetting by \XeLaTeX
 
 \openright
 \setcounter{page}{1}  % to avoid placing animation in the corner
@@ -261,12 +273,16 @@ implementation,
 \include{apx-attachedCd}
 \include{apx-aboutFigures}
 \include{apx-userDoc}
+\include{apx-componentCreation}
+\include{apx-publish}
 \include{apx-3rdParty}
 \include{apx-inputSyntax}
 \include{apx-stdLib}
 \include{apx-components}
+\include{apx-configurations}
 
 \end{appendices}
+
 
 
 \end{document}

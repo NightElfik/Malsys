@@ -8,6 +8,7 @@
 \definecolor{clr_doc}{rgb}{0.3,0.3,0.3}
 \definecolor{clr_class}{rgb}{0.17,0.57,0.69}
 \definecolor{clr_string}{rgb}{0.64,0.08,0.08}
+\definecolor{clr_tag}{rgb}{0.5,0,0.5}
 
 
 \newenvironment{btHighlight}[1][]
@@ -37,18 +38,23 @@
 		break,finally,out,true,byte,fixed,override,try,case,float,params,typeof,catch,for,get,private,uint,char,foreach,protected,ulong,
 		checked,goto,public,unchecked,class,if,readonly,unsafe,const,implicit,ref,ushort,continue,in,return,using,
 		decimal,int,sbyte,set,virtual,default,interface,sealed,volatile,delegate,internal,short,void,do,is,sizeof,while,
-		double,lock,stackalloc,else,long,static,enum,namespace,string,var},
+		double,lock,stackalloc,else,long,static,enum,namespace,string,
+		var,value},
 	keywordstyle=\color{clr_keyword},
 	classoffset=1,  % new class offset
 	morekeywords={ArgumentException,ArgumentNullException,Contract,List,IList,Point3D,Polygon3DTriangulerParameters,ICompiler,IExpressionCompiler,
 		Expression,IExpression,IMessageLogger,ExpressionCompiler,ConstantDefinition,IConstantDefinitionCompiler,ConstantDefCompiler,CompilersContainer,
 		IContainer,InputCompiler,IInputCompiler,ICompilersContainer,IEvaluatorsContainer,ProcessManager,InputBlockEvaled,IOutputProvider,IComponentMetadataResolver,
-		TimeSpan,IComponent,ProcessContext,AxiomProvider,SymbolProvider,SymbolInterpretation,ArgsStorage,Quaternion,Vector3D},
+		TimeSpan,IComponent,ProcessContext,AxiomProvider,SymbolProvider,SymbolInterpretation,ArgsStorage,Quaternion,Vector3D,UrlParameter,
+		GalleryController,Controller,ActionResult,DependencyResolver,IDependencyResolver,ContainerBuilder,MvcApplication,StandardDateTimeProvider,
+		IDateTimeProvider,Sha512PasswordHasher,IPasswordHasher,MalsysDb,IUsersDb,IInputDb,IFeedbackDb,AutofacDependencyResolver,MVC,OutputCache,
+		PredefinedController,HttpContext,ErrorSignal,Exception,SymbolFilter,ISymbolProcessor,NotImplementedException,UserConnectable,Symbol,IValue,
+		HashSet,AccessName,ImmutableList,UserSettableSybols,Constant,MessageType},
 	keywordstyle=\color{clr_class},
 	classoffset=0,  % restore default class offset
 	sensitive=true,
 	comment=[s]{/*}{*/},
-	morecomment=[l][\color{clr_doc}]{//},
+	morecomment=[l]{//},
 	commentstyle=\color{clr_comment}\itshape,
 	morecomment=[l][\color{clr_doc}]{///},
 	string=[b]",
@@ -74,6 +80,103 @@
 {\endminipage}
 
 \lstnewenvironment{CsharpBreak}[1][]{\lstset{language=Csharp,#1}}{}
+
+
+\lstdefinelanguage{Razor}{
+	basicstyle=\ttfamily\consolas\scriptsize,
+	literate={@}{{{\btHL[fill=yellow!30]@}}}1,
+	keywords={var,foreach,in,if,model},
+	keywordstyle=\color{clr_keyword},
+	classoffset=1,  % new class offset
+	morekeywords={InputDetail,MVC,Links},
+	keywordstyle=\color{clr_class},
+	classoffset=0,  % restore default class offset
+	sensitive=true,
+	comment=[s]{/*}{*/},
+	morecomment=[l][\color{clr_doc}]{//},
+	commentstyle=\color{clr_comment}\itshape,
+	morecomment=[s][\color{clr_tag}]{<}{>},
+	string=[b]",
+	stringstyle=\color{clr_string},
+	extendedchars=true,
+	tabsize=4,
+	framexleftmargin=4pt,
+	frame=lines,
+	captionpos=t,
+	backgroundcolor=\color{clr_code_bg},
+	captionpos=b,
+	showstringspaces=false
+}
+
+\lstnewenvironment{Razor}[1][]%
+{ % http://tex.stackexchange.com/questions/10141/how-to-prevent-lstlisting-from-splitting-code-between-pages
+	\noindent
+	\minipage{\linewidth}%
+	\vspace{0.5\baselineskip}
+	\lstset{language=Razor,#1}
+}
+{\endminipage}
+
+
+\lstdefinelanguage{Css}{
+	basicstyle=\ttfamily\consolas\scriptsize,
+	alsoletter=-@,
+	keywords={box-shadow,-moz-box-shadow,-webkit-box-shadow,min-width,margin,float,font-size},
+	keywordstyle=\color{clr_string},
+	classoffset=1,  % new class offset
+	morekeywords={@themeColor,@baseWidth,@x,@y,@blur,@spread,@color},
+	keywordstyle=\color{clr_keyword},
+	classoffset=0,  % restore default class offset
+	sensitive=true,
+	comment=[s]{/*}{*/},
+	extendedchars=true,
+	tabsize=4,
+	framexleftmargin=4pt,
+	frame=lines,
+	captionpos=t,
+	backgroundcolor=\color{clr_code_bg},
+	captionpos=b,
+	showstringspaces=false
+}
+
+\lstnewenvironment{Css}[1][]%
+{ % http://tex.stackexchange.com/questions/10141/how-to-prevent-lstlisting-from-splitting-code-between-pages
+	\noindent
+	\minipage{\linewidth}%
+	\vspace{0.5\baselineskip}
+	\lstset{language=Css,#1}
+}
+{\endminipage}
+
+
+\lstdefinelanguage{XML}{
+	basicstyle=\ttfamily\consolas\scriptsize,
+	keywords={},
+	keywordstyle=\color{clr_keyword},
+	sensitive=true,
+	comment=[s]{<!--}{-->},
+	commentstyle=\color{clr_comment}\itshape,
+	%morecomment=[s][\color{clr_tag}]{<}{>},
+	string=[b]",
+	stringstyle=\color{clr_string},
+	extendedchars=true,
+	tabsize=4,
+	framexleftmargin=4pt,
+	frame=lines,
+	captionpos=t,
+	backgroundcolor=\color{clr_code_bg},
+	captionpos=b,
+	showstringspaces=false
+}
+
+\lstnewenvironment{XML}[1][]%
+{ % http://tex.stackexchange.com/questions/10141/how-to-prevent-lstlisting-from-splitting-code-between-pages
+	\noindent
+	\minipage{\linewidth}%
+	\vspace{0.5\baselineskip}
+	\lstset{language=XML,#1}
+}
+{\endminipage}
 
 
 \lstdefinelanguage{Lsystem}{
@@ -112,6 +215,15 @@
 { % http://tex.stackexchange.com/questions/10141/how-to-prevent-lstlisting-from-splitting-code-between-pages
 	\noindent
 	\minipage{0.49\linewidth}%
+	\vspace{0.5\baselineskip}
+	\lstset{language=Lsystem,#1}
+}
+{\endminipage}
+
+\lstnewenvironment{Lsystem60}[1][]%
+{ % http://tex.stackexchange.com/questions/10141/how-to-prevent-lstlisting-from-splitting-code-between-pages
+	\noindent
+	\minipage{0.59\linewidth}%
 	\vspace{0.5\baselineskip}
 	\lstset{language=Lsystem,#1}
 }

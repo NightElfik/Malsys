@@ -1,0 +1,24 @@
+lsystem Spiral3D extends Polygons {
+
+	set symbols axiom = <(#EEEEEE) . K  X + F . K + Y >;
+	set iterations = 20;
+	set polygonTriangulationStrategy = maxDistanceFromNonTriangulated;
+	set cameraPosition = {-72, 75, -108};
+	set cameraUpVector = {-0.69, 0.51, -0.51};
+	set cameraTarget = {22, 59, -31};
+
+
+	interpret F as DrawForward(16, 1, #777777);
+	interpret K as DrawSphere(2, #AAAAAA);
+
+	interpret + as Yaw(60);
+	interpret - as Yaw(-60);
+
+	interpret ^ as Pitch(10);
+	interpret & as Pitch(-10);
+
+	rewrite X to ^ F F . K & + X;
+	rewrite Y to & & F . K ^ ^ - Y;
+}
+
+process all with ThreeJsRenderer;
