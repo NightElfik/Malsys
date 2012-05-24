@@ -1,24 +1,25 @@
 
 \section{\lsystem processing library}
-%!!!!!!!!!!!!!
-Main design goal of \lsystem processing library is simple extensibility.
-It should be possible to alter processing of \lsystem without need of changing whole process system.
-This behavior is achieved by modular design -- input is processed with set of connected components.
-Each component is specialized for one activity for example symbol rewriting or rendering of image.
-Both components and connections are definable by user.
+\label{sec:design-library}
 
-Component-based modular system have many advantages over monolithic system.
-Probably the biggest and already discussed advantage is easy extensibility.
-It is simple to implement extension component and include it into system.
-Also it is possible to improve existing components and extend system capabilities.
-Simple illustration of component system extension is shown in \autoref{fig:extensionExample}.
-The first system (\ref{fig:extensionExampleBase}) was extended by gravity simulation component to the second system (\ref{fig:extensionExampleExtended}).
-Possible results are in \autoref{fig:extensionExampleResult}.
+The main design goal of the \lsystem processing library was that it should be simple to extend.
+It should be possible to alter the processing of an \lsystem without needing to change the whole processing system.
+This behavior is achieved by its modular design -- input is processed within a set of connected components.
+Each component is specialized for one particular activity: for example, symbol rewriting or the rendering of an image.
+Both components and connections are definable by the user.
 
-Another advantage lies in specialization of components.
-Specialized components are easier to implement and result will likely have less bugs.
-Specialization also helps system robustness because individual components can be tested separately.
-Tests for single component are easier to write and they can test situations which can not be tested on whole system.
+A component-based modular system has many advantages over a monolithic system.
+Probably the biggest advantage, one already discussed, is its ease of extensibility.
+It is simple to implement the extension of a component and include it into the system.
+It is also possible to improve existing components and extend system capabilities.
+A simple illustration of how this component system extension works is shown in \autoref{fig:extensionExample}.
+The first system (Fig. \ref{fig:extensionExampleBase}) was extended by a gravity simulation component being added to give the second system (Fig. \ref{fig:extensionExampleExtended}).
+The possible results are shown in \autoref{fig:extensionExampleResult}.
+
+Another advantage lies the in specialization of its components.
+Specialized components are easier to implement and the outcome will most likely have less bugs.
+Specialization also helps to make a system more robust because individual components can be tested separately.
+Tests for a single component are easier to write and they can test situations which cannot be tested for on the whole system.
 
 \begin{figure}[h]
 	\centering
@@ -51,7 +52,7 @@ Tests for single component are easier to write and they can test situations whic
 		\end{tikzpicture}
 		\label{fig:extensionExampleExtended}
 	}
-	\caption{Example of extension of component-based \lsystem processing system}
+	\caption{The extension of component-based processing system}
 	\label{fig:extensionExample}
 \end{figure}
 
@@ -71,36 +72,34 @@ Tests for single component are easier to write and they can test situations whic
 
 \subsection{Input form}
 
-Input is important part of application.
-\lsystems have no standardized input for example like programming languages.
-Every implementation of \lsystem processor uses its own variant of input.
+Input is an important part of an application.
+\lsystems have no standardized input: for example, like programming languages.
+Every implementation of an \lsystem processor uses its own variant of the input.
 
-Main goals for input design are simplicity and universality.
-With simple input there is lower barrier for new user to start using the application.
-Complicated input might discourage many potential users.
-Universal input means that \textit{everything} is possible to define by input including definitions of \lsystems, configuration of components, etc.
+The main goals for input design are simplicity and universality.
+With simple input there is lower threshold for a new user to start using an application.
+Complicated input might well discourage many potential users.
+Universal input means that \textit{everything} is possible to define by input, including definitions of \lsystems, configuration of components, etc.
 
-Generally there are two basic types of input, graphic interface and source code.
-Source code was chosen as input because it is better for saving, sharing and versioning.
-Statements can be easily commented thus ideas behind code can be saved with it.
-Parts of code can be copy-pasted and the syntax can be extended.
-Parsing of source code is quite complex but input interface can be just one text area.
+Generally there are two basic types of input, the graphic interface and source code.
+Source code was chosen to be he input because it is better for saving, sharing and versioning.
+Statements can be easily commented upon, thus the ideas behind the code can be saved with it.
+Parts of the code can be copy-pasted and the syntax can be extended.
+Parsing of source code is quite complex but the input interface can be just one text area.
 
-To achieve good readability of input source code the syntax will be rich on keywords.
+To achieve good readability of input source code the syntax will have to be rich in keywords.
 This should ensure that even new users will understand the statements.
-With source code input it is still possible to create second type of input -- the graphic interface.
-It can be achieved by source code designers but this will be left as future extension.
+With source code input it is still possible to create a second type of input -- the graphic interface.
+This can be achieved by source code designers but this will be left to a future extension.
 
 
 \subsection{Input syntax}
 
 Everything can be described by input.
-By everything is meant \lsystem definitions, configuration of components, definitions of component systems, what \lsystem process with what component system etc.
+By everything is meant \lsystem definitions, configuration of components, definitions of component systems, which \lsystem to process with which component system etc.
 This is important for easy saving and sharing.
 
-Following list describes concrete entities which are possible to describe with source code.
-Full reference of input syntax is in appendix \ref{chap:syntax}.
-Small example of input source code together with the result is shown in \autoref{fig:scExample}.
+The following list describes concrete entities which are possible to describe with source code.
 
 \begin{itemize*}
 	\item Global constant
@@ -109,23 +108,26 @@ Small example of input source code together with the result is shown in \autoref
 		\begin{itemize*}
 			\item Local constant
 			\item Local function
-			\item Component property assign
-			\item Component symbol property assign
+			\item Component property assignment
+			\item Component symbol property assignment
 			\item Symbol interpretation -- defined interpretation for one or more \lsystem symbols
 			\item Rewrite rule
 		\end{itemize*}
 	\item Process configuration -- definition of component system
 		\begin{itemize*}
 			\item Component
-			\item Container -- components in container can be reassigned when \lsystem is processed by process configuration
-			\item Connection -- defines connection between two components
+			\item Container -- components in container a can be reassigned when an \lsystem is processed by process configuration
+			\item Connection -- defines the connection between two components
 		\end{itemize*}
-	\item Process statement -- defines processing of \lsystem with process configuration
+	\item Process statement -- defines processing of the \lsystem with process configuration
 		\begin{itemize*}
 			\item Container component reassign -- change of component in container
-			\item Additional \lsystem statements -- additional \lsystem statements which can alter processed \lsystem
+			\item Additional \lsystem statements -- additional \lsystem statements which can alter the processed \lsystem
 		\end{itemize*}
 \end{itemize*}
+
+A full reference of the input syntax is given in appendix \ref{chap:syntax}.
+A small example of input source code together with the result is shown in \autoref{fig:scExample}.
 
 \newsavebox{\lstBoxParams}
 \begin{lrbox}{\lstBoxParams}
@@ -163,22 +165,22 @@ process all with SvgRenderer;
 
 \subsubsection{Value types}
 
-\lsystem processing library allows to use two types of values for constants or for configuration of components.
-The first type is number and it is stored as floating point value with about 15 significant digits.
-Numbers can be specified in 5 formats:
+The \lsystem processing library allows to use two types of values for constants or for configuration of components.
+The first type is a \emph{number} and it is stored as floating point value with about 15 significant digits.
+The numbers can be specified in 5 formats:
 
 \begin{itemize*}
 	\item floating-point format like 24, -8.1, 2e-10, 3141.59e3,
-	\item binary format with prefix 0b like 0b100101, 0B0111011,
-	\item octal format with prefix 0o like 0o54607, 0o776,
-	\item hexadecimal format with prefix 0x like 0xFFBF00, 0x13a4F,
+	\item binary format with prefix \emph{0b} like 0b100101 or 0b0111011,
+	\item octal format with prefix \emph{0o} like 0o54607, 0o776,
+	\item hexadecimal format with prefix \emph{0x} like 0xFFBF00, 0x13a4F,
 	\item hexadecimal format with prefix \# like \#332211 (this is handy for colors).
 \end{itemize*}
 
-The second type is the array.
-Array can consists of both constants and arrays.
-Array is started and ended by brace and values are separated by comma.
-Syntax of array is illustrated if \autoref{lsys:arrays}.
+The second type is a \emph{array}.
+The elements in the array can be both the constants and the arrays.
+The array is started and ended by a brace and the values are separated by a comma.
+The syntax of the array is illustrated in \autoref{lsys:arrays}.
 
 \begin{Lsystem}[label=lsys:arrays,caption={Example of array syntax.}]
 let const = 0xAF + 1.2e1;
@@ -186,14 +188,61 @@ let array = {1, 2, {3.1, 3.2, 3.3}, const, 5, {}};
 \end{Lsystem}
 
 
+\subsubsection{\lsystem inheritance}
+
+The \lsystem can \emph{inherit} (extend) all features from some other L-system.
+This feature should minimize code repetition and allows to define base \lsystems in the standard library to simplify the work with \lsystems (see appendix \ref{sec:stdLibLsystems}).
+
+The pre-existing L-system is called \emph{base} or \emph{ancestor} and the new L-system is called \emph{derived} L-system or \emph{child} L-system.
+Inheritance L-system statements follows a simple rule: the derived L-system will redefine definitions of the base L-system.
+The result of \autoref{lsys:inherit} is \texttt{B B B B B A} (the first process statement) and \texttt{X X A} (the second process statement).
+
+\begin{Lsystem}[label=lsys:inherit,caption={Example \lsystems inheritance.}]
+lsystem BaseLsystem {
+	set symbols axiom = A;
+	set iterations = 5;
+	rewrite A to B A;
+}
+lsystem DerivedLsystem extends BaseLsystem {
+	set iterations = 2;
+	rewrite A to X A;
+}
+process BaseLsystem with SymbolPrinter;
+process DerivedLsystem with SymbolPrinter;
+\end{Lsystem}
+
+It is possible to inherit more than one L-system.
+Their statements are redefined in the same order as stated in the definition.
+The result of \autoref{lsys:inheritMore} is \texttt{Y Y A} (the first process statement) and \texttt{X X A} (the second process statement).
+
+\begin{Lsystem}[label=lsys:inheritMore,caption={Example of the array syntax.}]
+lsystem BaseLsystemX {
+	set symbols axiom = A;
+	set iterations = 5;
+	rewrite A to X A;
+}
+lsystem BaseLsystemY {
+	rewrite A to Y A;
+}
+lsystem DerivedLsystemXY extends BaseLsystemX, BaseLsystemY {
+	set iterations = 2;
+}
+lsystem DerivedLsystemYX extends BaseLsystemY, BaseLsystemX {
+	set iterations = 2;
+}
+process DerivedLsystemXY with SymbolPrinter;
+process DerivedLsystemYX with SymbolPrinter;
+\end{Lsystem}
+
 
 \subsection{Source code compilation}
+\nomenclature{AST}{abstract syntax tree}
 
-Source code compilation has two steps shown in \autoref{fig:compilePipeline}.
-The first step is parsing of source code to \emph{abstract syntax tree} (further called AST). \nomenclature{AST}{abstract syntax tree}
-Syntax parser will be generated by the \emph{FsYacc} parser generator (for details see \autoref{sec:parsingImplementaion}) which will guarantee robust and extensible syntax paring.
-Each node of AST will contain information about position in original source code.
-At this point AST can be used for syntax highlighting or source code formatting.
+Source code compilation has two steps as shown in \autoref{fig:compilePipeline}.
+The first step is parsing the of source code to the \emph{abstract syntax tree} (henceforth called AST).
+The syntax parser is generated by the \emph{FsYacc} parser generator which will guarantee a robust and extensible syntax paring (for details see \autoref{sec:parsingImplementaion}).
+Each node of the AST will contain information about its position in the original source code.
+At this point the AST can be used for syntax highlighting or source code formatting.
 
 \begin{figure}[h]
 	\centering
@@ -211,10 +260,10 @@ At this point AST can be used for syntax highlighting or source code formatting.
 	\label{fig:compilePipeline}
 \end{figure}
 
-Abstract syntax tree for \autoref{lsys:ast} is shown in \autoref{fig:ast}.
-You can see that expressions are not parsed as tree, they are placed in linear list under \emph{Expression} node.
-This is because operators (and their precedences) can be defined by user.
-Expressions will be parsed to expression tree by compiler in the next step.
+The abstract syntax tree (AST) for \autoref{lsys:ast} is shown in \autoref{fig:ast}.
+You can see that expressions are not parsed as a tree, they are placed in a linear list under the \emph{Expression} node.
+This is because operators (and their precedences) can be defined by the user, thus parser can not parse expressions where operator precedence is needed (like $2 + 3 * 4$).
+Expressions will be parsed to the expression tree by the compiler in the next step.
 
 \begin{Lsystem}[label=lsys:ast,caption={Constant definition statement for example of AST}]
 let angle = 90 + 5 * random();
@@ -250,11 +299,11 @@ let angle = 90 + 5 * random();
 	\label{fig:ast}
 \end{figure}
 
-The next step of source code processing is compilation of AST into \emph{semantic tree} (further called ST). \nomenclature{ST}{semantic tree}
-Unlike AST semantic tree contains only data (no keywords or metadata about position).
-However the nodes of semantic tree have reference to corresponding AST nodes to be possible to get the metadata for example for reporting locations of compilation errors.
-Semantic tree in \autoref{fig:st} is created by compiling AST in \autoref{fig:ast}.
-More complex semantic tree obtained from \autoref{lsys:stComplex} is shown in \autoref{fig:stComplex}.
+The next step of source code processing is compilation of the AST into the \emph{semantic tree} (henceforth called ST). \nomenclature{ST}{semantic tree}
+Unlike the AST the semantic tree contains only data (no keywords or metadata about position).
+However the nodes of the semantic tree have a reference to the corresponding AST nodes to make it possible to get the metadata, for example, for reporting the locations of compilation errors.
+The semantic tree in \autoref{fig:st} is created by compiling the AST in \autoref{fig:ast}.
+A more complex semantic tree obtained from \autoref{lsys:stComplex} is shown in \autoref{fig:stComplex}.
 
 \tikzstyle{st} = [draw, fill=blue!12, rectangle split, rectangle split parts=2, minimum height=2em]
 \tikzstyle{stx} = [draw, fill=blue!12, rectangle, minimum height=2em]
@@ -278,7 +327,7 @@ More complex semantic tree obtained from \autoref{lsys:stComplex} is shown in \a
 \end{figure}
 
 
-\begin{Lsystem}[label=lsys:stComplex,caption={This source code results in semantic tree in \autoref{fig:stComplex}}]
+\begin{Lsystem}[label=lsys:stComplex,caption={This source code results in the semantic tree shown in \autoref{fig:stComplex}}]
 let iterBase = 2;
 lsystem Octahedron {
 	set symbols axiom = F;
@@ -363,7 +412,7 @@ process all with SvgRenderer;
 			}
 			;
 	\end{tikzpicture}
-	\caption{More complex semantic tree of \autoref{lsys:stComplex}}
+	\caption{A more complex semantic tree of \autoref{lsys:stComplex}}
 	\label{fig:stComplex}
 \end{figure}
 
@@ -371,12 +420,12 @@ process all with SvgRenderer;
 \subsection{Input processing}
 \label{sec:inputProcessing}
 
-Evaluation of the input statements follows after compilation of the input.
-\emph{Process statements} which defines what \lsystem process with what component system are chosen from evaluated statements.
-Process manager will create appropriate component system, configure it and supply it all data needed for processing.
-Then the control over processing is handed to component system and results are produced.
-The processing of \lsystem is fully under control of component system.
-Described procedure is shown in \autoref{fig:processPipeline}.
+Evaluation of the ST follows after compilation of the input.
+\emph{Process statements} that define which \lsystem to process with which component system are chosen from the evaluated ST.
+The \emph{process manager}\footnote{The process manager is part of the \lsystem processing library responsible for the processing of the input.} creates the appropriate component system, configure it and supply it all the data needed for processing.
+Then the control over processing is handed to the component system and the results are produced.
+The processing of the \lsystem is fully under the control of the component system.
+The described procedure is shown in \autoref{fig:processPipeline}.
 
 \begin{figure}[H]
 	\centering
@@ -399,63 +448,51 @@ Described procedure is shown in \autoref{fig:processPipeline}.
 	\label{fig:processPipeline}
 \end{figure}
 
-All components will have access to \emph{process context}.
-Process context will contain all properties of processed \lsystem, current components graph, output provider and some other data which can be user in processing.
-Component can also provide values or functions to other components or to the user to use in input L-system (for example in rewrite rules or interpretation methods).  
+All components have access to \emph{process context}.
+Process context contains all the properties of the processed \lsystem, current components graph, output provider and some other data which can be used in processing.
+A component can also provide \emph{values} or \emph{functions} to other components or for use in the input L-system (for example, in the rewrite rules or interpretation methods).  
 
 
 \subsection{Components}
 \label{sec:components}
 
-Components are configurable using input.
-They have \emph{settable properties} to which can be set with values (numbers or arrays).
-Then \emph{settable symbol properties} to which can be set \lsystem symbols.
-Connection properties allows to connect other components to it.
-Components can provide \emph{gettable properties}, \emph{callable functions} and \emph{interpretation methods}.
+The components are configurable by the input.
+The \emph{settable properties} allow setting of values (numbers or arrays) whereas the \emph{settable symbol properties} allow setting of \lsystem symbols.
+Other components can be connected to the \emph{Connection properties}.
+Components can provide the \emph{gettable properties}, the \emph{callable functions} and the \emph{interpretation methods}.
 
 The component is .NET class.
-The settable and gettable properties are object properties marked with special attributes.
-Callable functions and interpretation methods are object methods also marked with the attributes.
-Concrete details about attribute types can be found in the \autoref{sec:compImplementaion} and appendix \ref{chap:componentExample} describes implementation of simple component.
+The settable and gettable properties are \emph{properties} of the .NET class marked with special attributes.
+Callable functions and interpretation methods are methods of the .NET class also marked with the attributes.
+Concrete details about attribute types can be found in the \autoref{sec:compImplementaion} and appendix \ref{chap:compImpl} describes the implementation of a simple component.
 
 
 \subsection{Measuring pass}
 \label{sec:measuring}
 
-Some components may need to know some information about processed model even if the model is not completed yet.
-For example when some renderer component is producing image its dimensions are needed before any drawing can be done.
-Also if we want to continuously color all lines with some gradient we must know total number of drawn lines.
+Some components may need to know some information about the processed model even if the model has not yet been completed.
+For example, when some renderer component is producing an image its dimensions may be needed before any drawing can be started.
+Also, if we want to continuously color all lines with some gradient we must know the total number of drawn lines.
 
-The on way how component could achieve this is to cache all input and count needed metadata and after all input is supplied produce the output.
-However this approach rises complexity of components and it can lead to significantly increased memory demands.
-Caching also prevents communication between components about current state of \lsystem.
-Imagine that some renderer wants to communicate with rewriter about rewriting style and some component in their way cahces all data .
-In the time when renderer starts to render image rewriter already did all rewriting.
+The only way how a component could achieve this is to cache all input and count the needed metadata, and after all the input has been supplied produce the output.
+However, this approach raises the complexity of components and it can lead to significant increases in memory demands.
+Caching also prevents communication between components about the current state of the \lsystem.
+Imagine that some renderer wants to communicate with a rewriter about concrete rewriting options and some component in their way caches all the data.
+At the moment when the renderer is ready to start to render the image, the rewriter has already done all the rewriting.
 
-The library uses another way how to allow components to pre-count some metadata.
-It is called \emph{measure pass}.
-If any component needs to pre-count some metadata the Process manager invokes processing of whole system two times.
-First pass is the \emph{measure pass} where all components can count metadata and no output is produced.
-Second pass is ordinary processing of \lsystem but components already have metadata counted.
-This way do not prevent communication between components about current state of \lsystem.
+The library uses another way to allow components to pre-count some metadata.
+It is called the \emph{measure pass}.
+If any component needs to pre-count some metadata, the process manager invokes processing of the whole system twice.
+The first pass is the \emph{measure pass} where all components can count metadata and no output is produced.
+The second pass is the ordinary processing of the \lsystem but the the components now have the metadata already counted.
+This way does not prevent communication between components about the current state of the \lsystem.
 
 It is important to ensure that both passes will be equal.
-For example problems can cause if component is using random generator for randomizing process.
-Library provides unified approach for random numbers generation with \emph{Random provider} component.
-Pseudo-random generator of the Random provider is resetted after each pass to the same value.
-If the value of random seed is not provided by user it is generated randomly but it will be the same for both passes.
-Concrete value of generated seed is supplied to user via message system to be possible to reproduce the output.
-
-\autoref{fig:measurePassExample} demonstrates usage of measure pass with continuous coloring of line segments with rainbow gradient of \lsystem in \autoref{lsys:measurePassExample}.
-Axiom of the \lsystem is equilateral triangle.
-In every iteration rewrite rule rewrites every line segment to line segment with triangle or square on it with the same probability 50\%.
-Effect of the "triangle" part of rewrite rule is shown in sub-figures \ref{fig:measurePassExampleT1} and \ref{fig:measurePassExampleT2},
-	effect of the "square" part is shown in \ref{fig:measurePassExampleR1} and \ref{fig:measurePassExampleR2}.
-Result is randomized combination of previous.
-First three and fifth iterations of \lsystem in \autoref{lsys:measurePassExample} are in sub-figures \ref{fig:measurePassExample1}, \ref{fig:measurePassExample2}, \ref{fig:measurePassExample3} and \ref{fig:measurePassExample5} respectively.
-
-Notice that even that number of colored lines of \lsystem is random the rainbow gradient is applied correctly (\autoref{fig:measurePassExample5}).
-It is because in measure pass number of lines was counted and total sum was used in next pass to distribute gradient correctly.
+For example, problems can occur if a component is using a random generator for a randomizing of processing.
+The library provides a unified approach for random numbers generation with the \emph{Random provider} component.
+The pseudo-random generator of the Random provider is reset after each pass to the same value.
+If the value of the random seed is not provided by the user it is generated randomly but it will be the same for both passes.
+The actual value of generated the seed is supplied to the user via the message system to make it possible to reproduce the output.
 
 \begin{figure}[p]
 	\centering
@@ -469,18 +506,29 @@ It is because in measure pass number of lines was counted and total sum was used
 	\subfloat[Stochastic 3rd iter.]{\includegraphics[scale=0.4]{MeasurePass3}\label{fig:measurePassExample3}}
 	\\
 	\subfloat[Correctly colored 5th iteration of stochastic \lsystem]{\includegraphics[scale=0.45]{MeasurePass5}\label{fig:measurePassExample5}}
-	\caption{Example of stochastic \lsystem which is correctly colored by color gradient even if total number of colored line segments is random}
+	\caption[Correctly colored stochastic \lsystem]{Example of stochastic \lsystem which is correctly colored by color gradient even if total number of colored line segments is random}
 	\label{fig:measurePassExample}
 \end{figure}
 
-\begin{Lsystem}[label=lsys:measurePassExample,caption={Stochastic \lsystem with variable number of line segments}]
+\autoref{fig:measurePassExample} demonstrates the usage of the measure pass with the continuous coloring of line segments with a rainbow gradient for the \lsystem in \autoref{lsys:measurePassExample}.
+The axiom of the \lsystem is an equilateral triangle.
+In every iteration, the rewrite rule rewrites every line segment to line segment with a triangle or square a on it with the same probability of 50\%.
+The effect of the "triangle" part of the rewrite rule is shown in Figures \ref{fig:measurePassExampleT1} and \ref{fig:measurePassExampleT2},
+	the effect of the "square" part is shown in Figures \ref{fig:measurePassExampleR1} and \ref{fig:measurePassExampleR2}.
+\autoref{fig:measurePassExample5} shows randomized combination of the previous two rules.
+The first three and fifth iterations of the \lsystem in \autoref{lsys:measurePassExample} are in Figures \ref{fig:measurePassExample1}, \ref{fig:measurePassExample2}, \ref{fig:measurePassExample3} and \ref{fig:measurePassExample5} respectively.
+
+Notice that even tough the number of colored lines of the \lsystem is random, the rainbow gradient is applied correctly (\autoref{fig:measurePassExample5}).
+It is because in the measure pass the number of lines has been counted and the total sum used in the ordinary pass to distribute the gradient correctly.
+
+\begin{Lsystem}[label=lsys:measurePassExample,caption={Stochastic \lsystem with a variable number of line segments}]
 lsystem WeirdKochCurve {
 	set symbols axiom = F +(-120) F +(-120) F;
 	set iterations = 5;
 	set randomSeed = 2;
 	@set continuousColoring = true;@
 
-	interpret F as DrawForward(2 ^ -(currentIteration * 3/2) * 300);
+	interpret F as DrawForward(16);
 	interpret + as TurnLeft;
 
 	@rewrite F@
@@ -493,15 +541,15 @@ process all with SvgRenderer;
 
 \subsection{Utilities}
 
-Library contains many useful functionality especially for components.
+The library contains some useful functionality -- especially for implementation of components.
 
-One large part is functions for work with 3D.
-The most important is the utility for triangulation of 3D objects defined by perimeter (3D version of 2D polygons).
-it is able to triangulate any object in space but triangulation of 3D objects defined by perimeter is ambiguous so triangulation strategy is configurable.
-Part of 3D utilities are functions for manipulation with points and vectors and quaternions.
+One large part is functions available for working with 3D.
+The most important one is the utility for the triangulation of 3D objects defined by their perimeter (the 3D version of 2D polygons).
+It is able to triangulate any object in space, but the triangulation of 3D objects defined by their perimeter is ambiguous so the triangulation strategy is configurable by the user.
+Part of the 3D utilities are functions for the manipulation of points, vectors and quaternions.
 
-Next utility serves for source code printing.
-It is possible to print and format abstract syntax tree as well as semantic tree.
+The next utility serves for source code printing.
+It is possible to print the abstract syntax tree as well as the semantic tree to the source code.
 
 
 

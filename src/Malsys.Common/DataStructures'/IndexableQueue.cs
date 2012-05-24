@@ -6,6 +6,9 @@ using System;
 using System.Diagnostics.Contracts;
 
 namespace Malsys {
+	/// <summary>
+	/// Dynamic queue that can be indexed.
+	/// </summary>
 	public class IndexableQueue<T> {
 
 		private const int defaultCapacity = 32;
@@ -42,18 +45,12 @@ namespace Malsys {
 
 		#region Constructors
 
-		public IndexableQueue()
-			: this(defaultCapacity, defaultGrowFactor) {
-		}
-
-		public IndexableQueue(int initialCapacity)
-			: this(initialCapacity, defaultGrowFactor) {
-		}
-
-		public IndexableQueue(int initialCapacity, float growFactor) {
+		/// <param name="initialCapacity">Initial capacity of the queue.</param>
+		/// <param name="growFactor">The old capacity is multiplied by the growFactor while extending the capacity of the queue.</param>
+		public IndexableQueue(int initialCapacity = defaultCapacity, float growFactor = defaultGrowFactor) {
 
 			Contract.Requires<ArgumentOutOfRangeException>(initialCapacity >= 0);
-			Contract.Requires<ArgumentOutOfRangeException>(growFactor >= 1.0f && growFactor <= 8.0f);
+			Contract.Requires<ArgumentOutOfRangeException>(growFactor > 1.0f && growFactor <= 8.0f);
 
 			data = new T[initialCapacity];
 			this.growFactor = (int)(growFactor * 100);
@@ -67,6 +64,9 @@ namespace Malsys {
 
 		#region Properties and indexers
 
+		/// <summary>
+		/// Returns i-th (zero-based) item from the beginning of the queue.
+		/// </summary>
 		public T this[int i] {
 			get {
 				Contract.Requires<ArgumentOutOfRangeException>(i >= 0 && i < size);
@@ -74,10 +74,17 @@ namespace Malsys {
 			}
 		}
 
+		/// <summary>
+		/// Number of stored items in the queue.
+		/// </summary>
 		public int Count {
 			get { return size; }
 		}
 
+		/// <summary>
+		/// Total capacity of the queue.
+		/// If the Count and Capacity are the same values the next addition will extend the queue by the grow factor.
+		/// </summary>
 		public int Capacity {
 			get { return data.Length; }
 		}
@@ -87,6 +94,9 @@ namespace Malsys {
 
 		#region Public methods
 
+		/// <summary>
+		/// Returns an item from the beginning of the queue without removing it.
+		/// </summary>
 		public T Peek() {
 
 			Contract.Requires<InvalidOperationException>(size > 0);
@@ -94,6 +104,9 @@ namespace Malsys {
 			return data[head];
 		}
 
+		/// <summary>
+		/// Adds given item to the end of the queue.
+		/// </summary>
 		public void Enqueue(T item) {
 			if (size == data.Length) {
 				int newCapacity = (int)((long)data.Length * (long)growFactor / 100);
@@ -110,6 +123,9 @@ namespace Malsys {
 			size++;
 		}
 
+		/// <summary>
+		/// Returns and removes an item from the beginning of the queue.
+		/// </summary>
 		public T Dequeue() {
 
 			Contract.Requires<InvalidOperationException>(size > 0);

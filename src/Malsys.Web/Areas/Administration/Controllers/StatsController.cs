@@ -27,6 +27,13 @@ namespace Malsys.Web.Areas.Administration.Controllers {
 			return View();
 		}
 
+		public virtual ActionResult Statistics() {
+			return View(new InputStatisticsModel() {
+				InputProcesses = inputDb.InputProcesses,
+				SavedInputs = inputDb.SavedInputs
+			});
+		}
+
 		public virtual ActionResult Input(int page = 1) {
 
 			if (page <= 0) {

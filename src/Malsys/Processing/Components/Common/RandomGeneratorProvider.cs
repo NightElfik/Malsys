@@ -10,10 +10,14 @@ using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Processing.Components.Common {
 	/// <summary>
-	/// This component offers both pseudo-random and random generators.
-	/// It provides callable function Random which can be called even in
-	/// L-system (not only at run-time).
-	/// It uses pseudo-random number generator by default.
+	/// This component offers both, random and pseudo-random generators.
+	/// It provides a callable function called random which can be called even in the L-system definition
+	/// (not only at run-time).
+	/// The pseudo-random number generator is used by default.
+	/// If no random seed is set it will be generated randomly and a message with its value will be sent to the user
+	/// to be possible to reproduce generated result.
+	/// Truly-random generation should be used only by experienced users because other components will not be able to
+	/// measure a generated model and results may be strange.
 	/// </summary>
 	/// <name>Random generator provider</name>
 	/// <group>General</group>

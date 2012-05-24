@@ -6,6 +6,9 @@ using System;
 using LexPos = Microsoft.FSharp.Text.Lexing.Position;
 
 namespace Malsys {
+	/// <summary>
+	/// Stores the position range (line and columns) and the source name.
+	/// </summary>
 	/// <remarks>
 	/// Immutable.
 	/// </remarks>

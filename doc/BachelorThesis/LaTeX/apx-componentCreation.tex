@@ -3,21 +3,20 @@
 \chapter{Component implementation and usage}
 \label{chap:compImpl}
 
-In this appendix is explained how to implement a component from scratch and use it together with other components in custom component graph.
+In this appendix is explained how to implement a component from scratch and use it together with other components in a custom component graph.
+At the end of this chapter is shown how to document created component correctly. 
 
 
 \section{Component implementation}
 
-For purpose of the example of implementation of a component is implemented a component for filtering symbols.
+For purpose of this example is implemented a component for filtering \lsystem symbols.
 In the first part is implemented static (non-configurable) filtering of symbols.
-Then the component is extended to allow configurable filtering.
-Last part of tutorial allows to check the parameters of passed symbols.
-
+Then the component is extended to allow configurable filtering and to check the parameters of passed symbols.
 
 \subsection{Static filtering}
 
-The component is intended to be between iterator and interpreter components.
-If we look in the section \emph{Connectable properties} in the documentation of the \hyperref[Malsys.Processing.Components.RewriterIterators.MemoryBufferedIterator]{MemoryBufferedIterator} we can see that \emph{OutputProcessor} connectable property accepts type \emph{ISymbolProvider}.
+The component is intended to be between the iterator and the interpreter components (see predefined process configurations in appendix \ref{sec:stdLibProcessConfigurations}).
+If we look in the section \emph{Connectable properties} in the documentation of the \hyperref[Malsys.Processing.Components.RewriterIterators.MemoryBufferedIterator]{MemoryBufferedIterator} we can see that the \emph{OutputProcessor} connectable property accepts the \emph{ISymbolProvider} type.
 We just start with an empty class implementing that interface.
 
 \begin{Csharp}
@@ -53,24 +52,24 @@ The \emph{Logger} property is for logging of errors and messages, we can just au
 public IMessageLogger Logger { get; set; }
 \end{Csharp}
 
-The \emph{Initialize} method is for first-time initialization of component and we don't need so we will leave it empty.
-The \emph{Cleanup} method is for setting component to state prepared for processing, we will do any cleaning there but we will leave it empty for now.
+The \emph{Initialize} method is for first-time initialization of the component and we can leave it empty.
+The \emph{Cleanup} method is for setting component to the initial state (prepared for processing), we will do any cleaning there but we will leave it empty for now.
 
 \begin{Csharp}public void Initialize(ProcessContext context) { }
-	public void Cleanup() { }
+public void Cleanup() { }
 \end{Csharp}
 
 Next block of members is inherited from the \emph{IProcessComponent} interface which allows repetitive processing within processing of the \lsystem.
 
-The \emph{RequiresMeasure} property is used for indicating whether component needs measure pass (see \autoref{sec:measuring}) which we do not so we can return false.
+The \emph{RequiresMeasure} property is used for indicating whether component needs the measure pass (see \autoref{sec:measuring}) which we do not, we can return false.
 
 \begin{Csharp}
 public bool RequiresMeasure { get { return false; } }
 \end{Csharp}
 
 The \emph{BeginProcessing} and \emph{EndProcessing} methods are for signaling individual process passes.
-With them we must call our output processor but we don't have one yet so lets define it.
-The output processor will have type \emph{ISymbolProcessor} to be possible to connect the same components as was connected to original iterator component (to which we will be connected).
+Within them we must call our output processor but we don't have one yet so lets define it.
+The output processor will have \emph{ISymbolProcessor} type to be possible to connect the same components as was connected to the original iterator component (to which we will be connected).
 
 \begin{Csharp}
 [UserConnectable]
@@ -89,8 +88,8 @@ public void EndProcessing() {
 }
 \end{Csharp}
 
-The last unimplemented method in our component is the \emph{ProcessSymbol} method.
-This method is called only between \emph{BeginProcessing} and \emph{EndProcessing} methods.
+The last unimplemented method in our component is the \emph{ProcessSymbol} me\-thod.
+This method is called only between the \emph{BeginProcessing} and \emph{EndProcessing} methods.
 Lets implement simple filtering based on the case of the first letter of passing symbols.
 We will send to output only symbols with lower-case first letter.
 
@@ -132,7 +131,7 @@ public class SymbolFilter : ISymbolProcessor {
 \subsubsection{Creation of process configuration}
 And that's is.
 For testing the the functionality we need to plug the filter component to some process configuration.
-We will do a very simple process configuration for testing purposes (\autoref{fig:compCreationTestConfig}).
+We will do a very simple process configuration for testing purposes (Fig. \ref{fig:compCreationTestConfig}).
 The Iterator component have no rewriter component attached to it because we do not need to iterate (number of iterations is by default 0)
 
 \begin{figure}[h]
@@ -152,7 +151,7 @@ The Iterator component have no rewriter component attached to it because we do n
 \end{figure}
 
 Processing of \autoref{lsys:staticFilterComponent} resulted to the expected output: \texttt{a cd g n oP}.
-Before running  the processing make sure that out filter component is loaded to component resolver together with other components from standard library (see \autoref{sec:implInputProcessing}).
+Before running the processing make sure that our filter component is loaded to the component resolver together with other components from the standard library (see \autoref{sec:implInputProcessing}).
 
 
 \begin{Lsystem}[label=lsys:staticFilterComponent,caption={\lsystem code for testing the filter component}]
@@ -178,10 +177,10 @@ process TestLsystem with @FilterTester@;
 
 \subsection{Configurable filtering}
 
-To allow user to chose what symbols are filtered we can create user settable symbol property.
+To allow the user to chose what symbols are filtered we can use the settable symbol property.
 Symbols set to this property will be ignored.
 
-The \emph{HashSet<string>} will be used for effective storing and queering ignored symbols.
+The \emph{HashSet<string>} will be used for effective storing and queering for ignored symbols.
 
 \begin{Csharp}
 private HashSet<string> ignoredSymbols = new HashSet<string>();
@@ -203,8 +202,8 @@ public ImmutableList<Symbol<IValue>> Ignore {
 }
 \end{Csharp}
 
-Component must be reusable so we need to clean ignored symbols after each use.
-For this is the method \emph{Clear} that was mentioned earlier.
+The component must be reusable so we need to clean ignored symbols after each use.
+For this is the \emph{Clear} method that was mentioned earlier.
 
 \begin{Csharp}
 public void Cleanup() {
@@ -273,7 +272,6 @@ lsystem TestLsystem {
 	set symbols axiom = A + B - C X X Y A + B - C;
 	@set symbols ignore = X Y + -;@
 }
-
 process TestLsystem with FilterTester;
 \end{Lsystem}
 
@@ -281,12 +279,12 @@ process TestLsystem with FilterTester;
 \subsection{Logging of messages}
 
 To further improve the filter component and to show how logging is done we will do a check of parameters of passed symbols.
-If they will contain any strange value like \emph{NaN} or \emph{infinity} we will report it.
+If they will contain any strange values like \emph{NaN} or \emph{infinity} we will report it.
 
 The logic will be placed to the \emph{ProcessSymbol} method.
 To log message we can use the \emph{Logger} property of our component which was discussed earlier.
-For \emph{infinity} arguments we will log a warning and for \emph{NaN} arguments we will log an error.
-Note that error will not abort the evaluation but at the end the results will not be shown to the user.
+For arguments with the value equal to \emph{infinity} we will log a warning and for \emph{NaN} values we will log an error.
+Note that the error will not abort the evaluation but at the end of processing the results will not be shown to the user.
 To aborting the evaluation can be thrown the \emph{ComponentException}.
 
 \begin{Csharp}
@@ -314,9 +312,9 @@ public void ProcessSymbol(Symbol<IValue> symbol) {
 }
 \end{Csharp}
 
-To try new functionality we will again use the \emph{FilterTester} process configuration.
-\autoref{fig:messagesFilter} shows result of processing \autoref{lsys:messagesFilterComponent}.
-Note the correct positions of the messages achieved by \texttt{symbol.AstNode.TryGetPosition()} call.
+To try newly implemented functionality we will, again, use the \emph{FilterTester} process configuration.
+\autoref{fig:messagesFilter} shows the result of processing \autoref{lsys:messagesFilterComponent}.
+Notice the correct positions of the messages (right part of the table in \autoref{fig:messagesFilter}) achieved by the \texttt{symbol.AstNode.TryGetPosition()} call.
 
 \begin{Lsystem}[label=lsys:messagesFilterComponent,caption={\lsystem code for testing improved filter component}]
 lsystem TestLsystem {
@@ -337,7 +335,7 @@ process TestLsystem with FilterTester;
 \subsection{Usage in real process configuration}
 
 New we can use the filter component in more complex process configuration.
-We will alter actual \emph{SymbolPrinter} process configuration (see appendix \ref{sec:stdLibSymbolPrinter}) by extending  it with our filter component as shows \autoref{fig:lastFilterScheme}.
+We will alter actual \emph{SymbolPrinter} process configuration (see appendix \ref{sec:stdLibSymbolPrinter}) by extending it with our filter component as shows \autoref{fig:lastFilterScheme}.
 
 \begin{figure}[h!]
 	\centering
@@ -362,7 +360,7 @@ We will alter actual \emph{SymbolPrinter} process configuration (see appendix \r
 	\label{fig:lastFilterScheme}
 \end{figure}
 
-Processing of \autoref{lsys:lastFilter} will result in output \texttt{F(2) F(4) F(256) F(Infinity)} along with warning about parameter of symbol \texttt{F}.
+Processing of \autoref{lsys:lastFilter} will produce following output: \texttt{F(2) F(4) F(256) F(Infinity)} along with warning about the parameter of the symbol \texttt{F}.
 
 \begin{Lsystem}[label=lsys:lastFilter,caption={Test of extended \emph{SymbolPrinter} process configuration with created filter component}]
 configuration FilteredSymbolPrinter {
@@ -393,6 +391,59 @@ lsystem TestLsystem {
 
 process TestLsystem with FilteredSymbolPrinter;
 \end{Lsystem}
+
+
+\section{Component documentation}
+
+The documentation of components is described in \autoref{sec:componentDoc}.
+\autoref{lsys:compDoc} shows the created filter component with documented members.
+Rest of the class is omitted.
+The result of generated documentation can be found in appendix \ref{chap:components} (\hyperref[ExamplePlugin.Components.SymbolFilter]{SymbolFilter} component).
+
+\begin{Csharp}[label=lsys:compDoc,caption={Symbol filter component with documented members}]
+/// <summary>
+/// Filters symbol stream.
+/// </summary>
+/// <name>Symbol fileter</name>
+/// <group>Plugin</group>
+public class SymbolFilter : ISymbolProcessor {
+
+	private HashSet<string> ignoredSymbols = new HashSet<string>();
+
+	/// <summary>
+	/// List of ignored symbols.
+	/// </summary>
+	[AccessName("ignore")]
+	[UserSettableSybols]
+	public ImmutableList<Symbol<IValue>> Ignore {
+		set {
+			ignoredSymbols.Clear();
+			foreach (var sym in value) {
+				ignoredSymbols.Add(sym.Name);
+			}
+		}
+	}
+
+	/// <summary>
+	/// Components to which filtered symbols are sent.
+	/// </summary>
+	[UserConnectable]
+	public ISymbolProcessor Output { get; set; }
+
+	...
+}
+\end{Csharp}
+
+
+
+
+
+
+
+
+
+
+
 
 
 

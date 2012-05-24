@@ -13,16 +13,17 @@ using Symbol = Malsys.SemanticModel.Symbol<Malsys.SemanticModel.Evaluated.IValue
 
 namespace Malsys.Processing.Components.Rewriters {
 	/// <summary>
-	/// Full featured symbol rewriter which rewrites symbols based on defined rewrite rules in current L-system.
+	/// Full featured symbol rewriter which rewrites symbols based on defined rewrite rules in the L-system.
 	/// It is capable to rewrite symbol based all criteria of Malsys' rewrite rules.
 	/// Rewriting is initiated by symbol request (by enumerator).
-	/// Then rewriter takes as many symbols from connected symbol provider as is needed for rewriting next symbol.
-	/// If contexts (or branches) are long it may load many symbols before returning.
+	/// Then rewriter takes as many symbols from connected symbol provider as is needed for rewriting the symbol.
+	/// If contexts (or branches) are long it may load many symbols before returning single one.
 	/// </summary>
 	/// <name>Symbol rewriter</name>
 	/// <group>Rewriters</group>
 	/// <remarks>
 	/// Context is not freed yet.
+	///
 	/// The problem occurs when trying to check context of symbol which is ignored from context.
 	/// </remarks>
 	public partial class SymbolRewriter : IRewriter {

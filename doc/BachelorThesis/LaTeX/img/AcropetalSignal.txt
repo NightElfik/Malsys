@@ -1,9 +1,9 @@
 lsystem Generator extends Branches {
 
-	set symbols axiom = [ + A(0) ] X;
+	set symbols axiom = E(30) [ + A(0) ] X E(30);
 	set iterations = 4;
 
-	interpret F as MoveForward(90);
+	interpret F E as DrawForward(90,4);
 	interpret B as DrawSphere(8);
 	interpret + as TurnLeft(90);
 

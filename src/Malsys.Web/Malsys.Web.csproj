@@ -200,6 +200,7 @@
     <Compile Include="Areas\Administration\AdministrationAreaRegistration.cs" />
     <Compile Include="Areas\Administration\Controllers\HomeController.cs" />
     <Compile Include="Areas\Administration\Controllers\TagsController.cs" />
+    <Compile Include="Areas\Administration\Models\InputStatisticsModel.cs" />
     <Compile Include="Areas\Administration\Models\TagModel.cs" />
     <Compile Include="Areas\Administration\Models\SavedInputModel.cs" />
     <Compile Include="Areas\Administration\Models\MailModel.cs" />
@@ -365,6 +366,7 @@
     <Content Include="Areas\Help\Views\Predefined\ComponentLatexPartial.cshtml" />
     <Content Include="Areas\Help\Views\Predefined\ConfigurationsLatex.cshtml" />
     <Content Include="Areas\Help\Views\Predefined\ConfigurationLatexPartial.cshtml" />
+    <Content Include="Areas\Administration\Views\Stats\Statistics.cshtml" />
     <None Include="DatabaseScheme.sql" />
     <Content Include="Error.html" />
     <Content Include="favicon.ico" />

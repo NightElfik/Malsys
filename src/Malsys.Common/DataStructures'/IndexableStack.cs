@@ -5,7 +5,9 @@
 using System;
 
 namespace Malsys {
-
+	/// <summary>
+	/// Dynamic stack that can be indexed (from top).
+	/// </summary>
 	public class IndexableStack<T> {
 
 		private const int defaultCapacity = 32;
@@ -28,15 +30,9 @@ namespace Malsys {
 
 		#region Constructors
 
-		public IndexableStack()
-			: this(defaultCapacity, defaultGrowFactor) {
-		}
-
-		public IndexableStack(int initialCapacity)
-			: this(initialCapacity, defaultGrowFactor) {
-		}
-
-		public IndexableStack(int initialCapacity, float growFactor) {
+		/// <param name="initialCapacity">Initial capacity of the stack.</param>
+		/// <param name="growFactor">The old capacity is multiplied by the growFactor while extending the capacity of the stack.</param>
+		public IndexableStack(int initialCapacity = defaultCapacity, float growFactor=defaultGrowFactor) {
 			if (initialCapacity < 0) {
 				throw new ArgumentOutOfRangeException("initialCapacity", "Capacity should be greater than zero.");
 			}
@@ -54,6 +50,9 @@ namespace Malsys {
 
 		#region Properties and indexers
 
+		/// <summary>
+		/// Returns i-th (zero-based) item from the top of the stack.
+		/// </summary>
 		public T this[int i] {
 			get {
 				if (i < 0 || i >= size) {
@@ -63,15 +62,30 @@ namespace Malsys {
 			}
 		}
 
+		/// <summary>
+		/// Number of stored items in the stack.
+		/// </summary>
 		public int Count {
 			get { return size; }
 		}
+
+		/// <summary>
+		/// Total capacity of the stack.
+		/// If the Count and Capacity are the same values the next addition will extend the stack by the grow factor.
+		/// </summary>
+		public int Capacity {
+			get { return data.Length; }
+		}
+
 
 		#endregion
 
 
 		#region Public methods
 
+		/// <summary>
+		/// Returns an item from the top of the stack without removing it.
+		/// </summary>
 		public T Peek() {
 			if (size == 0) {
 				throw new InvalidOperationException("Peek on empty stack.");
@@ -80,6 +94,9 @@ namespace Malsys {
 			return data[size - 1];
 		}
 
+		/// <summary>
+		/// Returns and removes an item from the top of the stack.
+		/// </summary>
 		public T Pop() {
 			if (size == 0) {
 				throw new InvalidOperationException("Pop from empty stack.");
@@ -90,6 +107,9 @@ namespace Malsys {
 			return item;
 		}
 
+		/// <summary>
+		/// Adds given item to the top of the stack.
+		/// </summary>
 		public void Push(T item) {
 			if (size == data.Length) {
 				int newCapacity = (int)((long)data.Length * (long)growFactor / 100);

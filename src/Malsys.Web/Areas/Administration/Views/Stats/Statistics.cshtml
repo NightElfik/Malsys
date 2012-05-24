@@ -1,0 +1,42 @@
+﻿@**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ *@
+@model InputStatisticsModel
+
+@{
+	ViewBag.Title = "Input statistics";
+	var inputNonGroup = Model.InputProcesses
+		.Where(x => x.User.Roles.Count() == 0);
+	var savedNonGroup = Model.SavedInputs
+		.Where(x => x.User.Roles.Count() == 0);
+
+	var chainLengths = Model.InputProcesses
+		.GroupBy(x => x.ChainLength)
+		.OrderBy(g => g.Key);
+}
+
+<h2>Input statistics</h2>
+
+<ul>
+	<li>Processed inputs: <b>@Model.InputProcesses.Count()</b></li>
+	<li>Processed inputs [non-grouped]: <b>@inputNonGroup.Count()</b></li>
+	<li>Processed inputs [unregistered]: <b>@Model.InputProcesses.Where(x => x.User == null).Count()</b></li>
+</ul>
+
+<ul>
+	<li>Saved inputs: <b>@Model.SavedInputs.Count()</b> (from which <b>@Model.SavedInputs.Where(x => x.IsDeleted).Count()</b> are deleted)</li>
+	<li>Published inputs: <b>@Model.SavedInputs.Where(x => x.IsPublished && !x.IsDeleted).Count()</b></li>
+	<li>Saved inputs [non-grouped]: <b>@savedNonGroup.Count()</b></li>
+</ul>
+
+<table>
+	<tr>
+		<th>Chain length</th><th>Count</th>
+	</tr>
+@foreach (var chainGroup in chainLengths) {
+	<tr>
+		<td>@chainGroup.Key</td><td>@chainGroup.Count()</td>
+	</tr>
+}
+</table>

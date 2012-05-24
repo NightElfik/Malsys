@@ -1,25 +1,25 @@
 
 \section{Processing system}
+\label{sec:design-components}
 
-As discussed in the previous chapter processing system of the library relies on components.
-Core of the library is responsible just for creating component graph.
-The processing of \lsystem and producing results is fully under control of component graph.
-This gives absolute freedom to user in implementing process system.
+As discussed in the previous chapter, the processing system of the library relies on the components.
+The core of the library is responsible for just creating the component graph.
+The processing of an \lsystem and production of results is fully under the control of the component graph.
+This gives absolute freedom to the user in implementing the process system.
 
-However it is hard to design and implement whole \lsystem processing system from scratch.
-Library contains rich set of predefined components from which can be assembled many different component graphs.
-The predefined components have general interface which allows user to reuse or extend them to add new functionality with minimum of effort.
-
+However it is hard to design and implement the whole \lsystem processing system from scratch.
+The library contains a rich set of predefined components from which can be assembled many different component graphs.
+The predefined components have a general interface which allows the user to reuse or extend them in order to add new functionality with a minimum of effort.
 
 
 \subsection{Basic component system}
 
-Component system designed in this section are primarily used for processing \lsystems to produce 2D and 3D graphics in the web interface.
-However component system is designed to be extensible to any output type.
+The component system designed in this section is primarily used for processing \lsystems to produce 2D and 3D graphics in the web interface.
+However, the component system is designed to be extensible to any output type.
 
 \lsystems are generally processed in two phases.
-First phase is rewriting where axiom (initial string of symbols) is rewritten by rewrite rules and second phase is interpreting result string of symbols.
-This can be done with two components, the Rewriter which is responsible for rewriting the \lsystem to given iteration and the Interpreter which is responsible for interpreting symbols and producing output (\autoref{fig:simpleSystem}).
+The first phase is rewriting where the axiom (the initial string of symbols) is rewritten by the rewrite rules, and the second phase is interpreting the resulting string of symbols.
+This can be done with two components, the Rewriter -- which is responsible for rewriting the \lsystem to a given iteration -- and the Interpreter -- which is responsible for interpreting symbols and producing output (Fig. \ref{fig:simpleSystem}).
 
 \begin{figure}[h!]
 	\centering
@@ -37,15 +37,15 @@ This can be done with two components, the Rewriter which is responsible for rewr
 	\label{fig:simpleSystem}
 \end{figure}
 
-However components in the system in \autoref{fig:simpleSystem} have too much tasks to do thus they will be complicated to implement and hard to extend and test.
+However the components in the system in \autoref{fig:simpleSystem} have too many tasks to do, and thus they will be complicated to implement and hard to extend and test.
 
-System in \autoref{fig:advancedSystem} was created by subdivision of previous system.
+The system in \autoref{fig:advancedSystem} was created by a subdivision of the previous system.
 The Rewriter component was split to the Rewriter and the Iterator.
-The Rewriter will do just rewriting of given symbols and the Iterator will control iterating of \lsystem (repetitive rewriting).
+The (new) Rewriter will just do the rewriting of some given symbols and the Iterator will control the iterating of the \lsystem (repetitive rewriting).
 The Interpreter component was split to the Interpreter and the Renderer.
-The Interpreter will do interpreting of symbols which means keep position of virtual turtle in space, saving and loading of states etc.
+The (new) Interpreter will handle the interpreting of symbols: which means keep position of the virtual "turtle" in space, saving and loading of states, etc.
 The Renderer will just produce the output.
-If we need to create different output type we have to implement only new renderer component and rest of the system will remain unchanged.
+If we need to create a different output type we only have to implement the new renderer component and the rest of the system will remain unchanged.
 
 \begin{figure}[h!]
 	\centering
@@ -73,11 +73,14 @@ If we need to create different output type we have to implement only new rendere
 \label{sec:caller}
 
 The system in \autoref{fig:callerComponent} can be enhanced even more.
-Every interpreter needs to translate symbols to interpretation methods itself which can be done by specialized component called \emph{Interpreter caller}.
-This component can be smart enough to explore all components in the system, find all interpretation methods and do translation automatically.
-This causes automatic connection of all interpreters to interpreter caller.
-More interpreters can be used with advantage for example for processing \lsystems which interacts with self or their Environment \cite{MP96}.
-One interpreter actual model ant the second interprets environment.
+Every component that interprets \lsystem symbols needs to translate symbols to interpretation methods.
+The translation can be implemented by every component individually.
+However, the translation can be done by a specialized component called the \emph{Interpreter caller}.
+This component can be smart enough to explore all the components in the system, find all the interpretation methods of all components and do translation automatically.
+This causes an automatic "connection" of all interpreters to the interpreter caller.
+
+More interpreters can be used to advantage: for example, for processing \lsystems which interact with themselves or their Environment \cite{MP96}.
+One interpreter actually creates the result model and the second interpreter simulates the environment.
 
 \begin{figure}[h!]
 	\centering
@@ -101,21 +104,21 @@ One interpreter actual model ant the second interprets environment.
 		\draw (env) -- (rw);
 		\draw (rend) -- node {output} (out);
 	\end{tikzpicture}
-	\caption{Advantage of Interpreter caller component which can automatically call more interpreters}
+	\caption[Automated interpreter caller]{The Interpreter caller which automatically calls interpretation methods of any components}
 	\label{fig:callerComponent}
 \end{figure}
 
 
 
 
-Next necessary component is called \emph{Random provider}.
-It provides controlled behavior for random number generation described in \autoref{sec:measuring}.
-This component provides function which returns random number and can be called by other components or by user in \lsystem definition.
-This component is connected to iterator to correctly reset random seed every pass.
+The next necessary component is called the \emph{Random provider}.
+It provides controlled behavior for random number generation as described in \autoref{sec:measuring}.
+This component provides a function which returns a random number and it can be called by other components or by the user in the \lsystem definition.
+This component is connected to the iterator to correctly the reset random seed at every pass.
 
-\emph{Axiom provider} is next extending component and it provides axiom to the Iterator.
-Axiom provider is wrapper around single symbol property called axiom.
-The Iterator is designed generally to take axiom from any component implementing \texttt{ISymbolProvider} so it is possible to connect for example another Rewriter as axiom provider (\autoref{fig:inputProvider}).
+The \emph{axiom provider} is the next extending component and it provides the axiom to the Iterator.
+The axiom provider is only a "wrapper" around a single symbol property called the axiom.
+The Iterator is designed generally to take the axiom from any component implementing \emph{ISymbolProvider} interface so it is possible to connect, for example, another rewriter as the axiom provider (Fig. \ref{fig:inputProvider}).
 
 \begin{figure}[h!]
 	\centering
@@ -138,32 +141,33 @@ The Iterator is designed generally to take axiom from any component implementing
 		\draw (inter) -- (rend);
 		\draw (rend) -- node {output} (out);
 	\end{tikzpicture}
-	\caption{Input of iterator can be supplied by another component}
+	\caption{Input for the iterator can be supplied by another component}
 	\label{fig:inputProvider}
 \end{figure}
 
 
 
-\subsection{Interpretation of symbol as another \lsystem}
+\subsection{Interpretation of a symbol as another \lsystem}
 \label{sec:innerLsystem}
 
-In some situations it can be handy to interpret symbol as another \lsystem.
-Component system of the library is very versatile and it allows to create specialized component which will be responsible for that.
+In some situations it can be handy to interpret a symbol as another \lsystem.
+The component system of the library is very versatile and it allows the creation of a specialized component which will be responsible for just this feature.
 
-The component is called \emph{Inner \lsystem processor}.
-It is connected to the Interpreter caller and when the caller needs to interpret symbol as \lsystem it will call the Inner \lsystem processor which take care of it.
-Component graph with Inner \lsystem processor component is shown in \autoref{fig:innerSystem}.
+The component is called the \emph{Inner \lsystem processor}.
+It is connected to the Interpreter caller and when the caller needs to interpret a symbol as an \lsystem it will call the Inner \lsystem processor to take care of this.
+A component graph with the Inner \lsystem processor component is shown in \autoref{fig:innerSystem}.
 
-The Inner \lsystem processor internally works in similar way how the Process manager do (see \autoref{sec:inputProcessing}).
-For every processed symbol it builds new components graph for processing inner \lsystem.
-The components graph can be specified by special process configuration which needs to be defined in the input\footnote{
-	The only implementation of Inner \lsystem processor the \hyperref[Malsys.Processing.Components.Common.ILsystemInLsystemProcessor]{\emph{ILsystemInLsystemProcessor}} component
-		uses process configuration called \emph{InnerLsystemConfig} for creating inner component graph.
-	This process configuration must be defined (see the definition in the Standard library \ref{sec:innerLsystemConfig}).}.
-Interpreter caller in inner component graph is automatically connected to all interpreters in original component graph (see \autoref{sec:caller}) therefore inner \lsystem is interpreted by the same interpreter as the main \lsystem.
-Inner interpreter caller is also connected to the Inner \lsystem processor thus it is possible to interpret symbol as another \lsystem even in inner \lsystem.
+The Inner \lsystem processor works internally in a similar way to that of the Process manager (see \autoref{sec:inputProcessing}).
+For every processed symbol it builds a new components graph for processing the inner \lsystem.
+The components graph can be specified by a special process configuration which needs to be defined in the input%
+	\footnote{
+		The only implementation of the Inner \lsystem processor the \hyperref[Malsys.Processing.Components.Common.LsystemInLsystemProcessor]{\emph{LsystemInLsystemProcessor}} component uses the process configuration called \emph{InnerLsystemConfig} for creating the inner component graph.
+		This process configuration must be defined (see the definition in the Standard library \ref{sec:innerLsystemConfig}).}.
+The interpreter caller in the inner component graph is automatically connected to all interpreters in the original component graph (see \autoref{sec:caller}), therefore the inner \lsystem is interpreted by the same interpreter as the main \lsystem.
+The inner interpreter caller is also connected to the Inner \lsystem processor: thus it is possible to interpret a symbol as another \lsystem even in the inner \lsystem.
 
-The creation of inner component graph is relatively complex operation but the created and used component graphs are cached and reused later.
+The creation of the inner component graph is a relatively complex operation.
+The created and used component graphs are cached and reused later which improves the performance.
 
 \begin{figure}[h!]
 	\centering
@@ -198,15 +202,14 @@ The creation of inner component graph is relatively complex operation but the cr
 		\draw (innerCaller) -- (inner);
 		\draw [dashed] (innerCaller) to[bend right] (inter);
 	\end{tikzpicture}
-	\caption{Component system for interpretation symbol as another \lsystem}
+	\caption{Component system for interpretation of a symbol as another \lsystem}
 	\label{fig:innerSystem}
 \end{figure}
 
-Interpretation of symbol as another \lsystem is demonstrated in \autoref{fig:innerLsystem}.
-The Pythagoras tree is made of Menger sponges.
-Number of iterations of each Menger sponges depends on its size.
-The smallest Menger sponges (zero iteration) have extra blossom as demonstration of interpretation symbol as \lsystem in inner \lsystem.
-The iteration of the Blossom determines number of leafs and it is randomly selected from 4 to 6.
+The interpretation of symbol as another \lsystem is demonstrated in \autoref{fig:innerLsystem}.
+The Pythagoras tree is made of Menger sponges: number of iterations of each Menger sponge depends on its size.
+The smallest Menger sponge (zero iteration) has an extra blossom as a demonstration of an interpretation symbol as an \lsystem in the inner \lsystem.
+The iteration of the Blossom \lsystem determines the number of leaves and it is randomly selected from 4 to 6.
 
 
 \begin{figure}[p]
@@ -215,15 +218,15 @@ The iteration of the Blossom determines number of leafs and it is randomly selec
 	\subfloat[5th iteration]{\includegraphics[scale=0.3]{Bloom5}}
 	\subfloat[6th iteration]{\includegraphics[scale=0.3]{Bloom6}}
 	\\
-	\subfloat[11th iteration of Pythagoras tree]{\includegraphics[width=0.55\textwidth]{Pythagoras}} ~
-	\subfloat[3rd iteration of Menger sponge]{\includegraphics[width=0.40\textwidth]{MengerSponge}}
+	\subfloat[11th iteration of the Pythagoras tree]{\includegraphics[width=0.55\textwidth]{Pythagoras}} ~
+	\subfloat[3rd iteration of the Menger sponge]{\includegraphics[width=0.40\textwidth]{MengerSponge}}
 	\\
-	\subfloat[Pythagoras tree made of Menger sponges with blossoms at the smallest cubes]{\includegraphics[width=0.9\textwidth]{HybridPythagoras}\label{fig:innerLsystemResult}}
-	\caption{Example of interpreting symbol as another \lsystem}
+	\subfloat[The Pythagoras tree made of the Menger sponges with blossoms at the smallest cubes]{\includegraphics[width=0.9\textwidth]{HybridPythagoras}\label{fig:innerLsystemResult}}
+	\caption{Example of interpreting s symbol as another \lsystem}
 	\label{fig:innerLsystem}
 \end{figure}
 
-\begin{Lsystem}[label=lsys:innerLsystem,caption={Source code of \lsystem (\autoref{fig:innerLsystemResult}) demonstrating usage of interpreting symbol as another \lsystem}]
+\begin{Lsystem}[label=lsys:innerLsystem,caption={Source code of \lsystem (Fig. \ref{fig:innerLsystemResult}) demonstrating use of an interpreting symbol as another \lsystem}]
 lsystem HybridPythagorasTree(angle = 50) extends Branches {
 	let angleComp = 90 - angle;  // angle complement
 	let sinAngle = sin(deg2rad(angle));
@@ -283,9 +286,9 @@ process HybridPythagorasTree with ThreeJsRenderer;
 
 \subsection{Final component system}
 
-Final component system uses all described functionality.
-Component graph is shown in \autoref{fig:finalSystem}.
-Two main \emph{process configurations} defined in the standard library uses this scheme, namely the \hyperref[configurationSvgRenderer]{\emph{SvgRenderer}} and the \hyperref[configurationThreeJsRenderer]{\emph{ThreeJsRenderer}}
+The final component system uses all the described functionality.
+The component graph is shown in \autoref{fig:finalSystem}.
+Two main \emph{process configurations} defined in the standard library use this scheme, namely the \hyperref[configurationSvgRenderer]{\emph{SvgRenderer}} and the \hyperref[configurationThreeJsRenderer]{\emph{ThreeJsRenderer}}
 	(see appendix \ref{sec:stdLibProcessConfigurations}).
 
 \begin{figure}[h!]

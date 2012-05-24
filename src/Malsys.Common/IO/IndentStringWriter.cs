@@ -5,6 +5,9 @@
 using System.Text;
 
 namespace Malsys.IO {
+	/// <summary>
+	/// Implementation of the IndentWriter that writes to the string.
+	/// </summary>
 	public class IndentStringWriter : IndentWriter {
 
 		private StringBuilder strBuilder;

@@ -6,8 +6,13 @@ using Autofac;
 
 namespace Malsys.Compilers {
 	/// <summary>
-	/// All compilers in this container have single-instance lifetime.
+	/// IoC container for compilers.
+	/// To extend it you can inherit this class and override the Resolve{T} method
+	/// or you can implement new implementation if the ICompilersContainer interface.
 	/// </summary>
+	/// <remarks>
+	/// All compilers in this container have single-instance lifetime.
+	/// </remarks>
 	public class CompilersContainer : ICompilersContainer {
 
 

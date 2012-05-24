@@ -7,9 +7,9 @@ using Symbol = Malsys.SemanticModel.Symbol<Malsys.SemanticModel.Evaluated.IValue
 
 namespace Malsys.Processing.Components.Common {
 	/// <summary>
-	/// Saves processed symbols to memory buffer.
-	/// This component is used especially in unit tests where printing
-	/// of symbols is not desired.
+	/// Saves all processed symbols to the memory buffer.
+	/// This component is used especially in the unit tests where printing of processed symbols is not desired.
+	/// If the user do not have access to the instance of this component there is no way how to get saved symbols.
 	/// </summary>
 	/// <name>Symbols memory buffer</name>
 	/// <group>Special</group>

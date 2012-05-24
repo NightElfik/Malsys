@@ -12,9 +12,10 @@ using System.Xml.XPath;
 
 namespace Malsys.Reflection {
 	/// <summary>
-	/// All public members are thread safe.
+	/// Standard implementation of the IXmlDocReader that reads XmlDoc from files in given base path.
 	/// </summary>
 	/// <remarks>
+	/// All public members are thread safe.
 	/// Caches XDocuments for fast access to documentation.
 	/// </remarks>
 	public class XmlDocReader : IXmlDocReader {

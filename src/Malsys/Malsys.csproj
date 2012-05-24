@@ -124,7 +124,6 @@
     <Compile Include="Processing\Components\Renderers\DebugRenderer2D.cs" />
     <Compile Include="Resources\MalsysConstantsAttribute.cs" />
     <Compile Include="Compilers\ConstantDefCompiler.cs" />
-    <Compile Include="Compilers\OperatorAttribute.cs" />
     <Compile Include="Compilers\ExpressionCompiler.cs" />
     <Compile Include="Compilers\FunctionDefCompiler.cs" />
     <Compile Include="Compilers\Interfaces%27\ICompiler.cs" />

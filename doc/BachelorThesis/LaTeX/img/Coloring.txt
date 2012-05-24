@@ -1,0 +1,64 @@
+lsystem SphinxForColoring {
+
+	set symbols axiom = x(60);
+	set iterations = 5;
+	let step = 8;
+
+	interpret F as DrawForward;
+	interpret G as MoveForward;
+	interpret + as TurnLeft;
+	interpret | as TurnLeft(180);
+
+	rewrite x(a) to < . +(a) F(2*step) . +(-a) x(-a) F(2*step) . +(a) F(2*step) . +(-2a) F(3*step) .
+		| x(a) | F(step) . +(-2a) x(-a) F(3*step) . x(-a) F(3*step) . | >;
+	rewrite F(x) to G(2*x);
+	rewrite G(x) to G(2*x);
+	rewrite < to nothing;
+	rewrite > to nothing;
+	rewrite . to nothing;
+}
+
+lsystem PenroseTilingForColoring extends Branches {
+
+	set symbols axiom = [N] + + [N] + + [N] + + [N] + + [N];
+	set iterations = 5;
+	set reversePolygonOrder = true;
+
+	let darkClr = #221166;  // dark blue
+	let lightClr = #FFCC66;  // dark yellow
+
+	// normalize move length (result image will have always same size)
+	interpret M N O P as DrawForward(2 ^ -(currentIteration / 2) * 200);
+	interpret + as TurnLeft(36);
+	interpret - as TurnLeft(-36);
+
+	rewrite M
+		to O + + <(darkClr, 2, #0) . P . - - - - N . [ - O . - - - - M . > ] + +;
+	rewrite N
+		to + <(lightClr, 2, #0) . O . - -  P . [ - - - M . - - N . > ] +;
+	rewrite O
+		to - <(lightClr, 2, #0) . M . + +  N . [ + + + O . + + P . > ] -;
+	rewrite P
+		to - - <(darkClr, 2, #0) . O . + + + + M . [ + P . + + + + N . > ] - - N;
+}
+
+lsystem SierpinskiTrangleForColoring {
+
+	set symbols axiom = F + F + F;
+	set iterations = 5;
+
+	interpret F f as MoveForward(2 ^ -currentIteration * 600);
+	interpret + as TurnLeft(120);
+	interpret - as TurnLeft(-120);
+	interpret < as StartPolygon(#FFFFFF, 2);
+	interpret . as RecordPolygonVertex;
+	interpret > as EndPolygon;
+
+	rewrite F to < . F . + F . > + f + f F;
+	rewrite f to f f;
+	rewrite < to nothing;
+	rewrite . to nothing;
+	rewrite > to nothing;
+}
+
+process all with SvgRenderer;

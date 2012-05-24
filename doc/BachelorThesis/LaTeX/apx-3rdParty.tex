@@ -1,5 +1,5 @@
 
-\chapter{Used third-party libraries}
+\chapter{Third-party libraries and services}
 \label{chap:thirdParty}
 
 \section{F\# PowerPack}
@@ -8,9 +8,9 @@
 
 \noindent
 The F\# PowerPack is a collection of libraries and tools for use with the F\# programming language provided by the F\# team at Microsoft.
-PowerPack includes F\# versions of these lexer and parser generation tools (FsLex and FsYacc), along with MSBuild tasks to incorporate them in the build process.
+The PowerPack includes F\# versions of lexer and parser generation tools (FsLex and FsYacc), along with the MSBuild tasks to incorporate them in the build process.
 
-The FsLex and FsYacc are used for parsing of input.
+The FsLex and FsYacc are used for parsing of input (see \autoref{sec:parsingImplementaion}).
 
 
 \section{HTML5 boilerplate}
@@ -20,7 +20,7 @@ The FsLex and FsYacc are used for parsing of input.
 \noindent
 HTML5 Boilerplate is the professional frontend developers's base HTML/CSS/JS template for a fast, robust and future-safe site.
 
-It was used as cornerstone of HTML and CSS in the web user interface.
+It is used as the base of the HTML and CSS in the web user interface.
 
 
 \section{Three.js}
@@ -48,7 +48,7 @@ All custom JavaScript win web user interface was written with the help of jQuery
 \srcurl{http://modernizr.com/}
 
 \noindent
-Modernizr is an open-source JavaScript library that helps you build the next generation of HTML5 and CSS3-powered websites.
+Modernizr is an open-source JavaScript library that helps to build the next generation of HTML5 and CSS3-powered websites.
 
 Cool HTML5 and CSS3 features can be used in web user interface thanks to Modernizr.
 
@@ -63,11 +63,11 @@ The contracts take the form of preconditions, postconditions, and object invaria
 Contracts act as checked documentation of your external and internal APIs.
 The contracts are used to improve testing via runtime checking, enable static contract verification, and documentation generation.
 
-Code Contracts are used in many methods across all projects.
-Contract checking is turned on while solution is built on debug settings but because of performance reasons they are turned off in release.
+The Code Contracts are used in many methods across all projects.
+Contract checking is turned on while the solution is built on the debug settings but because of performance reasons they are turned off in the release.
 
-In Source code \ref{cs:contracts} are defined four preconditions checking validity of arguments and two postconditions ensuring output format.
-From contracts is clear that method must be supplied with at least 3 points in list and number of returned indices will be divisible by 3 (without reminder).
+In \autoref{cs:contracts} are defined four preconditions checking validity of arguments and two postconditions ensuring output format.
+From the contracts is clear that the method must be supplied with at least 3 points in list and the number of returned indices will be divisible by 3 (without reminder).
 It makes sense because every 3 indices specifies a triangle.
 
 
@@ -83,41 +83,124 @@ public List<int> Triangularize(IList<Point3D> points,
 		
 	Contract.Ensures(Contract.Result<List<int>>() != null);
 	Contract.Ensures(Contract.Result<List<int>>().Count % 3 == 0);
-
 	...	
 }
 \end{Csharp}
 
 
 
-\section{Autofac IOC container}
+\section{Autofac IoC container}
 \label{sec:autofac}
 \srcurl{http://code.google.com/p/autofac/}
 
-\subsection{ASP.NET MVC 3 integration}
+\noindent
+Autofac is an IoC container for Microsoft .NET.
+It manages the dependencies between classes so that applications stay easy to change as they grow in size and complexity.
+This is achieved by treating regular .NET classes as components.
 
+The Autofac have the ASP.NET MVC 3 integration which extends the Autofac by helper methods for simple registration of controllers.
 
 
 \section{MvcContrib}
 \label{sec:mvcContrib}
+\srcurl{http://mvccontrib.codeplex.com/}
 
+\noindent
+MvcContrib project adds functionality and ease-of-use to Microsoft's ASP.NET MVC Framework.
+
+The part of the MvcContrib is \emph{T4MVC} which is a T4 template for ASP.NET MVC apps that creates strongly typed helpers that eliminate the use of literal strings when referring the controllers, actions and views (see \autoref{sec:implT4mvc}).
+
+The MvcContrib contains many useful UI components like the \emph{Grid} which is used for displaying data as table (\autoref{code:adminGrid}).
+
+\begin{Razor}[label=code:adminGrid,caption={Usage of the \emph{Grid} component to show list of user roles}]
+@Html.Grid(Model).Columns(col => {
+		col.For(x => x.RoleId)
+			.Named("Id")
+			.HeaderAttributes(style => "width: 40px;")
+			.Attributes(@class => "center");
+		col.For(x => x.Name);
+		col.For(x => Html.ActionLink("Edit", MVC.Administration.Roles.Edit(x.RoleId)))
+			.Attributes(@class => "center")
+			.HeaderAttributes(style => "width: 50px;")
+			.Encode(false);
+	}).Attributes(@class => "w100")
+\end{Razor} 
 
 
 \section{Elmah}
 \label{sec:elmah}
+\srcurl{http://code.google.com/p/elmah/}
 
+\noindent
+ELMAH (Error Logging Modules and Handlers) is an application-wide error logging facility that is completely pluggable.
+It can be dynamically added to a running ASP.NET web application, or even all ASP.NET web applications on a machine, without any need for re-compilation or re-deployment.
+Once ELMAH has been dropped into a running web application and configured appropriately it is possible to log nearly all unhandled exceptions.
 
+For usage of ELMAH in the web project see \autoref{sec:implErrorLog}
+
+ 
 \section{LESS css}
 \label{sec:lesscss}
+\srcurl{http://lesscss.org/}
+
+\noindent
+LESS is dynamic stylesheet language.
+It extends CSS with dynamic behavior such as variables, mixins, operations and functions.
+LESS can run on both the client-side and server-side.
+
+LESS was used for definition of stylesheets in the web (see \autoref{sec:implLess}).
 
 \subsection{.LESS}
+\srcurl{http://www.dotlesscss.org/}
+
+\noindent
+.LESS (pronounced dot-less) is a .NET port of the LESS JavaScript libary.
+It allows implicit compilation of LESS files to CSS.
+
+
+\section{Data Annotations Extensions}
+\label{sec:dataAnnoExt}
+\srcurl{http://dataannotationsextensions.org/}
+
+\noindent
+Data Annotations Extensions provides common validation attributes which extend the built-in ASP.NET DataAnnotations. 
+The core library provides server-side validation attributes that can be used in any .NET 4.0 project.
+
+For the the usage of the annotations see \autoref{sec:implDataAnn}.
 
 
 
+\section{Yahoo! UI Library}
+\label{sec:yuiLib}
+\srcurl{http://yuicompressor.codeplex.com/}
+
+\noindent
+Yahoo! UI Library is a .NET port of the Yahoo! UI Library's YUI Compressor Java project.
+The objective of this project is to compress any Javascript and Cascading Style Sheets to an efficient level that works exactly as the original source, before it was minified.
+
+The Yahoo! UI Library is used for minimalization of JavaScript files to improve site performace \autoref{sec:implJs}. 
+
+
+\section{ReCaptcha}
+\label{sec:reCaptcha}
+\srcurl{http://recaptcha.net/}
+
+\noindent
+reCAPTCHA is a free CAPTCHA\footnote{A CAPTCHA is a program that can tell whether its user is a human or a computer.} service that helps to digitize books, newspapers and old time radio shows.
+
+reCAPTCHA is used at user registration and feedback pages to prevent spamming by bots.
 
 
 
+\section{Google Analytics}
+\label{sec:ga}
+\srcurl{http://www.google.com/analytics/}
 
+\noindent
+Google Analytics (GA) is a free service offered by Google that collects visitors data and generates detailed statistics about them.
+The GA can track visitors from all referrers, including search engines, social networks, etc.
+
+The GA is used for tracking the activity of users in the web user interface.
 
 
 

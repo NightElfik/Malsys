@@ -7,6 +7,9 @@ using System.Diagnostics;
 using Malsys.SemanticModel.Compiled;
 
 namespace Malsys.Compilers {
+	/// <summary>
+	/// The main compiler for compilation of the AST.
+	/// </summary>
 	/// <remarks>
 	/// All public members are thread safe if supplied compilers are thread safe.
 	/// </remarks>

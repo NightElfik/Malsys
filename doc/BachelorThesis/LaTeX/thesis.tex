@@ -2,8 +2,13 @@
 % makeindex %.nlo -s nomencl.ist -o %.nls
 % biber %
 
-\newcommand{\debugging}{true}
-%\newcommand{\corneranim}{true}
+%\newcommand{\debugging}{\relax}  % uncomment to activane includeonly macro to chose what to include
+%\newcommand{\book}{\relax}  % uncoment if rendering printed version, there are some color tweaks for printing
+
+\ifdefined\book
+	\newcommand{\corneranim}{\relax}
+\fi
+
 
 %% Version for one sided printing:
 % margins: left 40mm, right 25mm, top and bottom 25mm
@@ -106,9 +111,15 @@
 \addbibresource{bibliography.bib}
 
 \usepackage{color}
-\definecolor{linkClr}{RGB}{64,0,0}  % dark red
-\definecolor{citeClr}{RGB}{0,64,0}  % dark green
-\definecolor{urlClr}{RGB}{0,0,64}  % dark blue
+\ifdefined\book
+	\definecolor{linkClr}{RGB}{0,0,0}
+	\definecolor{citeClr}{RGB}{0,0,0}
+	\definecolor{urlClr}{RGB}{0,0,0}
+\else
+	\definecolor{linkClr}{RGB}{64,0,0}  % dark red
+	\definecolor{citeClr}{RGB}{0,64,0}  % dark green
+	\definecolor{urlClr}{RGB}{0,0,64}  % dark blue
+\fi
 
 \usepackage{listings}  % \lstlisting enviroment - source code highliting
 
@@ -117,10 +128,12 @@
 
 \ifdefined\corneranim
 	\usepackage{eso-pic}
+	\newcommand\AtPageLowerLeftMargin[1]{\AtPageUpperLeft{%
+		\put(4,\LenToUnit{-0.993\paperheight}){#1}}}
 	\AddToShipoutPictureBG{%
-		\AtPageLowerLeft{\ifodd\thepage\else
+		\AtPageLowerLeftMargin{\ifodd\thepage\else
 			\ifnum\thepage>5\relax
-				\includegraphics[width=2cm]{\thepage}%
+				\includegraphics[width=15mm]{\thepage}%
 			\else\fi
 		\fi}}%
 \else\fi
@@ -153,6 +166,8 @@
 		\par\nobreak
 		\vskip 20\p@
 }}
+
+%\renewcommand*{\subsectionautorefname}{section}
 \makeatother
 
 % Definition of chapter macro for chapters that are not numbered but they are in TOC.
@@ -167,6 +182,8 @@
 % macros for L-system to avoid hyphenation of it.
 \newcommand{\lsystem}{\mbox{L-system}\xspace}
 \newcommand{\lsystems}{\mbox{L-systems}\xspace}
+%\newcommand{\DD}{\mbox{2-D}\xspace}
+%\newcommand{\DDD}{\mbox{3-D}\xspace}
 
 % less spavec in lists
 \newenvironment{itemize*}
@@ -199,7 +216,7 @@
 \includeonly{
 %frontpage,
 %thanks,
-%abstract,
+abstract,
 %introduction,
 %lsystems,
 %design,
@@ -210,11 +227,13 @@
 %apx-aboutFigures,
 %apx-userDoc,
 %apx-componentCreation,
-apx-publish,
+%apx-libraryUsage,
+%apx-publish,
 %apx-stdLib,
 %apx-3rdParty,
 %apx-components,
 %apx-configurations,
+%apx-coloring
 }
 \fi
 
@@ -223,6 +242,9 @@ apx-publish,
 %==============================================================================================================================
 
 \begin{document}
+
+\renewcommand*{\subsectionautorefname}{section}
+\renewcommand*{\subsubsectionautorefname}{section}
 
 \include{frontpage}
 \clearpage
@@ -257,14 +279,19 @@ apx-publish,
 
 \printnomenclature
 
-%\addcontentsline{toc}{chapter}{List of Figures}
-%\listoffigures
+% http://tex.stackexchange.com/questions/14510/how-to-show-listoffigures-and-listoftables-on-one-page-and-in-the-toc
+\begingroup
+	\let\cleardoublepage\clearpage
 
-%\addcontentsline{toc}{chapter}{List of Tables}
-%\listoftables
-
-%\addcontentsline{toc}{chapter}{List of Source codes}
-%\lstlistoflistings
+	\addcontentsline{toc}{chapter}{List of Figures}
+	\listoffigures
+	
+	\addcontentsline{toc}{chapter}{List of Tables}
+	\listoftables
+	
+	\addcontentsline{toc}{chapter}{List of Source codes}
+	\lstlistoflistings
+\endgroup
 
 
 \openright
@@ -274,12 +301,14 @@ apx-publish,
 \include{apx-aboutFigures}
 \include{apx-userDoc}
 \include{apx-componentCreation}
+\include{apx-libraryUsage}
 \include{apx-publish}
 \include{apx-3rdParty}
 \include{apx-inputSyntax}
 \include{apx-stdLib}
 \include{apx-components}
 \include{apx-configurations}
+\include{apx-coloring}
 
 \end{appendices}
 

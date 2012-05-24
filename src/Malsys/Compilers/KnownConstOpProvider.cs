@@ -7,6 +7,9 @@ using Malsys.Resources;
 using StringBool = System.Tuple<string, bool>;
 
 namespace Malsys.Compilers {
+	/// <summary>
+	/// Standard implementations of ICompilerConstantsProvider and IOperatorsProvider interfaces.
+	/// </summary>
 	public class KnownConstOpProvider : ICompilerConstantsProvider, ICompilerConstantsContainer, IOperatorsProvider, IOperatorsContainer {
 
 

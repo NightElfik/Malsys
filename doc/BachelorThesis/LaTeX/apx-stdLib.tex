@@ -2,12 +2,12 @@
 \chapter{Standard library source code}
 \label{chap:stdLib}
 
-The Standard library was created for easier creation of inputs.
+The Standard library was created for easier creation of the inputs.
 It contains useful constants, \lsystems for inheritance and predefined process configurations.
-Standard library source code is prepended to all processed inputs in the web user interface.
+The standard library source code is prepended to all processed inputs in the web user interface.
 
-Source code is divided into logical sections.
-Each section contains short comment and explanation of source code.
+The source code is divided into logical sections.
+Each section contains short comment and explanation of the source code.
 
 
 \section{General Constants}
@@ -21,12 +21,12 @@ let e = 2.7182818284590452354;
 
 \section{Component specific constants}
 
-Constants defined in this section helps to add semantic meaning to numeric values which are used for configuring components.
+Constants defined in this section helps to add a semantic meaning to the numeric values which are used for configuration of the components.
 
 \subsection{Svg renderer}
 \label{sec:stdLibSvgRenderer}
 
-Following constants represent line cap values of \emph{LineCap} property of \hyperref[Malsys.Processing.Components.Renderers.SvgRenderer2D]{\emph{SvgRenderer2D}} component.
+Following constants represent line cap values of the \emph{LineCap} property of the \hyperref[Malsys.Processing.Components.Renderers.SvgRenderer2D]{\emph{SvgRenderer2D}} component.
 
 \begin{LsystemBreak}
 let none = 0;
@@ -38,7 +38,7 @@ let round = 2;
 \subsection{ThreeJs renderer}
 \label{sec:stdLibThreeJs}
 
-Following constants represent triangulation strategies which are set to \emph{PolygonTriangulationStrategy} property of \hyperref[Malsys.Processing.Components.Renderers.ThreeJsSceneRenderer3D]{\emph{ThreeJsSceneRenderer3D}} component.
+Following constants represent triangulation strategies which are set to the \emph{PolygonTriangulationStrategy} property of the \hyperref[Malsys.Processing.Components.Renderers.ThreeJsSceneRenderer3D]{\emph{ThreeJsSceneRenderer3D}} component.
 
 \begin{LsystemBreak}
 let fanFromFirstPoint = 0;
@@ -50,9 +50,10 @@ let maxDistanceFromNonTriangulated = 4;
 
 
 \section{Abstract L-systems}
+\label{sec:stdLibLsystems}
 
-\lsystems defined in this section are intended to use as base \lsystems for \lsystems defined by user (for inheritance).
-They are defined as \emph{abstract} to exclude them from processing with \emph{all} keyword.
+\lsystems defined in this section are intended to use as base \lsystems for \lsystems defined by the user (for inheritance).
+They are defined as \emph{abstract} to exclude them from processing with the \emph{all} keyword.
 
 
 \subsection{Standard \lsystem 2D}
@@ -85,8 +86,8 @@ abstract lsystem StdLsystem {
 \subsection{Standard \lsystem 3D}
 
 \lsystem called \emph{StdLsystem3D} defines interpretation for usual symbols and correctly defines branches.
-The only difference between \texttt{StdLsystem3D} and \texttt{StdLsystem} is in interpretation of + and - symbols.
-2D image must be rendered in XY plane thus + and - symbols must do Pitch but in 3D for pitch is more intuitive to use \^{} and \& symbols.
+The only difference between the \texttt{StdLsystem3D} and \texttt{StdLsystem} is in the interpretation of \texttt{+} and \texttt{-} symbols.
+2D image must be rendered in the XY plane, thus \texttt{+} and \texttt{-} symbols must do a pitch but in 3D for pitch is more intuitive to use \texttt{\^{}} and \texttt{\&} symbols.
 
 \begin{LsystemBreak}
 abstract lsystem StdLsystem3D {
@@ -119,7 +120,7 @@ abstract lsystem StdLsystem3D {
 \subsection{Branches}
 
 \lsystem \emph{Branches} defines interpretation for branches correctly.
-To be able to do context rewriting correctly the Rewriter component must know what symbols start and end branches.
+To be able to do context rewriting correctly the Rewriter component must know what symbols start and end the branches.
 This should be the same symbol as supplied to interpreter.
 
 \begin{LsystemBreak}
@@ -158,24 +159,20 @@ abstract lsystem Polygons {
 \subsection{Symbol printer}
 \label{sec:stdLibSymbolPrinter}
 
-Process configuration \emph{SymbolPrinter} prints rewrited symbols as text.
+Process configuration called \emph{SymbolPrinter} prints rewrited symbols as text.
 It can be used to familiarize with \lsystem principles.
-Advanced users can use is while "debugging" some more complex \lsystem.
+Advanced users can use is while debugging some more complex \lsystems.
 
 \begin{LsystemBreak}
 configuration SymbolPrinter {
 	component AxiomProvider typeof AxiomProvider;
-	component RandomGeneratorProvider
-		typeof RandomGeneratorProvider;
+	component RandomGeneratorProvider typeof RandomGeneratorProvider;
 
 	container Rewriter typeof IRewriter default SymbolRewriter;
-	container Iterator typeof IIterator
-		default MemoryBufferedIterator;
-	container SymbolProcessor typeof ISymbolProcessor
-		default SymbolsSaver;
+	container Iterator typeof IIterator default MemoryBufferedIterator;
+	container SymbolProcessor typeof ISymbolProcessor default SymbolsSaver;
 
-	connect RandomGeneratorProvider
-		to Iterator.RandomGeneratorProvider;
+	connect RandomGeneratorProvider	to Iterator.RandomGeneratorProvider;
 	connect AxiomProvider to Iterator.AxiomProvider;
 	connect Iterator to Rewriter.SymbolProvider;
 	connect Rewriter to Iterator.SymbolProvider;
@@ -187,36 +184,29 @@ configuration SymbolPrinter {
 \subsection{Svg renderer}
 \label{configurationSvgRenderer}
 
-Process configuration \emph{SvgRenderer} interprets symbols with \hyperref[Malsys.Processing.Components.Interpreters.TurtleInterpreter]{\emph{TurtleInterpreter}} component
-	and renders the with \hyperref[Malsys.Processing.Components.Renderers.SvgRenderer2D]{\emph{SvgRenderer2D}} component to SVG (Scalable Vector Graphics).
+Process configuration \emph{SvgRenderer} interprets symbols with the \hyperref[Malsys.Processing.Components.Interpreters.TurtleInterpreter]{\emph{TurtleInterpreter}} component
+	and renders the with the \hyperref[Malsys.Processing.Components.Renderers.SvgRenderer2D]{\emph{SvgRenderer2D}} component to the SVG (Scalable Vector Graphics).
 However this process configuration is relatively universal and it can be used any 2D or 3D renderer component in the \emph{Renderer} container.
-Note that \lsystem in interpreted in 3D but z-coordinate from data sent to \hyperref[Malsys.Processing.Components.Renderers.SvgRenderer2D]{\emph{SvgRenderer2D}} is cut off.
+Note that \lsystem is interpreted in 3D but z-coordinate from data sent to the \hyperref[Malsys.Processing.Components.Renderers.SvgRenderer2D]{\emph{SvgRenderer2D}} are cut off.
 
 \begin{LsystemBreak}
 configuration SvgRenderer {
 	component AxiomProvider typeof AxiomProvider;
-	component RandomGeneratorProvider
-		typeof RandomGeneratorProvider;
-	component LsystemInLsystemProcessor
-		typeof LsystemInLsystemProcessor;
+	component RandomGeneratorProvider typeof RandomGeneratorProvider;
+	component LsystemInLsystemProcessor typeof LsystemInLsystemProcessor;
 
 	container Rewriter typeof IRewriter default SymbolRewriter;
-	container Iterator typeof IIterator
-		default MemoryBufferedIterator;
-	container InterpreterCaller typeof IInterpreterCaller
-		default InterpreterCaller;
-	container Interpreter typeof IInterpreter
-		default TurtleInterpreter;
+	container Iterator typeof IIterator default MemoryBufferedIterator;
+	container InterpreterCaller typeof IInterpreterCaller default InterpreterCaller;
+	container Interpreter typeof IInterpreter default TurtleInterpreter;
 	container Renderer typeof IRenderer default SvgRenderer2D;
 
-	connect RandomGeneratorProvider
-		to Iterator.RandomGeneratorProvider;
+	connect RandomGeneratorProvider to Iterator.RandomGeneratorProvider;
 	connect AxiomProvider to Iterator.AxiomProvider;
 	connect Iterator to Rewriter.SymbolProvider;
 	connect Rewriter to Iterator.SymbolProvider;
 	connect InterpreterCaller to Iterator.OutputProcessor;
-	connect LsystemInLsystemProcessor
-		to InterpreterCaller.LsystemInLsystemProcessor;
+	connect LsystemInLsystemProcessor to InterpreterCaller.LsystemInLsystemProcessor;
 	connect Renderer to Interpreter.Renderer;
 }
 \end{LsystemBreak}
@@ -225,36 +215,28 @@ configuration SvgRenderer {
 \subsection{ThreeJs renderer}
 \label{configurationThreeJsRenderer}
 
-Process configuration \emph{ThreeJsRenderer} is very similar to \hyperref[configurationSvgRenderer]{\emph{SvgRenderer}}.
-Only difference is in used renderer component in the \emph{Renderer} container.
-This process configuration uses \hyperref[Malsys.Processing.Components.Renderers.ThreeJsSceneRenderer3D]{\emph{ThreeJsSceneRenderer3D}} to render 3D scene for Three.js engine [\ref{sec:ThreeJs}].
+Process configuration \emph{ThreeJsRenderer} is very similar to the \hyperref[configurationSvgRenderer]{\emph{SvgRenderer}}.
+The only difference is in used renderer component in the \emph{Renderer} container.
+This process configuration uses the \hyperref[Malsys.Processing.Components.Renderers.ThreeJsSceneRenderer3D]{\emph{ThreeJsSceneRenderer3D}} to render 3D scene for the Three.js engine [\ref{sec:ThreeJs}].
 
 \begin{LsystemBreak}
 configuration ThreeJsRenderer {
 	component AxiomProvider typeof AxiomProvider;
-	component RandomGeneratorProvider
-		typeof RandomGeneratorProvider;
-	component LsystemInLsystemProcessor
-		typeof LsystemInLsystemProcessor;
+	component RandomGeneratorProvider typeof RandomGeneratorProvider;
+	component LsystemInLsystemProcessor typeof LsystemInLsystemProcessor;
 
 	container Rewriter typeof IRewriter default SymbolRewriter;
-	container Iterator typeof IIterator
-		default MemoryBufferedIterator;
-	container InterpreterCaller typeof IInterpreterCaller
-		default InterpreterCaller;
-	container Interpreter typeof IInterpreter
-		default TurtleInterpreter;
-	container Renderer typeof IRenderer
-		default ThreeJsSceneRenderer3D;
+	container Iterator typeof IIterator default MemoryBufferedIterator;
+	container InterpreterCaller typeof IInterpreterCaller default InterpreterCaller;
+	container Interpreter typeof IInterpreter default TurtleInterpreter;
+	container Renderer typeof IRenderer default ThreeJsSceneRenderer3D;
 
-	connect RandomGeneratorProvider
-		to Iterator.RandomGeneratorProvider;
+	connect RandomGeneratorProvider to Iterator.RandomGeneratorProvider;
 	connect AxiomProvider to Iterator.AxiomProvider;
 	connect Iterator to Rewriter.SymbolProvider;
 	connect Rewriter to Iterator.SymbolProvider;
 	connect InterpreterCaller to Iterator.OutputProcessor;
-	connect LsystemInLsystemProcessor
-		to InterpreterCaller.LsystemInLsystemProcessor;
+	connect LsystemInLsystemProcessor to InterpreterCaller.LsystemInLsystemProcessor;
 	connect Renderer to Interpreter.Renderer;
 }
 \end{LsystemBreak}
@@ -264,34 +246,27 @@ configuration ThreeJsRenderer {
 
 Process configuration \emph{HexAsciiRenderer} interpret symbols with special \hyperref[Malsys.Processing.Components.Interpreters.HexaAsciiInterpreter]{\emph{HexaAsciiInterpreter}}
 	which can move forward by fixed steps (not by any distance) and it can turn only by multiples of sixty degrees thus result will be in hexagonal grid.
-\hyperref[Malsys.Processing.Components.Interpreters.HexaAsciiInterpreter]{\emph{HexaAsciiInterpreter}} can communicate only with  is supposed to communicate with
-	\hyperref[Malsys.Processing.Components.Renderers.TextRenderer]{\emph{TextRenderer}} component which is used to generate ASCII art-style output.
+The \hyperref[Malsys.Processing.Components.Interpreters.HexaAsciiInterpreter]{\emph{HexaAsciiInterpreter}} can communicate only with  is supposed to communicate with
+	the \hyperref[Malsys.Processing.Components.Renderers.TextRenderer]{\emph{TextRenderer}} component which is used to generate ASCII art-style output.
 
 \begin{LsystemBreak}
 configuration HexAsciiRenderer {
 	component AxiomProvider typeof AxiomProvider;
-	component RandomGeneratorProvider
-		typeof RandomGeneratorProvider;
-	component LsystemInLsystemProcessor
-		typeof LsystemInLsystemProcessor;
+	component RandomGeneratorProvider typeof RandomGeneratorProvider;
+	component LsystemInLsystemProcessor typeof LsystemInLsystemProcessor;
 
 	container Rewriter typeof IRewriter default SymbolRewriter;
-	container Iterator typeof IIterator
-		default MemoryBufferedIterator;
-	container InterpreterCaller typeof IInterpreterCaller
-		default InterpreterCaller;
-	container Interpreter typeof IInterpreter
-		default HexaAsciiInterpreter;
+	container Iterator typeof IIterator default MemoryBufferedIterator;
+	container InterpreterCaller typeof IInterpreterCaller default InterpreterCaller;
+	container Interpreter typeof IInterpreter default HexaAsciiInterpreter;
 	container Renderer typeof IRenderer default TextRenderer;
 
-	connect RandomGeneratorProvider
-		to Iterator.RandomGeneratorProvider;
+	connect RandomGeneratorProvider to Iterator.RandomGeneratorProvider;
 	connect AxiomProvider to Iterator.AxiomProvider;
 	connect Iterator to Rewriter.SymbolProvider;
 	connect Rewriter to Iterator.SymbolProvider;
 	connect InterpreterCaller to Iterator.OutputProcessor;
-	connect LsystemInLsystemProcessor
-		to InterpreterCaller.LsystemInLsystemProcessor;
+	connect LsystemInLsystemProcessor to InterpreterCaller.LsystemInLsystemProcessor;
 	connect Renderer to Interpreter.Renderer;
 }
 \end{LsystemBreak}
@@ -328,7 +303,7 @@ configuration InnerLsystemConfig {
 The \emph{ConstantDumper} process configuration contains single component, the \hyperref[Malsys.Processing.Components.Common.ConstantsDumper]{\emph{ConstantsDumper}} which just prints all defined global constants as text.
 This can be used to experiment with expressions.
 
-Even though \hyperref[Malsys.Processing.Components.Common.ConstantsDumper]{\emph{ConstantsDumper}} do not need any \lsystems to prints constants (\lsystems are actually ignored), process system of the library can process only \lsystems.
+Even though the \hyperref[Malsys.Processing.Components.Common.ConstantsDumper]{\emph{ConstantsDumper}} do not need any \lsystems to prints constants (\lsystems are actually ignored), process system of the library can process only \lsystems.
 To over come this restriction with no effort the \emph{Constants} \lsystem is defined to be used in the process statement as follows:
 
 \noindent

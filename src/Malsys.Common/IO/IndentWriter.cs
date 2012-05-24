@@ -8,6 +8,9 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 
 namespace Malsys.IO {
+	/// <summary>
+	/// Abstract class that allows to write indented text.
+	/// </summary>
 	public abstract class IndentWriter {
 
 		protected bool lineIndented = false;

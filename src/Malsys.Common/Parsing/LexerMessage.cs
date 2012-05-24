@@ -4,6 +4,9 @@
  */
 
 namespace Malsys.Parsing {
+	/// <summary>
+	/// Message enumeration for the lexer from the Malsys.Parser (I don't know how to write this in the F#).
+	/// </summary>
 	public enum LexerMessage {
 
 		[Message(MessageType.Error, "Unrecognized input `{0}`.")]

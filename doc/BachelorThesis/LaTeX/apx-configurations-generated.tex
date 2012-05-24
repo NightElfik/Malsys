@@ -192,8 +192,8 @@
 	\paragraph{Settable symbol properties}\textcolor{gray}{of SvgRenderer}
 	\begin{description*}
 		\item[axiom] of \hyperref[Malsys.Processing.Components.Common.AxiomProvider]{AxiomProvider}
-			-- Storage for axiom.
-            Value is provided to connected component.
+			-- Initial string of symbols.
+            The value is provided to the connected component.
 		\item[Symbols] of \hyperref[Malsys.Processing.Components.Common.AxiomProvider]{AxiomProvider}
 			-- Symbol string which is provided.
 		\item[contextIgnore] of \hyperref[Malsys.Processing.Components.Rewriters.SymbolRewriter]{SymbolRewriter}
@@ -210,10 +210,11 @@
 		\item[SymbolProvider] of \hyperref[Malsys.Processing.Components.Rewriters.SymbolRewriter]{SymbolRewriter}
 		(connectable type: \hyperref[Malsys.Processing.Components.ISymbolProvider]{ISymbolProvider})
 		\item[SymbolProvider] of \hyperref[Malsys.Processing.Components.RewriterIterators.MemoryBufferedIterator]{MemoryBufferedIterator}
-		(connectable type: \hyperref[Malsys.Processing.Components.ISymbolProvider]{ISymbolProvider})
+ \textit{optional} 		(connectable type: \hyperref[Malsys.Processing.Components.ISymbolProvider]{ISymbolProvider})
 			-- Iterator iterates symbols by reading all symbols from SymbolProvider every iteration.
             Rewriter should be connected as SymbolProvider and rewriters's SymbolProvider should be this Iterator.
             This setup creates loop and iterator rewrites string of symbols every iteration.
+            When number of iterations is set to 0 (of left default as 0) only axiom is used and this that case this property can be left unconnected.
 		\item[AxiomProvider] of \hyperref[Malsys.Processing.Components.RewriterIterators.MemoryBufferedIterator]{MemoryBufferedIterator}
 		(connectable type: \hyperref[Malsys.Processing.Components.ISymbolProvider]{ISymbolProvider})
 			-- Axiom provider component provides initial string of symbols.

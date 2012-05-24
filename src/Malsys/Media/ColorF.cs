@@ -4,6 +4,9 @@
  */
 
 namespace Malsys.Media {
+	/// <summary>
+	/// ARGB color stored as four floats.
+	/// </summary>
 	public struct ColorF {
 
 		// for fast conversion to hex

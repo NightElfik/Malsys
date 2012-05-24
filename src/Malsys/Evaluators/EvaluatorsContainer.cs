@@ -6,8 +6,13 @@ using Autofac;
 
 namespace Malsys.Evaluators {
 	/// <summary>
-	/// All evaluators in this container have single-instance lifetime.
+	/// IoC container for evaluators.
+	/// To extend it you can inherit this class and override the Resolve{T} method
+	/// or you can implement new implementation if the IEvaluatorsContainer interface.
 	/// </summary>
+	/// <remarks>
+	/// All evaluators in this container have single-instance lifetime.
+	/// </remarks>
 	public class EvaluatorsContainer : IEvaluatorsContainer {
 
 

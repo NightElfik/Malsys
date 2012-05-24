@@ -1,0 +1,69 @@
+lsystem Sunflower(seedCount = 500, altSeedCount = 100, greenLeafCount = 30, yellowLeafCount = 40) extends Branches {
+
+	set symbols axiom = /(20) +(20) ^(-10) A(0);
+	set randomSeed = 0;
+
+	set iterations = seedCount + altSeedCount + greenLeafCount + yellowLeafCount ;
+
+	set cameraPosition = {180, 792, 249};
+	set cameraUpVector = {-0.96, 0.26, 0.12};
+	set cameraTarget = {31, 17, 28};
+
+
+	interpret f as MoveForward;
+	interpret Seed as DrawForward(24, 18, #332211);
+	interpret AltSeed as DrawForward(24, 18, #24180C);
+	interpret GreenLeaf as lsystem Leaf(lighten(#00AA00, random(0, 0.1)));
+	interpret YellowLeaf as lsystem Leaf(lighten(#E5C500, random(0, 0.1)));
+	interpret + as Yaw(137.515);
+	interpret / as Roll(45);
+	interpret ^ as Pitch(90);
+	interpret & as Pitch(-90);
+
+
+	let altSeedTreshold = seedCount;
+	let greenLeafTreshold = seedCount + altSeedCount;
+	let yellowLeafTreshold = seedCount + altSeedCount + greenLeafCount;
+
+	rewrite A(n) where n > yellowLeafTreshold
+		to + [ f(n^0.5 * 10 - 20) ^(random(5, 15)) YellowLeaf ] A(n+1);
+	rewrite A(n) where n > greenLeafTreshold
+		to + [ f(n^0.5 * 10 - 20) & f(10) ^ ^(random(0, 5)) GreenLeaf ] A(n+1);
+	rewrite A(n) where n > altSeedTreshold
+		to + [ f(n^0.5 * 10) ^ f(-12) /(random(-20, 20)) AltSeed ] A(n+1);
+	rewrite A(n)
+		to + [ f(n^0.5 * 10 - 10) / Seed ] A(n+1);
+}
+
+abstract lsystem Leaf(color = #E5C500) extends Polygons {
+
+	let la = 5;
+	let ra = 1.11;
+	let lb = 1;
+	let rb = 1.2;
+	let pd = 1;
+	let angle = 60;
+
+	set symbols axiom =
+		[ [ +(angle) ^ B(0) <(color) . ] A(1, angle) . > ]
+		[ [ +(-angle) ^ B(0) <(color) . ] A(1, -angle) . > ];
+	set iterations = random(20, 21);
+
+	interpret G as MoveForward;
+	interpret + as Yaw(60);
+	interpret - as Yaw(-60);
+	interpret ^ as Pitch(10);
+
+	rewrite A(t, angle) to
+		. G(la, ra) . [ +(angle) ^ B(t) . > ]
+		[ +(angle) ^ B(t) <(color) . ] A(t+1, angle);
+	rewrite B(t) where t > 0 to G(lb, rb) B(t - pd);
+	rewrite G(s, r) to G(s*r, r);
+}
+
+process all with ThreeJsRenderer;
+
+// thumbnail extension
+/*
+process Sunflower(200, 20, 5, 20) with ThreeJsRenderer;
+*/

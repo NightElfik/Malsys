@@ -3,16 +3,16 @@
 \chapter{User documentation}
 \label{chap:userDoc}
 
-In this appendix is explained how to process \lsystems in web user interface.
-There is also step-by-step tutorial how to create an \lsystem -- the Pthagoras tree.
+In this appendix is explained how to process the \lsystems in the web user interface.
+There is also a step-by-step tutorial how to create an \lsystem from scratch -- the Pythagoras tree.
 
 \section{How to process \lsystem}
 
 Processing of the input on the web is fairly easy.
 Following explanation will be referring to \autoref{fig:processScreenExplained}.
 
-To process \lsystem click on the \emph{\lsystem processor} link (A) in the main menu of the web, enter the \lsystem code into the text area (C) and click \emph{Process \& display results} button.
-Then you will see results (D) and eventually warnings or errors (B).
+To process the \lsystem click on the \emph{\lsystem processor} link (A) in the main menu of the web, enter the the \lsystem code into the text area (C) and click the \emph{Process \& display results} button.
+Then you will see the results (D) and eventually some warnings or errors (B).
 
 \begin{figure}[p]
 	\centering
@@ -27,15 +27,15 @@ Then you will see results (D) and eventually warnings or errors (B).
 The creation of actual \lsystem is little bit harder.
 Lets start with explanation of the Pythagoras tree itself.
 
-The Pythagoras tree is binary tree which starts from root at the bottom\footnote{With root at the bottom (note for computer scientists).}.
-From each branch (including the root) grows two other branches.
-It is named by Pythagoras because if we denote length of the base branch as $c$ and length of branches raised from the base branch as $a$ and $b$ Pythagorean theorem describes theirs relation as $c^2 = a^2 + b^2$.
-If the branches are drawn as squares the formula also says that area of the base square is equal to sum of areas of its child squares.
-The relation applies to all squares in the tree.
+The Pythagoras tree is a binary tree which starts from the root\footnote{The root is at the bottom (note for computer scientists).}.
+Two other branches grows each branch (including the root).
+It is named by the Pythagoras because if we denote the length of the base branch as $c$ and the length of branches raised from the base branch as $a$ and $b$ the Pythagorean theorem describes theirs relation as $c^2 = a^2 + b^2$.
+If the branches are drawn as squares, the formula also says that the area of the base square is equal to sum of the areas of its child squares.
+The relation applies to all the squares in the tree.
 
-Pythagoras can be easily built from squares, the angle of branches determines the size of squares.
+Pythagoras can be easily built from squares, the angle of branches determines the size of the squares.
 The branching setup is shown in \autoref{fig:pythagorasExplained}.
-If we denote left angle of triangle as $\alpha$ and length of the edge of the base square as $c$ then length of the edge of the left branch is equal to $b = c \cdot \cos(\alpha)$ and similarly for right branch  $a = c \cdot \sin(\alpha)$
+If we denote the left angle of the triangle as $\alpha$ and the length of the edge of the base square as $c$ then the length of the edge of the left branch is equal to the $b = c \cdot \cos(\alpha)$ and similarly for the right branch ($a = c \cdot \sin(\alpha)$).
 
 \begin{figure}[H]
 	\centering
@@ -75,24 +75,23 @@ If we denote left angle of triangle as $\alpha$ and length of the edge of the ba
 	\draw [draw=white,dashed,very thick] (10mm,0mm) arc (0:180:5mm);	
 	
 \end{tikzpicture}
-	\caption{The branching in Pythagoras tree with branches as squares}
+	\caption{The branching in the Pythagoras tree with branches as squares}
 	\label{fig:pythagorasExplained}
 \end{figure}
 
 
-Lets try to draw similar scheme using \lsystem.
-For drawing we will use the \emph{SvgRenderer} process configuration which renders \lsystems as 2D turtle graphics.
-%The actual component responsible for rendering is the \emph{SvgRenderer2D} component (this can be found in the definition of the \emph{SvgRenderer} process configuration).
+Lets try to draw similar scheme using the \lsystem.
+For drawing we will use the \emph{SvgRenderer} process configuration which renders the \lsystems with 2D turtle graphics.
 
-First we need to draw a square.
+Firstly, we need to draw a square.
 The simplest square is a line with the same width as length.
-If we look in consolidated documentation of the \emph{SvgRenderer} process configuration (appendix \ref{chap:configurations}) in the section \emph{Interpretation methods} we can see that there is method called \emph{DrawForward} which  is exactly what we need.
+If we look in the consolidated documentation of the \emph{SvgRenderer} process configuration (appendix \ref{chap:configurations}) in the section \emph{Interpretation methods} we can see that there is a method called \emph{DrawForward} which is exactly what we need.
 
-Lets write first code.
-We start with \lsystem called \emph{PythagorasTree} with axiom containing single symbol which will be interpreted as square.
-Also we set the scale to 100 (to be able to see the result well) and initial angle to $90{\circ}$ to start to move up (instead of right).
+Lets write our first code.
+We start with the \lsystem called \emph{PythagorasTree} with the axiom containing single symbol which will be interpreted as a square.
+Also we set the scale to 100 (to be able to see the result well) and initial angle to $90^{\circ}$ to start to move up (instead of right).
 These properties can be found in the section \emph{Settable properties} of mentioned documentation (appendix \ref{chap:configurations}).
-The code and its result is in \autoref{fig:userDoc1}
+The code and its result is shown in \autoref{fig:userDoc1}
 
 \newsavebox{\lstBoxUserDocA}
 \begin{lrbox}{\lstBoxUserDocA}
@@ -116,31 +115,31 @@ process PythagorasTree with SvgRenderer;
 		\includegraphics[width=0.3\textwidth]{UserDoc1}
 		\endminipage
 	}
-	\caption{Source code and its result.}
+	\caption{The first square of the Pythagoras tree}
 	\label{fig:userDoc1}
 \end{figure}
 
-The first problem is obvious at the first sight.
-By default lines have round caps.
-After quick look in the documentation there is property called \emph{lineCap}.
-Its value 0 will remove caps.
-To keep source code more readable we ca use predefined constant \emph{none} for it (see appendix \ref{sec:stdLibSvgRenderer}).
+The first problem is obvious.
+By default, lines have round caps.
+After a quick look into the documentation there is a property called \emph{lineCap}.
+Its value 0 will remove the round caps.
+To keep the source code more readable we can use a predefined constant \emph{none} for it (see appendix \ref{sec:stdLibSvgRenderer}).
 
 \begin{Lsystem}
 set lineCap = none;
 \end{Lsystem}
 
-Now we need an angle for counting the sizes of branches.
-Lets define a local variable called \emph{alpha} with vale of $90{30}$.
-The value of $\beta$ angle (in \autoref{fig:pythagorasExplained}) is obviously $90 - \alpha$ so we can define it as local variable too.
+Now we need an angle for counting the sizes of the branches.
+We will define the angle as a local variable called \emph{alpha} with vale of $90^{\circ}$.
+The value of the $\beta$ angle (in \autoref{fig:pythagorasExplained}) is obviously $90 - \alpha$ so we can define it as a local variable too.
 
 \begin{Lsystem}
 let alpha = 30;
 let beta = 90 - alpha;
 \end{Lsystem}
 
-To be able to turn by these angles we must define interpretation methods.
-Lets define the symbol $+$ as turn left by $\alpha$ and symbol $-$ as turn right by $\beta$ (equally as turn left by $-\beta$).
+To be able to turn by these angles we must define an interpretation methods.
+Lets define the symbol \texttt{+} as turn left by $\alpha$ degrees and symbol \texttt{-} as turn right by $\beta$ degrees (equally as turn left by $-\beta$ degrees).
 
 \begin{Lsystem}
 interpret + as TurnLeft(alpha);
@@ -148,8 +147,8 @@ interpret - as TurnLeft(-beta);
 \end{Lsystem}
 
 We need to be able to draw branches easily.
-For this are \emph{Bracketed \lsystems} which allows saving and loading of the interpretation state.
-We can define interpretation on our ow by following code.
+For this are the \emph{Bracketed \lsystems} which allows saving and loading of the interpretation state.
+We can define the interpretation on our ow by following code.
 
 \begin{Lsystem}
 interpret [ as StartBranch;
@@ -162,14 +161,14 @@ However it is much easier to just inherit the \emph{Branches} \lsystem which wil
 lsystem PythagorasTree extends Branches {
 \end{Lsystem}
 
-To be able to draw squares with any size we will upgrade the interpretation rule to take single parameter from interpreting symbol and use it as line length and width.
+To be able to draw squares with any size we will upgrade the interpretation rule to take single parameter from the interpreting symbol and use it as line length and width.
 
 \begin{Lsystem}
 interpret S(size) as DrawForward(size, size);
 \end{Lsystem}
 
-The last thing we need is to skip the space between base square and the branch (mark as dotted line in \autoref{fig:pythagorasExplained}).
-For this we have the interpretation method \emph{MoveForward}.
+The last thing we need to do is to skip the space between base square and the branch (mark as dotted line in \autoref{fig:pythagorasExplained}).
+For this we have the interpretation method called \emph{MoveForward}.
 We do not need to define explicit parameters because all parameters from interpreted symbol are automatically forwarded to the interpretation method.
 
 \begin{Lsystem}
@@ -177,14 +176,14 @@ interpret m as MoveForward;
 \end{Lsystem}
 
 
-Now we can draw squares, move without drawing, we can turn and we can do branches so lets put it all together.
-To draw branch we need to
+Now we can draw the squares, move without drawing, we can turn and we can do the branching so lets put it all together.
+To draw a branch of the Pythagoras tree we need to
 	\begin{inparaenum}[{\itshape a})]
-		\item start branch,
+		\item start the branch,
 		\item turn left,
 		\item move without drawing by half of the size of the other branch than we are drawing,
-		\item draw square and
-		\item end branch.
+		\item draw the square and
+		\item end the branch.
 	\end{inparaenum}
 Likewise with the right branch.
 
@@ -233,7 +232,7 @@ process PythagorasTree with SvgRenderer;
 		\includegraphics[width=\textwidth]{UserDoc2}
 		\endminipage
 	}
-	\caption{Source code and its result.}
+	\caption{Branching of the Pythagoras thee}
 	\label{fig:userDoc2}
 \end{figure}
 
@@ -241,15 +240,15 @@ This was the hard part.
 Now \lsystems will do the hard work for us.
 We need to apply the creation of new branches to again and again.
 
-Because we need to rewrite only last level of branches we will define new symbol $X$ for already rewritten square.
-We can add it to existing interpretation rule.
+Because we need to rewrite only the last level of branches we will define a new symbol \texttt{X} for already rewritten squares.
+We can add it to the existing interpretation rule.
 
 \begin{Lsystem}
 interpret S X (size) as DrawForward(size, size);
 \end{Lsystem}
 
 Now for the rewrite rule.
-All we need to do is to copy the axiom as the rewrite rule and use the parameter of rewritten symbol as base value.
+All we need to do is to copy the axiom as the rewrite rule and use the parameter of rewritten symbol as the base size.
 
 \begin{Lsystem}
 rewrite S(x) to X(x)
@@ -257,7 +256,7 @@ rewrite S(x) to X(x)
 	[ - m(x * cos(deg2rad(alpha)) / 2) S(x * sin(deg2rad(alpha))) ];
 \end{Lsystem}
 
-To simplify rewrite rule we can define local variables.
+To simplify the rewrite rule we can define local variables.
 
 \begin{Lsystem}
 rewrite S(x)
@@ -265,14 +264,14 @@ rewrite S(x)
 	to X(x) [ + m(a / 2) S(b) ] [ - m(b / 2) S(a) ];
 \end{Lsystem}
 
-To rewrite \lsystem we need to set number of iterations.
+To rewrite the \lsystem we need to set the number of iterations.
 We will use lower number like 2 to see if it is working.
 
 \begin{Lsystem}
 set iterations = 2;
 \end{Lsystem}
 
-Voilà, the Pythagoras tree is growing
+Voilà, the Pythagoras tree is growing.
 
 \newsavebox{\lstBoxUserDocC}
 \begin{lrbox}{\lstBoxUserDocC}
@@ -312,11 +311,29 @@ process PythagorasTree with SvgRenderer;
 		\includegraphics[width=\textwidth]{UserDoc3}
 		\endminipage
 	}
-	\caption{Source code and its result.}
+	\caption{Growing Pythagoras tree}
 	\label{fig:userDoc3}
 \end{figure}
 
-If we weant to generate many Pythagoras trees with different angles we can add it as a parameter to the \lsystem and remove the local variable.
+We can even render it into 3D with minimal effort, just process it with the \emph{ThreeJsRenderer} (and set little more iterations and green color), see \autoref{fig:UserPythagoras3D}.
+
+\begin{Lsystem}
+process PythagorasTree with ThreeJsRenderer
+	set initialColor = #00AA00
+	set iterations = 10;
+\end{Lsystem}
+
+\begin{figure}[p]
+	\centering
+	\includegraphics[width=0.7\linewidth]{UserPythagoras}
+	\caption{Pythagoras tree rendered in 3D}
+	\label{fig:UserPythagoras3D}
+\end{figure}
+
+
+If we want to generate many Pythagoras trees with different angles we can add a parameter to the \lsystem.
+This parameter will be used as the $\alpha$ angle.
+Then we just remove the local variable.
 
 \begin{Lsystem}
 lsystem PythagorasTree(alpha = 30) extends Branches{
@@ -331,7 +348,7 @@ process PythagorasTree(40) with SvgRenderer;
 process PythagorasTree(45) with SvgRenderer;
 \end{Lsystem}
 
-Final \lsystem in in \autoref{lsys:userDocFinal} and its results are in \autoref{fig:userDocFinal}
+Final \lsystem is in \autoref{lsys:userDocFinal} and its results are in \autoref{fig:userDocFinal}
 
 \begin{Lsystem}[label=lsys:userDocFinal,caption={Final \lsystem of the Pythagoras tree}]
 lsystem PythagorasTree(alpha = 30) extends Branches{
@@ -355,13 +372,13 @@ process PythagorasTree(40) with SvgRenderer;
 process PythagorasTree(45) with SvgRenderer;
 \end{Lsystem}
 
-\begin{figure}[h!]
+\begin{figure}[p]
 	\centering
-	\subfloat[$\alpha = 30$]{\includegraphics[scale=0.37]{UserDocFinal30}} \hspace{5mm}
-	\subfloat[$\alpha = 35$]{\includegraphics[scale=0.37]{UserDocFinal35}}
+	\subfloat[$\alpha = 30$]{\includegraphics[scale=0.4]{UserDocFinal30}} ~
+	\subfloat[$\alpha = 35$]{\includegraphics[scale=0.4]{UserDocFinal35}}
 	\\
-	\subfloat[$\alpha = 40$]{\includegraphics[scale=0.37]{UserDocFinal40}} \hspace{5mm}
-	\subfloat[$\alpha = 45$]{\includegraphics[scale=0.37]{UserDocFinal45}}
+	\subfloat[$\alpha = 40$]{\includegraphics[scale=0.4]{UserDocFinal40}} ~
+	\subfloat[$\alpha = 45$]{\includegraphics[scale=0.4]{UserDocFinal45}}
 	\caption{Results of finished \lsystem of the Pythagoras tree}
 	\label{fig:userDocFinal}
 \end{figure}

@@ -12,7 +12,7 @@
 
 /* TEAM */
 Developer & Maintainer: Marek Fišer
-E-mail: see the bottom of actual web
+E-mail: see the bottom of actual web (but you can try something like 'any string' @ 'my name'.cz )
 Location: Hradec Králové (Prague), Czech Republic
 
 

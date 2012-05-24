@@ -4,6 +4,9 @@
  */
 
 namespace Malsys {
+	/// <summary>
+	/// Implementation if IMessageLogger interface which do not log anything.
+	/// </summary>
 	public class DullMessageLogger : IMessageLogger {
 
 		private DullMessageLoggerBlock block = new DullMessageLoggerBlock();

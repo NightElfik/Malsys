@@ -44,9 +44,9 @@ namespace Malsys.Media.Triangulation {
 	/// <remarks>
 	/// Ear is triangle made of 3 consecutive points.
 	/// Every ear is scored by given function and best ear is made into triangle and is cut.
-	/// After n steps polygon is triangulated.
+	/// After n - 3 steps polygon is triangulated.
 	///
-	/// The trianguler has detection for polygons which are nearly planar (border points are in plane).
+	/// The trianguler has detection for polygons which are "nearly" planar (border points are in plane).
 	/// It detects the plane projects 3D point to 2D plane and triangulates using robust Delaunay triangulation
 	/// algorithm.
 	/// </remarks>

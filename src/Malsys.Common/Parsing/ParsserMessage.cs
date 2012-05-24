@@ -4,6 +4,9 @@
  */
 
 namespace Malsys.Parsing {
+	/// <summary>
+	/// Message enumeration for the parser from the Malsys.Parser (I don't know how to write this in the F#).
+	/// </summary>
 	public enum ParsserMessage {
 
 		[Message(MessageType.Error, "Constant definition is invalid.")]

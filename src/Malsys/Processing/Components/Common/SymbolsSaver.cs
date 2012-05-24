@@ -10,7 +10,8 @@ using Malsys.SourceCode.Printers;
 
 namespace Malsys.Processing.Components.Common {
 	/// <summary>
-	/// Prints processed symbols to text file.
+	/// Prints all processed symbols (with their parameters) as the text.
+	/// Symbols are delimited with a space.
 	/// </summary>
 	/// <name>Symbols saver</name>
 	/// <group>General</group>

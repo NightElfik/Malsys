@@ -121,7 +121,7 @@ ThreeJsSceneRenderer3D (Renderers.ThreeJsSceneRenderer3D) 	\paragraph{Base compo
 
 \subsection{Axiom provider}
 \label{Malsys.Processing.Components.Common.AxiomProvider}
-Provides symbol property called Axiom which serve as initial string of symbols of L-system.\paragraph{Type name}
+Provides a symbol property called Axiom which serves as an initial string of symbols of an L-system.\paragraph{Type name}
 AxiomProvider (Common.AxiomProvider) 	\paragraph{Base components}
 		\hyperref[Malsys.Processing.Components.Common.SymbolProvider]{SymbolProvider}%
 	\paragraph{Assignable to interfaces}
@@ -131,8 +131,8 @@ AxiomProvider (Common.AxiomProvider) 	\paragraph{Base components}
 	\paragraph{Settable symbol properties}\textcolor{gray}{of Axiom provider}
 	\begin{description*}
 		\item[axiom]
-			-- Storage for axiom.
-            Value is provided to connected component.
+			-- Initial string of symbols.
+            The value is provided to the connected component.
 		\item[Symbols]
 			-- Symbol string which is provided.
 	\end{description*}
@@ -142,12 +142,10 @@ AxiomProvider (Common.AxiomProvider) 	\paragraph{Base components}
 
 \subsection{Constants dumper}
 \label{Malsys.Processing.Components.Common.ConstantsDumper}
-Prints all defined constants from global scope.
-            To use this component process input with some dummy L-system and
-            with process configuration containing only this component.
-            Standard library in Malsys offers predefined L-system and configuration for this.
-            Just use following process statement.
-            process Constants with ConstantDumper;\paragraph{Type name}
+Prints all defined constants from the global scope.
+            To be able to use this component you will need to process some L-system with it.
+            It is possible to define an empty L-system or you can use the Constants L-system from the standard library.
+            The process statement may look like this: process Constants with ConstantDumper;\paragraph{Type name}
 ConstantsDumper (Common.ConstantsDumper) 	\paragraph{Assignable to interfaces}
 		\hyperref[Malsys.Processing.Components.IComponent]{IComponent}%
 , 		\hyperref[Malsys.Processing.Components.IProcessStarter]{IProcessStarter}%
@@ -282,10 +280,11 @@ InnerLsystemIterator (RewriterIterators.InnerLsystemIterator) 	\paragraph{Base c
  \textit{optional} 		(connectable type:  \hyperref[Malsys.Processing.Components.ISymbolProvider]{ISymbolProvider})
 			-- To allow not connecting AxiomProvider component.
 		\item[SymbolProvider]
-		(connectable type:  \hyperref[Malsys.Processing.Components.ISymbolProvider]{ISymbolProvider})
+ \textit{optional} 		(connectable type:  \hyperref[Malsys.Processing.Components.ISymbolProvider]{ISymbolProvider})
 			-- Iterator iterates symbols by reading all symbols from SymbolProvider every iteration.
             Rewriter should be connected as SymbolProvider and rewriters's SymbolProvider should be this Iterator.
             This setup creates loop and iterator rewrites string of symbols every iteration.
+            When number of iterations is set to 0 (of left default as 0) only axiom is used and this that case this property can be left unconnected.
 		\item[OutputProcessor]
 		(connectable type:  \hyperref[Malsys.Processing.Components.ISymbolProcessor]{ISymbolProcessor})
 			-- Result string of symbols is sent to connected output processor.
@@ -301,9 +300,9 @@ InnerLsystemIterator (RewriterIterators.InnerLsystemIterator) 	\paragraph{Base c
 
 \subsection{Inner L-system processor}
 \label{Malsys.Processing.Components.Common.LsystemInLsystemProcessor}
-This is special component for interpreting L-system symbol as another L-system.
-            Inner component systems used to process system must be defined under the name "InnerLsystemConfig".
-            It caches component systems for processing inner L-system to optimize speed of repetitive processing.\paragraph{Type name}
+This is special component for interpreting an L-system symbol as another L-system.
+            The symbol is processed by newly created component system but interpretation calls are processed with all the
+            components in the original system.\paragraph{Type name}
 LsystemInLsystemProcessor (Common.LsystemInLsystemProcessor) 	\paragraph{Assignable to interfaces}
 		\hyperref[Malsys.Processing.Components.Common.ILsystemInLsystemProcessor]{ILsystemInLsystemProcessor}%
 , 		\hyperref[Malsys.Processing.Components.IComponent]{IComponent}%
@@ -341,7 +340,7 @@ InterpreterCaller (Interpreters.InterpreterCaller) 	\paragraph{Assignable to int
 \subsection{Memory-buffered iterator}
 \label{Malsys.Processing.Components.RewriterIterators.MemoryBufferedIterator}
 Iterates L-system from connected symbol provider with connected rewriter.
-            Buffers symbols from rewriter in memory.\paragraph{Type name}
+            Buffers symbols from rewriter in the memory.\paragraph{Type name}
 MemoryBufferedIterator (RewriterIterators.MemoryBufferedIterator) 	\paragraph{Derived components}
 		\hyperref[Malsys.Processing.Components.RewriterIterators.InnerLsystemIterator]{InnerLsystemIterator}%
 	\paragraph{Assignable to interfaces}
@@ -387,10 +386,11 @@ MemoryBufferedIterator (RewriterIterators.MemoryBufferedIterator) 	\paragraph{De
 	\paragraph{Connectable properties}\textcolor{gray}{of Memory-buffered iterator}
 	\begin{description*}
 		\item[SymbolProvider]
-		(connectable type:  \hyperref[Malsys.Processing.Components.ISymbolProvider]{ISymbolProvider})
+ \textit{optional} 		(connectable type:  \hyperref[Malsys.Processing.Components.ISymbolProvider]{ISymbolProvider})
 			-- Iterator iterates symbols by reading all symbols from SymbolProvider every iteration.
             Rewriter should be connected as SymbolProvider and rewriters's SymbolProvider should be this Iterator.
             This setup creates loop and iterator rewrites string of symbols every iteration.
+            When number of iterations is set to 0 (of left default as 0) only axiom is used and this that case this property can be left unconnected.
 		\item[AxiomProvider]
 		(connectable type:  \hyperref[Malsys.Processing.Components.ISymbolProvider]{ISymbolProvider})
 			-- Axiom provider component provides initial string of symbols.
@@ -410,10 +410,14 @@ MemoryBufferedIterator (RewriterIterators.MemoryBufferedIterator) 	\paragraph{De
 
 \subsection{Random generator provider}
 \label{Malsys.Processing.Components.Common.RandomGeneratorProvider}
-This component offers both pseudo-random and random generators.
-            It provides callable function Random which can be called even in
-            L-system (not only at run-time).
-            It uses pseudo-random number generator by default.\paragraph{Type name}
+This component offers both, random and pseudo-random generators.
+            It provides a callable function called random which can be called even in the L-system definition
+            (not only at run-time).
+            The pseudo-random number generator is used by default.
+            If no random seed is set it will be generated randomly and a message with its value will be sent to the user
+            to be possible to reproduce generated result.
+            Truly-random generation should be used only by experienced users because other components will not be able to
+            measure a generated model and results may be strange.\paragraph{Type name}
 RandomGeneratorProvider (Common.RandomGeneratorProvider) 	\paragraph{Assignable to interfaces}
 		\hyperref[Malsys.Processing.Components.IComponent]{IComponent}%
 	\paragraph{Gettable properties}\textcolor{gray}{of Random generator provider}
@@ -477,7 +481,7 @@ SymbolFilter (ExamplePlugin.Components.SymbolFilter) 	\paragraph{Assignable to i
 	\paragraph{Settable symbol properties}\textcolor{gray}{of Symbol fileter}
 	\begin{description*}
 		\item[ignore]
-			-- List of ignored symbols
+			-- List of ignored symbols.
 	\end{description*}
 	\paragraph{Connectable properties}\textcolor{gray}{of Symbol fileter}
 	\begin{description*}
@@ -491,7 +495,8 @@ SymbolFilter (ExamplePlugin.Components.SymbolFilter) 	\paragraph{Assignable to i
 
 \subsection{Symbol provider}
 \label{Malsys.Processing.Components.Common.SymbolProvider}
-Standard implementation of ISymbolProvider interface.\paragraph{Type name}
+Standard implementation of ISymbolProvider interface.
+            It provides all symbols set to the Symbols property regardless of the state of processing.\paragraph{Type name}
 SymbolProvider (Common.SymbolProvider) 	\paragraph{Derived components}
 		\hyperref[Malsys.Processing.Components.Common.AxiomProvider]{AxiomProvider}%
 	\paragraph{Assignable to interfaces}
@@ -509,11 +514,11 @@ SymbolProvider (Common.SymbolProvider) 	\paragraph{Derived components}
 
 \subsection{Symbol rewriter}
 \label{Malsys.Processing.Components.Rewriters.SymbolRewriter}
-Full featured symbol rewriter which rewrites symbols based on defined rewrite rules in current L-system.
-            It is capable to rewrite symbol based all criteria of Malsys' rewrite rules.
-            Rewriting is initiated by symbol request (by enumerator).
-            Then rewriter takes as many symbols from connected symbol provider as is needed for rewriting next symbol.
-            If contexts (or branches) are long it may load many symbols before returning.\paragraph{Type name}
+Full featured symbol rewriter which rewrites symbols based on defined rewrite rules in the L-system.
+             It is capable to rewrite symbol based all criteria of Malsys' rewrite rules.
+             Rewriting is initiated by symbol request (by enumerator).
+             Then rewriter takes as many symbols from connected symbol provider as is needed for rewriting the symbol.
+             If contexts (or branches) are long it may load many symbols before returning single one.\paragraph{Type name}
 SymbolRewriter (Rewriters.SymbolRewriter) 	\paragraph{Assignable to interfaces}
 		\hyperref[Malsys.Processing.Components.IComponent]{IComponent}%
 , 		\hyperref[Malsys.Processing.Components.IProcessComponent]{IProcessComponent}%
@@ -541,7 +546,8 @@ SymbolRewriter (Rewriters.SymbolRewriter) 	\paragraph{Assignable to interfaces}
 
 \subsection{Symbols saver}
 \label{Malsys.Processing.Components.Common.SymbolsSaver}
-Prints processed symbols to text file.\paragraph{Type name}
+Prints all processed symbols (with their parameters) as the text.
+            Symbols are delimited with a space.\paragraph{Type name}
 SymbolsSaver (Common.SymbolsSaver) 	\paragraph{Assignable to interfaces}
 		\hyperref[Malsys.Processing.Components.IComponent]{IComponent}%
 , 		\hyperref[Malsys.Processing.Components.IProcessComponent]{IProcessComponent}%
@@ -565,8 +571,8 @@ TextRenderer (Renderers.TextRenderer) 	\paragraph{Assignable to interfaces}
 \subsection{Turtle interpreter}
 \label{Malsys.Processing.Components.Interpreters.TurtleInterpreter}
 Turtle interpreter interprets symbols as basic 2D or 3D graphics primitives.
-            Interpreting is always in 3D but if it is connected 2D renderer
-            (component with interface IRenderer2D) the Z coordinate is omitted.\paragraph{Type name}
+            Interpreting is always in 3D but if it is connected 2D renderer (component with interface IRenderer2D) the Z
+            coordinate is omitted.\paragraph{Type name}
 TurtleInterpreter (Interpreters.TurtleInterpreter) 	\paragraph{Assignable to interfaces}
 		\hyperref[Malsys.Processing.Components.IComponent]{IComponent}%
 , 		\hyperref[Malsys.Processing.Components.IInterpreter]{IInterpreter}%

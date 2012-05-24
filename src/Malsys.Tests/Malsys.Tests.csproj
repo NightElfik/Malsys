@@ -140,6 +140,7 @@
     <Compile Include="Processing\ContextTesterTests.cs" />
     <Compile Include="Processing\InherenceTests.cs" />
     <Compile Include="Processing\LsystemInLsystemTests.cs" />
+    <Compile Include="Processing\MinimalWorkingExample.cs" />
     <Compile Include="Processing\ProcessConfigurationBuilderTests.cs" />
     <Compile Include="Processing\ProcessManagerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

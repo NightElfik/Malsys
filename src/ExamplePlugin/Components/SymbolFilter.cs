@@ -14,6 +14,9 @@ namespace ExamplePlugin.Components {
 	/// <summary>
 	/// Filters symbol stream.
 	/// </summary>
+	/// <remarks>
+	/// Design and step-by-step implementation of this component is described in the bachelor thesis.
+	/// </remarks>
 	/// <name>Symbol fileter</name>
 	/// <group>Plugin</group>
 	public class SymbolFilter : ISymbolProcessor {
@@ -22,7 +25,7 @@ namespace ExamplePlugin.Components {
 
 
 		/// <summary>
-		/// List of ignored symbols
+		/// List of ignored symbols.
 		/// </summary>
 		[AccessName("ignore")]
 		[UserSettableSybols]
@@ -41,7 +44,6 @@ namespace ExamplePlugin.Components {
 		/// </summary>
 		[UserConnectable]
 		public ISymbolProcessor Output { get; set; }
-
 
 
 		public IMessageLogger Logger { get; set; }

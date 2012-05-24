@@ -1,0 +1,243 @@
+
+
+\chapter{Usage of \lsystem processing library}
+\label{chap:libUsage}
+
+The web user interface serves as an example of the usage of the \lsystem processing library however it is relatively complicated (it uses the IoC container).
+This appendix will show how to process a simple \lsystem from the string.
+
+We have following \lsystem definition in the string which we want to evaluate.
+
+\begin{Csharp}
+string sourceCode = string.Join("\n",
+	"lsystem Fibonacci {",
+	"	set iterations = 6;",
+	"	set interpretEveryIteration = true;",
+	"	set symbols axiom = A(0) B(1);",
+	"	rewrite          A(a) { B(b) } to A(b);",
+	"	rewrite { A(a) } B(b)          to B(a + b);",
+	"}",
+	"process all with SymbolPrinter;");
+\end{Csharp}
+
+First we need to load all components, functions, operators and other things from the \emph{Malsys} project.
+If we did not load them we could not use any operators, functions or components.
+The class \emph{MalsysLoader} will load everything for us, otherwise would have to load all "stuff" separately.
+
+\begin{Csharp}
+var logger = new MessageLogger();
+
+var knownStuffProvider = new KnownConstOpProvider();
+IExpressionEvaluatorContext evalCtxt = new ExpressionEvaluatorContext();
+var componentResolver = new ComponentResolver();
+
+var loader = new MalsysLoader();
+loader.LoadMalsysStuffFromAssembly(Assembly.GetAssembly(typeof(MalsysLoader)),
+	knownStuffProvider, knownStuffProvider, ref evalCtxt, componentResolver, logger);
+
+if (logger.ErrorOccurred) {
+	throw new Exception("Failed to register Malsys stuff. "
+		+ logger.AllMessagesToFullString());
+}
+\end{Csharp}
+
+After loading all standard things we can load some additions or plugins.
+To demonstrate it we will add a new operator \emph{@} which will take two constants and add them (like the \emph{+} operator).
+To reflect this in our \lsystem we will also change the replacement of the second rewrite rule to: \texttt{B(a @ b)}.
+
+\begin{Csharp}
+knownStuffProvider.AddOperator(new OperatorCore("@", 300, 320,
+		ExpressionValueTypeFlags.Constant, ExpressionValueTypeFlags.Constant,
+		(l, r) => ((Constant)l + (Constant)r).ToConst()));
+\end{Csharp}
+
+Now we can instantiate the main class for \lsystem processing, the \emph{ProcessManager}.
+It will need instances of compiler and evaluator containers which will be also created.
+
+\begin{Csharp}
+var compiler = new CompilersContainer(knownStuffProvider, knownStuffProvider);
+var evaluator = new EvaluatorsContainer(evalCtxt);
+var processMgr = new ProcessManager(compiler, evaluator, componentResolver);
+\end{Csharp}
+
+Evaluating of the \lsystem input is just one lie of code.
+
+\begin{Csharp}
+var evaledInput = processMgr.CompileAndEvaluateInput(sourceCode, "testInput", logger);
+if (logger.ErrorOccurred) {
+	throw new Exception("Failed to evaluate input."+logger.AllMessagesToFullString());
+}
+\end{Csharp}
+
+Before we can process it we must join it with the standard library to be able to use predefined process configurations and other useful definitions.
+The source code of the standard library is stored as an resource in the \emph{Malsys} project.
+First, we need to read it.
+
+\begin{Csharp}
+string stdLibResName = ResourcesHelper.StdLibResourceName;
+string stdlibSource;
+using (Stream stream = new ResourcesReader().GetResourceStream(stdLibResName)) {
+	using (TextReader reader = new StreamReader(stream)) {
+		stdlibSource = reader.ReadToEnd();
+	}
+}
+\end{Csharp}
+
+Then we will compile it in the same way as the \lsystem input.
+
+\begin{Csharp}
+var stdLib = processMgr.CompileAndEvaluateInput(stdlibSource, "stdLib", logger);
+if (logger.ErrorOccurred) {
+	throw new Exception("Failed to build std lib. "+logger.AllMessagesToFullString());
+}
+\end{Csharp}
+
+Now we must join our input and the standard library together.
+It is important to add our input to the standard library, not in the opposite order.
+
+\begin{Csharp}
+evaledInput = stdLib.JoinWith(evaledInput);
+\end{Csharp}
+
+Processing of the \lsystems needs an output provider.
+The web user interface uses the \emph{FileOutputProvider} class as an output provider.
+It saves the outputs as files to the file system.
+For our purposes is better to use the \emph{InMemoryOutputProvider} class which keeps the outputs in the operating memory.
+
+\begin{Csharp}
+var outProvider = new InMemoryOutputProvider();
+processMgr.ProcessInput(evaledInput, outProvider, logger, new TimeSpan(0, 0, 5));
+if (logger.ErrorOccurred) {
+	throw new Exception("Failed to process input. "+logger.AllMessagesToFullString());
+}
+\end{Csharp}
+
+And that's it.
+Now we can read all outputs from output provider.
+We will print them to the system console.
+
+\begin{Csharp}
+var encoding = new UTF8Encoding();
+var outputs = outProvider.GetOutputs().Select(x => encoding.GetString(x.OutputData));
+foreach (var o in outputs) {
+	Console.WriteLine(o);
+}
+\end{Csharp}
+
+The output is in \autoref{code:libUsageOut}.
+The complete source code is in \autoref{code:libUsageSrc}.
+
+\lstset{label=code:libUsageOut,caption={Symbol filter component with documented members}}
+\begin{lstlisting}
+A(0) B(1) 
+A(1) B(1) 
+A(1) B(2) 
+A(2) B(3) 
+A(3) B(5) 
+A(5) B(8) 
+A(8) B(13)
+\end{lstlisting}
+\lstset{label=,caption=}
+
+Did you noticed that all error reporting is done by the message logger?
+There is no need to catch exceptions at all.
+Only mistakes and bugs in the library will trow exceptions.
+
+
+
+\subsection*{Complete source code}
+
+\begin{CsharpBreak}[label=code:libUsageSrc,caption={Symbol filter component with documented members}]
+string sourceCode = string.Join("\n",
+	"lsystem Fibonacci {",
+	"	set iterations = 6;",
+	"	set interpretEveryIteration = true;",
+	"	set symbols axiom = A(0) B(1);",
+	"	rewrite          A(a) { B(b) } to A(b);",
+	"	rewrite { A(a) } B(b)          to B(a @ b);",
+	"}",
+	"process all with SymbolPrinter;");
+
+var logger = new MessageLogger();
+var knownStuffProvider = new KnownConstOpProvider();
+IExpressionEvaluatorContext evalCtxt = new ExpressionEvaluatorContext();
+var componentResolver = new ComponentResolver();
+
+var loader = new MalsysLoader();
+loader.LoadMalsysStuffFromAssembly(Assembly.GetAssembly(typeof(MalsysLoader)),
+	knownStuffProvider, knownStuffProvider, ref evalCtxt, componentResolver, logger);
+
+if (logger.ErrorOccurred) {
+	throw new Exception("Failed to register Malsys stuff. "
+		+ logger.AllMessagesToFullString());
+}
+
+knownStuffProvider.AddOperator(new OperatorCore("@", 300, 320,
+	ExpressionValueTypeFlags.Constant, ExpressionValueTypeFlags.Constant,
+	(l, r) => ((Constant)l + (Constant)r).ToConst()));
+
+var compiler = new CompilersContainer(knownStuffProvider, knownStuffProvider);
+var evaluator = new EvaluatorsContainer(evalCtxt);
+var processMgr = new ProcessManager(compiler, evaluator, componentResolver);
+
+
+var evaledInput = processMgr.CompileAndEvaluateInput(sourceCode, "testInput", logger);
+
+if (logger.ErrorOccurred) {
+	throw new Exception("Failed to evaluate input."+logger.AllMessagesToFullString());
+}
+
+string stdLibResName = ResourcesHelper.StdLibResourceName;
+string stdlibSource;
+using (Stream stream = new ResourcesReader().GetResourceStream(stdLibResName)) {
+	using (TextReader reader = new StreamReader(stream)) {
+		stdlibSource = reader.ReadToEnd();
+	}
+}
+
+var stdLib = processMgr.CompileAndEvaluateInput(stdlibSource, "stdLib", logger);
+if (logger.ErrorOccurred) {
+	throw new Exception("Failed to build std lib."+logger.AllMessagesToFullString());
+}
+
+evaledInput = stdLib.JoinWith(evaledInput);
+
+var outProvider = new InMemoryOutputProvider();
+
+processMgr.ProcessInput(evaledInput, outProvider, logger, new TimeSpan(0, 0, 5));
+
+if (logger.ErrorOccurred) {
+	throw new Exception("Failed to process input. "+logger.AllMessagesToFullString());
+}
+
+var encoding = new UTF8Encoding();
+var outputs = outProvider.GetOutputs().Select(x => encoding.GetString(x.OutputData));
+
+foreach (var o in outputs) {
+	Console.WriteLine(o);
+}
+\end{CsharpBreak}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

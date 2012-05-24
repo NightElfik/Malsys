@@ -1,25 +1,26 @@
 
 \section{Web user interface}
+\label{sec:design-web}
 
-The user interface is very important part of whole project.
-To basic forms of user interface was considered, desktop application and web site.
-The web was chosen because of following reasons.
+The user interface is a very important part of the whole project.
+Two basic forms of the user interface were considered: desktop application and web site.
+The web was chosen because for the following reasons.
 
 \begin{description*}
 	\item[Accessibility]
-		Web is accessible on wide range of operating systems where desktop application can not be ported easily.
-		Besides usual desktop systems it is possible to browse it on mobile devices like smart phones or tablets.		
+		The Web is accessible on a wide range of operating systems where desktop applications cannot be ported easily.
+		Besides the usual desktop systems it is possible to browse it on mobile devices such as smart phones or tablets.		
 	\item[No installation]
-		End-user do not install anything, the application does not depend on user's OS. \nomenclature{OS}{operating system}
+		The end-user does not have ti install anything: the application does not depend on the user's OS. \nomenclature{OS}{operating system}
 		The solution is not easy to setup because it has many dependencies to third-party libraries.
-		Web application is installed by experienced administrator and everything is set up properly.
+		The Web application is installed by experienced an administrator and everything is then set up properly.
 	\item[Community]
-		Users can share and discuss their work on the same place where they create it.
-		This helps to create community which is important to all projects.
+		Users can share and discuss their work at the same place where they create it.
+		This helps to create a community which is important to all projects.
 	\item[Up to date]
-		Web user interface is always up to date.
-		All updates are instantly applied for all users.
-		Errors can be logged and administrator can fix them as soon as possible.		
+		The web user interface is always up to date.
+		All updates are instantly applied and available to all users.
+		Errors can be logged and the administrator can fix them as soon as possible.		
 \end{description*}
 
 \begin{wrapfigure}{r}{0.4\textwidth}
@@ -30,76 +31,78 @@ The web was chosen because of following reasons.
 	\vspace{-20pt}
 \end{wrapfigure}
 
-Web user interface also serve as comprehensive example of \lsystem processing library and its usage and capabilities.
-Sunflower model in \autoref{fig:logo} was produced by the web site and because of its shape which fits in rectangle and good recognizability even as $32 \times 32$ pixels image it was chosen as the logo of the web page.
+The web user interface also serves as a comprehensive example of the \lsystem processing library and its use and capabilities.
+The Sunflower model in \autoref{fig:logo} was produced by the web site and because of its shape, which fits into a rectangle and its good recognizability even as a $32 \times 32$ pixels image, it was chosen as the logo of the web page.
 
-Web page have four main parts. First three parts, namely \emph{\lsystem processor}, \emph{Gallery of \lsystems} and \emph{Help} are accessible to anyone.
-Fourth part is the \emph{Administration} and it is accessible only to administrators.
+The web page has four main parts.
+The first three parts, namely the \emph{\lsystem processor}, \emph{Gallery of \lsystems} and \emph{Help} are accessible to everyone.
+The fourth part is the \emph{Administration} and it is accessible only to administrators.
+
 
 \subsection{\lsystem processor}
 
-Main functionality of the web is processing of user's input (source code) and showing results.
-For this purpose there is web page with big text area where the source code can be written.
-There is three possibilities how to submit the source code.
+The main functionality of the web is the processing of a user's input (source code) and showing the results.
+For this purpose there is a web page with a big text area where the source code can be written.
+There are three possibilities how to submit the source code.
 
-First is processing source code and showing all results (or list of errors).
-If there are too many outputs they are packed to one ZIP file.
-All results can be downloaded.
+The first is processing the source code and showing all the results (or list of errors).
+If there are too many outputs they are packed into one ZIP file.
+All the results can be downloaded.
 
-Second possibility is to just compile source code and see compiled source code (no results are showed).
-This is intended for debugging of errors in the input.
+The second possibility is to just compile the source code and see the compiled source code (no results are shown).
+This is intended for the debugging of errors in the input.
 
-Last possibility which is available only for registered users is to save the source code.
+The last possibility, which is only available for registered users, is to save the source code.
 To be able to save the source code successfully it must be without compilation errors.
-For each saved source code unique is generated and it can be accessed by permanent link.
+For each saved source code a unique identifier is generated and with it is possible to access the saved input (by a permanent link).
 Saved inputs can be published in gallery.
 
 
 \subsection{Gallery of \lsystems}
 
-The gallery will serve as showcase of capabilities of \lsystems for new users as well as learning material.
-All entries in gallery will have their source code included and anybody can try to process and customize it.
+The gallery will serve as a showcase of the capabilities of \lsystems for new users as well as learning material.
+All entries in the gallery will have their source code included and anybody can try to process and customize it.
 Registered users can rate other gallery entries.
 
-Every registered user may contribute to gallery with their own creation.
-To \lsystem into gallery user have to save and publish source code via \lsystem processor.
-It is possible to alter thumbnail \lsystem over original \lsystem.
-This allows to simplify images in thumbnail and show complex model in detail.
+Every registered user may contribute to the gallery with their own creation.
+To enter an \lsystem into the gallery a user has to save and publish the source code via the \lsystem processor.
+It is possible to alter the thumbnail \lsystem over the original \lsystem.
+This allows the simplification of images into thumbnails and show complex models in the detail view.
 
-Tags can be assigned to each \lsystem in gallery.
-Tag is short keyword, term or abbreviation which helps to describe \lsystem and allows it to be found again.
-List of all tags can be listed and list of \lsystems filtered by specific tag can be shown.
-Tag can contain short description of its meaning.
-The description can be edited only by special user group.
+Tags can be assigned to each \lsystem in the gallery.
+A tag is a short keyword, term or abbreviation which helps to describe the \lsystem and allows it to be found again.
+A list of all tags can be listed and a list of \lsystems filtered by a specific tag can be shown.
+A tag can contain a short description of its meaning.
+The description can be edited only by a special user group.
 
-\lsystems can be filtered also by user name.
+\lsystems can also be filtered by user name.
 
 
 \subsection{Help}
+\nomenclature{FAQ}{frequently asked questions}
 
-Important part of the web is the help.
-Help contains few basic topics and FAQ (frequently asked questions) for new users.
+An important part of the web is the help section.
+Help contains a few basic topics and FAQs (frequently asked questions) for new users.
 Then there is list of predefined components, process configurations, constants, functions and operators.
-Last part of the help is detailed syntax reference.
+The last part of the help is a detailed syntax reference.
 
 
 \subsection{Administration}
 
-Administration section of the web is accessible to restricted group of users.
-There is more administrators group every with different privileges.
+The administration section of the web is accessible to a restricted group of users.
+There is more than one administrators group, every one with different privileges.
 
 The main administrators group is able to manage roles for all users, manage user groups (roles) and explore error logs.
 
-Next group is able to explore all processed inputs on site, see all saved inputs and export input database to text file.
+The next group is able to explore all processed inputs on the site, see all saved inputs and export the input database to a text file.
 
-Last group can see list of submitted feedbacks and if the new feedback is submitted all users from this group will receive it via e-mail.
+The last group can see a list of the submitted feedbacks and if a new feedback is submitted all users from this group will receive it via e-mail.
 
 
 \subsection{Database}
 
 The database will serve for saving all necessary data.
-Figures \ref{fig:dbSchema1} and \ref{fig:dbSchema2} shows database scheme.
-\emph{PK} after name means primary key and \emph{FK} foreign key.
+Figures \ref{fig:dbSchema1} and \ref{fig:dbSchema2} shows the database scheme (\emph{PK} after name means primary key and \emph{FK} foreign key).
 
 
 \tikzstyle{db} = [draw, fill=blue!12, rectangle split, rectangle split parts=2]
@@ -235,61 +238,64 @@ Figures \ref{fig:dbSchema1} and \ref{fig:dbSchema2} shows database scheme.
 \end{figure}
 
 
-In the left part of the scheme (\autoref{fig:dbSchema1}) are tables \emph{User} and \emph{Roles} with relation \emph{n} to \emph{n} (any user can be in any number of roles).
-both tables table contains column called \emph{NameLowercase} for canonical representation of user names for easier searching.
-\emph{Feedback} table for saving posted feedback have foreign key to \emph{Users} (if registered user submit a feedback).
+In the left part of the scheme shown in \autoref{fig:dbSchema1} are the tables \emph{User} and \emph{Roles} with the relation \emph{n} to \emph{n} (any user can be in any number of roles).
+Both tables table contains column called \emph{NameLowercase} for canonical representation of the user names for easier searching.
+The \emph{Feedback} table for saving posted feedbacks have a foreign key to \emph{Users} (if a registered user submits a feedback).
 
-The right part of the scheme is (\autoref{fig:dbSchema2}) more complicated.
+The right part of the scheme shown in \autoref{fig:dbSchema2} is more complicated.
 Every processed input is saved to the \emph{Input process} table.
-To optimize size of the database the source code is not saved for every input process but it is canonicalized and saved to the \emph{Canonic input} table.
-Hash is counted for every saved canonical input to speed up lookup for identical inputs.
-This system ensures that in the database will not be saved two identical source codes.
+To optimize the size of the database the source code is not saved for every input process but it is canonicalized and saved to the \emph{Canonic input} table.
+The hash is counted for every saved canonical input to speed up lookup for identical inputs.
+This system ensures that two identical source codes will not be saved in the database.
 One might thing that the probability of processing two identical source codes is very low but it is not true.
-The most users trying to process \lsystems from gallery and do minor changes to them like changing number of iterations.
+The most users trying to process the \lsystems from  the gallery and do minor changes to them like changing the number of iterations.
 
-Results of processing (like images) are not saved directly to database because they are relatively big.
-They are saved to local disk to working directory (which can be configured).
-To ensure correct cleaning of files in the working directory there is table called \emph{Process output}.
-Record of each produced file is saved into this table.
-If file is viewed by user the \emph{LastOpenDate} entry is updated.
-If the number of stored files exceeds maximum (which can be configured) the files with the longest time before last opening are deleted.
-This mechanism allows to keep alive old but viewed files with no need to saving them permanently (for example for sharing with friend).
+The results of processing (like images) are not saved directly into the database because may be relatively large.
+The result are saved to the hard disk to the \emph{working directory} (which can be configured).
+Each produced file is saved into the \emph{Process output} table to ensure effective cleaning of the physical files in the working directory.
 
-Moreover the new files are saved with the \emph{LastOpenDate} lowered by one minute over the \emph{CreationDate}.
-This will cause that deleting of non-viewed files is likely than viewed ones.
-It can protect wiping all input from database by some bot who do not open processed outputs.
+\emph{LastOpenDate} entry (in the \emph{Process output} table) is updated every time the user views processed file.
+If the number of stored files exceeds the maximum (which can be configured) the files with the longest time before last opening are deleted.
+This mechanism allows to keep alive "old but viewed" files with no need for saving them permanently (for example for sharing with a friend).
 
-Lets get back to saving of all processed inputs to the \emph{Input process} table.
-If user is creating \lsystem the process is iterative.
-Parent input processes are saved (in \emph{ParentInputProcessId}) as user develops the \lsystem.
-This set of processes forms a chain.
-The longer the chain of processes is the better can be expected.
-The length of a chain can be counted by searching the database an resolving the \emph{ParentInputProcessId} column.
+Moreover, the new files are saved with the \emph{LastOpenDate} lowered by one minute over the \emph{CreationDate}.
+This will cause that deletion of non-viewed files is likely than the viewed ones.
+It can protect wiping all files by some bot that will process many inputs but do not open them.
+
+Lets go back to the saving of all processed inputs to the \emph{Input process} table.
+The creation of an \lsystem is iterative process.
+At the beginning is simple \lsystem which is gradually improved by the user.
+To keep track over this iterative process the "parent" input processes is saved for each processed input (if any exists).
+
+The processes forms chains.
+The longer the chain of processes is, the better \lsystem can be expected.
+The length of the chain can be counted by searching the database an resolving the \emph{ParentInputProcessId} column.
 However this process can take very long time because the \emph{Input process} table will likely have many rows.
-To be possible to easily find longest chains the chain length is counting for each row in column \emph{ChainLength}.
+To be possible to easily find the longest chain the chain length is counted for each row (column \emph{ChainLength}).
 
-If new input is about to save to the \emph{Input process} table and it do not have parent (for example first process after opening the page) the \emph{Canonic input} table is searched for corresponding input.
-If the canonical input it is found the oldest\footnote{More input process entries can share one canonical input entry.} corresponding input process is selected as the parent.
+If new input is about to save to the \emph{Input process} table and it do not have the parent (for example the first process after opening the page), the \emph{Canonic input} table is searched for corresponding input.
+If the canonical input it is found, the oldest\footnote{More input process entries can share one canonical input entry.} corresponding input process is selected as the parent.
 
 
 \subsubsection{Saved inputs}
 
 Registered users can save their inputs.
-They are saved to the \emph{Saved inputs} table which also serves as table for the gallery.
+Inputs are saved to the \emph{Saved inputs} table which also serves as table for the gallery.
 For every saved input is generated unique ID stored in the \emph{UrlId} column.
-This is is used in the permanent link which allows permanent access to all saved inputs.
+The ID is used in the permanent link which allows permanent access to all saved inputs.
 
-Saved inputs can be edited by owner but more importantly the can be published to the gallery.
-In the gallery inputs can be rated.
-For this is table \emph{Saved input vote}.
-Primary key to this table is pair of \emph{SavedInputId} and \emph{UserId} allowing each user to vote to every input just once (of course the vote can be changed).
+The saved inputs can be edited by the owner but, more importantly, they can be published to the gallery.
+The inputs in the gallery can be rated.
+Ratings are stored in the \emph{Saved input vote} table.
+The primary key to this table is a pair of the \emph{SavedInputId} and \emph{UserId} allowing each user to vote for every input just once (of course the the vote can be changed later).
 
-Published entries in the \emph{Saved inputs} table are sorted by average rating taking into account total number of votes (the more votes the better).
-To speed the sorting and eliminate joining with the \emph{Saved input vote} table the sum and the count of votes is stored directly in the \emph{Saved inputs} table.
+The published entries in the \emph{Saved inputs} table are sorted by average rating taking into account total number of the votes (the more votes, the better).
+To speed up the sorting and eliminate joining with the \emph{Saved input vote} table, the sum and the count of votes is stored directly in the \emph{Saved inputs} table.
 
-Source code of saved inputs is saved as is (without any canonicalization) to preserve comments and formatting.
-To allow generating thumbnail different from the original image and to save space and user effort the thumbnail is generated by adding content of the \emph{ThumbnailSourceExtension} to the \emph{SourceCode}.
-Because the last result is saved the source code in the \emph{ThumbnailSourceExtension} can produce thumbnail easily with usage of next process statement.
+The source code of saved inputs is saved as is (without any canonicalization) to preserve the comments and formatting.
+The last output of processed \lsystem is saved as the result (image or thumbnail) which allows to generate the thumbnails effectively by adding the thumbnail source extension (the \emph{ThumbnailSourceExtension} column) to the end of the actual source code (the \emph{SourceCode} column).
+In the thumbnail source extension can be used the process statement to generate thumbnail easily.
+
 
 
 

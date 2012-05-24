@@ -1,6 +1,10 @@
 \ProvidesPackage{syntaxHighlighters}
 
-\definecolor{clr_code_bg}{rgb}{0.95,0.95,0.95}
+\ifdefined\book
+	\definecolor{clr_code_bg}{rgb}{0.92,0.92,0.92}  % darker background in the book
+\else
+	\definecolor{clr_code_bg}{rgb}{0.95,0.95,0.95}
+\fi
 \definecolor{clr_keyword}{rgb}{0,0,1}
 \definecolor{clr_keyword_ls}{rgb}{0.5,0,0.2}
 \definecolor{clr_string}{rgb}{0.64,0.08,0.08}
@@ -9,6 +13,7 @@
 \definecolor{clr_class}{rgb}{0.17,0.57,0.69}
 \definecolor{clr_string}{rgb}{0.64,0.08,0.08}
 \definecolor{clr_tag}{rgb}{0.5,0,0.5}
+\definecolor{clr_razor}{rgb}{1,0,0}
 
 
 \newenvironment{btHighlight}[1][]
@@ -26,7 +31,7 @@
 	\tikz[#1]{%
 		\pgfpathrectangle{\pgfpoint{1pt}{0pt}}{\pgfpoint{\wd #2}{\ht #2}}%
 		\pgfusepath{use as bounding box}%
-		\node[anchor=base west, fill=yellow!40,outer sep=0pt,inner xsep=1pt, inner ysep=0pt, rounded corners=3pt, minimum height=\ht\strutbox+1pt,#1]{\raisebox{1pt}{\strut}\strut\usebox{#2}};
+		\node[anchor=base west, fill=yellow!45,outer sep=0pt,inner xsep=1pt, inner ysep=0pt, rounded corners=3pt, minimum height=\ht\strutbox+1pt,#1]{\raisebox{1pt}{\strut}\strut\usebox{#2}};
 	}%
 }
 
@@ -49,7 +54,10 @@
 		GalleryController,Controller,ActionResult,DependencyResolver,IDependencyResolver,ContainerBuilder,MvcApplication,StandardDateTimeProvider,
 		IDateTimeProvider,Sha512PasswordHasher,IPasswordHasher,MalsysDb,IUsersDb,IInputDb,IFeedbackDb,AutofacDependencyResolver,MVC,OutputCache,
 		PredefinedController,HttpContext,ErrorSignal,Exception,SymbolFilter,ISymbolProcessor,NotImplementedException,UserConnectable,Symbol,IValue,
-		HashSet,AccessName,ImmutableList,UserSettableSybols,Constant,MessageType},
+		HashSet,AccessName,ImmutableList,UserSettableSybols,Constant,MessageType,IMalsysInputRepository,IAppSettingsProvider,LsystemProcessor,
+		NewUserModel,Required,StringLength,Display,Email,DataType,Compare,OperatorCore,IExpressionEvaluatorContext,KnownConstOpProvider,
+		MessageLogger,Assembly,MalsysLoader,ComponentResolver,EvaluatorsContainer,Stream,TextReader,StreamReader,InMemoryOutputProvider,UTF8Encoding,
+		Console,ResourcesHelper},
 	keywordstyle=\color{clr_class},
 	classoffset=0,  % restore default class offset
 	sensitive=true,
@@ -67,7 +75,8 @@
 	backgroundcolor=\color{clr_code_bg},
 	captionpos=b,
 	showstringspaces=false,
-    moredelim=**[is][\btHL]{@}{@}
+    moredelim=**[is][\btHL]{@}{@},
+	escapechar=»
 }
 
 \lstnewenvironment{Csharp}[1][]%
@@ -84,7 +93,8 @@
 
 \lstdefinelanguage{Razor}{
 	basicstyle=\ttfamily\consolas\scriptsize,
-	literate={@}{{{\btHL[fill=yellow!30]@}}}1,
+	literate={@}{{{\color{clr_razor}@}}}1
+		{@class}{{@class}}6,
 	keywords={var,foreach,in,if,model},
 	keywordstyle=\color{clr_keyword},
 	classoffset=1,  % new class offset
@@ -105,7 +115,8 @@
 	captionpos=t,
 	backgroundcolor=\color{clr_code_bg},
 	captionpos=b,
-	showstringspaces=false
+	showstringspaces=false,
+    moredelim=**[is][\btHL]{`}{`},
 }
 
 \lstnewenvironment{Razor}[1][]%
@@ -200,7 +211,7 @@
     moredelim=**[is][\btHL]{@}{@}
 }
 
-\lstnewenvironment{LsystemBreak}[1][]{\lstset{language=Lsystem,#1}}{}
+\lstnewenvironment{LsystemBreak}[1][]{\lstset{language=Lsystem,basicstyle=\ttfamily\consolas\scriptsize,#1}}{}
 
 \lstnewenvironment{Lsystem}[1][]%
 { % http://tex.stackexchange.com/questions/10141/how-to-prevent-lstlisting-from-splitting-code-between-pages
@@ -298,6 +309,10 @@
 	\vspace{0.5\baselineskip}
 	\lstset{language=Fsharp,#1}}
 {\endminipage}
+
+\lstnewenvironment{FsharpBreak}[1][]%
+{\lstset{language=Fsharp,#1}}
+{}
 
 
 

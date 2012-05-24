@@ -6,6 +6,10 @@ using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Evaluators {
+	/// <summary>
+	/// Object for storing evaluated data of function call.
+	/// This object is used in anonymous delegate as evaluate function when adding new function to the IExpressionEvaluatorContext.
+	/// </summary>
 	/// <remarks>
 	/// Immutable.
 	/// </remarks>

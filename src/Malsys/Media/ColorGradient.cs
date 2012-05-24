@@ -5,6 +5,9 @@
 using System;
 
 namespace Malsys.Media {
+	/// <remarks>
+	/// Color gradient is represented as Colors with distance numbers between them.
+	/// </remarks>
 	public class ColorGradient {
 
 		private ColorF[] colors;

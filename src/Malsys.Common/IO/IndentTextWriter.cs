@@ -6,6 +6,9 @@
 using System.IO;
 
 namespace Malsys.IO {
+	/// <summary>
+	/// Implementation of the IndentWriter that writes to the TextWriter.
+	/// </summary>
 	public class IndentTextWriter : IndentWriter, IDisposable {
 
 		private TextWriter writer;

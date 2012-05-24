@@ -240,7 +240,7 @@ namespace Malsys.Processing.Components.Renderers {
 				writer.WriteLine("geom = new THREE.Geometry();");
 
 				foreach (var pt in polygon.Ponits) {
-					writer.WriteLine("geom.vertices.push(new THREE.Vertex(new THREE.Vector3({0:0.###},{1:0.###},{2:0.###})));"
+					writer.WriteLine("geom.vertices.push(new THREE.Vector3({0:0.###},{1:0.###},{2:0.###}));"
 						.Fmt(pt.X, pt.Y, pt.Z));
 					measure(pt);
 				}

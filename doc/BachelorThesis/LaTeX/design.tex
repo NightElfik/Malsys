@@ -1,20 +1,20 @@
 
 \chapter{Design}
 
-In this chapter is described design of solution and explained decisions that were made.
+In this chapter the design of my solution for an online feature-rich development environment is described and the decisions that were made explained.
 Implementation details are described in \autoref{chap:implementation}.
 
-In the first section is described design of \lsystem processing library.
-Library process input with component-based approach.
-Core of the library is responsible for creating system of connected components (components graph) but processing of \lsystem itself is fully under control of components.
-Components can be created by user which bring freedom to \lsystem processing.
+In the first section (\ref{sec:design-library}) the design of the \lsystem processing library is described.
+The library processes input with a component-based approach.
+The core of the library is responsible for creating system a of connected components (components graph) but processing of the \lsystem itself is fully under the control of the components.
+Components can be created by the user, thus bringing freedom to the \lsystem processing.
 
-Library it contains predefined components to be possible to process \lsystems without need of creating custom components.
-Design of these components is described in the second section.
+The library contains predefined components to make it possible to process \lsystems without need the for creating custom components.
+The design of these components is described in the second section (\ref{sec:design-components}).
 Predefined components also serves as an example for users who want to implement their own components or whole processing system.
 
-In the third section is described design of online web user interface.
-It uses the library and components to process input so it also serves as an example of usage of the library.
+In the third section (\ref{sec:design-web}) is described the design of the online web user interface.
+It uses the library and components to process input so it also serves as an example of the usage of the library.
 
 
 \section{Choice of development environment}
@@ -52,7 +52,7 @@ As development environment was chosen the .NET framework because of following re
 
 \input{design-library}
 
-\clearpage
+%\clearpage
 \input{design-processSystem}
 
 \clearpage

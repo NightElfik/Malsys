@@ -6,6 +6,9 @@ using System;
 using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Evaluators {
+	/// <summary>
+	/// Object for storing the function name and evaluation delegate and metadata.
+	/// </summary>
 	/// <remarks>
 	/// Immutable.
 	/// </remarks>

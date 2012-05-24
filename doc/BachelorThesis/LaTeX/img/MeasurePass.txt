@@ -4,9 +4,10 @@ lsystem WeirdKochCurve {
 	set iterations = 5;
 	set randomSeed = 2;
 	set continuousColoring = true;
+	set interpretEveryIteration = true;
 
 	// normalize line length to have (result image will have always same size)
-	interpret F as DrawForward(2 ^ -(currentIteration * 3 / 2) * 300);
+	interpret F as DrawForward(2 ^ -(currentIteration * 3 / 2) * 300, 4);
 	interpret + as TurnLeft;
 
 	rewrite F

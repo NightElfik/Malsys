@@ -8,12 +8,10 @@ using Malsys.SemanticModel;
 
 namespace Malsys.Processing.Components.Common {
 	/// <summary>
-	/// Prints all defined constants from global scope.
-	/// To use this component process input with some dummy L-system and
-	/// with process configuration containing only this component.
-	/// Standard library in Malsys offers predefined L-system and configuration for this.
-	/// Just use following process statement.
-	/// <code>process Constants with ConstantDumper;</code>
+	/// Prints all defined constants from the global scope.
+	/// To be able to use this component you will need to process some L-system with it.
+	/// It is possible to define an empty L-system or you can use the Constants L-system from the standard library.
+	/// The process statement may look like this: <code>process Constants with ConstantDumper;</code>
 	/// </summary>
 	/// <name>Constants dumper</name>
 	/// <group>Special</group>

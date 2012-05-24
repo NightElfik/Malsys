@@ -15,8 +15,8 @@ using Microsoft.FSharp.Collections;
 namespace Malsys.Processing.Components.Interpreters {
 	/// <summary>
 	/// Turtle interpreter interprets symbols as basic 2D or 3D graphics primitives.
-	/// Interpreting is always in 3D but if it is connected 2D renderer
-	/// (component with interface IRenderer2D) the Z coordinate is omitted.
+	/// Interpreting is always in 3D but if it is connected 2D renderer (component with interface IRenderer2D) the Z
+	/// coordinate is omitted.
 	/// </summary>
 	/// <name>Turtle interpreter</name>
 	/// <group>Interpreters</group>

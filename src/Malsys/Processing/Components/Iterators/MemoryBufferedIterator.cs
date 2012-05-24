@@ -14,7 +14,7 @@ using Malsys.SemanticModel.Evaluated;
 namespace Malsys.Processing.Components.RewriterIterators {
 	/// <summary>
 	/// Iterates L-system from connected symbol provider with connected rewriter.
-	/// Buffers symbols from rewriter in memory.
+	/// Buffers symbols from rewriter in the memory.
 	/// </summary>
 	/// <name>Memory-buffered iterator</name>
 	/// <group>Iterators</group>

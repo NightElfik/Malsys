@@ -13,6 +13,9 @@ using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Collections;
 
 namespace Malsys.Processing {
+	/// <summary>
+	/// Main class for processing of L-systems.
+	/// </summary>
 	public class ProcessManager {
 
 		private readonly ICompilersContainer compiler;
@@ -31,22 +34,28 @@ namespace Malsys.Processing {
 
 		public IComponentMetadataResolver ComponentResolver { get { return componentResolver; } }
 
-
+		/// <summary>
+		/// Compiles and evaluated the input in string.
+		/// All messages are logged to give logger.
+		/// </summary>
+		/// <param name="src">The source code.</param>
+		/// <param name="sourcName">The name of the source code for example it can be name of the source file. It will be saved in AST PositionRange classes.</param>
+		/// <param name="logger">Logger for logging any messages by compilers or evaluators.</param>
+		/// <returns>Evaluated input block. It can be partial or empty if some errors occurred.</returns>
 		public InputBlockEvaled CompileAndEvaluateInput(string src, string sourcName, IMessageLogger logger) {
 
-			using (var errBlock = logger.StartErrorLoggingBlock()) {
-
-				var inCompiled = compiler.CompileInput(src, sourcName, logger);
-
-				if (errBlock.ErrorOccurred) {
-					return null;
-				}
-
-				return evaluator.EvaluateInput(inCompiled, evaluator.ExpressionEvaluatorContext, logger);
-			}
+			var inCompiled = compiler.CompileInput(src, sourcName, logger);
+			return evaluator.EvaluateInput(inCompiled, evaluator.ExpressionEvaluatorContext, logger);
 
 		}
 
+		/// <summary>
+		/// Process all the process statements.
+		/// </summary>
+		/// <param name="inBlockEvaled">Evaluated input.</param>
+		/// <param name="outputProvider">Output provider for storing the outputs.</param>
+		/// <param name="logger">Logger that will be supplied to components for logging any messages.</param>
+		/// <param name="timeout">Timeout for evaluation.</param>
 		public void ProcessInput(InputBlockEvaled inBlockEvaled, IOutputProvider outputProvider, IMessageLogger logger, TimeSpan timeout) {
 
 			foreach (var processStat in inBlockEvaled.ProcessStatements) {

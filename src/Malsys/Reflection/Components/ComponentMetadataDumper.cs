@@ -14,7 +14,6 @@ using Malsys.SemanticModel.Evaluated;
 namespace Malsys.Reflection.Components {
 	public class ComponentMetadataDumper {
 
-
 		public ComponentMetadata GetMetadata(IComponent component, IMessageLogger logger, IXmlDocReader xmlDocReader = null) {
 
 			Contract.Requires<ArgumentNullException>(component != null);

@@ -8,6 +8,10 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace Malsys {
+	/// <summary>
+	/// Standard implementation of the IMessageLogger interface.
+	/// Logs messages to the Message class.
+	/// </summary>
 	public class MessageLogger : IMessageLogger, IEnumerable<Message> {
 
 		private bool errorOccurred = false;

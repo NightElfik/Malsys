@@ -12,10 +12,15 @@ using Microsoft.FSharp.Collections;
 
 namespace Malsys.Processing.Components.Common {
 	/// <summary>
-	///	This is special component for interpreting L-system symbol as another L-system.
-	///	Inner component systems used to process system must be defined under the name "InnerLsystemConfig".
-	///	It caches component systems for processing inner L-system to optimize speed of repetitive processing.
+	///	This is special component for interpreting an L-system symbol as another L-system.
+	///	The symbol is processed by newly created component system but interpretation calls are processed with all the
+	///	components in the original system.
 	/// </summary>
+	/// <remarks>
+	/// As for now, the inner component system is created from process configuration called "InnerLsystemConfig".
+	/// This process configuration must be defined correctly.
+	///	Newly created process systems are caches to optimize the performance of repetitive processing.
+	/// </remarks>
 	/// <name>Inner L-system processor</name>
 	/// <group>Special</group>
 	public class LsystemInLsystemProcessor : ILsystemInLsystemProcessor {

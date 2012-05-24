@@ -11,6 +11,9 @@ using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Collections;
 
 namespace Malsys.Processing {
+	/// <summary>
+	/// Context which is given to all components in initialization.
+	/// </summary>
 	public class ProcessContext {
 
 		public readonly LsystemEvaled Lsystem;

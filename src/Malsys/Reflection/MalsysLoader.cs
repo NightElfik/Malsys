@@ -13,8 +13,21 @@ using Malsys.Processing.Components;
 using Malsys.Resources;
 
 namespace Malsys.Reflection {
+	/// <summary>
+	/// Helper class for loading all Malsys stuff.
+	/// It can load everything from an assembly or individual members from types.
+	/// </summary>
 	public class MalsysLoader {
 
+		/// <remarks>
+		/// Classes implementing the IComponent interface are loaded as Components.
+		///
+		/// Compiler constants are loaded from classes marked with the MalsysConstants attribute.
+		///
+		/// Compiler functions are loaded from classes marked with the MalsysFunctions attribute.
+		///
+		/// Operators are loaded from classes marked with the MalsysOpertors attribute.
+		/// </remarks>
 		public void LoadMalsysStuffFromAssembly(Assembly a, ICompilerConstantsContainer constCont, IOperatorsContainer opCont,
 				ref IExpressionEvaluatorContext funCont, IComponentMetadataContainer compCont, IMessageLogger logger, IXmlDocReader xmlDocReader = null) {
 
@@ -58,6 +71,10 @@ namespace Malsys.Reflection {
 		}
 
 
+		/// <summary>
+		/// Loads all compiler constants from given type.
+		/// Compiler constants are public static fields of type CompilerConstant.
+		/// </summary>
 		public IEnumerable<CompilerConstant> LoadCompilerConstants(Type t, IXmlDocReader docReader = null) {
 			foreach (var fieldInfo in t.GetFields(BindingFlags.Public | BindingFlags.Static)) {
 
@@ -75,7 +92,10 @@ namespace Malsys.Reflection {
 			}
 		}
 
-
+		/// <summary>
+		/// Loads all operators from given type.
+		/// Operators are public static fields of type OperatorCore.
+		/// </summary>
 		public IEnumerable<OperatorCore> LoadOeprators(Type t, IXmlDocReader docReader = null) {
 			foreach (var fieldInfo in t.GetFields(BindingFlags.Public | BindingFlags.Static)) {
 
@@ -95,6 +115,10 @@ namespace Malsys.Reflection {
 		}
 
 
+		/// <summary>
+		/// Loads all functions from given type.
+		/// Functions are public static fields of type FunctionCore.
+		/// </summary>
 		public IEnumerable<FunctionInfo> LoadFunctionDefinitions(Type t, IXmlDocReader docReader = null) {
 			foreach (var fieldInfo in t.GetFields(BindingFlags.Public | BindingFlags.Static)) {
 

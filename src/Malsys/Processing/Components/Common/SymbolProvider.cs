@@ -9,6 +9,7 @@ using Malsys.SemanticModel.Evaluated;
 namespace Malsys.Processing.Components.Common {
 	/// <summary>
 	///	Standard implementation of ISymbolProvider interface.
+	///	It provides all symbols set to the Symbols property regardless of the state of processing.
 	/// </summary>
 	/// <name>Symbol provider</name>
 	/// <group>Common</group>
