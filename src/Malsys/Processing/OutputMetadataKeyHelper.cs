@@ -12,27 +12,27 @@ namespace Malsys.Processing {
 		/// <summary>
 		/// Expected value is bool.
 		/// </summary>
-		public const string OutputIsGZipped = "Output is gzipped";
+		public const string OutputIsGZipped = "gzipped";
 
 		/// <summary>
 		/// Expected value is bool.
 		/// </summary>
-		public const string OutputIsAsciiArt = "Ascii art";
+		public const string OutputIsAsciiArt = "asciiArt";
 
 		/// <summary>
 		/// Expected value is bool.
 		/// </summary>
-		public const string PackedOutputs = "All outputs packed";
+		public const string PackedOutputs = "packed";
 
 		/// <summary>
 		/// Width of output image. Expected value is positive integer.
 		/// </summary>
-		public const string OutputWidth = "Width";
+		public const string OutputWidth = "width";
 
 		/// <summary>
 		/// Height of output image. Expected value is positive integer.
 		/// </summary>
-		public const string OutputHeight = "Height";
+		public const string OutputHeight = "height";
 
 	}
 }

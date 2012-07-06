@@ -195,6 +195,9 @@
     <Compile Include="Administration.UsersController.generated.cs">
       <DependentUpon>T4MVC.tt</DependentUpon>
     </Compile>
+    <Compile Include="ApiController.generated.cs">
+      <DependentUpon>T4MVC.tt</DependentUpon>
+    </Compile>
     <Compile Include="AppSettingsKeys.cs" />
     <Compile Include="App_Start\RegisterClientValidationExtensions.cs" />
     <Compile Include="Areas\Administration\AdministrationAreaRegistration.cs" />
@@ -219,9 +222,11 @@
     </Compile>
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Areas\Administration\Controllers\StatsController.cs" />
+    <Compile Include="Controllers\ApiController.cs" />
     <Compile Include="Controllers\AuthenticationController.cs" />
     <Compile Include="Areas\Administration\Controllers\RolesController.cs" />
     <Compile Include="Areas\Administration\Controllers\UsersController.cs" />
+    <Compile Include="Controllers\CurveDesignerController.cs" />
     <Compile Include="Controllers\FeedbackController.cs" />
     <Compile Include="Controllers\GalleryController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -229,6 +234,9 @@
     <Compile Include="Controllers\ProcessController.cs" />
     <Compile Include="Controllers\ProcessOutputController.cs" />
     <Compile Include="Controllers\UserController.cs" />
+    <Compile Include="CurveDesignerController.generated.cs">
+      <DependentUpon>T4MVC.tt</DependentUpon>
+    </Compile>
     <Compile Include="Entities\IFeedbackDb.cs" />
     <Compile Include="Entities\IInputDb.cs" />
     <Compile Include="Entities\IQueriableExtensions.cs" />
@@ -273,6 +281,7 @@
     <Compile Include="Infrastructure\MalsysHelper.cs" />
     <Compile Include="Infrastructure\UrlHelperExtensions.cs" />
     <Compile Include="Models\MalsysStdLibSource.cs" />
+    <Compile Include="Models\ViewModels%27\DesignerModel.cs" />
     <Compile Include="Models\ViewModels%27\GalleryThumbnailModel.cs" />
     <Compile Include="Models\ViewModels%27\GalleryModel.cs" />
     <Compile Include="Models\ViewModels%27\TagModel.cs" />
@@ -361,6 +370,7 @@
     <Content Include="Areas\Administration\Views\Tags\Edit.cshtml" />
     <Content Include="Areas\Administration\Views\Tags\Delete.cshtml" />
     <Content Include="Areas\Help\Views\Home\StdLib.cshtml" />
+    <Content Include="Css\prettyPhoto.css" />
     <Content Include="Css\style.less.css" />
     <Content Include="Areas\Help\Views\Predefined\ComponentsLatex.cshtml" />
     <Content Include="Areas\Help\Views\Predefined\ComponentLatexPartial.cshtml" />
@@ -371,6 +381,8 @@
     <Content Include="Error.html" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
+    <Content Include="Download\MarekFiser-LsystemsOnline.v101.pdf" />
+    <Content Include="Download\MarekFiser-LsystemsOnline.v101.pdf.zip" />
     <None Include="Js\jquery.textarea.js" />
     <None Include="Js\jquery.validate.js" />
     <None Include="Js\jquery.js" />
@@ -386,14 +398,42 @@
     <Content Include="google4412977e75e1f8f1.html" />
     <Content Include="humans.txt" />
     <None Include="Js\ThreeJs\Stats.js" />
+    <Content Include="Img\ajax-loader.gif" />
+    <Content Include="Img\designerExample.png" />
     <Content Include="Img\Lilac-DiffWebGL.png" />
+    <Content Include="Img\prettyPhoto\light_square\btnNext.png" />
+    <Content Include="Img\prettyPhoto\light_square\btnPrevious.png" />
+    <Content Include="Img\prettyPhoto\light_square\default_thumbnail.gif" />
+    <Content Include="Img\prettyPhoto\light_square\loader.gif" />
+    <Content Include="Img\prettyPhoto\light_square\sprite.png" />
+    <Content Include="Img\Thesis\00.png" />
+    <Content Include="Img\Thesis\05.png" />
+    <Content Include="Img\Thesis\12.png" />
+    <Content Include="Img\Thesis\18.png" />
+    <Content Include="Img\Thesis\30.png" />
+    <Content Include="Img\Thesis\83.png" />
+    <Content Include="Img\Thesis\thn\00.png" />
+    <Content Include="Img\Thesis\thn\05.png" />
+    <Content Include="Img\Thesis\thn\12.png" />
+    <Content Include="Img\Thesis\thn\18.png" />
+    <Content Include="Img\Thesis\thn\30.png" />
+    <Content Include="Img\Thesis\thn\83.png" />
+    <None Include="Js\malsys.curveDesigner.js" />
+    <None Include="Js\jquery.prettyPhoto.js" />
+    <None Include="Js\jquery.tmpl.js" />
     <Content Include="Js\jquery.min.js">
       <DependentUpon>MinifyJs.tt</DependentUpon>
     </Content>
     <Content Include="Js\jquery.old.min.js">
       <DependentUpon>MinifyJs.tt</DependentUpon>
     </Content>
+    <Content Include="Js\jquery.prettyPhoto.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
     <Content Include="Js\jquery.textarea.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\jquery.tmpl.min.js">
       <DependentUpon>MinifyJs.tt</DependentUpon>
     </Content>
     <Content Include="Js\jquery.unobtrusive-ajax.min.js">
@@ -403,6 +443,9 @@
       <DependentUpon>MinifyJs.tt</DependentUpon>
     </Content>
     <Content Include="Js\jquery.validate.unobtrusive.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\malsys.curveDesigner.min.js">
       <DependentUpon>MinifyJs.tt</DependentUpon>
     </Content>
     <Content Include="Js\malsys.min.js">
@@ -439,7 +482,6 @@
     <Content Include="Views\Account\ChangePasswordSuccess.cshtml" />
     <Content Include="Views\Authentication\LogOn.cshtml" />
     <Content Include="Views\Account\Register.cshtml" />
-    <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\LogOnPartial.cshtml" />
@@ -482,6 +524,9 @@
     <Content Include="Views\Home\Sitemap.cshtml" />
     <Content Include="Views\Gallery\Sitemap.cshtml" />
     <Content Include="Areas\Help\Views\Home\Sitemap.cshtml" />
+    <Content Include="Views\Home\Thesis.cshtml" />
+    <Content Include="Views\CurveDesigner\Index.cshtml" />
+    <Content Include="Views\CurveDesigner\Show.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Areas\Administration\Views\Shared\" />

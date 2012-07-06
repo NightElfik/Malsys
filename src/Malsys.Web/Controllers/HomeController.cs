@@ -39,15 +39,15 @@ namespace Malsys.Web.Controllers {
 			return View(model);
 		}
 
-		public virtual ActionResult About() {
-			return View();
-		}
-
 		public virtual ActionResult WhyWebgl() {
 			return View();
 		}
 
 		public virtual ActionResult Sitemap() {
+			return View();
+		}
+
+		public virtual ActionResult Thesis() {
 			return View();
 		}
 

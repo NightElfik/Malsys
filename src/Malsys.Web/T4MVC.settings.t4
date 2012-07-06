@@ -56,7 +56,7 @@ static bool AddTimestampToStaticLinks = true;
 
 // Folders containing static files for which links are generated (e.g. Links.Scripts.Map_js)
 readonly string[] StaticFilesFolders = new string[] {
-    "Content",
+    "Download",
     "Css",
     "Js",
     "Img"

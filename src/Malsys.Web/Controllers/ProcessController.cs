@@ -59,6 +59,10 @@ namespace Malsys.Web.Controllers {
 		[ActionName("Index")]
 		public virtual ActionResult IndexPost(string sourceCode, int? referenceId = null, string compile = null, string save = null) {
 
+			if (sourceCode == null) {
+				sourceCode = "";
+			}
+
 			usersRepository.LogUserActivity(User.Identity.Name);
 
 			TimeSpan timeout;

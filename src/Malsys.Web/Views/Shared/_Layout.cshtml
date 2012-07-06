@@ -75,11 +75,12 @@
 		<footer id="footer">
 			<p class="center">
 				&copy; @Html.ActionLink("Marek Fišer", MVC.Feedback.EmailToAuthor(), new { title = "E-mail to author", tabindex = 90 }) 2011 &mdash; 2012
-				| @Html.ActionLink("Feedback", MVC.Feedback.Index(), new { title = "Send a feedback", tabindex = 91 })
+				| @Html.ActionLink("Thesis", MVC.Home.Thesis(), new { title = "Bachelor thesis", tabindex = 91 })
+				| @Html.ActionLink("Feedback", MVC.Feedback.Index(), new { title = "Send a feedback", tabindex = 92 })
 				| thanks @Html.Link("MFF CUNI", "http://www.mff.cuni.cz/", "Faculty of Mathematics and Physics of Charles University in Prague") for hosting
 			</p>
 			<div class="note clearfix">
-				<p class="right">This page was generated at @DateTime.Now.ToUniversalTime() (UTC)</p>
+				<p class="right">This page was generated at @DateTime.Now.ToString("u") (UTC)</p>
 				<p class="left">
 					Web version: <abbr title="Compiled with @Malsys.Web.MalsysWebVersion.CompiledWith, linked with @Malsys.Web.MalsysWebVersion.LinkedWith">@Malsys.Web.MalsysWebVersion.LinkedWith</abbr>
 					Library version: <abbr title="Compiled with @MalsysVersion.CompiledWith, linked with @MalsysVersion.LinkedWith">@MalsysVersion.LinkedWith</abbr>

@@ -13,12 +13,15 @@ namespace Malsys.Web.Infrastructure {
 			return Link(html, link, link);
 		}
 
-		public static HtmlString Link(this HtmlHelper html, string text, string link, string title = null) {
+		public static HtmlString Link(this HtmlHelper html, string text, string link, string title = null, bool newWindow = false) {
 			var tb = new TagBuilder("a");
 			tb.SetInnerText(text);
 			tb.MergeAttribute("href", link);
 			if (title != null) {
 				tb.MergeAttribute("title", title);
+			}
+			if (newWindow) {
+				tb.MergeAttribute("target", "_blank");
 			}
 
 			return new HtmlString(tb.ToString());

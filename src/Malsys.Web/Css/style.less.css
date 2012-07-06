@@ -335,7 +335,7 @@ html, #headerContainer, #footerContainer {
 
 /* Main ===================================================================== */
 
-#main { margin: 32px 20px; }
+#main { margin: 40px 20px; }
 
 input[type="submit"] { padding: 0.5em 1em; }
 
@@ -608,9 +608,32 @@ a.tag {
 	.paginationRight { float: right; }
 }
 
+/* Designers ================================================================ */
+.curveDesigneContainer {
+	position: relative;
+	float: left;
+	.curveDesigner {
+		 position: absolute; top: 0; left: 0;
+	}
+}
+
+.curveDesigneMirrors {
+	float: left;
+	a {
+		display: block;
+		width: 70px;
+		text-align: center;
+		.border-radius-malsys(4px);
+		.box-shadow(0, 0, 4px, 0, #BBB);
+		margin: 8px;
+		&:hover { color: @linkHoverColor; text-decoration: none; color: #000; background: #EEE; .box-shadow(0, 0, 6px, 0, #777); }
+		&.mirror { height: 170px; }
+	}
+}
 
 
 /* Uncategorized ============================================================ */
+
 
 .scrollBox { overflow: auto; margin: 0 auto; }
 
@@ -628,7 +651,10 @@ p.malsysMsg {
 
 .monospace { font-family: @monospaceFonts; }
 
-
+#ajaxLoader {
+	display: none;
+	text-align: center;
+}
 
 /* Media queries ============================================================ */
 

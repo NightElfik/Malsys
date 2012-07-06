@@ -1,0 +1,77 @@
+﻿@model DesignerModel
+
+@{
+	ViewBag.Title = "Curve designer";
+	int size = 400;
+}
+
+<h2>Curve designer</h2>
+
+<div class="clearfix">
+<div class="curveDesigneContainer" style="width: @(size)px; height: @(size)px;">
+	<canvas id="cdLeft" class="curveDesigner" width="@(size)px" height="@(size)px" data-cols="@Model.Size" data-rows="@Model.Size" data-edge-type="left">
+		<p>Unfortunately, your browser is do not support this feature.</p>
+	</canvas>
+</div>
+
+<div class="curveDesigneMirrors">
+	<a href="#" class="mirror" data-src-id="cdRight" data-dest-id="cdLeft"> « « <br /> mirror <br /> right <br /> to <br /> left <br /> « « </a>
+	<a href="#" id="clearCds">clear</a>
+	<a href="#" class="mirror" data-src-id="cdLeft" data-dest-id="cdRight"> » » <br /> mirror <br /> left <br /> to <br /> right <br /> » » </a>
+</div>
+
+<div class="curveDesigneContainer" style="width: @(size)px; height: @(size)px;">
+	<canvas id="cdRight" class="curveDesigner" width="@(size)px" height="@(size)px" data-cols="@Model.Size" data-rows="@Model.Size" data-edge-type="right">
+		<p>Unfortunately, your browser is do not support this feature.</p>
+	</canvas>
+</div>
+</div>
+<p>
+	<input type="checkbox" id="autoMirror" @(Model.AutoMirror ? "checked=\"checked\"" : "") data-src-id="cdLeft" data-dest-id="cdRight" /> <label for="autoMirror">Auto mirror</label>
+	<input type="checkbox" id="checkFassRules" @(Model.CheckFassRules ? "checked=\"checked\"" : "") /> <label for="checkFassRules">Check rules of FASS curves (experimental, do not cover all conditions)</label>
+	<br />
+	@Html.ActionLink("Back to designer settings (exits current designer)", MVC.CurveDesigner.Index());
+</p>
+
+<h3>Results</h3>
+
+<p>
+	<input type="submit" id="process" value="Process & display results" />
+</p>
+
+<div id="ajaxLoader">
+	<p>Loading ...</p>
+	<img src="@Links.Img.ajax_loader_gif" width="220px" height="19px" alt="Loading animation" />
+</div>
+
+<div id="resultsContainer" class="floating_container clearfix">
+</div>
+
+<script id="svgOutputTemplate" type="text/x-jquery-tmpl">
+	<div class="floating_box">
+	<div class="scrollBox">
+		<img src="${url}" width="${width}px" height="${height}px" alt="Process result" />
+	</div>
+	</div>
+	<br />
+</script>
+
+
+<h3>Generated code</h3>
+
+<pre class="malsys box" id="sourceCodeResult">
+</pre>
+
+<p>
+@using (Html.BeginForm(MVC.Process.Index())) {
+	<input type="submit" id="edit" value="Edit source code (exits designer)" />
+	<input id="SourceCode" name="SourceCode" type="hidden" value="" />
+}
+</p>
+
+
+@section scripts {
+	@Content.Js(Links.Js.jquery_tmpl_js)
+	@Content.Js(Links.Js.malsys_curveDesigner_js)
+}
+

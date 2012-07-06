@@ -6,26 +6,26 @@ using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("Malsys.Web")]
-[assembly: AssemblyDescription("Web interface of Malsys")]
+
+[assembly: AssemblyTitle("Malsys.BitmapRenderers")]
+[assembly: AssemblyDescription("Malsys plugin adding some bitmap renderers.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Marek Fišer")]
-[assembly: AssemblyProduct("Malsys.Web")]
+[assembly: AssemblyProduct("Malsys.BitmapRenderers")]
 [assembly: AssemblyCopyright("Copyright © Marek Fišer 2012 All rights reserved.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
-[assembly: ComVisible(false)]
-[assembly: Guid("79bd5bc3-6fd7-4f26-9eb3-372745f9aa31")]
+[assembly: Guid("716bf11f-5894-42b9-b5dd-37146797b185")]
 
-[assembly: AssemblyVersion(Malsys.Web.MalsysWebVersion.CompiledWith)]
-[assembly: AssemblyFileVersion(Malsys.Web.MalsysWebVersion.CompiledWith)]
+[assembly: AssemblyVersion(Malsys.BitmapRenderers.MalsysBitmapRenderersVersion.CompiledWith)]
+[assembly: AssemblyFileVersion(Malsys.BitmapRenderers.MalsysBitmapRenderersVersion.CompiledWith)]
 
 
-namespace Malsys.Web {
-	public static class MalsysWebVersion {
+namespace Malsys.BitmapRenderers {
+	public static class MalsysBitmapRenderersVersion {
 
-		public const string CompiledWith = "1.2.0";
+		public const string CompiledWith = "0.1.0";
 		public static readonly string LinkedWith = CompiledWith;
 
 		public static Version CompiledWithVersion { get { return new Version(CompiledWith); } }

@@ -1,0 +1,47 @@
+﻿@{
+	ViewBag.Title = "Curve designer";
+	int maxSize = 9;
+}
+
+<h2>Curve designer</h2>
+
+<p>
+	Curve designer is visual tool for designing 2D curves without knowledge of L-systems or their syntax.
+</p>
+<p>
+	The designer is inspired by node-rewriting explained in
+		@Html.Link("The algorithmic beauty of plants", "http://algorithmicbotany.org/papers/#abop", "The algorithmic beauty of plants", true)
+		by P. Prusinkiewicz and A. Lindenmayer (p. 14).
+</p>
+
+
+<h3>Designer help</h3>
+<img class="right" src="@Links.Img.designerExample_png" width="256px" height="256px" alt="Designer example" />
+
+<p>
+	To create a curve in designer you must connect start and end node in each grid.
+	To achieve the connection you must click in grid to place nodes, relative position of mouse to cell will determine position of placed node.
+	The curve must be green to be valid.
+	The curve can not touch or cross itself.
+	After creating valid curve click on the Process button to see results.
+	Lower you can see L-system source code.
+</p>
+
+
+
+<h3>Designer setup</h3>
+
+@using (Html.BeginForm(MVC.CurveDesigner.Show(), FormMethod.Get)) {
+
+	<label for="size">Size: </label>
+	<select id="size" name="size">
+		@for (int i = 2; i <= maxSize; i++) {
+			<option value="@i" @(i == 5 ? "selected=\"selected\"" : "")>@i</option>
+		}
+	</select>
+	<br />
+	<input type="checkbox" id="autoMirror" name="autoMirror" value="true" checked="checked" /> <label for="autoMirror">Automatically mirror left design to right</label>
+	<br />
+	<input type="submit" value="Start designer" />
+}
+

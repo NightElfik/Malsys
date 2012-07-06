@@ -8,7 +8,7 @@
 @using Malsys.Web.Models.Lsystem;
 
 @{
-	var metadata = OutputMetadataHelper.DeserializeMetadata(Model.SavedInput.OutputMetadata);
+	var metadata = OutputMetadataHelper.DeserializeMetadata(Model.SavedInput.OutputThnMetadata);
 
 	HtmlString linkStrBegin = new HtmlString("<a href=\"" + Url.Action(MVC.Gallery.Detail(Model.SavedInput.UrlId))
 		+ "\" title=\"" + Model.SavedInput.PublishName + " \">");
