@@ -7,6 +7,7 @@ lsystem MycelisMuralis extends Branches {
 	set initialAngle = 90;
 	set scale = 4;
 	//set interpretEveryIterationFrom = 70;
+	set canvasOriginSize = {-45, -130, 100, 128};
 	set interpretFollowingIterations = {1,20,41, 45,50,55,60,65,70,75,80,90,98};
 	set tropismVector = {0, -1, 0};
 	set tropismCoefficient = 2.2;

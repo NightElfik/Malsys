@@ -9,7 +9,7 @@ using Malsys.Evaluators;
 using Malsys.Resources;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Malsys.Tests.Resources {
+namespace Malsys.Tests {
 	[TestClass]
 	public class StdLibTests {
 

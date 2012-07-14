@@ -121,6 +121,7 @@
     <Compile Include="Media\Triangulation\Polygon3DTrianguler.cs" />
     <Compile Include="Media\Triangulation\Polygon3DTriangulerParameters.cs" />
     <Compile Include="Media\Triangulation\TriangleEvaluationFunction.cs" />
+    <Compile Include="Processing\Components\Renderers\BaseRenderer2D.cs" />
     <Compile Include="Processing\Components\Renderers\DebugRenderer2D.cs" />
     <Compile Include="Resources\MalsysConstantsAttribute.cs" />
     <Compile Include="Compilers\ConstantDefCompiler.cs" />
@@ -284,7 +285,6 @@
     <Compile Include="Processing\Components\Common\SymbolsMemoryBuffer.cs" />
     <Compile Include="Media\ColorF.cs" />
     <Compile Include="Processing\Components\Interfaces%27\IInterpreter.cs" />
-    <Compile Include="Media\PointF.cs" />
     <Compile Include="Processing\Components\UserSettableAttribute.cs" />
     <Compile Include="Processing\ProcessContext.cs" />
     <Compile Include="Processing\ProcessConfigurationBuilder.cs" />

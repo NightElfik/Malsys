@@ -152,6 +152,10 @@ namespace Malsys.Web {
 				loader.LoadMalsysStuffFromAssembly(plugin,
 					knownStuffProvider, knownStuffProvider, ref eec, componentResolver, logger, xmlDocReader);
 			}
+			if (tryLoadPlugin("~/bin/Malsys.BitmapRenderers.dll", out plugin)) {
+				loader.LoadMalsysStuffFromAssembly(plugin,
+					knownStuffProvider, knownStuffProvider, ref eec, componentResolver, logger, xmlDocReader);
+			}
 
 			if (logger.ErrorOccurred) {
 				throw new Exception("Failed to load Malsys stuff" + logger.AllMessagesToFullString());
@@ -184,11 +188,13 @@ namespace Malsys.Web {
 
 
 			string stdlib;
-			using (Stream stream = new ResourcesReader().GetResourceStream(ResourcesHelper.StdLibResourceName)) {
+			using (var stream = new ResourcesReader().GetResourceStream(ResourcesHelper.StdLibResourceName)) {
 				using (TextReader reader = new StreamReader(stream)) {
 					stdlib = reader.ReadToEnd();
 				}
 			}
+
+			stdlib += File.ReadAllText(Server.MapPath("~/App_Data/StdLibExtension.malsys"));
 
 			builder.Register(x => new MalsysStdLibSource(stdlib)).SingleInstance();
 

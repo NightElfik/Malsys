@@ -25,49 +25,58 @@ namespace Malsys.Media {
 		public static readonly ColorF Blue = new ColorF(0f, 0f, 1f);
 		public static readonly ColorF Magenta = new ColorF(1f, 0f, 1f);
 
-		public static readonly ColorF TransparentBlack = new ColorF(0f, 0f, 0f, 0f);
+		public static readonly ColorF TransparentBlack = new ColorF(1f, 0f, 0f, 0f);
 
-
-		public float A;
+		/// <summary>
+		/// Transparency. Value 0 means no transparency, 1 means full transparency.
+		/// Transparency is 1 - Alpha.
+		/// Alpha is not used to allow 0 to be default value with no transparency.
+		/// </summary>
+		public float T;
 		public float R;
 		public float G;
 		public float B;
 
 
-		public ColorF(uint argb) {
-			A = ((argb >> 24) & 0xFF) / 255f;
-			R = ((argb >> 16) & 0xFF) / 255f;
-			G = ((argb >> 8) & 0xFF) / 255f;
-			B = (argb & 0xFF) / 255f;
+		public ColorF(uint trgb) {
+			T = ((trgb >> 24) & 0xFF) / 255f;
+			R = ((trgb >> 16) & 0xFF) / 255f;
+			G = ((trgb >> 8) & 0xFF) / 255f;
+			B = (trgb & 0xFF) / 255f;
 		}
 
 		public ColorF(float r, float g, float b) {
-			A = 1f;
+			T = 0f;
 			R = r;
 			G = g;
 			B = b;
 		}
 
 		public ColorF(double r, double g, double b) {
-			A = 1f;
+			T = 0f;
 			R = (float)r;
 			G = (float)g;
 			B = (float)b;
 		}
 
-		public ColorF(float a, float r, float g, float b) {
-			A = a;
+		public ColorF(float t, float r, float g, float b) {
+			T = t;
 			R = r;
 			G = g;
 			B = b;
 		}
 
-		public ColorF(double a, double r, double g, double b) {
-			A = (float)a;
+		public ColorF(double t, double r, double g, double b) {
+			T = (float)t;
 			R = (float)r;
 			G = (float)g;
 			B = (float)b;
 		}
+
+		public bool IsTransparent {
+			get { return T > 0f; }
+		}
+
 
 		public uint ToRgb() {
 
@@ -78,14 +87,27 @@ namespace Malsys.Media {
 			return (r << 16) | (g << 8) | b;
 		}
 
+		/// <remarks>
+		/// Inverses transparency value to create valid alpha value.
+		/// </remarks>
 		public uint ToArgb() {
 
-			uint a = (uint)(MathHelper.Clamp01(A) * 255);
+			uint a = (uint)(MathHelper.Clamp01(1 - T) * 255);
 			uint r = (uint)(MathHelper.Clamp01(R) * 255);
 			uint g = (uint)(MathHelper.Clamp01(G) * 255);
 			uint b = (uint)(MathHelper.Clamp01(B) * 255);
 
 			return (a << 24) | (r << 16) | (g << 8) | b;
+		}
+
+		public uint ToTrgb() {
+
+			uint t = (uint)(MathHelper.Clamp01(T) * 255);
+			uint r = (uint)(MathHelper.Clamp01(R) * 255);
+			uint g = (uint)(MathHelper.Clamp01(G) * 255);
+			uint b = (uint)(MathHelper.Clamp01(B) * 255);
+
+			return (t << 24) | (r << 16) | (g << 8) | b;
 		}
 
 		public string ToRgbHexString() {
@@ -105,7 +127,7 @@ namespace Malsys.Media {
 		}
 
 		public override string ToString() {
-			return "{0},{1},{2},{3}".FmtInvariant(A, R, G, B);
+			return "{0},{1},{2},{3}".FmtInvariant(T, R, G, B);
 		}
 
 	}

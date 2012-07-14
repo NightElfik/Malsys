@@ -52,8 +52,8 @@ namespace Malsys.Processing.Components.Renderers {
 			logState(DrawPolygonName);
 		}
 
-		public void DrawSphere(Point3D center, Quaternion rotation, double radius, ColorF color, double quality) {
-			logState(logFormat, DrawSphereName, center, rotation, radius, color);
+		public void DrawSphere(double radius, ColorF color, double quality) {
+			logState(logFormat, DrawSphereName, new Point3D(), new Quaternion(), radius, color);
 		}
 
 		#endregion

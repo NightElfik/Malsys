@@ -21,11 +21,17 @@ namespace Malsys.Processing.Components.Common {
 		public IMessageLogger Logger { get; set; }
 
 
-		public bool RequiresMeasure { get { return false; } }
+		public void Reset() { }
 
 		public void Initialize(ProcessContext ctxt) { }
 
 		public void Cleanup() { }
+
+		public void Dispose() { }
+
+
+
+		public bool RequiresMeasure { get { return false; } }
 
 
 		public void BeginProcessing(bool measuring) {

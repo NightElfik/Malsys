@@ -122,6 +122,38 @@ namespace Malsys {
 		}
 
 		/// <summary>
+		/// Counts lines with respect to Windows, Unix or MAC line endings.
+		/// </summary>
+		public static int CountLines(this string str) {
+
+			Contract.Requires<ArgumentNullException>(str != null);
+
+			int lines = 1;
+
+			int beginIndex = 0;
+
+			for (int i = 0; i < str.Length; i++) {
+
+				switch (str[i]) {
+					case '\r':
+						if (i + 1 < str.Length && str[i + 1] == '\n') {
+							i++;
+						}
+						beginIndex = i + 1;
+						lines++;
+						break;
+
+					case '\n':
+						beginIndex = i + 1;
+						lines++;
+						break;
+				}
+			}
+
+			return lines;
+		}
+
+		/// <summary>
 		/// Appends a copy of a specified substring to the end of this instance.
 		/// </summary>
 		/// <param name="sb">The StringBuilder instance.</param>

@@ -28,14 +28,9 @@ namespace Malsys.Processing.Components.Common {
 		private IRandomGenerator localRandomGenerator;
 
 
-		public IMessageLogger Logger { get; set; }
-
-
 		/// <summary>
-		/// If set to true as random generator will be used
-		/// true-random (cryptographic random) generator.
-		/// For this random generator can not be set any seed and numbers are
-		/// always unpredictably random.
+		/// If set to true as random generator will be used true-random (cryptographic random) generator.
+		/// For this random generator can not be set any seed and numbers are always unpredictably random.
 		/// If set to false as random generator will be used pseudo-random generator.
 		/// </summary>
 		/// <expected>true or false</expected>
@@ -57,25 +52,40 @@ namespace Malsys.Processing.Components.Common {
 		public Constant RandomSeed { get; set; }
 
 
-		public void Initialize(ProcessContext ctxt) { }
+		public IMessageLogger Logger { get; set; }
 
-		public void Cleanup() {
+
+		public void Reset() {
 
 			localRandomGenerator = null;
 
-			if (cryptoRandomInstance != null) {
-				cryptoRandomInstance.Dispose();
-			}
-
 			TrueRandom = Constant.False;
 			RandomSeed = Constant.MinusOne;
-
 		}
+
+		public void Initialize(ProcessContext ctxt) { }
+
+		public void Cleanup() { }
+
+		/// <summary>
+		/// Disposes true random generator if used.
+		/// </summary>
+		/// <remarks>
+		/// Once "true random" generator is created there is no need to dispose and recreate id after every usage, it
+		/// can be reused but it should be disposed at the very end.
+		/// </remarks>
+		public void Dispose() {
+			if (cryptoRandomInstance != null) {
+				cryptoRandomInstance.Dispose();
+				cryptoRandomInstance = null;
+			}
+		}
+
 
 		/// <summary>
 		/// Resets random generator to initial state.
 		/// </summary>
-		public void Reset(int? seed = null) {
+		public void ResetRandomGenerator(int? seed = null) {
 			if (!TrueRandom.IsTrue) {
 				if (seed == null) {
 					ensureSeed();

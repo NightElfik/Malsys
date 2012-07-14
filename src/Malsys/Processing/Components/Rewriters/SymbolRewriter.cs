@@ -48,6 +48,7 @@ namespace Malsys.Processing.Components.Rewriters {
 
 		public IMessageLogger Logger { get; set; }
 
+		#region User gettable & settable properties
 
 		/// <summary>
 		/// List of symbols which are ignored in context checking.
@@ -95,31 +96,17 @@ namespace Malsys.Processing.Components.Rewriters {
 			}
 		}
 
+		#endregion
 
-		#region IRewriter Members
 
 		[UserConnectable]
 		public ISymbolProvider SymbolProvider { get; set; }
 
-		/// <summary>
-		/// Returns enumerator which will yields result of rewriting symbols from symbol provider.
-		/// </summary>
-		/// <remarks>
-		/// Enumerator is reusable BUT Reset method must be called before each usage.
-		/// Even source (symbol provider) can be switched between usages, Reset call will gets new enumerator.
-		/// </remarks>
-		public IEnumerator<Symbol> GetEnumerator() {
-			enumerator.Reset();
-			return enumerator;
-		}
 
-		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
-			enumerator.Reset();
-			return enumerator;
-		}
+		#region IComponent Members
 
-		public bool RequiresMeasure {
-			get { return false; }
+		public void Reset() {
+			ContextIgnore = StartBranchSymbols = EndBranchSymbols = ImmutableList<Symbol<IValue>>.Empty;
 		}
 
 		public void Initialize(ProcessContext ctxt) {
@@ -170,11 +157,14 @@ namespace Malsys.Processing.Components.Rewriters {
 			lsystem = null;
 			exprEvalCtxt = null;
 			rewriteRules = null;
-			endBranchSymbolNames.Clear();
-			startBranchSymbolNames.Clear();
-			endBranchSymbolNames.Clear();
-			contextSymbols.Clear();
 		}
+
+		public void Dispose() { }
+
+
+
+		public bool RequiresMeasure { get { return false; } }
+
 
 		public void BeginProcessing(bool measuring) {
 			enumerator = new SymbolRewriterEnumerator(this);
@@ -187,6 +177,24 @@ namespace Malsys.Processing.Components.Rewriters {
 		}
 
 		#endregion
+
+
+		/// <summary>
+		/// Returns enumerator which will yields result of rewriting symbols from symbol provider.
+		/// </summary>
+		/// <remarks>
+		/// Enumerator is reusable BUT Reset method must be called before each usage.
+		/// Even source (symbol provider) can be switched between usages, Reset call will gets new enumerator.
+		/// </remarks>
+		public IEnumerator<Symbol> GetEnumerator() {
+			enumerator.Reset();
+			return enumerator;
+		}
+
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
+			enumerator.Reset();
+			return enumerator;
+		}
 
 
 		public enum Message {

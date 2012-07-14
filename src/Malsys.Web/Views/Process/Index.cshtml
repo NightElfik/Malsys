@@ -42,7 +42,7 @@
 	else {
 		<p class="okBlock">
 			Compilation was successful.
-			See compiled source code at the end of page.
+			@Html.AnchorLink("See compiled source code below", "compiledSource")
 		</p>
 	}
 }
@@ -50,7 +50,7 @@
 @if (Model.OutputFiles != null && Model.OutputFiles.Count > 0) {
 	<p>
 		Processing of input created @Model.OutputFiles.Count result(s) in @Math.Round(Model.ProcessDuration.TotalSeconds, 2) second(s).
-		See them below.
+		@Html.AnchorLink("See them below.", "results")
 	</p>
 }
 else {
@@ -75,10 +75,10 @@ else {
 		<td>
 			@if (count > 1) {
 				<p class="malsysMsg"><abbr title="@messages">[@(count)x]</abbr> @MalsysHelper.SimplifyMessage(msg.MessageStr)</p>
-   }
-   else {
+			}
+			else {
 				<p class="malsysMsg">@MalsysHelper.SimplifyMessage(msg.MessageStr)</p>
-   }
+			}
 		</td>
 		<td>
 			@if (!msg.Position.IsUnknown) {
@@ -101,7 +101,7 @@ else {
 
 		@Html.ValidationSummary(true)
 
-		@Html.TextAreaFor(m => m.SourceCode, 20, 60, null)
+		@Html.TextAreaFor(m => m.SourceCode, Math.Max(20, (Model.SourceCode ?? "").CountLines() / 3), 60, null)
 
 		@* @Html.HiddenFor(m => m.ReferenceId) inserts old value from POST instead of updated value from model *@
 		<input id="ReferenceId" name="ReferenceId" type="hidden" value="@Model.ReferenceId" />
@@ -114,10 +114,12 @@ else {
 	</fieldset>
 }
 </div>
-
 @{
 	bool loadThreeJs = false;
 	if (Model.OutputFiles != null) {
+		<div class="floating_box">
+			<h3 id="results">Process results</h3>
+		</div>
 		foreach (var result in Model.OutputFiles) {
 			if (result.MimeType == Malsys.MimeType.Application.Javascript) {
 				// TODO: this should be returned from partial view somehow
@@ -133,7 +135,7 @@ else {
 
 @if (Model.CompiledSourceCode != null) {
 	<div class="floating_box">
-		<h3>Compiled source code</h3>
+		<h3 id="compiledSource">Compiled source code</h3>
 		<pre class="malsys box">
 		@Model.CompiledSourceCode
 		</pre>

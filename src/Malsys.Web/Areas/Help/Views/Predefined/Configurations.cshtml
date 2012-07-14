@@ -24,7 +24,7 @@
 
 <ul class="clean">
 @foreach (var configModel in configs) {
-	<li>@Html.AnchorLink(configModel.ProcessConfiguration.Name, MVC.Help.Predefined.Configurations(), configModel.ProcessConfiguration.Name)</li>
+	<li>@Html.AnchorLink(configModel.ProcessConfiguration.Name, configModel.ProcessConfiguration.Name, MVC.Help.Predefined.Configurations())</li>
 }
 </ul>
 

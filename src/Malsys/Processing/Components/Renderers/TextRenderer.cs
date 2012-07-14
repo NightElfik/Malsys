@@ -28,20 +28,30 @@ namespace Malsys.Processing.Components.Renderers {
 		private char[][] resultBuffer;
 
 
-		public IMessageLogger Logger { get; set; }
 
 
 		#region IComponent Members
 
-		public bool RequiresMeasure { get { return true; } }
+		public IMessageLogger Logger { get; set; }
+
+
+		public void Reset() { }
 
 		public void Initialize(ProcessContext ctxt) {
 			context = ctxt;
 		}
 
+
 		public void Cleanup() {
 			context = null;
 		}
+
+		public void Dispose() { }
+
+
+
+		public bool RequiresMeasure { get { return true; } }
+
 
 		public void BeginProcessing(bool measuring) {
 

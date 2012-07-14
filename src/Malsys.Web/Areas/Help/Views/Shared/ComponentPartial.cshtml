@@ -12,12 +12,12 @@
 	var derComp = Model.DerivedTypes.Where(t => !t.IsInterface).ToList();
 	var derInt = Model.DerivedTypes.Where(t => t.IsInterface).ToList();
 
-	var anchorLink = Html.AnchorLink("↑ " + data.HumanReadableName, MVC.Help.Predefined.Components(), data.ComponentType.FullName, true, true);
+	var anchorLink = Html.AnchorLink("↑ " + data.HumanReadableName, data.ComponentType.FullName, MVC.Help.Predefined.Components(), true, true);
 }
 
 
 <div class="component box">
-@Html.AnchorLink("#", MVC.Help.Predefined.Components(), data.ComponentType.FullName, true)
+@Html.AnchorLink("#", data.ComponentType.FullName, MVC.Help.Predefined.Components(), true)
 <h4 id="@data.ComponentType.FullName">
 	@data.HumanReadableName @Html.TypeLink(data.ComponentType)
 	@if (!Model.Metadata.ComponentType.IsInterface && Model.Metadata.ComponentType.IsAbstract) { <span class="flag">{abstract}</span> }

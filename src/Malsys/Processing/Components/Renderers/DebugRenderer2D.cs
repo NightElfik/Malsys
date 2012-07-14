@@ -23,6 +23,10 @@ namespace Malsys.Processing.Components.Renderers {
 
 		private string logFormat;
 
+		private Point lastPoint;
+		private double lastWidth;
+		private ColorF lastColor;
+
 
 		public DebugRenderer2D()
 			: this("{0}|{1}|{2}|{3}") {
@@ -42,20 +46,28 @@ namespace Malsys.Processing.Components.Renderers {
 
 		public void MoveTo(Point point, double width, ColorF color) {
 			logState(logFormat, MoveToName, point, width, color);
+			saveLastState(point, width, color);
 		}
 
 		public void DrawTo(Point point, double width, ColorF color) {
 			logState(logFormat, DrawToName, point, width, color);
+			saveLastState(point, width, color);
 		}
 
 		public void DrawPolygon(Polygon2D polygon) {
 			logState(DrawPolygonName);
 		}
 
-		public void DrawCircle(Point center, double radius, ColorF color) {
-			logState(logFormat, DrawCircleName, center, radius, color);
+		public void DrawCircle(double radius, ColorF color) {
+			logState(logFormat, DrawCircleName, lastPoint, radius, color);
 		}
 
 		#endregion
+
+		protected void saveLastState(Point point, double width, ColorF color) {
+			lastPoint = point;
+			lastWidth = width;
+			lastColor = color;
+		}
 	}
 }

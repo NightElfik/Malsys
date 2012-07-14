@@ -12,7 +12,7 @@ namespace Malsys.Media {
 		public static ValuesArray ToIValue(ColorF color) {
 
 			IValue[] arr = new IValue[4];
-			arr[0] = color.A.ToConst();
+			arr[0] = color.T.ToConst();
 			arr[1] = color.R.ToConst();
 			arr[2] = color.G.ToConst();
 			arr[3] = color.B.ToConst();

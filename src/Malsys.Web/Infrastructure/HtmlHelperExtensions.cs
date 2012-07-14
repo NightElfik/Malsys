@@ -66,11 +66,11 @@ namespace Malsys.Web.Infrastructure {
 		}
 
 
-		public static HtmlString AnchorLink(this HtmlHelper html, string text, ActionResult result, string anchor,
+		public static HtmlString AnchorLink(this HtmlHelper html, string text, string anchor, ActionResult result = null,
 				bool anchorLink = false, bool autoHide = false) {
 
 			return new HtmlString("<a href=\"{0}#{2}\" class=\"{3} {4}\">{1}</a>"
-				.Fmt(new UrlHelper(html.ViewContext.RequestContext).Action(result), text, anchor, anchorLink ? "anchorLink" : "", autoHide ? "autoHide" : ""));
+				.Fmt(result == null ? "" : new UrlHelper(html.ViewContext.RequestContext).Action(result), text, anchor, anchorLink ? "anchorLink" : "", autoHide ? "autoHide" : ""));
 		}
 
 

@@ -23,5 +23,11 @@ namespace Malsys.Processing.Components.Common {
 		public ImmutableList<Symbol<IValue>> Axiom { set { Symbols = value; } }
 
 
+		public override void Reset() {
+			base.Reset();
+			Axiom = ImmutableList<Symbol<IValue>>.Empty;
+		}
+
+
 	}
 }

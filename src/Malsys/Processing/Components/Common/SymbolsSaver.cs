@@ -29,7 +29,8 @@ namespace Malsys.Processing.Components.Common {
 		public IMessageLogger Logger { get; set; }
 
 
-		public bool RequiresMeasure { get { return false; } }
+
+		public void Reset() { }
 
 		public void Initialize(ProcessContext ctxt) {
 			outProvider = ctxt.OutputProvider;
@@ -39,6 +40,12 @@ namespace Malsys.Processing.Components.Common {
 		public void Cleanup() {
 			outProvider = null;
 		}
+
+		public void Dispose() { }
+
+
+
+		public bool RequiresMeasure { get { return false; } }
 
 
 		public void BeginProcessing(bool measuring) {

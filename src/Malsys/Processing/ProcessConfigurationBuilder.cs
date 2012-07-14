@@ -129,7 +129,7 @@ namespace Malsys.Processing {
 		}
 
 		/// <summary>
-		/// Initializes given components with given context.
+		/// Sets given logger to all given components.
 		/// </summary>
 		public void SetLogger(FSharpMap<string, ConfigurationComponent> components, IMessageLogger logger) {
 			foreach (var kvp in components) {
@@ -289,8 +289,37 @@ namespace Malsys.Processing {
 		}
 
 		/// <summary>
+		/// Reset all given components.
+		/// </summary>
+		/// <remarks>
+		/// Sets Logger to null and calls Reset on all given components.
+		///
+		/// Catches exceptions of type ComponentException and logs them to given logger as errors.
+		/// </remarks>
+		public void ResetComponents(FSharpMap<string, ConfigurationComponent> components, IMessageLogger logger) {
+
+			foreach (var kvp in components) {
+
+				var comp = kvp.Value;
+
+				try {
+					comp.Component.Logger = null;
+					comp.Component.Reset();
+				}
+				catch (ComponentException ex) {
+					logger.LogMessage(Message.ComponentCleanupError, comp.Name, comp.ComponentType.FullName, ex.Message);
+				}
+			}
+		}
+
+		/// <summary>
 		/// Calls Cleanup method on all given components.
 		/// </summary>
+		/// <remarks>
+		/// Catches exceptions of type ComponentException and logs them to given logger as errors.
+		///
+		/// Catches all unhandled exceptions to safely cleanup all components. Catched exceptions are reported as errors to given logger.
+		/// </remarks>
 		public void CleanupComponents(FSharpMap<string, ConfigurationComponent> components, IMessageLogger logger) {
 
 			foreach (var kvp in components) {
@@ -302,16 +331,37 @@ namespace Malsys.Processing {
 				}
 				catch (ComponentException ex) {
 					logger.LogMessage(Message.ComponentCleanupError, comp.Name, comp.ComponentType.FullName, ex.Message);
-					continue;
 				}
-#if !DEBUG  // to not catch all exceptions while debugging and allow debugger to catch them
+#if !DEBUG  // do not catch all exceptions while debugging and allow debugger to catch them
 				catch (Exception ex) {
 					logger.LogMessage(Message.ComponentCleanupException, ex.GetType().Name, comp.Name, comp.ComponentType.FullName);
-					continue;
 				}
 #endif
+			}
+		}
 
 
+		/// <summary>
+		/// Calls Dispose method on all given components.
+		/// </summary>
+		/// <remarks>
+		/// Catches all unhandled exceptions to safely dispose all components. Catched exceptions are reported as errors to given logger.
+		/// </remarks>
+		public void DisposeComponents(FSharpMap<string, ConfigurationComponent> components, IMessageLogger logger) {
+
+			foreach (var kvp in components) {
+
+				var comp = kvp.Value;
+
+				try {
+					comp.Component.Dispose();
+				}
+#if !DEBUG  // do not catch all exceptions while debugging and allow debugger to catch them
+				catch (Exception ex) {
+					logger.LogMessage(Message.ComponentDisposeException, ex.GetType().Name, comp.Name, comp.ComponentType.FullName);
+				}
+#endif
+				finally { }
 			}
 		}
 
@@ -605,6 +655,8 @@ namespace Malsys.Processing {
 			ComponentCleanupError,
 			[Message(MessageType.Error, "`{0}` thrown on cleanup of component `{1}` (`{2}`).")]
 			ComponentCleanupException,
+			[Message(MessageType.Error, "`{0}` thrown on dispose of component `{1}` (`{2}`).")]
+			ComponentDisposeException,
 			[Message(MessageType.Error, "Invalid connection rule connecting `{0}` to `{1}`.`{2}`.")]
 			InvalidConnection,
 

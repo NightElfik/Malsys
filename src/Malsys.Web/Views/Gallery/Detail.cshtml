@@ -40,14 +40,34 @@
 		break;
 
 	case MimeType.Image.SvgXml:
-		int width = OutputMetadataHelper.TryGetValue(Model.Metadata, OutputMetadataKeyHelper.OutputWidth, -1);
-		int height = OutputMetadataHelper.TryGetValue(Model.Metadata, OutputMetadataKeyHelper.OutputHeight, -1);
-		bool hasValidSize = width > 0 && height > 0;
+		int svgWidth = OutputMetadataHelper.TryGetValue(Model.Metadata, OutputMetadataKeyHelper.OutputWidth, -1);
+		int svgHeight = OutputMetadataHelper.TryGetValue(Model.Metadata, OutputMetadataKeyHelper.OutputHeight, -1);
+		bool svgHasValidSize = svgWidth > 0 && svgHeight > 0;
 		<div class="scrollBox">
 			<a href="@Url.Action(MVC.Gallery.GetOutput(Model.Input.UrlId, Model.Input.EditDate.Hash()))" title="@Model.Input.PublishName">
-			<img src="@Url.Action(MVC.Gallery.GetOutput(Model.Input.UrlId, Model.Input.EditDate.Hash()))" @if (hasValidSize) { <text>width="@(width)px" height="@(height)px"</text> } alt="@Model.Input.PublishName" />
+			<img src="@Url.Action(MVC.Gallery.GetOutput(Model.Input.UrlId, Model.Input.EditDate.Hash()))" @if (svgHasValidSize) { <text>width="@(svgWidth)px" height="@(svgHeight)px"</text> } alt="@Model.Input.PublishName" />
 			</a>
 		</div>
+		break;
+
+	case MimeType.Image.Png:
+	case MimeType.Image.Jpeg:
+	case MimeType.Image.Gif:
+		int bmpWidth = OutputMetadataHelper.TryGetValue(Model.Metadata, OutputMetadataKeyHelper.OutputWidth, -1);
+		int bmpHeight = OutputMetadataHelper.TryGetValue(Model.Metadata, OutputMetadataKeyHelper.OutputHeight, -1);
+		bool bmpHasValidSize = bmpWidth > 0 && bmpHeight > 0;
+		<div class="scrollBox">
+			<a href="@Url.Action(MVC.Gallery.GetOutput(Model.Input.UrlId, Model.Input.EditDate.Hash()))" title="@Model.Input.PublishName">
+			<img src="@Url.Action(MVC.Gallery.GetOutput(Model.Input.UrlId, Model.Input.EditDate.Hash()))" @if (bmpHasValidSize) { <text>width="@(bmpWidth)px" height="@(bmpHeight)px"</text> } alt="@Model.Input.PublishName" />
+			</a>
+		</div>
+		if (OutputMetadataHelper.TryGetValue(Model.Metadata, OutputMetadataKeyHelper.OutputInPngAnimation, false)) {
+			<p class="note">
+				This output is @Html.Link("PNG animation", "http://en.wikipedia.org/wiki/APNG", "Animated PNG on Wikipedia", true).
+				If you don't see any animation, please use @Html.Link("supported browser", "http://en.wikipedia.org/wiki/APNG#Application_support", "List of supported applications on Wikipedia", true).
+			</p>
+		}
+
 		break;
 
 	case MimeType.Application.Javascript:
@@ -109,10 +129,10 @@ break;
 		<span class="vote">
 		@if (Model.UserVote == null || Model.UserVote != i) {
 			@Html.ActionLink(text, MVC.Gallery.Vote(Model.Input.UrlId, i))
-		}
-		else {
+  }
+  else {
 			@text
-		}
+  }
 		</span>
 	}
 	<span class="vote">best</span>

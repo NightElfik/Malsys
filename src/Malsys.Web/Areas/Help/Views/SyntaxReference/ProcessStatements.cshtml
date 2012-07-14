@@ -47,7 +47,7 @@
 
 <p>
 	If there are more L-systems and we want to render them all we can write one process statement for each L-system or we can just use <code class="malsys">all</code>
-		to process all defined (@Html.AnchorLink("non-abstract", MVC.Help.SyntaxReference.LsystemDefinition(), "AbstractLsystems")) L-systems.
+		to process all defined (@Html.AnchorLink("non-abstract", "AbstractLsystems", MVC.Help.SyntaxReference.LsystemDefinition())) L-systems.
 </p>
 
 @Html.Partial(MVC.Help.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, StringHelper.JoinLines(

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.FSharp.Collections;
 
 namespace Malsys.Processing.Output {
 	public class InMemoryOutputProvider : IOutputProvider {
@@ -38,6 +39,13 @@ namespace Malsys.Processing.Output {
 				throw new ArgumentException("Given output stream does not exist.");
 			}
 			managedFile.Metadata[key] = value;
+		}
+
+		public FSharpMap<string, object> GetMetadata(Stream outputStream) {
+			return managedFiles
+				.Where(x => x.Stream == outputStream)
+				.Select(x => x.Metadata.ToFsharpMap(y => y.Key, y => y.Value))
+				.FirstOrDefault();
 		}
 
 		/// <summary>

@@ -19,7 +19,9 @@ namespace Malsys.Processing.Components.Renderers {
 	/// </summary>
 	/// <name>2D SVG renderer</name>
 	/// <group>Renderers</group>
-	public class SvgRenderer2D : IRenderer2D {
+	public class SvgRenderer2D : BaseRenderer2D {
+
+		private const double invertY = -1;
 
 		public const string FileHeader = "<?xml version=\"1.0\" standalone=\"no\"?>\n"
 			+ "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">";
@@ -27,35 +29,26 @@ namespace Malsys.Processing.Components.Renderers {
 			+ " viewBox=\"{0:0.###} {1:0.###} {2:0.###} {3:0.###}\" width=\"{4:0.###}px\" height=\"{5:0.###}px\" style=\"stroke-linecap: {6}\">";
 		public const string SvgFooter = "</svg>";
 
-
-		private ProcessContext context;
-		private FSharpMap<string, object> globalAdditionalData = MapModule.Empty<string, object>();
-
-		private bool measuring;
-
-		private Stream outputStream;
 		private TextWriter writer;
 
-		private double invertY = -1;
+		private double marginT, marginR, marginB, marginL;
 
-		private double lastX, lastY;
+		private Point lastPoint;
 		private double lastWidth;
 		private ColorF lastColor;
 
-		private double marginT = 2, marginR = 2, marginB = 2, marginL = 2;
-		private double measuredMinX, measuredMinY, measuredMaxX, measuredMaxY;
-		private double minX, minY, maxX, maxY;
 
-
-		public IMessageLogger Logger { get; set; }
-
-
+		#region User gettable and settable properties
 
 		/// <summary>
 		/// Margin of result image.
+		/// Margin is not applied if canvas size is specified.
 		/// </summary>
-		/// <expected>One number (or array with one number) for all margins, array of two numbers for vertical and horizontal margins
-		/// or array of four numbers as top, right, bottom and left margin respectively.</expected>
+		/// <expected>
+		/// One number (or array with one number) for size of all (top, right, bottom and left) margins,
+		/// array of two numbers for vertical and horizontal margins,
+		/// or array of four numbers as top, right, bottom and left margin respectively.
+		/// </expected>
 		/// <default>2</default>
 		[AccessName("margin")]
 		[UserSettable]
@@ -88,6 +81,8 @@ namespace Malsys.Processing.Components.Renderers {
 
 		/// <summary>
 		/// When set it overrides measured dimensions of image and uses given values.
+		/// Setting this value can significantly improve performance because this component will not need measure pass before rendering.
+		/// However some other component in the system may need the measure pass as well so performance may not be improved.
 		/// </summary>
 		/// <expected>Four numbers representing x, y, width and height of canvas.</expected>
 		/// <default>none</default>
@@ -102,6 +97,32 @@ namespace Malsys.Processing.Components.Renderers {
 			}
 		}
 		private ValuesArray canvasOriginSize;
+
+		/// <summary>
+		/// When set the output is scaled to fit given rectangle (width and height).
+		/// </summary>
+		/// <expected>Array of twp numbers representing maximum width and height of the output.</expected>
+		/// <default>none</default>
+		[AccessName("scaleOutputToFit")]
+		[UserSettable]
+		public ValuesArray ScaleOutputToFit {
+			set {
+				if (!value.IsConstArrayOfLength(2)) {
+					throw new InvalidUserValueException("ScaleOutputToFit must be array of 2 constants.");
+				}
+
+				int wid = ((Constant)value[0]).RoundedIntValue;
+				int hei = ((Constant)value[1]).RoundedIntValue;
+				if (wid > 0 && hei > 0) {
+					scaleOutputToFit.Width = wid;
+					scaleOutputToFit.Height = hei;
+				}
+				else {
+					throw new InvalidUserValueException("Width and height values of ScaleOutputToFit property must be positive.");
+				}
+			}
+		}
+		private Size scaleOutputToFit;
 
 		/// <summary>
 		/// If set to true result SBG image is compressed by GZip.
@@ -124,7 +145,7 @@ namespace Malsys.Processing.Components.Renderers {
 		public Constant Scale { get; set; }
 
 		/// <summary>
-		/// Cap of each rendered line.
+		/// Cap of each rendered lines.
 		/// </summary>
 		/// <expected>0 for no caps, 1 for square caps, 2 for round caps</expected>
 		/// <default>2 (round caps)</default>
@@ -132,88 +153,101 @@ namespace Malsys.Processing.Components.Renderers {
 		[UserSettable]
 		public Constant LineCap { get; set; }
 
+		#endregion
+
 
 		#region IComponent Members
 
-		public bool RequiresMeasure {
+		public override bool RequiresMeasure {
 			get {
 				// do not measure when canvas size is already known
 				return canvasOriginSize == null;
 			}
 		}
 
-		public void Initialize(ProcessContext ctxt) {
-			context = ctxt;
-		}
-
-		public void Cleanup() {
-			context = null;
-			Margin = new Constant(2d);
+		public override void Reset() {
+			base.Reset();
+			Margin = Constant.Two;
 			CompressSvg = Constant.True;
 			Scale = Constant.One;
-			LineCap = new Constant(2d);
+			LineCap = Constant.Two;
 			canvasOriginSize = null;
+			scaleOutputToFit = Size.Empty;
 		}
 
-		public void BeginProcessing(bool measuring) {
 
-			this.measuring = measuring;
-			var localAdditionalData = globalAdditionalData;
+		public override void BeginProcessing(bool measuring) {
+			base.BeginProcessing(measuring);
+
+			var localMetadata = globalMetadata;
 			if (CompressSvg.IsTrue) {
-				localAdditionalData = localAdditionalData.Add(OutputMetadataKeyHelper.OutputIsGZipped, true);
+				localMetadata = localMetadata.Add(OutputMetadataKeyHelper.OutputIsGZipped, true);
 			}
 
 			if (measuring) {
 				writer = null;
+				return;
+			}
+
+			double minX, minY, maxX, maxY;
+
+			if (canvasOriginSize != null) {
+				minX = ((Constant)canvasOriginSize[0]).Value;
+				minY = ((Constant)canvasOriginSize[1]).Value;
+				maxX = minX + ((Constant)canvasOriginSize[2]).Value;
+				maxY = minY + ((Constant)canvasOriginSize[3]).Value;
 			}
 			else {
-				if (canvasOriginSize != null) {
-					measuredMinX = ((Constant)canvasOriginSize[0]).Value;
-					measuredMinY = ((Constant)canvasOriginSize[1]).Value;
-					measuredMaxX = measuredMinX + ((Constant)canvasOriginSize[2]);
-					measuredMaxY = measuredMinY + ((Constant)canvasOriginSize[3]);
-				}
-				double svgWidth = measuredMaxX - measuredMinX + marginL + marginR;
-				double svgHeight = measuredMaxY - measuredMinY + marginT + marginB;
-				double svgWidthScaled = svgWidth * Scale.Value;
-				double svgHeighScaled = svgHeight * Scale.Value;
-
-				localAdditionalData = localAdditionalData.Add(OutputMetadataKeyHelper.OutputWidth, (int)Math.Round(svgWidthScaled));
-				localAdditionalData = localAdditionalData.Add(OutputMetadataKeyHelper.OutputHeight, (int)Math.Round(svgHeighScaled));
-
-				outputStream = context.OutputProvider.GetOutputStream<SvgRenderer2D>(
-					"SVG result from `{0}`".Fmt(context.Lsystem.Name),
-					MimeType.Image.SvgXml, false, localAdditionalData);
-
-				if (CompressSvg.IsTrue) {
-					var gzipStream = new GZipStream(outputStream, CompressionMode.Compress);
-					writer = new StreamWriter(gzipStream);
-				}
-				else {
-					writer = new StreamWriter(outputStream);
-				}
-
-				writer.WriteLine(FileHeader);
-				writer.WriteLine(SvgHeader.FmtInvariant(
-					measuredMinX - marginL,
-					measuredMinY - marginT,
-					svgWidth,
-					svgHeight,
-					svgWidthScaled,
-					svgHeighScaled,
-					getLineCapString(LineCap)));
+				minX = measuredMin.X - marginL;
+				minY = measuredMin.Y - marginB;
+				maxX = measuredMax.X + marginR;
+				maxY = measuredMax.Y + marginT;
 			}
+
+			double svgWidth = maxX - minX;
+			double svgHeight = maxY - minY;
+
+			double scale;
+			if (!scaleOutputToFit.IsEmpty) {
+				scale = MathHelper.GetScaleSizeToFitScale(svgWidth, svgHeight, scaleOutputToFit.Width, scaleOutputToFit.Height);
+			}
+			else {
+				scale = Scale.Value;
+			}
+
+			int svgWidthScaled = (int)Math.Ceiling(svgWidth * scale);
+			int svgHeighScaled = (int)Math.Ceiling(svgHeight * scale);
+
+			localMetadata = localMetadata.Add(OutputMetadataKeyHelper.OutputWidth, svgWidthScaled);
+			localMetadata = localMetadata.Add(OutputMetadataKeyHelper.OutputHeight, svgHeighScaled);
+
+			outputStream = context.OutputProvider.GetOutputStream<SvgRenderer2D>(
+				"SVG result from `{0}`".Fmt(context.Lsystem.Name),
+				MimeType.Image.SvgXml, false, localMetadata);
+
+			if (CompressSvg.IsTrue) {
+				var gzipStream = new GZipStream(outputStream, CompressionMode.Compress);
+				writer = new StreamWriter(gzipStream);
+			}
+			else {
+				writer = new StreamWriter(outputStream);
+			}
+
+			writer.WriteLine(FileHeader);
+			writer.WriteLine(SvgHeader.FmtInvariant(
+				minX,
+				minY,
+				svgWidth,
+				svgHeight,
+				svgWidthScaled,
+				svgHeighScaled,
+				getLineCapString(LineCap)));
 		}
 
-		public void EndProcessing() {
+		public override void EndProcessing() {
+			base.EndProcessing();
 
-			if (measuring) {
-				measuredMinX = minX;
-				measuredMaxX = maxX;
-				measuredMinY = minY;
-				measuredMaxY = maxY;
-			}
-			else {
+			if (!measuring) {
 				writer.WriteLine(SvgFooter);
 				writer.Close();
 				writer = null;
@@ -225,71 +259,54 @@ namespace Malsys.Processing.Components.Renderers {
 
 		#region IRenderer2D Members
 
-		public void AddGlobalOutputData(string key, object value) {
-			globalAdditionalData = globalAdditionalData.Add(key, value);
+
+		public override void InitializeState(Point startPoint, double width, ColorF color) {
+
+			startPoint.Y *= invertY;
+			base.InitializeState(startPoint, width, color);
+
+			lastPoint = startPoint;
+			lastWidth = width;
+			lastColor = color;
+
 		}
 
-		public void AddCurrentOutputData(string key, object value) {
-			if (outputStream != null) {
-				context.OutputProvider.AddMetadata(outputStream, key, value);
-			}
-		}
+		public override void MoveTo(Point endPoint, double width, ColorF color) {
 
-		public void InitializeState(Point point, double width, ColorF color) {
-
-			point.Y *= invertY;
+			endPoint.Y *= invertY;
 
 			if (measuring) {
-				minX = maxX = point.X;
-				maxY = minY = point.Y;
-			}
-			else {
-				lastX = point.X;
-				lastY = point.Y;
-				lastWidth = width;
-				lastColor = color;
+				measure(endPoint, width / 2);
 			}
 
+			lastPoint = endPoint;
+			lastWidth = width;
+			lastColor = color;
 		}
 
-		public void MoveTo(Point point, double width, ColorF color) {
+		public override void DrawTo(Point endPoint, double width, ColorF color) {
 
-			point.Y *= invertY;
-
-			if (measuring) {
-				measure(point.X, point.Y);
-			}
-			else {
-				lastX = point.X;
-				lastY = point.Y;
-				lastWidth = width;
-				lastColor = color;
-			}
-		}
-
-		public void DrawTo(Point point, double width, ColorF color) {
-
-			point.Y *= invertY;
+			endPoint.Y *= invertY;
 
 			if (measuring) {
-				measure(point.X, point.Y);
+				measure(endPoint, width / 2);
 			}
 			else {
 				writer.WriteLine("<line x1=\"{0:0.###}\" y1=\"{1:0.###}\" x2=\"{2:0.###}\" y2=\"{3:0.###}\" stroke=\"#{4}\" stroke-width=\"{5:0.###}\" />"
-					.FmtInvariant(lastX, lastY, point.X, point.Y, color.ToRgbHexString(), width));
-
-				lastX = point.X;
-				lastY = point.Y;
-				lastWidth = width;
-				lastColor = color;
+					.FmtInvariant(lastPoint.X, lastPoint.Y, endPoint.X, endPoint.Y, color.ToRgbHexString(), width));
 			}
+
+			lastPoint = endPoint;
+			lastWidth = width;
+			lastColor = color;
 		}
 
-		public void DrawPolygon(Polygon2D polygon) {
+		public override void DrawPolygon(Polygon2D polygon) {
 
 			if (measuring) {
+				double measureRadius = polygon.StrokeWidth / 2;
 				foreach (var pt in polygon.Ponits) {
-					measure(pt.X, pt.Y * invertY);
+					measure(pt.X, pt.Y * invertY, measureRadius);
 				}
 			}
 			else {
@@ -304,17 +321,15 @@ namespace Malsys.Processing.Components.Renderers {
 			}
 		}
 
-		public void DrawCircle(Point center, double radius, ColorF color) {
-
-			center.Y *= -1;
+		public override void DrawCircle(double radius, ColorF color) {
 
 			if (measuring) {
-				measure(center.X + radius, center.Y + radius);
-				measure(center.X - radius, center.Y - radius);
+				// last point is already measured but radius may be wrong
+				measure(lastPoint, radius);
 			}
 			else {
 				writer.Write("<circle cx=\"{0:0.###}\" cy=\"{1:0.###}\" r=\"{2:0.###}\" fill=\"#{3}\" stroke-width=\"0px\" />"
-					.FmtInvariant(center.X, center.Y, radius, color.ToRgbHexString()));
+					.FmtInvariant(lastPoint.X, lastPoint.Y, radius, color.ToRgbHexString()));
 			}
 		}
 
@@ -326,22 +341,6 @@ namespace Malsys.Processing.Components.Renderers {
 				case 1: return "square";
 				case 2: return "round";
 				default: return "butt";
-			}
-		}
-
-		private void measure(double x, double y) {
-			if (x < minX) {
-				minX = x;
-			}
-			else if (x > maxX) {
-				maxX = x;
-			}
-
-			if (y < minY) {
-				minY = y;
-			}
-			else if (y > maxY) {
-				maxY = y;
 			}
 		}
 	}

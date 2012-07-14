@@ -110,6 +110,7 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
@@ -136,6 +137,8 @@
     <Compile Include="Parsing\ProcessConfigurationTest.cs" />
     <Compile Include="Parsing\ProcessStatementTests.cs" />
     <Compile Include="Parsing\VariableDefinitionTests.cs" />
+    <Compile Include="Png\PngReaderTests.cs" />
+    <Compile Include="Png\PngWriterTest.cs" />
     <Compile Include="Processing\ContextListBuilderTests.cs" />
     <Compile Include="Processing\ContextTesterTests.cs" />
     <Compile Include="Processing\InherenceTests.cs" />
@@ -145,8 +148,13 @@
     <Compile Include="Processing\ProcessManagerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Common\StringExtensionsTest.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Prototypes\MetadataStoreComparison.cs" />
-    <Compile Include="Resources\StdLibTests.cs" />
+    <Compile Include="StdLibTests.cs" />
     <Compile Include="Rewriters\MemoryBufferedIteratorTests.cs" />
     <Compile Include="Rewriters\SymbolRewriterTests.cs" />
     <Compile Include="SourceCode\CanonicPrinterTests.cs" />
@@ -155,9 +163,17 @@
     <Compile Include="TestUtils\TestUtils.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ExamplePlugin\ExamplePlugin.csproj">
+      <Project>{A45E7E3C-3AEE-4110-B8CC-9B1419FE40AF}</Project>
+      <Name>ExamplePlugin</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Malsys.Ast\Malsys.Ast.csproj">
       <Project>{4DE67417-39CA-4AEC-AC75-9584112268F0}</Project>
       <Name>Malsys.Ast</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Malsys.BitmapRenderers\Malsys.BitmapRenderers.csproj">
+      <Project>{4159F9DB-B635-4861-8930-EF2DD6DCA730}</Project>
+      <Name>Malsys.BitmapRenderers</Name>
     </ProjectReference>
     <ProjectReference Include="..\Malsys.Common\Malsys.Common.csproj">
       <Project>{433E2485-4265-4656-A197-D0EB315618E1}</Project>
@@ -178,6 +194,13 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Resources\MinimalPng.png.bin" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

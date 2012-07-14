@@ -63,10 +63,10 @@ namespace Malsys.Tests {
 				new ColorF[] { ColorF.TransparentBlack, ColorF.White, ColorF.TransparentBlack },
 				new uint[] { 3, 3 },
 				new UintColorF(0, ColorF.TransparentBlack),
-				new UintColorF(1, new ColorF(0.25f, 0.25f, 0.25f, 0.25f)),
+				new UintColorF(1, new ColorF(0.75f, 0.25f, 0.25f, 0.25f)),
 				new UintColorF(2, new ColorF(0.5f, 0.5f, 0.5f, 0.5f)),
 				new UintColorF(4, ColorF.White),
-				new UintColorF(5, new ColorF(0.75f, 0.75f, 0.75f, 0.75f)),
+				new UintColorF(5, new ColorF(0.25f, 0.75f, 0.75f, 0.75f)),
 				new UintColorF(6, new ColorF(0.5f, 0.5f, 0.5f, 0.5f)),
 				new UintColorF(8, ColorF.TransparentBlack));
 		}

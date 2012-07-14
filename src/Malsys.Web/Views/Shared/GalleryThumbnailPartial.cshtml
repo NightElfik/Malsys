@@ -23,16 +23,31 @@
 @switch (Model.SavedInput.MimeType) {
 
 	case MimeType.Image.SvgXml:
-		int width = OutputMetadataHelper.TryGetValue(metadata, OutputMetadataKeyHelper.OutputWidth, -1);
-		int height = OutputMetadataHelper.TryGetValue(metadata, OutputMetadataKeyHelper.OutputHeight, -1);
-		bool hasValidSize = width > 0 && height > 0;
-		if (hasValidSize) {
-			MathHelper.ScaleSizeToFit(ref width, ref height, Model.MaxWidth, Model.MaxHeight);
+		int svgWidth = OutputMetadataHelper.TryGetValue(metadata, OutputMetadataKeyHelper.OutputWidth, -1);
+		int svgHeight = OutputMetadataHelper.TryGetValue(metadata, OutputMetadataKeyHelper.OutputHeight, -1);
+		bool svgHasValidSize = svgWidth > 0 && svgHeight > 0;
+		if (svgHasValidSize) {
+			MathHelper.ScaleSizeToFit(ref svgWidth, ref svgHeight, Model.MaxWidth, Model.MaxHeight);
 		}
 		else {
-			height = Model.MaxHeight;
+			svgHeight = Model.MaxHeight;
 		}
-		<img src="@Url.Action(MVC.Gallery.GetThumbnail(Model.SavedInput.UrlId, Model.SavedInput.EditDate.Hash()))" @if (width > 0) { <text>width="@(width)px" </text> } height="@(height)px" alt="@Model.SavedInput.PublishName" />
+		<img src="@Url.Action(MVC.Gallery.GetThumbnail(Model.SavedInput.UrlId, Model.SavedInput.EditDate.Hash()))" @if (svgWidth > 0) { <text>width="@(svgWidth)px" </text> } height="@(svgHeight)px" alt="@Model.SavedInput.PublishName" />
+		break;
+
+	case MimeType.Image.Png:
+	case MimeType.Image.Jpeg:
+	case MimeType.Image.Gif:
+		int bmpWidth = OutputMetadataHelper.TryGetValue(metadata, OutputMetadataKeyHelper.OutputWidth, -1);
+		int bmpHeight = OutputMetadataHelper.TryGetValue(metadata, OutputMetadataKeyHelper.OutputHeight, -1);
+		bool bmpHasValidSize = bmpWidth > 0 && bmpHeight > 0;
+		if (bmpHasValidSize) {
+			MathHelper.ScaleSizeToFit(ref bmpWidth, ref bmpHeight, Model.MaxWidth, Model.MaxHeight);
+		}
+		else {
+			bmpHeight = Model.MaxHeight;
+		}
+		<img src="@Url.Action(MVC.Gallery.GetThumbnail(Model.SavedInput.UrlId, Model.SavedInput.EditDate.Hash()))" @if (bmpWidth > 0) { <text>width="@(bmpWidth)px" </text> } height="@(bmpHeight)px" alt="@Model.SavedInput.PublishName" />
 		break;
 
 	case MimeType.Application.Javascript:

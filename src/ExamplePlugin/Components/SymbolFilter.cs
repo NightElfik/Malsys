@@ -17,7 +17,7 @@ namespace ExamplePlugin.Components {
 	/// <remarks>
 	/// Design and step-by-step implementation of this component is described in the bachelor thesis.
 	/// </remarks>
-	/// <name>Symbol fileter</name>
+	/// <name>Symbol filter</name>
 	/// <group>Plugin</group>
 	public class SymbolFilter : ISymbolProcessor {
 
@@ -47,12 +47,27 @@ namespace ExamplePlugin.Components {
 
 
 		public IMessageLogger Logger { get; set; }
-		public bool RequiresMeasure { get { return false; } }
+
+		public void Reset() {
+			ignoredSymbols.Clear();
+		}
 
 		public void Initialize(ProcessContext context) { }
 
-		public void Cleanup() {
-			ignoredSymbols.Clear();
+		public void Cleanup() { }
+
+		public void Dispose() { }
+
+
+		public bool RequiresMeasure { get { return false; } }
+
+
+		public void BeginProcessing(bool measuring) {
+			Output.BeginProcessing(measuring);
+		}
+
+		public void EndProcessing() {
+			Output.EndProcessing();
 		}
 
 
@@ -84,14 +99,6 @@ namespace ExamplePlugin.Components {
 
 			Output.ProcessSymbol(symbol);
 
-		}
-
-		public void BeginProcessing(bool measuring) {
-			Output.BeginProcessing(measuring);
-		}
-
-		public void EndProcessing() {
-			Output.EndProcessing();
 		}
 
 	}

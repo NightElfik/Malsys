@@ -41,8 +41,6 @@ namespace Malsys.Processing.Components.Interpreters {
 		private CanonicPrinter debugPrinter;
 
 
-		public IMessageLogger Logger { get; set; }
-
 		/// <summary>
 		/// True if print debug information about interpretation converting.
 		/// </summary>
@@ -60,8 +58,13 @@ namespace Malsys.Processing.Components.Interpreters {
 		public ILsystemInLsystemProcessor LsystemInLsystemProcessor { get; set; }
 
 
-		public bool RequiresMeasure { get { return false; } }
+		public IMessageLogger Logger { get; set; }
 
+
+		public void Reset() {
+			interpreters = null;
+			DebugInterpretation = Constant.False;
+		}
 
 		public void Initialize(ProcessContext ctxt) {
 
@@ -95,11 +98,14 @@ namespace Malsys.Processing.Components.Interpreters {
 				}
 				debugPrinter = null;
 			}
-
-			interpreters = null;
-			DebugInterpretation = Constant.False;
 			instrToDel.Clear();
 		}
+
+		public void Dispose() { }
+
+
+
+		public bool RequiresMeasure { get { return false; } }
 
 
 		public void BeginProcessing(bool measuring) {

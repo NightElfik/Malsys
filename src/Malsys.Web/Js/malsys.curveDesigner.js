@@ -513,7 +513,8 @@
 
 		$.each(designers, function (i, designer) {
 			sourceCode += '\tinterpret ' + edgeTypeToSymbol(designer.edgeType) +
-				' as DrawForward(' + Math.max(designer.cols, designer.rows) + ' ^ -currentIteration * 500);\n';
+				' as DrawForward(' + Math.max(designer.cols, designer.rows) + ' ^ -currentIteration * ' +
+					Math.round(100 + Math.sqrt((designer.cols + designer.rows) / 2) * 200) + ');\n';
 		});
 
 		sourceCode += '\tinterpret + as TurnLeft(90);\n' +

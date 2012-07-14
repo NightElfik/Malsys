@@ -33,7 +33,10 @@ namespace Malsys.Processing.Components.Renderers {
 
 		void DrawPolygon(Polygon3D polygon);
 
-		void DrawSphere(Point3D center, Quaternion rotation, double radius, ColorF color, double quality);
+		/// <summary>
+		/// Draws a sphere at current position (and rotation) with given radius and color.
+		/// </summary>
+		void DrawSphere(double radius, ColorF color, double quality);
 
 	}
 }

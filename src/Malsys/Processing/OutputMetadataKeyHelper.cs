@@ -5,34 +5,71 @@
 
 namespace Malsys.Processing {
 	/// <summary>
-	/// Helper class to avoid typos in output metadata keys and values.
+	/// Helper class for easy work with magic metadata keys.
 	/// </summary>
 	public static class OutputMetadataKeyHelper {
 
-		/// <summary>
+		/// <remarks>
 		/// Expected value is bool.
-		/// </summary>
+		/// </remarks>
 		public const string OutputIsGZipped = "gzipped";
 
-		/// <summary>
+		/// <remarks>
 		/// Expected value is bool.
-		/// </summary>
+		/// </remarks>
 		public const string OutputIsAsciiArt = "asciiArt";
 
-		/// <summary>
+		/// <remarks>
 		/// Expected value is bool.
-		/// </summary>
+		/// </remarks>
 		public const string PackedOutputs = "packed";
 
-		/// <summary>
-		/// Width of output image. Expected value is positive integer.
-		/// </summary>
+		/// <remarks>
+		/// Expected value is positive integer.
+		/// </remarks>
 		public const string OutputWidth = "width";
 
-		/// <summary>
-		/// Height of output image. Expected value is positive integer.
-		/// </summary>
+		/// <remarks>
+		/// Expected value is positive integer.
+		/// </remarks>
 		public const string OutputHeight = "height";
+
+		/// <summary>
+		/// Top offset from original position (after trimming).
+		/// </summary>
+		/// <remarks>
+		/// Expected value is positive integer.
+		/// </remarks>
+		public const string OffsetTop = "offsetTop";
+
+		/// <summary>
+		/// Right offset from original position (after trimming).
+		/// </summary>
+		/// <remarks>
+		/// Expected value is positive integer.
+		/// </remarks>
+		public const string OffsetRight = "offsetRight";
+
+		/// <summary>
+		/// Bottom offset from original position (after trimming).
+		/// </summary>
+		/// <remarks>
+		/// Expected value is positive integer.
+		/// </remarks>
+		public const string OffsetBottom = "offsetBottom";
+
+		/// <summary>
+		/// Left offset from original position (after trimming).
+		/// </summary>
+		/// <remarks>
+		/// Expected value is positive integer.
+		/// </remarks>
+		public const string OffsetLeft = "offsetLeft";
+
+		/// <remarks>
+		/// Expected value is bool.
+		/// </remarks>
+		public const string OutputInPngAnimation = "pngAnimation";
 
 	}
 }

@@ -169,7 +169,7 @@ namespace Malsys.Tests.Interpreters {
 				string inputSymbols, string[] excpected) {
 
 			var caller = new InterpreterCaller();
-			caller.Cleanup();
+			caller.Reset();
 			var symbols = TestUtils.CompileSymbols(inputSymbols);
 
 			var evaluator = new EvaluatorsContainer(TestUtils.ExpressionEvaluatorContext);
@@ -181,7 +181,7 @@ namespace Malsys.Tests.Interpreters {
 			var logger = new MessageLogger();
 
 			var dummyInterpreter = new DummyInterpreter();
-			dummyInterpreter.Cleanup();
+			dummyInterpreter.Reset();
 			var intMeta = new ComponentMetadataDumper().GetMetadata(dummyInterpreter.GetType(), logger);
 			var component = new ConfigurationComponent("interpreter", dummyInterpreter, intMeta);
 			var componentsGraph = MapModule.Empty<string, ConfigurationComponent>().Add(component.Name, component);
@@ -217,26 +217,32 @@ namespace Malsys.Tests.Interpreters {
 			IndentStringWriter writer;
 			CanonicPrinter printer;
 
-			public IMessageLogger Logger { get; set; }
 
 			public DummyInterpreter() {
 				writer = new IndentStringWriter();
 				printer = new CanonicPrinter(writer);
 			}
 
-
-			#region IInterpreter Members
-
 			public IRenderer Renderer {
 				set { throw new NotImplementedException(); }
 			}
 
 
-			public bool RequiresMeasure { get { return false; } }
+			#region IComponent Members
+
+
+			public IMessageLogger Logger { get; set; }
+
+			public void Reset() { }
 
 			public void Initialize(ProcessContext context) { }
 
 			public void Cleanup() { }
+
+			public void Dispose() { }
+
+
+			public bool RequiresMeasure { get { return false; } }
 
 			public void BeginProcessing(bool measuring) { }
 

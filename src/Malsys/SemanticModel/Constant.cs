@@ -33,6 +33,11 @@ namespace Malsys.SemanticModel {
 		public static readonly Constant One = new Constant(1d);
 
 		/// <summary>
+		/// Constant with value 2.
+		/// </summary>
+		public static readonly Constant Two = new Constant(2d);
+
+		/// <summary>
 		/// Constant with value 1 representing true.
 		/// </summary>
 		public static readonly Constant True = One;

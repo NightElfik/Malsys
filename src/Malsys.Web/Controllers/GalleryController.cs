@@ -91,7 +91,7 @@ namespace Malsys.Web.Controllers {
 			var tags = malsysInputRepository.InputDb.Tags.Select(t => new TagModel() {
 				TagName = t.Name,
 				Description = t.Description,
-				Quantity = t.SavedInputs.Count()
+				Quantity = t.SavedInputs.Where(x => !x.IsDeleted && x.IsPublished).Count()
 			});
 			return View(tags);
 		}
@@ -255,7 +255,7 @@ namespace Malsys.Web.Controllers {
 			}
 
 
-			var metadata = OutputMetadataHelper.DeserializeMetadata(thumbnail ? input.OutputMetadata : input.OutputThnMetadata);
+			var metadata = OutputMetadataHelper.DeserializeMetadata(thumbnail ? input.OutputThnMetadata : input.OutputMetadata);
 
 			if (metadata.Contains(new KeyValuePair<string, object>(OutputMetadataKeyHelper.OutputIsGZipped, true))) {
 				Response.AppendHeader("Content-Encoding", "gzip");

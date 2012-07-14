@@ -9,11 +9,11 @@
 	var config = Model.ProcessConfiguration;
 	var reolver = Model.ComponentMetadataResolver;
 
-	var anchorLink = Html.AnchorLink("↑ " + config.Name, MVC.Help.Predefined.Configurations(), config.Name, true, true);
+	var anchorLink = Html.AnchorLink("↑ " + config.Name, config.Name, MVC.Help.Predefined.Configurations(), true, true);
 }
 
 <div class="component box">
-@Html.AnchorLink("#", MVC.Help.Predefined.Configurations(), config.Name, true)
+@Html.AnchorLink("#", config.Name, MVC.Help.Predefined.Configurations(), true)
 <h4 id="@config.Name">
 	@config.Name
 </h4>

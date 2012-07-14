@@ -61,10 +61,10 @@ namespace Malsys.Tests.Rewriters {
 				null, TimeSpan.MaxValue, null);
 
 			var symBuff = new SymbolsMemoryBuffer();
-			symBuff.Cleanup();
+			symBuff.Reset();
 
 			var rewIt = new MemoryBufferedIterator();
-			rewIt.Cleanup();
+			rewIt.Reset();
 			var rewriter = new SymbolRewriter();
 			rewriter.SymbolProvider = rewIt;
 			rewriter.Initialize(context);

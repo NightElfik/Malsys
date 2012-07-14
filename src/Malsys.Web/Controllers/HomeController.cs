@@ -22,7 +22,7 @@ namespace Malsys.Web.Controllers {
 
 			var input = inputDb.SavedInputs
 				.Where(x => x.IsPublished && !x.IsDeleted)
-				.Where(x => x.MimeType == MimeType.Image.SvgXml || x.MimeType == MimeType.Application.Javascript)
+				.Where(x => x.MimeType == MimeType.Image.SvgXml || x.MimeType == MimeType.Application.Javascript || x.MimeType == MimeType.Image.Png)
 				.Where(x => (double)x.RatingSum / ((double)x.RatingCount + 1) > 2)
 				.OrderBy(x => x.SavedInputId)
 				.RandomOrDefault();

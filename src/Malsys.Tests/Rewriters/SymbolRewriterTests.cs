@@ -263,7 +263,7 @@ namespace Malsys.Tests.Rewriters {
 				TestUtils.ExpressionEvaluatorContext, null, TimeSpan.MaxValue, null);
 
 			var rewriter = new SymbolRewriter();
-			rewriter.Cleanup();
+			rewriter.Reset();
 			rewriter.ContextIgnore = new ImmutableList<Symbol<IValue>>(new Symbol<IValue>("I"));
 			rewriter.StartBranchSymbols = new ImmutableList<Symbol<IValue>>(new Symbol<IValue>("["));
 			rewriter.EndBranchSymbols = new ImmutableList<Symbol<IValue>>(new Symbol<IValue>("]"));
@@ -272,7 +272,7 @@ namespace Malsys.Tests.Rewriters {
 			rewriter.SymbolProvider = new SymbolProvider(lsystem.ComponentSymbolsAssigns["axiom"]);
 
 			var symBuff = new SymbolsMemoryBuffer();
-			symBuff.Cleanup();
+			symBuff.Reset();
 			int iterations = excpectedIterations.Length;
 
 			for (int i = 0; i < iterations; i++) {

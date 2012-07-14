@@ -451,9 +451,9 @@ namespace Malsys.Resources {
 				double h, s, l;
 				ColorHelper.ColorToHsl(clr, out h, out s, out l);
 				l += ((Constant)a[1]).Value;
-				MathHelper.Clamp01(l);
+				l = MathHelper.Clamp01(l);
 				ColorF resultColor = ColorHelper.HslToColor(h, s, l);
-				resultColor.A = clr.A;
+				resultColor.T = clr.T;  // preserve transparency
 
 				return ColorHelper.ToIValue(resultColor);
 			}
@@ -475,9 +475,9 @@ namespace Malsys.Resources {
 				double h, s, l;
 				ColorHelper.ColorToHsl(clr, out h, out s, out l);
 				l -= ((Constant)a[1]).Value;
-				MathHelper.Clamp01(l);
+				l = MathHelper.Clamp01(l);
 				ColorF resultColor = ColorHelper.HslToColor(h, s, l);
-				resultColor.A = clr.A;
+				resultColor.T = clr.T;  // preserve transparency
 
 				return ColorHelper.ToIValue(resultColor);
 			}

@@ -128,7 +128,17 @@ namespace Malsys.Processing.Components.Renderers {
 		#endregion
 
 
+		public override void Reset() {
+			base.Reset();
+			SmoothShading = Constant.False;
+			PolygonTriangulationStrategy = Constant.Two;
+			cameraPosition = null;
+			cameraUpVector = null;
+			cameraTarget = null;
+		}
+
 		public override void Initialize(ProcessContext ctxt) {
+			base.Initialize(ctxt);
 
 			var triangleEvalFun = getTriangleEvaluationFunction();
 
@@ -141,17 +151,8 @@ namespace Malsys.Processing.Components.Renderers {
 				MaxVarCoefOfDist = 0.1
 			};
 
-			base.Initialize(ctxt);
 		}
 
-		public override void Cleanup() {
-			SmoothShading = Constant.False;
-			PolygonTriangulationStrategy = new Constant(2d);
-			cameraPosition = null;
-			cameraUpVector = null;
-			cameraTarget = null;
-			base.Cleanup();
-		}
 
 
 		public override bool RequiresMeasure { get { return false; } }
@@ -170,7 +171,7 @@ namespace Malsys.Processing.Components.Renderers {
 
 				outputStream = context.OutputProvider.GetOutputStream<ThreeJsSceneRenderer3D>(
 					"3D result from `{0}`".Fmt(context.Lsystem.Name),
-					MimeType.Application.Javascript, false, globalAdditionalData);
+					MimeType.Application.Javascript, false, globalMetadata);
 
 				writer = new IndentTextWriter(new StreamWriter(outputStream));
 
@@ -183,7 +184,7 @@ namespace Malsys.Processing.Components.Renderers {
 			base.EndProcessing();
 
 			if (!measuring) {
-				// we don't require measuring, so save even if there was no measure (while measuring, base method do this)
+				// we measure in process pass (because we do not require measure pass)
 				measuredMin = currentMeasuredMin;
 				measuredMax = currentMeasuredMax;
 
@@ -196,6 +197,9 @@ namespace Malsys.Processing.Components.Renderers {
 			}
 		}
 
+		public override void MoveTo(Point3D endPoint, Quaternion rotation, double width, ColorF color) {
+			saveLastState(endPoint, rotation, width, color);
+		}
 
 		public override void DrawTo(Point3D endPoint, Quaternion rotation, double width, ColorF color, double quality) {
 			if (!measuring) {
@@ -223,9 +227,8 @@ namespace Malsys.Processing.Components.Renderers {
 				writer.WriteLine("mesh.rotationAutoUpdate = false;");
 				writer.WriteLine("objectHolder.add(mesh);");
 
-				base.DrawTo(endPoint, rotation, width, color, quality);
-
-				measure(endPoint);
+				saveLastState(endPoint, rotation, width, color);
+				measure(endPoint, width / 2);
 			}
 		}
 
@@ -239,10 +242,11 @@ namespace Malsys.Processing.Components.Renderers {
 
 				writer.WriteLine("geom = new THREE.Geometry();");
 
+				double measureRadius = polygon.StrokeWidth / 2;
 				foreach (var pt in polygon.Ponits) {
 					writer.WriteLine("geom.vertices.push(new THREE.Vector3({0:0.###},{1:0.###},{2:0.###}));"
 						.Fmt(pt.X, pt.Y, pt.Z));
-					measure(pt);
+					measure(pt, measureRadius);
 				}
 
 				var indices = polygonTrianguler.Triangularize(polygon.Ponits, polygonTriangulerParameters);
@@ -261,17 +265,17 @@ namespace Malsys.Processing.Components.Renderers {
 			}
 		}
 
-		public override void DrawSphere(Point3D center, Quaternion rotation, double radius, ColorF color, double quality) {
+		public override void DrawSphere(double radius, ColorF color, double quality) {
 			if (!measuring) {
 				string geometryName = createSphereGeometry(quality);
 				string materialName = createMaterial(color);
 				writer.WriteLine("mesh = new THREE.Mesh({0}, {1});".Fmt(geometryName, materialName));
 
-				writer.WriteLine("mesh.position.x = {0:0.###};".Fmt(center.X));
-				writer.WriteLine("mesh.position.y = {0:0.###};".Fmt(center.Y));
-				writer.WriteLine("mesh.position.z = {0:0.###};".Fmt(center.Z));
+				writer.WriteLine("mesh.position.x = {0:0.###};".Fmt(lastPoint.X));
+				writer.WriteLine("mesh.position.y = {0:0.###};".Fmt(lastPoint.Y));
+				writer.WriteLine("mesh.position.z = {0:0.###};".Fmt(lastPoint.Z));
 
-				var euclidRotation = rotation.ToEuclidRotation();
+				var euclidRotation = lastRotation.ToEuclidRotation();
 				writer.WriteLine("mesh.eulerOrder = 'YZX';");
 				writer.WriteLine("mesh.rotation.x = {0:0.###};".Fmt(euclidRotation.X));
 				writer.WriteLine("mesh.rotation.y = {0:0.###};".Fmt(euclidRotation.Y));
@@ -288,8 +292,8 @@ namespace Malsys.Processing.Components.Renderers {
 				writer.WriteLine("objectHolder.add(mesh);");
 
 				var radPoint = new Point3D(radius, radius, radius);
-				measure(Math3D.AddPoints(center, radPoint));
-				measure(Math3D.SubtractPoints(center, radPoint));
+				// last point is already measured but radius may be wrong
+				measure(lastPoint, radius);
 
 			}
 		}

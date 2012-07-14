@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
-/**
+﻿/**
  * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
  * All rights reserved.
  */
+using System.Collections.Generic;
 using System.IO;
+using Microsoft.FSharp.Collections;
 
 namespace Malsys.Processing {
 	public interface IOutputProvider {
@@ -12,9 +13,10 @@ namespace Malsys.Processing {
 		/// Returns opened <see cref="Stream" /> for saving output.
 		/// </summary>
 		/// <remarks>
-		/// The stream will be automatically closed at the end of the processing.
-		/// If some service like <see cref="StreamWriter" /> uses the stream, caller should not forget to flush it before leaving.
-		/// If <see cref="IOutputProvider" /> closes underlying stream, <see cref="StreamWriter" /> will not be able to flush remaining data.
+		/// The stream will be automatically closed at the end of the processing thus, components should not close it
+		/// to enable seeking in stream by other services.
+		/// If some class like StreamWriter uses the stream, caller should not forget to flush it before leaving.
+		/// If IOutputProvider closes underlying stream, StreamWriter will not be able to flush remaining data.
 		/// </remarks>
 		/// <typeparam name="TCaller">Caller type for identification of the caller.</typeparam>
 		/// <param name="outputName">Name of output (for user).</param>
@@ -28,5 +30,12 @@ namespace Malsys.Processing {
 		/// </summary>
 		void AddMetadata(Stream outputStream, string key, object value);
 
+		/// <summary>
+		/// Returns all metadata associated with given stream so far.
+		/// </summary>
+		/// <remarks>
+		/// Metadata added to the stream later will not appear in returned collection (returned collection is immutable).
+		/// </remarks>
+		FSharpMap<string, object> GetMetadata(Stream outputStream);
 	}
 }

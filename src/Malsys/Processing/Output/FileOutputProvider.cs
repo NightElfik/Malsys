@@ -10,19 +10,15 @@ using System.Globalization;
 using System.IO;
 using System.IO.Packaging;
 using System.Linq;
+using System.Threading;
 using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Collections;
-using System.Threading;
 
 namespace Malsys.Processing.Output {
 	public class FileOutputProvider : IOutputProvider, IDisposable {
 
-		private const int maxRandInt = 1000;
-
 		private string root;
 		private List<ManagedFile> managedFiles = new List<ManagedFile>();
-
-		private Random rndGenerator = new Random();
 
 		private bool allStreamsClosed = true;
 
@@ -94,6 +90,13 @@ namespace Malsys.Processing.Output {
 			managedFile.Metadata.Add(key, value);
 
 
+		}
+
+		public FSharpMap<string, object> GetMetadata(Stream outputStream) {
+			return managedFiles
+				.Where(x => x.Stream == outputStream)
+				.Select(x => x.Metadata.ToFsharpMap(y => y.Key, y => y.Value))
+				.FirstOrDefault();
 		}
 
 		#endregion

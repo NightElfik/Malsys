@@ -38,9 +38,15 @@ namespace Malsys.Processing.Components.Common {
 		public IMessageLogger Logger { get; set; }
 
 
+		public virtual void Reset() {
+			Symbols = ImmutableList<Symbol<IValue>>.Empty;
+		}
+
 		public void Initialize(ProcessContext ctxt) { }
 
-		public void Cleanup() { Symbols = ImmutableList<Symbol<IValue>>.Empty; }
+		public void Cleanup() { }
+
+		public void Dispose() { }
 
 
 		public bool RequiresMeasure { get { return false; } }
@@ -57,6 +63,5 @@ namespace Malsys.Processing.Components.Common {
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
 			return Symbols.GetEnumerator();
 		}
-
 	}
 }

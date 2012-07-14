@@ -32,12 +32,12 @@ namespace Malsys.Processing.Components.RewriterIterators {
 		protected bool aborted = false;
 
 		private HashSet<int> interpretFollowingIterationsCache = new HashSet<int>();
+		private HashSet<int> skipFollowingIterationsCache = new HashSet<int>();
 
 
-		public IMessageLogger Logger { get; set; }
 
 
-		#region User gettable, settable and connectable properties
+		#region User gettable & settable & connectable properties
 
 		/// <summary>
 		/// Number of current iteration. Zero is axiom (no iteration was done), first iteration have number 1
@@ -82,8 +82,8 @@ namespace Malsys.Processing.Components.RewriterIterators {
 		/// <summary>
 		/// Sets interprets all iteration from given number.
 		/// </summary>
-		/// <expected>true or false</expected>
-		/// <default>false</default>
+		/// <expected>positive number (lower than total number of iterations)</expected>
+		/// <default>none</default>
 		[AccessName("interpretEveryIterationFrom")]
 		[UserSettable]
 		public Constant InterpretEveryIterationFrom { get; set; }
@@ -91,7 +91,7 @@ namespace Malsys.Processing.Components.RewriterIterators {
 		/// <summary>
 		/// Array with numbers of iterations which will be interpreted.
 		/// </summary>
-		/// <expected>Array of numbers</expected>
+		/// <expected>array of numbers</expected>
 		/// <default>{} (empty array)</default>
 		[AccessName("interpretFollowingIterations")]
 		[UserSettable]
@@ -108,6 +108,27 @@ namespace Malsys.Processing.Components.RewriterIterators {
 		}
 		private ValuesArray interpretFollowingIterations;
 
+		/// <summary>
+		/// Array with numbers of iterations which will be skipped (not interpreted).
+		/// This field have priority over properties which are saying what iterations to interpret.
+		/// </summary>
+		/// <expected>array of numbers</expected>
+		/// <default>{} (empty array)</default>
+		[AccessName("skipFollowingIterations")]
+		[UserSettable]
+		public ValuesArray SkipFollowingIterations {
+			get {
+				return skipFollowingIterations;
+			}
+			set {
+				if (!value.IsConstArray()) {
+					throw new InvalidUserValueException("All members of array are not numbers.");
+				}
+				skipFollowingIterations = value;
+			}
+		}
+		private ValuesArray skipFollowingIterations;
+
 
 		/// <summary>
 		/// Iterator iterates symbols by reading all symbols from SymbolProvider every iteration.
@@ -115,7 +136,7 @@ namespace Malsys.Processing.Components.RewriterIterators {
 		/// This setup creates loop and iterator rewrites string of symbols every iteration.
 		/// When number of iterations is set to 0 (of left default as 0) only axiom is used and this that case this property can be left unconnected.
 		/// </summary>
-		[UserConnectable(IsOptional=true)]
+		[UserConnectable(IsOptional = true)]
 		public ISymbolProvider SymbolProvider { get; set; }
 
 		/// <summary>
@@ -145,33 +166,33 @@ namespace Malsys.Processing.Components.RewriterIterators {
 
 
 
-		public IEnumerator<Symbol<IValue>> GetEnumerator() {
-			return inBuffer.GetEnumerator();
-		}
-
-		IEnumerator IEnumerable.GetEnumerator() {
-			return inBuffer.GetEnumerator();
-		}
+		public IMessageLogger Logger { get; set; }
 
 
-		public bool RequiresMeasure {
-			get { return false; }
+		public void Reset() {
+			currentIteration = Constant.MinusOne;
+			Iterations = Constant.Zero;
+			InterpretEveryIteration = Constant.False;
+			InterpretEveryIterationFrom = Constant.MinusOne;
+			InterpretFollowingIterations = SkipFollowingIterations = ValuesArray.Empty;
 		}
 
 		public void Initialize(ProcessContext ctxt) {
 			timeout = ctxt.ProcessingTimeLimit;
 			iterationsCount = iterations.RoundedIntValue;
 			interpretFollowingIterationsCache.AddRange(interpretFollowingIterations.Select(x => ((Constant)x).RoundedIntValue));
+			skipFollowingIterationsCache.AddRange(skipFollowingIterations.Select(x => ((Constant)x).RoundedIntValue));
 		}
 
 		public void Cleanup() {
-			currentIteration = Constant.MinusOne;
-			Iterations = Constant.Zero;
-			InterpretEveryIteration = Constant.False;
-			InterpretEveryIterationFrom = Constant.MinusOne;
-			InterpretFollowingIterations = ValuesArray.Empty;
 			interpretFollowingIterationsCache.Clear();
+			skipFollowingIterationsCache.Clear();
 		}
+
+		public void Dispose() { }
+
+
+		public bool RequiresMeasure { get { return false; } }
 
 
 		public void BeginProcessing(bool measuring) { }
@@ -199,6 +220,14 @@ namespace Malsys.Processing.Components.RewriterIterators {
 			aborting = true;
 		}
 
+		public IEnumerator<Symbol<IValue>> GetEnumerator() {
+			return inBuffer.GetEnumerator();
+		}
+
+		IEnumerator IEnumerable.GetEnumerator() {
+			return inBuffer.GetEnumerator();
+		}
+
 
 		private void setCurrentIteration(int value) {
 			currIteration = value;
@@ -208,6 +237,10 @@ namespace Malsys.Processing.Components.RewriterIterators {
 
 		private bool interpretCurrentIteration() {
 
+			if (skipFollowingIterationsCache.Contains(currIteration)) {
+				return false;  // skip have priority
+			}
+
 			if (InterpretEveryIteration.IsTrue) {
 				return true;
 			}
@@ -216,7 +249,7 @@ namespace Malsys.Processing.Components.RewriterIterators {
 				return true;
 			}
 
-			if (interpretFollowingIterationsCache.Count > 0 && interpretFollowingIterationsCache.Contains(currIteration)) {
+			if (interpretFollowingIterationsCache.Contains(currIteration)) {
 				return true;
 			}
 
@@ -230,7 +263,7 @@ namespace Malsys.Processing.Components.RewriterIterators {
 		private int resetRendomGenerator() {
 			if (RandomGeneratorProvider != null) {
 				int seed = (int)(RandomGeneratorProvider.Random() * int.MaxValue);
-				RandomGeneratorProvider.Reset(seed);
+				RandomGeneratorProvider.ResetRandomGenerator(seed);
 				return seed;
 			}
 			return -1;
@@ -238,7 +271,7 @@ namespace Malsys.Processing.Components.RewriterIterators {
 
 		private void resetRendomGenerator(int seed) {
 			if (RandomGeneratorProvider != null) {
-				RandomGeneratorProvider.Reset(seed);
+				RandomGeneratorProvider.ResetRandomGenerator(seed);
 			}
 		}
 

@@ -63,7 +63,7 @@ namespace Malsys.Media {
 			ColorF upperColor = colors[upperBoundIndex];
 
 			return new ColorF(
-				lowerColor.A * lowerMultiplier + upperColor.A * upperMultiplier,
+				lowerColor.T * lowerMultiplier + upperColor.T * upperMultiplier,
 				lowerColor.R * lowerMultiplier + upperColor.R * upperMultiplier,
 				lowerColor.G * lowerMultiplier + upperColor.G * upperMultiplier,
 				lowerColor.B * lowerMultiplier + upperColor.B * upperMultiplier);

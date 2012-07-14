@@ -19,13 +19,11 @@ namespace Malsys.Processing.Components.Renderers {
 		protected Stream outputStream;
 		protected TextWriter writer;
 
+
 		public IMessageLogger Logger { get; set; }
 
 
-
-		public virtual bool RequiresMeasure {
-			get { return false; }
-		}
+		public void Reset() { }
 
 		public virtual void Initialize(ProcessContext ctxt) {
 			context = ctxt;
@@ -34,6 +32,11 @@ namespace Malsys.Processing.Components.Renderers {
 		public virtual void Cleanup() {
 			context = null;
 		}
+
+		public void Dispose() { }
+
+
+		public virtual bool RequiresMeasure { get { return false; } }
 
 		public virtual void BeginProcessing(bool measuring) {
 			outputStream = context.OutputProvider.GetOutputStream<DebugRendererBase>("debug renderer output", MimeType.Text.Plain);

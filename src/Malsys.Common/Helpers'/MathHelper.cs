@@ -3,6 +3,7 @@
  * All rights reserved.
  */
 using System;
+using System.Diagnostics.Contracts;
 
 namespace Malsys {
 	public static class MathHelper {
@@ -77,23 +78,40 @@ namespace Malsys {
 
 		public static void ScaleSizeToFit(ref int width, ref int height, int maxWidth, int maxHeight, bool shrinkOnly = false) {
 
-			float wRatio = (float)width / maxWidth;
-			float hRatio = (float)height / maxHeight;
+			double scale = GetScaleSizeToFitScale(width, height, maxWidth, maxHeight);
 
-			// which dimension is worst?
-			if (wRatio > hRatio) {  // width is worst
-				if (!shrinkOnly || wRatio > 1) {
-					width = (int)Math.Round(width / wRatio);
-					height = (int)Math.Round(height / wRatio);
+			width = (int)Math.Round(width * scale);
+			height = (int)Math.Round(height * scale);
+		}
+
+		/// <summary>
+		/// Returns scale which has to be applied to width and height to fit desired dimensions.
+		/// </summary>
+		public static double GetScaleSizeToFitScale(double width, double height, double maxWidth, double maxHeight, bool shrinkOnly = false) {
+
+			Contract.Requires<ArgumentException>(width > 0);
+			Contract.Requires<ArgumentException>(height > 0);
+			Contract.Requires<ArgumentException>(maxWidth > 0);
+			Contract.Requires<ArgumentException>(maxHeight > 0);
+			Contract.Ensures(Contract.Result<double>() > 0);
+			Contract.Ensures(shrinkOnly ? Contract.Result<double>() < 1 : true);
+
+			double wScale = maxWidth / width;
+			double hScale = maxHeight / height;
+
+			// which scale is more restrictive?
+			if (wScale <= hScale) {  // width is more restrictive
+				if (!shrinkOnly || wScale < 1) {
+					return wScale;
 				}
 			}
-			else {  // height is worst
-				if (!shrinkOnly || hRatio > 1) {
-					width = (int)Math.Round(width / hRatio);
-					height = (int)Math.Round(height / hRatio);
+			else {  // height is more restrictive
+				if (!shrinkOnly || hScale < 1) {
+					return hScale;
 				}
 			}
 
+			return 1d;
 		}
 
 

@@ -19,6 +19,12 @@
 	<b>@Model.Name</b> (by <abbr title="@Model.SourceType.FullName">@Model.SourceType.Name</abbr>)
 	@Html.ActionLink(string.Format("download [{0}]", Malsys.DataSizeHelper.ToOptimalUnitString(fi.Length)),
 		MVC.ProcessOutput.Download(fi.Name))
+	<span class="note">
+	Metadata:
+	@foreach (var meta in Model.Metadata) {
+		@meta.Key @:= @meta.Value;
+	}
+	</span>
 </p>
 
 
@@ -55,6 +61,22 @@
 				<img src="@Url.Action(MVC.ProcessOutput.Show(fi.Name))" @if(hasValidSize) { <text>width="@(width)px" height="@(height)px"</text> } alt="Process result" />
 			</div>
 		}
+		break;
+
+	case MimeType.Image.Png:
+	case MimeType.Image.Jpeg:
+	case MimeType.Image.Gif:
+		if (fi.Length > 1024 * 1024) {
+				<p class="outputTruncated">Image is too big (greater than 1 MB) so it is not shown directly. Please download the image to see it.</p>
+			}
+			else {
+				int width = Model.Metadata.TryGetValue(OutputMetadataKeyHelper.OutputWidth, -1);
+				int height = Model.Metadata.TryGetValue(OutputMetadataKeyHelper.OutputHeight, -1);
+				bool hasValidSize = width > 0 && height > 0;
+				<div class="scrollBox">
+					<img src="@Url.Action(MVC.ProcessOutput.Show(fi.Name))" @if(hasValidSize) { <text>width="@(width)px" height="@(height)px"</text> } alt="Process result" />
+				</div>
+			}
 		break;
 
 	case MimeType.Application.Javascript:

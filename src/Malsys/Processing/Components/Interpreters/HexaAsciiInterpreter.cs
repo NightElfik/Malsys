@@ -38,8 +38,6 @@ namespace Malsys.Processing.Components.Interpreters {
 		private float horizontalScaleMult;
 
 
-		public IMessageLogger Logger { get; set; }
-
 
 		/// <summary>
 		/// Scale of result ASCII art.
@@ -77,8 +75,13 @@ namespace Malsys.Processing.Components.Interpreters {
 		}
 
 
-		public bool RequiresMeasure { get { return false; } }
+		public IMessageLogger Logger { get; set; }
 
+
+		public void Reset() {
+			Scale = Constant.One;
+			HorizontalScaleMultiplier = Constant.Two;
+		}
 
 		public void Initialize(ProcessContext ctxt) {
 			scale = Scale.RoundedIntValue;
@@ -86,10 +89,13 @@ namespace Malsys.Processing.Components.Interpreters {
 			renderer.AddGlobalOutputData(OutputMetadataKeyHelper.OutputIsAsciiArt, true);
 		}
 
-		public void Cleanup() {
-			Scale = Constant.One;
-			HorizontalScaleMultiplier = new Constant(2d);
-		}
+		public void Cleanup() { }
+
+		public void Dispose() { }
+
+
+
+		public bool RequiresMeasure { get { return false; } }
 
 
 		public void BeginProcessing(bool measuring) {

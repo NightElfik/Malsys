@@ -20,7 +20,6 @@ namespace Malsys.Processing.Components.Common {
 		private ProcessContext context;
 
 
-		public IMessageLogger Logger { get; set; }
 
 		/// <summary>
 		/// Default behavior is to print only constants in main input.
@@ -32,14 +31,21 @@ namespace Malsys.Processing.Components.Common {
 		public Constant DumpAllConstants { get; set; }
 
 
+		public IMessageLogger Logger { get; set; }
+
+
+		public void Reset() {
+			context = null;
+			DumpAllConstants = Constant.False;
+		}
+
 		public void Initialize(ProcessContext ctxt) {
 			context = ctxt;
 		}
 
-		public void Cleanup() {
-			context = null;
-			DumpAllConstants = Constant.False;
-		}
+		public void Cleanup() { }
+
+		public void Dispose() { }
 
 
 		public void Start(bool doMeasure) {

@@ -76,9 +76,6 @@ namespace Malsys.Processing.Components.Interpreters {
 		}
 
 
-		public IMessageLogger Logger { get; set; }
-
-
 		#region User gettable & settable properties
 
 		/// <summary>
@@ -173,7 +170,7 @@ namespace Malsys.Processing.Components.Interpreters {
 		/// <summary>
 		/// Initial color of drawn line.
 		/// </summary>
-		/// <expected>Number representing ARGB color (in range from 0 to 2^32 - 1) or array of numbers (in range from 0.0 to 1.0) with length of 3 (RGB) or 4 (ARGB).</expected>
+		/// <expected>Number representing ARGB color (in range from 0 to 2^32 - 1) or array of numbers (in range from 0.0 to 1.0) of length of 3 (RGB) or 4 (ARGB).</expected>
 		/// <default>0 (black)</default>
 		[AccessName("initialColor")]
 		[UserSettable]
@@ -229,9 +226,6 @@ namespace Malsys.Processing.Components.Interpreters {
 
 		#endregion
 
-
-		#region IInterpreter Members
-
 		/// <summary>
 		/// All render events will be called on connected renderer.
 		/// Both IRenderer2D or IRenderer3D can be connected.
@@ -261,7 +255,24 @@ namespace Malsys.Processing.Components.Interpreters {
 		}
 
 
-		public bool RequiresMeasure { get { return continousColoring; } }
+		#region Component-related stuff
+
+		public IMessageLogger Logger { get; set; }
+
+
+		public void Reset() {
+			Origin = new ValuesArray(Constant.Zero, Constant.Zero, Constant.Zero);
+			ForwardVector = new ValuesArray(Constant.One, Constant.Zero, Constant.Zero);
+			UpVector = new ValuesArray(Constant.Zero, Constant.One, Constant.Zero);
+			InitialAngleZ = Constant.Zero;
+			InitialLineWidth = Constant.Two;
+			InitialColor = Constant.Zero;
+			ContinuousColoring = Constant.False;
+			ReversePolygonOrder = Constant.False;
+			RotationQuaternion = new ValuesArray(Constant.One, Constant.Zero, Constant.Zero, Constant.Zero);
+			TropismVector = new ValuesArray(Constant.Zero, Constant.One, Constant.Zero);
+			TropismCoefficient = Constant.Zero;
+		}
 
 		public void Initialize(ProcessContext ctxt) {
 
@@ -350,19 +361,13 @@ namespace Malsys.Processing.Components.Interpreters {
 
 		}
 
-		public void Cleanup() {
-			Origin = new ValuesArray(Constant.Zero, Constant.Zero, Constant.Zero);
-			ForwardVector = new ValuesArray(Constant.One, Constant.Zero, Constant.Zero);
-			UpVector = new ValuesArray(Constant.Zero, Constant.One, Constant.Zero);
-			InitialAngleZ = Constant.Zero;
-			InitialLineWidth = new Constant(2d);
-			InitialColor = Constant.Zero;
-			ContinuousColoring = Constant.False;
-			ReversePolygonOrder = Constant.False;
-			RotationQuaternion = new ValuesArray(Constant.One, Constant.Zero, Constant.Zero, Constant.Zero);
-			TropismVector = new ValuesArray(Constant.Zero, Constant.One, Constant.Zero);
-			TropismCoefficient = Constant.Zero;
-		}
+		public void Cleanup() { }
+
+		public void Dispose() { }
+
+
+		public bool RequiresMeasure { get { return continousColoring; } }
+
 
 		public void BeginProcessing(bool measuring) {
 
@@ -449,7 +454,7 @@ namespace Malsys.Processing.Components.Interpreters {
 		#endregion
 
 
-		#region IInterpreter2D & IInterpreter3D Members
+		#region Interpretation methods
 
 
 		/// <summary>
@@ -555,11 +560,11 @@ namespace Malsys.Processing.Components.Interpreters {
 
 			colorEvents++;
 			if (mode2D) {
-				renderer2D.DrawCircle(currState.Position.ToPoint2D(), radius, color);
+				renderer2D.DrawCircle(radius, color);
 			}
 			else {
 				double quality = getArgumentAsDouble(args, 2);
-				renderer3D.DrawSphere(currState.Position, currState.Rotation, radius, color, quality);
+				renderer3D.DrawSphere(radius, color, quality);
 			}
 		}
 
