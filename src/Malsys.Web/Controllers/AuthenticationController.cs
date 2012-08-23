@@ -6,6 +6,7 @@ using System.Linq;
 using System.Web.Mvc;
 using Malsys.Web.Models;
 using Malsys.Web.Security;
+using Malsys.Web.Entities;
 
 namespace Malsys.Web.Controllers {
 	public partial class AuthenticationController : Controller {
@@ -38,20 +39,24 @@ namespace Malsys.Web.Controllers {
 
 			if (ModelState.IsValid) {
 
-				if (userAuth.ValidateUser(model.UserName, model.Password)) {
-					var realName = usersRepo.Users.Where(u => u.NameLowercase == model.UserName.Trim().ToLower()).Single().Name;
+				var userResult = userAuth.ValidateUser(model.UserName, model.Password);
+				if (userResult) {
+					var user = userResult.Data;
+					var realName = user.Name;
 					authProvider.LogOn(realName, model.RememberMe);
 
-					if (Url.IsLocalUrl(returnUrl) && returnUrl.Length > 1 && returnUrl.StartsWith("/")
-							&& !returnUrl.StartsWith("//") && !returnUrl.StartsWith("/\\")) {
+					usersRepo.UsersDb.Log("LogIn", ActionLogSignificance.Low, null, user);
+
+					if (Url.IsUrlSafeToRedirect(returnUrl)) {
 						return Redirect(returnUrl);
 					}
 					else {
-						return RedirectToAction("Index", "Home");
+						return RedirectToAction(MVC.Home.Index());
 					}
 				}
 				else {
-					ModelState.AddModelError("", "The user name or password provided is incorrect.");
+					usersRepo.UsersDb.Log("LogIn-Fail", ActionLogSignificance.Medium, model.UserName);
+					ModelState.AddModelError("", userResult.ErrorMessage);
 				}
 			}
 
@@ -61,9 +66,13 @@ namespace Malsys.Web.Controllers {
 
 		public virtual ActionResult LogOff() {
 
-			authProvider.LogOff();
+			if (User.Identity.IsAuthenticated) {
+				var user = usersRepo.UsersDb.TryGetUserByName(User.Identity.Name);
+				usersRepo.UsersDb.Log("LogOff", ActionLogSignificance.Low, null, user);
+			}
 
-			return RedirectToAction("Index", "Home");
+			authProvider.LogOff();
+			return RedirectToAction(MVC.Home.Index());
 		}
 
 	}

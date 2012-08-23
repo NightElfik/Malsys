@@ -1,0 +1,207 @@
+﻿@**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ *@
+@model ComponentModel
+@using Malsys.SemanticModel.Evaluated;
+
+@{
+	var data = Model.Metadata;
+	var baseComp = Model.BaseTypes.Where(t => !t.IsInterface).ToList();
+	var baseInt = Model.BaseTypes.Where(t => t.IsInterface).ToList();
+	var derComp = Model.DerivedTypes.Where(t => !t.IsInterface).ToList();
+	var derInt = Model.DerivedTypes.Where(t => t.IsInterface).ToList();
+
+	var anchorLink = Html.AnchorLink("↑ " + data.HumanReadableName, data.ComponentType.FullName, MVC.Documentation.Predefined.Components(), true, true);
+}
+
+
+<div class="component box">
+@Html.AnchorLink("#", data.ComponentType.FullName, MVC.Documentation.Predefined.Components(), true)
+<h4 id="@data.ComponentType.FullName">
+	@data.HumanReadableName @Html.TypeLink(data.ComponentType)
+	@if (!Model.Metadata.ComponentType.IsInterface && Model.Metadata.ComponentType.IsAbstract) { <span class="flag">{abstract}</span> }
+</h4>
+
+@if (!string.IsNullOrEmpty(data.SummaryDoc)) {
+	<p>@data.SummaryDoc</p>
+}
+
+<dl>
+
+	<dt><strong>Configuration access names</strong> </dt>
+	<dd><ul class="clean monospace">
+	@foreach (var name in Model.AccessNames) {
+		<li>@name</li>
+	}
+	</ul></dd>
+
+	@if (baseComp.Count > 0) {
+		<dt><strong>Base components</strong> @anchorLink</dt>
+		<dd>
+		@foreach (var type in baseComp) {
+			@Html.TypeLink(type)@(" ")
+		}
+		</dd>
+	}
+
+	@if (derComp.Count> 0) {
+		<dt><strong>Derived components</strong> @anchorLink</dt>
+		<dd>
+		@foreach (var type in derComp) {
+			@Html.TypeLink(type)@(" ")
+		}
+		</dd>
+	}
+
+	@if (baseInt.Count > 0) {
+		<dt><strong>@(data.IsInstantiable ? "Assignable to" : "Derived") interfaces</strong> @anchorLink</dt>
+		<dd>
+		@foreach (var type in baseInt) {
+			@Html.TypeLink(type)@(" ")
+		}
+		</dd>
+	}
+
+	@if (derInt.Count > 0) {
+		<dt><strong>Derived interfaces</strong> @anchorLink</dt>
+		<dd>
+		@foreach (var type in derInt) {
+			@Html.TypeLink(type)@(" ")
+		}
+		</dd>
+	}
+
+	@if (data.GettableProperties.Length > 0) {
+		<dt><strong>Gettable properties</strong> @anchorLink</dt>
+		<dd><ul class="clean">
+		@foreach (var prop in data.GettableProperties) {
+			<li class="spaced">
+				<span class="monospace">@string.Join(", ", prop.Names)</span>
+				@if (!prop.IsGettableBeforeInitialiation) { <span class="flag">{run-time only}</span> }
+				(returns @prop.ExpressionValueType.ToTypeString())
+				@if (!string.IsNullOrEmpty(prop.SummaryDoc)) {
+					<ul><li>@prop.SummaryDoc</li></ul>
+				}
+			</li>
+		}
+		</ul></dd>
+	}
+
+	@if (data.SettableProperties.Length > 0) {
+		<dt><strong>Settable properties</strong> @anchorLink</dt>
+		<dd><ul class="clean">
+		@foreach (var prop in data.SettableProperties) {
+			<li class="spaced">
+				<span class="monospace">@string.Join(", ", prop.Names)</span>
+				@if (prop.IsMandatory) { <span class="flag">{mandatory}</span> }
+				(accepts @prop.ExpressionValueType.ToTypeString())
+				<ul>
+				@if (!string.IsNullOrEmpty(prop.SummaryDoc)) {
+					<li>@prop.SummaryDoc</li>
+				}
+				@if (!string.IsNullOrEmpty(prop.ExpectedValueDoc)) {
+					<li>Expected value: @prop.ExpectedValueDoc</li>
+				}
+				@if (!string.IsNullOrEmpty(prop.DefaultValueDoc)) {
+					<li>Default value: <code>@prop.DefaultValueDoc</code></li>
+				}
+				</ul>
+			</li>
+		}
+		</ul></dd>
+	}
+
+	@if (data.SettableSymbolsProperties.Length > 0) {
+		<dt><strong>Settable symbol properties</strong> @anchorLink</dt>
+		<dd><ul class="clean">
+		@foreach (var prop in data.SettableSymbolsProperties) {
+			<li class="spaced">
+				<span class="monospace">@string.Join(", ", prop.Names)</span>
+				@if (prop.IsMandatory) { <span class="flag">{mandatory}</span> }
+				@if (!string.IsNullOrEmpty(prop.SummaryDoc)) {
+					<ul><li>@prop.SummaryDoc</li></ul>
+				}
+			</li>
+		}
+		</ul></dd>
+	}
+
+	@if (data.ConnectableProperties.Length > 0) {
+		<dt><strong>Connectable properties</strong> @anchorLink</dt>
+		<dd><ul class="clean">
+		@foreach (var prop in data.ConnectableProperties) {
+			<li class="spaced">
+				<span class="monospace">@string.Join(", ", prop.Names)</span>
+				@Html.TypeLink(prop.PropertyType)
+				@if (prop.IsOptional) { <span class="flag">{optional}</span> }
+				@if (prop.AllowMultiple) { <span class="flag">{allowed multiple}</span> }
+				@if (!string.IsNullOrEmpty(prop.SummaryDoc)) {
+					<ul><li>@prop.SummaryDoc</li></ul>
+				}
+			</li>
+		}
+		</ul></dd>
+	}
+
+	@if (data.CallableFunctions.Length > 0) {
+		<dt><strong>Callable functions</strong> @anchorLink</dt>
+		<dd><ul class="clean">
+		@foreach (var fun in data.CallableFunctions) {
+			<li class="spaced">
+				<span class="monospace">@string.Join(", ", fun.Names)</span>
+				@if (!fun.IsGettableBeforeInitialiation) { <span class="flag">{run-time only}</span> }
+				(returns @fun.ExpressionValueReturnType.ToTypeString())
+				<ul>
+					@if (!string.IsNullOrEmpty(fun.SummaryDoc)) {
+					<li>@fun.SummaryDoc</li>
+					}
+					<li>Parameters: @fun.ParamsCount
+					@if (fun.ParamsCount > 0) {
+						var paramsDoc = fun.ParamsDoc.SplitToLines().ToList();
+						<ol>
+						@for (int i = 0; i < fun.ParamsCount; i++) {
+							<li>
+								@if (i < paramsDoc.Count) { @paramsDoc[i] }
+							</li>
+						}
+						</ol>
+					}
+					</li>
+				</ul>
+			</li>
+		}
+		</ul></dd>
+	}
+
+	@if (data.InterpretationMethods.Length > 0) {
+		<dt><strong>Interpretation methods</strong> @anchorLink</dt>
+		<dd><ul class="clean">
+		@foreach (var intMethod in data.InterpretationMethods) {
+			<li class="spaced">
+				<span class="monospace">@string.Join(", ", intMethod.Names)</span>
+				<ul>
+					@if (!string.IsNullOrEmpty(intMethod.SummaryDoc)) {
+					<li>@intMethod.SummaryDoc</li>
+					}
+					<li>Parameters: @intMethod.ParamsCount
+					@if(intMethod.ParamsCount > 0) {
+						var paramsDoc = intMethod.ParamsDoc.SplitToLines().ToList();
+						<ol>
+						@for (int i = 0; i < intMethod.ParamsCount; i++) {
+							<li>
+								@if (i < intMethod.MandatoryParamsCount) { <span class="flag">{mandatory}</span> }
+								@if (i < paramsDoc.Count) { @paramsDoc[i] }
+							</li>
+						}
+						</ol>
+					}
+					</li>
+				</ul>
+			</li>
+		}
+		</ul></dd>
+	}
+
+</dl>
+</div>

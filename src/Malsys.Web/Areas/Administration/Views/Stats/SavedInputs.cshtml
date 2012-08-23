@@ -7,6 +7,7 @@
 
 @{
 	ViewBag.Title = "Saved inputs";
+	ViewBag.MainClass = "fullWidth";
 }
 
 
@@ -16,13 +17,13 @@
 
 @Html.Grid(Model).Columns(col => {
 		col.For(m => m.SavedInputId)
-			.HeaderAttributes(style => "width: 40px;")
+			.HeaderAttributes(style => "width: 60px;")
 			.Attributes(@class => "center");
 		col.For(m => m.UrlId)
-			.HeaderAttributes(style => "width: 40px;")
+			.HeaderAttributes(style => "width: 100px;")
 			.Attributes(@class => "center");
 		col.For(m => m.User)
-			.HeaderAttributes(style => "width: 100px;");
+			.HeaderAttributes(style => "width: 150px;");
 		col.For(m => "<abbr title=\"" + m.EditDate + "\">" + m.EditDate.ToTimeSpanStringFromNow() + "</abbr>")
 			.Named("Age")
 			.HeaderAttributes(style => "width: 100px;")
@@ -30,7 +31,7 @@
 			.Encode(false);
 		col.For(m => TimeSpan.FromTicks(m.Duration).ToAutoscaledString())
 			.Named("Process duration")
-			.HeaderAttributes(style => "width: 60px;")
+			.HeaderAttributes(style => "width: 100px;")
 			.Attributes(@class => "center");
 		col.For(m => "<pre class=\"malsys collapsable noMargin\">" + m.SourceCode + "</pre>")
 			.Named("Source")

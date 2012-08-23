@@ -6,13 +6,17 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using Malsys.Evaluators;
 using Malsys.Processing.Components;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Reflection.Components {
+	/// <remarks>All public methods are thread safe.</remarks>
 	public class ComponentMetadataDumper {
+
+		private Regex removeRedundantWhitespacesRegex = new Regex(@"^\s+|\s+$", RegexOptions.Compiled | RegexOptions.Multiline);
 
 		public ComponentMetadata GetMetadata(IComponent component, IMessageLogger logger, IXmlDocReader xmlDocReader = null) {
 
@@ -34,10 +38,9 @@ namespace Malsys.Reflection.Components {
 				logger.LogMessage(Message.InvalidComponentType, componentType.FullName, typeof(IComponent).FullName);
 			}
 
-
-			string name = xmlDocReader != null ? xmlDocReader.GetXmlDocumentationAsString(componentType, "name") : null;
-			string group = xmlDocReader != null ? xmlDocReader.GetXmlDocumentationAsString(componentType, "group") : null;
-			string summary = xmlDocReader != null ? xmlDocReader.GetXmlDocumentationAsString(componentType) : null;
+			string summary = getDoc("summary", componentType, xmlDocReader);
+			string name = getDoc("name", componentType, xmlDocReader);
+			string group = getDoc("group", componentType, xmlDocReader);
 
 			bool isInstantiable, hasMsgCtor;
 			return new ComponentMetadata(componentType,
@@ -68,7 +71,7 @@ namespace Malsys.Reflection.Components {
 					continue;
 				}
 
-				string summary = xmlDocReader != null ? xmlDocReader.GetXmlDocumentationAsString(propInfo) : null;
+				string summary = getDoc("summary", propInfo, xmlDocReader);
 
 				yield return new ComponentGettablePropertyMetadata(propInfo.GetAccessNames().ToImmutableList(), propInfo, propInfoAndAttr.Item2.IsGettableBeforeInitialiation, summary);
 			}
@@ -90,11 +93,12 @@ namespace Malsys.Reflection.Components {
 					continue;
 				}
 
-				string summary = xmlDocReader != null ? xmlDocReader.GetXmlDocumentationAsString(propInfo) : null;
-				string excpected = xmlDocReader != null ? xmlDocReader.GetXmlDocumentationAsString(propInfo, "expected") : null;
-				string def = xmlDocReader != null ? xmlDocReader.GetXmlDocumentationAsString(propInfo, "default") : null;
+				string summary = getDoc("summary", propInfo, xmlDocReader);
+				string excpected = getDoc("expected", propInfo, xmlDocReader);
+				string def = getDoc("default", propInfo, xmlDocReader);
+				string typicalValue = getDoc("typicalValue", propInfo, xmlDocReader);
 
-				yield return new ComponentSettablePropertyMetadata(propInfo.GetAccessNames().ToImmutableList(), propInfo, propInfoAndAttr.Item2.IsMandatory, summary, excpected, def);
+				yield return new ComponentSettablePropertyMetadata(propInfo.GetAccessNames().ToImmutableList(), propInfo, propInfoAndAttr.Item2.IsMandatory, summary, excpected, def, typicalValue);
 			}
 
 		}
@@ -114,7 +118,7 @@ namespace Malsys.Reflection.Components {
 					continue;
 				}
 
-				string summary = xmlDocReader != null ? xmlDocReader.GetXmlDocumentationAsString(propInfo) : null;
+				string summary = getDoc("summary", propInfo, xmlDocReader);
 
 				yield return new ComponentSettableSybolsPropertyMetadata(propInfo.GetAccessNames().ToImmutableList(), propInfo, propInfoAndAttr.Item2.IsMandatory, summary);
 			}
@@ -136,7 +140,7 @@ namespace Malsys.Reflection.Components {
 					continue;
 				}
 
-				string summary = xmlDocReader != null ? xmlDocReader.GetXmlDocumentationAsString(propInfo) : null;
+				string summary = getDoc("summary", propInfo, xmlDocReader);
 
 				yield return new ComponentConnectablePropertyMetadata(propInfo.GetAccessNames().ToImmutableList(), propInfo, propInfoAndAttr.Item2.IsOptional,
 					propInfoAndAttr.Item2.AllowMultiple, summary);
@@ -162,8 +166,8 @@ namespace Malsys.Reflection.Components {
 					continue;
 				}
 
-				string summary = xmlDocReader != null ? xmlDocReader.GetXmlDocumentationAsString(methodInfo) : null;
-				string paramsDoc = xmlDocReader != null ? xmlDocReader.GetXmlDocumentationAsString(methodInfo, "parameters") : null;
+				string summary = getDoc("summary", methodInfo, xmlDocReader);
+				string paramsDoc = getDoc("parameters", methodInfo, xmlDocReader, true);
 
 				yield return new ComponentCallableFunctionMetadata(methodInfo.GetAccessNames().ToImmutableList(), methodInfo, attr.ParamsCount,
 					attr.ParamsTypesCyclicPattern.ToImmutableList(), attr.IsCallableBeforeInitialiation, summary, paramsDoc);
@@ -189,8 +193,8 @@ namespace Malsys.Reflection.Components {
 					continue;
 				}
 
-				string summary = xmlDocReader != null ? xmlDocReader.GetXmlDocumentationAsString(methodInfo) : null;
-				string paramsDoc = xmlDocReader != null ? xmlDocReader.GetXmlDocumentationAsString(methodInfo, "parameters") : null;
+				string summary = getDoc("summary", methodInfo, xmlDocReader);
+				string paramsDoc = getDoc("parameters", methodInfo, xmlDocReader, true);
 
 				yield return new ComponentInterpretationMethodMetadata(methodInfo.GetAccessNames().ToImmutableList(), methodInfo, attr.ParametersCount,
 					attr.RequiredParametersCount, summary, paramsDoc);
@@ -219,6 +223,23 @@ namespace Malsys.Reflection.Components {
 
 			return ctorInfo;
 
+		}
+
+		private string getDoc(string tagName, MemberInfo memberInfo, IXmlDocReader xmlDocReader, bool preserveLines = false) {
+
+			if (xmlDocReader == null) {
+				return null;
+			}
+
+			string value = xmlDocReader.GetXmlDocumentationAsString(memberInfo, tagName);
+			value = removeRedundantWhitespacesRegex.Replace(value, "");
+
+			if (!preserveLines) {
+				value = value.Replace("\r", "");
+				value = value.Replace("\n", " ");
+			}
+
+			return value;
 		}
 
 

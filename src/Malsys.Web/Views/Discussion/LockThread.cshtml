@@ -1,0 +1,23 @@
+﻿@model DiscusThread
+
+@{
+	ViewBag.Title = "(Un)lock thread";
+}
+
+<h2>(Un)lock thread</h2>
+
+<p>
+	Do you want to <b>@(Model.IsLocked ? "unlock" : "lock")</b> this thread?
+</p>
+
+<p>
+	@Model.Title
+</p>
+
+@using (Html.BeginForm()) {
+
+	@Html.SubmitButton("Yes", Model.IsLocked ? "Unlock" : "Lock")
+
+	@Html.SubmitButton("No", "Cancel")
+
+}

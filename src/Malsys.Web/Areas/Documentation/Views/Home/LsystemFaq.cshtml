@@ -1,0 +1,98 @@
+﻿@**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ *@
+@model Malsys.Web.Models.Lsystem.SimpleLsystemProcessor
+
+@section submenu {
+	<li>@Html.ActionLink("Back to documentation index", MVC.Documentation.Home.Index())</li>
+}
+
+@section scripts {
+	@Content.Js(Links.Js.jquery_tmpl_js)  @* For example of inline doc *@
+}
+
+@{
+	ViewBag.Title = "Frequently asked questions (L-systems)";
+	var exampleModel = new LsystemExampleViewModel() {
+		LsystemProcessor = Model,
+		SourceCodeTemplate = "{0}"
+	};
+}
+
+<h2>Frequently asked questions (L-systems)</h2>
+
+<p>
+	If you have questions which are not answered here you may visit @Html.ActionLink("discussion", MVC.Discussion.Index()) and ask there.
+	For general FAQ @Html.ActionLink("see this page", MVC.Documentation.Home.Faq()).
+</p>
+
+<div id="toc"></div>
+
+
+<h3>List and explanation of all properties usable in L-systems</h3>
+
+<p>
+	<span class="huge">Q:</span>
+	Whey I'm exploring the @Html.ActionLink("gallery", MVC.Gallery.Index()) I can see many different properties like <code>continuousColoring</code> or <code>initialAngle</code> used in L-systems.
+	Where can I find complete list with explanation?
+</p>
+
+<p>
+	<span class="huge">A:</span>
+	Properties depends on used components in process configuration.
+	If you use predefined process configurations like <code>SvgRenderer</code> or <code>SymbolPrinter</code> there is consolidated list
+		of all properties in @Html.ActionLink("Predefined process configurations", MVC.Documentation.Predefined.Configurations()) section of
+		@Html.ActionLink("documentation", MVC.Documentation.Home.Index()).
+</p>
+
+<p>
+	Recently was added list of some properties directly on @Html.ActionLink("process page", MVC.Process.Index()).
+	It will show documentation for used process configurations so you have to use some first (for example with: <code>process all with SvgRenderer;</code>).
+	It looks like this, try to hover over links (JavaScript must be enabled):
+</p>
+
+<div class="inlineDoc" data-config-names="SvgRenderer" data-fetch-url="@Url.ActionAbsolute(MVC.Documentation.Api.ProcessConfigMembers())"></div>
+
+
+@* ================================================================================================================== *@
+
+<h3>Symbol rewriting is not working properly!</h3>
+
+<p>
+	<span class="huge">Q:</span>
+	In following L-system rewriting do not work, nothing is rendered:
+</p>
+
+<pre class="malsys box">
+lsystem RewritingProblem {
+	set symbols axiom = F;
+	set iterations = 2;
+
+	interpret F as DrawForward(10);
+
+	rewrite F to FFF;
+}
+process all with SvgRenderer;
+</pre>
+
+<p>
+	<span class="huge">A:</span>
+	Problem is in symbols, <code>FFF</code> is one symbol for Malsys, you need to separate individual symbols with space.
+	This problem can be easily debugged setting <code>debugInterpretation</code> property to true.
+	If you do so you will see <code>FFF =></code> which means that symbol <code>FFF</code> was interpreted as nothing which is correct to L-system definition.
+</p>
+
+<pre class="malsys box">
+lsystem RewritingProblem {
+	set symbols axiom = F;
+	set iterations = 2;
+	set debugInterpretation = true;
+
+	interpret F as DrawForward(10);
+
+	rewrite F to FFF;
+}
+process all with SvgRenderer;
+</pre>
+

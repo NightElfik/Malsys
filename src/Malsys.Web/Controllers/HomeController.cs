@@ -2,6 +2,8 @@
  * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
  * All rights reserved.
  */
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using Malsys.Web.Entities;
@@ -12,9 +14,14 @@ namespace Malsys.Web.Controllers {
 
 
 		private readonly IInputDb inputDb;
+		private readonly IDiscusDb discusDb;
+		private readonly LoadedPlugins loadedPlugins;
 
-		public HomeController(IInputDb inputDb) {
+
+		public HomeController(IInputDb inputDb, IDiscusDb discusDb, LoadedPlugins loadedPlugins) {
 			this.inputDb = inputDb;
+			this.discusDb = discusDb;
+			this.loadedPlugins = loadedPlugins;
 		}
 
 
@@ -27,16 +34,26 @@ namespace Malsys.Web.Controllers {
 				.OrderBy(x => x.SavedInputId)
 				.RandomOrDefault();
 
-			GalleryThumbnailModel model = null;
+			var cat = discusDb.GetKnownDiscussCat(DiscussionCategory.News);
+			var news = discusDb.DiscusThreads
+				.Where(x => x.CategoryId == cat.CategoryId)
+				.OrderByDescending(x => x.CreationDate)
+				.Take(3);
+
+			GalleryThumbnailModel thumb = null;
 			if (input != null) {
-				model = new GalleryThumbnailModel() {
+				thumb = new GalleryThumbnailModel() {
 					SavedInput = input,
 					MaxWidth = 256,
 					MaxHeight = 256
 				};
 			}
 
-			return View(model);
+			return View(new Tuple<GalleryThumbnailModel, IEnumerable<DiscusThread>>(thumb, news));
+		}
+
+		public virtual ActionResult LoadedPlugins() {
+			return View(loadedPlugins);
 		}
 
 		public virtual ActionResult WhyWebgl() {

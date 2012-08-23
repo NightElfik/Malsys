@@ -35,6 +35,7 @@ namespace Malsys.Web.Models.Repositories {
 		}
 
 
+		public IUsersDb UsersDb { get { return usersDb; } }
 		public IInputDb InputDb { get { return inputDb; } }
 
 

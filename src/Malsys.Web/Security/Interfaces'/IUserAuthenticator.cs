@@ -2,15 +2,16 @@
  * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
  * All rights reserved.
  */
+using Malsys.Web.Entities;
 
 namespace Malsys.Web.Security {
 	public interface IUserAuthenticator {
 
-		bool ValidateUser(string userName, string password);
+		OperationResult<User> ValidateUser(string userName, string password);
 
 		string[] GetRolesForUser(string userName);
 
-		void ChangePassword(string userName, string oldPassword, string newPassword);
+		OperationResult<User> ChangePassword(string userName, string oldPassword, string newPassword);
 
 	}
 }

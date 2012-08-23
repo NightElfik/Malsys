@@ -18,7 +18,12 @@ using System.Runtime.Serialization;
 [assembly: EdmSchemaAttribute()]
 #region EDM Relationship Metadata
 
+[assembly: EdmRelationshipAttribute("MalsysDbEntities", "FK_ActionLog_Users", "User", System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, typeof(Malsys.Web.Entities.User), "ActionLog", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(Malsys.Web.Entities.ActionLog), true)]
 [assembly: EdmRelationshipAttribute("MalsysDbEntities", "FK_InputProcesses_CanonicInputs", "CanonicInput", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(Malsys.Web.Entities.CanonicInput), "InputProcess", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(Malsys.Web.Entities.InputProcess), true)]
+[assembly: EdmRelationshipAttribute("MalsysDbEntities", "FK_DiscusThreads_DiscusCategories", "DiscusCategory", System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, typeof(Malsys.Web.Entities.DiscusCategory), "DiscusThread", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(Malsys.Web.Entities.DiscusThread), true)]
+[assembly: EdmRelationshipAttribute("MalsysDbEntities", "FK_DiscusMessages_DiscusThreads", "DiscusThread", System.Data.Metadata.Edm.RelationshipMultiplicity.One, typeof(Malsys.Web.Entities.DiscusThread), "DiscusMessage", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(Malsys.Web.Entities.DiscusMessage), true)]
+[assembly: EdmRelationshipAttribute("MalsysDbEntities", "FK_DiscusMessages_Users", "User", System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, typeof(Malsys.Web.Entities.User), "DiscusMessage", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(Malsys.Web.Entities.DiscusMessage), true)]
+[assembly: EdmRelationshipAttribute("MalsysDbEntities", "FK_DiscusThreads_Users", "User", System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, typeof(Malsys.Web.Entities.User), "DiscusThread", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(Malsys.Web.Entities.DiscusThread), true)]
 [assembly: EdmRelationshipAttribute("MalsysDbEntities", "FK_Feedbacks_Users", "User", System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, typeof(Malsys.Web.Entities.User), "Feedback", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(Malsys.Web.Entities.Feedback), true)]
 [assembly: EdmRelationshipAttribute("MalsysDbEntities", "FK_InputProcesses_InputProcesses", "InputProcess", System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, typeof(Malsys.Web.Entities.InputProcess), "InputProcess1", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(Malsys.Web.Entities.InputProcess), true)]
 [assembly: EdmRelationshipAttribute("MalsysDbEntities", "FK_InputProcesses_Users", "User", System.Data.Metadata.Edm.RelationshipMultiplicity.ZeroOrOne, typeof(Malsys.Web.Entities.User), "InputProcess", System.Data.Metadata.Edm.RelationshipMultiplicity.Many, typeof(Malsys.Web.Entities.InputProcess), true)]
@@ -83,6 +88,22 @@ namespace Malsys.Web.Entities
         /// <summary>
         /// No Metadata Documentation available.
         /// </summary>
+        public ObjectSet<ActionLog> ActionLogs
+        {
+            get
+            {
+                if ((_ActionLogs == null))
+                {
+                    _ActionLogs = base.CreateObjectSet<ActionLog>("ActionLogs");
+                }
+                return _ActionLogs;
+            }
+        }
+        private ObjectSet<ActionLog> _ActionLogs;
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
         public ObjectSet<CanonicInput> CanonicInputs
         {
             get
@@ -95,6 +116,54 @@ namespace Malsys.Web.Entities
             }
         }
         private ObjectSet<CanonicInput> _CanonicInputs;
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        public ObjectSet<DiscusCategory> DiscusCategories
+        {
+            get
+            {
+                if ((_DiscusCategories == null))
+                {
+                    _DiscusCategories = base.CreateObjectSet<DiscusCategory>("DiscusCategories");
+                }
+                return _DiscusCategories;
+            }
+        }
+        private ObjectSet<DiscusCategory> _DiscusCategories;
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        public ObjectSet<DiscusMessage> DiscusMessages
+        {
+            get
+            {
+                if ((_DiscusMessages == null))
+                {
+                    _DiscusMessages = base.CreateObjectSet<DiscusMessage>("DiscusMessages");
+                }
+                return _DiscusMessages;
+            }
+        }
+        private ObjectSet<DiscusMessage> _DiscusMessages;
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        public ObjectSet<DiscusThread> DiscusThreads
+        {
+            get
+            {
+                if ((_DiscusThreads == null))
+                {
+                    _DiscusThreads = base.CreateObjectSet<DiscusThread>("DiscusThreads");
+                }
+                return _DiscusThreads;
+            }
+        }
+        private ObjectSet<DiscusThread> _DiscusThreads;
     
         /// <summary>
         /// No Metadata Documentation available.
@@ -228,11 +297,43 @@ namespace Malsys.Web.Entities
         #region AddTo Methods
     
         /// <summary>
+        /// Deprecated Method for adding a new object to the ActionLogs EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
+        /// </summary>
+        public void AddToActionLogs(ActionLog actionLog)
+        {
+            base.AddObject("ActionLogs", actionLog);
+        }
+    
+        /// <summary>
         /// Deprecated Method for adding a new object to the CanonicInputs EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
         /// </summary>
         public void AddToCanonicInputs(CanonicInput canonicInput)
         {
             base.AddObject("CanonicInputs", canonicInput);
+        }
+    
+        /// <summary>
+        /// Deprecated Method for adding a new object to the DiscusCategories EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
+        /// </summary>
+        public void AddToDiscusCategories(DiscusCategory discusCategory)
+        {
+            base.AddObject("DiscusCategories", discusCategory);
+        }
+    
+        /// <summary>
+        /// Deprecated Method for adding a new object to the DiscusMessages EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
+        /// </summary>
+        public void AddToDiscusMessages(DiscusMessage discusMessage)
+        {
+            base.AddObject("DiscusMessages", discusMessage);
+        }
+    
+        /// <summary>
+        /// Deprecated Method for adding a new object to the DiscusThreads EntitySet. Consider using the .Add method of the associated ObjectSet&lt;T&gt; property instead.
+        /// </summary>
+        public void AddToDiscusThreads(DiscusThread discusThread)
+        {
+            base.AddObject("DiscusThreads", discusThread);
         }
     
         /// <summary>
@@ -306,6 +407,228 @@ namespace Malsys.Web.Entities
     #endregion
     
     #region Entities
+    
+    /// <summary>
+    /// No Metadata Documentation available.
+    /// </summary>
+    [EdmEntityTypeAttribute(NamespaceName="MalsysDbEntities", Name="ActionLog")]
+    [Serializable()]
+    [DataContractAttribute(IsReference=true)]
+    public partial class ActionLog : EntityObject
+    {
+        #region Factory Method
+    
+        /// <summary>
+        /// Create a new ActionLog object.
+        /// </summary>
+        /// <param name="actionLogId">Initial value of the ActionLogId property.</param>
+        /// <param name="timestamp">Initial value of the Timestamp property.</param>
+        /// <param name="significance">Initial value of the Significance property.</param>
+        /// <param name="action">Initial value of the Action property.</param>
+        public static ActionLog CreateActionLog(global::System.Int32 actionLogId, global::System.DateTime timestamp, global::System.Byte significance, global::System.String action)
+        {
+            ActionLog actionLog = new ActionLog();
+            actionLog.ActionLogId = actionLogId;
+            actionLog.Timestamp = timestamp;
+            actionLog.Significance = significance;
+            actionLog.Action = action;
+            return actionLog;
+        }
+
+        #endregion
+        #region Primitive Properties
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=true, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int32 ActionLogId
+        {
+            get
+            {
+                return _ActionLogId;
+            }
+            set
+            {
+                if (_ActionLogId != value)
+                {
+                    OnActionLogIdChanging(value);
+                    ReportPropertyChanging("ActionLogId");
+                    _ActionLogId = StructuralObject.SetValidValue(value);
+                    ReportPropertyChanged("ActionLogId");
+                    OnActionLogIdChanged();
+                }
+            }
+        }
+        private global::System.Int32 _ActionLogId;
+        partial void OnActionLogIdChanging(global::System.Int32 value);
+        partial void OnActionLogIdChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.DateTime Timestamp
+        {
+            get
+            {
+                return _Timestamp;
+            }
+            set
+            {
+                OnTimestampChanging(value);
+                ReportPropertyChanging("Timestamp");
+                _Timestamp = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("Timestamp");
+                OnTimestampChanged();
+            }
+        }
+        private global::System.DateTime _Timestamp;
+        partial void OnTimestampChanging(global::System.DateTime value);
+        partial void OnTimestampChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Byte Significance
+        {
+            get
+            {
+                return _Significance;
+            }
+            set
+            {
+                OnSignificanceChanging(value);
+                ReportPropertyChanging("Significance");
+                _Significance = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("Significance");
+                OnSignificanceChanged();
+            }
+        }
+        private global::System.Byte _Significance;
+        partial void OnSignificanceChanging(global::System.Byte value);
+        partial void OnSignificanceChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public Nullable<global::System.Int32> UserId
+        {
+            get
+            {
+                return _UserId;
+            }
+            set
+            {
+                OnUserIdChanging(value);
+                ReportPropertyChanging("UserId");
+                _UserId = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("UserId");
+                OnUserIdChanged();
+            }
+        }
+        private Nullable<global::System.Int32> _UserId;
+        partial void OnUserIdChanging(Nullable<global::System.Int32> value);
+        partial void OnUserIdChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.String Action
+        {
+            get
+            {
+                return _Action;
+            }
+            set
+            {
+                OnActionChanging(value);
+                ReportPropertyChanging("Action");
+                _Action = StructuralObject.SetValidValue(value, false);
+                ReportPropertyChanged("Action");
+                OnActionChanged();
+            }
+        }
+        private global::System.String _Action;
+        partial void OnActionChanging(global::System.String value);
+        partial void OnActionChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public global::System.String AdditionalInfo
+        {
+            get
+            {
+                return _AdditionalInfo;
+            }
+            set
+            {
+                OnAdditionalInfoChanging(value);
+                ReportPropertyChanging("AdditionalInfo");
+                _AdditionalInfo = StructuralObject.SetValidValue(value, true);
+                ReportPropertyChanged("AdditionalInfo");
+                OnAdditionalInfoChanged();
+            }
+        }
+        private global::System.String _AdditionalInfo;
+        partial void OnAdditionalInfoChanging(global::System.String value);
+        partial void OnAdditionalInfoChanged();
+
+        #endregion
+    
+        #region Navigation Properties
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("MalsysDbEntities", "FK_ActionLog_Users", "User")]
+        public User User
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<User>("MalsysDbEntities.FK_ActionLog_Users", "User").Value;
+            }
+            set
+            {
+                ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<User>("MalsysDbEntities.FK_ActionLog_Users", "User").Value = value;
+            }
+        }
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [BrowsableAttribute(false)]
+        [DataMemberAttribute()]
+        public EntityReference<User> UserReference
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<User>("MalsysDbEntities.FK_ActionLog_Users", "User");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedReference<User>("MalsysDbEntities.FK_ActionLog_Users", "User", value);
+                }
+            }
+        }
+
+        #endregion
+    }
     
     /// <summary>
     /// No Metadata Documentation available.
@@ -484,6 +807,778 @@ namespace Malsys.Web.Entities
                 if ((value != null))
                 {
                     ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<InputProcess>("MalsysDbEntities.FK_InputProcesses_CanonicInputs", "InputProcess", value);
+                }
+            }
+        }
+
+        #endregion
+    }
+    
+    /// <summary>
+    /// No Metadata Documentation available.
+    /// </summary>
+    [EdmEntityTypeAttribute(NamespaceName="MalsysDbEntities", Name="DiscusCategory")]
+    [Serializable()]
+    [DataContractAttribute(IsReference=true)]
+    public partial class DiscusCategory : EntityObject
+    {
+        #region Factory Method
+    
+        /// <summary>
+        /// Create a new DiscusCategory object.
+        /// </summary>
+        /// <param name="categoryId">Initial value of the CategoryId property.</param>
+        /// <param name="isLocked">Initial value of the IsLocked property.</param>
+        public static DiscusCategory CreateDiscusCategory(global::System.Int32 categoryId, global::System.Boolean isLocked)
+        {
+            DiscusCategory discusCategory = new DiscusCategory();
+            discusCategory.CategoryId = categoryId;
+            discusCategory.IsLocked = isLocked;
+            return discusCategory;
+        }
+
+        #endregion
+        #region Primitive Properties
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=true, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int32 CategoryId
+        {
+            get
+            {
+                return _CategoryId;
+            }
+            set
+            {
+                if (_CategoryId != value)
+                {
+                    OnCategoryIdChanging(value);
+                    ReportPropertyChanging("CategoryId");
+                    _CategoryId = StructuralObject.SetValidValue(value);
+                    ReportPropertyChanged("CategoryId");
+                    OnCategoryIdChanged();
+                }
+            }
+        }
+        private global::System.Int32 _CategoryId;
+        partial void OnCategoryIdChanging(global::System.Int32 value);
+        partial void OnCategoryIdChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Boolean IsLocked
+        {
+            get
+            {
+                return _IsLocked;
+            }
+            set
+            {
+                OnIsLockedChanging(value);
+                ReportPropertyChanging("IsLocked");
+                _IsLocked = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("IsLocked");
+                OnIsLockedChanged();
+            }
+        }
+        private global::System.Boolean _IsLocked;
+        partial void OnIsLockedChanging(global::System.Boolean value);
+        partial void OnIsLockedChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public global::System.String Name
+        {
+            get
+            {
+                return _Name;
+            }
+            set
+            {
+                OnNameChanging(value);
+                ReportPropertyChanging("Name");
+                _Name = StructuralObject.SetValidValue(value, true);
+                ReportPropertyChanged("Name");
+                OnNameChanged();
+            }
+        }
+        private global::System.String _Name;
+        partial void OnNameChanging(global::System.String value);
+        partial void OnNameChanged();
+
+        #endregion
+    
+        #region Navigation Properties
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("MalsysDbEntities", "FK_DiscusThreads_DiscusCategories", "DiscusThread")]
+        public EntityCollection<DiscusThread> DiscusThreads
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<DiscusThread>("MalsysDbEntities.FK_DiscusThreads_DiscusCategories", "DiscusThread");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<DiscusThread>("MalsysDbEntities.FK_DiscusThreads_DiscusCategories", "DiscusThread", value);
+                }
+            }
+        }
+
+        #endregion
+    }
+    
+    /// <summary>
+    /// No Metadata Documentation available.
+    /// </summary>
+    [EdmEntityTypeAttribute(NamespaceName="MalsysDbEntities", Name="DiscusMessage")]
+    [Serializable()]
+    [DataContractAttribute(IsReference=true)]
+    public partial class DiscusMessage : EntityObject
+    {
+        #region Factory Method
+    
+        /// <summary>
+        /// Create a new DiscusMessage object.
+        /// </summary>
+        /// <param name="messageId">Initial value of the MessageId property.</param>
+        /// <param name="threadId">Initial value of the ThreadId property.</param>
+        /// <param name="creationDate">Initial value of the CreationDate property.</param>
+        /// <param name="updateDate">Initial value of the UpdateDate property.</param>
+        /// <param name="text">Initial value of the Text property.</param>
+        public static DiscusMessage CreateDiscusMessage(global::System.Int32 messageId, global::System.Int32 threadId, global::System.DateTime creationDate, global::System.DateTime updateDate, global::System.String text)
+        {
+            DiscusMessage discusMessage = new DiscusMessage();
+            discusMessage.MessageId = messageId;
+            discusMessage.ThreadId = threadId;
+            discusMessage.CreationDate = creationDate;
+            discusMessage.UpdateDate = updateDate;
+            discusMessage.Text = text;
+            return discusMessage;
+        }
+
+        #endregion
+        #region Primitive Properties
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=true, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int32 MessageId
+        {
+            get
+            {
+                return _MessageId;
+            }
+            set
+            {
+                if (_MessageId != value)
+                {
+                    OnMessageIdChanging(value);
+                    ReportPropertyChanging("MessageId");
+                    _MessageId = StructuralObject.SetValidValue(value);
+                    ReportPropertyChanged("MessageId");
+                    OnMessageIdChanged();
+                }
+            }
+        }
+        private global::System.Int32 _MessageId;
+        partial void OnMessageIdChanging(global::System.Int32 value);
+        partial void OnMessageIdChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int32 ThreadId
+        {
+            get
+            {
+                return _ThreadId;
+            }
+            set
+            {
+                OnThreadIdChanging(value);
+                ReportPropertyChanging("ThreadId");
+                _ThreadId = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("ThreadId");
+                OnThreadIdChanged();
+            }
+        }
+        private global::System.Int32 _ThreadId;
+        partial void OnThreadIdChanging(global::System.Int32 value);
+        partial void OnThreadIdChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.DateTime CreationDate
+        {
+            get
+            {
+                return _CreationDate;
+            }
+            set
+            {
+                OnCreationDateChanging(value);
+                ReportPropertyChanging("CreationDate");
+                _CreationDate = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("CreationDate");
+                OnCreationDateChanged();
+            }
+        }
+        private global::System.DateTime _CreationDate;
+        partial void OnCreationDateChanging(global::System.DateTime value);
+        partial void OnCreationDateChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.DateTime UpdateDate
+        {
+            get
+            {
+                return _UpdateDate;
+            }
+            set
+            {
+                OnUpdateDateChanging(value);
+                ReportPropertyChanging("UpdateDate");
+                _UpdateDate = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("UpdateDate");
+                OnUpdateDateChanged();
+            }
+        }
+        private global::System.DateTime _UpdateDate;
+        partial void OnUpdateDateChanging(global::System.DateTime value);
+        partial void OnUpdateDateChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public Nullable<global::System.Int32> AuthorUserId
+        {
+            get
+            {
+                return _AuthorUserId;
+            }
+            set
+            {
+                OnAuthorUserIdChanging(value);
+                ReportPropertyChanging("AuthorUserId");
+                _AuthorUserId = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("AuthorUserId");
+                OnAuthorUserIdChanged();
+            }
+        }
+        private Nullable<global::System.Int32> _AuthorUserId;
+        partial void OnAuthorUserIdChanging(Nullable<global::System.Int32> value);
+        partial void OnAuthorUserIdChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public global::System.String AuthorNameNonRegistered
+        {
+            get
+            {
+                return _AuthorNameNonRegistered;
+            }
+            set
+            {
+                OnAuthorNameNonRegisteredChanging(value);
+                ReportPropertyChanging("AuthorNameNonRegistered");
+                _AuthorNameNonRegistered = StructuralObject.SetValidValue(value, true);
+                ReportPropertyChanged("AuthorNameNonRegistered");
+                OnAuthorNameNonRegisteredChanged();
+            }
+        }
+        private global::System.String _AuthorNameNonRegistered;
+        partial void OnAuthorNameNonRegisteredChanging(global::System.String value);
+        partial void OnAuthorNameNonRegisteredChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.String Text
+        {
+            get
+            {
+                return _Text;
+            }
+            set
+            {
+                OnTextChanging(value);
+                ReportPropertyChanging("Text");
+                _Text = StructuralObject.SetValidValue(value, false);
+                ReportPropertyChanged("Text");
+                OnTextChanged();
+            }
+        }
+        private global::System.String _Text;
+        partial void OnTextChanging(global::System.String value);
+        partial void OnTextChanged();
+
+        #endregion
+    
+        #region Navigation Properties
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("MalsysDbEntities", "FK_DiscusMessages_DiscusThreads", "DiscusThread")]
+        public DiscusThread DiscusThread
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<DiscusThread>("MalsysDbEntities.FK_DiscusMessages_DiscusThreads", "DiscusThread").Value;
+            }
+            set
+            {
+                ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<DiscusThread>("MalsysDbEntities.FK_DiscusMessages_DiscusThreads", "DiscusThread").Value = value;
+            }
+        }
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [BrowsableAttribute(false)]
+        [DataMemberAttribute()]
+        public EntityReference<DiscusThread> DiscusThreadReference
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<DiscusThread>("MalsysDbEntities.FK_DiscusMessages_DiscusThreads", "DiscusThread");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedReference<DiscusThread>("MalsysDbEntities.FK_DiscusMessages_DiscusThreads", "DiscusThread", value);
+                }
+            }
+        }
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("MalsysDbEntities", "FK_DiscusMessages_Users", "User")]
+        public User User
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<User>("MalsysDbEntities.FK_DiscusMessages_Users", "User").Value;
+            }
+            set
+            {
+                ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<User>("MalsysDbEntities.FK_DiscusMessages_Users", "User").Value = value;
+            }
+        }
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [BrowsableAttribute(false)]
+        [DataMemberAttribute()]
+        public EntityReference<User> UserReference
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<User>("MalsysDbEntities.FK_DiscusMessages_Users", "User");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedReference<User>("MalsysDbEntities.FK_DiscusMessages_Users", "User", value);
+                }
+            }
+        }
+
+        #endregion
+    }
+    
+    /// <summary>
+    /// No Metadata Documentation available.
+    /// </summary>
+    [EdmEntityTypeAttribute(NamespaceName="MalsysDbEntities", Name="DiscusThread")]
+    [Serializable()]
+    [DataContractAttribute(IsReference=true)]
+    public partial class DiscusThread : EntityObject
+    {
+        #region Factory Method
+    
+        /// <summary>
+        /// Create a new DiscusThread object.
+        /// </summary>
+        /// <param name="threadId">Initial value of the ThreadId property.</param>
+        /// <param name="isLocked">Initial value of the IsLocked property.</param>
+        /// <param name="creationDate">Initial value of the CreationDate property.</param>
+        /// <param name="lastUpdateDate">Initial value of the LastUpdateDate property.</param>
+        /// <param name="title">Initial value of the Title property.</param>
+        public static DiscusThread CreateDiscusThread(global::System.Int32 threadId, global::System.Boolean isLocked, global::System.DateTime creationDate, global::System.DateTime lastUpdateDate, global::System.String title)
+        {
+            DiscusThread discusThread = new DiscusThread();
+            discusThread.ThreadId = threadId;
+            discusThread.IsLocked = isLocked;
+            discusThread.CreationDate = creationDate;
+            discusThread.LastUpdateDate = lastUpdateDate;
+            discusThread.Title = title;
+            return discusThread;
+        }
+
+        #endregion
+        #region Primitive Properties
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=true, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Int32 ThreadId
+        {
+            get
+            {
+                return _ThreadId;
+            }
+            set
+            {
+                if (_ThreadId != value)
+                {
+                    OnThreadIdChanging(value);
+                    ReportPropertyChanging("ThreadId");
+                    _ThreadId = StructuralObject.SetValidValue(value);
+                    ReportPropertyChanged("ThreadId");
+                    OnThreadIdChanged();
+                }
+            }
+        }
+        private global::System.Int32 _ThreadId;
+        partial void OnThreadIdChanging(global::System.Int32 value);
+        partial void OnThreadIdChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public global::System.String ThreadName
+        {
+            get
+            {
+                return _ThreadName;
+            }
+            set
+            {
+                OnThreadNameChanging(value);
+                ReportPropertyChanging("ThreadName");
+                _ThreadName = StructuralObject.SetValidValue(value, true);
+                ReportPropertyChanged("ThreadName");
+                OnThreadNameChanged();
+            }
+        }
+        private global::System.String _ThreadName;
+        partial void OnThreadNameChanging(global::System.String value);
+        partial void OnThreadNameChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public Nullable<global::System.Int32> CategoryId
+        {
+            get
+            {
+                return _CategoryId;
+            }
+            set
+            {
+                OnCategoryIdChanging(value);
+                ReportPropertyChanging("CategoryId");
+                _CategoryId = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("CategoryId");
+                OnCategoryIdChanged();
+            }
+        }
+        private Nullable<global::System.Int32> _CategoryId;
+        partial void OnCategoryIdChanging(Nullable<global::System.Int32> value);
+        partial void OnCategoryIdChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.Boolean IsLocked
+        {
+            get
+            {
+                return _IsLocked;
+            }
+            set
+            {
+                OnIsLockedChanging(value);
+                ReportPropertyChanging("IsLocked");
+                _IsLocked = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("IsLocked");
+                OnIsLockedChanged();
+            }
+        }
+        private global::System.Boolean _IsLocked;
+        partial void OnIsLockedChanging(global::System.Boolean value);
+        partial void OnIsLockedChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.DateTime CreationDate
+        {
+            get
+            {
+                return _CreationDate;
+            }
+            set
+            {
+                OnCreationDateChanging(value);
+                ReportPropertyChanging("CreationDate");
+                _CreationDate = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("CreationDate");
+                OnCreationDateChanged();
+            }
+        }
+        private global::System.DateTime _CreationDate;
+        partial void OnCreationDateChanging(global::System.DateTime value);
+        partial void OnCreationDateChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.DateTime LastUpdateDate
+        {
+            get
+            {
+                return _LastUpdateDate;
+            }
+            set
+            {
+                OnLastUpdateDateChanging(value);
+                ReportPropertyChanging("LastUpdateDate");
+                _LastUpdateDate = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("LastUpdateDate");
+                OnLastUpdateDateChanged();
+            }
+        }
+        private global::System.DateTime _LastUpdateDate;
+        partial void OnLastUpdateDateChanging(global::System.DateTime value);
+        partial void OnLastUpdateDateChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public Nullable<global::System.Int32> AuthorUserId
+        {
+            get
+            {
+                return _AuthorUserId;
+            }
+            set
+            {
+                OnAuthorUserIdChanging(value);
+                ReportPropertyChanging("AuthorUserId");
+                _AuthorUserId = StructuralObject.SetValidValue(value);
+                ReportPropertyChanged("AuthorUserId");
+                OnAuthorUserIdChanged();
+            }
+        }
+        private Nullable<global::System.Int32> _AuthorUserId;
+        partial void OnAuthorUserIdChanging(Nullable<global::System.Int32> value);
+        partial void OnAuthorUserIdChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=true)]
+        [DataMemberAttribute()]
+        public global::System.String AuthorNameNonRegistered
+        {
+            get
+            {
+                return _AuthorNameNonRegistered;
+            }
+            set
+            {
+                OnAuthorNameNonRegisteredChanging(value);
+                ReportPropertyChanging("AuthorNameNonRegistered");
+                _AuthorNameNonRegistered = StructuralObject.SetValidValue(value, true);
+                ReportPropertyChanged("AuthorNameNonRegistered");
+                OnAuthorNameNonRegisteredChanged();
+            }
+        }
+        private global::System.String _AuthorNameNonRegistered;
+        partial void OnAuthorNameNonRegisteredChanging(global::System.String value);
+        partial void OnAuthorNameNonRegisteredChanged();
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [EdmScalarPropertyAttribute(EntityKeyProperty=false, IsNullable=false)]
+        [DataMemberAttribute()]
+        public global::System.String Title
+        {
+            get
+            {
+                return _Title;
+            }
+            set
+            {
+                OnTitleChanging(value);
+                ReportPropertyChanging("Title");
+                _Title = StructuralObject.SetValidValue(value, false);
+                ReportPropertyChanged("Title");
+                OnTitleChanged();
+            }
+        }
+        private global::System.String _Title;
+        partial void OnTitleChanging(global::System.String value);
+        partial void OnTitleChanged();
+
+        #endregion
+    
+        #region Navigation Properties
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("MalsysDbEntities", "FK_DiscusThreads_DiscusCategories", "DiscusCategory")]
+        public DiscusCategory DiscusCategory
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<DiscusCategory>("MalsysDbEntities.FK_DiscusThreads_DiscusCategories", "DiscusCategory").Value;
+            }
+            set
+            {
+                ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<DiscusCategory>("MalsysDbEntities.FK_DiscusThreads_DiscusCategories", "DiscusCategory").Value = value;
+            }
+        }
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [BrowsableAttribute(false)]
+        [DataMemberAttribute()]
+        public EntityReference<DiscusCategory> DiscusCategoryReference
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<DiscusCategory>("MalsysDbEntities.FK_DiscusThreads_DiscusCategories", "DiscusCategory");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedReference<DiscusCategory>("MalsysDbEntities.FK_DiscusThreads_DiscusCategories", "DiscusCategory", value);
+                }
+            }
+        }
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("MalsysDbEntities", "FK_DiscusMessages_DiscusThreads", "DiscusMessage")]
+        public EntityCollection<DiscusMessage> DiscusMessages
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<DiscusMessage>("MalsysDbEntities.FK_DiscusMessages_DiscusThreads", "DiscusMessage");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<DiscusMessage>("MalsysDbEntities.FK_DiscusMessages_DiscusThreads", "DiscusMessage", value);
+                }
+            }
+        }
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("MalsysDbEntities", "FK_DiscusThreads_Users", "User")]
+        public User User
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<User>("MalsysDbEntities.FK_DiscusThreads_Users", "User").Value;
+            }
+            set
+            {
+                ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<User>("MalsysDbEntities.FK_DiscusThreads_Users", "User").Value = value;
+            }
+        }
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [BrowsableAttribute(false)]
+        [DataMemberAttribute()]
+        public EntityReference<User> UserReference
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedReference<User>("MalsysDbEntities.FK_DiscusThreads_Users", "User");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedReference<User>("MalsysDbEntities.FK_DiscusThreads_Users", "User", value);
                 }
             }
         }
@@ -2800,6 +3895,72 @@ namespace Malsys.Web.Entities
         #endregion
     
         #region Navigation Properties
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("MalsysDbEntities", "FK_ActionLog_Users", "ActionLog")]
+        public EntityCollection<ActionLog> ActionLogs
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<ActionLog>("MalsysDbEntities.FK_ActionLog_Users", "ActionLog");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<ActionLog>("MalsysDbEntities.FK_ActionLog_Users", "ActionLog", value);
+                }
+            }
+        }
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("MalsysDbEntities", "FK_DiscusMessages_Users", "DiscusMessage")]
+        public EntityCollection<DiscusMessage> DiscusMessages
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<DiscusMessage>("MalsysDbEntities.FK_DiscusMessages_Users", "DiscusMessage");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<DiscusMessage>("MalsysDbEntities.FK_DiscusMessages_Users", "DiscusMessage", value);
+                }
+            }
+        }
+    
+        /// <summary>
+        /// No Metadata Documentation available.
+        /// </summary>
+        [XmlIgnoreAttribute()]
+        [SoapIgnoreAttribute()]
+        [DataMemberAttribute()]
+        [EdmRelationshipNavigationPropertyAttribute("MalsysDbEntities", "FK_DiscusThreads_Users", "DiscusThread")]
+        public EntityCollection<DiscusThread> DiscusThreads
+        {
+            get
+            {
+                return ((IEntityWithRelationships)this).RelationshipManager.GetRelatedCollection<DiscusThread>("MalsysDbEntities.FK_DiscusThreads_Users", "DiscusThread");
+            }
+            set
+            {
+                if ((value != null))
+                {
+                    ((IEntityWithRelationships)this).RelationshipManager.InitializeRelatedCollection<DiscusThread>("MalsysDbEntities.FK_DiscusThreads_Users", "DiscusThread", value);
+                }
+            }
+        }
     
         /// <summary>
         /// No Metadata Documentation available.

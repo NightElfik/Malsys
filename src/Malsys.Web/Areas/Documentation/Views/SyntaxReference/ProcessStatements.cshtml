@@ -1,0 +1,142 @@
+﻿@**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ *@
+@model Malsys.Web.Models.Lsystem.SimpleLsystemProcessor
+
+@{
+	ViewBag.Title = "Process statements";
+	var exampleModel = new LsystemExampleViewModel() {
+		LsystemProcessor = Model,
+		SourceCodeTemplate = StringHelper.JoinLines("// process statements example {0:00}", "{1}"),
+		UnimportantLines = new int[] { 1 }
+
+	};
+	var lsystemStr = StringHelper.JoinLines(
+		"lsystem {0} {{",
+		"set symbols axiom = {0};",
+		"}}");
+	int exampleId = 1;
+}
+
+<h2>Process statements</h2>
+
+<p>
+	Process statement defines processing of L-system with process configuration.
+</p>
+
+<div id="toc"></div>
+
+@* ================================================================================================================== *@
+<h3>Basic process statement</h3>
+
+<p>
+	Basic syntax of process statement is <code class="malsys">process LsystemName with ConfigurationName;</code>
+		where <code>LsystemName</code> is name of processed L-system and <code>ConfigurationName</code> is name of used process configuration.
+	There are @Html.ActionLink("predefined process configurations", MVC.Documentation.Predefined.Configurations()) that can be used right away.
+	One of them is <code>SymbolPrinter</code> which will print all symbols of L-system.
+</p>
+
+@Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, StringHelper.JoinLines(
+		lsystemStr.Fmt("LsystemA"),
+		"process LsystemA with SymbolPrinter;")))
+
+
+@* ================================================================================================================== *@
+<h3>Processing all defined L-systems</h3>
+
+<p>
+	If there are more L-systems and we want to render them all we can write one process statement for each L-system or we can just use <code class="malsys">all</code>
+		to process all defined (@Html.AnchorLink("non-abstract", "AbstractLsystems", MVC.Documentation.SyntaxReference.LsystemDefinition())) L-systems.
+</p>
+
+@Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, StringHelper.JoinLines(
+		"abstract " + lsystemStr.Fmt("LsystemA"),
+		lsystemStr.Fmt("LsystemB"),
+		lsystemStr.Fmt("LsystemC"),
+		"process all with SymbolPrinter;")))
+
+
+@* ================================================================================================================== *@
+<h3>Passing arguments to processed L-systems</h3>
+
+<p>
+	If L-system has some parameters it is possible to pass arguments to them with process statement.
+</p>
+
+@Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, StringHelper.JoinLines(
+		"lsystem ParameterizedLsystem(x = 0, i = 1) {",
+		"set symbols axiom = A;",
+		"set iterations = i;",
+		"rewrite A to X(x) A;",
+		"}",
+		"process ParameterizedLsystem(5, 5) with SymbolPrinter;",
+		"process ParameterizedLsystem(4) with SymbolPrinter;",
+		"process all(2, 2) with SymbolPrinter;",
+		"process ParameterizedLsystem with SymbolPrinter;")))
+
+
+@* ================================================================================================================== *@
+<h3>Adding additional L-system statements to process statement</h3>
+
+<p>
+	If you need to process L-system with minor changes you can write L-system statements after process statement.
+	You can only write following statements: @Html.ActionLink("component property assign", MVC.Documentation.SyntaxReference.ComponentPropertyAssignDefinition()),
+		@Html.ActionLink("rewrite rule", MVC.Documentation.SyntaxReference.RewriteRule()) and
+		@Html.ActionLink("interpretation definition", MVC.Documentation.SyntaxReference.SymbolInterpretation()).
+	Behavior is the same as if you will derive processed L-system and written statements to child L-system.
+</p>
+
+<p>
+	This can be used in L-system gallery in thumbnail source.
+	you can just invoke original L-system with for example lower iteration number.
+</p>
+
+@Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, StringHelper.JoinLines(
+		"lsystem Lsystem {",
+			"set symbols axiom = A;",
+			"set iterations = 2;",
+			"rewrite A to X A;",
+		"}",
+		"process Lsystem with SymbolPrinter",
+			"\tset iterations = 10;",
+		"process Lsystem with SymbolPrinter",
+			"\tset symbols axiom = B B",
+			"\trewrite B to X B;")))
+
+
+@* ================================================================================================================== *@
+<h3>Specifying components for containers</h3>
+
+<p>
+	In process statement components in containers in process configurations can be specified.
+	By default each container have specified default component but definition will override it.
+	To be able to assign component to container component type must be compatible with container's type.
+</p>
+
+@Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, StringHelper.JoinLines(
+		"lsystem Lsystem {",
+			"set symbols axiom = F;",
+			"set iterations = 2;",
+			"interpret F as DrawForward(10);",
+			"rewrite F to F + F;",
+		"}",
+		"process Lsystem with SvgRenderer",
+			"\tuse DebugRenderer2D as Renderer;")))
+
+<p>
+	You can  use <code>DebugRenderer3D</code> instead of <code>ThreeJsSceneRenderer3D</code> or
+		<code>InterpreterCallerDebugger</code> instead of <code>InterpreterCaller</code>.
+</p>
+
+@* ================================================================================================================== *@
+<h3>Formal grammar</h3>
+
+@MalsysHelper.GrammarBox(
+	"process_statement = 'process' name params? 'with' ID use_components* ';'",
+	"",
+	"name = 'all' | ID",
+	"",
+	"params = '(' ( expression (',' expression)+ )? ')'",
+	"",
+	"use_components = 'use' ID 'as' ID")

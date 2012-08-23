@@ -446,8 +446,8 @@ namespace Malsys.Tests.Process {
 			var procStat = input.ProcessStatements[0];
 
 			ProcessConfigurationStatement procConfig;
-			if (!input.ProcessConfigurations.TryGetValue(procStat.ProcessConfiName, out procConfig)) {
-				Assert.Fail("Configuration `{0}` not found.".Fmt(procStat.ProcessConfiName));
+			if (!input.ProcessConfigurations.TryGetValue(procStat.ProcessConfigName, out procConfig)) {
+				Assert.Fail("Configuration `{0}` not found.".Fmt(procStat.ProcessConfigName));
 			}
 
 			LsystemEvaled lsystem;

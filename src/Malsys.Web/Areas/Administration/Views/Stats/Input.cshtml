@@ -7,6 +7,7 @@
 
 @{
 	ViewBag.Title = "Input processes history";
+	ViewBag.MainClass = "fullWidth";
 }
 
 
@@ -16,12 +17,12 @@
 
 @Html.Grid(Model).Columns(col => {
 		col.For(m => m.ProcessId)
-			.HeaderAttributes(style => "width: 40px;")
+			.HeaderAttributes(style => "width: 60px;")
 			.Attributes(@class => "center");
 		col.For(m => m.User)
-			.HeaderAttributes(style => "width: 100px;");
+			.HeaderAttributes(style => "width: 150px;");
 		col.For(m => m.ParentProcessId)
-			.HeaderAttributes(style => "width: 40px;")
+			.HeaderAttributes(style => "width: 60px;")
 			.Attributes(@class => "center");
 		col.For(m => "<abbr title=\"" + m.Date + "\">" + m.Date.ToTimeSpanStringFromNow() + "</abbr>")
 			.Named("Age")
@@ -30,10 +31,10 @@
 			.Encode(false);
 		col.For(m => TimeSpan.FromTicks(m.Duration).ToAutoscaledString())
 			.Named("Process duration")
-			.HeaderAttributes(style => "width: 60px;")
+			.HeaderAttributes(style => "width: 100px;")
 			.Attributes(@class => "center");
 		col.For(m => m.SourceId)
-			.HeaderAttributes(style => "width: 40px;")
+			.HeaderAttributes(style => "width: 60px;")
 			.Attributes(@class => "center");
 		col.For(m => "<pre class=\"malsys collapsable noMargin\">" + m.Source + "</pre>")
 			.Named("Source")

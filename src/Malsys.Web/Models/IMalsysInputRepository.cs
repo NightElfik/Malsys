@@ -11,7 +11,9 @@ using Malsys.Web.Entities;
 namespace Malsys.Web.Models {
 	public interface IMalsysInputRepository {
 
+		IUsersDb UsersDb { get; }
 		IInputDb InputDb { get; }
+
 
 		InputProcess AddInputProcess(InputBlockEvaled input, int? parentId, IEnumerable<OutputFile> outputs, string userName, TimeSpan duration);
 

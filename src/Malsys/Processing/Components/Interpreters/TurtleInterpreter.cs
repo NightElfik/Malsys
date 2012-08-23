@@ -83,6 +83,7 @@ namespace Malsys.Processing.Components.Interpreters {
 		/// </summary>
 		/// <expected>Array of 2 or 3 numbers representing x, y and optionally z coordinate.</expected>
 		/// <default>{0, 0, 0}</default>
+		/// <typicalValue>{0, 0, 0}</typicalValue>
 		[AccessName("origin")]
 		[UserGettable(IsGettableBeforeInitialiation = true)]
 		[UserSettable]
@@ -102,6 +103,7 @@ namespace Malsys.Processing.Components.Interpreters {
 		/// </summary>
 		/// <expected>Array of 3 numbers representing x, y and z coordinate.</expected>
 		/// <default>{1, 0, 0}</default>
+		/// <typicalValue>{1, 0, 0}</typicalValue>
 		[AccessName("forwardVector")]
 		[UserGettable(IsGettableBeforeInitialiation = true)]
 		[UserSettable]
@@ -121,6 +123,7 @@ namespace Malsys.Processing.Components.Interpreters {
 		/// </summary>
 		/// <expected>Array of 3 constants representing x, y and z coordinate.</expected>
 		/// <default>{0, 1, 0}</default>
+		/// <typicalValue>{0, 1, 0}</typicalValue>
 		[AccessName("upVector")]
 		[UserGettable(IsGettableBeforeInitialiation = true)]
 		[UserSettable]
@@ -136,7 +139,12 @@ namespace Malsys.Processing.Components.Interpreters {
 		private ValuesArray upVector;
 
 
-
+		/// <summary>
+		/// Initial rotation of turtle. Only for experienced users.
+		/// </summary>
+		/// <expected>Array of 4 constants representing a quaternion.</expected>
+		/// <default>{1, 0, 0, 0}</default>
+		/// <typicalValue>{1, 0, 0, 0}</typicalValue>
 		[AccessName("rotationQuaternion")]
 		[UserSettable]
 		public ValuesArray RotationQuaternion {
@@ -152,8 +160,9 @@ namespace Malsys.Processing.Components.Interpreters {
 		/// <summary>
 		/// Initial angle (in degrees) in 2D mode (angle in plane given by forward and up vectors).
 		/// </summary>
-		/// <expected>Number representing angle in degrees.</expected>
+		/// <expected>Number representing initial angle in degrees.</expected>
 		/// <default>0</default>
+		/// <typicalValue>90</typicalValue>
 		[AccessName("initialAngle")]
 		[UserSettable]
 		public Constant InitialAngleZ { get; set; }
@@ -161,8 +170,9 @@ namespace Malsys.Processing.Components.Interpreters {
 		/// <summary>
 		/// Initial width of drawn line.
 		/// </summary>
-		/// <expected>Number representing width. Unit of value depends on used renderer.</expected>
+		/// <expected>Number representing initial width. Unit of value depends on used renderer.</expected>
 		/// <default>2</default>
+		/// <typicalValue>1</typicalValue>
 		[AccessName("initialLineWidth")]
 		[UserSettable]
 		public Constant InitialLineWidth { get; set; }
@@ -172,6 +182,7 @@ namespace Malsys.Processing.Components.Interpreters {
 		/// </summary>
 		/// <expected>Number representing ARGB color (in range from 0 to 2^32 - 1) or array of numbers (in range from 0.0 to 1.0) of length of 3 (RGB) or 4 (ARGB).</expected>
 		/// <default>0 (black)</default>
+		/// <typicalValue>#000000</typicalValue>
 		[AccessName("initialColor")]
 		[UserSettable]
 		public IValue InitialColor { get; set; }
@@ -183,6 +194,7 @@ namespace Malsys.Processing.Components.Interpreters {
 		/// <expected>Boolean false disables continuous coloring, true uses default rainbow gradient to continuous coloring.
 		///		Array representing color gradient can be also set (see documentation or examples for syntax).</expected>
 		/// <default>false</default>
+		/// <typicalValue>true</typicalValue>
 		[AccessName("continuousColoring")]
 		[UserSettable]
 		public IValue ContinuousColoring { get; set; }
@@ -193,6 +205,7 @@ namespace Malsys.Processing.Components.Interpreters {
 		/// </summary>
 		/// <expected>true or false</expected>
 		/// <default>false</default>
+		/// <typicalValue>true</typicalValue>
 		[AccessName("reversePolygonOrder")]
 		[UserSettable]
 		public Constant ReversePolygonOrder { get; set; }
@@ -202,6 +215,7 @@ namespace Malsys.Processing.Components.Interpreters {
 		/// </summary>
 		/// <expected>Array of 3 constants representing x, y and z coordinate.</expected>
 		/// <default>{0, 1, 0}</default>
+		/// <typicalValue>{0, 1, 0}</typicalValue>
 		[AccessName("tropismVector")]
 		[UserSettable]
 		public ValuesArray TropismVector {
@@ -220,6 +234,7 @@ namespace Malsys.Processing.Components.Interpreters {
 		/// </summary>
 		/// <expected>Number.</expected>
 		/// <default>0</default>
+		/// <typicalValue>1</typicalValue>
 		[AccessName("tropismCoefficient")]
 		[UserSettable]
 		public Constant TropismCoefficient { get; set; }

@@ -17,7 +17,10 @@
 	IHtmlString pager = Html.Pager(Model.Inputs);
 }
 
-<div class="right">@Html.ActionLink("list of tags", MVC.Gallery.Tags())</div>
+@section submenu {
+	<li>@Html.ActionLink("Gallery entries grouped by tags", MVC.Gallery.Tags())</li>
+}
+
 <h2>Gallery of L-systems</h2>
 
 <div class="clearfix">

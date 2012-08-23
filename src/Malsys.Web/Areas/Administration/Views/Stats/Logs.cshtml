@@ -1,0 +1,31 @@
+﻿@model IPagination<ActionLog>
+
+@{
+	ViewBag.Title = "Action logs";
+	ViewBag.MainClass = "fullWidth";
+}
+
+
+
+<h2>Action logs</h2>
+
+
+<div class="clearfix">
+@Html.Pager(Model)
+</div>
+
+@Html.Grid(Model).Columns(col => {
+		col.For(m => m.Action)
+			.HeaderAttributes(style => "width: 200px;");
+		col.For(x => "<abbr title=\"" + x.Timestamp + "\">" + x.Timestamp.ToShortDateString() + "</abbr>")
+			.Named("Timestamp")
+			.HeaderAttributes(style => "width: 120px;")
+			.Attributes(@class => "center")
+			.Encode(false);
+		col.For(m => m.Significance)
+			.HeaderAttributes(style => "width: 60px;");
+		col.For(m => m.User != null ? m.User.Name : "")
+			.Named("User")
+			.HeaderAttributes(style => "width: 150px;");
+		col.For(m => m.AdditionalInfo);
+	}).Attributes(@class => "w100")

@@ -9,6 +9,8 @@ using Malsys.Processing.Output;
 namespace Malsys.Web.Models {
 	public class ProcessLsystemResultModel {
 
+		public bool IsEmpty { get; set; }
+
 		public bool NoProcessStatement { get; set; }
 
 		public string SourceCode { get; set; }
@@ -23,7 +25,11 @@ namespace Malsys.Web.Models {
 
 		public string SavedInputUrlId { get; set; }
 
+		public TimeSpan MaxProcessDuration { get; set; }
+
 		public TimeSpan ProcessDuration { get; set; }
+
+		public string[] UsedProcessConfigurationsNames { get; set; }
 
 	}
 }

@@ -4,6 +4,13 @@
  *@
 
 @if (Request.IsAuthenticated) {
+	if (User.IsInRole(UserRoles.ViewStats)) {
+		@Html.ActionLink("Statistics", MVC.Administration.Stats.Index()) @:|
+	}
+	if (User.IsInRole(UserRoles.Administrator)) {
+		@Html.ActionLink("Administration", MVC.Administration.Home.Index()) @:|
+	}
+
 	@Html.ActionLink("Saved inputs", MVC.Gallery.Index(user: User.Identity.Name), new { tabindex = 20 })
 	@:|
 	<b>@Html.ActionLink(User.Identity.Name, MVC.User.Index(), new { tabindex = 21 })</b>

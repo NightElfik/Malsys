@@ -1,0 +1,331 @@
+﻿@{
+	ViewBag.Title = "Dev diary: Creating of PNG animation renderer";
+
+	var refs = new References();
+	var figs = new Figures();
+}
+
+<h2>Dev diary: Creating of PNG animation renderer</h2>
+
+<p>
+	An L-systems are developing in iterations.
+	TODO
+</p>
+
+
+
+<h3>Possible solutions</h3>
+
+<p>
+	There are more ways how to create an animation of L-systems iterations.
+	The first two which came to my mind were scripted animation (with JavaScript) and GIF animated image.
+	But I didn't like any of them so I've decided to create PNG animation.
+	Pros and cons of all three techniques are summarized in following sections.
+</p>
+
+
+<h4>JavaScript animation</h4>
+
+<div class="indent">
+<p>
+	Malsys already supports rendering L-systems to vector graphic in SVG format.
+	So the easiest way is to generate SVG images of all iterations and animate them using JavaScript code.
+	This solution is pretty easy to implement and it will work in all common browsers.
+</p>
+
+<p>
+	However, there are problems with such animation.
+	It is hard to save because it is composed of many files.
+	This problem is not only on the client side (if user wants to save it) but also on server side.
+	For example @Html.ActionLink("L-systems Gallery", MVC.Gallery.Index()) can save only one file as main file and another one as thumbnail.
+	It is possible to solve these problems but it would require large changes on server side and also I am not fan of JavaScript at all!
+</p>
+</div>
+
+<h4>GIF animation</h4>
+
+<div class="indent">
+<p>
+	File format which supports animations must be used to overcome problems with multiple files per animation.
+	Graphics Interchange Format (GIF) is one candidate for creating L-system animations.
+	All iterations can be rendered as GIF image and final animation as one GIF file can be created rom them.
+	However, animation in GIF format has many drawbacks: @(refs.Cite("GIF", Html.Link("Graphics Interchange Format (GIF)",
+			"http://en.wikipedia.org/wiki/Graphics_Interchange_Format", true) + " at Wikipedia"))
+</p>
+
+<ul>
+	<li>GIF uses color palette of max. 256 distinct colors (per frame).</li>
+	<li>24 bit color depth (RGB) which means no semi-transparency (pixel can be fully transparent or not transparent at all).</li>
+	<li>Some software discontinue support of animated GIFs (for example Win7).</li>
+	<li>Gif has relatively complicated binary format.</li>
+</ul>
+
+<p>
+	Limited color palette may cause lossy compression of individual frames.
+	The problem is that each frame is compressed separately which may cause noise in animation which is so typical for animated GIFs.
+</p>
+
+<p>
+	GIF's binary format is relatively complicated and I want to avoid using any 3rd party libraries
+		(or at least do not use those which are not written in .NET to preserve portability).
+	I'd like to "<b>do it myself</b>" (to be able to tweak the solution to the perfection :).
+</p>
+</div>
+
+
+<h4>PNG animation</h4>
+
+<div class="indent">
+<p>
+	Portable Network Graphics (PNG) image format was created to improve and replace GIF.
+	It has many advantages over GIF (no limited palette, simple binary format@(refs.Cite("PNG", Html.Link("Portable Network Graphics (PNG)",
+			"http://en.wikipedia.org/wiki/Portable_Network_Graphics", true) + " at Wikipedia"))),
+		but	PNG itself does not support animation at all.
+	Extension called MNG was designed by members of the PNG Group, but it is relatively complex and has a different file signature,
+		which automatically renders it incompatible with standard PNG decoders.
+	Luckily, developers of the Mozilla Foundation created simpler format for PNG animations called APNG (animated PNG)
+		which offers fallback to single-image display for PNG decoders that do not support APNG.
+	@(refs.Cite("PNG anim", Html.Link("Animated PNG",
+		"http://en.wikipedia.org/wiki/Portable_Network_Graphics#Animation", true) + " at Wikipedia"))
+</p>
+
+<p>
+	APNG is by now already supported in Mozilla Firefox and Opera web browsers.
+	Plugins for some other web browsers can be downloaded to display APNGs correctly.
+	@(refs.Cite("APNG sup", Html.Link("Support for animated PNGs",
+		"http://en.wikipedia.org/wiki/APNG#Application_support", true) + " at Wikipedia"))
+	It is also possible that APNG format wont be successful and the support will not improve (or it will be deprecated), but I take that risk!
+</p>
+</div>
+
+
+
+<h3>Implementation of Bitmap renderer</h3>
+
+<p>
+	This section describes creation of Bitmap renderer for Malsys.
+	You can @Html.AnchorLink("skip to implementation of APNG renderer", "implApng") if you are interested more in it.
+</p>
+
+<p>
+	To create APNG we need to be able to render L-systems as PNG images from which the APNG will be composed.
+	Malsys is capable to render L-systems as SVGs, 3D scene and ASCII art (in hexagonal grid) but not as bitmap image.
+	So first step is creation of bitmap renderer.
+	Because L-systems processing is highly modular we just need to implement one component for rendering bitmap images.
+	Such component needs to implement <code>IRenderer2D</code> interface which looks like this:
+</p>
+
+<pre class="csharp box">
+public interface IRenderer2D : IRenderer {
+	void InitializeState(Point startPoint, double width, ColorF color);
+	void MoveTo(Point endPoint, double width, ColorF color);
+	void DrawTo(Point endPoint, double width, ColorF color);
+	void DrawPolygon(Polygon2D polygon);
+	void DrawCircle(double radius, ColorF color);
+}
+</pre>
+
+<p>
+	Interface <code>IRenderer2D</code> derives from more interfaces, namely <code>IRenderer</code>, <code>IProcessComponent</code>, and <code>IComponent</code>,
+		which contains methods for initializing and clearing component and signaling start and end of each iteration of processed L-system.
+</p>
+
+<p>
+	Implementation of <code>IRenderer2D</code> is simple and straightforward.
+	Drawing itself is done by GDI+ (System.Drawing namespace) which also allows to save the result to many image formats.
+	Bitmap renderer component allows to save the result as JPEG, PNG and GIF.
+</p>
+
+@{
+	var figCoordSpaces = figs.SubFigure(null, "Difference between Malsys and bitmap coordinate spaces")
+		.SubImage("malsysCoords", Links.Img.DevDiary.apng.MalsysCoords_png, 280, 200, "Malsys coordinates")
+		.SubImage("imageCoords", Links.Img.DevDiary.apng.ImageCoords_png, 280, 200, "Bitmap coordinates");
+}
+
+<p>
+	The only non-trivial problem is conversion of coordinates from Malsys' coordinate space to Bitmap's.
+	Malsys interprets L-systems in @Html.Link("Cartesian coordinate system", "http://en.wikipedia.org/wiki/Cartesian_coordinate_system", true)
+		where positive coordinates of x axis are to the right from origin and positive coordinates of y axis are up from origin (@figs.Ref("malsysCoords", true)).
+	However GDI+ bitmap have inversed y axis (positive coordinates are down from origin) and image can be drawn only to the quadrant with both coordinates positive (@figs.Ref("imageCoords", true)).
+</p>
+
+@figCoordSpaces.ToHtml()
+
+@{
+	var figShiftToZero = figs.SubFigure("zeroTransl", "Translation of image to positive coordinates")
+		.SubImage(null, Links.Img.DevDiary.apng.CoordConversion_1_png, 280, 200, "Before")
+		.SubImage(null, Links.Img.DevDiary.apng.CoordConversionMatrix_12_png, 218, 145, "Conversion matrix", 200)
+		.SubImage(null, Links.Img.DevDiary.apng.CoordConversion_2_png, 280, 200, "After");
+}
+
+<p>
+	Matrix transformations are used to convert Malsys coordinate space to Bitmap coordinate space.
+	First, drawn image must be translated to be whole in positive coordinates.
+	This is done by translating it horizontally by <i>−minX</i> (minimal X coordinate of drawn image) and vertically by <i>−minY</i>.
+	@figs.Ref("zeroTransl") shows this transformation.
+</p>
+
+@figShiftToZero.ToHtml()
+
+@{
+	var figFlipByX = figs.SubFigure("flipByX", "Inversion of Y coordinates by flipping over X axis")
+		.SubImage(null, Links.Img.DevDiary.apng.CoordConversion_2_png, 280, 200, "Before")
+		.SubImage(null, Links.Img.DevDiary.apng.CoordConversionMatrix_23_png, 235, 73, "Conversion matrix", 200)
+		.SubImage(null, Links.Img.DevDiary.apng.CoordConversion_3_png, 280, 200, "After");
+}
+
+<p>
+	Then we need to invert Y axis.
+	This can be done by flipping image over axis X.
+
+</p>
+
+@figFlipByX.ToHtml()
+
+@{
+	var upByHei = figs.SubFigure("upByHei", "Correction of Y coordinates (to be all positive)")
+		.SubImage(null, Links.Img.DevDiary.apng.CoordConversion_3_png, 280, 200, "Before")
+		.SubImage(null, Links.Img.DevDiary.apng.CoordConversionMatrix_34_png, 204, 145, "Conversion matrix", 200)
+		.SubImage(null, Links.Img.DevDiary.apng.CoordConversion_4_png, 280, 200, "After")
+		.SubImage(null, Links.Img.DevDiary.apng.CoordConversion_5_png, 280, 200, "After (drawed upside down)");
+}
+
+<p>
+	In last step we need to translate drawn image to positive Y coordinates by translating it vertically by <i>height</i>.
+</p>
+
+@upByHei.ToHtml()
+
+<p>
+	If we multiply three conversion matrices we will get one matrix which will do all three operations at once.
+	But it is not needed since Graphics class will do the hard work.
+</p>
+
+<p>
+	Following source code shows configuration of Graphics class to do the transformation automatically.
+	Bitmap renderer will draw in native L-system coordinates but image will be drawn correctly in transformed coordinates.
+</p>
+
+<pre class="csharp box">
+Graphics g = Graphics.FromImage(bitmap);
+g.TranslateTransform(-minX, -minY, MatrixOrder.Append);
+g.MultiplyTransform(new Matrix(1f, 0f, 0f, -1f, 0, 0), MatrixOrder.Append);
+g.TranslateTransform(0f, height, MatrixOrder.Append);
+</pre>
+
+
+<h3 id="implApng">Implementation of APNG renderer</h3>
+
+<p>
+	APNG renderer is extension of Bitmap renderer.
+	The extension is located in <i>Cleanup</i> method which is called at the end of processing of all iterations.
+	APNG renderer just takes all images (outputs) generated by its base Bitmap renderer and composes an animation from them
+</p>
+
+<p>
+	To be able to create animated PNG it is necessary to be able to decode and encode PNGs.
+	Since PNG format is quite simple I decided to write own decoder and encoder classes.
+</p>
+
+<h4>PNG format</h4>
+
+@{
+	var pngChunks = figs.SubFigure()
+		.SubImage("pngChunk", Links.Img.DevDiary.apng.PngChunk_png, 292, 52, "PNG chunk structure")
+		.SubImage("pngImage", Links.Img.DevDiary.apng.MinimalPng_png, 384, 52, "Minimal PNG image structure");
+}
+
+<p>
+	PNG image is composed from PNG signature (special 8 bytes) and blocks called chunks.
+	Chunks carry all the necessary information about the PNG image.
+	Each chunk have its length, type (4 chars), data and checksum (@figs.Ref("pngChunk", true)).
+	There are about @Html.Link("20 different chunk types", "http://www.w3.org/TR/PNG/#11Chunks", true), but for a minimal PNG, only 3 are required:
+	The IHDR chunk which specifies image size and other necessary information (see @Html.Link("official documentation", "http://www.w3.org/TR/PNG/#11IHDR", true));
+		the IDAT chunk which contains compressed image data; and the IEND chunk which signalize end of PNG image.
+	@(refs.Cite("PNG spec", Html.Link("Official Portable Network Graphics (PNG) Specification (Second Edition)",
+		"http://www.w3.org/TR/PNG/", true)))
+</p>
+
+@pngChunks.ToHtml()
+
+@{
+	var apngComposition = figs.Image("apngComposition", Links.Img.DevDiary.apng.ApngStructure_png, 824, 374, "Composition of animated PNG from PNG images");
+}
+
+<p>
+	As mentioned in the first section the Mozilla Foundation created simple format for animated PNG called APNG.
+	Big advantage of this format is backwards compatibility with PNG format.
+	Decoders that do not support APNG format will show the first frame (which may or may not be included in the animation).
+	This is because specification of PNG says that unknown chunks should be ignored.
+</p>
+
+<p>
+	Another advantage of APNG is that there is no need for decoding compressed PNG data from IDAT chunk.
+	APNG composition is shown in @figs.Ref("apngComposition").
+</p>
+
+@apngComposition
+
+<p>
+	The Image header (IHDR) chunk of animation specifies size of animation, color depth, compression method and other information for all frames.
+	The Animation Control Chunk (acTL) chunk contains number of frames and number of loops of the animation (zero means forever).
+	The Frame Control Chunk (fcTL) is before each frame and specifies dimension and offset of the frame as well as its delay (time to be shown) and blend operation.
+	For details see the APNG specification @(refs.Cite("APNG spec", Html.Link("APNG Specification", "https://wiki.mozilla.org/APNG_Specification", true))).
+</p>
+
+
+<h3>Implementation if PNG en/decoder</h3>
+
+<p>
+	To be possible to assemble APNG as shows @figs.Ref("apngComposition") we need PNG encoder and decoder.
+</p>
+
+<p>
+	Implementation of PNG decoder is relatively simple since we do not have to decompress data from IDAT chunk.
+	The decoder is designed to work as stream reader to minimize memory consumption, thus, improve performance.
+	Its interface is shown in the following code snippet (unimportant members omitted).
+</p>
+
+<pre class="csharp box">
+public class PngReader {
+	public void ReadPngHeader();
+	public ChunkReader ReadChunk();
+
+	public class ChunkReader {
+		public readonly string Name;
+		public readonly uint Length;
+
+		public int Read(byte[] buffer, int offset, int count);
+	}
+}
+</pre>
+
+<p>
+	The usage of PngReader class shows following code which prints chunk names and lengths to the Console.
+</p>
+
+<pre class="csharp box">
+using (var stream = FileStream("test.png", FileMode.Open, FileAccess.Read)) {
+	var buffer = new byte[1024];
+	var pngReader = new PngReader(stream);
+	pngReader.ReadPngHeader();
+
+	PngReader.ChunkReader chunkReader;
+	while ((chunkReader = pngReader.ReadChunk()) != null) {
+		Console.WriteLine("{0} [{1}]", chunkReader.Name, chunkReader.Length);
+
+		int readedLength;
+		while ((readedLength = chunkReader.Read(buffer, 0, buffer.Length)) > 0) {
+			Console.WriteLine("Readed {0} B", readedLength);
+		}
+	}
+}
+</pre>
+
+<p>
+	PNG encoder has similar design  to count checksum of chunks but
+</p>
+
+<h3>References</h3>
+
+@refs.PrintReferences()

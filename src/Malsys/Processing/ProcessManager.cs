@@ -65,8 +65,8 @@ namespace Malsys.Processing {
 				try {
 					using (var errBlock = logger.StartErrorLoggingBlock()) {
 						ProcessConfigurationStatement processConfigStat;
-						if (!inBlockEvaled.ProcessConfigurations.TryGetValue(processStat.ProcessConfiName, out processConfigStat)) {
-							logger.LogMessage(Message.UndefinedProcessConfig, processStat.AstNode.ProcessConfiNameId.Position, processStat.ProcessConfiName);
+						if (!inBlockEvaled.ProcessConfigurations.TryGetValue(processStat.ProcessConfigName, out processConfigStat)) {
+							logger.LogMessage(Message.UndefinedProcessConfig, processStat.AstNode.ProcessConfiNameId.Position, processStat.ProcessConfigName);
 							return;
 						}
 
@@ -77,6 +77,7 @@ namespace Malsys.Processing {
 						if (errBlock.ErrorOccurred) {
 							return;
 						}
+
 						processInputStatement(processStat, components, processConfigStat.Connections, inBlockEvaled, outputProvider, logger, timeout);
 					}
 				}

@@ -207,16 +207,17 @@
     <Compile Include="Areas\Administration\Models\TagModel.cs" />
     <Compile Include="Areas\Administration\Models\SavedInputModel.cs" />
     <Compile Include="Areas\Administration\Models\MailModel.cs" />
-    <Compile Include="Areas\Help\Controllers\HomeController.cs" />
-    <Compile Include="Areas\Help\Controllers\PredefinedController.cs" />
-    <Compile Include="Areas\Help\Controllers\SyntaxReferenceController.cs" />
-    <Compile Include="Areas\Help\HelpAreaRegistration.cs" />
-    <Compile Include="Areas\Help\Models\BasicInterpretationModel.cs" />
-    <Compile Include="Areas\Help\Models\ComponentModel.cs" />
-    <Compile Include="Areas\Help\Models\ConfigurationModel.cs" />
-    <Compile Include="Areas\Help\Models\LsystemExampleViewModel.cs" />
-    <Compile Include="Areas\Help\Models\PredefinedConstantsModel.cs" />
-    <Compile Include="Areas\Help\Views\CompilerConstantsAttribute.cs" />
+    <Compile Include="Areas\Documentation\Controllers\ApiController.cs" />
+    <Compile Include="Areas\Documentation\Controllers\HomeController.cs" />
+    <Compile Include="Areas\Documentation\Controllers\PredefinedController.cs" />
+    <Compile Include="Areas\Documentation\Controllers\SyntaxReferenceController.cs" />
+    <Compile Include="Areas\Documentation\DocumentationAreaRegistration.cs" />
+    <Compile Include="Areas\Documentation\Models\BasicInterpretationModel.cs" />
+    <Compile Include="Areas\Documentation\Models\ComponentModel.cs" />
+    <Compile Include="Areas\Documentation\Models\ConfigurationModel.cs" />
+    <Compile Include="Areas\Documentation\Models\LsystemExampleViewModel.cs" />
+    <Compile Include="Areas\Documentation\Models\PredefinedConstantsModel.cs" />
+    <Compile Include="Areas\Documentation\Views\CompilerConstantsAttribute.cs" />
     <Compile Include="AuthenticationController.generated.cs">
       <DependentUpon>T4MVC.tt</DependentUpon>
     </Compile>
@@ -227,6 +228,8 @@
     <Compile Include="Areas\Administration\Controllers\RolesController.cs" />
     <Compile Include="Areas\Administration\Controllers\UsersController.cs" />
     <Compile Include="Controllers\CurveDesignerController.cs" />
+    <Compile Include="Controllers\DevDiaryController.cs" />
+    <Compile Include="Controllers\DiscussionController.cs" />
     <Compile Include="Controllers\FeedbackController.cs" />
     <Compile Include="Controllers\GalleryController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -237,6 +240,29 @@
     <Compile Include="CurveDesignerController.generated.cs">
       <DependentUpon>T4MVC.tt</DependentUpon>
     </Compile>
+    <Compile Include="DevDiaryController.generated.cs">
+      <DependentUpon>T4MVC.tt</DependentUpon>
+    </Compile>
+    <Compile Include="DiscussionController.generated.cs">
+      <DependentUpon>T4MVC.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Documentation.ApiController.generated.cs">
+      <DependentUpon>T4MVC.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Documentation.HomeController.generated.cs">
+      <DependentUpon>T4MVC.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Documentation.PredefinedController.generated.cs">
+      <DependentUpon>T4MVC.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Documentation.SharedController.generated.cs">
+      <DependentUpon>T4MVC.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Documentation.SyntaxReferenceController.generated.cs">
+      <DependentUpon>T4MVC.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\IActionLogDb.cs" />
+    <Compile Include="Entities\IDiscusDb.cs" />
     <Compile Include="Entities\IFeedbackDb.cs" />
     <Compile Include="Entities\IInputDb.cs" />
     <Compile Include="Entities\IQueriableExtensions.cs" />
@@ -256,32 +282,30 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Help.HomeController.generated.cs">
-      <DependentUpon>T4MVC.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Help.PredefinedController.generated.cs">
-      <DependentUpon>T4MVC.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Help.SharedController.generated.cs">
-      <DependentUpon>T4MVC.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Help.SyntaxReferenceController.generated.cs">
-      <DependentUpon>T4MVC.tt</DependentUpon>
-    </Compile>
     <Compile Include="HomeController.generated.cs">
       <DependentUpon>T4MVC.tt</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\AppSettingsProvider.cs" />
     <Compile Include="Infrastructure\DateTimeExtensions.cs" />
+    <Compile Include="Infrastructure\Figures.cs" />
     <Compile Include="Infrastructure\HtmlHelperExtensions.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Infrastructure\IAppSettingsProvider.cs" />
     <Compile Include="Infrastructure\LatexHelper.cs" />
     <Compile Include="Infrastructure\MalsysHelper.cs" />
+    <Compile Include="Infrastructure\References.cs" />
     <Compile Include="Infrastructure\UrlHelperExtensions.cs" />
+    <Compile Include="LoadedPlugins.cs" />
+    <Compile Include="Models\DiscussionCategory.cs" />
+    <Compile Include="Models\IDiscussionRepository.cs" />
     <Compile Include="Models\MalsysStdLibSource.cs" />
+    <Compile Include="Models\NewDiscusMessageModel.cs" />
+    <Compile Include="Models\NewDiscusThreadModel.cs" />
+    <Compile Include="OperationResult.cs" />
+    <Compile Include="Models\Repositories\DiscussionRepository.cs" />
     <Compile Include="Models\ViewModels%27\DesignerModel.cs" />
+    <Compile Include="Models\ViewModels%27\DiscusThreadViewModel.cs" />
     <Compile Include="Models\ViewModels%27\GalleryThumbnailModel.cs" />
     <Compile Include="Models\ViewModels%27\GalleryModel.cs" />
     <Compile Include="Models\ViewModels%27\TagModel.cs" />
@@ -342,40 +366,40 @@
     <Content Include="App_Data\MalsysDb_log.ldf">
       <DependentUpon>MalsysDb.mdf</DependentUpon>
     </Content>
-    <Content Include="Areas\Help\Views\Predefined\Components.cshtml" />
-    <Content Include="Areas\Help\Views\Home\BasicInterpretation.cshtml" />
-    <Content Include="Areas\Help\Views\Shared\ComponentPartial.cshtml" />
+    <Content Include="Areas\Documentation\Views\Predefined\Components.cshtml" />
+    <Content Include="Areas\Documentation\Views\Home\BasicInterpretation.cshtml" />
+    <Content Include="Areas\Documentation\Views\Shared\ComponentPartial.cshtml" />
     <Content Include="Areas\Administration\Views\Stats\Index.cshtml" />
     <Content Include="Areas\Administration\Views\Stats\SavedInputs.cshtml" />
-    <Content Include="Areas\Help\Views\SyntaxReference\SymbolInterpretation.cshtml" />
-    <Content Include="Areas\Help\Views\SyntaxReference\RewriteRule.cshtml" />
-    <Content Include="Areas\Help\Views\Shared\LsystemExamplePartial.cshtml" />
-    <Content Include="Areas\Help\Views\SyntaxReference\ConstantDefinition.cshtml" />
-    <Content Include="Areas\Help\Views\SyntaxReference\Tokens.cshtml" />
+    <Content Include="Areas\Documentation\Views\SyntaxReference\SymbolInterpretation.cshtml" />
+    <Content Include="Areas\Documentation\Views\SyntaxReference\RewriteRule.cshtml" />
+    <Content Include="Areas\Documentation\Views\Shared\LsystemExamplePartial.cshtml" />
+    <Content Include="Areas\Documentation\Views\SyntaxReference\ConstantDefinition.cshtml" />
+    <Content Include="Areas\Documentation\Views\SyntaxReference\Tokens.cshtml" />
     <Content Include="Areas\Administration\Views\Home\TrySendMail.cshtml" />
-    <Content Include="Areas\Help\Views\Home\BasicSyntax.cshtml" />
-    <Content Include="Areas\Help\Views\SyntaxReference\FunctionDefinition.cshtml" />
-    <Content Include="Areas\Help\Views\Home\Faq.cshtml" />
-    <Content Include="Areas\Help\Views\SyntaxReference\LsystemDefinition.cshtml" />
-    <Content Include="Areas\Help\Views\SyntaxReference\ComponentPropertyAssignDefinition.cshtml" />
-    <Content Include="Areas\Help\Views\Predefined\Configurations.cshtml" />
-    <Content Include="Areas\Help\Views\Shared\ConfigurationPartial.cshtml" />
-    <Content Include="Areas\Help\Views\Home\LsystemSymbols.cshtml" />
-    <Content Include="Areas\Help\Views\Home\ProcessConfigurations.cshtml" />
-    <Content Include="Areas\Help\Views\SyntaxReference\ProcessStatements.cshtml" />
-    <Content Include="Areas\Help\Views\Predefined\Operators.cshtml" />
-    <Content Include="Areas\Help\Views\SyntaxReference\ComponentConfigurationDefinition.cshtml" />
-    <Content Include="Areas\Help\Views\SyntaxReference\ArithmeticExpressions.cshtml" />
+    <Content Include="Areas\Documentation\Views\Home\BasicSyntax.cshtml" />
+    <Content Include="Areas\Documentation\Views\SyntaxReference\FunctionDefinition.cshtml" />
+    <Content Include="Areas\Documentation\Views\Home\Faq.cshtml" />
+    <Content Include="Areas\Documentation\Views\SyntaxReference\LsystemDefinition.cshtml" />
+    <Content Include="Areas\Documentation\Views\SyntaxReference\ComponentPropertyAssignDefinition.cshtml" />
+    <Content Include="Areas\Documentation\Views\Predefined\Configurations.cshtml" />
+    <Content Include="Areas\Documentation\Views\Shared\ConfigurationPartial.cshtml" />
+    <Content Include="Areas\Documentation\Views\Home\LsystemSymbols.cshtml" />
+    <Content Include="Areas\Documentation\Views\Home\ProcessConfigurations.cshtml" />
+    <Content Include="Areas\Documentation\Views\SyntaxReference\ProcessStatements.cshtml" />
+    <Content Include="Areas\Documentation\Views\Predefined\Operators.cshtml" />
+    <Content Include="Areas\Documentation\Views\SyntaxReference\ComponentConfigurationDefinition.cshtml" />
+    <Content Include="Areas\Documentation\Views\SyntaxReference\ArithmeticExpressions.cshtml" />
     <Content Include="Areas\Administration\Views\Tags\Index.cshtml" />
     <Content Include="Areas\Administration\Views\Tags\Edit.cshtml" />
     <Content Include="Areas\Administration\Views\Tags\Delete.cshtml" />
-    <Content Include="Areas\Help\Views\Home\StdLib.cshtml" />
+    <Content Include="Areas\Documentation\Views\Home\StdLib.cshtml" />
     <Content Include="Css\prettyPhoto.css" />
     <Content Include="Css\style.less.css" />
-    <Content Include="Areas\Help\Views\Predefined\ComponentsLatex.cshtml" />
-    <Content Include="Areas\Help\Views\Predefined\ComponentLatexPartial.cshtml" />
-    <Content Include="Areas\Help\Views\Predefined\ConfigurationsLatex.cshtml" />
-    <Content Include="Areas\Help\Views\Predefined\ConfigurationLatexPartial.cshtml" />
+    <Content Include="Areas\Documentation\Views\Predefined\ComponentsLatex.cshtml" />
+    <Content Include="Areas\Documentation\Views\Predefined\ComponentLatexPartial.cshtml" />
+    <Content Include="Areas\Documentation\Views\Predefined\ConfigurationsLatex.cshtml" />
+    <Content Include="Areas\Documentation\Views\Predefined\ConfigurationLatexPartial.cshtml" />
     <Content Include="Areas\Administration\Views\Stats\Statistics.cshtml" />
     <None Include="App_Data\DatabaseScheme.sql" />
     <Content Include="Error.html" />
@@ -383,10 +407,17 @@
     <Content Include="Global.asax" />
     <Content Include="Download\MarekFiser-LsystemsOnline.v101.pdf" />
     <Content Include="Download\MarekFiser-LsystemsOnline.v101.pdf.zip" />
+    <Content Include="Areas\Documentation\Views\Home\LsystemFaq.cshtml" />
+    <Content Include="Areas\Administration\Views\Stats\Logs.cshtml" />
     <None Include="Js\jquery.textarea.js" />
     <None Include="Js\jquery.validate.js" />
     <None Include="Js\jquery.js" />
     <None Include="Js\malsys.js" />
+    <None Include="Js\MinifyJs.log">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </None>
     <None Include="Js\modernizr.js" />
     <None Include="Js\ThreeJs\Detector.js" />
     <None Include="Js\ThreeJs\malsys.three.js" />
@@ -395,6 +426,19 @@
     <None Include="Js\ThreeJs\Stats.js" />
     <Content Include="Img\ajax-loader.gif" />
     <Content Include="Img\designerExample.png" />
+    <Content Include="Img\DevDiary\apng\ApngStructure.png" />
+    <Content Include="Img\DevDiary\apng\CoordConversion-1.png" />
+    <Content Include="Img\DevDiary\apng\CoordConversion-2.png" />
+    <Content Include="Img\DevDiary\apng\CoordConversion-3.png" />
+    <Content Include="Img\DevDiary\apng\CoordConversion-4.png" />
+    <Content Include="Img\DevDiary\apng\CoordConversion-5.png" />
+    <Content Include="Img\DevDiary\apng\CoordConversionMatrix-12.png" />
+    <Content Include="Img\DevDiary\apng\CoordConversionMatrix-23.png" />
+    <Content Include="Img\DevDiary\apng\CoordConversionMatrix-34.png" />
+    <Content Include="Img\DevDiary\apng\ImageCoords.png" />
+    <Content Include="Img\DevDiary\apng\MalsysCoords.png" />
+    <Content Include="Img\DevDiary\apng\MinimalPng.png" />
+    <Content Include="Img\DevDiary\apng\PngChunk.png" />
     <Content Include="Img\Lilac-DiffWebGL.png" />
     <Content Include="Img\prettyPhoto\light_square\btnNext.png" />
     <Content Include="Img\prettyPhoto\light_square\btnPrevious.png" />
@@ -416,6 +460,48 @@
     <None Include="Js\malsys.curveDesigner.js" />
     <None Include="Js\jquery.prettyPhoto.js" />
     <None Include="Js\jquery.tmpl.js" />
+    <Content Include="Js\jquery.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\jquery.old.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\jquery.prettyPhoto.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\jquery.textarea.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\jquery.tmpl.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\jquery.unobtrusive-ajax.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\jquery.validate.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\jquery.validate.unobtrusive.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\malsys.curveDesigner.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\malsys.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\modernizr.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\ThreeJs\Detector.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\ThreeJs\malsys.three.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\ThreeJs\Stats.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
     <Content Include="Js\ThreeJs\Three.js" />
     <Content Include="robots.txt" />
     <Content Include="Web.config">
@@ -443,16 +529,16 @@
     <Content Include="Views\Feedback\Index.cshtml" />
     <Content Include="Views\Feedback\Thanks.cshtml" />
     <Content Include="Areas\Administration\Views\Web.config" />
-    <Content Include="Areas\Help\Views\Web.config" />
+    <Content Include="Areas\Documentation\Views\Web.config" />
     <Content Include="Areas\Administration\Views\Home\Index.cshtml" />
-    <Content Include="Areas\Help\Views\Home\Index.cshtml" />
+    <Content Include="Areas\Documentation\Views\Home\Index.cshtml" />
     <Content Include="Areas\Administration\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\Help\Views\_ViewStart.cshtml" />
-    <Content Include="Areas\Help\Views\Home\BasicRewriting.cshtml" />
-    <Content Include="Areas\Help\Views\SyntaxReference\Grammar.cshtml" />
-    <Content Include="Areas\Help\Views\SyntaxReference\GrammarRegexps.cshtml" />
-    <Content Include="Areas\Help\Views\Predefined\Constants.cshtml" />
-    <Content Include="Areas\Help\Views\Predefined\Functions.cshtml" />
+    <Content Include="Areas\Documentation\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Documentation\Views\Home\BasicRewriting.cshtml" />
+    <Content Include="Areas\Documentation\Views\SyntaxReference\Grammar.cshtml" />
+    <Content Include="Areas\Documentation\Views\SyntaxReference\GrammarRegexps.cshtml" />
+    <Content Include="Areas\Documentation\Views\Predefined\Constants.cshtml" />
+    <Content Include="Areas\Documentation\Views\Predefined\Functions.cshtml" />
     <None Include="Js\MinifyJs.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>MinifyJs.log</LastGenOutput>
@@ -477,10 +563,22 @@
     <Content Include="Views\Home\WhyWebgl.cshtml" />
     <Content Include="Views\Home\Sitemap.cshtml" />
     <Content Include="Views\Gallery\Sitemap.cshtml" />
-    <Content Include="Areas\Help\Views\Home\Sitemap.cshtml" />
+    <Content Include="Areas\Documentation\Views\Home\Sitemap.cshtml" />
     <Content Include="Views\Home\Thesis.cshtml" />
     <Content Include="Views\CurveDesigner\Index.cshtml" />
     <Content Include="Views\CurveDesigner\Show.cshtml" />
+    <Content Include="Views\DevDiary\PngAnimationRenderer.cshtml" />
+    <Content Include="Views\DevDiary\Index.cshtml" />
+    <Content Include="Views\Discussion\Thread.cshtml" />
+    <Content Include="Views\Discussion\AutoThreadInline.cshtml" />
+    <Content Include="Views\Discussion\MessagePartial.cshtml" />
+    <Content Include="Views\Discussion\AddMessagePartial.cshtml" />
+    <Content Include="Views\Discussion\Category.cshtml" />
+    <Content Include="Views\Discussion\DeleteMessage.cshtml" />
+    <Content Include="Views\Discussion\DeleteThread.cshtml" />
+    <Content Include="Views\Discussion\LockThread.cshtml" />
+    <Content Include="Views\Discussion\Index.cshtml" />
+    <Content Include="Views\Home\LoadedPlugins.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Areas\Administration\Views\Shared\" />
@@ -537,9 +635,6 @@
     <Content Include="Areas\Administration\Views\Users\Roles.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Shared\MenuPartial.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <EntityDeploy Include="Entities\MalsysDbModel.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>MalsysDbModel.Designer.cs</LastGenOutput>
@@ -559,7 +654,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>

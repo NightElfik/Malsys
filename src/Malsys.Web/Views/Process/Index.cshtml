@@ -9,8 +9,20 @@
 	ViewBag.MainClass = "twoColumns";
 }
 
+@section submenu {
+	<li>@Html.ActionLink("Curve designer", MVC.CurveDesigner.Index())</li>
+	<li>@Html.ActionLink("Documentation & FAQ", MVC.Documentation.Home.Index())</li>
+}
+
 
 <h2>L-system processor</h2>
+
+@if (Model.IsEmpty) {
+	<p class="okBlock">
+		If you don't know how to start writing L-systems, take a look in @Html.ActionLink("Documentation", MVC.Documentation.Home.Index()) at
+			@Html.ActionLink("basic principles of L-system rewriting", MVC.Documentation.Home.BasicRewriting()).
+	</p>
+}
 
 @if (Model.SavedInputUrlId != null) {
 	<p>
@@ -23,12 +35,11 @@
 @if (Model.NoProcessStatement) {
 	<p class="errorBlock">
 		No process statements found.
-		Please look at the help to learn how to write process statements or use one from list below (put it at the very end of the input).
+		Please look at the @Html.ActionLink("Documentation", MVC.Documentation.Home.Index()) to learn how to write process statements or use one from list below (put it at the very end of the input).
 	</p>
 	<ul>
 		<li><code>process all with SymbolPrinter;</code></li>
 		<li><code>process all with SvgRenderer;</code></li>
-		<li><code>process all with HexAsciiRenderer;</code></li>
 		<li><code>process all with ThreeJsRenderer;</code></li>
 	</ul>
 }
@@ -47,15 +58,13 @@
 	}
 }
 
-@if (Model.OutputFiles != null && Model.OutputFiles.Count > 0) {
+@if (Model.OutputFiles != null) {
 	<p>
-		Processing of input created @Model.OutputFiles.Count result(s) in @Math.Round(Model.ProcessDuration.TotalSeconds, 2) second(s).
-		@Html.AnchorLink("See them below.", "results")
-	</p>
-}
-else {
-	<p>
-		Processing took @Math.Round(Model.ProcessDuration.TotalSeconds, 2) second(s).
+		Processing of input
+		@if (Model.OutputFiles.Count > 0) {
+			@:resulted in @Html.AnchorLink(Model.OutputFiles.Count + " file(s)", "results") and
+		}
+		took @Math.Round(Model.ProcessDuration.TotalSeconds, 2) second(s).
 	</p>
 }
 
@@ -95,18 +104,25 @@ else {
 <div class="floating_container clearfix">
 
 <div class="floating_box">
-@using (Html.BeginForm(MVC.Process.Index())) {
+@using (Html.BeginForm(MVC.Process.Index(), FormMethod.Post, new {
+		id = "processForm",
+		data_max_process_time = Model.MaxProcessDuration.TotalSeconds > int.MaxValue ? -1 : (int)Model.MaxProcessDuration.TotalSeconds })) {
 	<fieldset class="malsysSource">
 		<legend>Source code</legend>
+
+		@if(Model.UsedProcessConfigurationsNames != null){
+			<div class="inlineDoc" data-config-names="@Model.UsedProcessConfigurationsNames.JoinToString(";")"
+				data-fetch-url="@Url.ActionAbsolute(MVC.Documentation.Api.ProcessConfigMembers())"></div>
+		}
 
 		@Html.ValidationSummary(true)
 
 		@Html.TextAreaFor(m => m.SourceCode, Math.Max(20, (Model.SourceCode ?? "").CountLines() / 3), 60, null)
 
-		@* @Html.HiddenFor(m => m.ReferenceId) inserts old value from POST instead of updated value from model *@
+		@* Do not use @Html.HiddenFor(m => m.ReferenceId) since it inserts old value from POST instead of updated value from model *@
 		<input id="ReferenceId" name="ReferenceId" type="hidden" value="@Model.ReferenceId" />
 
-		<p>
+		<p id="submitControls">
 			<input type="submit" name="Process" value="Process & display results" />
 			<input type="submit" name="Compile" value="Try to compile" />
 			<input type="submit" name="Save" value="Save & get permanent link" />
@@ -116,7 +132,7 @@ else {
 </div>
 @{
 	bool loadThreeJs = false;
-	if (Model.OutputFiles != null) {
+	if (Model.OutputFiles != null && Model.OutputFiles.Count > 0) {
 		<div class="floating_box">
 			<h3 id="results">Process results</h3>
 		</div>
@@ -145,6 +161,7 @@ else {
 </div>
 
 @section scripts {
+	@Content.Js(Links.Js.jquery_tmpl_js)
 	@Content.Js(Links.Js.jquery_textarea_js)
 	<script type="text/javascript">jQuery(document).ready(function () { $("#SourceCode").tabby() })</script>
 
@@ -154,4 +171,15 @@ else {
 		@Content.Js(Links.Js.ThreeJs.Stats_js)
 		@Content.Js(Links.Js.ThreeJs.malsys_three_js)
 	}
+
+	<script type="text/javascript">
+	(function ($) {
+		$("#processForm").submit(function () {
+			var container = $('#submitControls');
+			console.log(container.children());
+			container.children().hide();
+			container.append($('<i>Processing, please wait</i>'));
+		});
+	} (jQuery));
+	</script>
 }

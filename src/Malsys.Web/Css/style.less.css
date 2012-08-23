@@ -110,7 +110,7 @@ blockquote { margin: 1em 40px; }
 
 dfn { font-style: italic; }
 
-hr { display: block; height: 1px; border: 0; border-top: 1px solid #CCC; margin: 1em 0; padding: 0; }
+hr { display: block; height: 1px; border: 0; border-top: 1px solid #999; margin: 1em 0; padding: 0; }
 
 ins { background: #FF9; color: #000; text-decoration: none; }
 
@@ -251,11 +251,16 @@ body {
 	font-family: "Trebuchet MS", Helvetica, Arial, sans-serif;
 	background: @bodyBgColor;
 	min-width: @baseWidth;
+	word-wrap: break-word;
 }
 
 /* Layout =================================================================== */
 
 .wrapper { margin: 0 auto; padding: 0; width: @baseWidth; }
+
+#mainContainer.fullWidth {
+	.wrapper { width: 100%; }
+}
 
 
 /* Header =================================================================== */
@@ -269,12 +274,6 @@ html, #headerContainer, #footerContainer {
 	.box-shadow(0, 40px, 40px, -40px, #777);
 }
 
-.titleContainer {
-	float: left;
-	margin-top: 20px;
-	a:hover { text-decoration: none; }
-}
-
 #title {
 	font-size: 3.1em;
 	color: #FFF;
@@ -283,16 +282,41 @@ html, #headerContainer, #footerContainer {
 	display: inline;
 	line-height: 1;
 	&:hover { text-shadow: 0px 0px 8px #FFF; }
-	.cz { font-size: 20%;  }
+	.cz { font-size: 20%; }
 }
 
 #subtitle { color: @themeColorDarkerDarker; font-size: 0.6em; line-height: 1; letter-spacing: 0.65em; }
 
 #header {
 	margin: 0 10px;
+
+	.titleContainer {
+		float: left;
+		margin-top: 20px;
+		a:hover { text-decoration: none; }
+	}
+
+	.logonBox {
+		float: right;
+		margin-top: 8px;
+		width: 650px;
+		color: #FFF;
+		font-size: 0.8em;
+		text-align: right;
+		a {
+			color: #FFF;
+			&:hover { text-shadow: 0px 0px 3px #FFF; }
+			&:link { color: #FFF; }
+			&:visited { color: #FFF; }
+		}
+	}
+
 	.navigation {
 		float: right;
-		margin-top: 32px;
+		margin: 20px 0 0 0;
+		padding: 0;
+		width: 650px;
+
 		ul { float: right; }
 		li { display: inline; font-weight: bolder; }
 		a {
@@ -313,20 +337,14 @@ html, #headerContainer, #footerContainer {
 			&:link { color: #FFF; }
 			&:visited { color: #FFF; }
 		}
-	}
 
-	.logonBox {
-		float: right;
-		margin-top: 8px;
-		width: 400px;
-		color: #FFF;
-		font-size: 0.8em;
-		text-align: right;
-		a {
-			color: #FFF;
-			&:hover { text-shadow: 0px 0px 3px #FFF; }
-			&:link { color: #FFF; }
-			&:visited { color: #FFF; }
+		.subnav {
+			margin: 8px 0 0 0;
+			padding: 0;
+			a {
+				font-size: 0.8em;
+				padding: 0 0.5em 0.2em 0.4em;
+			}
 		}
 	}
 }
@@ -361,7 +379,16 @@ h2, h3 {
 		&:link { color: #000; }
 		&:visited { color: #000; }
 	}
-	.note { font-size: 0.7em; color: @themeColorDarker; }
+	.note {
+		font-size: 0.7em;
+		color: @themeColorDarker;
+		a {
+			color: @themeColorDarker;
+			&:hover { color: @themeColorDarkerDarker; }
+			&:link { color: @themeColorDarker; }
+			&:visited { color: @themeColorDarker; }
+		}
+	}
 }
 
 
@@ -369,8 +396,8 @@ h2, h3 {
 
 .fullScreen { margin: 0; padding: 0; overflow: hidden; }
 .center { text-align: center; }
+.centerMargin { margin: 0 auto; width: 100px; }
 .block { display: block; }
-.right { text-align: right; }
 .w100 { width: 100%; }
 .w60 { width: 60%; }
 .w30 { width: 30%; }
@@ -383,9 +410,7 @@ h2, h3 {
 	.malsysBox();
 	margin-bottom: 0.5em;
 }
-a.noUnderline:hover {
-	text-decoration: none;
-}
+a.noUnderline:hover { text-decoration: none; }
 
 .leftHalf {
 	float: left;
@@ -398,6 +423,11 @@ a.noUnderline:hover {
 	display: block;
 	width: 49%;
 }
+
+p { text-align: justify; }
+.indent { margin: 0 0 0 2em; }
+
+.keepNl { white-space: pre-line; }
 
 
 /* Lists general styles ===================================================== */
@@ -432,6 +462,58 @@ a.tocLink, a.anchorLink {
 	&.autoHide {
 		opacity: 0.2;
 		&:hover { opacity: 1; }
+	}
+}
+
+/* Discussion =============================================================== */
+
+.discusThread {
+	.msgCount { font-size: 80%; }
+	.author { font-size: 80%; }
+	.lastMessage { font-size: 80%; margin: 0; padding: 0; }
+}
+
+.discusMsg {
+	.message { width: 70%; }
+	.author {
+		display: block;
+		padding: 0 0.5em;
+		float: right;
+		width: 25%;
+		border-left: 1px solid #CCC;
+		p { text-align: center; }
+		.date { font-size: 80%; }
+	}
+}
+
+/* Figures ================================================================== */
+
+.figure {
+	margin: 8px;
+	text-align: center;
+	p { text-align: center; margin: 0; padding: 4px 0 0 0; }
+	.subfigure{
+		display: inline-block;
+		margin: 8px;
+	}
+}
+
+/* Processing =============================================================== */
+
+.inlineDoc {
+	font-size: 90%;
+	p { text-align: left; }
+	ul {
+		margin: 0; padding: 0;
+		li { display: inline; margin: 0; padding: 0; }
+	}
+	p { margin: 0; padding: 0; }
+	.popup {
+		margin: 0; padding: 8px;
+		background-color: white;
+		border: 1px solid #555;
+		.box-shadow(0px, 0px, 5px, 0, #000);
+		hr { margin: 3px;}
 	}
 }
 

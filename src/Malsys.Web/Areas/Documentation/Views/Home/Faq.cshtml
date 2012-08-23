@@ -1,0 +1,52 @@
+﻿@**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ *@
+
+@section submenu {
+	<li>@Html.ActionLink("Back to Help", MVC.Documentation.Home.Index())</li>
+}
+
+@{
+	ViewBag.Title = "Frequently asked questions (general)";
+}
+
+<h2>Frequently asked questions (general)</h2>
+
+<p>
+	If you have questions which are not answered here you may visit @Html.ActionLink("discussion", MVC.Discussion.Index()) and ask there.
+	For FAQ related to L-system processing is @Html.ActionLink("see this page", MVC.Documentation.Home.LsystemFaq()).
+</p>
+
+<div id="toc"></div>
+
+<h3>What is L-system?</h3>
+
+<p>
+	<span class="huge">Q:</span>
+	What the hell is L-system?
+</p>
+
+<p>
+	<span class="huge">A:</span>
+	An L-system or Lindenmayer system is a parallel rewriting system, namely a variant of a formal grammar,
+		most famously used to model the growth processes of plant development, but also able to model the morphology of a variety of organisms.
+	More about L-system theory on @Html.Link("Wikipedia", "http://en.wikipedia.org/wiki/L-system").
+</p>
+
+
+@* ================================================================================================================== *@
+
+<h3>No more Q & A?</h3>
+
+<p>
+	<span class="huge">Q:</span>
+	Why there are no more questions and answers?
+</p>
+
+<p>
+	<span class="huge">A:</span>
+	Because I didn't think them out yet.
+	Maybe you can help me!
+	You can check @Html.ActionLink("L-system FAQ", MVC.Documentation.Home.LsystemFaq()), there are some Q & A ;)
+</p>

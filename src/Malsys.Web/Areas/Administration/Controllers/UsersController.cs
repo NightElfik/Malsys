@@ -29,11 +29,11 @@ namespace Malsys.Web.Areas.Administration.Controllers {
 				page = 1;
 			}
 
-			return View(usersRepo.Users.OrderBy(u => u.NameLowercase).AsPagination(page));
+			return View(usersRepo.UsersDb.Users.OrderBy(u => u.NameLowercase).AsPagination(page));
 		}
 
 		public virtual ViewResult Details(int id) {
-			User user = usersRepo.Users.SingleOrDefault(u => u.UserId == id);
+			User user = usersRepo.UsersDb.Users.SingleOrDefault(u => u.UserId == id);
 			if (user == null) {
 				return View(Views.Index);
 			}
@@ -44,7 +44,7 @@ namespace Malsys.Web.Areas.Administration.Controllers {
 
 		public virtual ActionResult Edit(int id) {
 
-			User user = usersRepo.Users.SingleOrDefault(u => u.UserId == id);
+			User user = usersRepo.UsersDb.Users.SingleOrDefault(u => u.UserId == id);
 			if (user == null) {
 				return View(Views.Index);
 			}
@@ -57,10 +57,10 @@ namespace Malsys.Web.Areas.Administration.Controllers {
 
 			if (ModelState.IsValid) {
 
-				User user = usersRepo.Users.SingleOrDefault(u => u.UserId == userModel.UserId);
+				User user = usersRepo.UsersDb.Users.SingleOrDefault(u => u.UserId == userModel.UserId);
 				if (user != null) {
 					userModel.UpdateUser(user);
-					usersRepo.SaveChanges();
+					usersRepo.UsersDb.SaveChanges();
 					return RedirectToAction(Actions.Index());
 				}
 				else {
@@ -74,12 +74,12 @@ namespace Malsys.Web.Areas.Administration.Controllers {
 
 		public virtual ActionResult Roles(int id) {
 
-			var user = usersRepo.Users.SingleOrDefault(u => u.UserId == id);
+			var user = usersRepo.UsersDb.Users.SingleOrDefault(u => u.UserId == id);
 			if (user == null) {
 				return View(Views.Index);
 			}
 
-			var aviableRoles = usersRepo.Roles.ToList();
+			var aviableRoles = usersRepo.UsersDb.Roles.ToList();
 			var aviableRolesList = aviableRoles.Except(user.Roles.ToList()).ToList();
 
 			return View(new Tuple<User, IEnumerable<Role>>(user, aviableRolesList));
@@ -88,12 +88,12 @@ namespace Malsys.Web.Areas.Administration.Controllers {
 		[HttpPost]
 		public virtual ActionResult Roles(int userId, string roleName, bool add) {
 
-			var user = usersRepo.Users.SingleOrDefault(u => u.UserId == userId);
+			var user = usersRepo.UsersDb.Users.SingleOrDefault(u => u.UserId == userId);
 			if (user == null) {
 				return View(Views.Index);
 			}
 
-			var role = usersRepo.Roles.SingleOrDefault(r => r.NameLowercase == roleName.Trim().ToLower());
+			var role = usersRepo.UsersDb.Roles.SingleOrDefault(r => r.NameLowercase == roleName.Trim().ToLower());
 			if (role == null) {
 				return View(Views.Index);
 			}

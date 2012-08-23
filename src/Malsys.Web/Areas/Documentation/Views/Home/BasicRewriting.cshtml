@@ -1,0 +1,172 @@
+﻿@**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ *@
+@model Malsys.Web.Models.Lsystem.SimpleLsystemProcessor
+
+@{
+	ViewBag.Title = "Rewriting basics";
+	var exampleModel = new LsystemExampleViewModel() {
+		LsystemProcessor = Model,
+		UnimportantLines = new int[] { -1 },
+		SourceCodeTemplate = StringHelper.JoinLines(
+			"lsystem {0} {{",
+			"set symbols axiom = {1};",
+			"set iterations = {2};",
+			"{3}",
+			"}}",
+			"process all with SymbolPrinter;")
+	};
+}
+
+<h2>Rewriting basics</h2>
+
+<p>
+	In the simplest form the L-system is set of rewrite rules and list of initial symbols (often called an axiom).
+	In each iteration axiom is rewritten by defined rewrite rules to another list of symbols, which is used as axiom in next iteration.
+	Symbol in Malsys is string of characters.
+	Individual symbols are separated by whitespace characters.
+</p>
+
+<div id="toc"></div>
+
+<p>
+	Let's define very simple L-system called <code>MyFirstLsystem</code> with an axiom set to one symbol <code>A</code>,
+		number of iterations equal to <code>5</code> and in each iteration we want to rewrite symbol
+		<code>A</code> to symbols <code>B</code> and <code>A</code>.
+</p>
+
+@Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(
+		"MyFirstLsystem", "A", "5", "rewrite A to B A;"))
+
+<p>
+	Pretty simple, isn't it?
+	If we want to see symbols in all iterations we can set <code>interpretEveryIteration</code> property to <code>true</code>.
+</p>
+
+@Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(
+		"MyFirstLsystem", "A", "5", StringHelper.JoinLines(
+			"set interpretEveryIteration = true;",
+			"rewrite A to B A;")))
+
+<p>
+	As we can see, in every iteration the L-system can apply the rewrite only on the last symbol and rewrites
+		<code>A</code> to <code>A B</code>.
+	Symbols on which can't be applied any rewrite rule remains untouched (they are copied to next iteration).
+	So if we add second rewrite rule <code class="malsys">rewrite B to B;</code> to the L-system, result will be exactly the same.
+</p>
+
+
+<h3>Order of rewrite rules matters</h3>
+
+<p>
+	We can define any number of rewrite rules to L-system, but searching for matching rewrite rule will end after first success.
+	This means that order if rewrite rule is significant.
+	Compare following two L-systems.
+</p>
+
+@Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(
+		"OrderOfRulesMatters1", "A", "5", StringHelper.JoinLines("rewrite A to B A;", "rewrite A to C A;")))
+
+@Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(
+		"OrderOfRulesMatters2", "A", "5", StringHelper.JoinLines( "rewrite A to C A;", "rewrite A to B A;")))
+
+
+<h3>More complex example</h3>
+
+<p>
+	In following L-system is hidden the @Html.Link("Fibonacci sequence", "http://en.wikipedia.org/wiki/Fibonacci_sequence").
+</p>
+
+@Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(
+		"Fibonacci", "A", "6", StringHelper.JoinLines(
+			"set interpretEveryIteration = true;",
+			"rewrite A to B;",
+			"rewrite B to A B;")))
+
+<p>
+	Let's count number of symbols in each iteration (starting with the axiom).
+	1, 1, 2, 3, 5, 8, 13.
+	Yes, these numbers are Fibonacci sequence.
+	This L-system have many interesting properties, for example suffix of any iteration is the previous one.
+	But let's move on some more complex topics.
+</p>
+
+
+<h3>Only one symbol can be rewritten by the rewrite rule</h3>
+
+<p>
+	It is not possible to create rewrite rule like this: <code class="malsys">rewrite A B to B A;</code>.
+	Rewrite rule can rewrite only one symbol, but it can be replaced for any number of symbols (including 0).
+	However, rewriting two (or more) symbols can be simulated using context rewrite rules.
+</p>
+
+
+<h3>Context rewriting</h3>
+
+<p>
+	Quite advanced feature is context rewriting.
+	The way how rewrite rule is matched on symbol can be restricted with context (symbols directly before and after).
+	Context specification in the rewrite rule is placed in braces on the appropriate (left or right) side of rewrite rule's pattern symbol.
+	If we want to rewrite <code>A</code> to <code>B</code> only if the left neighbor of
+		<code>A</code> is <code>B</code>, we can write: <code class="malsys">rewrite {B} A to B;</code>.
+	As an example will be signal propagation through a string of symbols.
+</p>
+
+@Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(
+		"SignalPropagation", "B A A A A", "5", StringHelper.JoinLines(
+			"set interpretEveryIteration = true;",
+			"rewrite {B} A to B;",
+			"rewrite B to A;")))
+
+<p>
+	With context rewrite rules can be simulated switching two neighbor symbols.
+	Imagine situation that we need rewrite rule <code class="malsys">rewrite X Y to Y X;</code>
+		or <code class="malsys">rewrite Y X to X Y;</code> which are unfortunately not legal in Malsys
+		(it is not possible to rewrite more than one symbol with rewrite rule).
+	But we can simulate this behavior with context rewrite rules.
+</p>
+
+@Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(
+		"Transpose", "A  X Y  B", "3", StringHelper.JoinLines(
+			"set interpretEveryIteration = true;",
+			"rewrite {X} Y to X;", "rewrite X {Y} to Y;", "",
+			"rewrite Y {X} to X;", "rewrite {Y} X to Y;")))
+
+<p>
+	It is also possible to simulate rewriting two symbols at once.
+	Following L-system is simulating rewrite rule <code class="malsys">rewrite A B to C D E;</code> which is not legal rewrite rule of Malsys.
+</p>
+
+@Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(
+		"TwoAtOnce", "A  A B  B  A B  A", "1", StringHelper.JoinLines(
+			"rewrite A {B} to C D E;",
+			"rewrite {A} B to nothing;")))
+
+
+<h3>Rewriting is parallel (concurrent)</h3>
+
+<p>
+	Another feature of L-system rewriting rules is that all symbols are rewritten <i>at once</i> (concurrently).
+	You may noticed this behavior in previous examples.
+</p>
+
+<p>
+	If rewriting were not parallel, lets examine one iteration of <code class="malsys">SignalPropagation</code> L-system.
+	Axiom is <code>B A A A A</code>.
+	The only rewrite rule matching first symbol is <code class="malsys">rewrite B to A</code>, after application this
+		rewrite rule we have <code>A A A A A</code>.
+	Second, third, fourth and fifth symbol do not match any rewrite rule,
+		so our result is <code>A A A A A</code>.
+	What is wrong?
+	We have to decide which rewrite rule to use on each symbol and then apply them at once.
+	Or alternatively do rewrite rule matching and context checking on old axiom.
+</p>
+
+
+
+<h3>More rewriting features</h3>
+
+<p>
+	Full list of rewriting features can be found on @Html.ActionLink("rewrite rules reference page", MVC.Documentation.SyntaxReference.RewriteRule()).
+</p>

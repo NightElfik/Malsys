@@ -1,0 +1,71 @@
+﻿@model Tuple<DiscusCategory, IPagination<DiscusThread>>
+
+@{
+	var category = Model.Item1;
+	var threads = Model.Item2;
+
+	ViewBag.Title = category.Name + " discussion";
+
+	bool first = true;
+	IHtmlString pager = Html.Pager(threads);
+	bool modControls = User.IsInRole(UserRoles.DiscusModerator);
+}
+
+<h2>@category.Name discussion</h2>
+
+<div class="clearfix">
+@pager
+</div>
+
+<div class="discussion">
+
+@if (category.Is(DiscussionCategory.General) || User.IsInRole(UserRoles.DiscusModerator)) {
+	<div class="discusNewThread"
+		data-new-thread-url="@Url.Action(MVC.Discussion.NewThread())"
+		data-show-thread-url="@Url.Action(MVC.Discussion.Thread(-1))"
+		data-category-id="@category.CategoryId"
+			@if (User.Identity.IsAuthenticated) { <text>data-user="@User.Identity.IsAuthenticated.ToString().ToLower()"</text> } >
+		<p>JavaScript must be enabled to create new threads.</p>
+	</div>
+}
+
+@foreach (var thread in threads) {
+
+	var userName = thread.User != null ? thread.User.Name : thread.AuthorNameNonRegistered;
+	var messagesCount = thread.DiscusMessages.Count();
+
+	if (first) {
+		first = false;
+	}
+	else {
+		<hr />
+	}
+
+	<div class="discusThread">
+		<p>
+			@Html.ActionLink(thread.Title, MVC.Discussion.Thread(thread.ThreadId))
+			@if (thread.IsLocked) { <span class="note">[Locked]</span> }
+			—
+			<span class="msgCount"><b>@messagesCount</b> messages,</span>
+			<span class="author">
+				@if (userName != null) {
+					@:started by <b>@(userName),</b>
+				}
+				last message <b>@thread.LastUpdateDate.ToString("dd. MMM yyyy")</b>
+					(@(Math.Round((DateTime.Now - thread.LastUpdateDate).TotalDays, 1)) days old)
+			</span>
+
+			@if (modControls) {
+				<span class="note">
+					[@(Html.ActionLink(thread.IsLocked ? "Unlock" : "Lock", MVC.Discussion.LockThread(thread.ThreadId, Request.RawUrl.ToString())))]
+					[@(Html.ActionLink("Delete", MVC.Discussion.DeleteThread(thread.ThreadId, Request.RawUrl.ToString())))]
+				</span>
+   }
+		</p>
+	</div>
+}
+</div>
+
+<div class="clearfix">
+@pager
+</div>

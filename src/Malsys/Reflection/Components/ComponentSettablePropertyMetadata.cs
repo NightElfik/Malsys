@@ -29,10 +29,11 @@ namespace Malsys.Reflection.Components {
 		public readonly string SummaryDoc;
 		public readonly string ExpectedValueDoc;
 		public readonly string DefaultValueDoc;
+		public readonly string TypicalValueDoc;
 
 
 		public ComponentSettablePropertyMetadata(ImmutableList<string> names, PropertyInfo propertyInfo, bool isMandatory,
-				string summaryDoc = null, string expectedValueDoc = null, string defaultValueDoc = null) {
+				string summaryDoc = null, string expectedValueDoc = null, string defaultValueDoc = null, string typicalValueDoc = null) {
 
 			Names = names;
 			PropertyInfo = propertyInfo;
@@ -41,6 +42,7 @@ namespace Malsys.Reflection.Components {
 			SummaryDoc = summaryDoc ?? "";
 			ExpectedValueDoc = expectedValueDoc ?? "";
 			DefaultValueDoc = defaultValueDoc ?? "";
+			TypicalValueDoc = typicalValueDoc ?? "";
 
 			ExpressionValueType = IValueExtensions.IValueTypeToEnum(propertyInfo.PropertyType);
 

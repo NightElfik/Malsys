@@ -65,8 +65,8 @@ namespace Malsys.Processing.Output {
 				}
 			}
 
-			string path = getNewFilePath(ext);
-			Stream stream = new FileStream(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Delete, 4096,
+			string path = allocateNewFile(ext);
+			Stream stream = new FileStream(path, FileMode.Create, FileAccess.ReadWrite, FileShare.Delete, 4096,
 				temp ? FileOptions.DeleteOnClose : FileOptions.None);
 
 			var mf = new ManagedFile() {
@@ -160,8 +160,7 @@ namespace Malsys.Processing.Output {
 
 			CloseAllOutputStreams();
 
-
-			string packagePath = getNewFilePath(".zip");
+			string packagePath = allocateNewFile(".zip");
 			using (Package package = Package.Open(packagePath, FileMode.Create)) {
 
 				foreach (var file in managedFiles) {
@@ -193,25 +192,37 @@ namespace Malsys.Processing.Output {
 
 
 
-		private string getNewFilePath(string suffix) {
-
+		private string allocateNewFile(string suffix) {
 			Contract.Ensures(Contract.Result<string>().StartsWith(root));
 
 			int tryNumber = 0;
 			string filePath;
-			do {
+			while (true) {
 				string timeStamp = DateTime.Now.ToString("yyyy-MM-dd--HH-mm-ss-fffff", CultureInfo.InvariantCulture.DateTimeFormat);
 				string fileName = "{0}{1}{2}".Fmt(FilesPrefix, timeStamp, suffix);
 				filePath = Path.Combine(root, fileName);
-				filePath = Path.GetFullPath(filePath);
+				filePath = Path.GetFullPath(filePath);  // canonicalize path
+
 				if (!filePath.StartsWith(root)) {
 					throw new Exception("File path escaped from root directory.");
 				}
+
+				if (!File.Exists(filePath)) {
+					try {
+						File.Create(filePath).Dispose();
+						break;
+					}
+					catch (IOException) {
+						// to avoid locking, catch exceptions in the file was already been created by another thread
+					}
+				}
+
+				Thread.Sleep(1);  // DateTime.Now is not as detailed as I expected
+
 				if (tryNumber++ > 16) {
 					throw new Exception("Unable to find unique file name.");
 				}
-				Thread.Sleep(1);  // DateTime.Now is not as detailed as I expected
-			} while (File.Exists(filePath));
+			}
 
 			return filePath;
 		}

@@ -83,5 +83,19 @@ namespace Malsys {
 			return string.Join(Environment.NewLine, lines);
 		}
 
+		public static string TrimAndTreatEmptyAsNull(string str) {
+
+			if (str == null) {
+				return null;
+			}
+
+			str = str.Trim();
+			if (str.Length == 0) {
+				return null;
+			}
+
+			return str;
+		}
+
 	}
 }

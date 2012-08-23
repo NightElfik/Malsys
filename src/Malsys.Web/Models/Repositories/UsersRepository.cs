@@ -23,13 +23,7 @@ namespace Malsys.Web.Models.Repositories {
 		}
 
 
-		public IQueryable<User> Users {
-			get { return usersDb.Users; }
-		}
-
-		public IQueryable<Role> Roles {
-			get { return usersDb.Roles; }
-		}
+		public IUsersDb UsersDb { get { return usersDb; } }
 
 
 		public void LogUserActivity(string userName) {
@@ -44,7 +38,7 @@ namespace Malsys.Web.Models.Repositories {
 
 		}
 
-		public User CreateUser(NewUserModel newUser) {
+		public OperationResult<User> CreateUser(NewUserModel newUser) {
 
 			// TODO: validate model somehow
 
@@ -53,7 +47,7 @@ namespace Malsys.Web.Models.Repositories {
 
 			var user = usersDb.Users.SingleOrDefault(u => u.NameLowercase == userNameLower);
 			if (user != null) {
-				throw new ApplicationException("User name `{0}` already exists.".Fmt(userName));
+				return new OperationResult<User>("User name `{0}` is already taken.".Fmt(userName));
 			}
 
 			DateTime now = dateTimeProvider.Now;
@@ -76,10 +70,10 @@ namespace Malsys.Web.Models.Repositories {
 			usersDb.AddUser(newDbUser);
 			usersDb.SaveChanges();
 
-			return newDbUser;
+			return new OperationResult<User>(newDbUser);
 		}
 
-		public Role CreateRole(NewRoleModel newRole) {
+		public OperationResult<Role> CreateRole(NewRoleModel newRole) {
 
 			// TODO: validate model somehow
 
@@ -88,7 +82,7 @@ namespace Malsys.Web.Models.Repositories {
 
 			var role = usersDb.Roles.SingleOrDefault(r => r.NameLowercase == roleNameLower);
 			if (role != null) {
-				throw new ApplicationException("Role `{0}` already exists.".Fmt(roleName));
+				return new OperationResult<Role>("Role name `{0}` is already taken.".Fmt(roleName));
 			}
 
 			var newDbRole = new Role() {
@@ -99,7 +93,7 @@ namespace Malsys.Web.Models.Repositories {
 			usersDb.AddRole(newDbRole);
 			usersDb.SaveChanges();
 
-			return newDbRole;
+			return new OperationResult<Role>(newDbRole);
 		}
 
 		public void AddUserToRole(int userId, int roleId) {
@@ -137,11 +131,6 @@ namespace Malsys.Web.Models.Repositories {
 				user.Roles.Remove(role);
 				usersDb.SaveChanges();
 			}
-		}
-
-
-		public int SaveChanges() {
-			return usersDb.SaveChanges();
 		}
 
 	}

@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using Malsys.Web.Models;
 using Malsys.Web.Infrastructure;
+using Malsys.Web.Entities;
 using Malsys.Web.Models.Lsystem;
 using Malsys.Processing.Output;
 using Malsys.SemanticModel.Evaluated;
@@ -38,6 +39,7 @@ namespace Malsys.Web.Controllers {
 			autoPackTreshold = int.Parse(appSettingsProvider[AppSettingsKeys.AutoPackTreshold]);
 
 		}
+
 
 		public virtual ActionResult Process(string sourceCode) {
 
@@ -74,6 +76,7 @@ namespace Malsys.Web.Controllers {
 			sw.Stop();
 
 			if (!success) {
+				usersRepository.UsersDb.Log("ApiProcess-FAIL", ActionLogSignificance.Low);
 				return Json(new {
 					error = true,
 					messages = logger.Select(x => x.GetFullMessage()).ToList()
@@ -92,6 +95,8 @@ namespace Malsys.Web.Controllers {
 			if (outputs.Count > 0) {
 				var ip = malsysInputRepository.AddInputProcess(evaledInput, null, outputs, User.Identity.Name, sw.Elapsed);
 			}
+
+			usersRepository.UsersDb.Log("ApiProcess", ActionLogSignificance.Low);
 
 			return Json(new {
 				error = false,

@@ -1,0 +1,23 @@
+﻿@**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ *@
+@model Malsys.Web.Models.MalsysStdLibSource
+
+@{
+	ViewBag.Title = "Malsys standard library";
+}
+
+<h2>Malsys standard library</h2>
+
+<p>
+	For simplifying work with Malsys before every processed input is "pasted" standard library.
+	It defines few basic constants, L-systems (which can be @Html.AnchorLink("inherited", "LsystemInheritance", MVC.Documentation.SyntaxReference.LsystemDefinition()))
+		and process configurations.
+	Its source code is printed on this page.
+</p>
+
+
+<pre class="malsys box">
+@Model.SourceCode
+</pre>

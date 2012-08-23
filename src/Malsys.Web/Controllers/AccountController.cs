@@ -2,8 +2,8 @@
  * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
  * All rights reserved.
  */
-using System;
 using System.Web.Mvc;
+using Malsys.Web.Entities;
 using Malsys.Web.Infrastructure;
 using Malsys.Web.Models;
 using Malsys.Web.Security;
@@ -39,25 +39,21 @@ namespace Malsys.Web.Controllers {
 			}
 
 			if (!ReCaptcha.Validate()) {
-				ModelState.AddModelError("", "Captcha invalid.");
+				ModelState.AddModelError("", "Captcha is invalid.");
 				return View(model);
 			}
 
-			bool success = false;
-			try {
-				usersRepo.CreateUser(model);
-				success = true;
-			}
-			catch (Exception ex) {
-				ModelState.AddModelError("", ex.Message);
-			}
-
-			if (success) {
-				return RedirectToAction("LogOn", "Authentication");
+			var userResult = usersRepo.CreateUser(model);
+			if (userResult) {
+				usersRepo.UsersDb.Log("Register", ActionLogSignificance.Medium, null, userResult.Data);
+				return RedirectToAction(MVC.Authentication.LogOn(userResult.Data.Name));
 			}
 			else {
-				return View(model);
+				usersRepo.UsersDb.Log("Register-Fail", ActionLogSignificance.Medium, userResult.ErrorMessage);
 			}
+
+			ModelState.AddModelError("", "Failed to create user. " + userResult.ErrorMessage);
+			return View(model);
 		}
 
 		[Authorize]
@@ -70,18 +66,14 @@ namespace Malsys.Web.Controllers {
 		public virtual ActionResult ChangePassword(ChangePasswordModel model) {
 
 			if (ModelState.IsValid) {
-				bool success = false;
-				try {
-					userAuth.ChangePassword(User.Identity.Name, model.OldPassword, model.NewPassword);
-					success = true;
-				}
-				catch (Exception) {
-					ModelState.AddModelError("", "The current password is incorrect or the new password is invalid.");
+				var userResult = userAuth.ChangePassword(User.Identity.Name, model.OldPassword, model.NewPassword);
+				if (userResult) {
+					usersRepo.UsersDb.Log("PwdChange", ActionLogSignificance.Medium, null, usersRepo.UsersDb.TryGetUserByName(User.Identity.Name));
+					return RedirectToAction(Actions.ChangePasswordSuccess());
 				}
 
-				if (success) {
-					return RedirectToAction("ChangePasswordSuccess");
-				}
+				usersRepo.UsersDb.Log("PwdChange-Fail", ActionLogSignificance.Medium, "wrong password", usersRepo.UsersDb.TryGetUserByName(User.Identity.Name));
+				ModelState.AddModelError("", "The current password is incorrect or the new password is invalid.");
 			}
 
 			return View(model);

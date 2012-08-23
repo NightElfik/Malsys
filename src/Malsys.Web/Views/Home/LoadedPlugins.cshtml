@@ -1,0 +1,13 @@
+﻿@model Malsys.Web.LoadedPlugins
+
+@{
+	ViewBag.Title = "Loaded plugins";
+}
+
+<h2>Loaded plugins</h2>
+
+<ul>
+	@foreach (var pludinAss in Model) {
+		<li>@pludinAss.FullName [@pludinAss.ImageRuntimeVersion]</li>
+	}
+</ul>

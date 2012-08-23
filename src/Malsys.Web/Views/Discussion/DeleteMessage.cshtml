@@ -1,0 +1,24 @@
+﻿@model DiscusMessage
+
+@{
+	ViewBag.Title = "Delete message";
+}
+
+<h2>Delete message</h2>
+
+<p>
+	Do you really want to delete following message?
+</p>
+
+<p>
+	@Model.Text
+</p>
+
+@using (Html.BeginForm()) {
+
+	<p>
+		@Html.SubmitButton("Yes", "Yes, delete it!")
+
+		@Html.SubmitButton("No", "No, cancel deletion!")
+	</p>
+}

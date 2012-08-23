@@ -6,7 +6,7 @@ using System.Data.Objects.DataClasses;
 using System.Linq;
 
 namespace Malsys.Web.Entities {
-	public interface IInputDb {
+	public interface IInputDb : IActionLogDb {
 
 		IQueryable<CanonicInput> CanonicInputs { get; }
 

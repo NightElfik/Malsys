@@ -26,6 +26,7 @@ using Malsys.Web.Models;
 using Malsys.Web.Models.Lsystem;
 using Malsys.Web.Models.Repositories;
 using Malsys.Web.Security;
+using System.Collections.Generic;
 
 namespace Malsys.Web {
 	public class MvcApplication : HttpApplication {
@@ -37,8 +38,9 @@ namespace Malsys.Web {
 
 			AreaRegistration.RegisterAllAreas();
 
-			initializeDb(resolver);
-			checkFileSystem(resolver);
+			initializeDb(resolver.GetService<IUsersRepository>());
+			initializeDiscussion(resolver.GetService<IDiscussionRepository>());
+			checkFileSystem(resolver.GetService<IAppSettingsProvider>());
 
 			registerGlobalFilters(GlobalFilters.Filters);
 			registerRoutes(RouteTable.Routes);
@@ -112,10 +114,13 @@ namespace Malsys.Web {
 				.As<IUsersDb>()
 				.As<IInputDb>()
 				.As<IFeedbackDb>()
+				.As<IDiscusDb>()
+				.As<IActionLogDb>()
 				.InstancePerHttpRequest();
 
 			builder.RegisterType<UsersRepository>().As<IUsersRepository>().InstancePerHttpRequest();
 			builder.RegisterType<MalsysInputRepository>().As<IMalsysInputRepository>().InstancePerHttpRequest();
+			builder.RegisterType<DiscussionRepository>().As<IDiscussionRepository>().InstancePerHttpRequest();
 
 			builder.RegisterType<UserAuthenticator>().As<IUserAuthenticator>().InstancePerHttpRequest();
 			builder.RegisterType<FormsAuthenticationProvider>().As<IAuthenticationProvider>().SingleInstance();
@@ -147,12 +152,13 @@ namespace Malsys.Web {
 			loader.LoadMalsysStuffFromAssembly(Assembly.GetAssembly(typeof(MalsysLoader)),
 				knownStuffProvider, knownStuffProvider, ref eec, componentResolver, logger, xmlDocReader);
 
+			var loadedPlugins = new List<Assembly>();
 			Assembly plugin;
-			if (tryLoadPlugin("~/bin/ExamplePlugin.dll", out plugin)) {
+			if (tryLoadPlugin("~/bin/ExamplePlugin.dll", out plugin, loadedPlugins)) {
 				loader.LoadMalsysStuffFromAssembly(plugin,
 					knownStuffProvider, knownStuffProvider, ref eec, componentResolver, logger, xmlDocReader);
 			}
-			if (tryLoadPlugin("~/bin/Malsys.BitmapRenderers.dll", out plugin)) {
+			if (tryLoadPlugin("~/bin/Malsys.BitmapRenderers.dll", out plugin, loadedPlugins)) {
 				loader.LoadMalsysStuffFromAssembly(plugin,
 					knownStuffProvider, knownStuffProvider, ref eec, componentResolver, logger, xmlDocReader);
 			}
@@ -160,6 +166,8 @@ namespace Malsys.Web {
 			if (logger.ErrorOccurred) {
 				throw new Exception("Failed to load Malsys stuff" + logger.AllMessagesToFullString());
 			}
+
+			builder.Register(x => new LoadedPlugins(loadedPlugins));
 
 			builder.Register(x => knownStuffProvider)
 				.As<ICompilerConstantsProvider>()
@@ -210,13 +218,14 @@ namespace Malsys.Web {
 
 
 
-		private bool tryLoadPlugin(string path, out Assembly plugin, bool pathIsVirtual = true) {
+		private bool tryLoadPlugin(string path, out Assembly plugin, List<Assembly> loadedPlugins, bool pathIsVirtual = true) {
 			if (pathIsVirtual) {
 				path = Server.MapPath(path);
 			}
 			try {
 				if (File.Exists(path)) {
 					plugin = Assembly.LoadFile(path);
+					loadedPlugins.Add(plugin);
 					return true;
 				}
 				plugin = null;
@@ -229,17 +238,29 @@ namespace Malsys.Web {
 			}
 		}
 
+
+		private void initializeDiscussion(IDiscussionRepository discusRepo) {
+
+			foreach (DiscussionCategory cat in Enum.GetValues(typeof(DiscussionCategory))) {
+				string name = cat.ToName();
+				if (discusRepo.EnsureCategory(name) == null) {
+					throw new Exception("Failed to ensure discussion category `{0}`".Fmt(name));
+				}
+			}
+
+		}
+
+
+
 		/// <summary>
 		/// Checks whether DB contains all well-known user roles and at least one user.
 		/// Missing things are added.
 		/// </summary>
 		/// <remarks>
-		/// If there are no user groups in the database, standard user groups from class <c>UserRoles</c> are created.
+		/// Standard user groups from class <c>UserRoles</c> are checked and eventually created.
 		/// If there are no users in the database, "Administrator" user with password "malsys" is created.
 		/// </remarks>
-		private void initializeDb(IDependencyResolver resolver) {
-
-			var usersRepo = resolver.GetService<IUsersRepository>();
+		private void initializeDb(IUsersRepository usersRepo) {
 
 			foreach (var fi in typeof(UserRoles).GetFields(BindingFlags.Public | BindingFlags.Static)) {
 
@@ -247,35 +268,41 @@ namespace Malsys.Web {
 					continue;
 				}
 
-				string value = (string)fi.GetValue(null);
+				string roleName = ((string)fi.GetValue(null)).Trim().ToLower();
 
-				if (usersRepo.Roles.Where(x => x.NameLowercase == value).Count() == 0) {
-					usersRepo.CreateRole(new NewRoleModel() { RoleName = value });
+				if (usersRepo.UsersDb.Roles.Where(x => x.NameLowercase == roleName).Count() == 0) {
+					if (usersRepo.CreateRole(new NewRoleModel() { RoleName = roleName }) == null) {
+						throw new Exception("Failed to create role `{0}`".Fmt(roleName));
+					}
 				}
 
 			}
 
-			if (usersRepo.Users.Count() == 0) {
+			if (usersRepo.UsersDb.Users.Count() == 0) {
 				// DB has no users -- lets create admin
-				var adminUser = usersRepo.CreateUser(new NewUserModel() {
+				var adminUserResult = usersRepo.CreateUser(new NewUserModel() {
 					UserName = "Administrator",
 					Email = "temp@email.com",
 					Password = "malsys",
 					ConfirmPassword = "malsys"
 				});
 
-				var adminRole = usersRepo.Roles.Where(x => x.NameLowercase == UserRoles.Administrator).Single();
+				if (!adminUserResult) {
+					throw new Exception("Failed to create administrator user.");
+				}
 
-				usersRepo.AddUserToRole(adminUser.UserId, adminRole.RoleId);
+				var adminRole = usersRepo.UsersDb.Roles.Where(x => x.NameLowercase == UserRoles.Administrator).Single();
+
+				usersRepo.AddUserToRole(adminUserResult.Data.UserId, adminRole.RoleId);
 
 			}
 
 		}
 
-
-		private void checkFileSystem(IDependencyResolver resolver) {
-
-			var appSettingsProvider = resolver.GetService<IAppSettingsProvider>();
+		/// <summary>
+		/// Checks if all necessary directories exists and are writable.
+		/// </summary>
+		private void checkFileSystem(IAppSettingsProvider appSettingsProvider) {
 
 			ensureDirExistsAndIsWritable(appSettingsProvider[AppSettingsKeys.WorkDir]);
 

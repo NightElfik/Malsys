@@ -7,15 +7,20 @@
 @using Malsys.Processing;
 @using Malsys.Web.Models.Lsystem;
 
+@{
+	ViewBag.Title = Model.Input.PublishName;
+}
+
+@section submenu {
+	<li>@Html.ActionLink("Edit or change publish settings", MVC.Gallery.Edit(Model.Input.UrlId))</li>
+}
+
 
 <div class="right">permalink: @Html.InputPermaLink(Model.Input.UrlId)</div>
 <h2>@Model.Input.PublishName</h2>
-<div class="right">@if (Model.CurrentUserIsOwner) { @Html.ActionLink("Edit or change publish settings", MVC.Gallery.Edit(Model.Input.UrlId)) }</div>
 <h4>by @Html.ActionLink(Model.Input.User.Name, MVC.Gallery.Index(Model.Input.User.Name)) @if (Model.CurrentUserIsOwner) { <text>(you)</text> }</h4>
 
 @{
-	ViewBag.Title = Model.Input.PublishName;
-
 	var fi = new FileInfo(Model.FilePath);
 	if (!fi.Exists) {
 		<p>File not found!</p>
@@ -165,4 +170,11 @@ else {
 </text>
 }
 </pre>
+
+<h3>Comments</h3>
+
+@{
+	Html.RenderAction(MVC.Discussion.AutoThreadInline("gallery " + Model.Input.UrlId,
+		"Comments for {0} ({1})".Fmt(Model.Input.PublishName, Model.Input.UrlId), DiscussionCategory.Gallery));
+}
 

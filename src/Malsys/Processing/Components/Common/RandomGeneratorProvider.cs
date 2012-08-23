@@ -29,9 +29,10 @@ namespace Malsys.Processing.Components.Common {
 
 
 		/// <summary>
-		/// If set to true as random generator will be used true-random (cryptographic random) generator.
+		/// If set to true, as internal random generator will be used true-random (cryptographic random) generator.
 		/// For this random generator can not be set any seed and numbers are always unpredictably random.
-		/// If set to false as random generator will be used pseudo-random generator.
+		/// This will cause that measuring and process pass will not be the same and can cause unexpected behavior.
+		/// Default random generator is pseudo-random generator.
 		/// </summary>
 		/// <expected>true or false</expected>
 		/// <default>false</default>
@@ -41,7 +42,7 @@ namespace Malsys.Processing.Components.Common {
 		public Constant TrueRandom { get; set; }
 
 		/// <summary>
-		/// If set pseudo-random generator will generate always same sequence of random numbers.
+		/// Random seed for pseudo-random generator to be able to reproduce random L-systems.
 		/// Do not work if TrueRandom property is set.
 		/// </summary>
 		/// <expected>Non-negative integer.</expected>
@@ -63,7 +64,9 @@ namespace Malsys.Processing.Components.Common {
 			RandomSeed = Constant.MinusOne;
 		}
 
-		public void Initialize(ProcessContext ctxt) { }
+		public void Initialize(ProcessContext ctxt) {
+			localRandomGenerator = GetRandomGenerator();
+		}
 
 		public void Cleanup() { }
 
@@ -87,9 +90,7 @@ namespace Malsys.Processing.Components.Common {
 		/// </summary>
 		public void ResetRandomGenerator(int? seed = null) {
 			if (!TrueRandom.IsTrue) {
-				if (seed == null) {
-					ensureSeed();
-				}
+				ensureSeed();
 				localRandomGenerator = new PseudoRandomGenerator(seed ?? RandomSeed.RoundedIntValue); ;
 			}
 		}
@@ -111,10 +112,7 @@ namespace Malsys.Processing.Components.Common {
 				return cryptoRandomInstance;
 			}
 			else {
-				if (RandomSeed.Value < 0) {
-					ensureSeed();
-				}
-
+				ensureSeed();
 				return new PseudoRandomGenerator(RandomSeed.RoundedIntValue);
 			}
 		}
@@ -136,14 +134,9 @@ namespace Malsys.Processing.Components.Common {
 		[UserCallableFunction(IsCallableBeforeInitialiation = true)]
 		public Constant GetRandomValue(IValue[] args, IExpressionEvaluatorContext eec) {
 
-			Contract.Ensures(Contract.Result<IValue>() != null);
-
-			if (localRandomGenerator == null) {
-				localRandomGenerator = GetRandomGenerator();
-			}
+			Contract.Ensures(Contract.Result<Constant>() != null);
 
 			return localRandomGenerator.NextDouble().ToConst();
-
 		}
 
 		/// <summary>
@@ -157,22 +150,18 @@ namespace Malsys.Processing.Components.Common {
 		[UserCallableFunction(2, ExpressionValueTypeFlags.Constant, ExpressionValueTypeFlags.Constant, IsCallableBeforeInitialiation = true)]
 		public Constant GetRandomValueRange(IValue[] args, IExpressionEvaluatorContext eec) {
 
-			Contract.Ensures(Contract.Result<IValue>() != null);
-
-			if (localRandomGenerator == null) {
-				localRandomGenerator = GetRandomGenerator();
-			}
+			Contract.Ensures(Contract.Result<Constant>() != null);
 
 			double lower = ((Constant)args[0]).Value;
 			double upper = ((Constant)args[1]).Value;
-
 			return (localRandomGenerator.NextDouble() * (upper - lower) + lower).ToConst();
 
 		}
 
+
 		private void ensureSeed() {
 			if (RandomSeed != null && !double.IsInfinity(RandomSeed.Value) && RandomSeed.Value >= 0) {
-				return;  // coveres also NaN
+				return;  // covers also NaN
 			}
 
 			// no random seed set, generate random one

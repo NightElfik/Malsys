@@ -1,0 +1,21 @@
+﻿@**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ *@
+@model List<ConfigurationModel>
+
+@{
+	Layout = null;
+	var included = new HashSet<string>() {
+	//	"SymbolPrinter",
+		"SvgRenderer"};
+
+	var configs = Model.OrderBy(x => x.ProcessConfiguration.Name)
+		.Where(x => included.Contains(x.ProcessConfiguration.Name));
+}
+
+@foreach (var configModel in configs) {
+	@:
+	@:% ======== @configModel.ProcessConfiguration.Name ================================================================
+	Html.RenderPartial(MVC.Documentation.Predefined.Views.ConfigurationLatexPartial, configModel);
+}

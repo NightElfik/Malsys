@@ -1,0 +1,162 @@
+﻿@**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ *@
+@model Malsys.Web.Models.Lsystem.SimpleLsystemProcessor
+
+@{
+	ViewBag.Title = "FunctionDefinition";
+	var exampleModel = new LsystemExampleViewModel() {
+		LsystemProcessor = Model,
+		SourceCodeTemplate = string.Join(Environment.NewLine,
+			"// function definition example {0:00}",
+			"{1}")
+	};
+	int exampleId = 1;
+}
+
+<h2>Function definition</h2>
+
+<div id="toc"></div>
+
+@* ================================================================================================================== *@
+<h3>Basic definition</h3>
+
+<p>
+	With functions is lot of fun.
+	Their definition starts with keyword <code class="malsys">fun</code> followed by its name and arguments list in parenthesis.
+	Then follows function body enclosed in braces which contains function statements.
+	There are two valid function statements.
+	First is @Html.ActionLink("constant definition", MVC.Documentation.Predefined.Constants()), second is return expression which
+		should be last statement and it is <code class="malsys">return</code> keyword followed by return expression.
+</p>
+
+@Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, StringHelper.JoinLines(
+		"fun one() {",
+		"return 1;",
+		"}",
+		"let x = one();",
+		"",
+		"fun twoTimes(x) {",
+		"return x * 2;",
+		"}",
+		"let y = twoTimes(4);",
+		"",
+		"process Constants with ConstantDumper;")))
+
+<hr />
+
+<p>
+	Local constant definition.
+</p>
+
+@Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, StringHelper.JoinLines(
+		"fun pythagoras(a, b) {",
+		"let a2 = a*a;",
+		"let b2 = b*b;",
+		"return sqrt(a2 + b2);",
+		"}",
+		"let x = pythagoras(3, 4);",
+		"",
+		"process Constants with ConstantDumper;")))
+<hr />
+
+<p>
+	Function's parameters can have their default values.
+</p>
+
+@Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, StringHelper.JoinLines(
+		"fun add(a, b = 0) {",
+		"return a + b;",
+		"}",
+		"let w = add(1, 2);",
+		"let x = add(5);",
+		"",
+		"fun power(x = sqrt(2)) {",
+		"return x * x;",
+		"}",
+		"let y = power(4);",
+		"let z = power();",
+		"",
+		"process Constants with ConstantDumper;")))
+
+
+@* ================================================================================================================== *@
+<h3>Global and local scope</h3>
+
+<p>
+	Function can be defined on both local or global scopes and they behave in the same way like
+		@Html.ActionLink("constants", MVC.Documentation.SyntaxReference.ConstantDefinition()) (local definitions overlays global).
+</p>
+
+@Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, StringHelper.JoinLines(
+		"fun alpha() { return 1; }",
+		"fun beta() { return -1; }",
+		"lsystem Lsystem1 {",
+			"fun beta() { return 7; }",
+			"set symbols axiom = A(alpha()) B(beta());",
+		"}",
+		"lsystem Lsystem2 {",
+			"set symbols axiom = C(alpha()) D(beta());",
+		"}",
+		"process all with SymbolPrinter;")))
+
+
+@* ================================================================================================================== *@
+<h3>Parameters overlays constants</h3>
+
+<p>
+	Parameters have greater precedence than any constants.
+	Local constants overlays parameters.
+</p>
+
+@Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, StringHelper.JoinLines(
+		"let x = 7;",
+		"fun alpha(x) {",
+			"return x;",
+		"}",
+		"let a = alpha(0);",
+		"",
+		"fun beta(x) {",
+			"let x = 1;",
+			"return x;",
+		"}",
+		"let b = beta(0);",
+		"",
+		"process Constants with ConstantDumper;")))
+
+@* ================================================================================================================== *@
+<h3>Inheritance of functions</h3>
+
+<p>
+	Inheritance of functions works as expected.
+	Functions from derived L-systems are defined and new functions can redefine them.
+</p>
+
+@Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, StringHelper.JoinLines(
+		"abstract lsystem Base {",
+			"fun a() { return 1; }",
+			"fun b() { return 2; }",
+		"}",
+		"lsystem Derived extends Base {",
+			"fun a() { return 3; }",
+			"set symbols axiom = A(a()) B(b());",
+		"}",
+		"process all with SymbolPrinter;")))
+
+
+@* ================================================================================================================== *@
+<h3>Formal grammar</h3>
+
+@MalsysHelper.GrammarBox(
+	"function_def = 'fun' ID '(' params_list? ')' '{' constant_def* 'return' expression ';' '}'",
+	"",
+	"params_list = ID ('=' expression)?  (',' params_list)?")
+
+<p>
+	Defines function with name represented by <code>ID</code>, parameters <code>params_list</code>,
+		local constants <code>constant_def</code> and return value <code>expression</code>.
+</p>
+
+
+

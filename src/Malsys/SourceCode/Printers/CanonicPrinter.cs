@@ -611,7 +611,7 @@ namespace Malsys.SourceCode.Printers {
 			writer.Write(" ");
 
 			Print(Ast.Keyword.With);
-			writer.Write(procStat.ProcessConfiName);
+			writer.Write(procStat.ProcessConfigName);
 
 			writer.Indent();
 			foreach (var assign in procStat.ComponentAssignments) {

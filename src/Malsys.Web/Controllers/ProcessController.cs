@@ -12,8 +12,10 @@ using Malsys.Processing.Output;
 using Malsys.SemanticModel.Evaluated;
 using Malsys.SourceCode.Printers;
 using Malsys.Web.Infrastructure;
+using Malsys.Web.Entities;
 using Malsys.Web.Models;
 using Malsys.Web.Models.Lsystem;
+using Microsoft.FSharp.Collections;
 
 namespace Malsys.Web.Controllers {
 	public partial class ProcessController : Controller {
@@ -52,10 +54,10 @@ namespace Malsys.Web.Controllers {
 				return IndexPost(lsystem.Replace("    ", "\t"));
 			}
 
-			return View(new ProcessLsystemResultModel());
+			return View(new ProcessLsystemResultModel() { IsEmpty = true });
 		}
 
-		[HttpPost]
+		[HttpPost, ValidateInput(false)]
 		[ActionName("Index")]
 		public virtual ActionResult IndexPost(string sourceCode, int? referenceId = null, string compile = null, string save = null) {
 
@@ -89,7 +91,8 @@ namespace Malsys.Web.Controllers {
 			var resultModel = new ProcessLsystemResultModel() {
 				SourceCode = sourceCode,
 				ReferenceId = referenceId,
-				Logger = logger
+				Logger = logger,
+				MaxProcessDuration = timeout
 			};
 
 
@@ -115,6 +118,15 @@ namespace Malsys.Web.Controllers {
 				}
 			}
 
+
+			if (evaledInput != null) {
+				resultModel.UsedProcessConfigurationsNames = evaledInput.ProcessStatements.Select(x => x.ProcessConfigName).ToArray();
+			}
+			else {
+				resultModel.UsedProcessConfigurationsNames = new string[0];
+			}
+
+
 			if (compileOnly || !result) {
 				return View(Views.Index, resultModel);
 			}
@@ -138,6 +150,9 @@ namespace Malsys.Web.Controllers {
 				resultModel.ReferenceId = ip.InputProcessId;
 				resultModel.OutputFiles = outputs;
 			}
+			else {
+				resultModel.OutputFiles = new List<OutputFile>();
+			}
 
 			if (save != null) {
 				if (User.Identity.IsAuthenticated) {
@@ -148,6 +163,8 @@ namespace Malsys.Web.Controllers {
 					ModelState.AddModelError("", "Only registered users can save Malsys inputs.");
 				}
 			}
+
+			malsysInputRepository.InputDb.Log("ProcessLsystem", ActionLogSignificance.Low, null, malsysInputRepository.UsersDb.TryGetUserByName(User.Identity.Name));
 
 			return View(Views.Index, resultModel);
 		}
@@ -163,6 +180,7 @@ namespace Malsys.Web.Controllers {
 
 			return View(new ProcessLsystemResultModel() { SavedInputUrlId = id });
 		}
+
 
 	}
 }

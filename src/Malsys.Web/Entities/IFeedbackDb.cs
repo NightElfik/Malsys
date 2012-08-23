@@ -6,7 +6,7 @@ using System.Data.Objects.DataClasses;
 using System.Linq;
 
 namespace Malsys.Web.Entities {
-	public interface IFeedbackDb {
+	public interface IFeedbackDb : IActionLogDb {
 
 		IQueryable<Feedback> Feedbacks { get; }
 

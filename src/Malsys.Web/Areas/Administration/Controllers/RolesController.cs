@@ -27,12 +27,12 @@ namespace Malsys.Web.Areas.Administration.Controllers {
 				page = 1;
 			}
 
-			return View(usersRepo.Roles.OrderBy(x => x.NameLowercase).AsPagination(page));
+			return View(usersRepo.UsersDb.Roles.OrderBy(x => x.NameLowercase).AsPagination(page));
 		}
 
 		public virtual ViewResult Details(int id) {
 
-			Role role = usersRepo.Roles.SingleOrDefault(r => r.RoleId == id);
+			Role role = usersRepo.UsersDb.Roles.SingleOrDefault(r => r.RoleId == id);
 			if (role == null) {
 				return View("Index");
 			}
@@ -69,7 +69,7 @@ namespace Malsys.Web.Areas.Administration.Controllers {
 
 		public virtual ActionResult Edit(int id) {
 
-			Role role = usersRepo.Roles.SingleOrDefault(r => r.RoleId == id);
+			Role role = usersRepo.UsersDb.Roles.SingleOrDefault(r => r.RoleId == id);
 			if (role == null) {
 				return View("Index");
 			}
@@ -82,10 +82,10 @@ namespace Malsys.Web.Areas.Administration.Controllers {
 
 			if (ModelState.IsValid) {
 
-				Role role = usersRepo.Roles.SingleOrDefault(r => r.RoleId == roleModel.RoleId);
+				Role role = usersRepo.UsersDb.Roles.SingleOrDefault(r => r.RoleId == roleModel.RoleId);
 				if (role != null) {
 					roleModel.UpdateRole(role);
-					usersRepo.SaveChanges();
+					usersRepo.UsersDb.SaveChanges();
 					return RedirectToAction("Index");
 				}
 			}

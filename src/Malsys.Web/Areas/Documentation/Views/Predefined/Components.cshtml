@@ -1,0 +1,96 @@
+﻿@**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ *@
+@model IEnumerable<ComponentModel>
+
+@{
+	ViewBag.Title = "Components and interfaces (containers)";
+	string defaultCategory = "Other";
+	var componentsGroupped = Model
+		.Where(c => !c.Metadata.ComponentType.IsInterface)
+		.OrderBy(c => c.Metadata.HumanReadableName)
+		.GroupBy(x => string.IsNullOrEmpty(x.Metadata.GroupDoc) ? defaultCategory : x.Metadata.GroupDoc)
+		.OrderBy(x => x.Key);
+	var interfacesGroupped = Model
+		.Where(c => c.Metadata.ComponentType.IsInterface)
+		.OrderBy(c => c.Metadata.HumanReadableName)
+		.GroupBy(x => string.IsNullOrEmpty(x.Metadata.GroupDoc) ? defaultCategory : x.Metadata.GroupDoc)
+		.OrderBy(x => x.Key);
+}
+
+<h2>Components and interfaces (containers)</h2>
+
+<p>
+	This page contains list of all Components and interfaces (containers) along with theirs comprehensive information.
+</p>
+
+<div class="clearfix" id="toc">
+	<div class="leftHalf">
+		<h3>Components</h3>
+		<ul class="clean">
+		@foreach (var group in componentsGroupped) {
+			<li>@group.Key
+				<ul class="clean">
+				@foreach (var component in group) {
+					<li>@Html.AnchorLink(component.Metadata.HumanReadableName, component.Metadata.ComponentType.FullName, MVC.Documentation.Predefined.Components())</li>
+				}
+				</ul>
+			</li>
+		}
+		</ul>
+	</div>
+
+	<div class="rightHalf">
+		<h3>Interfaces (containers)</h3>
+		<ul class="clean">
+		@foreach (var group in interfacesGroupped) {
+			<li>@group.Key
+				<ul class="clean">
+				@foreach (var container in group) {
+					<li>@Html.AnchorLink(container.Metadata.HumanReadableName, container.Metadata.ComponentType.FullName, MVC.Documentation.Predefined.Components())</li>
+				}
+				</ul>
+			</li>
+		}
+		</ul>
+	</div>
+</div>
+
+<h3>Legend</h3>
+
+<ul class="component">
+	<li><span class="flag">{abstract}</span> – components marked as <i>abstract</i> can not be instantiated, they can be used in the same way as interfaces only as container type</li>
+	<li><span class="flag">{run-time only}</span> – gettable properties (or callable functions) marked as <i>run-time only</i>
+		can be get (called) only while L-system is processed (in rewrite rules or interpretation methods), not in L-system let or set statements</li>
+	<li><span class="flag">{mandatory}</span> – settable (symbol) properties marked as <i>mandatory</i> must be set in L-system definition,
+		parameters of interpretation method marked as <i>mandatory</i> must be supplied to interpretation method</li>
+	<li><span class="flag">{optional}</span> – connectable properties marked as <i>optional</i> may not be connected by process configuration (by default they must be connected)</li>
+	<li><span class="flag">{allowed multiple}</span> – more components can be connected to connectable properties marked as <i>allowed multiple</i>
+		(by default only one component can be connected)</li>
+</ul>
+
+
+<h2>Components</h2>
+@foreach (var group in componentsGroupped) {
+	<h3>@group.Key</h3>
+
+	foreach (var comp in group) {
+		Html.RenderPartial(MVC.Documentation.Shared.Views.ComponentPartial, comp);
+		@MalsysHelper.TocLink();
+	}
+
+}
+
+<h2>Interfaces (containers)</h2>
+@foreach (var group in interfacesGroupped) {
+	<h3>@group.Key</h3>
+
+	foreach (var comp in group) {
+		Html.RenderPartial(MVC.Documentation.Shared.Views.ComponentPartial, comp);
+		@MalsysHelper.TocLink(true);
+	}
+
+}
+
+@Html.ValidationSummary(false)

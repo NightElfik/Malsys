@@ -5,7 +5,7 @@
 using System.Linq;
 
 namespace Malsys.Web.Entities {
-	public partial class MalsysDb : IUsersDb, IInputDb, IFeedbackDb {
+	public partial class MalsysDb : IUsersDb, IInputDb, IFeedbackDb, IDiscusDb, IActionLogDb {
 
 
 		#region IUsersDb Members
@@ -95,6 +95,48 @@ namespace Malsys.Web.Entities {
 
 		public void AddFeedback(Feedback feedback) {
 			Feedbacks.AddObject(feedback);
+		}
+
+		#endregion
+
+
+		#region IDiscusDb Members
+
+		IQueryable<DiscusCategory> IDiscusDb.DiscusCategories { get { return DiscusCategories; } }
+
+		public void AddDiscusCategory(DiscusCategory discusCategory) {
+			DiscusCategories.AddObject(discusCategory);
+		}
+
+		IQueryable<DiscusThread> IDiscusDb.DiscusThreads { get { return DiscusThreads; } }
+
+		public void AddDiscusThread(DiscusThread discusThread) {
+			DiscusThreads.AddObject(discusThread);
+		}
+
+		public void DeleteDiscusThread(DiscusThread discusThread) {
+			DiscusThreads.DeleteObject(discusThread);
+		}
+
+		IQueryable<DiscusMessage> IDiscusDb.DiscusMessages { get { return DiscusMessages; } }
+
+		public void AddDiscusMessage(DiscusMessage discusMessage) {
+			DiscusMessages.AddObject(discusMessage);
+		}
+
+		public void DeleteDiscusMessage(DiscusMessage discusMessage) {
+			DiscusMessages.DeleteObject(discusMessage);
+		}
+
+		#endregion
+
+
+		#region IActionLogDb Members
+
+		IQueryable<ActionLog> IActionLogDb.ActionLogs { get { return ActionLogs; } }
+
+		public void AddActionLog(ActionLog actionLog) {
+			ActionLogs.AddObject(actionLog);
 		}
 
 		#endregion

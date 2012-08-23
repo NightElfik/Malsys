@@ -44,7 +44,7 @@ namespace Malsys.SemanticModel.Evaluated {
 
 		public static string ToTypeString(this ExpressionValueType type) {
 			switch (type) {
-				case ExpressionValueType.Constant: return "value";
+				case ExpressionValueType.Constant: return "constant";
 				case ExpressionValueType.Array: return "array";
 				default: return "unknown";
 			}
@@ -68,18 +68,18 @@ namespace Malsys.SemanticModel.Evaluated {
 
 		public static string ToTypeString(this ExpressionValueTypeFlags type) {
 			switch (type) {
-				case ExpressionValueTypeFlags.Constant: return "value";
+				case ExpressionValueTypeFlags.Constant: return "constant";
 				case ExpressionValueTypeFlags.Array: return "array";
-				case ExpressionValueTypeFlags.Any: return "value or array";
+				case ExpressionValueTypeFlags.Any: return "constant or array";
 				default: return "unknown";
 			}
 		}
 
 		public static string ToTypeStringOneWord(this ExpressionValueTypeFlags type) {
 			switch (type) {
-				case ExpressionValueTypeFlags.Constant: return "value";
+				case ExpressionValueTypeFlags.Constant: return "constant";
 				case ExpressionValueTypeFlags.Array: return "array";
-				case ExpressionValueTypeFlags.Any: return "valueOrArray";
+				case ExpressionValueTypeFlags.Any: return "constantOrArray";
 				default: return "unknown";
 			}
 		}

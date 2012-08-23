@@ -105,7 +105,7 @@ namespace Malsys.BitmapRenderers.Components {
 		/// <summary>
 		/// When set the output is scaled to fit given rectangle (width and height).
 		/// </summary>
-		/// <expected>Array of twp numbers representing maximum width and height of the output.</expected>
+		/// <expected>Array of two numbers representing maximum width and height of the output.</expected>
 		/// <default>none</default>
 		[AccessName("scaleOutputToFit")]
 		[UserSettable]
@@ -138,7 +138,7 @@ namespace Malsys.BitmapRenderers.Components {
 		public Constant Scale { get; set; }
 
 		/// <summary>
-		/// Cap of each rendered lines.
+		/// Cap of each rendered line.
 		/// </summary>
 		/// <expected>0 for no caps, 1 for square caps, 2 for round caps</expected>
 		/// <default>2 (round caps)</default>

@@ -26,24 +26,24 @@ namespace Malsys.Web.Security {
 		}
 
 
-		public bool ValidateUser(string userName, string password) {
+		public OperationResult<User> ValidateUser(string userName, string password) {
 
 			userName = userName.Trim().ToLower();
 
 			var user = usersDb.Users.SingleOrDefault(u => u.NameLowercase == userName);
 			if (user == null) {
-				return false;  // unknown user
+				return new OperationResult<User>("Unknown user name or invalid password.");  // unknown user
 			}
 
 			if (!pwdHasher.VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt)) {
-				return false;  // wrong password
+				return new OperationResult<User>("Unknown user name or invalid password.");  // wrong password
 			}
 
 			// password ok, update last login date
 			user.LastLoginDate = dateTimeProvider.Now;
 			usersDb.SaveChanges();
 
-			return true;
+			return new OperationResult<User>(user);
 		}
 
 		public string[] GetRolesForUser(string userName) {
@@ -58,23 +58,25 @@ namespace Malsys.Web.Security {
 			return user.Roles.Select(r => r.Name).ToArray();
 		}
 
-		public void ChangePassword(string userName, string oldPassword, string newPassword) {
+		public OperationResult<User> ChangePassword(string userName, string oldPassword, string newPassword) {
 
-			if (!ValidateUser(userName, oldPassword)) {
-				throw new ApplicationException("Wrong current password.");
+			var userResult = ValidateUser(userName, oldPassword);
+			if (!userResult) {
+				return userResult;
 			}
+
+			var user = userResult.Data;
 
 			DateTime now = dateTimeProvider.Now;
 			byte[] pwdHash, salt;
 
 			pwdHasher.CreatePasswordHash(newPassword, out pwdHash, out salt);
 
-			// user should exist if it is valid
-			var user = usersDb.Users.FirstOrDefault(u => u.NameLowercase == userName);
-
 			user.PasswordHash = pwdHash;
 			user.PasswordSalt = salt;
 			usersDb.SaveChanges();
+
+			return new OperationResult<User>(user);
 		}
 
 	}

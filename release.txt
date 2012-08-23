@@ -1,0 +1,4 @@
+delete captcha codes
+delete analytics code
+delete automatic redirect to malsys.cz
+detele G+ button

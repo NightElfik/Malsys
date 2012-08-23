@@ -17,5 +17,6 @@ public static class UserRoles {
 	public const string TrustedUser = "trusted";
 	public const string ViewStats = "viewstats";
 	public const string ViewFeedbacks = "viewfeedbacks";
+	public const string DiscusModerator = "discusmoderator";
 
 }

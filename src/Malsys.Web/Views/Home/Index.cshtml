@@ -2,16 +2,23 @@
  * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
  * All rights reserved.
  *@
-@model GalleryThumbnailModel
+@model Tuple<GalleryThumbnailModel, IEnumerable<DiscusThread>>
 
 @{
 	ViewBag.Title = "Malsys";
 }
 
-@if (Model != null) {
+@section submenu {
+	<li>@Html.ActionLink("Curve designer", MVC.CurveDesigner.Index())</li>
+	@*<li>@Html.ActionLink("Development diary", MVC.DevDiary.Index())</li>*@
+	<li>@Html.ActionLink("Thesis", MVC.Home.Thesis())</li>
+	<li>@Html.ActionLink("Documentation", MVC.Documentation.Home.Index())</li>
+}
+
+@if (Model.Item1 != null) {
 	<div class="right bg">
-	@Html.Partial(MVC.Shared.Views.GalleryThumbnailPartial, Model)
-	<h4 class="center">@Model.SavedInput.PublishName</h4>
+	@Html.Partial(MVC.Shared.Views.GalleryThumbnailPartial, Model.Item1)
+	<h4 class="center">@Model.Item1.SavedInput.PublishName</h4>
 	</div>
 }
 
@@ -26,8 +33,55 @@
 		@Html.ActionLink("this page", MVC.Home.Thesis()).
 </p>
 
+<h3>How can I use Malsys?</h3>
+<p>
+	Check @Html.ActionLink("Documentation", MVC.Documentation.Home.Index()) or examples in @Html.ActionLink("gallery", MVC.Gallery.Index()).
+	Or you can try to create an L-system curve with @Html.ActionLink("curve designer", MVC.CurveDesigner.Index()).
+</p>
+
+<h3>Gallery</h3>
+<p>
+	Gallery contains examples of many L-systems.
+	The most of them are 2D vector images (in @Html.Link("SVG", "http://en.wikipedia.org/wiki/Scalable_Vector_Graphics", "Scalable Vector Graphics - Wikipedia"))
+		which can be displayed with most of browsers.
+	However there are some amazing 3D L-systems which needs @Html.Link("WebGL", "http://en.wikipedia.org/wiki/WebGL", "WebGL - Wikipedia")
+		for proper display (see @Html.ActionLink("the comparison", MVC.Home.WhyWebgl())).
+	3D L-systems are rendered by your browser and you can rotate, zoom or pan them.
+	You can check whether your browser support WebGL at @Html.Link("http://get.webgl.org/").
+</p>
+
 <h3>Latest news</h3>
+@{ int? newsCatId = null; }
+@foreach (var thread in Model.Item2) {
+	newsCatId = thread.CategoryId;
+	var commentsNum = thread.DiscusMessages.Count() - 1;
+	var firstMessage = thread.DiscusMessages.OrderBy(m => m.CreationDate).First();
+	var firstMsgText = firstMessage.Text;
+	int endOfFirstPar = firstMsgText.IndexOf("\n\n");
+	bool readMore = true;
+	if (endOfFirstPar < 0) {
+		endOfFirstPar = firstMsgText.Length;
+		readMore = false;
+	}
+	var firstParagraph = firstMsgText.Substring(0, endOfFirstPar);
+
+	<div class="right">@thread.CreationDate.ToString("dddd, dd. MMMM yyyy")</div>
+	<h4>@thread.Title</h4>
+	<p class="keepNl">@firstParagraph @if (readMore) { <span>@Html.ActionLink("... read more", MVC.Discussion.Thread(thread.ThreadId))</span> }</p>
+	<div>@Html.ActionLink(commentsNum + " comments", MVC.Discussion.Thread(thread.ThreadId))</div>
+
+	<hr />
+}
+
+@if (newsCatId != null) {
+	@Html.ActionLink("News archive", MVC.Discussion.Category(newsCatId))
+}
+
+@*
 <ul>
+	<li>
+		Added simple submenu for specialized actions on some pages.
+	</li>
 	<li>
 		Animation renderer was added for creating PNG animations! See gallery for examples.
 	</li>
@@ -36,40 +90,16 @@
 		It is created using HTML5 canvas element.
 	</li>
 </ul>
+*@
 
-
-<h3>What is L-system?</h3>
-<p>
-	An L-system or Lindenmayer system is a parallel rewriting system, namely a variant of a formal grammar,
-		most famously used to model the growth processes of plant development, but also able to model the morphology of a variety of organisms.
-	More about L-system theory on @Html.Link("Wikipedia", "http://en.wikipedia.org/wiki/L-system").
-</p>
-
-
-<h3>How can I use Malsys?</h3>
-<p>
-	Check @Html.ActionLink("help pages", MVC.Help.Home.Index()) or examples in @Html.ActionLink("gallery", MVC.Gallery.Index()).
-	Or you can try to create an L-system curve with @Html.ActionLink("curve designer", MVC.CurveDesigner.Index()).
-</p>
-
-<h3>Gallery</h3>
-<p>
-	Gallery contains examples of many L-systems.
-	The most of them are 2D vector images (@Html.Link("SVG", "http://en.wikipedia.org/wiki/Scalable_Vector_Graphics", "Scalable Vector Graphics - Wikipedia")
-		which can be displayed with most of browsers.
-	However there are some amazing 3D L-systems which needs @Html.Link("WebGL", "http://en.wikipedia.org/wiki/WebGL", "WebGL - Wikipedia")
-		for proper display (see @Html.ActionLink("the comparison", MVC.Home.WhyWebgl())).
-	3D L-systems are rendered by your browser and you can rotate, zoom or pan them.
-	You can check whether your browser support WebGL at @Html.Link("http://get.webgl.org/").
-</p>
 
 @*
 <h3>Features</h3>
 
 <ul>
 	<li>Readable L-system syntax</li>
-	<li>Lot of predefined @Html.ActionLink("functions", MVC.Help.Predefined.Functions()) and @Html.ActionLink("operators", MVC.Help.Predefined.Operators())</li>
-	<li>Custom @Html.ActionLink("constants", MVC.Help.SyntaxReference.ConstantDefinition()) and @Html.ActionLink("functions", MVC.Help.SyntaxReference.FunctionDefinition()) definitions</li>
+	<li>Lot of predefined @Html.ActionLink("functions", MVC.Documentation.Predefined.Functions()) and @Html.ActionLink("operators", MVC.Documentation.Predefined.Operators())</li>
+	<li>Custom @Html.ActionLink("constants", MVC.Documentation.SyntaxReference.ConstantDefinition()) and @Html.ActionLink("functions", MVC.Documentation.SyntaxReference.FunctionDefinition()) definitions</li>
 	<li>Public gallery, saving of L-systems for registered users (with permalink)</li>
 	<li>Rendering
 		<ul>
@@ -91,7 +121,7 @@
 *@
 
 
-@if (Model != null && Model.NeedsThreeJs) {
+@if (Model.Item1 != null && Model.Item1.NeedsThreeJs) {
 	<text>
 	@section scripts {
 		@Content.Js(Links.Js.ThreeJs.Three_js)

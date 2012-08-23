@@ -15,11 +15,13 @@ namespace Malsys.Web.Areas.Administration.Controllers {
 
 		private readonly IInputDb inputDb;
 		private readonly IUsersDb usersDb;
+		private readonly IActionLogDb actionLogDb;
 
 
-		public StatsController(IInputDb inputDb, IUsersDb usersDb) {
+		public StatsController(IInputDb inputDb, IUsersDb usersDb, IActionLogDb actionLogDb) {
 			this.inputDb = inputDb;
 			this.usersDb = usersDb;
+			this.actionLogDb = actionLogDb;
 		}
 
 
@@ -51,6 +53,20 @@ namespace Malsys.Web.Areas.Administration.Controllers {
 					SourceId = p.CanonicInput.CanonicInputId,
 					Source = p.CanonicInput.SourceCode
 				})
+				.AsPagination(page, 10);
+
+			return View(result);
+		}
+
+
+		public virtual ActionResult Logs(int page = 1) {
+
+			if (page <= 0) {
+				page = 1;
+			}
+
+			var result = actionLogDb.ActionLogs
+				.OrderByDescending(p => p.Timestamp)
 				.AsPagination(page, 10);
 
 			return View(result);

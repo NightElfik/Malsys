@@ -11,7 +11,7 @@
 <head>
 	<meta charset="utf-8" />
 
-	<title>@ViewBag.Title</title>
+	<title>@ViewBag.Title – Malsys.cz</title>
 	<meta name="description" content="Modern L-system generator and gallery" />
 	<meta name="keywords" content="Lindenmayer,system,L-system,Lsystem,generator,processor,gallery,examples,SVG,WebGL,3D" />
 	<meta name="author" content="Marek Fišer" />
@@ -29,7 +29,7 @@
 	<meta name="msapplication-starturl" content="@Url.ActionAbsolute(MVC.Home.Index())"/>
 	<meta name="msapplication-task" content="name=Process L-system;action-uri=@Url.ActionAbsolute(MVC.Process.Index());icon-uri=/favicon.ico" />
 	<meta name="msapplication-task" content="name=Gallery of L-systems;action-uri=@Url.ActionAbsolute(MVC.Gallery.Index());icon-uri=/favicon.ico" />
-	<meta name="msapplication-task" content="name=Help index;action-uri=@Url.ActionAbsolute(MVC.Help.Home.Index());icon-uri=/favicon.ico" />
+	<meta name="msapplication-task" content="name=Documentation index;action-uri=@Url.ActionAbsolute(MVC.Documentation.Home.Index());icon-uri=/favicon.ico" />
 
 	@Content.Css(Links.Css.style_less_css)
 
@@ -56,7 +56,18 @@
 			</div>
 			<nav class="navigation">
 				<a id="skipNavigation" href="#main" tabindex="2" class="visuallyhidden focusable">Skip navigation</a>
-				@Html.Partial(MVC.Shared.Views.MenuPartial)
+				<div class="nav clearfix">
+					<ul>
+						<li>@Html.ActionLink("Gallery of L-systems", MVC.Gallery.Index(), new { tabindex = 10 })</li>
+						<li>@Html.ActionLink("L-system processor", MVC.Process.Index(), new { tabindex = 11 })</li>
+						<li>@Html.ActionLink("Discussion", MVC.Discussion.Category(1), new { tabindex = 12 })</li>
+					</ul>
+				</div>
+				<div class="subnav clearfix"">
+					<ul>
+						@RenderSection("submenu", false)
+					</ul>
+				</div>
 			</nav>
 		</header>
 		</div>
@@ -79,11 +90,15 @@
 				| @Html.ActionLink("Feedback", MVC.Feedback.Index(), new { title = "Send a feedback", tabindex = 92 })
 				| thanks @Html.Link("MFF CUNI", "http://www.mff.cuni.cz/", "Faculty of Mathematics and Physics of Charles University in Prague") for hosting
 			</p>
+			<div class="centerMargin">
+				<div class="g-plusone" data-size="medium" data-href="http://malsys.cz/"></div>
+			</div>
 			<div class="note clearfix">
 				<p class="right">This page was generated at @DateTime.Now.ToString("u") (UTC)</p>
 				<p class="left">
 					Web version: <abbr title="Compiled with @Malsys.Web.MalsysWebVersion.CompiledWith, linked with @Malsys.Web.MalsysWebVersion.LinkedWith">@Malsys.Web.MalsysWebVersion.LinkedWith</abbr>
-					Library version: <abbr title="Compiled with @MalsysVersion.CompiledWith, linked with @MalsysVersion.LinkedWith">@MalsysVersion.LinkedWith</abbr>
+					| Library version: <abbr title="Compiled with @MalsysVersion.CompiledWith, linked with @MalsysVersion.LinkedWith">@MalsysVersion.LinkedWith</abbr>
+					| @Html.ActionLink("loaded plugins", MVC.Home.LoadedPlugins())
 				</p>
 			</div>
 		</footer>
@@ -98,7 +113,12 @@
 	@Content.Js(Links.Js.malsys_js)
 	@RenderSection("scripts", false)
 
+	@* Google +1 button *@
+	<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
 	@Analytics.GetGoogleAsyncHtml("UA-27861319-1")
 
+	@if (Request.IsLocal) {
+		<div style="position: absolute; top: 8px; left: 8px; font-size: 150%; color: #DDD;">localhost</div>
+	}
 </body>
 </html>

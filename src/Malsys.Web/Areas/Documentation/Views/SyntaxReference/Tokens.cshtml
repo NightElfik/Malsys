@@ -1,0 +1,73 @@
+﻿@**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ *@
+@{
+	ViewBag.Title = "Tokens";
+}
+
+<h2>Tokens</h2>
+
+<p>
+	Token is atomic element of Malsys grammar.
+	In token can not be any whitespace character, however whitespace characters are often used to separate individual tokens.
+	More about tokens syntax can be found on @Html.ActionLink("grammar syntax page", MVC.Documentation.SyntaxReference.Grammar()).
+</p>
+
+<div id="toc"></div>
+
+@* ================================================================================================================== *@
+<h3>Identifier</h3>
+
+@MalsysHelper.GrammarBox("ID = (ALPHABETIC_CHAR | '_') (ALPHABETIC_CHAR | DIGIT | '_' | ''')*")
+
+<p>
+	Formal grammar of identifier is simplified, to avoid using characters groups in unicode.
+	<code>ALPHABETIC_CHAR</code> matches any letter and <code>DIGIT</code> matches any digit.
+	From definition is obvious, that identifier can not start with digit.
+</p>
+
+
+@* ================================================================================================================== *@
+<h3>Number</h3>
+
+@MalsysHelper.GrammarBox(
+	"NUMBER =",
+	"	| [0-9]+ ('.' [0-9]+)? ([eE] ('+'|'-')? [0-9]+)?",
+	"	| '0'[bB] [01]+",
+	"	| '0'[oO] [0-7]+",
+	"	| '0'[xX] ([0-9] | [a-f] | [A-F])+",
+	"	| '#' ([0-9] | [a-f] | [A-F])+")
+
+<p>
+	Malsys supports 5 different formats of number literal.
+</p>
+
+<ul>
+	<li>Floating-point format</li>
+	<li>Binary format with prefix <code class="match">0b</code></li>
+	<li>Octal format with prefix <code class="match">0o</code></li>
+	<li>Hexadecimal format with prefix <code class="match">0x</code></li>
+	<li>Hexadecimal format with prefix <code class="match">#</code></li>
+</ul>
+
+<p>
+	All numbers in Malsys are stored in @Html.Link("double-precision floating-point format", "http://en.wikipedia.org/wiki/Double-precision_floating-point_format").
+	Precision of numbers is about 16 decimal digits.
+</p>
+
+
+@* ================================================================================================================== *@
+<h3>Operator</h3>
+
+@MalsysHelper.GrammarBox(
+	"OPERATOR = (first_op_char op_char*) | '==' | '/'",
+	"",
+	"first_op_char = '!'|'$'|'%'|'&'|'*'|'+'|'\\'|'<'|'>'|'@'|'^'|'|'|'~'|'?'|':'|'-'",
+	"",
+	"op_char = first_op_char | '=' | '/'")
+
+
+<p>
+	Not all combinations of characters are defined as operator in Malsys, see @Html.ActionLink("list of predefined operators", MVC.Documentation.Predefined.Operators()).
+</p>
