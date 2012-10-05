@@ -244,7 +244,7 @@ configuration InnerLsystemConfig {
 
 	// this connection is virtual because LsystemInLsystemProcessor component
 	// will be added to process configuration from main process configuration
-	virtual connect LsystemInLsystemProcessor to InterpreterCaller.LsystemInLsystemProcessor;
+	virtual connect __this__ to InterpreterCaller.LsystemInLsystemProcessor;
 
 }
 

@@ -239,6 +239,7 @@ namespace Malsys.Processing.Components.Interpreters {
 		[UserSettable]
 		public Constant TropismCoefficient { get; set; }
 
+
 		#endregion
 
 		/// <summary>
@@ -271,6 +272,15 @@ namespace Malsys.Processing.Components.Interpreters {
 
 
 		#region Component-related stuff
+
+		/// <summary>
+		/// Returns current position in space.
+		/// </summary>
+		public Point3D CurrPosition {
+			get {
+				return currState.Position;
+			}
+		}
 
 		public IMessageLogger Logger { get; set; }
 

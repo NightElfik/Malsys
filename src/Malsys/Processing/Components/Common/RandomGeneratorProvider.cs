@@ -136,7 +136,7 @@ namespace Malsys.Processing.Components.Common {
 
 			Contract.Ensures(Contract.Result<Constant>() != null);
 
-			return localRandomGenerator.NextDouble().ToConst();
+			return Random().ToConst();
 		}
 
 		/// <summary>
@@ -154,7 +154,7 @@ namespace Malsys.Processing.Components.Common {
 
 			double lower = ((Constant)args[0]).Value;
 			double upper = ((Constant)args[1]).Value;
-			return (localRandomGenerator.NextDouble() * (upper - lower) + lower).ToConst();
+			return (Random() * (upper - lower) + lower).ToConst();
 
 		}
 

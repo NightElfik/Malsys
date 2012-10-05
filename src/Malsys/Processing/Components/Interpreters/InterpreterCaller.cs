@@ -24,6 +24,7 @@ namespace Malsys.Processing.Components.Interpreters {
 	/// </summary>
 	/// <name>Interpreter caller</name>
 	/// <group>Interpreters</group>
+	/// TODO: improve dictionaries to be able to handle more interpreters with same method names.
 	public class InterpreterCaller : IInterpreterCaller {
 
 		private List<IInterpreter> interpreters = new List<IInterpreter>();
@@ -61,9 +62,19 @@ namespace Malsys.Processing.Components.Interpreters {
 		public IMessageLogger Logger { get; set; }
 
 
+		[UserConnectable(IsOptional = true, AllowMultiple = true)]
+		public IInterpreter ExplicitInterpreters {
+			set {
+				explicitInterpreters.Add(value);
+			}
+		}
+		private List<IInterpreter> explicitInterpreters = new List<IInterpreter>();
+
+
 		public void Reset() {
 			interpreters = null;
 			DebugInterpretation = Constant.False;
+			explicitInterpreters.Clear();
 		}
 
 		public void Initialize(ProcessContext ctxt) {
@@ -78,15 +89,28 @@ namespace Malsys.Processing.Components.Interpreters {
 			exprEvalCtxt = ctxt.ExpressionEvaluatorContext;
 			symbolToInstr = ctxt.Lsystem.SymbolsInterpretation.ToDictionary(x => x.Key, x => x.Value);
 
-			var interpretersMeta = ctxt.ComponentGraph
-				.Where(x => typeof(IInterpreter).IsAssignableFrom(x.Value.ComponentType))
-				.Select(x => x.Value)
-				.ToList();
+			List<ConfigurationComponent> interpretersMeta;
+			if (explicitInterpreters.Count > 0) {
+				interpretersMeta = explicitInterpreters
+					.Select(x => ctxt.FindComponent(x))
+					.Where(x => x.HasValue)
+					.Select(x => x.Value.Value)
+					.ToList();
+			}
+			else {
+				interpretersMeta = ctxt.ComponentGraph
+					.Where(x => typeof(IInterpreter).IsAssignableFrom(x.Value.ComponentType))
+					.Select(x => x.Value)
+					.ToList();
+			}
 
 			createInstrToDelCahce(interpretersMeta);
 
 			interpreters = interpretersMeta.Select(x => (IInterpreter)x.Component).ToList();
 
+			if (LsystemInLsystemProcessor != null) {
+				LsystemInLsystemProcessor.SetInterpreters(interpreters);
+			}
 
 		}
 

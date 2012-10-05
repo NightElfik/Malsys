@@ -3,6 +3,7 @@
  * All rights reserved.
  */
 using Malsys.SemanticModel.Evaluated;
+using System.Collections.Generic;
 
 namespace Malsys.Processing.Components.Common {
 	/// <summary>
@@ -11,6 +12,8 @@ namespace Malsys.Processing.Components.Common {
 	/// <name>Inner L-system processor interface</name>
 	/// <group>Special</group>
 	public interface ILsystemInLsystemProcessor : IComponent {
+
+		void SetInterpreters(IEnumerable<IInterpreter> interpreters);
 
 		void ProcessLsystem(string name, string configName, IValue[] args);
 

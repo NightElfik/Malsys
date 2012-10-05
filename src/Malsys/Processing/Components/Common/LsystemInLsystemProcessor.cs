@@ -9,6 +9,7 @@ using Malsys.Evaluators;
 using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Collections;
+using Malsys.Processing.Components.Interpreters;
 
 namespace Malsys.Processing.Components.Common {
 	/// <summary>
@@ -27,6 +28,8 @@ namespace Malsys.Processing.Components.Common {
 
 		protected string DefaultProcessConfigName = "InnerLsystemConfig";
 
+		private const string componentNamePlaceholder = "__this__";
+
 
 		private readonly ProcessConfigurationBuilder configBuilder = new ProcessConfigurationBuilder();
 
@@ -40,10 +43,19 @@ namespace Malsys.Processing.Components.Common {
 		private List<FunctionInfo> forwardedFunctions;
 
 
+		/// <summary>
+		/// List of interpreters which should be called by internal interpreter caller.
+		/// </summary>
+		private List<IInterpreter> interpreters = new List<IInterpreter>();
+
+
+
+
 		public IMessageLogger Logger { get; set; }
 
 
 		public void Reset() {
+			interpreters.Clear();
 			context = null;
 			myselfComp = null;
 			componentBase = null;
@@ -62,7 +74,7 @@ namespace Malsys.Processing.Components.Common {
 			myselfComp = myslefKvp.Value.Value;
 
 			componentBase = MapModule.Empty<string, ConfigurationComponent>()
-				.Add(myselfComp.Name, myselfComp);
+				.Add(componentNamePlaceholder, myselfComp);
 
 
 			forwardedFunctions = context.ExpressionEvaluatorContext.GetAllStoredFunctions()
@@ -83,11 +95,22 @@ namespace Malsys.Processing.Components.Common {
 
 		public void Dispose() { }
 
-
+		/// <summary>
+		/// Sets interpreters which will be called by internal caller.
+		/// Should be set by parent component in initialization.
+		/// </summary>
+		public void SetInterpreters(IEnumerable<IInterpreter> ipreters) {
+			foreach (var inter in ipreters) {
+				// guard to nested hierarchies to prevent adding same interpreter more times
+				if (!interpreters.Contains(inter)) {
+					interpreters.Add(inter);
+				}
+			}
+		}
 
 		/// <remarks>
 		/// The given process configuration must have connections to "virtual" component type of
-		/// ILsystemInLsystemProcessor called with same name as this component. This component is added to component
+		/// ILsystemInLsystemProcessor called as "__this__". This component is added to component
 		/// graph builder to connect it to new component graph.
 		///
 		/// Process logic in this method is taken from ProcessInput method of ProcessManager class.
@@ -128,7 +151,7 @@ namespace Malsys.Processing.Components.Common {
 			}
 
 			// to avoid setting of settable values and initialization of "myself"
-			var compGraphOnlyNew = compGraph.Remove(myselfComp.Name);
+			var compGraphOnlyNew = compGraph.Remove(componentNamePlaceholder);
 
 			try {
 				ProcessConfiguration procConfig;
@@ -178,6 +201,19 @@ namespace Malsys.Processing.Components.Common {
 
 					var newContext = new ProcessContext(lsysEvaled, context.OutputProvider, context.InputData, context.EvaluatorsContainer,
 						newEec, context.ComponentResolver, context.ProcessingTimeLimit, context.ComponentGraph);
+
+					// add interpreters to caller
+					var callerComp = compGraph.Where(x => x.Value.ComponentType == typeof(InterpreterCaller))
+						.Select(x => x.Value.Component)
+						.FirstOrDefault();
+					if (callerComp == null) {
+						throw new ComponentException("Failed to find interpreter caller component in inner L-system configuration.");
+					}
+
+					foreach (var interp in interpreters) {
+						// yes, this looks weird but setter is actually saving interpreters to array
+						((InterpreterCaller)callerComp).ExplicitInterpreters = interp;
+					}
 
 					// initialize components with ExpressionEvaluatorContext -- components can call themselves
 					configBuilder.InitializeComponents(compGraphOnlyNew, newContext, Logger);

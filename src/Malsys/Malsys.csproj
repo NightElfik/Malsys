@@ -123,6 +123,7 @@
     <Compile Include="Media\Triangulation\TriangleEvaluationFunction.cs" />
     <Compile Include="Processing\Components\Renderers\BaseRenderer2D.cs" />
     <Compile Include="Processing\Components\Renderers\DebugRenderer2D.cs" />
+    <Compile Include="Processing\Components\Renderers\EmptyRenderer.cs" />
     <Compile Include="Resources\MalsysConstantsAttribute.cs" />
     <Compile Include="Compilers\ConstantDefCompiler.cs" />
     <Compile Include="Compilers\ExpressionCompiler.cs" />

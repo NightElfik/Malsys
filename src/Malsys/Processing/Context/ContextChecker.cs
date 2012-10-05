@@ -137,7 +137,7 @@ namespace Malsys.Processing.Context {
 		/// It also saves matched variables to given EEC if true is returned.
 		/// </summary>
 		/// <param name="firstNodeAfterSymbol">First node after symbol which context is checked.</param>
-		/// <param name="firstNodeOfContext">First (left) node in list of left context. From this node to next nodes is context checked.</param>
+		/// <param name="firstNodeOfContext">First (left) node in list of right context. From this node to next nodes is context checked.</param>
 		/// <param name="resultEec">EEC where matched variables will be saved. It context checking failed, no variables are saved (EEC remains unchanged).</param>
 		/// <returns>True if given context matches symbols right of given start node, false otherwise.</returns>
 		public bool CheckRightContextOfSymbol(ContextListNode<IValue> firstNodeAfterSymbol, ContextListNode<string> firstNodeOfContext, ref IExpressionEvaluatorContext resultEec) {
