@@ -13,8 +13,9 @@ namespace Malsys.Processing.Context {
 	/// </summary>
 	public class ContextListNode<T> {
 
-		private ContextList parentList;
 		public ContextList ParentList { get { return parentList; } }
+		private ContextList parentList;
+
 		public ContextListNode<T> ParentNode { get { return parentList == null ? null : parentList.ParentNode; } }
 
 		public ContextListNode<T> Previous { get; private set; }
@@ -23,6 +24,19 @@ namespace Malsys.Processing.Context {
 		public Symbol<T> Symbol { get; private set; }
 
 		public ContextList InnerList { get; private set; }
+
+		/// <summary>
+		/// ID to identify whether this node was matched by current context search or not.
+		/// </summary>
+		/// <remarks>
+		///	This property could be bool but then it would be necessary to reset
+		///	all flags to false after context matching.
+		///
+		/// Instead, every context search should have its "unique" (incremental) ID
+		/// and if ID id search is the same as ID of node, then it was visited.
+		/// No resets are required after matching because next search will have different ID.
+		/// </remarks>
+		public int MatchedId { get; set; }
 
 
 		/// <summary>

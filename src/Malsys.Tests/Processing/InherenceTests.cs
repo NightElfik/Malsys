@@ -117,11 +117,13 @@ namespace Malsys.Tests.Processing {
 
 			}
 
-			foreach (var msg in logger) {
+			var relevantMessages = logger.Where(m => m.Type != MessageType.Info);
+
+			foreach (var msg in relevantMessages) {
 				Console.WriteLine(msg.GetFullMessage());
 			}
 
-			actualOutputs.AddRange(logger.Select(msg => msg.Id));
+			actualOutputs.AddRange(relevantMessages.Select(msg => msg.Id));
 
 			Console.WriteLine(string.Join(Environment.NewLine, actualOutputs));
 

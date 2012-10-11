@@ -151,6 +151,18 @@ namespace Malsys.Tests.Processing {
 				"a1 = 1", "a2 = NaN", "b1 = 2", "b2 = 3");
 		}
 
+		[TestMethod]
+		public void MultipleSameBranchesLeftContextTests() {
+			doLeftContextTest("[ B(2) ] [ B(3) ] S", "[ B(a) ] [ B(b) ]", true,
+				"a = 2", "b = 3");
+
+			doLeftContextTest("[ B(2) ] [ X(5) ] [ B(3) ] S", "[ B(a) ] [ B(b) ]", true,
+				"a = 2", "b = 3");
+
+			doLeftContextTest("X [ [ B(2) ] [ X(5) ] [ B(3) ] X ] S", "[ [ B(a) ] [ B(b) ] ]", true,
+				"a = 2", "b = 3");
+		}
+
 
 		// right context tests ==========================================================================================
 
@@ -251,6 +263,18 @@ namespace Malsys.Tests.Processing {
 		public void VariableMatchingNotDefinedRightContextTests() {
 			doRightContextTest("A(1) B(2, 3)", "A(a1, a2) B(b1, b2)", true,
 				"a1 = 1", "a2 = NaN", "b1 = 2", "b2 = 3");
+		}
+
+		[TestMethod]
+		public void MultipleSameBranchesRightContextTests() {
+			doRightContextTest("[ B(2) ] [ B(3) ]", "[ B(a) ] [ B(b) ]", true,
+				"a = 2", "b = 3");
+
+			doRightContextTest("[ B(2) ] [ X(5) ] [ B(3) ]", "[ B(a) ] [ B(b) ]", true,
+				"a = 2", "b = 3");
+
+			doRightContextTest("[ [ B(2) ] [ X(5) ] [ B(3) ] X ] X", "[ [ B(a) ] [ B(b) ] ]", true,
+				"a = 2", "b = 3");
 		}
 
 

@@ -5,16 +5,19 @@
 using Malsys.Evaluators;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Evaluated;
+using System.Threading;
 
 namespace Malsys.Processing.Context {
 	/// <summary>
 	/// All public members are thread safe.
 	/// </summary>
 	/// <remarks>
-	/// This class has no internal state. All methods are pure functions thus they are thread safe.
+	/// This class has no internal state. All methods are "pure" functions thus they are thread safe.
 	/// This class is not static because of testing, deriving or future extensions.
 	/// </remarks>
 	public class ContextChecker {
+
+		private int contextSearchIdCounter = 0;
 
 		/// <summary>
 		/// Checks left context of given symbol with respect to branches.
@@ -26,7 +29,8 @@ namespace Malsys.Processing.Context {
 		/// <returns>True if given context matches symbol's left context, false otherwise.</returns>
 		public bool CheckLeftContextOfSymbol(ContextListNode<IValue> symbolNode, ContextListNode<string>.ContextList context, ref IExpressionEvaluatorContext resultEec) {
 
-			return CheckLeftContextOfSymbol(symbolNode, context.Last, ref resultEec);
+			int searchId = Interlocked.Increment(ref contextSearchIdCounter);  // to preserve thread safety
+			return checkLeftContextOfSymbol(symbolNode, context.Last, searchId, ref resultEec);
 
 		}
 
@@ -40,7 +44,8 @@ namespace Malsys.Processing.Context {
 		/// <returns>True if given context matches symbol's left context, false otherwise.</returns>
 		public bool CheckRightContextOfSymbol(ContextListNode<IValue> symbolNode, ContextListNode<string>.ContextList context, ref IExpressionEvaluatorContext resultEec) {
 
-			return CheckRightContextOfSymbol(symbolNode.Next, context.First, ref resultEec);
+			int searchId = Interlocked.Increment(ref contextSearchIdCounter);  // to preserve thread safety
+			return CheckRightContextOfSymbol(symbolNode.Next, context.First, searchId, ref resultEec);
 
 		}
 
@@ -50,9 +55,11 @@ namespace Malsys.Processing.Context {
 		/// </summary>
 		/// <param name="symbolNode">Symbol which context will be checked.</param>
 		/// <param name="lastContextNode">Last (right) node in list of left context. From this node to previous nodes is context checked.</param>
+		/// <param name="contextSearchId">ID for distinguishing matched branches.</param>
 		/// <param name="resultEec">EEC where matched variables will be saved. It context checking failed, no variables are saved (EEC remains unchanged).</param>
 		/// <returns>True if given context matches symbol's left context, false otherwise.</returns>
-		public bool CheckLeftContextOfSymbol(ContextListNode<IValue> symbolNode, ContextListNode<string> lastContextNode, ref IExpressionEvaluatorContext resultEec) {
+		private bool checkLeftContextOfSymbol(ContextListNode<IValue> symbolNode, ContextListNode<string> lastContextNode,
+				int contextSearchId, ref IExpressionEvaluatorContext resultEec) {
 
 			var eec = resultEec;
 			// already checked node, previous node is checked
@@ -76,7 +83,7 @@ namespace Malsys.Processing.Context {
 						if (lastNode.ParentNode == null) {
 							return false;  // we have no parent
 						}
-						if (CheckLeftContextOfSymbol(lastNode.ParentNode, ctxtNode, ref eec)) {
+						if (checkLeftContextOfSymbol(lastNode.ParentNode, ctxtNode, contextSearchId, ref eec)) {
 							// recursive call matched rest of context
 							resultEec = eec;  // return EEC only if context is matched successfully
 							return true;
@@ -98,8 +105,12 @@ namespace Malsys.Processing.Context {
 					ContextListNode<IValue> matchedNode = null;
 					var node = lastNode.Previous;
 					for (; node != null && node.IsListNode; node = node.Previous) {
-						if (CheckRightContextOfSymbol(node.InnerList.First, ctxtNode.InnerList.First, ref eec)) {
-							// TODO: mark used node to avoid matching on it again
+						if (CheckRightContextOfSymbol(node.InnerList.First, ctxtNode.InnerList.First, contextSearchId, ref eec)) {
+							if (node.MatchedId == contextSearchId) {
+								continue;  // this node was already matched
+							}
+
+							node.MatchedId = contextSearchId;  // mark node as matched
 							matchedNode = node;
 							break;
 						}
@@ -114,7 +125,7 @@ namespace Malsys.Processing.Context {
 						if (lastNode.ParentNode == null) {
 							return false;  // we have no parent
 						}
-						if (CheckLeftContextOfSymbol(lastNode.ParentNode, ctxtNode, ref eec)) {
+						if (checkLeftContextOfSymbol(lastNode.ParentNode, ctxtNode, contextSearchId, ref eec)) {
 							// recursive call matched rest of context
 							resultEec = eec;  // return EEC only if context is matched successfully
 							return true;
@@ -138,9 +149,11 @@ namespace Malsys.Processing.Context {
 		/// </summary>
 		/// <param name="firstNodeAfterSymbol">First node after symbol which context is checked.</param>
 		/// <param name="firstNodeOfContext">First (left) node in list of right context. From this node to next nodes is context checked.</param>
+		/// <param name="contextSearchId">ID for distinguishing matched branches.</param>
 		/// <param name="resultEec">EEC where matched variables will be saved. It context checking failed, no variables are saved (EEC remains unchanged).</param>
 		/// <returns>True if given context matches symbols right of given start node, false otherwise.</returns>
-		public bool CheckRightContextOfSymbol(ContextListNode<IValue> firstNodeAfterSymbol, ContextListNode<string> firstNodeOfContext, ref IExpressionEvaluatorContext resultEec) {
+		public bool CheckRightContextOfSymbol(ContextListNode<IValue> firstNodeAfterSymbol, ContextListNode<string> firstNodeOfContext,
+				int contextSearchId, ref IExpressionEvaluatorContext resultEec) {
 
 			var eec = resultEec;
 			// current checked node, can be null
@@ -169,8 +182,12 @@ namespace Malsys.Processing.Context {
 					// try to match context on all following branches
 					ContextListNode<IValue> matchedNode = null;
 					for (var node = currNode; node != null && node.IsListNode; node = node.Next) {
-						if (CheckRightContextOfSymbol(node.InnerList.First, ctxtNode.InnerList.First, ref eec)) {
-							// TODO: mark used node to avoid matching on it again
+						if (CheckRightContextOfSymbol(node.InnerList.First, ctxtNode.InnerList.First, contextSearchId, ref eec)) {
+							if (node.MatchedId == contextSearchId) {
+								continue;  // this node was already matched
+							}
+
+							node.MatchedId = contextSearchId;  // mark node as matched
 							matchedNode = node;
 							break;
 						}
