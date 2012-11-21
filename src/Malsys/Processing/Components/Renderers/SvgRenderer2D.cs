@@ -247,11 +247,16 @@ namespace Malsys.Processing.Components.Renderers {
 		public override void EndProcessing() {
 			base.EndProcessing();
 
-			if (!measuring) {
-				writer.WriteLine(SvgFooter);
-				writer.Close();
-				writer = null;
+			if (measuring) {
+				return;
 			}
+
+			writer.WriteLine(SvgFooter);
+			writer.Close();
+			writer = null;
+
+			outputStream.Flush();
+			outputStream = null;
 		}
 
 		#endregion
@@ -303,6 +308,11 @@ namespace Malsys.Processing.Components.Renderers {
 
 		public override void DrawPolygon(Polygon2D polygon) {
 
+			if (polygon.Ponits.Count < 3) {
+				Logger.LogMessage(Message.InvalidPolygon, polygon.Ponits.Count);
+				return;
+			}
+
 			if (measuring) {
 				double measureRadius = polygon.StrokeWidth / 2;
 				foreach (var pt in polygon.Ponits) {
@@ -343,5 +353,12 @@ namespace Malsys.Processing.Components.Renderers {
 				default: return "butt";
 			}
 		}
+
+
+		public enum Message {
+			[Message(MessageType.Warning, "Invalid polygon with {0} points ignored.")]
+			InvalidPolygon
+		}
+
 	}
 }

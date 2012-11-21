@@ -9,6 +9,7 @@ using Malsys.Processing.Context;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Evaluated;
 using Symbol = Malsys.SemanticModel.Symbol<Malsys.SemanticModel.Evaluated.IValue>;
+using System.Text;
 
 
 namespace Malsys.Processing.Components.Rewriters {
@@ -44,6 +45,11 @@ namespace Malsys.Processing.Components.Rewriters {
 		private int rightCtxtMaxLen;
 		private int rrReplacementMaxLen;
 		private bool stochasticRules;
+
+		private bool collectStatistics;
+		protected ulong totalRewrittenSymbolsCount;
+		Dictionary<string, ulong> rewriteSymbolsStatistics = new Dictionary<string, ulong>();
+
 
 
 		public IMessageLogger Logger { get; set; }
@@ -96,6 +102,17 @@ namespace Malsys.Processing.Components.Rewriters {
 			}
 		}
 
+		/// <summary>
+		/// Set to true to report statistics.
+		/// </summary>
+		/// <expected>Boolean.</expected>
+		/// <default>false</default>
+		/// <typicalValue>true</typicalValue>
+		[AccessName("reportStatistics")]
+		[UserSettableSybols]
+		public Constant ReportStatistics { get; set; }
+
+
 		#endregion
 
 
@@ -107,6 +124,10 @@ namespace Malsys.Processing.Components.Rewriters {
 
 		public void Reset() {
 			ContextIgnore = StartBranchSymbols = EndBranchSymbols = ImmutableList<Symbol<IValue>>.Empty;
+			ReportStatistics = Constant.False;
+			collectStatistics = false;
+			totalRewrittenSymbolsCount = 0;
+			rewriteSymbolsStatistics.Clear();
 		}
 
 		public void Initialize(ProcessContext ctxt) {
@@ -150,9 +171,13 @@ namespace Malsys.Processing.Components.Rewriters {
 
 			stochasticRules = lsystem.RewriteRules.Any(rr => rr.Replacements.Length > 1);
 
+			collectStatistics = ReportStatistics.IsTrue;
 		}
 
 		public void Cleanup() {
+			if (collectStatistics) {
+				reportStatistics();
+			}
 			context = null;
 			lsystem = null;
 			exprEvalCtxt = null;
@@ -167,12 +192,10 @@ namespace Malsys.Processing.Components.Rewriters {
 
 
 		public void BeginProcessing(bool measuring) {
-			enumerator = new SymbolRewriterEnumerator(this);
 			SymbolProvider.BeginProcessing(measuring);
 		}
 
 		public void EndProcessing() {
-			enumerator = null;
 			SymbolProvider.EndProcessing();
 		}
 
@@ -182,18 +205,26 @@ namespace Malsys.Processing.Components.Rewriters {
 		/// <summary>
 		/// Returns enumerator which will yields result of rewriting symbols from symbol provider.
 		/// </summary>
-		/// <remarks>
-		/// Enumerator is reusable BUT Reset method must be called before each usage.
-		/// Even source (symbol provider) can be switched between usages, Reset call will gets new enumerator.
-		/// </remarks>
 		public IEnumerator<Symbol> GetEnumerator() {
-			enumerator.Reset();
-			return enumerator;
+			return new SymbolRewriterEnumerator(this);
 		}
 
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
-			enumerator.Reset();
-			return enumerator;
+			return new SymbolRewriterEnumerator(this);
+		}
+
+
+		private void reportStatistics() {
+
+			var sb = new StringBuilder();
+
+			sb.AppendLine("Total rewritten symbols: " + totalRewrittenSymbolsCount);
+			sb.AppendLine("Individual symbols details");
+			foreach (var symbolQuantityPair in rewriteSymbolsStatistics) {
+				sb.AppendLine(symbolQuantityPair.Key + ": " + symbolQuantityPair.Value);
+			}
+
+			Logger.LogMessage(Message.Statistics, sb.ToString());
 		}
 
 
@@ -201,6 +232,9 @@ namespace Malsys.Processing.Components.Rewriters {
 
 			[Message(MessageType.Warning, "Function `{0}` does not exist or do not return a value. Emergency local random generator is used.")]
 			NoRandomFunc,
+
+			[Message(MessageType.Statistics, "{0}")]
+			Statistics,
 
 		}
 

@@ -62,12 +62,15 @@ namespace Malsys.Processing.Components.Rewriters {
 
 			private Random emergencyRandomGenerator = null;
 
+			private bool collectStatistics;
+
 
 
 			public SymbolRewriterEnumerator(SymbolRewriter parentSr) {
 
 				parent = parentSr;
 				logger = parent.Logger;
+				collectStatistics = parent.collectStatistics;
 
 				rewriteRules = parent.rewriteRules;
 				exprEvalCtxt = parent.exprEvalCtxt;
@@ -78,14 +81,18 @@ namespace Malsys.Processing.Components.Rewriters {
 				leftCtxtMaxLen = parent.leftCtxtMaxLen;
 				rightCtxtMaxLen = parent.rightCtxtMaxLen;
 
-				processContext = leftCtxtMaxLen > 0 || rightCtxtMaxLen > 0;
-
 				inputBuffer = new IndexableQueue<Symbol>(rightCtxtMaxLen + 4);
 				// optimal output buffer length is max length of any replacement
 				outputBuffer = new IndexableQueue<Symbol>(parent.rrReplacementMaxLen + 1);
 
-				contextBuilder = new ContextListBuilder<IValue>(s => parent.startBranchSymbolNames.Contains(s.Name), s => parent.endBranchSymbolNames.Contains(s.Name));
+				symbolsSource = parent.SymbolProvider.GetEnumerator();
 
+				processContext = leftCtxtMaxLen > 0 || rightCtxtMaxLen > 0;
+				if (processContext) {
+					contextBuilder = new ContextListBuilder<IValue>(s => parent.startBranchSymbolNames.Contains(s.Name), s => parent.endBranchSymbolNames.Contains(s.Name));
+					contextRootNode = contextBuilder.RootNode;
+					currentSombolInContext = contextRootNode;  // will correctly set to symbol after load (next of list is its first item)
+				}
 			}
 
 
@@ -121,23 +128,9 @@ namespace Malsys.Processing.Components.Rewriters {
 				get { return Current; }
 			}
 
-			/// <summary>
-			/// Must be called before any usage, even before first usage.
-			/// </summary>
-			public void Reset() {
+			public void Reset() { }
 
-				symbolsSource = parent.SymbolProvider.GetEnumerator();
-				inputBuffer.Clear();
-				outputBuffer.Clear();
-				contextBuilder.Reset();
-				contextRootNode = contextBuilder.RootNode;
-				currentSombolInContext = contextRootNode;  // will correctly set to symbol after load (next of list is its first item)
-
-			}
-
-			public void Dispose() {
-				// do not dispose anything since enumerator can be reused
-			}
+			public void Dispose() { }
 
 			#endregion
 
@@ -150,13 +143,13 @@ namespace Malsys.Processing.Components.Rewriters {
 				}
 
 				symbol = inputBuffer.Dequeue();
-				if (!contextSymbols.Contains(symbol.Name)) {
+				if (processContext && !contextSymbols.Contains(symbol.Name)) {
 					// search for symbol in hierarchy should never fail because it is done after non-ignored symbol is
 					// loaded thus it must be in context
-					if (currentSombolInContext.GetNextSymbolNodeInHierarchy() == null) {
-						var i = 10;
-						i++;
-					}
+					//if (currentSombolInContext.GetNextSymbolNodeInHierarchy() == null) {
+					//    var i = 10;
+					//    i++;
+					//}
 					currentSombolInContext = currentSombolInContext.GetNextSymbolNodeInHierarchy();
 					Debug.Assert(currentSombolInContext.Symbol == symbol, "Context is not synchronized.");
 				}
@@ -185,7 +178,7 @@ namespace Malsys.Processing.Components.Rewriters {
 				while (count > 0 && symbolsSource.MoveNext()) {
 					var symbol = symbolsSource.Current;
 					inputBuffer.Enqueue(symbol);
-					if (!contextIgnoredSymbolNames.Contains(symbol.Name)) {
+					if (processContext && !contextIgnoredSymbolNames.Contains(symbol.Name)) {
 						contextBuilder.AddSymbolToContext(symbol);
 					}
 					loadedSymbolsCount++;
@@ -213,6 +206,11 @@ namespace Malsys.Processing.Components.Rewriters {
 					foreach (var replacSymbol in replac.Replacement) {
 						var evaledSymbol = new Symbol<IValue>(replacSymbol.Name, eec.EvaluateList(replacSymbol.Arguments));
 						outputBuffer.Enqueue(evaledSymbol);
+					}
+
+					if (collectStatistics) {
+						parent.totalRewrittenSymbolsCount++;
+						parent.rewriteSymbolsStatistics[symbol.Name]++;
 					}
 				}
 				else {

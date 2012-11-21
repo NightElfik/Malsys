@@ -10,6 +10,11 @@ namespace Malsys.Processing {
 	public static class OutputMetadataKeyHelper {
 
 		/// <remarks>
+		/// Suggested file extension.
+		/// </remarks>
+		public const string OutputSuggestedFileExt = "fileExt";
+
+		/// <remarks>
 		/// Expected value is bool.
 		/// </remarks>
 		public const string OutputIsGZipped = "gzipped";

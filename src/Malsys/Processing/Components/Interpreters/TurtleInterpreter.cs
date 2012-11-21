@@ -239,7 +239,6 @@ namespace Malsys.Processing.Components.Interpreters {
 		[UserSettable]
 		public Constant TropismCoefficient { get; set; }
 
-
 		#endregion
 
 		/// <summary>
@@ -286,6 +285,8 @@ namespace Malsys.Processing.Components.Interpreters {
 
 
 		public void Reset() {
+			currState = null;
+
 			Origin = new ValuesArray(Constant.Zero, Constant.Zero, Constant.Zero);
 			ForwardVector = new ValuesArray(Constant.One, Constant.Zero, Constant.Zero);
 			UpVector = new ValuesArray(Constant.Zero, Constant.One, Constant.Zero);
@@ -421,17 +422,15 @@ namespace Malsys.Processing.Components.Interpreters {
 			currState = new State3D() {
 				Position = initPosition,
 				Rotation = initRotation,
-				Width = InitialLineWidth.Value,
-				Color = initColor,
 				Variables = MapModule.Empty<string, IValue>()
 			};
 
 			renderer.BeginProcessing(measuring);
 			if (mode2D) {
-				renderer2D.InitializeState(currState.Position.ToPoint2D(), currState.Width, currState.Color);
+				renderer2D.InitializeState(currState.Position.ToPoint2D(), InitialLineWidth.Value, initColor);
 			}
 			else {
-				renderer3D.InitializeState(currState.Position, currState.Rotation, currState.Width, currState.Color);
+				renderer3D.InitializeState(currState.Position, currState.Rotation, InitialLineWidth.Value, initColor);
 			}
 		}
 
@@ -489,6 +488,59 @@ namespace Malsys.Processing.Components.Interpreters {
 		public void Nothing(ArgsStorage args) { }
 
 		/// <summary>
+		/// Moves turtle to given position. Rotation (orientation) is not changed.
+		/// This method can be called both with coordinates as separate arguments or with array containing coordinates.
+		/// </summary>
+		/// <parameters>
+		/// X coordinate or array of two (three) numbers representing vector of x, y (and optionally z coordinate).
+		/// Y coordinate (optional, default 0).
+		/// Z coordinate (optional, default 0).
+		/// </parameters>
+		[SymbolInterpretation(3, 1)]
+		public void GoTo(ArgsStorage args) {
+
+			double x, y, z;
+
+			if (args[0].IsArray) {
+				var arr = (ValuesArray)args[0];
+				if (!arr.IsConstArray()) {
+					throw new InterpretationException("Array argument of GoTo interpretation method do not contain numbers only.");
+				}
+
+				if (arr.Length == 2) {
+					x = ((Constant)arr[0]).Value;
+					y = ((Constant)arr[1]).Value;
+					z = 0;
+				}
+				else if (arr.Length == 3) {
+					x = ((Constant)arr[0]).Value;
+					y = ((Constant)arr[1]).Value;
+					z = ((Constant)arr[2]).Value;
+				}
+				else {
+					throw new InterpretationException("Array argument of GoTo interpretation method do not have length 2 or 3");
+				}
+			}
+			else {
+				x = getArgumentAsDouble(args, 0);
+				y = getArgumentAsDouble(args, 1);
+				z = getArgumentAsDouble(args, 2);
+			}
+
+			currState.Position.X = x;
+			currState.Position.Y = y;
+			currState.Position.Z = z;
+
+			if (mode2D) {
+				renderer2D.MoveTo(currState.Position.ToPoint2D(), InitialLineWidth.Value, initColor);  // TODO: get proper line width and color
+			}
+			else {
+				renderer3D.MoveTo(currState.Position, currState.Rotation, InitialLineWidth.Value, initColor);
+			}
+
+		}
+
+		/// <summary>
 		/// Moves forward in current direction (without drawing) by distance equal to value of the first parameter.
 		/// </summary>
 		/// <parameters>
@@ -498,6 +550,8 @@ namespace Malsys.Processing.Components.Interpreters {
 		public void MoveForward(ArgsStorage args) {
 
 			double length = getArgumentAsDouble(args, 0);
+			double width = getArgumentAsDouble(args, 1, InitialLineWidth.Value);
+			ColorF color = getArgumentAsColor(args, 2);
 
 			quatRotation.Quaternion = currState.Rotation;
 			Vector3D moveVector = tranform.Transform(fwdVect * length);
@@ -508,10 +562,10 @@ namespace Malsys.Processing.Components.Interpreters {
 			}
 
 			if (mode2D) {
-				renderer2D.MoveTo(currState.Position.ToPoint2D(), currState.Width, currState.Color);
+				renderer2D.MoveTo(currState.Position.ToPoint2D(), width, color);
 			}
 			else {
-				renderer3D.MoveTo(currState.Position, currState.Rotation, currState.Width, currState.Color);
+				renderer3D.MoveTo(currState.Position, currState.Rotation, width, color);
 			}
 
 			if (applyTropism) {
@@ -532,7 +586,7 @@ namespace Malsys.Processing.Components.Interpreters {
 		public void DrawForward(ArgsStorage args) {
 
 			double length = getArgumentAsDouble(args, 0);
-			double width = getArgumentAsDouble(args, 1, currState.Width);
+			double width = getArgumentAsDouble(args, 1, 0);
 			ColorF color = getArgumentAsColor(args, 2);
 
 			quatRotation.Quaternion = currState.Rotation;
@@ -666,10 +720,10 @@ namespace Malsys.Processing.Components.Interpreters {
 
 			currState = statesStack.Pop();
 			if (mode2D) {
-				renderer2D.MoveTo(currState.Position.ToPoint2D(), currState.Width, currState.Color);
+				renderer2D.MoveTo(currState.Position.ToPoint2D(), InitialLineWidth.Value, initColor);  // TODO: where to get width and color?
 			}
 			else {
-				renderer3D.MoveTo(currState.Position, currState.Rotation, currState.Width, currState.Color);
+				renderer3D.MoveTo(currState.Position, currState.Rotation, InitialLineWidth.Value, initColor);
 			}
 		}
 
@@ -686,7 +740,7 @@ namespace Malsys.Processing.Components.Interpreters {
 		public void StartPolygon(ArgsStorage args) {
 
 			ColorF color = getArgumentAsColor(args, 0);
-			double strokeWidth = getArgumentAsDouble(args, 1, currState.Width);
+			double strokeWidth = getArgumentAsDouble(args, 1, 0);
 			ColorF strokeColor = getArgumentAsColor(args, 2);
 
 			colorEvents++;
@@ -730,7 +784,8 @@ namespace Malsys.Processing.Components.Interpreters {
 				if (currPolygon3d == null) {
 					throw new InterpretationException("Failed to record polygon vertex. No polygon is opened.");
 				}
-				currPolygon3d.Ponits.Add(currState.Position);
+
+				currPolygon3d.Add(currState.Position, currState.Rotation);
 			}
 		}
 
@@ -796,7 +851,7 @@ namespace Malsys.Processing.Components.Interpreters {
 				}
 			}
 
-			return currState.Color;
+			return initColor;
 		}
 
 

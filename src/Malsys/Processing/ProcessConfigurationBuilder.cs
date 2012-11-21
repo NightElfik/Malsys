@@ -412,12 +412,12 @@ namespace Malsys.Processing {
 		}
 
 		private Func<IValue> buildComponentVariableCall(PropertyInfo pi, object componentInstance) {
-
-			var instance = Expression.Constant(componentInstance, componentInstance.GetType());
-			var call = Expression.Call(instance, pi.GetGetMethod());
-			var x = pi.GetGetMethod().GetParameters();
-			return Expression.Lambda<Func<IValue>>(call).Compile();
-
+			//var instance = Expression.Constant(componentInstance, componentInstance.GetType());
+			//var call = Expression.Call(instance, pi.GetGetMethod());
+			//var x = pi.GetGetMethod().GetParameters();
+			//return Expression.Lambda<Func<IValue>>(call).Compile();
+			// tremendous speedup:
+			return () => { return (IValue)pi.GetValue(componentInstance, null); };
 		}
 
 		private Func<IValue[], IExpressionEvaluatorContext, IValue> buildCallableFunctionCall(MethodInfo mi, object componentInstance) {

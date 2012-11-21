@@ -8,6 +8,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media.Media3D;
+using System.Diagnostics;
 
 namespace Malsys.Media.Triangulation {
 
@@ -64,6 +65,10 @@ namespace Malsys.Media.Triangulation {
 			Contract.Requires<ArgumentException>(prms.TriangleEvalDelegate != null);
 			Contract.Ensures(Contract.Result<List<int>>() != null);
 			Contract.Ensures(Contract.Result<List<int>>().Count % 3 == 0);
+
+			if (points.Count == 3) {
+				return new List<int>() { 0, 1, 2 };
+			}
 
 			if (prms.DetectPlanarPolygons) {
 				List<int> result;
@@ -149,6 +154,8 @@ namespace Malsys.Media.Triangulation {
 
 		private bool tryTriangulizeAsPlanar(IList<Point3D> points, Polygon3DTriangulerParameters prms, out List<int> tringleIndices) {
 
+			// TODO: enhance detection of optimal plane and computation of goodness of that plane
+
 			Point3D p1, p2, p3;
 			if (!tryGetPlaneFromPoints(points, out p1, out p2, out p3)) {
 				tringleIndices = null;
@@ -159,8 +166,12 @@ namespace Malsys.Media.Triangulation {
 
 			var distances = points.Select(p => Vector3D.DotProduct(normal, p - p1));
 			var mean = distances.Average();
-			var stdDeviation = distances.Sum(d => (d - mean) * (d - mean)) / (points.Count - 1);
+			var stdDeviation = Math.Sqrt(distances.Sum(d => (d - mean) * (d - mean)) / (points.Count - 1));
 			var coefOfVariation = Math.Abs(stdDeviation / mean);
+
+			//var correlation = distances.Sum(d => d / stdDeviation) / (points.Count - 1);
+			//Debug.Assert(correlation >= -1.1 && correlation <= 1.1);
+			//if (Math.Abs(correlation) < 0.8) {
 
 			if (coefOfVariation > prms.MaxVarCoefOfDist) {
 				tringleIndices = null;
@@ -248,12 +259,6 @@ namespace Malsys.Media.Triangulation {
 		private bool tryGetPlaneFromPoints(IList<Point3D> points, out Point3D p1, out Point3D p2, out Point3D p3) {
 			Contract.Requires<ArgumentException>(points.Count >= 3);
 
-			if (points.Count == 3) {
-				p1 = points[0];
-				p2 = points[1];
-				p3 = points[2];
-				return true;
-			}
 
 			int maxPointI = -1, minPointI = -1;
 

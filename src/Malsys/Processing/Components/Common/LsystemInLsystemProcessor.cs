@@ -60,6 +60,14 @@ namespace Malsys.Processing.Components.Common {
 			myselfComp = null;
 			componentBase = null;
 			forwardedFunctions = null;
+
+			foreach (var compStack in configPool.Values) {
+				foreach (var config in compStack) {
+					configBuilder.DisposeComponents(config, Logger);
+				}
+			}
+
+			configPool.Clear();
 		}
 
 		public void Initialize(ProcessContext ctxt) {
@@ -77,21 +85,14 @@ namespace Malsys.Processing.Components.Common {
 				.Add(componentNamePlaceholder, myselfComp);
 
 
-			forwardedFunctions = context.ExpressionEvaluatorContext.GetAllStoredFunctions()
-				.Where(x => x.Name.ToLower() == "random")
-				.ToList();
+			//forwardedFunctions = context.ExpressionEvaluatorContext.GetAllStoredFunctions()
+			//    .Where(x => x.Name.ToLower() == "random")
+			//    .ToList();
+			forwardedFunctions = context.ExpressionEvaluatorContext.GetAllStoredFunctions().ToList();
 
 		}
 
-		public void Cleanup() {
-			foreach (var compStack in configPool.Values) {
-				foreach (var config in compStack) {
-					configBuilder.DisposeComponents(config, Logger);
-				}
-			}
-
-			configPool.Clear();
-		}
+		public void Cleanup() { }
 
 		public void Dispose() { }
 
@@ -202,16 +203,18 @@ namespace Malsys.Processing.Components.Common {
 					var newContext = new ProcessContext(lsysEvaled, context.OutputProvider, context.InputData, context.EvaluatorsContainer,
 						newEec, context.ComponentResolver, context.ProcessingTimeLimit, context.ComponentGraph);
 
+
 					// add interpreters to caller
 					var callerComp = compGraph.Where(x => x.Value.ComponentType == typeof(InterpreterCaller))
 						.Select(x => x.Value.Component)
 						.FirstOrDefault();
+
 					if (callerComp == null) {
 						throw new ComponentException("Failed to find interpreter caller component in inner L-system configuration.");
 					}
 
 					foreach (var interp in interpreters) {
-						// yes, this looks weird but setter is actually saving interpreters to array
+						// yes, this looks weird but setter is actually saving interpreters to list
 						((InterpreterCaller)callerComp).ExplicitInterpreters = interp;
 					}
 

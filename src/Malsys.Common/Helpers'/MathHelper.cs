@@ -114,7 +114,18 @@ namespace Malsys {
 			return 1d;
 		}
 
+		public static double RoundToSignificantDigits(this double num, int n) {
+			if (num == 0) {
+				return 0;
+			}
 
+			double d = Math.Ceiling(Math.Log10(num < 0 ? -num : num));
+			int power = n - (int)d;
+
+			double magnitude = Math.Pow(10, power);
+			double shifted = Math.Round(num * magnitude);
+			return shifted / magnitude;
+		}
 
 	}
 }

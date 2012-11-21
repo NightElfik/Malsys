@@ -125,6 +125,16 @@ namespace Malsys.Processing.Components.Renderers {
 		}
 		private ValuesArray cameraTarget;
 
+		/// <summary>
+		/// Set to false to turn off crappy detection of planar polygons and potentionally speedup processing.
+		/// </summary>
+		/// <expected>Number.</expected>
+		/// <default>true</default>
+		/// <typicalValue>false</typicalValue>
+		[AccessName("detectPlanarPloygons")]
+		[UserSettable]
+		public Constant DetectPlanarPloygons { get; set; }
+
 		#endregion
 
 
@@ -135,6 +145,7 @@ namespace Malsys.Processing.Components.Renderers {
 			cameraPosition = null;
 			cameraUpVector = null;
 			cameraTarget = null;
+			DetectPlanarPloygons = Constant.True;
 		}
 
 		public override void Initialize(ProcessContext ctxt) {
@@ -147,8 +158,8 @@ namespace Malsys.Processing.Components.Renderers {
 				Ordering = triangleEvalFun.Ordering,
 				RecountMode = triangleEvalFun.RecountMode,
 				AttachedMultiplier = 1,
-				DetectPlanarPolygons = true,
-				MaxVarCoefOfDist = 0.1
+				DetectPlanarPolygons = DetectPlanarPloygons.IsTrue,
+				MaxVarCoefOfDist = 0.2
 			};
 
 		}
@@ -241,6 +252,18 @@ namespace Malsys.Processing.Components.Renderers {
 				}
 
 				writer.WriteLine("geom = new THREE.Geometry();");
+
+				// draw stroke if its width is greater than zero
+				if (polygon.StrokeWidth.EpsilonCompareTo(0) > 0) {
+					if (polygon.Ponits.Count != polygon.Rotations.Count) {
+						Logger.LogMessage(Message.InvalidPolygonPtRotCount, polygon.Ponits.Count);
+					}
+
+					MoveTo(polygon.Ponits[0], polygon.Rotations[0], polygon.StrokeWidth, polygon.StrokeColor);
+					for (int i = 1; i < polygon.Ponits.Count; i++) {
+						DrawTo(polygon.Ponits[i], polygon.Rotations[i], polygon.StrokeWidth, polygon.StrokeColor, 1);
+					}
+				}
 
 				double measureRadius = polygon.StrokeWidth / 2;
 				foreach (var pt in polygon.Ponits) {
@@ -444,7 +467,9 @@ namespace Malsys.Processing.Components.Renderers {
 
 		public enum Message {
 			[Message(MessageType.Warning, "Invalid polygon with {0} points ignored.")]
-			InvalidPolygon
+			InvalidPolygon,
+			[Message(MessageType.Warning, "Invalid polygon with different number of points and rotations, ignored.")]
+			InvalidPolygonPtRotCount,
 		}
 
 	}

@@ -391,6 +391,8 @@ namespace Malsys.BitmapRenderers.Components {
 			bitmap.Dispose();
 			bitmap = null;
 
+			outputStream.Flush();
+			outputStream = null;
 		}
 
 
@@ -427,6 +429,12 @@ namespace Malsys.BitmapRenderers.Components {
 		}
 
 		public override void DrawPolygon(Polygon2D polygon) {
+
+			if (polygon.Ponits.Count < 3) {
+				Logger.LogMessage(Message.InvalidPolygon, polygon.Ponits.Count);
+				return;
+			}
+
 			if (measuring) {
 				double measureRadius = polygon.StrokeWidth / 2;
 				foreach (var pt in polygon.Ponits) {
@@ -484,5 +492,9 @@ namespace Malsys.BitmapRenderers.Components {
 			return currentBrush;
 		}
 
+		public enum Message {
+			[Message(MessageType.Warning, "Invalid polygon with {0} points ignored.")]
+			InvalidPolygon
+		}
 	}
 }

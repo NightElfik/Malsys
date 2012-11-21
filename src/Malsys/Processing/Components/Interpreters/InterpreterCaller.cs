@@ -38,6 +38,7 @@ namespace Malsys.Processing.Components.Interpreters {
 		private ArgsStorage args = new ArgsStorage();
 
 		private bool debug;
+		private bool interpDebug;
 		private IndentTextWriter itWriter;
 		private CanonicPrinter debugPrinter;
 
@@ -50,6 +51,15 @@ namespace Malsys.Processing.Components.Interpreters {
 		[AccessName("debugInterpretation")]
 		[UserSettable]
 		public Constant DebugInterpretation { get; set; }
+
+		/// <summary>
+		/// If true, interpreter will interpret symbols while debugging.
+		/// </summary>
+		/// <expected>true or false</expected>
+		/// <default>false</default>
+		[AccessName("interpretWhileDebug")]
+		[UserSettable]
+		public Constant InterpretWhileDebug { get; set; }
 
 
 		/// <summary>
@@ -65,21 +75,28 @@ namespace Malsys.Processing.Components.Interpreters {
 		[UserConnectable(IsOptional = true, AllowMultiple = true)]
 		public IInterpreter ExplicitInterpreters {
 			set {
-				explicitInterpreters.Add(value);
+				if (!explicitInterpreters.Contains(value)) {
+					explicitInterpreters.Add(value);
+				}
 			}
 		}
 		private List<IInterpreter> explicitInterpreters = new List<IInterpreter>();
 
 
 		public void Reset() {
+			exprEvalCtxt = null;
 			interpreters = null;
 			DebugInterpretation = Constant.False;
+			InterpretWhileDebug = Constant.False;
 			explicitInterpreters.Clear();
+			instrToDel.Clear();
+			symbolToInstr = null;
 		}
 
 		public void Initialize(ProcessContext ctxt) {
 
 			debug = DebugInterpretation.IsTrue;
+			interpDebug = InterpretWhileDebug.IsTrue;
 			if (debug) {
 				itWriter = new IndentTextWriter(new StreamWriter(
 					ctxt.OutputProvider.GetOutputStream<InterpreterCaller>("interpreter calls", MimeType.Text.Plain)));
@@ -123,6 +140,7 @@ namespace Malsys.Processing.Components.Interpreters {
 				debugPrinter = null;
 			}
 			instrToDel.Clear();
+			symbolToInstr.Clear();
 		}
 
 		public void Dispose() { }
@@ -137,7 +155,8 @@ namespace Malsys.Processing.Components.Interpreters {
 			if (debug) {
 				debugPrinter.WriteLine("Begin processing" + (measuring ? " (measuring)" : ""));
 			}
-			else {
+
+			if (!debug || interpDebug) {
 				foreach (var i in interpreters) {
 					i.BeginProcessing(measuring);
 				}
@@ -149,7 +168,8 @@ namespace Malsys.Processing.Components.Interpreters {
 			if (debug) {
 				debugPrinter.WriteLine("End processing");
 			}
-			else {
+
+			if (!debug || interpDebug) {
 				foreach (var i in interpreters) {
 					i.EndProcessing();
 				}
@@ -194,13 +214,14 @@ namespace Malsys.Processing.Components.Interpreters {
 
 			if (instr.InstructionIsLsystemName) {
 				if (LsystemInLsystemProcessor == null) {
-					throw new InterpretationException("Failed to interpret symbol `{0}` as L-system `{1}`. Component of type `{2}` is not connected."
-						.Fmt(symbol.Name, instr.InstructionName, typeof(ILsystemInLsystemProcessor).FullName));
+					Logger.LogMessage(Message.LilpNotConnected, symbol.Name, instr.InstructionName, typeof(ILsystemInLsystemProcessor).FullName);
 				}
-				if (debug) {
-					debugPrinter.NewLine();
+				else {
+					if (debug) {
+						debugPrinter.NewLine();
+					}
+					LsystemInLsystemProcessor.ProcessLsystem(instr.InstructionName, instr.LsystemConfigName, args.ToArray());
 				}
-				LsystemInLsystemProcessor.ProcessLsystem(instr.InstructionName, instr.LsystemConfigName, args.ToArray());
 				return;
 			}
 
@@ -232,7 +253,8 @@ namespace Malsys.Processing.Components.Interpreters {
 			if (debug) {
 				debugPrinter.NewLine();
 			}
-			else {
+
+			if (!debug || interpDebug) {
 				iActionParams.Item1(args);
 			}
 		}
@@ -279,10 +301,20 @@ namespace Malsys.Processing.Components.Interpreters {
 		}
 
 		private Action<ArgsStorage> createInterpretAction(MethodInfo mi, IInterpreter interpreter) {
-			var instance = Expression.Constant(interpreter, interpreter.GetType());
-			var argument = Expression.Parameter(typeof(ArgsStorage), "arguments");
-			var call = Expression.Call(instance, mi, argument);
-			return Expression.Lambda<Action<ArgsStorage>>(call, argument).Compile();
+			//var instance = Expression.Constant(interpreter, interpreter.GetType());
+			//var argument = Expression.Parameter(typeof(ArgsStorage), "arguments");
+			//var call = Expression.Call(instance, mi, argument);
+			//return Expression.Lambda<Action<ArgsStorage>>(call, argument).Compile();
+			// tremendous speedup:
+			return arg => mi.Invoke(interpreter, new object[] { arg });
+		}
+
+
+		public enum Message {
+
+			[Message(MessageType.Warning, "Failed to interpret Symbol `{0}` as L-system `{1}`, responsible component is not connected (type {2}).")]
+			LilpNotConnected,
+
 		}
 
 	}

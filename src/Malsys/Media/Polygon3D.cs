@@ -2,6 +2,7 @@
  * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
  * All rights reserved.
  */
+using System;
 using System.Collections.Generic;
 using System.Windows.Media.Media3D;
 
@@ -12,6 +13,7 @@ namespace Malsys.Media {
 	public class Polygon3D {
 
 		public List<Point3D> Ponits;
+		public List<Quaternion> Rotations;
 
 		public ColorF Color;
 
@@ -27,7 +29,14 @@ namespace Malsys.Media {
 			StrokeWidth = strokeWidth;
 
 			Ponits = new List<Point3D>();
+			Rotations = new List<Quaternion>();
 
+		}
+
+
+		public void Add(Point3D pt, Quaternion rotation) {
+			Ponits.Add(pt);
+			Rotations.Add(rotation);
 		}
 
 	}

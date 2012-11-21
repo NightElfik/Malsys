@@ -437,6 +437,7 @@ namespace Malsys.Resources {
 
 		/// <summary>
 		/// Lightens given color by given amount of percent.
+		/// Negative value causes darkening of color.
 		/// </summary>
 		/// <group>Color functions</group>
 		[AccessName("lighten")]
@@ -461,6 +462,7 @@ namespace Malsys.Resources {
 
 		/// <summary>
 		/// Darkens given color by given amount of percent.
+		/// Negative value causes lightening of color.
 		/// </summary>
 		/// <group>Color functions</group>
 		[AccessName("darken")]

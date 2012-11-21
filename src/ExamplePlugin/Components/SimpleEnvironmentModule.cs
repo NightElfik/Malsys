@@ -64,6 +64,26 @@ namespace ExamplePlugin.Components {
 			return position.Y > 0 && intensity > position.Y ? Constant.True : Constant.False;
 		}
 
+		[AccessName("getEnvValue")]
+		[UserCallableFunction]
+		public Constant GetEnvValue(IValue[] args, IExpressionEvaluatorContext eec) {
+
+			Contract.Ensures(Contract.Result<Constant>() != null);
+
+			Point3D position = TurtleInterpreter.CurrPosition;
+
+			int envX = (int)Math.Round(position.X / EnvScale.Value);
+			int envY = (int)Math.Round(position.Z / EnvScale.Value);
+
+			if (envX < 0 || envX >= envMap.Width || envY < 0 || envY >= envMap.Height) {
+				return Constant.MinusOne;
+			}
+
+			var color = envMap.GetPixel(envX, envY);
+			double intensity = (color.R + color.G + color.B) / 3.0;
+			return intensity.ToConst();
+		}
+
 		#region IComponent Members
 
 		public IMessageLogger Logger { get; set; }
@@ -79,7 +99,7 @@ namespace ExamplePlugin.Components {
 			this.context = context;
 
 			try {
-				envMap = (Bitmap)Bitmap.FromFile(@"I:\Malsys\src\Malsys.Web\envMap.png");
+				envMap = (Bitmap)Bitmap.FromFile("envMap.png");
 			}
 			catch {
 				Logger.LogError("", "Failed to load environment map.");
@@ -93,15 +113,11 @@ namespace ExamplePlugin.Components {
 
 		#endregion
 
-		#region IEnumerable<Symbol<IValue>> Members
+		#region IEnumerable Members
 
 		public IEnumerator<Symbol<IValue>> GetEnumerator() {
 			return new Enumerator(this);
 		}
-
-		#endregion
-
-		#region IEnumerable Members
 
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
 			return new Enumerator(this);

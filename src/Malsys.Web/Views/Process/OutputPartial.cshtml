@@ -34,6 +34,9 @@
 		using (var sr = fi.OpenText()) {
 			bool asciiArt = Model.Metadata.ContainsValue(OutputMetadataKeyHelper.OutputIsAsciiArt, true);
 			int readChars = 1000;
+#if DEBUG
+			readChars = 10000;
+#endif
 			if (asciiArt) {
 				readChars *= 4;
 			}

@@ -55,7 +55,17 @@ namespace Malsys.Processing.Output {
 				meta = metadata.ToDictionaryOverwrite(x => x.Key, x => x.Value);
 			}
 
-			string ext = MimeType.ToFileExtension(mimeType);
+			string ext;
+
+			if (meta.ContainsKey(OutputMetadataKeyHelper.OutputSuggestedFileExt)
+					&& !string.IsNullOrWhiteSpace(meta[OutputMetadataKeyHelper.OutputSuggestedFileExt].ToString())) {
+
+				ext = meta[OutputMetadataKeyHelper.OutputSuggestedFileExt].ToString().Trim();
+			}
+			else {
+				ext = MimeType.ToFileExtension(mimeType);
+			}
+
 			if (meta.ContainsValue(OutputMetadataKeyHelper.OutputIsGZipped, true)) {
 				if (mimeType == MimeType.Image.SvgXml) {
 					ext = ".svgz";
@@ -88,8 +98,6 @@ namespace Malsys.Processing.Output {
 		public void AddMetadata(Stream outputStream, string key, object value) {
 			var managedFile = managedFiles.Where(x => x.Stream == outputStream).Single();
 			managedFile.Metadata.Add(key, value);
-
-
 		}
 
 		public FSharpMap<string, object> GetMetadata(Stream outputStream) {

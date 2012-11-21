@@ -45,6 +45,10 @@ namespace Malsys.Web.Controllers {
 			workDirCleanAmount = int.Parse(appSettingsProvider[AppSettingsKeys.WorkDirCleanAmount]);
 			autoPackTreshold = int.Parse(appSettingsProvider[AppSettingsKeys.AutoPackTreshold]);
 
+#if DEBUG
+			autoPackTreshold = 50;  // for debugging purposes
+#endif
+
 		}
 
 

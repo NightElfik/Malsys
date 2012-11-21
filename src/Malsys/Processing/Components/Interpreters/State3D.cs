@@ -14,10 +14,6 @@ namespace Malsys.Processing.Components.Interpreters {
 
 		public Quaternion Rotation;
 
-		public double Width;
-
-		public ColorF Color;
-
 		public FSharpMap<string, IValue> Variables;
 
 
