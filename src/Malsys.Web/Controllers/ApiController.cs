@@ -85,7 +85,7 @@ namespace Malsys.Web.Controllers {
 
 			List<OutputFile> outputs;
 
-			if (fileMgr.OutputFilesCount > autoPackTreshold) {
+			if (fileMgr.OutputsCount > autoPackTreshold) {
 				outputs = fileMgr.GetOutputFilesAsZipArchive().ToList();
 			}
 			else {

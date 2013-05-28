@@ -1,7 +1,5 @@
-﻿/**
- * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
- * All rights reserved.
- */
+﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
+// All rights reserved.
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -139,8 +137,13 @@ namespace Malsys.Processing.Components.Interpreters {
 				}
 				debugPrinter = null;
 			}
+
 			instrToDel.Clear();
-			symbolToInstr.Clear();
+
+			if (symbolToInstr != null) {
+				symbolToInstr.Clear();
+				symbolToInstr = null;
+			}
 		}
 
 		public void Dispose() { }

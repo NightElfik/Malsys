@@ -1,7 +1,5 @@
-﻿/**
- * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
- * All rights reserved.
- */
+﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
+// All rights reserved.
 using System;
 
 namespace Malsys {
@@ -27,7 +25,12 @@ namespace Malsys {
 		}
 
 		public string GetFullMessage() {
-			return "{0} [{1}] at {2}: {3} ".Fmt(Type.ToString(), Id, Position, MessageStr);
+			if (Position.IsUnknown) {
+				return "{0} [{1}]: {2} ".Fmt(Type.ToString(), Id, MessageStr);
+			}
+			else {
+				return "{0} [{1}] at {2}: {3} ".Fmt(Type.ToString(), Id, Position, MessageStr);
+			}
 		}
 
 		public override string ToString() {

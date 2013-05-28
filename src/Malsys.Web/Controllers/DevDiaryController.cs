@@ -12,6 +12,10 @@ namespace Malsys.Web.Controllers {
 		}
 
 
+		public virtual ActionResult SvgOptimizations() {
+			return View();
+		}
+
 		public virtual ActionResult PngAnimationRenderer() {
 			return View();
 		}

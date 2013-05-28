@@ -37,7 +37,7 @@ namespace Malsys.Web.Models.Repositories {
 
 		public DiscusCategory CreateCategory(string name) {
 
-			Contract.Requires<ArgumentNullException>(name != null);
+			//Contract.Requires<ArgumentNullException>(name != null);
 
 			if (string.IsNullOrWhiteSpace(name)) {
 				return null;
@@ -57,7 +57,7 @@ namespace Malsys.Web.Models.Repositories {
 
 		public DiscusCategory EnsureCategory(string name) {
 
-			Contract.Requires<ArgumentNullException>(name != null);
+			//Contract.Requires<ArgumentNullException>(name != null);
 
 			if (string.IsNullOrWhiteSpace(name)) {
 				return null;
@@ -74,7 +74,7 @@ namespace Malsys.Web.Models.Repositories {
 
 		public DiscusThread CreateThread(int categoryId, string title, string authenticatedAuthorName, string nonRegisteredAuthorName, string threadName = null) {
 
-			Contract.Requires<ArgumentNullException>(title != null);
+			//Contract.Requires<ArgumentNullException>(title != null);
 
 			var thread = createThreadEntity(categoryId, title, authenticatedAuthorName, nonRegisteredAuthorName, threadName);
 			discusDb.AddDiscusThread(thread);
@@ -85,7 +85,7 @@ namespace Malsys.Web.Models.Repositories {
 
 		public DiscusThread CreateThreadWithFirstMessage(int categoryId, string title, string authenticatedAuthorName, string nonRegisteredAuthorName, string message, string threadName = null) {
 
-			Contract.Requires<ArgumentNullException>(title != null);
+			//Contract.Requires<ArgumentNullException>(title != null);
 
 			var thread = createThreadEntity(categoryId, title, authenticatedAuthorName, nonRegisteredAuthorName, threadName);
 			discusDb.AddDiscusThread(thread);
@@ -100,8 +100,8 @@ namespace Malsys.Web.Models.Repositories {
 
 		public DiscusMessage AddMessage(int threadId, string text, string authenticatedAuthorName, string nonRegisteredAuthorName) {
 
-			Contract.Requires<ArgumentNullException>(text != null);
-			Contract.Requires<ArgumentException>(authenticatedAuthorName != null || nonRegisteredAuthorName != null);
+			//Contract.Requires<ArgumentNullException>(text != null);
+			//Contract.Requires<ArgumentException>(authenticatedAuthorName != null || nonRegisteredAuthorName != null);
 
 			var threadEntity = discusDb.DiscusThreads.Where(x => x.ThreadId == threadId && !x.IsLocked).SingleOrDefault();
 

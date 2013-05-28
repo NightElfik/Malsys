@@ -1,7 +1,5 @@
-﻿/**
- * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
- * All rights reserved.
- */
+﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
+// All rights reserved.
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -137,7 +135,7 @@ namespace Malsys.Tests.Processing {
 				Assert.AreEqual(excpectedOutput[i].Name, strDataArr[0]);
 
 				if (excpectedOutput[i].IsPointValid) {
-					Assert.IsTrue(excpectedOutput[i].Point.IsEpsilonEqualTo(Point.Parse(strDataArr[1])));
+					Assert.IsTrue(excpectedOutput[i].Point.IsAlmostEqualTo(Point.Parse(strDataArr[1])));
 				}
 				i++;
 			}

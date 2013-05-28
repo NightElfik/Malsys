@@ -1,0 +1,427 @@
+
+// Frames Per Iteration (roughly)
+let FPI = 12;
+//let FPI = 24; -- only for detail rendering
+
+let baseSpeed = 1 / FPI;
+
+fun getSpeed() {
+	return baseSpeed * random(0.6, 1.4);
+}
+
+fun getInitT() {
+	return baseSpeed * random(0.8, 1.2);
+}
+
+
+lsystem Tree extends Polygons {
+
+	//set debugInterpretation = true;
+	//set interpretWhileDebug = true;
+
+	// branching angles (yaw)
+	//let d0 = 0; -- inlined
+	let d1 = 77;
+	let d2 = 181;
+	let d3 = 249;
+
+	fun getRndPitch() {
+		return -40 + random(-2, 2);
+	}
+	
+	fun getRndRoll(baseAagle) {
+		return baseAagle + random(-4, 4);
+	}
+	
+	fun getLeafColor() {
+		return darken(#41FF32, random(0, 0.1));
+	}
+	
+	fun getBloomColor() {
+		return #6495ED;
+	}
+	
+	fun getBloomRodColor() {
+		return #FFFFFF;
+	}
+	
+	fun getBloomSize() {
+		return random(3, 4);
+	}
+	
+	fun getBloomLeafCount() {
+		return floor(random(6, 10));
+	}
+
+	//set reportStatistics = true;
+
+	let baseBranchLen = 60;
+	let genBranchMult = -3;
+	let stemColor = #228B22;  // forest green
+
+	// to distinguish between individual iterations
+	set addSuffixToFileNames = true;
+
+	set interpretEveryIteration = true;
+	//set interpretEveryIterationFrom = 10;
+	
+	
+	let maxGeneration = 7;  // 7 is optimal, set lower for debugging
+	
+	//set iterations = 15;
+	let it = (maxGeneration + 11) * FPI;  // min +9 for good results
+	set iterations = it;
+	
+	set initialAngle = 90;
+
+	set symbols axiom =
+		[ GoTo(40, 1, 260) S(1, maxGeneration - 1) ]  // *H
+		[ GoTo(190, 1, 260) S(1, maxGeneration - 1) ]  // H*
+		[ GoTo(320, 1, 270) S(1, maxGeneration + 2) ]  // P
+		[ GoTo(520, 1, 260) S(1, maxGeneration + 2) ]  // *C
+		[ GoTo(630, 1, 260) S(1, maxGeneration - 1) ]  // C*
+		[ GoTo(790, 1, 120) S(1, maxGeneration - 1) ]  // C^
+		[ GoTo(770, 1, 390) S(1, maxGeneration - 1) ]  // Cv
+		[ GoTo(870, 1, 300) S(1, maxGeneration) ]  // >G<
+		[ GoTo(1030, 1, 250) S(1, maxGeneration) ]  // G*
+		;
+
+	// tropism up to eliminate (minimize) branches growing down
+	set tropismVector = {0, 1, 0};
+	set tropismCoefficient = 0.4;
+
+	//set cameraPosition = {659, 970, 270};
+	//set cameraUpVector = {0.04, 0.18, -0.99};
+	//set cameraTarget = {549, 98, 294};
+
+	// for triangulating leafs
+	set polygonTriangulationStrategy = maxDistance;  // 3
+	// turn this off to speedup processing, it is not working properly anyways
+	set detectPlanarPloygons = false;
+
+	// Ignore all symbols which we do not need in context
+	// this should speedup processing a bit.
+	// The only symbol needed in context is: Leaf and Branch (for separation).
+	set symbols contextIgnore = / ^
+		TestEnvironment
+		GrowingBranch FakeBranch GoTo;
+
+
+	interpret Branch(gen, t) as DrawForward(
+		baseBranchLen + genBranchMult * gen,
+		// branch will grow to maximum width in 6 iterations
+		0.5 + (5 / gen) * min(1, t / 6),
+		stemColor);
+		
+	// when t == FPI, growing branch must be equal to branch
+	interpret GrowingBranch(t, gen) as DrawForward(
+		(baseBranchLen + genBranchMult * gen) * t,
+		0.5 * t,
+		lighten(stemColor, 0.2 * (1 - t)));
+		
+	// fake branch must have same length as normal branch
+	interpret FakeBranch(gen) as MoveForward(
+		baseBranchLen + genBranchMult * gen);
+		
+	//interpret TestEnvironment as DrawSphere(2);
+		
+	interpret Leaf as lsystem Leaf;
+	interpret Bloom as lsystem Bloom;
+	interpret ^ as Pitch;
+	interpret / as Roll;
+	interpret GoTo as GoTo;
+
+
+	rewrite S(gen, maxGen) to FakeBranch(gen) TestEnvironment(gen, maxGen);
+	
+	// if environment is ok, rewrite to branch
+	rewrite TestEnvironment(gen, maxGen)
+		where gen < maxGen && canLive()
+		to GrowingBranch(getInitT(), gen, maxGen, getSpeed());
+		
+	// out of environment, place leaf
+	rewrite TestEnvironment(gen)
+		to /(random(-10,10)) Leaf(getLeafColor(), getInitT(), gen, getSpeed());
+		
+	// cleanup fake branches
+	rewrite FakeBranch to nothing;
+	
+	
+	// branch growth
+	rewrite GrowingBranch(t, gen, maxGen, tSpeed)
+		where t < 1
+		to GrowingBranch(min(1, t+tSpeed), gen, maxGen, tSpeed);
+		
+	// branch growth ended, branch
+	rewrite GrowingBranch(t, gen, maxGen)
+		with g = gen + 1
+		to Branch(gen, getInitT())
+			[ /(getRndRoll(0))  ^(getRndPitch()) S(g, maxGen) ]
+			[ /(getRndRoll(d1)) ^(getRndPitch()) S(g, maxGen) ]
+			[ /(getRndRoll(d2)) ^(getRndPitch()) S(g, maxGen) ]
+			[ /(getRndRoll(d3)) ^(getRndPitch()) S(g, maxGen) ];
+
+	
+	// branch growth
+	rewrite Branch(gen, t) to Branch(gen, t + baseSpeed);
+
+	// four leafes to three leafes and bloom (50% chance)
+	rewrite {[Leaf] [Leaf] [Leaf]} Leaf
+		to Bloom(getBloomSize(), getBloomLeafCount(), getBloomColor(), getBloomRodColor(), getInitT(), getSpeed()) weight 1
+		to nothing weight 1;
+
+	// leaf growth
+	rewrite Leaf(c, t, gen, speed) to Leaf(c, t + speed, gen, speed);
+	
+	// bloom growth
+	rewrite Bloom(s, l, c, rc, t, speed) to Bloom(s, l, c, rc, t + speed, speed);
+}
+
+
+abstract lsystem Leaf(color, t, gen) extends Polygons {
+
+	let growthMult = min(1, t);  // goes from 0 to 1 first generation, stops at 1
+	
+	// max 14 iterations
+	set iterations = 14;
+	
+	// older leafes will be smaller
+	// leaf will grow in 5 iterations
+	let scale = (0.2 + (1 / gen)) * min(1, t / 5);
+	let angle = 2;
+
+	let LA = 5;  // length - main segment
+	let RA = 1;  // growth rate - main segment
+	let LB = 1;  // initial length - lateral segment
+	let RB = 1.2;  // growth rate - lateral segment
+	let PD = 1;  // growth potential decrement
+
+	let stemLen = 10*scale*growthMult;
+	let stemWid = 2*scale*growthMult;
+	let stemColor = darken(color, 0.3);
+
+	set symbols axiom = ^(-30)
+		F(stemLen * growthMult, stemWid * growthMult, stemColor) X(-stemLen * growthMult)
+		<(color) . A(0) >;
+
+	interpret F as DrawForward;
+	interpret X as MoveForward;
+	interpret G(len) as MoveForward(len*scale);
+	interpret + as Yaw(60);
+	interpret - as Yaw(-60);
+	interpret ^ as Pitch(angle);
+
+	rewrite A(t) to G(LA,RA) [ - B(t) . ] [ ^ A(t+1) ] [ + B(t) . ];
+	rewrite B(t) where t > 0 to G(LB,RB) B(t-PD);
+	rewrite G(s, r) to G(s*r,r);
+	
+}
+
+abstract lsystem LeafTest {
+	
+	set polygonTriangulationStrategy = minAngle;  // 1
+	
+	set interpretEveryIteration = true;
+	set symbols axiom = /(90) L(0);
+	set iterations = 20;
+	
+	set scale = 10;
+	
+	interpret L as lsystem Leaf;
+	interpret / as Roll;
+	
+	rewrite L(x) to L(x + 1);
+	
+}
+
+/// Optimal base size is 3
+abstract lsystem Bloom(baseSize, leafCount, color, rodColor, t) extends Polygons {
+
+	let growthMult = min(1, t);  // goes from 0 to 1 first generation, stops at 1
+	
+	let darkerColor = darken(color, 0.1);
+	let angle = 200 / leafCount;
+	let scale = min(baseSize, t);  // bloom will grow in 'baseSize' iterations
+
+	let leafAngle = min(70, 15 * t) + 10; // bloom will open in five iterations
+	let rodAngleMult = min(1, t / 5); // rods will open in five iterations
+
+	let rodCount = 2 * leafCount;
+	let rodDarkerColor = darken(rodColor, 0.2);
+
+	set symbols axiom = F [ G K ] F(-scale / 6)
+		[ leaf(leafCount) ]
+		[ rod(rodCount) ];
+	set iterations = max(leafCount, rodCount);
+
+	interpret F as DrawForward(scale * 2.5, (1 + scale / 4) * growthMult, color);
+	interpret f as MoveForward(scale);
+	interpret r as MoveForward(2 * scale);
+	interpret s as MoveForward(scale / 4);
+	//interpret K as DrawSphere(scale / 2, #ffff00);
+	interpret K as DrawForward(scale/2, (1 + scale/5) * growthMult, #ffff00);
+
+	interpret + as Yaw(angle);
+	interpret - as Yaw(-angle / 2);
+	interpret | as Yaw(180);
+	interpret / as Roll;
+
+	interpret ^ as Pitch(-10);
+
+	rewrite leaf(num) where num > 0 to
+		/(360 / leafCount) [ ^(leafAngle) <(color) .
+		+ ^ f . - ^ f . - ^ f . - ^ f . - ^ f . + |
+		+ f . - ^ f . - ^ f . - ^ f .  > ] leaf(num - 1);
+
+	rewrite rod(num) where num > 0 to
+		/(360 / rodCount) <(rodColor)
+		[ ^((40 + (num % 2) * 10) * rodAngleMult) r . ] [ +(90) s . ] [ +(-90) s . ] >
+		rod(num - 1);
+}
+
+
+abstract lsystem BloomTest extends Branches {
+	
+	set polygonTriangulationStrategy = minAngle;  // 1
+	
+	set interpretEveryIteration = true;
+	set symbols axiom = [ +(90) B(8, 0) ] F(10) B(8, 0);
+	set iterations = 16;
+	
+	set scale = 10;
+	
+	interpret B as lsystem Bloom;
+	interpret F as MoveForward;
+	interpret + as Yaw;
+	
+	rewrite B(l, x) to B(l, x + 1);
+	
+}
+
+
+
+lsystem PlainTree extends Tree {
+
+	set symbols axiom = S(1, maxGeneration);
+	
+	set iterations = (maxGeneration + 2) * FPI;
+
+	rewrite S(gen, maxGen)
+		where gen < maxGen
+		to GrowingBranch(getInitT(), gen, maxGen, getSpeed());
+	
+	rewrite S to nothing;
+
+}
+
+
+lsystem CutTree extends Tree {
+
+	set symbols axiom = /(-40) S(1, maxGeneration);
+	
+	set iterations = (maxGeneration + 4) * FPI;
+
+	// do not add leafes when branches are too old
+	rewrite TestEnvironment(gen, maxGen)
+		where gen >= maxGen
+		to nothing;
+		
+	rewrite TestEnvironment(gen, maxGen)
+		where getEnvPosition()[2] < 50
+		to GrowingBranch(getInitT(), gen, maxGen, getSpeed());
+		
+	rewrite TestEnvironment(gen)
+		to /(random(-10,10)) Leaf(getLeafColor(), getInitT(), gen, getSpeed());
+		
+	// Force leaf rewriting to not create blooms
+	rewrite Leaf(c, t, gen, speed) to Leaf(c, t + speed, gen, speed);
+		
+}
+
+lsystem DetailTree extends Tree {
+
+	set symbols axiom =
+		[ GoTo(190, 1, 260) S(1, maxGeneration - 1) ]  // H*
+		[ GoTo(320, 1, 270) S(1, maxGeneration + 2) ]  // P
+		[ GoTo(520, 1, 260) S(1, maxGeneration + 2) ]  // *C
+		;
+	
+	set iterations = it * 3 / 4;
+	set interpretEveryIteration = false;
+	set interpretEveryIterationFrom = it / 3;
+		
+}
+
+// needs different heightmap
+lsystem Heart extends Tree {
+	
+	set symbols axiom =
+		[ GoTo(160, 1, 130) S(1, maxGeneration) ]
+		;
+	rewrite {[Leaf] [Leaf] [Leaf]} Leaf
+		to Bloom(getBloomSize() * 1.1, getBloomLeafCount(), #FF0000, #AA0000, getInitT(), getSpeed());
+}
+
+/*
+process Tree with EnvRenderer
+	use ObjExporter3D as Renderer  // comment to display scene using WebGL
+	//use GdiBitmapRenderer as Renderer
+;
+*/
+//process LeafTest with BitmapRenderer;
+//process BloomTest with BitmapRenderer;
+//process PlainTree with ObjExporter;
+//process CutTree with EnvRenderer use ObjExporter3D as Renderer;
+
+// set FPI to 24 for following L-system
+//process DetailTree with EnvRenderer use ObjExporter3D as Renderer;
+
+// needs heart heightmap
+process Heart with EnvRenderer use ObjExporter3D as Renderer;
+
+
+configuration EnvRenderer {
+
+	component Environment typeof SimpleEnvironmentModule;
+	component EnvInterpreter typeof TurtleInterpreter;
+	component EnvInterpreterCaller typeof InterpreterCaller;
+	component EmptyRenderer typeof EmptyRenderer;
+
+	container Rewriter typeof IRewriter default SymbolRewriter;
+	container Iterator typeof IIterator default MemoryBufferedIterator;
+
+	// the connection is unituitecely reversed, but this order is because of enumerators
+	connect Environment to Rewriter.SymbolProvider;
+	connect Iterator to Environment.SymbolProvider;
+	connect Rewriter to Iterator.SymbolProvider;
+
+
+	connect EnvInterpreterCaller to Environment.InterpreterCaller;
+	connect EnvInterpreter to Environment.TurtleInterpreter;
+	connect EnvInterpreter to EnvInterpreterCaller.ExplicitInterpreters;
+	connect EmptyRenderer to EnvInterpreter.Renderer;
+
+
+	container Interpreter typeof IInterpreter default TurtleInterpreter;
+	container InterpreterCaller typeof IInterpreterCaller default InterpreterCaller;
+
+	connect Interpreter to InterpreterCaller.ExplicitInterpreters;
+
+
+	component LsystemInLsystemProcessor typeof LsystemInLsystemProcessor;
+	component AxiomProvider typeof AxiomProvider;
+	component RandomGeneratorProvider typeof RandomGeneratorProvider;
+
+	container Renderer typeof IRenderer default ThreeJsSceneRenderer3D;
+
+	connect RandomGeneratorProvider to Iterator.RandomGeneratorProvider;
+	connect AxiomProvider to Iterator.AxiomProvider;
+	connect LsystemInLsystemProcessor to InterpreterCaller.LsystemInLsystemProcessor;
+	connect Renderer to Interpreter.Renderer;
+	
+	component SymbolsSaver typeof SymbolsSaver;
+	// interpreter vs symbols
+	connect InterpreterCaller to Iterator.OutputProcessor;
+	//connect SymbolsSaver to Iterator.OutputProcessor;
+
+}

@@ -50,8 +50,10 @@
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
     <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
-    <DocumentationFile>bin\Malsys.Web.xml</DocumentationFile>
-    <NoWarn>1591</NoWarn>
+    <DocumentationFile>
+    </DocumentationFile>
+    <NoWarn>
+    </NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -86,7 +88,7 @@
     <CodeContractsReferenceAssembly>DoNotBuild</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
     <ExcludeApp_Data>true</ExcludeApp_Data>
-    <NoWarn>1591</NoWarn>
+    <NoWarn>1591 1584</NoWarn>
     <DocumentationFile>bin\Malsys.Web.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
@@ -409,6 +411,14 @@
     <Content Include="Download\MarekFiser-LsystemsOnline.v101.pdf.zip" />
     <Content Include="Areas\Documentation\Views\Home\LsystemFaq.cshtml" />
     <Content Include="Areas\Administration\Views\Stats\Logs.cshtml" />
+    <None Include="Img\DevDiary\SvgOptimizations\CircTile.svgz" />
+    <None Include="Img\DevDiary\SvgOptimizations\DekkingsChurch.svgz" />
+    <None Include="Img\DevDiary\SvgOptimizations\HexagosperSig2.svgz" />
+    <None Include="Img\DevDiary\SvgOptimizations\HexagosperSig3.svgz" />
+    <None Include="Img\DevDiary\SvgOptimizations\HexagosperSig4.svgz" />
+    <None Include="Img\DevDiary\SvgOptimizations\HexaGosperSmall.svgz" />
+    <None Include="Img\DevDiary\SvgOptimizations\HtreeSmall.svgz" />
+    <None Include="Img\DevDiary\SvgOptimizations\SierpinskiTrangle.svgz" />
     <None Include="Js\jquery.textarea.js" />
     <None Include="Js\jquery.validate.js" />
     <None Include="Js\jquery.js" />
@@ -439,6 +449,8 @@
     <Content Include="Img\DevDiary\apng\MalsysCoords.png" />
     <Content Include="Img\DevDiary\apng\MinimalPng.png" />
     <Content Include="Img\DevDiary\apng\PngChunk.png" />
+    <Content Include="Img\DevDiary\apng\SimplePythagorasAnim.png" />
+    <Content Include="Img\DevDiary\apng\SimplePythagorasAnimFallback.png" />
     <Content Include="Img\Lilac-DiffWebGL.png" />
     <Content Include="Img\prettyPhoto\light_square\btnNext.png" />
     <Content Include="Img\prettyPhoto\light_square\btnPrevious.png" />
@@ -579,6 +591,7 @@
     <Content Include="Views\Discussion\LockThread.cshtml" />
     <Content Include="Views\Discussion\Index.cshtml" />
     <Content Include="Views\Home\LoadedPlugins.cshtml" />
+    <Content Include="Views\DevDiary\SvgOptimizations.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Areas\Administration\Views\Shared\" />

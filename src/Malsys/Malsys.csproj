@@ -50,8 +50,10 @@
     <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <DocumentationFile>bin\Debug\Malsys.xml</DocumentationFile>
-    <NoWarn>1591</NoWarn>
+    <DocumentationFile>
+    </DocumentationFile>
+    <NoWarn>
+    </NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -86,7 +88,7 @@
     <CodeContractsReferenceAssembly>DoNotBuild</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
     <DocumentationFile>bin\Release\Malsys.XML</DocumentationFile>
-    <NoWarn>1591</NoWarn>
+    <NoWarn>1591 1587</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Autofac, Version=2.6.1.841, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
@@ -125,6 +127,7 @@
     <Compile Include="Processing\Components\Renderers\ObjExporter3D.cs" />
     <Compile Include="Processing\Components\Renderers\DebugRenderer2D.cs" />
     <Compile Include="Processing\Components\Renderers\EmptyRenderer.cs" />
+    <Compile Include="Processing\Components\Renderers\SvgPolylinesDrawer.cs" />
     <Compile Include="Resources\MalsysConstantsAttribute.cs" />
     <Compile Include="Compilers\ConstantDefCompiler.cs" />
     <Compile Include="Compilers\ExpressionCompiler.cs" />
@@ -169,7 +172,6 @@
     <Compile Include="Evaluators\ParametersEvaluator.cs" />
     <Compile Include="Evaluators\SymbolEvaluator.cs" />
     <Compile Include="Evaluators\VariableInfo.cs" />
-    <Compile Include="Helpers%27\FloatArithmeticHelper.cs" />
     <Compile Include="Media\ColorHelper.cs" />
     <Compile Include="Media\ColorGradient.cs" />
     <Compile Include="Media\ColorGradientFactory.cs" />

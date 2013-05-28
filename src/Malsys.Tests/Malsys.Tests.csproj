@@ -49,8 +49,10 @@
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
     <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
-    <DocumentationFile>bin\Debug\Malsys.Tests.XML</DocumentationFile>
-    <NoWarn>1591</NoWarn>
+    <DocumentationFile>
+    </DocumentationFile>
+    <NoWarn>
+    </NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -123,6 +125,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ColorGradientTest.cs" />
+    <Compile Include="Common\MathHelperTests.cs" />
     <Compile Include="Compilers\ExpressionCompilerTest.cs" />
     <Compile Include="DataSizeHelperTest.cs" />
     <Compile Include="Evaluators\FunctionEvalTests.cs" />

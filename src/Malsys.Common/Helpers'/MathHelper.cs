@@ -1,9 +1,8 @@
-﻿/**
- * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
- * All rights reserved.
- */
+﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
+// All rights reserved.
 using System;
 using System.Diagnostics.Contracts;
+using System.Globalization;
 
 namespace Malsys {
 	public static class MathHelper {
@@ -114,8 +113,13 @@ namespace Malsys {
 			return 1d;
 		}
 
+		/// <remarks>
+		/// For details see SigDigitsRounding.ods document.
+		/// </remarks>
 		public static double RoundToSignificantDigits(this double num, int n) {
-			if (num == 0) {
+			Contract.Requires<ArgumentOutOfRangeException>(n > 0);
+
+			if (num.IsAlmostZero()) {
 				return 0;
 			}
 
@@ -125,6 +129,53 @@ namespace Malsys {
 			double magnitude = Math.Pow(10, power);
 			double shifted = Math.Round(num * magnitude);
 			return shifted / magnitude;
+		}
+
+		/// <summary>
+		/// Rounds number to given number of significant digits.
+		/// Preserves numbers which are beyond rounding precision but they are needed in string representation anyways.
+		/// For example 1234.5 is rounded to 1200 but returned value will be 1234 but value 0.12345 will be returned as 0.12 (2 sign. digits rounding).
+		/// </summary>
+		/// <remarks>
+		/// For details see SigDigitsRounding.ods document.
+		/// </remarks>
+		public static string RoundToShortestString(this double num, int leastSignificantDigits, bool allowScientificNotation) {
+			Contract.Requires<ArgumentOutOfRangeException>(leastSignificantDigits > 0);
+
+			if (num.IsAlmostZero()) {
+				return "0";
+			}
+
+			double d = Math.Ceiling(Math.Log10(num < 0 ? -num : num));
+			int power = leastSignificantDigits - (int)d;
+
+			double magnitude = Math.Pow(10, power);
+			double shifted = Math.Round(num * magnitude);
+
+			string classicString;
+
+			if (power <= 0) {
+				// 1234.5 => 1200 situation, lets return 1234
+				classicString = Math.Round(num).ToStringInvariant();
+			}
+			else {
+				classicString = (shifted / magnitude).ToStringInvariant();
+			}
+
+			if (allowScientificNotation) {
+				string baseStr = ((long)shifted).ToString();
+				while (baseStr.EndsWith("0")) {
+					baseStr = baseStr.Substring(0, baseStr.Length - 1);
+					--power;
+				}
+
+				string scienceString = baseStr + "E" + (-power).ToString();
+				if (scienceString.Length < classicString.Length) {
+					return scienceString;
+				}
+			}
+
+			return classicString;
 		}
 
 	}

@@ -1,7 +1,5 @@
-﻿/**
- * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
- * All rights reserved.
- */
+﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
+// All rights reserved.
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -110,7 +108,7 @@ namespace Malsys.Processing.Output {
 		#endregion
 
 
-		public int OutputFilesCount {
+		public int OutputsCount {
 			get { return managedFiles.Where(x => !x.IsTemporary).Count(); }
 		}
 
@@ -215,6 +213,7 @@ namespace Malsys.Processing.Output {
 					throw new Exception("File path escaped from root directory.");
 				}
 
+				// TODO: fix this, it is not secure (thread safe)
 				if (!File.Exists(filePath)) {
 					try {
 						File.Create(filePath).Dispose();

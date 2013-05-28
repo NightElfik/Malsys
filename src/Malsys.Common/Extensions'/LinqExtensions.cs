@@ -1,12 +1,11 @@
-﻿/**
- * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
- * All rights reserved.
- */
+﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
+// All rights reserved.
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.FSharp.Collections;
+using System.Diagnostics.Contracts;
 
 namespace Malsys {
 	public static class LinqExtensions {
@@ -81,6 +80,17 @@ namespace Malsys {
 			int index = new Random().Next(count);
 
 			return source.Skip(index).First();
+		}
+
+		public static T LastOrDefault<T>(this IList<T> source) {
+
+			int count = source.Count();
+
+			if (count == 0) {
+				return default(T);
+			}
+
+			return source[count - 1];
 		}
 
 	}

@@ -1,7 +1,5 @@
-﻿/**
- * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
- * All rights reserved.
- */
+﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
+// All rights reserved.
 using System;
 using System.Data.Objects.DataClasses;
 using System.Linq;
@@ -21,10 +19,10 @@ namespace Malsys.Web.Entities {
 		void AddRole(Role role);
 
 
-		int SaveChanges();
+		//override int SaveChanges();
 
-		void Detach(object entity);
-		void Attach(IEntityWithKey entity);
+		//void Detach(object entity);
+		//void Attach(IEntityWithKey entity);
 
 	}
 

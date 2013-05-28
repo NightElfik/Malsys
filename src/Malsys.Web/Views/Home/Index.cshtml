@@ -15,13 +15,6 @@
 	<li>@Html.ActionLink("Documentation", MVC.Documentation.Home.Index())</li>
 }
 
-@if (Model.Item1 != null) {
-	<div class="right bg">
-	@Html.Partial(MVC.Shared.Views.GalleryThumbnailPartial, Model.Item1)
-	<h4 class="center">@Model.Item1.SavedInput.PublishName</h4>
-	</div>
-}
-
 <h3>What is Malsys?</h3>
 <p>
 	Malsys is online L-system generator designed for working and experimenting with L-systems.
@@ -33,7 +26,11 @@
 		@Html.ActionLink("this page", MVC.Home.Thesis()).
 </p>
 
-<h3>How can I use Malsys?</h3>
+<h3>What can be achieved with Malsys</h3>
+<div class="center">
+	<iframe width="640" height="360" src="http://www.youtube.com/embed/NUyar1wrcaQ?rel=0" frameborder="0" allowfullscreen></iframe>
+</div>
+<h3>How to use Malsys?</h3>
 <p>
 	Check @Html.ActionLink("Documentation", MVC.Documentation.Home.Index()) or examples in @Html.ActionLink("gallery", MVC.Gallery.Index()).
 	Or you can try to create an L-system curve with @Html.ActionLink("curve designer", MVC.CurveDesigner.Index()).

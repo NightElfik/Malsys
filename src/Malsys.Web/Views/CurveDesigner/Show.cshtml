@@ -35,7 +35,7 @@
 	<input type="checkbox" id="autoMirror" @(Model.AutoMirror ? "checked=\"checked\"" : "") data-src-id="cdLeft" data-dest-id="cdRight" /> <label for="autoMirror">Auto mirror</label>
 	<input type="checkbox" id="checkFassRules" @(Model.CheckFassRules ? "checked=\"checked\"" : "") /> <label for="checkFassRules">Check rules of FASS curves (experimental, do not cover all conditions)</label>
 	<br />
-	@Html.ActionLink("Back to designer settings (exits current designer)", MVC.CurveDesigner.Index());
+	@Html.ActionLink("Back to designer settings (exits current designer)", MVC.CurveDesigner.Index())
 </p>
 
 <h3>Results</h3>

@@ -12,7 +12,10 @@
 	TODO
 </p>
 
-
+<p>
+	This development diary is quite detailed.
+	Feel free to skip topics which are not interesting for you ;)
+</p>
 
 <h3>Possible solutions</h3>
 
@@ -273,16 +276,20 @@ g.TranslateTransform(0f, height, MatrixOrder.Append);
 	For details see the APNG specification @(refs.Cite("APNG spec", Html.Link("APNG Specification", "https://wiki.mozilla.org/APNG_Specification", true))).
 </p>
 
-
-<h3>Implementation if PNG en/decoder</h3>
-
 <p>
-	To be possible to assemble APNG as shows @figs.Ref("apngComposition") we need PNG encoder and decoder.
+	One last note to PNG format.
+	The IDAT chunk is usually "divided" into more smaller IDAT chunks.
+	PNG standard allows more consecutive IDAT chunks which should be considered as one "data stream".
+	For example standard .NET Bitmap class divides IDAT chunks to 64 kB pieces.
 </p>
 
+
+<h3>Implementation if PNG reader/writer</h3>
+
 <p>
-	Implementation of PNG decoder is relatively simple since we do not have to decompress data from IDAT chunk.
-	The decoder is designed to work as stream reader to minimize memory consumption, thus, improve performance.
+	To be possible to assemble APNG as shows @figs.Ref("apngComposition") we need PNG reader and writer.
+	As already mentioned, we do not need to touch IDAT chunks which are encoded (compressed) so implementation of PNG reader is then relatively simple.
+	The reader is designed to work as stream reader to minimize memory consumption, thus, improve performance.
 	Its interface is shown in the following code snippet (unimportant members omitted).
 </p>
 
@@ -323,8 +330,101 @@ using (var stream = FileStream("test.png", FileMode.Open, FileAccess.Read)) {
 </pre>
 
 <p>
-	PNG encoder has similar design  to count checksum of chunks but
+	PNG writer has similar design as reader.
+	Only difference is that it needs to compute checksum of chunks.
+	Following snippet shows interface of PNG writer (unimportant members omitted).
 </p>
+
+<pre class="csharp box">
+public class PngWriter {
+	public void WritePngHeader();
+	public ChunkWriter StartChunk(string name, uint length);
+
+	public class ChunkWriter {
+		public readonly string Name;
+		public readonly uint Length;
+
+		public void Write(byte[] buffer, int offset, int count);
+	}
+}
+</pre>
+
+
+<h3>Results</h3>
+
+@{
+	var simplePythagorasAnim = figs.Image("simplePythagorasAnim", Links.Img.DevDiary.apng.SimplePythagorasAnim_png, 502, 382, "Simple animation of Pythagoras tree");
+}
+
+<p>
+	Now we have everything what is needed for creating animated PNG.
+	If we can define some simple L-system, set canvas size to ensure that every image will be exactly the same and see the result.
+	Follows L-system code of "growing" Pythagoras tree and rendered result (Fig. @figs.Ref("simplePythagorasAnim")).
+</p>
+
+<pre class="malsys box">
+lsystem SimpleAnimation extends Branches {
+
+	set symbols axiom = F(128, 16);
+	set iterations = 11;
+	set initialAngle = 90;
+
+	set interpretEveryIteration = true;  // to render all iterations as frames
+	set canvasOriginSize = {-251, 0, 502, 382};  // to ensure same sizes of frames
+
+	interpret E as DrawForward;
+	interpret + as TurnLeft(45);
+	interpret - as TurnLeft(-45);
+
+	let sq2 = sqrt(2);
+
+	rewrite F(step, w) to E(step, w)
+		[ + F(step / sq2, w / sq2) ] - F(step / sq2, w / sq2);
+}
+process all with AnimationRenderer;
+</pre>
+
+@simplePythagorasAnim
+
+@{
+	var fallbackImg = figs.Image("fallbackImg", Links.Img.DevDiary.apng.SimplePythagorasAnimFallback_png, 502, 382, "Fallback image for unsupported viewers.");
+}
+
+<h4>Preview image for unsupported viewers</h4>
+
+<p>
+	Because APNG is not well supported it is important to provide reasonable default image with some information that the file is an animation.
+	This image is also used in previews so it is not good idea to put there things like "Your browser sucks!".
+</p>
+
+<p>
+	The easiest approach is to leave the first image as default fallback.
+	This solution however do not allow to place some warning that file is animation because it would be also in animation loop.
+	Next disadvantage is that animations of L-systems tend to be "empty" at beginning so preview would be white in the most cases.
+</p>
+
+<p>
+	Hopefully, APNG allows to separate first (default) fallback image from animation so it is simple to put there some warning.
+	I've decided to take middle frame as representative preview of animation.
+	The result is shown in Figure @figs.Ref("fallbackImg")
+</p>
+
+@fallbackImg
+
+
+<h3>File size reduction</h3>
+
+<p>
+	APNGs have one issue, the file size is pretty large.
+	I've addressed this issue by implementing two improvements.
+</p>
+
+<h4>Anti-aliasing</h4>
+
+
+
+<h4>Trimming frames & relative positioning</h4>
+
 
 <h3>References</h3>
 

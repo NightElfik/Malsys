@@ -1,7 +1,5 @@
-﻿/**
- * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
- * All rights reserved.
- */
+﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
+// All rights reserved.
 using System.Data.Objects.DataClasses;
 using System.Linq;
 
@@ -13,9 +11,9 @@ namespace Malsys.Web.Entities {
 		void AddFeedback(Feedback feedback);
 
 
-		int SaveChanges();
+		//int SaveChanges();
 
-		void Detach(object entity);
-		void Attach(IEntityWithKey entity);
+		//void Detach(object entity);
+		//void Attach(IEntityWithKey entity);
 	}
 }

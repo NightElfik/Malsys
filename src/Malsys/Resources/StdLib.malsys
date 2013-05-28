@@ -64,9 +64,9 @@ abstract lsystem StdLsystem {
 
 /**
  * Basic 3D L-system with usual interpretations and correctly set branches.
- * Main difference between this L-system and StdLsystem is in interpretation
+ * Main difference between this and StdLsystem is in interpretation
  * of + and -. 2D Image must be in XY plane so + and - must do Pitch but in
- * 3D for pitch is better use ^ and &.
+ * 3D for pitch is better use ^ and & because it is more semantic.
  */
 abstract lsystem StdLsystem3D {
 

@@ -1,7 +1,5 @@
-﻿/**
- * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
- * All rights reserved.
- */
+﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
+// All rights reserved.
 
 namespace Malsys.Media {
 	/// <summary>
@@ -124,6 +122,18 @@ namespace Malsys.Media {
 			}
 
 			return new string(result);
+		}
+
+		public string ToRgbHexStringOptimized() {
+
+			string result = ToRgbHexString();
+
+			if (result[0] == result[1] && result[2] == result[3] && result[4] == result[5]) {
+				return result[0].ToString() + result[2] + result[4];
+			}
+			else {
+				return result;
+			}
 		}
 
 		public override string ToString() {

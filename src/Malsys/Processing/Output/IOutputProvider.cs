@@ -1,7 +1,5 @@
-﻿/**
- * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
- * All rights reserved.
- */
+﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
+// All rights reserved.
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.FSharp.Collections;
@@ -37,5 +35,10 @@ namespace Malsys.Processing {
 		/// Metadata added to the stream later will not appear in returned collection (returned collection is immutable).
 		/// </remarks>
 		FSharpMap<string, object> GetMetadata(Stream outputStream);
+
+		/// <summary>
+		/// Returns number of provided outputs.
+		/// </summary>
+		int OutputsCount { get; }
 	}
 }

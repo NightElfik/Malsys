@@ -1,7 +1,5 @@
-﻿/**
- * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
- * All rights reserved.
- */
+﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
+// All rights reserved.
 using System;
 using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Evaluated;
@@ -38,6 +36,11 @@ namespace Malsys.SemanticModel {
 		public static readonly Constant Two = new Constant(2d);
 
 		/// <summary>
+		/// Constant with value 3.
+		/// </summary>
+		public static readonly Constant Three = new Constant(3d);
+
+		/// <summary>
 		/// Constant with value 1 representing true.
 		/// </summary>
 		public static readonly Constant True = One;
@@ -70,12 +73,12 @@ namespace Malsys.SemanticModel {
 		/// <summary>
 		/// Returns true if value is not zero (with respect to epsilon).
 		/// </summary>
-		public bool IsTrue { get { return !(-FloatArithmeticHelper.Epsilon < Value && Value < FloatArithmeticHelper.Epsilon); } }
+		public bool IsTrue { get { return !Value.IsAlmostZero(); } }
 
 		/// <summary>
 		/// Returns true if value is zero (with respect to epsilon).
 		/// </summary>
-		public bool IsZero { get { return -FloatArithmeticHelper.Epsilon < Value && Value < FloatArithmeticHelper.Epsilon; } }
+		public bool IsZero { get { return Value.IsAlmostZero(); } }
 
 		/// <summary>
 		/// Returns true if value is NaN (not a number).

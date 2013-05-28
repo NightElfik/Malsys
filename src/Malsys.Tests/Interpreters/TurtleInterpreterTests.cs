@@ -1,7 +1,5 @@
-﻿/**
- * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
- * All rights reserved.
- */
+﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
+// All rights reserved.
 using System;
 using System.Linq;
 using System.Text;
@@ -318,7 +316,7 @@ namespace Malsys.Tests.Interpreters {
 				Assert.AreEqual(excpectedOutput[i].Name, strDataArr[0]);
 
 				if (excpectedOutput[i].IsPointValid) {
-					Assert.IsTrue(excpectedOutput[i].Point.IsEpsilonEqualTo(Point3D.Parse(strDataArr[1])));
+					Assert.IsTrue(excpectedOutput[i].Point.IsAlmostEqualTo(Point3D.Parse(strDataArr[1])));
 				}
 
 				if (excpectedOutput[i].IsRotationValid) {

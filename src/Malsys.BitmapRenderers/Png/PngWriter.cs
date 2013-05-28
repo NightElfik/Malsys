@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
 using System.Diagnostics.Contracts;
+using System.IO;
 
 namespace Malsys.BitmapRenderers.Png {
 	public class PngWriter {

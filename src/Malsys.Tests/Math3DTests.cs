@@ -1,7 +1,5 @@
-﻿/**
- * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
- * All rights reserved.
- */
+﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
+// All rights reserved.
 using System.Windows;
 using System.Windows.Media.Media3D;
 using Malsys.Media;
@@ -29,7 +27,7 @@ namespace Malsys.Tests {
 
 			Vector3D excpected = euclidInDegrees * MathHelper.PiOver180;
 			Vector3D actual = quaternion.ToEuclidRotation();
-			Assert.IsTrue(Math3D.IsEpsilonEqualTo(excpected, actual));
+			Assert.IsTrue(Math3D.IsAlmostEqualTo(excpected, actual));
 
 		}
 

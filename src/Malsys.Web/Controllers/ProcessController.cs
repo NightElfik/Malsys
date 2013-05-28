@@ -1,7 +1,5 @@
-﻿/**
- * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
- * All rights reserved.
- */
+﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
+// All rights reserved.
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -135,14 +133,14 @@ namespace Malsys.Web.Controllers {
 				return View(Views.Index, resultModel);
 			}
 
-			if (fileMgr.OutputFilesCount == 0 && evaledInput.ProcessStatements.Count == 0) {
+			if (fileMgr.OutputsCount == 0 && evaledInput.ProcessStatements.Count == 0) {
 				resultModel.NoProcessStatement = true;
 				return View(Views.Index, resultModel);
 			}
 
 			List<OutputFile> outputs;
 
-			if (fileMgr.OutputFilesCount > autoPackTreshold) {
+			if (fileMgr.OutputsCount > autoPackTreshold) {
 				outputs = fileMgr.GetOutputFilesAsZipArchive().ToList();
 			}
 			else {

@@ -1,7 +1,5 @@
-﻿/**
- * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
- * All rights reserved.
- */
+﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
+// All rights reserved.
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -116,7 +114,13 @@ namespace Malsys.Reflection {
 						xml = XDocumentCache[assemblyFullName];
 					}
 					else {
-						xml = XDocument.Load(basePath + Path.DirectorySeparatorChar + member.Module.Assembly.GetName().Name + ".xml");
+						string path = basePath + Path.DirectorySeparatorChar + member.Module.Assembly.GetName().Name + ".xml";
+						if (File.Exists(path)) {
+							xml = XDocument.Load(path);
+						}
+						else {
+							xml = new XDocument();  // empty document
+						}
 						XDocumentCache[assemblyFullName] = xml;
 					}
 				}

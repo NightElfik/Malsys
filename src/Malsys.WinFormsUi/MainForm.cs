@@ -88,7 +88,7 @@ namespace Malsys.WinFormsUi {
 
 			fileMgr.CloseAllOutputStreams();
 
-			tsslStatus.Text = string.Format("{0} files produced in {1} seconds.", fileMgr.OutputFilesCount, sw.Elapsed.TotalSeconds);
+			tsslStatus.Text = string.Format("{0} files produced in {1} seconds.", fileMgr.OutputsCount, sw.Elapsed.TotalSeconds);
 			tbMessages.Text = logger.AllMessagesToFullString();
 
 			if (!result) {

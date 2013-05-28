@@ -1,7 +1,5 @@
-﻿/**
- * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
- * All rights reserved.
- */
+﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
+// All rights reserved.
 using System;
 using System.Diagnostics;
 using System.Windows;
@@ -80,21 +78,21 @@ namespace Malsys.Media {
 			return (Point3D)pt;
 		}
 
-		public static bool IsEpsilonEqualTo(this Vector3D vector, Vector3D another) {
-			return vector.X.EpsilonCompareTo(another.X) == 0
-				&& vector.Y.EpsilonCompareTo(another.Y) == 0
-				&& vector.Z.EpsilonCompareTo(another.Z) == 0;
+		public static bool IsAlmostEqualTo(this Vector3D vector, Vector3D another) {
+			return vector.X.IsAlmostEqualTo(another.X)
+				&& vector.Y.IsAlmostEqualTo(another.Y)
+				&& vector.Z.IsAlmostEqualTo(another.Z);
 		}
 
-		public static bool IsEpsilonEqualTo(this Point3D pt, Point3D another) {
-			return pt.X.EpsilonCompareTo(another.X) == 0
-				&& pt.Y.EpsilonCompareTo(another.Y) == 0
-				&& pt.Z.EpsilonCompareTo(another.Z) == 0;
+		public static bool IsAlmostEqualTo(this Point3D pt, Point3D another) {
+			return pt.X.IsAlmostEqualTo(another.X)
+				&& pt.Y.IsAlmostEqualTo(another.Y)
+				&& pt.Z.IsAlmostEqualTo(another.Z);
 		}
 
-		public static bool IsEpsilonEqualTo(this Point pt, Point another) {
-			return pt.X.EpsilonCompareTo(another.X) == 0
-				&& pt.Y.EpsilonCompareTo(another.Y) == 0;
+		public static bool IsAlmostEqualTo(this Point pt, Point another) {
+			return pt.X.IsAlmostEqualTo(another.X)
+				&& pt.Y.IsAlmostEqualTo(another.Y);
 		}
 
 		/// <summary>

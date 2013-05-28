@@ -1,7 +1,5 @@
-﻿/**
- * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
- * All rights reserved.
- */
+﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
+// All rights reserved.
 using System;
 using System.Linq;
 using System.Web.Mvc;
@@ -34,7 +32,7 @@ namespace Malsys.Web.Areas.Administration.Controllers {
 
 			Role role = usersRepo.UsersDb.Roles.SingleOrDefault(r => r.RoleId == id);
 			if (role == null) {
-				return View("Index");
+				return View(Views.Index);
 			}
 
 			return View(role);
@@ -59,7 +57,7 @@ namespace Malsys.Web.Areas.Administration.Controllers {
 				}
 
 				if (success) {
-					return RedirectToAction("Index");
+					return RedirectToAction(Actions.Index());
 				}
 			}
 
@@ -71,7 +69,7 @@ namespace Malsys.Web.Areas.Administration.Controllers {
 
 			Role role = usersRepo.UsersDb.Roles.SingleOrDefault(r => r.RoleId == id);
 			if (role == null) {
-				return View("Index");
+				return View(Views.Index);
 			}
 
 			return View(RoleDetailModel.FromRole(role));
@@ -86,7 +84,7 @@ namespace Malsys.Web.Areas.Administration.Controllers {
 				if (role != null) {
 					roleModel.UpdateRole(role);
 					usersRepo.UsersDb.SaveChanges();
-					return RedirectToAction("Index");
+					return RedirectToAction(Actions.Index());
 				}
 			}
 

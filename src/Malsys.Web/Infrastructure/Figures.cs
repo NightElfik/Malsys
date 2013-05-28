@@ -14,7 +14,7 @@ namespace Malsys.Web.Infrastructure {
 		public HtmlString Image(string id, string imgSrc, int width, int height, string caption, FigureFloat figureFloat = FigureFloat.None) {
 
 			if (figures.ContainsKey(id)) {
-				return new HtmlString("<b>Figure with id `{0}` already exists.</b>");
+				return new HtmlString("<b>Figure with id `{0}` already exists.</b>".Fmt(id));
 			}
 
 			string figNum = getNextFigNum();
@@ -31,6 +31,26 @@ namespace Malsys.Web.Infrastructure {
 
 		}
 
+		public HtmlString Graph(string id, int width, int height, string caption, FigureFloat figureFloat = FigureFloat.None) {
+
+			if (figures.ContainsKey(id)) {
+				return new HtmlString("<b>Figure with id `{0}` already exists.</b>".Fmt(id));
+			}
+
+			string figNum = getNextFigNum();
+			figures.Add(id, figNum);
+
+			return new HtmlString(
+				StringHelper.JoinLines(
+					"<div class=\"figure{6}\" id=\"{5}\">",
+					"<div class=\"graph\"><div id=\"{0}\" style=\"width: {1}px; height: {2}px;\"></div></div>",
+					"<p>Figure {4}: {3}</p>",
+					"</div>")
+				.Fmt(id, width, height, caption, figNum, getFigNumId(figNum),
+					figureFloat == FigureFloat.None ? "" : (figureFloat == FigureFloat.Left ? " left" : " right")));
+
+		}
+
 		public SubFigureBuilder SubFigure(string id = null, string caption = null) {
 			return new SubFigureBuilder(this, id, getNextFigNum(), caption);
 		}
@@ -39,7 +59,7 @@ namespace Malsys.Web.Infrastructure {
 
 			string figNum;
 			if (!figures.TryGetValue(id, out figNum)) {
-				return new HtmlString("<b>Figure with id `{0}` not found exists.</b>");
+				return new HtmlString("<b>Figure with id `{0}` not found exists.</b>".Fmt(id));
 			}
 
 			return new HtmlString("<a href=\"#{0}\" title=\"Go to Figure {2}\">{1} {2}</a>".Fmt(getFigNumId(figNum), shorted ? "Fig." : "Figure", figNum));
@@ -77,7 +97,7 @@ namespace Malsys.Web.Infrastructure {
 
 				if (figId != null) {
 					if (parent.figures.ContainsKey(figId)) {
-						sb.AppendLine("<b>Figure with id `{0}` already exists.</b>");
+						sb.AppendLine("<b>Figure with id `{0}` already exists.</b>".Fmt(id));
 					}
 					parent.figures.Add(figId, figNum);
 				}
@@ -97,7 +117,7 @@ namespace Malsys.Web.Infrastructure {
 
 				if (id != null) {
 					if (parent.figures.ContainsKey(id)) {
-						sb.AppendLine("<b>Figure with id `{0}` already exists.</b>");
+						sb.AppendLine("<b>Figure with id `{0}` already exists.</b>".Fmt(id));
 						return this;
 					}
 					parent.figures.Add(id, wholeSubfigNum);
@@ -109,7 +129,8 @@ namespace Malsys.Web.Infrastructure {
 				if (compensateHeight) {
 					sb.AppendLine("<div style=\"margin:{0}px 0;\">".Fmt((floatHeight - height) / 2));
 				}
-				sb.AppendLine("<img src=\"{0}\" width=\"{1}px\" height=\"{2}px\" alt=\"{3}\" />".Fmt(imgSrc, width, height, caption ?? "")); if (compensateHeight) {
+				sb.AppendLine("<img src=\"{0}\" width=\"{1}px\" height=\"{2}px\" alt=\"{3}\" />".Fmt(imgSrc, width, height, caption ?? ""));
+				if (compensateHeight) {
 					sb.AppendLine("</div>");
 				}
 				sb.AppendLine("<p>({0}) {1}</p>".Fmt(subfigNum, caption ?? ""));
@@ -118,6 +139,34 @@ namespace Malsys.Web.Infrastructure {
 				return this;
 			}
 
+			public SubFigureBuilder SubGraph(string id, int width, int height, string caption = null, int floatHeight = -1) {
+
+				string subfigNum = getNextSubFigNum();
+				string wholeSubfigNum = figNum + subfigNum;
+
+				if (id != null) {
+					if (parent.figures.ContainsKey(id)) {
+						sb.AppendLine("<b>Figure with id `{0}` already exists.</b>".Fmt(id));
+						return this;
+					}
+					parent.figures.Add(id, wholeSubfigNum);
+				}
+
+				bool compensateHeight = floatHeight > height;
+
+				sb.AppendLine("<div class=\"subfigure\" id=\"{0}\" style=\"width:{1}px;\">".Fmt(Figures.getFigNumId(wholeSubfigNum), width));
+				if (compensateHeight) {
+					sb.AppendLine("<div style=\"margin:{0}px 0;\">".Fmt((floatHeight - height) / 2));
+				}
+				sb.AppendLine("<div class=\"graph\"><div id=\"{0}\" style=\"width: {1}px; height: {2}px;\"></div></div>".Fmt(id, width, height));
+				if (compensateHeight) {
+					sb.AppendLine("</div>");
+				}
+				sb.AppendLine("<p>({0}) {1}</p>".Fmt(subfigNum, caption ?? ""));
+				sb.AppendLine("</div>");
+
+				return this;
+			}
 
 			private string getNextSubFigNum() {
 				return (subFigureNumber++).ToString();

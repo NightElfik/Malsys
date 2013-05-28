@@ -1,7 +1,5 @@
-﻿/**
- * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
- * All rights reserved.
- */
+﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
+// All rights reserved.
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Media.Media3D;
@@ -46,6 +44,7 @@ namespace Malsys.Processing.Components.Interpreters {
 
 		private bool continousColoring = false;
 		private bool colorContinously = false;
+		private double continousColoringMultiplier;
 		private ColorGradient colorGradient;
 
 		private ColorParser colorParser;
@@ -200,6 +199,16 @@ namespace Malsys.Processing.Components.Interpreters {
 		public IValue ContinuousColoring { get; set; }
 
 		/// <summary>
+		/// How many times to repeat the gradient through entire L-system.
+		/// </summary>
+		/// <expected>Positive number.</expected>
+		/// <default>1</default>
+		/// <typicalValue>3</typicalValue>
+		[AccessName("continuousColoringRepeat")]
+		[UserSettable]
+		public Constant ContinuousColoringRepeat { get; set; }
+
+		/// <summary>
 		/// Reverses order of drawn polygons from first-opened last-drawn to first-opened first-drawn.
 		/// This in only valid when 2D renderer is attached (in 3D is order insignificant).
 		/// </summary>
@@ -294,6 +303,7 @@ namespace Malsys.Processing.Components.Interpreters {
 			InitialLineWidth = Constant.Two;
 			InitialColor = Constant.Zero;
 			ContinuousColoring = Constant.False;
+			ContinuousColoringRepeat = Constant.One;
 			ReversePolygonOrder = Constant.False;
 			RotationQuaternion = new ValuesArray(Constant.One, Constant.Zero, Constant.Zero, Constant.Zero);
 			TropismVector = new ValuesArray(Constant.Zero, Constant.One, Constant.Zero);
@@ -345,18 +355,18 @@ namespace Malsys.Processing.Components.Interpreters {
 				colorParser.TryParseColor(InitialColor, out initColor, Logger);
 			}
 
-			if (ContinuousColoring != null) {
-				if (ContinuousColoring.IsConstant) {
-					if (((Constant)ContinuousColoring).IsTrue) {
-						continousColoring = true;
-						colorGradient = ColorGradients.Rainbow;
-					}
-				}
-				else if (ContinuousColoring.IsArray) {
+			if (ContinuousColoring.IsConstant) {
+				if (((Constant)ContinuousColoring).IsTrue) {
 					continousColoring = true;
-					colorGradient = new ColorGradientFactory().CreateFromValuesArray((ValuesArray)ContinuousColoring, Logger);
+					colorGradient = ColorGradients.Rainbow;
 				}
 			}
+			else if (ContinuousColoring.IsArray) {
+				continousColoring = true;
+				colorGradient = new ColorGradientFactory().CreateFromValuesArray((ValuesArray)ContinuousColoring, Logger);
+			}
+
+			continousColoringMultiplier = ContinuousColoringRepeat.Value;
 
 			bool reversePoly = ReversePolygonOrder.IsTrue;
 			if (reversePoly && !mode2D) {
@@ -586,7 +596,7 @@ namespace Malsys.Processing.Components.Interpreters {
 		public void DrawForward(ArgsStorage args) {
 
 			double length = getArgumentAsDouble(args, 0);
-			double width = getArgumentAsDouble(args, 1, 0);
+			double width = getArgumentAsDouble(args, 1, 2);
 			ColorF color = getArgumentAsColor(args, 2);
 
 			quatRotation.Quaternion = currState.Rotation;
@@ -842,7 +852,7 @@ namespace Malsys.Processing.Components.Interpreters {
 		private ColorF getArgumentAsColor(ArgsStorage args, int index) {
 
 			if (colorContinously) {
-				return colorGradient.GetColorbyPercentage((double)colorEvents / (double)colorEventsMeasured);
+				return colorGradient.GetColorbyPercentage(continousColoringMultiplier * (double)colorEvents / (double)colorEventsMeasured);
 			}
 			else if (index < args.ArgsCount) {
 				ColorF color;

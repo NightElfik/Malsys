@@ -1,7 +1,5 @@
-﻿/**
- * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
- * All rights reserved.
- */
+﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
+// All rights reserved.
 using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -29,7 +27,7 @@ using System.Runtime.InteropServices;
 namespace Malsys {
 	public static class MalsysVersion {
 
-		public const string CompiledWith = "1.3.1";
+		public const string CompiledWith = "1.4.2";
 		public static readonly string LinkedWith = CompiledWith;
 
 		public static Version CompiledWithVersion { get { return new Version(CompiledWith); } }

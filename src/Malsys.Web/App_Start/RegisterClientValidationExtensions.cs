@@ -1,7 +1,5 @@
-/**
- * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
- * All rights reserved.
- */
+// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
+// All rights reserved.
 using DataAnnotationsExtensions.ClientValidation;
 
 [assembly: WebActivator.PreApplicationStartMethod(typeof(Malsys.Web.App_Start.RegisterClientValidationExtensions), "Start")]

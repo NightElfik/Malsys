@@ -1,7 +1,5 @@
-/**
- * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
- * All rights reserved.
- */
+// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
+// All rights reserved.
 
  /* ==========================================================================
   * Styles for Malsys
@@ -495,6 +493,8 @@ a.tocLink, a.anchorLink {
 	.subfigure{
 		display: inline-block;
 		margin: 8px;
+	}
+	.graph {
 	}
 }
 

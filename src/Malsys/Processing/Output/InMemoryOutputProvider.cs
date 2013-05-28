@@ -1,7 +1,5 @@
-﻿/**
- * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
- * All rights reserved.
- */
+﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
+// All rights reserved.
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -60,7 +58,10 @@ namespace Malsys.Processing.Output {
 					x.Caller,
 					x.Metadata.ToFsharpMap(y => y.Key, y => y.Value)));
 		}
-
+		
+		public int OutputsCount {
+			get { return managedFiles.Where(x => !x.IsTemporary).Count(); }
+		}
 
 		private class ManagedOutput {
 

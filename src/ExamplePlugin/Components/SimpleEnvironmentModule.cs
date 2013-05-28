@@ -84,6 +84,17 @@ namespace ExamplePlugin.Components {
 			return intensity.ToConst();
 		}
 
+		[AccessName("getEnvPosition")]
+		[UserCallableFunction]
+		public ValuesArray GetEnvPosition(IValue[] args, IExpressionEvaluatorContext eec) {
+
+			Contract.Ensures(Contract.Result<ValuesArray>() != null);
+
+			Point3D position = TurtleInterpreter.CurrPosition;
+
+			return new ValuesArray(position.X.ToConst(), position.Y.ToConst(), position.Z.ToConst());
+		}
+
 		#region IComponent Members
 
 		public IMessageLogger Logger { get; set; }

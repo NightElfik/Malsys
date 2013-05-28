@@ -18,7 +18,7 @@
 	<link rel="author" href="/humans.txt" />
 	<link rel="shortcut icon" href="/favicon.ico" />
 	<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-	<link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
+	<link rel="sitemap" type="application/xml" title="Sitemap" href="@Url.ActionAbsolute(MVC.Home.Sitemap())" />
 
 	@* Mobile viewport optimized: h5bp.com/viewport *@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -51,7 +51,7 @@
 		<header id="header">
 			<div class="titleContainer">
 				<a href="/" title="Home" tabindex="1"><h1 id="title">Malsys<span class="cz">.cz</span></h1></a>
-				<h4 id="subtitle">Mark's L-systems</h4>
+				<h4 id="subtitle">Marek's L-systems</h4>
 			</div>
 			<div class="logonBox">
 				@Html.Partial(MVC.Shared.Views.LogOnPartial)
@@ -65,7 +65,7 @@
 						<li>@Html.ActionLink("Discussion", MVC.Discussion.Category(1), new { tabindex = 12 })</li>
 					</ul>
 				</div>
-				<div class="subnav clearfix"">
+				<div class="subnav clearfix">
 					<ul>
 						@RenderSection("submenu", false)
 					</ul>

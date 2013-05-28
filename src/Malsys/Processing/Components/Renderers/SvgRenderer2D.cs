@@ -1,7 +1,5 @@
-﻿/**
- * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
- * All rights reserved.
- */
+﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
+// All rights reserved.
 using System;
 using System.IO;
 using System.IO.Compression;
@@ -9,7 +7,6 @@ using System.Windows;
 using Malsys.Media;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Evaluated;
-using Microsoft.FSharp.Collections;
 
 namespace Malsys.Processing.Components.Renderers {
 	/// <summary>
@@ -26,7 +23,7 @@ namespace Malsys.Processing.Components.Renderers {
 		public const string FileHeader = "<?xml version=\"1.0\" standalone=\"no\"?>\n"
 			+ "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">";
 		public const string SvgHeader = "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\""
-			+ " viewBox=\"{0:0.###} {1:0.###} {2:0.###} {3:0.###}\" width=\"{4:0.###}px\" height=\"{5:0.###}px\" style=\"stroke-linecap: {6}\">";
+			+ " viewBox=\"{0} {1} {2} {3}\" width=\"{4}px\" height=\"{5}px\" style=\"fill:none;stroke-linecap:{6}\">";
 		public const string SvgFooter = "</svg>";
 
 		private TextWriter writer;
@@ -34,9 +31,10 @@ namespace Malsys.Processing.Components.Renderers {
 		private double marginT, marginR, marginB, marginL;
 
 		private Point lastPoint;
-		private double lastWidth;
-		private ColorF lastColor;
 
+		private int roundingSigDigits;
+
+		SvgPolylinesDrawer linesDrawer = new SvgPolylinesDrawer();
 
 		#region User gettable and settable properties
 
@@ -125,7 +123,7 @@ namespace Malsys.Processing.Components.Renderers {
 		private Size scaleOutputToFit;
 
 		/// <summary>
-		/// If set to true result SBG image is compressed by GZip.
+		/// If set to true result SVG image is compressed by GZip (resulting in SVGZ).
 		/// GZipped SVG images are standard and all programs supporting SVG should be able to open it.
 		/// GZipping SVG significantly reduces its size.
 		/// </summary>
@@ -134,6 +132,26 @@ namespace Malsys.Processing.Components.Renderers {
 		[AccessName("compressSvg")]
 		[UserSettable]
 		public Constant CompressSvg { get; set; }
+
+		/// <summary>
+		/// If set to true, renderer will try to optimize result SVG markup to be as smallest as possible.
+		/// Optimized and un-optimized SVGs might be rendered slightly differently.
+		/// </summary>
+		/// <expected>true or false</expected>
+		/// <default>true</default>
+		[AccessName("optimizeSvg")]
+		[UserSettable]
+		public Constant OptimizeSvg { get; set; }
+
+		/// <summary>
+		/// If set to true, renderer will try to group elements to save as much characters as possible.
+		/// This will change z-order of rendered shapes and it is likely that over-optimized SVG will be rendered differently than non-optimized.
+		/// </summary>
+		/// <expected>true or false</expected>
+		/// <default>false</default>
+		[AccessName("overoptimizeSvg")]
+		[UserSettable]
+		public Constant OveroptimizeSvg { get; set; }
 
 		/// <summary>
 		/// Scale of result image.
@@ -153,6 +171,15 @@ namespace Malsys.Processing.Components.Renderers {
 		[UserSettable]
 		public Constant LineCap { get; set; }
 
+		/// <summary>
+		/// Number of significant digits in of printed coordinates.
+		/// </summary>
+		/// <expected>Positive integer.</expected>
+		/// <default>4</default>
+		[AccessName("outputSignificantDigitsCount")]
+		[UserSettable]
+		public Constant OutputSignificantDigitsCount { get; set; }
+
 		#endregion
 
 
@@ -169,10 +196,13 @@ namespace Malsys.Processing.Components.Renderers {
 			base.Reset();
 			Margin = Constant.Two;
 			CompressSvg = Constant.True;
+			OptimizeSvg = Constant.True;
+			OveroptimizeSvg = Constant.False;
 			Scale = Constant.One;
 			LineCap = Constant.Two;
 			canvasOriginSize = null;
 			scaleOutputToFit = Size.Empty;
+			OutputSignificantDigitsCount = new Constant(4);
 		}
 
 
@@ -188,6 +218,7 @@ namespace Malsys.Processing.Components.Renderers {
 				writer = null;
 				return;
 			}
+
 
 			double minX, minY, maxX, maxY;
 
@@ -235,13 +266,14 @@ namespace Malsys.Processing.Components.Renderers {
 
 			writer.WriteLine(FileHeader);
 			writer.WriteLine(SvgHeader.FmtInvariant(
-				minX,
-				minY,
-				svgWidth,
-				svgHeight,
+				minX.RoundToShortestString(roundingSigDigits, true),
+				minY.RoundToShortestString(roundingSigDigits, true),
+				svgWidth.RoundToShortestString(roundingSigDigits, true),
+				svgHeight.RoundToShortestString(roundingSigDigits, true),
 				svgWidthScaled,
 				svgHeighScaled,
 				getLineCapString(LineCap)));
+
 		}
 
 		public override void EndProcessing() {
@@ -251,11 +283,13 @@ namespace Malsys.Processing.Components.Renderers {
 				return;
 			}
 
+			linesDrawer.Flush();
+
 			writer.WriteLine(SvgFooter);
 			writer.Close();
 			writer = null;
 
-			outputStream.Flush();
+			// output stream flushed and closed by writer
 			outputStream = null;
 		}
 
@@ -267,12 +301,16 @@ namespace Malsys.Processing.Components.Renderers {
 
 		public override void InitializeState(Point startPoint, double width, ColorF color) {
 
+			bool optimizeSvg = OptimizeSvg.IsTrue;
+			bool overoptimizeSvg = OveroptimizeSvg.IsTrue;
+			roundingSigDigits = Math.Max(1, OutputSignificantDigitsCount.RoundedIntValue);
+
 			startPoint.Y *= invertY;
 			base.InitializeState(startPoint, width, color);
 
 			lastPoint = startPoint;
-			lastWidth = width;
-			lastColor = color;
+
+			linesDrawer.Initialize(writer, roundingSigDigits, startPoint, width, color, optimizeSvg, overoptimizeSvg);
 
 		}
 
@@ -283,10 +321,11 @@ namespace Malsys.Processing.Components.Renderers {
 			if (measuring) {
 				measure(endPoint, width / 2);
 			}
+			else {
+				linesDrawer.MoveTo(endPoint, width, color);
+			}
 
 			lastPoint = endPoint;
-			lastWidth = width;
-			lastColor = color;
 		}
 
 		public override void DrawTo(Point endPoint, double width, ColorF color) {
@@ -297,13 +336,10 @@ namespace Malsys.Processing.Components.Renderers {
 				measure(endPoint, width / 2);
 			}
 			else {
-				writer.WriteLine("<line x1=\"{0:0.###}\" y1=\"{1:0.###}\" x2=\"{2:0.###}\" y2=\"{3:0.###}\" stroke=\"#{4}\" stroke-width=\"{5:0.###}\" />"
-					.FmtInvariant(lastPoint.X, lastPoint.Y, endPoint.X, endPoint.Y, color.ToRgbHexString(), width));
+				linesDrawer.DrawTo(endPoint, width, color);
 			}
 
 			lastPoint = endPoint;
-			lastWidth = width;
-			lastColor = color;
 		}
 
 		public override void DrawPolygon(Polygon2D polygon) {
@@ -320,11 +356,15 @@ namespace Malsys.Processing.Components.Renderers {
 				}
 			}
 			else {
-				writer.Write("<polygon fill=\"#{0}\" stroke-width=\"{1:0.###}\" stroke=\"#{2}\" points=\""
-					.FmtInvariant(polygon.Color.ToRgbHexString(), polygon.StrokeWidth, polygon.StrokeColor.ToRgbHexString()));
+				linesDrawer.CloseCurrentElement();
+				writer.Write("<polygon fill=\"#{0}\" stroke-width=\"{1}\" stroke=\"#{2}\" points=\""
+					.FmtInvariant(polygon.Color.ToRgbHexStringOptimized(),
+						polygon.StrokeWidth.RoundToShortestString(roundingSigDigits, true),
+						polygon.StrokeColor.ToRgbHexStringOptimized()));
 
 				foreach (var pt in polygon.Ponits) {
-					writer.Write("{0:0.###},{1:0.###} ".FmtInvariant(pt.X, pt.Y * invertY));
+					writer.Write(pt.X.RoundToShortestString(roundingSigDigits, true) + ","
+						+ (pt.Y * invertY).RoundToShortestString(roundingSigDigits, true) + " ");
 				}
 
 				writer.WriteLine("\" />");
@@ -338,8 +378,12 @@ namespace Malsys.Processing.Components.Renderers {
 				measure(lastPoint, radius);
 			}
 			else {
-				writer.Write("<circle cx=\"{0:0.###}\" cy=\"{1:0.###}\" r=\"{2:0.###}\" fill=\"#{3}\" stroke-width=\"0px\" />"
-					.FmtInvariant(lastPoint.X, lastPoint.Y, radius, color.ToRgbHexString()));
+				linesDrawer.CloseCurrentElement();
+				writer.Write("<circle cx=\"{0}\" cy=\"{1}\" r=\"{2}\" fill=\"#{3}\" stroke-width=\"0px\" />"
+					.FmtInvariant(lastPoint.X.RoundToShortestString(roundingSigDigits, true),
+						lastPoint.Y.RoundToShortestString(roundingSigDigits, true),
+						radius.RoundToShortestString(roundingSigDigits, true),
+						color.ToRgbHexStringOptimized()));
 			}
 		}
 
@@ -353,6 +397,8 @@ namespace Malsys.Processing.Components.Renderers {
 				default: return "butt";
 			}
 		}
+
+
 
 
 		public enum Message {

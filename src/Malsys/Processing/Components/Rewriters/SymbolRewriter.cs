@@ -1,7 +1,5 @@
-﻿/**
- * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
- * All rights reserved.
- */
+﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
+// All rights reserved.
 using System.Collections.Generic;
 using System.Linq;
 using Malsys.Evaluators;
@@ -109,7 +107,7 @@ namespace Malsys.Processing.Components.Rewriters {
 		/// <default>false</default>
 		/// <typicalValue>true</typicalValue>
 		[AccessName("reportStatistics")]
-		[UserSettableSybols]
+		[UserSettable]
 		public Constant ReportStatistics { get; set; }
 
 

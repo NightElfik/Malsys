@@ -1,7 +1,5 @@
-﻿/**
- * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
- * All rights reserved.
- */
+﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
+// All rights reserved.
 using System;
 using Malsys.Evaluators;
 using Malsys.IO;
@@ -66,6 +64,7 @@ namespace Malsys.Tests.Rewriters {
 			var rewIt = new MemoryBufferedIterator();
 			rewIt.Reset();
 			var rewriter = new SymbolRewriter();
+			rewriter.Reset();
 			rewriter.SymbolProvider = rewIt;
 			rewriter.Initialize(context);
 
