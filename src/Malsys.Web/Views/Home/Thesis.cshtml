@@ -2,6 +2,13 @@
 	ViewBag.Title = "Bachelor thesis – L-systems online";
 }
 
+@section submenu {
+	<li>@Html.ActionLink("Curve designer", MVC.CurveDesigner.Index())</li>
+	<li>@Html.ActionLink("Development diary", MVC.DevDiary.Index())</li>
+	<li>@Html.ActionLink("Thesis", MVC.Home.Thesis())</li>
+	<li>@Html.ActionLink("Documentation", MVC.Documentation.Home.Index())</li>
+}
+
 <h2>Bachelor thesis – L-systems online</h2>
 
 <p>

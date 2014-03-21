@@ -53,6 +53,9 @@ namespace Malsys.BitmapRenderers.Components {
 
 		protected override Stream createStream(FSharpMap<string, object> metadata) {
 			var stream = context.OutputProvider.GetOutputStream<GdiBitmapRenderer>("Animation frame #" + frames.Count, outputMimeType, true, metadata);
+			//int wid = metadata.TryGetValue(OutputMetadataKeyHelper.OutputWidth, 0);
+			//int hei = metadata.TryGetValue(OutputMetadataKeyHelper.OutputHeight, 0);
+			//var stream = new FileStream(@"I:\Malsys\src\Malsys.Web\Img\DevDiary\apng\Frames\AFrmae{0}-{1}x{2}.png".Fmt(frames.Count, wid, hei), FileMode.Create, FileAccess.Write);
 			frames.Add(stream);
 			return stream;
 		}

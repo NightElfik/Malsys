@@ -36,9 +36,14 @@
 	</url>
 	<url>
 		<loc>@Url.ActionAbsolute(MVC.Discussion.Index())</loc>
-		<lastmod>@lastmod</lastmod>
 		<changefreq>daily</changefreq>
 		<priority>0.8</priority>
+	</url>
+	<url>
+		<loc>@Url.ActionAbsolute(MVC.DevDiary.Index())</loc>
+		<lastmod>@lastmod</lastmod>
+		<changefreq>monthly</changefreq>
+		<priority>0.6</priority>
 	</url>
 	<url>
 		<loc>@Url.ActionAbsolute(MVC.Feedback.Index())</loc>

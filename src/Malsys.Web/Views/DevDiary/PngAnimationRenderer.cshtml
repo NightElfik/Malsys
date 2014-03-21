@@ -5,17 +5,59 @@
 	var figs = new Figures();
 }
 
+@section submenu {
+	<li>@Html.ActionLink("Curve designer", MVC.CurveDesigner.Index())</li>
+	<li>@Html.ActionLink("Development diary", MVC.DevDiary.Index())</li>
+	<li>@Html.ActionLink("Thesis", MVC.Home.Thesis())</li>
+	<li>@Html.ActionLink("Documentation", MVC.Documentation.Home.Index())</li>
+}
+
+@section scripts {
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+	google.load('visualization', '1', { 'packages': ['corechart'] });
+	google.setOnLoadCallback(drawChart);
+
+	function drawChart() {
+
+		var data = google.visualization.arrayToDataTable([
+			['', 'No optimization', 'Frame trimming', 'No anti-aliasing', 'Both optimizations'],
+			['Growing flower (46 frames)', 514, 436, 263, 235],
+			['Dragon curve (15 frames)', 186, 174, 183, 172]
+		]);
+
+		var options = {
+			vAxis: { title: 'Size [kB]', minValue: 0 },
+			chartArea: { width: '85%', height: '70%' },
+			legend: { position: 'bottom' }
+		};
+
+		var chart = new google.visualization.ColumnChart(document.getElementById('figSizeGraphs'));
+		chart.draw(data, options);
+	}
+</script>
+}
+
 <h2>Dev diary: Creating of PNG animation renderer</h2>
 
 <p>
 	An L-systems are developing in iterations.
-	TODO
+	They were developed to simulate plant growth so the progression of some L-system is more important than final state.
+	To capture the progression, we need some sort of animation showing each iteration as an image -- animated image.
+	There are many ways how to approach this problem but I've chosen APNG -- animated PNG.
 </p>
 
-<p>
-	This development diary is quite detailed.
-	Feel free to skip topics which are not interesting for you ;)
-</p>
+<div class="figure">
+@Html.Image(Links.Img.DevDiary.apng.Teaser_png, 800, 400, "Teaser")
+</div>
+
+<div class="errorBlock">
+	Disclaimer: In this development diary are used @Html.Link("animated PNGs (APNG)", "http://en.wikipedia.org/wiki/APNG")
+		as some figures.
+	To fully enjoy the reading, use @Html.Link("supported browser", "http://en.wikipedia.org/wiki/APNG#Application_support", true).
+</div>
+
+<div id="toc"></div>
 
 <h3>Possible solutions</h3>
 
@@ -101,6 +143,19 @@
 </p>
 </div>
 
+<h4>Update on WebP</h4>
+<div class="indent">
+<p>
+	In the time of writing this (July 2012), I did not know that WebP
+		@(refs.Cite("WebP", Html.Link("WebP", "http://en.wikipedia.org/wiki/WebP", true) + " at Wikipedia")) format exists and I think that
+		WebP would be probably better option than animated PNG because it supports compression of animated images, much better than PNG.
+</p>
+
+<p>
+	If WebP become popular, I will rewrite animations to WebP.
+	Till then, enjoy APNG!
+</p>
+</div>
 
 
 <h3>Implementation of Bitmap renderer</h3>
@@ -287,6 +342,10 @@ g.TranslateTransform(0f, height, MatrixOrder.Append);
 <h3>Implementation if PNG reader/writer</h3>
 
 <p>
+	Note: described simple PNG reader/writer can be downloaded at @Html.AnchorLink("the bottom of this page.", "down").
+</p>
+
+<p>
 	To be possible to assemble APNG as shows @figs.Ref("apngComposition") we need PNG reader and writer.
 	As already mentioned, we do not need to touch IDAT chunks which are encoded (compressed) so implementation of PNG reader is then relatively simple.
 	The reader is designed to work as stream reader to minimize memory consumption, thus, improve performance.
@@ -416,16 +475,131 @@ process all with AnimationRenderer;
 
 <p>
 	APNGs have one issue, the file size is pretty large.
-	I've addressed this issue by implementing two improvements.
+	I've addressed this issue by implementing two optimizations.
 </p>
+
 
 <h4>Anti-aliasing</h4>
 
+@{
+	var figAa = figs.SubFigure("figAa", "Comparison of Anti-aliasing effect on quality and file size")
+		.SubImage(null, Links.Img.DevDiary.apng.ApngNoTrim_png, 270, 360, "Anti-aliased (514 KB)")
+		.SubImage(null, Links.Img.DevDiary.apng.ApngNoTrimNoAA_png, 270, 360, "No anti-aliasing (263 KB)");
+}
 
+<p>
+	To allow better PNG compression, anti-aliasing could be turned off.
+	This will result in worst quality of images but interestingly enough the savings are quite large.
+	@figs.Ref("figAa") shows example of animated plant where disabling of anti-aliasing saved around 50% of file size.
+</p>
+
+@figAa.ToHtml()
+
+<p>
+	By default, anti-aliasing is on but you can turn it off using <code class="malsys">set antiAlias = false;</code>.
+</p>
 
 <h4>Trimming frames & relative positioning</h4>
 
+<p>
+	More advanced optimization is taking advantage of the fact, that APNg allows to position individual frames on arbitrary position in image.
+	Thanks to this feature, background of individual frames can be trimmed and positioned to original position.
+</p>
+
+<p>
+	Background of each frame is trimmed and the correct offset is set in the Frame Control Chunk (fcTL) of APNG (see @figs.Ref("apngComposition")).
+	However this brings a bunch of problems.
+</p>
+
+<p>
+	L-systems in Malsys are rendered in floating-point space but bitmap (png image) has integer space as well as PNG offset.
+	If every frame would be trimmed in floating-point space (which is the easiest way), frames will be jumping on sub-pixel level because offset is integral.
+	Trimming must be by integer-amount.
+</p>
+
+<p>
+	The second problem is with background.
+	Some browsers (Opera :) do not "turn on" transparency if PNG frames are without transparency channel (24 bpp) and background around frames is black.
+	To avoid this behavior, we can force 32 bpp rendering by for example this <code class="malsys">set bgColor = #FF000000;</code> which will set background color to fully transparent black.
+</p>
+
+
+@{
+	var figTrimVis = figs.Image("figTrimVis", Links.Img.DevDiary.apng.ApngTrimVis_png, 270, 370, "Visualization of frame trimming.");
+}
+
+<p>
+	To visualize how trimming optimizes frames we can set background color to some non-fully transparent color
+		(like <code class="malsys">set bgColor = #01AAAAAA;</code>) to see individual frames background (@figs.Ref("figTrimVis")).
+	This is also a limitation, only transparent background are supported.
+</p>
+
+@figTrimVis
+
+@{
+	var figAnimFrames = figs.SubFigure("figAnimFrames", "All trimmed animation frames", true);
+	string baseUrl = Links.Img.DevDiary.apng.Frames.Url();
+	string baseDir = Server.MapPath(Links.Img.DevDiary.apng.Frames.URLPATH);
+
+	foreach (var filePath in Directory.EnumerateFiles(baseDir).OrderBy(x => x)) {
+		string fileName = Path.GetFileNameWithoutExtension(filePath);
+		fileName = fileName.Substring(fileName.IndexOf('-') + 1);
+		var size = fileName.Split('x');
+		int width = int.Parse(size[0]);
+		figAnimFrames.SubImage(null, baseUrl + "/" + Path.GetFileName(filePath),
+			width, int.Parse(size[1]), figureWidth: Math.Max(40, width));
+	}
+}
+
+<p>
+	For those who do not see animation, @figs.Ref("figAnimFrames") shows all frames as individual PNGs.
+</p>
+
+@figAnimFrames.ToHtml()
+
+
+@{
+	var figSizeGraphs = figs.Graph("figSizeGraphs", 800, 400, "Comparison of file sizes with different optimization");
+
+	var figSizeGraphImgs = figs.SubFigure("figSizeGraphImgs", "L-systems from " + figs.Ref("figSizeGraphs"))
+		.SubImage("figPlantSub", Links.Img.DevDiary.apng.Apng_png, 270, 360, "Growing flower")
+		.SubImage(null, Links.Img.DevDiary.apng.DragonApng_png, 520, 352, "Dragon curve");
+}
+
+@figSizeGraphs
+
+@figSizeGraphImgs.ToHtml()
+
+<p>
+	By default, trimming is off but you can turn it on using <code class="malsys">set autoTrim = true;</code>.
+</p>
+
+<h3>Conclusion</h3>
+
+<p>
+	By writing this extension, I demonstrated how modular design of Malsys allows to do non-trivial extensions to L-system rendering.
+	Animations are awesome!
+	Also, I've learned a lot about PNG binary format structure.
+</p>
+
+<p>
+	Recently I discovered WebP image format which seems to be better for animated images.
+	I might write WebP renderer some day.
+</p>
+
+<h3 id="downs">Downloads</h3>
+
+<p>
+	Simple PNG reader and writer described in this article can be downloaded here.
+	@Html.Link("PNG reader/writer download.", Links.Download.Png_v1_zip)
+</p>
 
 <h3>References</h3>
 
 @refs.PrintReferences()
+
+<h3>Comments</h3>
+@{
+	Html.RenderAction(MVC.Discussion.AutoThreadInline("DevDiaryApng",
+		"Comments for Dev Diary about APNGs", DiscussionCategory.DevDiary));
+}

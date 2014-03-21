@@ -913,7 +913,7 @@ void ProcessStaticFilesRecursive(ProjectItem projectItem, string path) {
     if (IsFolder(projectItem)) { #>
     [<#= GeneratedCode #>, DebuggerNonUserCode]
     public static class <#=EscapeID(Sanitize(projectItem.Name)) #> {
-        private const string URLPATH = "<#=path#>/<#=projectItem.Name#>";
+        public const string URLPATH = "<#=path#>/<#=projectItem.Name#>";
         public static string Url() { return T4MVCHelpers.ProcessVirtualPath(URLPATH); }
         public static string Url(string fileName) { return T4MVCHelpers.ProcessVirtualPath(URLPATH + "/" + fileName); }
 <#+

@@ -9,6 +9,7 @@ namespace Malsys.Web.Models {
 		General,
 		Gallery,
 		News,
+		DevDiary,
 
 	}
 

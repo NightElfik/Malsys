@@ -1,6 +1,7 @@
 
 # rubbish
 /backup
+*.zip
 
 # .NET rubbish
 *.suo
@@ -32,6 +33,7 @@ obj/
 
 # documentation
 /doc/RelatedApps
+/doc/SandCastle
 
 # LaTeX rubbish
 *.aux
@@ -44,9 +46,13 @@ obj/
 *.blg
 *.synctex.gz
 *.run.xml
-
-# do not need to version, can generate anytime
-/doc/TodoList/main.pdf
+*.pdf
+*.ilg
+*.lof
+*.lot
+*.lol
+*.nlo
+*.nls
 
 # Windows rubbish 
 Thumbs.db

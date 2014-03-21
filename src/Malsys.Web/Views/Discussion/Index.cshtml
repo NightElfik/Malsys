@@ -4,6 +4,13 @@
 	ViewBag.Title = "Discussion categories";
 }
 
+@section submenu {
+	<li>@Html.ActionLink("Curve designer", MVC.CurveDesigner.Index())</li>
+	<li>@Html.ActionLink("Development diary", MVC.DevDiary.Index())</li>
+	<li>@Html.ActionLink("Thesis", MVC.Home.Thesis())</li>
+	<li>@Html.ActionLink("Documentation", MVC.Documentation.Home.Index())</li>
+}
+
 <h2>Discussion categories</h2>
 
 <ul>

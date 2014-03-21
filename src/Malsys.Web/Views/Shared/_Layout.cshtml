@@ -50,19 +50,19 @@
 		<div class="wrapper">
 		<header id="header">
 			<div class="titleContainer">
-				<a href="/" title="Home" tabindex="1"><h1 id="title">Malsys<span class="cz">.cz</span></h1></a>
+				<a href="/" title="Home"><h1 id="title">Malsys<span class="cz">.cz</span></h1></a>
 				<h4 id="subtitle">Marek's L-systems</h4>
 			</div>
 			<div class="logonBox">
 				@Html.Partial(MVC.Shared.Views.LogOnPartial)
 			</div>
 			<nav class="navigation">
-				<a id="skipNavigation" href="#main" tabindex="2" class="visuallyhidden focusable">Skip navigation</a>
+				<a id="skipNavigation" href="#main" class="visuallyhidden focusable">Skip navigation</a>
 				<div class="nav clearfix">
 					<ul>
-						<li>@Html.ActionLink("Gallery of L-systems", MVC.Gallery.Index(), new { tabindex = 10 })</li>
-						<li>@Html.ActionLink("L-system processor", MVC.Process.Index(), new { tabindex = 11 })</li>
-						<li>@Html.ActionLink("Discussion", MVC.Discussion.Category(1), new { tabindex = 12 })</li>
+						<li>@Html.ActionLink("Gallery of L-systems", MVC.Gallery.Index())</li>
+						<li>@Html.ActionLink("L-system processor", MVC.Process.Index())</li>
+						<li>@Html.ActionLink("Discussion", MVC.Discussion.Category(1))</li>
 					</ul>
 				</div>
 				<div class="subnav clearfix">
@@ -87,9 +87,9 @@
 		<div class="wrapper">
 		<footer id="footer">
 			<p class="center">
-				&copy; @Html.ActionLink("Marek Fišer", MVC.Feedback.EmailToAuthor(), new { title = "E-mail to author", tabindex = 90 }) 2011 &mdash; 2012
-				| @Html.ActionLink("Thesis", MVC.Home.Thesis(), new { title = "Bachelor thesis", tabindex = 91 })
-				| @Html.ActionLink("Feedback", MVC.Feedback.Index(), new { title = "Send a feedback", tabindex = 92 })
+				&copy; @Html.Link("Marek Fišer", "https://plus.google.com/108426300827063985511", true) 2011 &mdash; 2013
+				| @Html.ActionLink("Thesis", MVC.Home.Thesis(), new { title = "Bachelor thesis" })
+				| @Html.ActionLink("Feedback", MVC.Feedback.Index(), new { title = "Send a feedback" })
 				| thanks @Html.Link("MFF CUNI", "http://www.mff.cuni.cz/", "Faculty of Mathematics and Physics of Charles University in Prague") for hosting
 			</p>
 			<div class="centerMargin">
@@ -119,7 +119,16 @@
 	<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
 
 	@if (Request.IsLocal) {
-		<div style="position: absolute; top: 8px; left: 8px; font-size: 150%; color: #DDD;">localhost</div>
+		<div style="position: absolute; top: 8px; left: 8px; font-size: 150%; color: #DDD;">
+			localhost
+@{
+	string build = "release";
+#if DEBUG
+	build = "debug";
+#endif
+}
+@build
+		</div>
 	}
 </body>
 </html>

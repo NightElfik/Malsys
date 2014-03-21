@@ -494,7 +494,8 @@ a.tocLink, a.anchorLink {
 		display: inline-block;
 		margin: 8px;
 	}
-	.graph {
+	.graph div {
+		margin: 0 auto;
 	}
 }
 

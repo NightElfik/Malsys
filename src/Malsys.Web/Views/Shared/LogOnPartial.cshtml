@@ -11,11 +11,11 @@
 		@Html.ActionLink("Administration", MVC.Administration.Home.Index()) @:|
 	}
 
-	@Html.ActionLink("Saved inputs", MVC.Gallery.Index(user: User.Identity.Name), new { tabindex = 20 })
+	@Html.ActionLink("Saved inputs", MVC.Gallery.Index(user: User.Identity.Name))
 	@:|
-	<b>@Html.ActionLink(User.Identity.Name, MVC.User.Index(), new { tabindex = 21 })</b>
-	@:[ @Html.ActionLink("Log Off", MVC.Authentication.LogOff(), new { tabindex = 22 }) ]
+	<b>@Html.ActionLink(User.Identity.Name, MVC.User.Index())</b>
+	@:[ @Html.ActionLink("Log Off", MVC.Authentication.LogOff()) ]
 }
 else {
-	@:[ @Html.ActionLink("Log On", MVC.Authentication.LogOn(), new { tabindex = 20 }) ]
+	@:[ @Html.ActionLink("Log On", MVC.Authentication.LogOn()) ]
 }

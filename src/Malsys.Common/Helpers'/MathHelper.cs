@@ -93,7 +93,7 @@ namespace Malsys {
 			Contract.Requires<ArgumentException>(maxWidth > 0);
 			Contract.Requires<ArgumentException>(maxHeight > 0);
 			Contract.Ensures(Contract.Result<double>() > 0);
-			Contract.Ensures(shrinkOnly ? Contract.Result<double>() < 1 : true);
+			Contract.Ensures(shrinkOnly ? Contract.Result<double>() <= 1 : true);
 
 			double wScale = maxWidth / width;
 			double hScale = maxHeight / height;

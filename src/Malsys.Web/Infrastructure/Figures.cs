@@ -51,8 +51,8 @@ namespace Malsys.Web.Infrastructure {
 
 		}
 
-		public SubFigureBuilder SubFigure(string id = null, string caption = null) {
-			return new SubFigureBuilder(this, id, getNextFigNum(), caption);
+		public SubFigureBuilder SubFigure(string id = null, string caption = null, bool useNumericSubfigureNumbering = false) {
+			return new SubFigureBuilder(this, id, getNextFigNum(), caption, useNumericSubfigureNumbering);
 		}
 
 		public HtmlString Ref(string id, bool shorted = false) {
@@ -78,7 +78,7 @@ namespace Malsys.Web.Infrastructure {
 
 		public class SubFigureBuilder {
 
-			private char subFigureNumber = 'a';
+			private int subFigureNumber = 0;
 
 			private StringBuilder sb = new StringBuilder();
 			private Figures parent;
@@ -87,13 +87,16 @@ namespace Malsys.Web.Infrastructure {
 			private string figNum;
 			private string subFigCaption;
 
+			bool numericSubfigureNumbering;
 
-			public SubFigureBuilder(Figures parentFig, string id, string figureNum, string caption) {
+
+			public SubFigureBuilder(Figures parentFig, string id, string figureNum, string caption, bool useNumericSubfigureNumbering) {
 
 				figId = id;
 				figNum = figureNum;
 				subFigCaption = caption;
 				parent = parentFig;
+				numericSubfigureNumbering = useNumericSubfigureNumbering;
 
 				if (figId != null) {
 					if (parent.figures.ContainsKey(figId)) {
@@ -110,7 +113,7 @@ namespace Malsys.Web.Infrastructure {
 			}
 
 
-			public SubFigureBuilder SubImage(string id, string imgSrc, int width, int height, string caption = null, int floatHeight = -1) {
+			public SubFigureBuilder SubImage(string id, string imgSrc, int width, int height, string caption = null, int floatHeight = -1, int figureWidth = -1) {
 
 				string subfigNum = getNextSubFigNum();
 				string wholeSubfigNum = figNum + subfigNum;
@@ -125,7 +128,7 @@ namespace Malsys.Web.Infrastructure {
 
 				bool compensateHeight = floatHeight > height;
 
-				sb.AppendLine("<div class=\"subfigure\" id=\"{0}\" style=\"width:{1}px;\">".Fmt(Figures.getFigNumId(wholeSubfigNum), width));
+				sb.AppendLine("<div class=\"subfigure\" id=\"{0}\" style=\"width:{1}px;\">".Fmt(Figures.getFigNumId(wholeSubfigNum), figureWidth < 0 ? width : figureWidth));
 				if (compensateHeight) {
 					sb.AppendLine("<div style=\"margin:{0}px 0;\">".Fmt((floatHeight - height) / 2));
 				}
@@ -139,7 +142,7 @@ namespace Malsys.Web.Infrastructure {
 				return this;
 			}
 
-			public SubFigureBuilder SubGraph(string id, int width, int height, string caption = null, int floatHeight = -1) {
+			public SubFigureBuilder SubGraph(string id, int width, int height, string caption = null, int floatHeight = -1, int figureWidth = -1) {
 
 				string subfigNum = getNextSubFigNum();
 				string wholeSubfigNum = figNum + subfigNum;
@@ -154,7 +157,7 @@ namespace Malsys.Web.Infrastructure {
 
 				bool compensateHeight = floatHeight > height;
 
-				sb.AppendLine("<div class=\"subfigure\" id=\"{0}\" style=\"width:{1}px;\">".Fmt(Figures.getFigNumId(wholeSubfigNum), width));
+				sb.AppendLine("<div class=\"subfigure\" id=\"{0}\" style=\"width:{1}px;\">".Fmt(Figures.getFigNumId(wholeSubfigNum), figureWidth < 0 ? width : figureWidth));
 				if (compensateHeight) {
 					sb.AppendLine("<div style=\"margin:{0}px 0;\">".Fmt((floatHeight - height) / 2));
 				}
@@ -169,7 +172,17 @@ namespace Malsys.Web.Infrastructure {
 			}
 
 			private string getNextSubFigNum() {
-				return (subFigureNumber++).ToString();
+				string subfigNum;
+
+				if (numericSubfigureNumbering) {
+					subfigNum = (subFigureNumber + 1).ToString();
+				}
+				else {
+					subfigNum = ((char)(subFigureNumber + 'a')).ToString();
+				}
+
+				++subFigureNumber;
+				return subfigNum;
 			}
 
 			public HtmlString ToHtml() {

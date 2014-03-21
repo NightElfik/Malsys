@@ -19,8 +19,6 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Malsys.Parsing", "Malsys.Pa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Malsys.Ast", "Malsys.Ast\Malsys.Ast.csproj", "{4DE67417-39CA-4AEC-AC75-9584112268F0}"
 EndProject
-Project("{7CF6DF6D-3B04-46F8-A40B-537D21BCA0B4}") = "Documentation", "Documentation\Documentation.shfbproj", "{4811144B-A268-4119-AD3C-2D7AC840BA5E}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExamplePlugin", "ExamplePlugin\ExamplePlugin.csproj", "{A45E7E3C-3AEE-4110-B8CC-9B1419FE40AF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Malsys.BitmapRenderers", "Malsys.BitmapRenderers\Malsys.BitmapRenderers.csproj", "{4159F9DB-B635-4861-8930-EF2DD6DCA730}"
@@ -106,16 +104,6 @@ Global
 		{4DE67417-39CA-4AEC-AC75-9584112268F0}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{4DE67417-39CA-4AEC-AC75-9584112268F0}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{4DE67417-39CA-4AEC-AC75-9584112268F0}.Release|x86.ActiveCfg = Release|Any CPU
-		{4811144B-A268-4119-AD3C-2D7AC840BA5E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4811144B-A268-4119-AD3C-2D7AC840BA5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4811144B-A268-4119-AD3C-2D7AC840BA5E}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{4811144B-A268-4119-AD3C-2D7AC840BA5E}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{4811144B-A268-4119-AD3C-2D7AC840BA5E}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{4811144B-A268-4119-AD3C-2D7AC840BA5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4811144B-A268-4119-AD3C-2D7AC840BA5E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4811144B-A268-4119-AD3C-2D7AC840BA5E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{4811144B-A268-4119-AD3C-2D7AC840BA5E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{4811144B-A268-4119-AD3C-2D7AC840BA5E}.Release|x86.ActiveCfg = Release|Any CPU
 		{A45E7E3C-3AEE-4110-B8CC-9B1419FE40AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A45E7E3C-3AEE-4110-B8CC-9B1419FE40AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A45E7E3C-3AEE-4110-B8CC-9B1419FE40AF}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU

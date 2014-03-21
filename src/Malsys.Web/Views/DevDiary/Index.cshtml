@@ -2,10 +2,19 @@
 	ViewBag.Title = "Dev diary";
 }
 
+@section submenu {
+	<li>@Html.ActionLink("Curve designer", MVC.CurveDesigner.Index())</li>
+	<li>@Html.ActionLink("Development diary", MVC.DevDiary.Index())</li>
+	<li>@Html.ActionLink("Thesis", MVC.Home.Thesis())</li>
+	<li>@Html.ActionLink("Documentation", MVC.Documentation.Home.Index())</li>
+}
+
 <h2>Dev diary</h2>
 
 <p>
-	27 May 2013 - @Html.ActionLink("SVG markup optimizations", MVC.DevDiary.SvgOptimizations())
+	May 2013 - @Html.ActionLink("SVG markup optimizations", MVC.DevDiary.SvgOptimizations())
 </p>
 
-@* @Html.ActionLink("Creating of PNG animation renderer", MVC.DevDiary.PngAnimationRenderer()) *@
+<p>
+	July 2012 - @Html.ActionLink("Creating of PNG animation renderer", MVC.DevDiary.PngAnimationRenderer())
+</p>
