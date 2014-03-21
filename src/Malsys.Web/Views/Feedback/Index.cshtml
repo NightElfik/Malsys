@@ -6,11 +6,8 @@
 
 @{
 	ViewBag.Title = "Send a feedback";
-}
-
-@section scripts {
-	@Content.Js(Links.Js.jquery_validate_js)
-	@Content.Js(Links.Js.jquery_validate_unobtrusive_js)
+	StaticHtml.RequireScript(Links.Js.jquery_validate_js);
+	StaticHtml.RequireScript(Links.Js.jquery_validate_unobtrusive_js);
 }
 
 @if (Request.IsAuthenticated && User.IsInRole(UserRoles.ViewFeedbacks)) {

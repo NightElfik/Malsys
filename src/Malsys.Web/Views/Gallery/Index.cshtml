@@ -59,13 +59,9 @@
 @if (loadThreeJs) {
 	<p class="note">
 		Note that thumbnails of L-systems in 3D are actual 3D scenes rendered by your browser and you can rotate, zoom or pan them.
-	</p>
-	<text>
-	@section scripts {
-		@Content.Js(Links.Js.ThreeJs.Three_js)
-		@Content.Js(Links.Js.ThreeJs.Detector_js)
-		@Content.Js(Links.Js.ThreeJs.Stats_js)
-		@Content.Js(Links.Js.ThreeJs.malsys_three_js)
-	}
-	</text>
+	</p>	
+	StaticHtml.RequireScript(Links.Js.ThreeJs.Three_js);
+	StaticHtml.RequireScript(Links.Js.ThreeJs.Detector_js);
+	StaticHtml.RequireScript(Links.Js.ThreeJs.Stats_js);
+	StaticHtml.RequireScript(Links.Js.ThreeJs.malsys_three_js);
 }

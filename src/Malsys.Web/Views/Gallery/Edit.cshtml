@@ -73,9 +73,8 @@
 	</p>
 
 }
-
-@section scripts {
-	@Content.Js(Links.Js.jquery_textarea_js)
-	<script type="text/javascript">jQuery(document).ready(function () { $("#SourceCode").tabby() })</script>
-	<script type="text/javascript">jQuery(document).ready(function () { $("#SourceCodeThn").tabby() })</script>
+@{	
+	StaticHtml.RequireScript(Links.Js.jquery_textarea_js);
+	StaticHtml.InlineScript("jQuery(document).ready(function () { $('#SourceCode').tabby() })");
+	StaticHtml.InlineScript("jQuery(document).ready(function () { $('#SourceCodeThn').tabby() })");
 }

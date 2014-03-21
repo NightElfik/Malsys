@@ -119,12 +119,8 @@
 
 
 @if (Model.Item1 != null && Model.Item1.NeedsThreeJs) {
-	<text>
-	@section scripts {
-		@Content.Js(Links.Js.ThreeJs.Three_js)
-		@Content.Js(Links.Js.ThreeJs.Detector_js)
-		@Content.Js(Links.Js.ThreeJs.Stats_js)
-		@Content.Js(Links.Js.ThreeJs.malsys_three_js)
-	}
-	</text>
+	StaticHtml.RequireScript(Links.Js.ThreeJs.Three_js);
+	StaticHtml.RequireScript(Links.Js.ThreeJs.Detector_js);
+	StaticHtml.RequireScript(Links.Js.ThreeJs.Stats_js);
+	StaticHtml.RequireScript(Links.Js.ThreeJs.malsys_three_js);
 }

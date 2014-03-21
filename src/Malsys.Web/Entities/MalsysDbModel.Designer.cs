@@ -8,12 +8,13 @@
 //------------------------------------------------------------------------------
 
 using System;
+using System.ComponentModel;
+using System.Data.EntityClient;
 using System.Data.Objects;
 using System.Data.Objects.DataClasses;
-using System.Data.EntityClient;
-using System.ComponentModel;
-using System.Xml.Serialization;
+using System.Linq;
 using System.Runtime.Serialization;
+using System.Xml.Serialization;
 
 [assembly: EdmSchemaAttribute()]
 #region EDM Relationship Metadata
@@ -294,6 +295,7 @@ namespace Malsys.Web.Entities
         private ObjectSet<User> _Users;
 
         #endregion
+
         #region AddTo Methods
     
         /// <summary>
@@ -401,11 +403,11 @@ namespace Malsys.Web.Entities
         }
 
         #endregion
+
     }
-    
 
     #endregion
-    
+
     #region Entities
     
     /// <summary>
@@ -436,6 +438,7 @@ namespace Malsys.Web.Entities
         }
 
         #endregion
+
         #region Primitive Properties
     
         /// <summary>
@@ -586,6 +589,7 @@ namespace Malsys.Web.Entities
         partial void OnAdditionalInfoChanged();
 
         #endregion
+
     
         #region Navigation Properties
     
@@ -628,6 +632,7 @@ namespace Malsys.Web.Entities
         }
 
         #endregion
+
     }
     
     /// <summary>
@@ -660,6 +665,7 @@ namespace Malsys.Web.Entities
         }
 
         #endregion
+
         #region Primitive Properties
     
         /// <summary>
@@ -786,6 +792,7 @@ namespace Malsys.Web.Entities
         partial void OnOutputSizeChanged();
 
         #endregion
+
     
         #region Navigation Properties
     
@@ -812,6 +819,7 @@ namespace Malsys.Web.Entities
         }
 
         #endregion
+
     }
     
     /// <summary>
@@ -838,6 +846,7 @@ namespace Malsys.Web.Entities
         }
 
         #endregion
+
         #region Primitive Properties
     
         /// <summary>
@@ -916,6 +925,7 @@ namespace Malsys.Web.Entities
         partial void OnNameChanged();
 
         #endregion
+
     
         #region Navigation Properties
     
@@ -942,6 +952,7 @@ namespace Malsys.Web.Entities
         }
 
         #endregion
+
     }
     
     /// <summary>
@@ -974,6 +985,7 @@ namespace Malsys.Web.Entities
         }
 
         #endregion
+
         #region Primitive Properties
     
         /// <summary>
@@ -1148,6 +1160,7 @@ namespace Malsys.Web.Entities
         partial void OnTextChanged();
 
         #endregion
+
     
         #region Navigation Properties
     
@@ -1228,6 +1241,7 @@ namespace Malsys.Web.Entities
         }
 
         #endregion
+
     }
     
     /// <summary>
@@ -1260,6 +1274,7 @@ namespace Malsys.Web.Entities
         }
 
         #endregion
+
         #region Primitive Properties
     
         /// <summary>
@@ -1482,6 +1497,7 @@ namespace Malsys.Web.Entities
         partial void OnTitleChanged();
 
         #endregion
+
     
         #region Navigation Properties
     
@@ -1584,6 +1600,7 @@ namespace Malsys.Web.Entities
         }
 
         #endregion
+
     }
     
     /// <summary>
@@ -1616,6 +1633,7 @@ namespace Malsys.Web.Entities
         }
 
         #endregion
+
         #region Primitive Properties
     
         /// <summary>
@@ -1790,6 +1808,7 @@ namespace Malsys.Web.Entities
         partial void OnIsNewChanged();
 
         #endregion
+
     
         #region Navigation Properties
     
@@ -1832,6 +1851,7 @@ namespace Malsys.Web.Entities
         }
 
         #endregion
+
     }
     
     /// <summary>
@@ -1864,6 +1884,7 @@ namespace Malsys.Web.Entities
         }
 
         #endregion
+
         #region Primitive Properties
     
         /// <summary>
@@ -2038,6 +2059,7 @@ namespace Malsys.Web.Entities
         partial void OnDurationChanged();
 
         #endregion
+
     
         #region Navigation Properties
     
@@ -2222,6 +2244,7 @@ namespace Malsys.Web.Entities
         }
 
         #endregion
+
     }
     
     /// <summary>
@@ -2252,6 +2275,7 @@ namespace Malsys.Web.Entities
         }
 
         #endregion
+
         #region Primitive Properties
     
         /// <summary>
@@ -2402,6 +2426,7 @@ namespace Malsys.Web.Entities
         partial void OnMetadataChanged();
 
         #endregion
+
     
         #region Navigation Properties
     
@@ -2444,6 +2469,7 @@ namespace Malsys.Web.Entities
         }
 
         #endregion
+
     }
     
     /// <summary>
@@ -2472,6 +2498,7 @@ namespace Malsys.Web.Entities
         }
 
         #endregion
+
         #region Primitive Properties
     
         /// <summary>
@@ -2550,6 +2577,7 @@ namespace Malsys.Web.Entities
         partial void OnNameLowercaseChanged();
 
         #endregion
+
     
         #region Navigation Properties
     
@@ -2576,6 +2604,7 @@ namespace Malsys.Web.Entities
         }
 
         #endregion
+
     }
     
     /// <summary>
@@ -2626,6 +2655,7 @@ namespace Malsys.Web.Entities
         }
 
         #endregion
+
         #region Primitive Properties
     
         /// <summary>
@@ -3136,6 +3166,7 @@ namespace Malsys.Web.Entities
         partial void OnRatingCountChanged();
 
         #endregion
+
     
         #region Navigation Properties
     
@@ -3260,6 +3291,7 @@ namespace Malsys.Web.Entities
         }
 
         #endregion
+
     }
     
     /// <summary>
@@ -3288,6 +3320,7 @@ namespace Malsys.Web.Entities
         }
 
         #endregion
+
         #region Primitive Properties
     
         /// <summary>
@@ -3369,6 +3402,7 @@ namespace Malsys.Web.Entities
         partial void OnRatingChanged();
 
         #endregion
+
     
         #region Navigation Properties
     
@@ -3449,6 +3483,7 @@ namespace Malsys.Web.Entities
         }
 
         #endregion
+
     }
     
     /// <summary>
@@ -3477,6 +3512,7 @@ namespace Malsys.Web.Entities
         }
 
         #endregion
+
         #region Primitive Properties
     
         /// <summary>
@@ -3579,6 +3615,7 @@ namespace Malsys.Web.Entities
         partial void OnDescriptionChanged();
 
         #endregion
+
     
         #region Navigation Properties
     
@@ -3605,6 +3642,7 @@ namespace Malsys.Web.Entities
         }
 
         #endregion
+
     }
     
     /// <summary>
@@ -3647,6 +3685,7 @@ namespace Malsys.Web.Entities
         }
 
         #endregion
+
         #region Primitive Properties
     
         /// <summary>
@@ -3893,6 +3932,7 @@ namespace Malsys.Web.Entities
         partial void OnLastPwdChangeDateChanged();
 
         #endregion
+
     
         #region Navigation Properties
     
@@ -4073,8 +4113,10 @@ namespace Malsys.Web.Entities
         }
 
         #endregion
+
     }
 
     #endregion
+
     
 }

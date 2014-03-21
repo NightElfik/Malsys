@@ -6,11 +6,8 @@
 
 @{
 	ViewBag.Title = "Register";
-}
-
-@section scripts {
-	@Content.Js(Links.Js.jquery_validate_js)
-	@Content.Js(Links.Js.jquery_validate_unobtrusive_js)
+	StaticHtml.RequireScript(Links.Js.jquery_validate_js);
+	StaticHtml.RequireScript(Links.Js.jquery_validate_unobtrusive_js);
 }
 
 <h2>Create a New Account</h2>

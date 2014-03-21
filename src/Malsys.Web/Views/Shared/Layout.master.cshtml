@@ -3,11 +3,7 @@
  * All rights reserved.
  *@
 <!doctype html>
-@* http://paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ *@
-<!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
-<!--[if IE 7]>    <html class="no-js ie7 oldie" lang="en"> <![endif]-->
-<!--[if IE 8]>    <html class="no-js ie8 oldie" lang="en"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<html>
 <head>
 	<meta charset="utf-8" />
 
@@ -22,22 +18,12 @@
 
 	@* Mobile viewport optimized: h5bp.com/viewport *@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-	@* IE9 Pinned Sites *@
-	<meta name="application-name" content="Malsys" />
-	<meta name="msapplication-tooltip" content="Modern L-system generator and gallery" />
-	<meta name="msapplication-starturl" content="@Url.ActionAbsolute(MVC.Home.Index())"/>
-	<meta name="msapplication-task" content="name=Process L-system;action-uri=@Url.ActionAbsolute(MVC.Process.Index());icon-uri=/favicon.ico" />
-	<meta name="msapplication-task" content="name=Gallery of L-systems;action-uri=@Url.ActionAbsolute(MVC.Gallery.Index());icon-uri=/favicon.ico" />
-	<meta name="msapplication-task" content="name=Documentation index;action-uri=@Url.ActionAbsolute(MVC.Documentation.Home.Index());icon-uri=/favicon.ico" />
-
-	@Content.Css(Links.Css.style_less_css)
-
+	
+	@*<link rel="stylesheet" type="text/css" href="@Links.Css.normalize_less_css" />*@
+	<link rel="stylesheet" type="text/css" href="@Links.Css.style_less_css" />
 
 	@* All JavaScript at the bottom, except for Modernizr and google analytics *@
-	@Analytics.GetGoogleAsyncHtml("UA-27861319-1")
-	@Content.Js(Links.Js.modernizr_js)
-
+	@*@Analytics.GetGoogleAsyncHtml("UA-27861319-1")*@
 
 	@* More ideas for your <head> here: h5bp.com/d/head-Tips *@
 </head>
@@ -87,7 +73,7 @@
 		<div class="wrapper">
 		<footer id="footer">
 			<p class="center">
-				&copy; @Html.Link("Marek Fišer", "https://plus.google.com/108426300827063985511", true) 2011 &mdash; 2013
+				&copy; @Html.Link("Marek Fišer", "https://plus.google.com/108426300827063985511", true) 2011 &mdash; 2014
 				| @Html.ActionLink("Thesis", MVC.Home.Thesis(), new { title = "Bachelor thesis" })
 				| @Html.ActionLink("Feedback", MVC.Feedback.Index(), new { title = "Send a feedback" })
 				| thanks @Html.Link("MFF CUNI", "http://www.mff.cuni.cz/", "Faculty of Mathematics and Physics of Charles University in Prague") for hosting
@@ -109,14 +95,11 @@
 
 	@* JavaScript at the bottom for fast page loading
 	   Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if necessary *@
-	@Content.Js("//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js")
-	<script type="text/javascript">window.jQuery || document.write('<script src="@Links.Js.jquery_js"><\/script>')</script>
-
-	@Content.Js(Links.Js.malsys_js)
-	@RenderSection("scripts", false)
-
-	@* Google +1 button *@
-	<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+	@{
+		StaticHtml.RequireScript("//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js", 1);
+		StaticHtml.RequireScript(Links.Js.malsys_js, 2);
+		StaticHtml.RequireScript("https://apis.google.com/js/plusone.js", StaticHtml.LaterOrder); // Google +1 button.
+	}
 
 	@if (Request.IsLocal) {
 		<div style="position: absolute; top: 8px; left: 8px; font-size: 150%; color: #DDD;">

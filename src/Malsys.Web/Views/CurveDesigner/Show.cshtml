@@ -3,6 +3,8 @@
 @{
 	ViewBag.Title = "Curve designer";
 	int size = 400;
+	StaticHtml.RequireScript(Links.Js.jquery_tmpl_js);
+	StaticHtml.RequireScript(Links.Js.malsys_curveDesigner_js);
 }
 
 @section submenu {
@@ -10,11 +12,6 @@
 	<li>@Html.ActionLink("Development diary", MVC.DevDiary.Index())</li>
 	<li>@Html.ActionLink("Thesis", MVC.Home.Thesis())</li>
 	<li>@Html.ActionLink("Documentation", MVC.Documentation.Home.Index())</li>
-}
-
-@section scripts {
-	@Content.Js(Links.Js.jquery_tmpl_js)
-	@Content.Js(Links.Js.malsys_curveDesigner_js)
 }
 
 <h2>Curve designer</h2>

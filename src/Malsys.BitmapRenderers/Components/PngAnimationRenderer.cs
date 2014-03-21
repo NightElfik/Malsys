@@ -251,7 +251,7 @@ namespace Malsys.BitmapRenderers.Components {
 			}
 		}
 
-		public enum Message {
+		new public enum Message {
 
 			[Message(MessageType.Error, "All animation frames do not have the same size as the first frame.")]
 			InconsistentSize,

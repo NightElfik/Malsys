@@ -85,14 +85,10 @@
 			Rendered L-system is not plain image, it is actual 3D scene rendered by your browser and you can rotate, zoom or pan with it.
 		</p>
 		<p>@Html.ActionLink("Download JavaScript source code", MVC.Gallery.GetOutput(Model.Input.UrlId, Model.Input.EditDate.Hash()))</p>
-		<text>
-		@section scripts {
-			@Content.Js(Links.Js.ThreeJs.Three_js)
-			@Content.Js(Links.Js.ThreeJs.Detector_js)
-			@Content.Js(Links.Js.ThreeJs.Stats_js)
-			@Content.Js(Links.Js.ThreeJs.malsys_three_js)
-		}
-		</text>
+		StaticHtml.RequireScript(Links.Js.ThreeJs.Three_js);
+		StaticHtml.RequireScript(Links.Js.ThreeJs.Detector_js);
+		StaticHtml.RequireScript(Links.Js.ThreeJs.Stats_js);
+		StaticHtml.RequireScript(Links.Js.ThreeJs.malsys_three_js);
 break;
 
 	default:

@@ -22,10 +22,10 @@
 	@* Mobile viewport optimized: h5bp.com/viewport *@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-	@Content.Css(Links.Css.style_less_css)
+	@*@Content.Css(Links.Css.style_less_css)*@
 
 	@* All JavaScript at the bottom, except for Modernizr *@
-	@Content.Js(Links.Js.modernizr_js)
+@*	@Content.Js(Links.Js.modernizr_js)*@
 
 </head>
 
@@ -39,13 +39,13 @@
 
 	@* JavaScript at the bottom for fast page loading
 	   Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if necessary *@
-	@Content.Js("//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js")
+@*	@Content.Js("//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js")
 	<script type="text/javascript">window.jQuery || document.write('<script src="@Links.Js.jquery_js"><\/script>')</script>
 
 	@Content.Js(Links.Js.malsys_js)
 	@RenderSection("scripts", false)
 
-	@Analytics.GetGoogleAsyncHtml("UA-27861319-1")
+	@Analytics.GetGoogleAsyncHtml("UA-27861319-1")*@
 
 </body>
 </html>

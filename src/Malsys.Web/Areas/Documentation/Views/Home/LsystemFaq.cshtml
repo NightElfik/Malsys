@@ -8,16 +8,13 @@
     <li>@Html.ActionLink("Back to documentation index", MVC.Documentation.Home.Index())</li>
 }
 
-@section scripts {
-    @Content.Js(Links.Js.jquery_tmpl_js)  @* For example of inline doc *@
-}
-
 @{
     ViewBag.Title = "Frequently asked questions (L-systems)";
     var exampleModel = new LsystemExampleViewModel() {
         LsystemProcessor = Model,
         SourceCodeTemplate = "{0}"
-    };
+	};
+	StaticHtml.RequireScript(Links.Js.jquery_tmpl_js);
 }
 
 <h2>Frequently asked questions (L-systems)</h2>
