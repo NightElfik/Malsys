@@ -1,7 +1,6 @@
 
 # rubbish
 /backup
-*.zip
 
 # .NET rubbish
 *.suo
@@ -34,6 +33,7 @@ obj/
 # documentation
 /doc/RelatedApps
 /doc/SandCastle
+/doc/BachelorThesis/References
 
 # LaTeX rubbish
 *.aux
@@ -46,7 +46,6 @@ obj/
 *.blg
 *.synctex.gz
 *.run.xml
-*.pdf
 *.ilg
 *.lof
 *.lot
