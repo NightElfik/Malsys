@@ -457,6 +457,7 @@
     <Content Include="Areas\Administration\Views\Tags\Edit.cshtml" />
     <Content Include="Areas\Administration\Views\Tags\Delete.cshtml" />
     <Content Include="Areas\Documentation\Views\Home\StdLib.cshtml" />
+    <Content Include="Css\normalize.less.css" />
     <Content Include="Css\prettyPhoto.css" />
     <Content Include="Css\style.less.css" />
     <Content Include="Areas\Documentation\Views\Predefined\ComponentsLatex.cshtml" />
@@ -465,6 +466,7 @@
     <Content Include="Areas\Documentation\Views\Predefined\ConfigurationLatexPartial.cshtml" />
     <Content Include="Areas\Administration\Views\Stats\Statistics.cshtml" />
     <None Include="App_Data\DatabaseScheme.sql" />
+    <Content Include="Css\unsemantic.less.css" />
     <Content Include="Error.html" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />

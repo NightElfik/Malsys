@@ -7,56 +7,68 @@
 	ViewBag.Title = "Malsys help index";
 }
 
-@section submenu {
-	<li>@Html.ActionLink("General FAQ", MVC.Documentation.Home.Faq())</li>
-	<li>@Html.ActionLink("L-systems FAQ", MVC.Documentation.Home.LsystemFaq())</li>
-}
+<div class="grid-100 mobile-grid-100 grid-parent hideLinks">
+	<div class="grid-100 mobile-grid-100 ">
+		<h1>Malsys docummentation</h1>
 
-<h2>Frequently asked questions</h2>
+		<p>
+			Malsys is quite complicated systems but it offeres a lot of pre-defined stuff that makes it easy to use even for beginners.	
+			The best way how to start using Malsys is to read
+				@Html.ActionLink("Basic principles of L-system rewriting", MVC.Documentation.Home.BasicRewriting())
+				and look at some examples in @Html.ActionLink("the gallery", MVC.Gallery.Index()).
+		</p>
 
-<p>
-	If you have any questions try look at @Html.ActionLink("general FAQ page", MVC.Documentation.Home.Faq()).
-	There is also @Html.ActionLink("specialized FAQ for L-systems", MVC.Documentation.Home.LsystemFaq()).
-</p>
-
-<h2>Malsys help index</h2>
-
-<ol>
-	<li>@Html.ActionLink("Basic principles of L-system rewriting", MVC.Documentation.Home.BasicRewriting())</li>
-	<li>@Html.ActionLink("L-system symbols with arguments", MVC.Documentation.Home.LsystemSymbols())</li>
-	<li>@Html.ActionLink("Interpret symbols to get image", MVC.Documentation.Home.BasicInterpretation())</li>
-	<li>@Html.ActionLink("Process configurations", MVC.Documentation.Home.ProcessConfigurations())</li>
-	<li>@Html.ActionLink("Malsys standard library", MVC.Documentation.Home.StdLib())</li>
-</ol>
+		<p>
+			If you have any questions try look at @Html.ActionLink("general FAQ page", MVC.Documentation.Home.Faq()).
+			There is also @Html.ActionLink("specialized FAQ for L-systems", MVC.Documentation.Home.LsystemFaq()).
+		</p>
+	</div>
+</div>
 
 
-<h3>Predefined stuff</h3>
+<div class="grid-100 mobile-grid-100 grid-parent hideLinks">
+	<div class="grid-50 mobile-grid-100 ">
+		<h2>Tutorials and explanations of the system</h2>
 
-<ol class="uRoman">
-	<li>@Html.ActionLink("Available components list", MVC.Documentation.Predefined.Components())</li>
-	<li>@Html.ActionLink("Predefined process configurations", MVC.Documentation.Predefined.Configurations())</li>
-	<li>@Html.ActionLink("Predefined constants", MVC.Documentation.Predefined.Constants())</li>
-	<li>@Html.ActionLink("Predefined functions", MVC.Documentation.Predefined.Functions())</li>
-	<li>@Html.ActionLink("Predefined operators", MVC.Documentation.Predefined.Operators())</li>
-</ol>
+		<ol>
+			<li>@Html.ActionLink("Basic principles of L-system rewriting", MVC.Documentation.Home.BasicRewriting())</li>
+			<li>@Html.ActionLink("L-system symbols with arguments", MVC.Documentation.Home.LsystemSymbols())</li>
+			<li>@Html.ActionLink("Interpret symbols to get image", MVC.Documentation.Home.BasicInterpretation())</li>
+			<li>@Html.ActionLink("Process configurations", MVC.Documentation.Home.ProcessConfigurations())</li>
+		</ol>
 
 
-<h3>Syntax reference</h3>
+		<h2>Predefined stuff</h2>
 
-<ol class="uAlpha">
-	<li>@Html.ActionLink("L-system definition", MVC.Documentation.SyntaxReference.LsystemDefinition())</li>
-	<li>@Html.ActionLink("Component property assign definition", MVC.Documentation.SyntaxReference.ComponentPropertyAssignDefinition())</li>
-	<li>@Html.ActionLink("Constant definition", MVC.Documentation.SyntaxReference.ConstantDefinition())</li>
-	<li>@Html.ActionLink("Function definition", MVC.Documentation.SyntaxReference.FunctionDefinition())</li>
-	<li>@Html.ActionLink("Rewrite rule definition", MVC.Documentation.SyntaxReference.RewriteRule())</li>
-	<li>@Html.ActionLink("Symbol interpretation definition", MVC.Documentation.SyntaxReference.SymbolInterpretation())</li>
-	<li>@Html.ActionLink("Component configuration definition", MVC.Documentation.SyntaxReference.ComponentConfigurationDefinition())</li>
-	<li>@Html.ActionLink("Process statements", MVC.Documentation.SyntaxReference.ProcessStatements())</li>
-	<li>@Html.ActionLink("Arithmetic expressions", MVC.Documentation.SyntaxReference.ArithmeticExpressions())</li>
-</ol>
+		<ol>
+			<li>@Html.ActionLink("Malsys standard library", MVC.Documentation.Home.StdLib())</li>
+			<li>@Html.ActionLink("Available components list", MVC.Documentation.Predefined.Components())</li>
+			<li>@Html.ActionLink("Predefined process configurations", MVC.Documentation.Predefined.Configurations())</li>
+			<li>@Html.ActionLink("Predefined constants", MVC.Documentation.Predefined.Constants())</li>
+			<li>@Html.ActionLink("Predefined functions", MVC.Documentation.Predefined.Functions())</li>
+			<li>@Html.ActionLink("Predefined operators", MVC.Documentation.Predefined.Operators())</li>
+		</ol>
 
-<ol class="uRoman">
-	<li>@Html.ActionLink("Tokens definition", MVC.Documentation.SyntaxReference.Tokens())</li>
-	<li>@Html.ActionLink("Grammar syntax reference", MVC.Documentation.SyntaxReference.Grammar())</li>
-	<li>@Html.ActionLink("Regular expressions reference", MVC.Documentation.SyntaxReference.GrammarRegexps())</li>
-</ol>
+	</div>
+	<div class="grid-50 mobile-grid-100">
+		<h2>Syntax reference</h2>
+
+		<ol>
+			<li>@Html.ActionLink("L-system definition", MVC.Documentation.SyntaxReference.LsystemDefinition())</li>
+			<li>@Html.ActionLink("Component property assign definition", MVC.Documentation.SyntaxReference.ComponentPropertyAssignDefinition())</li>
+			<li>@Html.ActionLink("Constant definition", MVC.Documentation.SyntaxReference.ConstantDefinition())</li>
+			<li>@Html.ActionLink("Function definition", MVC.Documentation.SyntaxReference.FunctionDefinition())</li>
+			<li>@Html.ActionLink("Rewrite rule definition", MVC.Documentation.SyntaxReference.RewriteRule())</li>
+			<li>@Html.ActionLink("Symbol interpretation definition", MVC.Documentation.SyntaxReference.SymbolInterpretation())</li>
+			<li>@Html.ActionLink("Component configuration definition", MVC.Documentation.SyntaxReference.ComponentConfigurationDefinition())</li>
+			<li>@Html.ActionLink("Process statements", MVC.Documentation.SyntaxReference.ProcessStatements())</li>
+			<li>@Html.ActionLink("Arithmetic expressions", MVC.Documentation.SyntaxReference.ArithmeticExpressions())</li>
+		</ol>
+
+		<ol>
+			<li>@Html.ActionLink("Tokens definition", MVC.Documentation.SyntaxReference.Tokens())</li>
+			<li>@Html.ActionLink("Grammar syntax reference", MVC.Documentation.SyntaxReference.Grammar())</li>
+			<li>@Html.ActionLink("Regular expressions reference", MVC.Documentation.SyntaxReference.GrammarRegexps())</li>
+		</ol>
+	</div>
+</div>

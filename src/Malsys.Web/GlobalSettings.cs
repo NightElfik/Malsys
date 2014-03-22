@@ -4,7 +4,7 @@ namespace Malsys.Web {
 
 		public static string Domain = "malsys.cz";
 
-		public static string DisqusShortName = "";
+		public static string DisqusShortName = "malsys";
 
 	}
 }

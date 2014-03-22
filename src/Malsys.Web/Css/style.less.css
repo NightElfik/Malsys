@@ -1,15 +1,15 @@
-// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
-// All rights reserved.
+/*
+ * Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ */
 
  /* ==========================================================================
   * Styles for Malsys
   * Using LESS CSS -- The dynamic stylesheet language http://lesscss.org/
   * Derived from HTML5 ✰ Boilerplate http://html5boilerplate.com/docs/css/
   * ========================================================================= */
-
-/* Global settings ========================================================== */
-
-@themeColor: #0F4D92;  /* Yale Blue http://en.wikipedia.org/wiki/Yale_Blue_(color) */
+ 
+@themeColor: lighten(#0F4D92, 5%);  /* Yale Blue http://en.wikipedia.org/wiki/Yale_Blue_(color) */
 @themeColorLighter: lighten(@themeColor, 10%);
 @themeColorDarker: darken(@themeColor, 10%);
 @themeColorDarkerDarker: darken(@themeColor, 20%);
@@ -25,29 +25,16 @@
 @linkHoverColor: darken(@linkColor, 10%);
 @linkVisitedColor: spin(@linkColor, 30);
 
-@baseWidth: 960px;
+@baseFont: "Trebuchet MS", Helvetica, Arial, sans-serif;
+@monospaceFont: Consolas, "Courier New", monospace;
 
-@monospaceFonts: Consolas, "Courier New", monospace;
 
-
-/* Mixins =================================================================== */
-
-.box-shadow (@x: 0, @y: 0, @blur: 1px, @spread: 0, @color: #000) {
-	box-shadow: @arguments;
-	-moz-box-shadow: @arguments;
-	-webkit-box-shadow: @arguments;
-}
-
-.box-shadow-inset (@x: 0, @y: 0, @blur: 1px, @spread: 0, @color: #000) {
-	box-shadow: @arguments inset;
-	-moz-box-shadow: @arguments inset;
-	-webkit-box-shadow: @arguments inset;
-}
+/* ==================================================================================================================
+ * Mixins
+ * ================================================================================================================== */
 
 .border-radius-malsys (@radius: 8px) {
 	border-radius: @radius 0 @radius 0;
-	-webkit-border-radius: @radius 0 @radius 0;
-	-moz-border-radius: @radius 0 @radius 0;
 }
 
 .malsysBox () {
@@ -56,323 +43,179 @@
 	margin: 0;
 	background: #DDD;
 	.border-radius-malsys;
-	.box-shadow(2px, 2px, 5px, 0, #AAA);
+	box-shadow: 2px 2px 5px 0 #AAA;
+}
+
+.transition(@value) {
+	-webkit-transition: @arguments;
+	-moz-transition: @arguments;
+	-o-transition: @arguments;
+	-ms-transition: @arguments;
+	transition: @arguments;
 }
 
 
-/* HTML5 display definitions ================================================ */
+/* ==================================================================================================================
+ * Layout
+ * ================================================================================================================== */
 
-article, aside, details, figcaption, figure, footer, header, hgroup, nav, section { display: block; }
-audio, canvas, video { display: inline-block; *display: inline; *zoom: 1; }
-audio:not([controls]) { display: none; }
-[hidden] { display: none; }
+#header {
+	padding: 0;
+}
 
-/* Base ===================================================================== */
+#navigation {
+	ul {
+		float: right;
+		list-style: none;
+		margin: 0 0 4px 0;
+		padding: 0;
+	}
+	li {
+		display: inline;
+		float: left;
+	}
+	a {
+		position: relative;
+		display: inline-block;
+		padding: 10px;
+	}
+}	
 
-/*
- * 1. Correct text resizing oddly in IE6/7 when body font-size is set using em units
- * 2. Prevent iOS text size adjust on device orientation change, without disabling user zoom: h5bp.com/g
- */
-html { font-size: 100%; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
-body, button, input, select, textarea { font-family: sans-serif; color: @textColor; }
-body { margin: 0; font-size: 1em; line-height: 1.4; }
+#main {
+	.grid-container { margin: 0em auto 2em auto; }
+}
+
+#footer {	
+	ul {
+		list-style: none;
+		margin: 0 0 4px 0;
+		padding: 0;
+	}
+}
+
+/* ==================================================================================================================
+ * General styles
+ * ================================================================================================================== */
 
 /*
  * Remove text-shadow in selection highlight: h5bp.com/i
  * These selection declarations have to be separate
  */
-::-moz-selection { background: #fe57a1; color: #FFF; text-shadow: none; }
-::selection { background: #fe57a1; color: #FFF; text-shadow: none; }
+::-moz-selection { background: @linkColor; color: #FFF; text-shadow: none; }
+::selection { background: @linkColor; color: #FFF; text-shadow: none; }
 
-
-/* Links ==================================================================== */
 
 a {
-	color: @linkColor; text-decoration: none;
-	&:hover { color: @linkHoverColor; text-decoration: underline; }
-	&:visited { color: @linkVisitedColor; }
+	color: @linkColor;
+	text-decoration: none;
+	.transition(color 0.5s ease);
+	&:hover { color: @linkHoverColor; outline: 0; text-decoration: underline; }
+	&:link { color: @linkVisitedColor; outline: 0; }
+	&:visited { color: @linkVisitedColor; outline: 0; }
 	&:focus { outline: thin dotted; }
 }
-
-/* Improve readability when focused and hovered in all browsers: h5bp.com/h */
-a:hover, a:active { outline: 0; }
-
-
-/* Typography =============================================================== */
-
-abbr[title] { border-bottom: 1px dotted; }
-
-b, strong { font-weight: bold; }
-
-blockquote { margin: 1em 40px; }
-
-dfn { font-style: italic; }
-
-hr { display: block; height: 1px; border: 0; border-top: 1px solid #999; margin: 1em 0; padding: 0; }
-
-ins { background: #FF9; color: #000; text-decoration: none; }
-
-mark { background: #FF0; color: #000; font-style: italic; font-weight: bold; }
-
+	
 /* Redeclare monospace font family: h5bp.com/j */
-pre, code, kbd, samp { font-family: @monospaceFonts; _font-family: @monospaceFonts; font-size: 1em; }
-
-/* Improve readability of pre-formatted text in all browsers */
-pre { white-space: pre; white-space: pre-wrap; word-wrap: break-word; }
-
-q { quotes: none; }
-q:before, q:after { content: ""; content: none; }
-
-small { font-size: 85%; }
+pre, code, kbd, samp { font-family: @monospaceFont; font-size: 1em; }
 
 /* Position subscript and superscript content without affecting line-height: h5bp.com/k */
 sub, sup { font-size: 75%; line-height: 0; position: relative; vertical-align: baseline; }
 sup { top: -0.5em; }
 sub { bottom: -0.25em; }
 
-
-/* Lists ==================================================================== */
-
-ul, ol { margin: 1em 0; padding: 0 0 0 40px; }
-ul, ol { ul, ol { margin: 0; } }
-dd { margin: 0 0 0 40px; }
-nav ul, nav ol { list-style: none; list-style-image: none; margin: 0; padding: 0; }
-ul.clean { list-style: none; list-style-image: none; }
-
-
-/* Embedded content ========================================================= */
-
-/*
- * 1. Improve image quality when scaled in IE7: h5bp.com/d
- * 2. Remove the gap between images and borders on image containers: h5bp.com/e
- */
-img { border: 0; -ms-interpolation-mode: bicubic; vertical-align: middle; }
-
-/*
- * Correct overflow not hidden in IE9
- */
-svg:not(:root) { overflow: hidden; }
-
-
-/* Figures ================================================================== */
-
-figure { margin: 0; }
-
-
-/* Forms ==================================================================== */
-
-form { margin: 0; }
-fieldset { border: 1px solid #AAA; margin: 0; padding: 0.5em 1em; }
-
-/* Indicate that 'label' will shift focus to the associated form element */
-label { cursor: pointer; }
-
-/*
- * 1. Correct color not inheriting in IE6/7/8/9
- * 2. Correct alignment displayed oddly in IE6/7
- */
-legend { border: 0; *margin-left: -7px; padding: 0; white-space: normal; }
-
-/*
- * 1. Correct font-size not inheriting in all browsers
- * 2. Remove margins in FF3/4 S5 Chrome
- * 3. Define consistent vertical alignment display in all browsers
- */
-button, input, select, textarea { font-size: 100%; margin: 0; vertical-align: baseline; *vertical-align: middle; }
-
-/*
- * Define line-height as normal to match FF3/4 (set using !important in the UA stylesheet)
- */
-button, input { line-height: normal; }
-
-/*
- * 1. Display hand cursor for clickable form elements
- * 2. Allow styling of clickable form elements in iOS
- * 3. Correct inner spacing displayed oddly in IE7 (doesn't effect IE6)
- */
-button, input[type="button"], input[type="reset"], input[type="submit"] {
-	cursor: pointer; -webkit-appearance: button; *overflow: visible;
-}
-
-/*
- * Re-set default cursor for disabled elements
- */
-button[disabled], input[disabled] { cursor: default; }
-
-/*
- * Consistent box sizing and appearance
- */
-input[type="checkbox"], input[type="radio"] { box-sizing: border-box; padding: 0; *width: 13px; *height: 13px; }
-input[type="search"] { -webkit-appearance: textfield; -moz-box-sizing: content-box; -webkit-box-sizing: content-box; box-sizing: content-box; }
-input[type="search"]::-webkit-search-decoration, input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; }
-
-/*
- * Remove inner padding and border in FF3/4: h5bp.com/l
- */
-button::-moz-focus-inner, input::-moz-focus-inner { border: 0; padding: 0; }
-
-/*
- * 1. Remove default vertical scrollbar in IE6/7/8/9
- * 2. Allow only vertical resizing
- */
-textarea { overflow: auto; vertical-align: top; resize: vertical; }
-
-/* Colors for form validity */
-input:valid, textarea:valid {  }
-input:invalid, textarea:invalid { background-color: #F0DDDD; }
-
-
-/* Tables =================================================================== */
-
-table { border-collapse: collapse; border-spacing: 0; border: solid 1px #DDD; }
-
-table td { padding: 5px; border: solid 1px #AAA; }
-
-table th {
-	padding: 0.1em 0.2em;
-	text-align: left;
-	background-color: #DDD;
-	border: solid 1px #AAA;
-	text-align: center;
-}
-
 /* Chrome Frame Prompt ====================================================== */
 
 .chromeframe { margin: 0.2em 0; background: #CCC; color: black; padding: 0.2em 1em; }
 
 
-/* Primary styles =============================================================
- ============================================================================ */
-
 body {
 	font-size: 120%;
-	font-family: "Trebuchet MS", Helvetica, Arial, sans-serif;
+	font-family: @baseFont;
 	background: @bodyBgColor;
-	min-width: @baseWidth;
-	word-wrap: break-word;
+	color: @textColor; 
 }
-
-/* Layout =================================================================== */
-
-.wrapper { margin: 0 auto; padding: 0; width: @baseWidth; }
-
-#mainContainer.fullWidth {
-	.wrapper { width: 100%; }
-}
-
 
 /* Header =================================================================== */
 
-html, #headerContainer, #footerContainer {
+html, #header, #footer {
 	background:	@bgColor;
 }
 
-#headerContainer {
-	height: 128px;
-	.box-shadow(0, 40px, 40px, -40px, #777);
+#header {
+	box-shadow: 0 40px 40px -40px #777;
+	margin-bottom: 1em;
+	a {
+		color: #FFF; 
+		.transition(all 0.5s ease);
+		&:hover { color: #FFF; text-decoration: none; }
+		&:link { color: #FFF; }
+		&:visited { color: #FFF; }
+	}
 }
 
 #title {
 	font-size: 3.1em;
-	color: #FFF;
 	text-shadow: 0px 0px 8px #000;
 	letter-spacing: 0.1em;
 	display: inline;
-	line-height: 1;
 	&:hover { text-shadow: 0px 0px 8px #FFF; }
 	.cz { font-size: 20%; }
 }
 
-#subtitle { color: @themeColorDarkerDarker; font-size: 0.6em; line-height: 1; letter-spacing: 0.65em; }
+#subtitle { color: #000; font-size: 0.6em; line-height: 1; letter-spacing: 0.65em; }
 
-#header {
-	margin: 0 10px;
-
-	.titleContainer {
-		float: left;
-		margin-top: 20px;
-		a:hover { text-decoration: none; }
-	}
-
-	.logonBox {
-		float: right;
-		margin-top: 8px;
-		width: 650px;
-		color: #FFF;
-		font-size: 0.8em;
-		text-align: right;
-		a {
-			color: #FFF;
-			&:hover { text-shadow: 0px 0px 3px #FFF; }
-			&:link { color: #FFF; }
-			&:visited { color: #FFF; }
-		}
-	}
-
-	.navigation {
-		float: right;
-		margin: 20px 0 0 0;
-		padding: 0;
-		width: 650px;
-
-		ul { float: right; }
-		li { display: inline; font-weight: bolder; }
-		a {
-			font-size: 1.25em;
-			padding: 0.3em;
-			margin: 0.1em;
-			text-decoration: none;
-			background-color: @themeColor;
-			color: #FFF;
-
-			text-shadow: 2px 2px 2px @themeColorDarkerDarker;
-
-			border: 1px solid @themeColorDarkerDarker;
-			.border-radius-malsys;
-
-			&:hover { text-decoration: none; border-color: #FFF;
-				text-shadow: 0px 0px 3px #FFF; .box-shadow-inset(0, 0, 8px, 0, #FFF); }
-			&:link { color: #FFF; }
-			&:visited { color: #FFF; }
-		}
-
-		.subnav {
-			margin: 8px 0 0 0;
-			padding: 0;
-			a {
-				font-size: 0.8em;
-				padding: 0 0.5em 0.2em 0.4em;
-			}
-		}
+#logonBox {
+	float: right;
+	margin-top: 8px;
+	width: 650px;
+	color: #FFF;
+	font-size: 0.8em;
+	text-align: right;
+	a {
+		&:hover { text-shadow: 0px 0px 3px #FFF; }
 	}
 }
 
-#skipNavigation { position: absolute; top: 0; left: 0; }
+#navigation {
+	li { font-weight: bolder; }
+	a {
+		font-size: 1.2em;
+		padding: 0.3em;
+		margin: 0.1em;
+		text-decoration: none;
+		background-color: @themeColor;
+		text-shadow: 2px 2px 2px @themeColorDarkerDarker;
+		border: 1px solid @themeColorDarkerDarker;
+		.border-radius-malsys;
 
-/* Main ===================================================================== */
-
-#main { margin: 40px 20px; }
+		&:hover { border-color: #FFF; text-shadow: 0px 0px 3px #FFF; box-shadow: 0 0 8px 0 #FFF inset; }
+	}
+	#subnav {
+		margin: 8px 0 0 0;
+		padding: 0;
+		a {
+			font-size: 0.8em;
+			padding: 0 0.5em 0.2em 0.4em;
+		}
+	}
+}
 
 input[type="submit"] { padding: 0.5em 1em; }
 
-h2, h3 {
+h1, h2, h3 {
 	border-bottom: 1px solid #BBB;
-	.box-shadow(0, 6px, 6px, -6px, #BBB);
-}
-
-
-/* Footer =================================================================== */
-
-#footerContainer {
-	.box-shadow(0, -40px, 40px, -40px, #777);
+	box-shadow: 0 6px 6px -6px #BBB;
 }
 
 #footer {
-	margin: 0 20px;
-	padding: 10px 0 40px 0;
-	p { font-size: 0.8em; }
+	color: #000;
+	font-size: 0.8em;
+	box-shadow: 0 -40px 40px -40px #777;
+	padding: 1.5em 0 4em 0;
+	h5 { margin: 0 0 0.3em 0; }
 	a {
 		color: #000;
+		.transition(all 0.5s ease);
 		&:hover { text-shadow: 0px 0px 3px #FFF; }
 		&:link { color: #000; }
 		&:visited { color: #000; }
@@ -426,13 +269,6 @@ p { text-align: justify; }
 .indent { margin: 0 0 0 2em; }
 
 .keepNl { white-space: pre-line; }
-
-
-/* Lists general styles ===================================================== */
-
-ol.uRoman { list-style-type: upper-roman; }
-ol.uAlpha { list-style-type: upper-alpha; }
-ol.lAlpha { list-style-type: lower-alpha; }
 
 
 /* Collapsation ============================================================= */
@@ -513,7 +349,7 @@ a.tocLink, a.anchorLink {
 		margin: 0; padding: 8px;
 		background-color: white;
 		border: 1px solid #555;
-		.box-shadow(0px, 0px, 5px, 0, #000);
+		box-shadow: 0px 0px 5px 0 #000;
 		hr { margin: 3px;}
 	}
 }
@@ -573,12 +409,12 @@ pre .lsysTryMe, pre .collapseSwitch {
 	background: #DDD;
 
 	.border-radius-malsys(4px);
-	.box-shadow-inset(0, 0, 4px, 0, #BBB);
+	box-shadow: 0 0 4px 0 #BBB inset;
 
 	&:hover { color: #000; background: #FFF; }
 }
 
-.malsysSource textarea { font-family: @monospaceFonts; width: 98%; }
+.malsysSource textarea { font-family: @monospaceFont; width: 98%; }
 
 .outputTruncated { font-size: 0.8em; color: #888888; }
 
@@ -593,7 +429,7 @@ pre.asciiArt {
 	border: solid 1px #000000;
 	width: 800px;
 	height: 600px;
-	.box-shadow(0px, 0px, 5px, 0, #000);
+	box-shadow: 0px 0px 5px 0 #000;
 
 	.fullscreen { position: absolute; top: 4px; left: 4px; margin: 0; font-size: 0.8em; color: #888; }
 	.webgl { position: absolute; top: 4px; left: 100px; margin: 0; font-size: 0.8em; color: #888; }
@@ -612,7 +448,7 @@ pre.asciiArt {
 	height: 100%;
 	margin: 0;
 	padding: 0;
-	.box-shadow(0px, 0px, 0px, 0, #000);
+	box-shadow: 0px 0px 0px 0 #000;
 }
 
 /* Gallery ================================================================== */
@@ -627,7 +463,7 @@ pre.asciiArt {
 	width: 341px;
 	height: 256px;
 	border: none;
-	.box-shadow(0px, 0px, 0px, 0, #000);
+	box-shadow: 0px 0px 0px 0 #000;
 }
 
 a.tag {
@@ -639,7 +475,7 @@ a.tag {
 	&:visited { color: @linkColor; }
 	&:hover {
 		color: @linkHoverColor; border-color: @linkHoverColor; background-color: darken(@bgColorLight, 10%);
-		.box-shadow-inset(0, 0, 8px, 0, #FFF); text-shadow: 0px 0px 8px #FFF;
+		box-shadow: 0 0 8px 0 #FFF inset; text-shadow: 0px 0px 8px #FFF;
 	}
 }
 
@@ -707,9 +543,9 @@ a.tag {
 		width: 70px;
 		text-align: center;
 		.border-radius-malsys(4px);
-		.box-shadow(0, 0, 4px, 0, #BBB);
+		box-shadow: 0 0 4px 0 #BBB;
 		margin: 8px;
-		&:hover { color: @linkHoverColor; text-decoration: none; color: #000; background: #EEE; .box-shadow(0, 0, 6px, 0, #777); }
+		&:hover { color: @linkHoverColor; text-decoration: none; color: #000; background: #EEE; box-shadow: 0 0 6px 0 #777; }
 		&.mirror { height: 170px; }
 	}
 }
@@ -723,7 +559,7 @@ a.tag {
 p.malsysMsg {
 	margin: 0;
 	padding: 0;
-	.quoted { font-family: @monospaceFonts; font-weight: bolder; }
+	.quoted { font-family: @monospaceFont; font-weight: bolder; }
 }
 
 .error { background-color: #FFDDDD; }
@@ -732,7 +568,7 @@ p.malsysMsg {
 
 .okBlock { background-color: #DDFFDD; padding: 0.5em; border: 1px solid #00FF00; }
 
-.monospace { font-family: @monospaceFonts; }
+.monospace { font-family: @monospaceFont; }
 
 #ajaxLoader {
 	display: none;

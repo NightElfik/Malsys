@@ -183,7 +183,7 @@ var disqus_url = '{3}';
 	var dsq = document.createElement('script');
 	dsq.type = 'text/javascript'; dsq.async = true; dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
 	(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-}})();".FmtInvariant(GlobalSettings.DisqusShortName, id, title.Replace("'", "\\'"), url));
+}})();".FmtInvariant(GlobalSettings.DisqusShortName, id, title.Replace("'", @"\'").Replace("/", @"\/"), url));
 
 			return new HtmlString(@"<div id=""disqus_thread""></div><a href=""http://disqus.com"" class=""dsq-brlink"">comments powered by <span class=""logo-disqus"">Disqus</span></a>");
 		}

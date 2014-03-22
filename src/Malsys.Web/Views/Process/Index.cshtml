@@ -160,26 +160,26 @@
 
 </div>
 
-@section scripts {
-@*	@Content.Js(Links.Js.jquery_tmpl_js)
-	@Content.Js(Links.Js.jquery_textarea_js)
-	<script type="text/javascript">jQuery(document).ready(function () { $("#SourceCode").tabby() })</script>
 
-	@if (loadThreeJs) {
-		@Content.Js(Links.Js.ThreeJs.Three_js)
-		@Content.Js(Links.Js.ThreeJs.Detector_js)
-		@Content.Js(Links.Js.ThreeJs.Stats_js)
-		@Content.Js(Links.Js.ThreeJs.malsys_three_js)
-	}*@
 
-	<script type="text/javascript">
-	(function ($) {
-		$("#processForm").submit(function () {
+@{
+	StaticHtml.RequireScript(Links.Js.jquery_tmpl_js);
+	StaticHtml.RequireScript(Links.Js.jquery_textarea_js);
+	StaticHtml.InlineScript("jQuery(document).ready(function () { $('#SourceCode').tabby() });");
+
+	if (loadThreeJs) {
+		StaticHtml.RequireScript(Links.Js.ThreeJs.Three_js);
+		StaticHtml.RequireScript(Links.Js.ThreeJs.Detector_js);
+		StaticHtml.RequireScript(Links.Js.ThreeJs.Stats_js);
+		StaticHtml.RequireScript(Links.Js.ThreeJs.malsys_three_js);
+	}
+		
+	StaticHtml.InlineScript(@"(function ($) {
+		$('#processForm').submit(function () {
 			var container = $('#submitControls');
 			console.log(container.children());
 			container.children().hide();
 			container.append($('<i>Processing, please wait</i>'));
 		});
-	} (jQuery));
-	</script>
+	} (jQuery));");
 }

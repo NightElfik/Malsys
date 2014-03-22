@@ -24,6 +24,8 @@ jQuery.cachedScript = function (url, options) {
 
 	$('.threeJsScene').each(function (i) {
 
+		return;
+
 		var domElement = $(this);
 		var sceneUrl = domElement.attr('data-scene');
 		if (!sceneUrl) {

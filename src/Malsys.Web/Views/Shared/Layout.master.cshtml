@@ -14,104 +14,117 @@
 	<link rel="author" href="/humans.txt" />
 	<link rel="shortcut icon" href="/favicon.ico" />
 	<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-	<link rel="sitemap" type="application/xml" title="Sitemap" href="@Url.ActionAbsolute(MVC.Home.Sitemap())" />
-
-	@* Mobile viewport optimized: h5bp.com/viewport *@
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	
-	@*<link rel="stylesheet" type="text/css" href="@Links.Css.normalize_less_css" />*@
+	<link rel="stylesheet" type="text/css" href="@Links.Css.normalize_less_css" />
+	<link rel="stylesheet" type="text/css" href="@Links.Css.unsemantic_less_css" />
 	<link rel="stylesheet" type="text/css" href="@Links.Css.style_less_css" />
 
-	@* All JavaScript at the bottom, except for Modernizr and google analytics *@
-	@*@Analytics.GetGoogleAsyncHtml("UA-27861319-1")*@
-
-	@* More ideas for your <head> here: h5bp.com/d/head-Tips *@
+@{
+	#if !DEBUG
+		// All JavaScript at the bottom except Google analytics.
+		@Analytics.GetGoogleAsyncHtml("UA-27861319-1");
+	#endif
+}
 </head>
 
 <body>
 	@* Prompt IE 6 users to install Chrome Frame. *@
 	<!--[if lt IE 7]><p class=chromeframe>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
-
-	<div id="headerContainer">
-		<div class="wrapper">
-		<header id="header">
-			<div class="titleContainer">
-				<a href="/" title="Home"><h1 id="title">Malsys<span class="cz">.cz</span></h1></a>
-				<h4 id="subtitle">Marek's L-systems</h4>
+	<header role="banner" id="header">
+		<div class="grid-container">
+			<div class="grid-30 mobile-grid-100">
+				<div>
+					<a href="/" title="Home" id="title">Malsys<span class="cz">.cz</span></a>
+					<br />
+					<span id="subtitle">Marek's L-systems</span>
+				</div>
 			</div>
-			<div class="logonBox">
-				@Html.Partial(MVC.Shared.Views.LogOnPartial)
-			</div>
-			<nav class="navigation">
-				<a id="skipNavigation" href="#main" class="visuallyhidden focusable">Skip navigation</a>
-				<div class="nav clearfix">
+			<div class="grid-70 mobile-grid-100 grid-parent">
+				<div id="logonBox">
+					@Html.Partial(MVC.Shared.Views.LogOnPartial)
+				</div>
+				<nav role="navigation" id="navigation" class="grid-100 mobile-grid-100">
 					<ul>
 						<li>@Html.ActionLink("Gallery of L-systems", MVC.Gallery.Index())</li>
 						<li>@Html.ActionLink("L-system processor", MVC.Process.Index())</li>
-						<li>@Html.ActionLink("Discussion", MVC.Discussion.Category(1))</li>
+						<li>@Html.ActionLink("Documentation", MVC.Documentation.Home.Index())</li>
 					</ul>
-				</div>
-				<div class="subnav clearfix">
-					<ul>
-						@RenderSection("submenu", false)
-					</ul>
-				</div>
-			</nav>
-		</header>
+					<div id="subnav" class="grid-100 mobile-grid-100">
+						<ul>						
+							<li>@Html.ActionLink("Curve designer", MVC.CurveDesigner.Index())</li>
+							<li>@Html.ActionLink("Development diary", MVC.DevDiary.Index())</li>
+							<li>@Html.ActionLink("Thesis", MVC.Home.Thesis())</li>
+						</ul>
+					</div>
+				</nav>
+			</div>
 		</div>
-	</div>
+	</header>
 
-	<div id="mainContainer" class="@ViewBag.MainClass">
-		<div class="wrapper">
-		<div id="main" role="main">
+	<div id="main">
+		<div class="grid-container">
 			@RenderBody()
 		</div>
-		</div>
 	</div>
+	
+	<footer role="contentinfo" id="footer">
+		<div class="grid-container">
+			<div class="grid-25 mobile-grid-100">
+				<p>Copyright &copy; 2014 Marek Fišer</p>
 
-	<div id="footerContainer">
-		<div class="wrapper">
-		<footer id="footer">
-			<p class="center">
-				&copy; @Html.Link("Marek Fišer", "https://plus.google.com/108426300827063985511", true) 2011 &mdash; 2014
-				| @Html.ActionLink("Thesis", MVC.Home.Thesis(), new { title = "Bachelor thesis" })
-				| @Html.ActionLink("Feedback", MVC.Feedback.Index(), new { title = "Send a feedback" })
-				| thanks @Html.Link("MFF CUNI", "http://www.mff.cuni.cz/", "Faculty of Mathematics and Physics of Charles University in Prague") for hosting
-			</p>
-			<div class="centerMargin">
-				<div class="g-plusone" data-size="medium" data-href="http://malsys.cz/"></div>
+				<div class="center">
+					<div class="g-plusone" data-size="medium" data-href="http://malsys.cz/"></div>
+				</div>
+
+				<span class="note">Web version: <abbr title="Compiled with @Malsys.Web.MalsysWebVersion.CompiledWith, linked with @Malsys.Web.MalsysWebVersion.LinkedWith">@Malsys.Web.MalsysWebVersion.LinkedWith</abbr></span>
+				<span class="note">Malsys library version: <abbr title="Compiled with @MalsysVersion.CompiledWith, linked with @MalsysVersion.LinkedWith">@MalsysVersion.LinkedWith</abbr></span>
+				<span class="note">@Html.ActionLink("Loaded plugins", MVC.Home.LoadedPlugins())</span>
 			</div>
-			<div class="note clearfix">
-				<p class="right">This page was generated at @DateTime.Now.ToString("u") (UTC)</p>
-				<p class="left">
-					Web version: <abbr title="Compiled with @Malsys.Web.MalsysWebVersion.CompiledWith, linked with @Malsys.Web.MalsysWebVersion.LinkedWith">@Malsys.Web.MalsysWebVersion.LinkedWith</abbr>
-					| Library version: <abbr title="Compiled with @MalsysVersion.CompiledWith, linked with @MalsysVersion.LinkedWith">@MalsysVersion.LinkedWith</abbr>
-					| @Html.ActionLink("loaded plugins", MVC.Home.LoadedPlugins())
-				</p>
+			<div class="grid-25 mobile-grid-100">
+				<h5 class="floatRight">L-systems</h5>
+				<ul>
+					<li>@Html.ActionLink("Gallery of L-systems", MVC.Gallery.Index())</li>
+					<li>@Html.ActionLink("Gallery entries grouped by tags", MVC.Gallery.Tags())</li>
+				</ul>
+				<ul>
+					<li>@Html.ActionLink("L-system processor", MVC.Process.Index())</li>
+					<li>@Html.ActionLink("L-system curve designer", MVC.CurveDesigner.Index())</li>
+					<li>@Html.ActionLink("Documentation", MVC.Documentation.Home.Index())</li>
+					<li>@Html.ActionLink("General FAQ", MVC.Documentation.Home.Faq())</li>
+					<li>@Html.ActionLink("L-systems FAQ", MVC.Documentation.Home.LsystemFaq())</li>
+				</ul>
 			</div>
-		</footer>
+			<div class="grid-25 mobile-grid-100">
+				<h5 class="floatRight">Other resources</h5>
+				<ul>
+					<li>@Html.ActionLink("Development diary", MVC.DevDiary.Index())</li>
+					<li>@Html.ActionLink("Thesis", MVC.Home.Thesis())</li>
+				</ul>
+				<ul>
+					<li>@Html.ActionLink("Feedback", MVC.Feedback.Index())</li>
+					<li>@Html.ActionLink("Log On", MVC.Authentication.LogOn())</li>
+				</ul>
+			</div>
+			<div class="grid-25 mobile-grid-100">				
+				<h5 class="floatRight">Other interesting websites</h5>		
+				<a href="http://www.marekfiser.com" title="Marek's personal website">
+					Marek's personal website
+				</a>
+			</div>
 		</div>
-	</div>
+	</footer>
 
-	@* JavaScript at the bottom for fast page loading
-	   Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if necessary *@
 	@{
 		StaticHtml.RequireScript("//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js", 1);
 		StaticHtml.RequireScript(Links.Js.malsys_js, 2);
 		StaticHtml.RequireScript("https://apis.google.com/js/plusone.js", StaticHtml.LaterOrder); // Google +1 button.
 	}
+	
+	@StaticHtml.EmitRequiredScripts()
+	@StaticHtml.EmitInlineScripts()
 
 	@if (Request.IsLocal) {
-		<div style="position: absolute; top: 8px; left: 8px; font-size: 150%; color: #DDD;">
-			localhost
-@{
-	string build = "release";
-#if DEBUG
-	build = "debug";
-#endif
-}
-@build
-		</div>
+		<div style="position: absolute; top: 8px; left: 8px; font-size: 150%; color: #DDD;">localhost</div>
 	}
 </body>
 </html>

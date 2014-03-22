@@ -169,8 +169,9 @@ else {
 
 <h3>Comments</h3>
 
-@{
-	Html.RenderAction(MVC.Discussion.AutoThreadInline("gallery " + Model.Input.UrlId,
-		"Comments for {0} ({1})".Fmt(Model.Input.PublishName, Model.Input.UrlId), DiscussionCategory.Gallery));
+@{	
+	string id = "gallery/" + Model.Input.UrlId;
+	string url = Url.ActionAbsolute(MVC.Permalink.Index(Model.Input.UrlId));	
+	@StaticHtml.DisqusComments(Model.Input.PublishName, id, url)
 }
 
