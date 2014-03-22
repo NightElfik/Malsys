@@ -17,13 +17,15 @@
 	var output = Model.LsystemProcessor.Process(input).ToList();
 }
 
-<table class="w100">
-	<tr><th class="w60">Input</th><th>Output</th></tr>
-	<tr><td>
+<div class="grid-100 mobile-grid-100 grid-parent malsysExample">
+	<div class="grid-50 mobile-grid-100">
+		<h4>Input</h4>
 <pre class="malsys" @unimportantLinesAttr>
 @input
 </pre>
-	</td><td>
+	</div>
+	<div class="grid-50 mobile-grid-100">
+		<h4>Output</h4>
 	@if (output.Count == 1) {
 <pre>
 @output[0].Trim()
@@ -36,5 +38,5 @@
 		}
 		</ol>
 	}
-	</td></tr>
-</table>
+	</div>
+</div>

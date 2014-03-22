@@ -85,7 +85,7 @@
 
 
 	$('pre.malsys').each(function (index) {
-
+		return;
 		var lsystemCode = $(this).text().trim();
 		if (lsystemCode.length == 0) {
 			return;

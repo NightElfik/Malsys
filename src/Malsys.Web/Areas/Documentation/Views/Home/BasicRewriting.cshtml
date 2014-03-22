@@ -5,7 +5,17 @@
 @model Malsys.Web.Models.Lsystem.SimpleLsystemProcessor
 
 @{
-	ViewBag.Title = "Rewriting basics";
+	ViewBag.Title = "Basic principles of symbol rewriting system of L-systems";
+	const string disqusId = "Rewriting-basics";  // Do not chage!!
+
+	var sectionsManager = SectionsManager.CreateForLocal();
+	var rootSec = sectionsManager.RootSection;
+
+	var secSimple = rootSec.Subsection("Simple rewrite rule");
+	var secOrderMatters = rootSec.Subsection("Order of rewrite rules matters");
+	var secOnlyOne = rootSec.Subsection("Only one symbol can be rewritten by rewrite rule at once");
+	var secNext = rootSec.Subsection("Next steps");
+	
 	var exampleModel = new LsystemExampleViewModel() {
 		LsystemProcessor = Model,
 		UnimportantLines = new int[] { -1 },
@@ -19,60 +29,88 @@
 	};
 }
 
-<h2>Rewriting basics</h2>
+<h1>@ViewBag.Title</h1>
 
-<p>
-	In the simplest form the L-system is set of rewrite rules and list of initial symbols (often called an axiom).
-	In each iteration axiom is rewritten by defined rewrite rules to another list of symbols, which is used as axiom in next iteration.
-	Symbol in Malsys is string of characters.
-	Individual symbols are separated by whitespace characters.
-</p>
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
+		<p>
+			In the simplest form an L-system is a set of rewrite rules and a list of initial symbols (often called an axiom).
+			In every iteration the axiom is rewritten by rewrite rules which results to another list of symbols, which is used as axiom in next iteration.
+			A symbol in Malsys is represented as a string of characters but it is often jsut a single character.
+			Individual symbols are separated by whitespace characters.
+		</p>
+	</div>
+	<div class="grid-50 mobile-grid-100">
+		<p>
+			This chapter covers absolute basics of rewrite rule mechanics of L-systems.
+			Following chapter covers how symbols can be interpreted as graphical elements to draw simple fractals.
+		</p>
+	</div>
+</div>
 
-<div id="toc"></div>
+<div class="grid-100 mobile-grid-100 grid-parent hideLinks toc">
+	<h3>Table of contents</h3>
+	@sectionsManager.TableOfContents(false, 3)
+</div>
 
-<p>
-	Let's define very simple L-system called <code>MyFirstLsystem</code> with an axiom set to one symbol <code>A</code>,
-		number of iterations equal to <code>5</code> and in each iteration we want to rewrite symbol
-		<code>A</code> to symbols <code>B</code> and <code>A</code>.
-</p>
+@secSimple.Html
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
+		<p>
+			Let's define very simple L-system called <code>MyFirstLsystem</code> that will generate a sequence of symbols <code>B</code>.
+			This can be done by defining some special symbol, in this case symbol <code>A</code>, that will be used to clone new symbols <code>B</code>.
+		</p>
+		<p>
+			Now the cloning itself is cone by rewrite rule that rewrites the symbol <code>A</code> to symbols <code>B</code> and <code>A</code>.
+			Notice that symbol <code>A</code> is preserved and new symbol <code>B</code> appeared.
+			Other symbols in the string remains untouched.
+			By setting number of iterations equal to <code>5</code> the code will generate 5 symbols <code>B</code> and symbol <code>A</code> at the end of the string.
+		</p>
+	</div>
+</div>
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(
 		"MyFirstLsystem", "A", "5", "rewrite A to B A;"))
 
-<p>
-	Pretty simple, isn't it?
-	If we want to see symbols in all iterations we can set <code>interpretEveryIteration</code> property to <code>true</code>.
-</p>
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
+		<p>
+			It is possible to print result of every iteration by setting property <code>interpretEveryIteration</code> to <code>true</code>.
+		</p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(
 		"MyFirstLsystem", "A", "5", StringHelper.JoinLines(
 			"set interpretEveryIteration = true;",
 			"rewrite A to B A;")))
 
-<p>
-	As we can see, in every iteration the L-system can apply the rewrite only on the last symbol and rewrites
-		<code>A</code> to <code>A B</code>.
-	Symbols on which can't be applied any rewrite rule remains untouched (they are copied to next iteration).
-	So if we add second rewrite rule <code class="malsys">rewrite B to B;</code> to the L-system, result will be exactly the same.
-</p>
 
+@secOrderMatters.Html
 
-<h3>Order of rewrite rules matters</h3>
-
-<p>
-	We can define any number of rewrite rules to L-system, but searching for matching rewrite rule will end after first success.
-	This means that order if rewrite rule is significant.
-	Compare following two L-systems.
-</p>
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
+		<p>
+			It is possible to define any number of rewrite rules in the L-system.
+			However, only one rule ca be applied to a particular symbol.
+			A search for rewrite rule goes from top to bottom and ends after first match.
+			This means that order of rewrite rule in L-system definition is very significant.
+			Compare following two L-systems, the only difference is order of rewrite rules.
+			Quite obviously the results differ.
+		</p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(
 		"OrderOfRulesMatters1", "A", "5", StringHelper.JoinLines("rewrite A to B A;", "rewrite A to C A;")))
+
+<br />
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(
 		"OrderOfRulesMatters2", "A", "5", StringHelper.JoinLines( "rewrite A to C A;", "rewrite A to B A;")))
 
 
-<h3>More complex example</h3>
+@*<h3>More complex example</h3>
 
 <p>
 	In following L-system is hidden the @Html.Link("Fibonacci sequence", "http://en.wikipedia.org/wiki/Fibonacci_sequence").
@@ -91,17 +129,33 @@
 	This L-system have many interesting properties, for example suffix of any iteration is the previous one.
 	But let's move on some more complex topics.
 </p>
+*@
 
+@secOnlyOne.Html
 
-<h3>Only one symbol can be rewritten by the rewrite rule</h3>
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
+		<p>
+			It is not possible to create rewrite rule that rewrite groups of symbols at once.
+			For example, it is not possible to rewrite symbols <code>A B</code> to <code>B A</code> using one rewrite rule.
+			Every rewrite rule can rewrite only one symbol to any number (including zero) symbols.
+			However, rewriting two (or more) symbols can be achieved with L-systems using context rewrite rules that will be discussed later in chapter ??.
+		</p>
+	</div>
+</div>
 
-<p>
-	It is not possible to create rewrite rule like this: <code class="malsys">rewrite A B to B A;</code>.
-	Rewrite rule can rewrite only one symbol, but it can be replaced for any number of symbols (including 0).
-	However, rewriting two (or more) symbols can be simulated using context rewrite rules.
-</p>
+@secNext.Html
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
+		<p>
+			This chapter is intentionally very short and coveres the very basics because rewriting bare symbol (characters) is not fun.
+			Following chapter ?? coveres how symbols can be interpreted as basic geometric primitives such as lines to draw some simple fractals.
+		</p>
+	</div>
+</div>
 
+@*
 <h3>Context rewriting</h3>
 
 <p>
@@ -169,4 +223,4 @@
 
 <p>
 	Full list of rewriting features can be found on @Html.ActionLink("rewrite rules reference page", MVC.Documentation.SyntaxReference.RewriteRule()).
-</p>
+</p>*@

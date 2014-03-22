@@ -243,9 +243,6 @@
     <Compile Include="Administration.RolesController.generated.cs">
       <DependentUpon>T4MVC.tt</DependentUpon>
     </Compile>
-    <Compile Include="Administration.SharedController.generated.cs">
-      <DependentUpon>T4MVC.tt</DependentUpon>
-    </Compile>
     <Compile Include="Administration.StatsController.generated.cs">
       <DependentUpon>T4MVC.tt</DependentUpon>
     </Compile>
@@ -279,6 +276,9 @@
     <Compile Include="Areas\Documentation\Models\LsystemExampleViewModel.cs" />
     <Compile Include="Areas\Documentation\Models\PredefinedConstantsModel.cs" />
     <Compile Include="Areas\Documentation\Views\CompilerConstantsAttribute.cs" />
+    <Compile Include="ArticleTools\IFigure.cs" />
+    <Compile Include="ArticleTools\Section.cs" />
+    <Compile Include="ArticleTools\SectionsManager.cs" />
     <Compile Include="AuthenticationController.generated.cs">
       <DependentUpon>T4MVC.tt</DependentUpon>
     </Compile>
@@ -335,6 +335,7 @@
       <DependentUpon>MalsysDbModel.edmx</DependentUpon>
     </Compile>
     <Compile Include="ExtensionsAndHelpers%27\StaticHtml.cs" />
+    <Compile Include="ExtensionsAndHelpers%27\StaticUrl.cs" />
     <Compile Include="FeedbackController.generated.cs">
       <DependentUpon>T4MVC.tt</DependentUpon>
     </Compile>
@@ -715,9 +716,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Code\" />
-    <Folder Include="Areas\Administration\Views\Shared\" />
-    <Folder Include="Views\Shared\DisplayTemplates\" />
-    <Folder Include="Views\Shared\EditorTemplates\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -4,17 +4,17 @@
  *@
 
 @{
-	ViewBag.Title = "Malsys help index";
+	ViewBag.Title = "Malsys docummentation";
 }
+
+<h1>Malsys docummentation</h1>
 
 <div class="grid-100 mobile-grid-100 grid-parent hideLinks">
 	<div class="grid-100 mobile-grid-100 ">
-		<h1>Malsys docummentation</h1>
-
 		<p>
 			Malsys is quite complicated systems but it offeres a lot of pre-defined stuff that makes it easy to use even for beginners.	
-			The best way how to start using Malsys is to read
-				@Html.ActionLink("Basic principles of L-system rewriting", MVC.Documentation.Home.BasicRewriting())
+			The best way how to start using Malsys is to read .....
+
 				and look at some examples in @Html.ActionLink("the gallery", MVC.Gallery.Index()).
 		</p>
 
@@ -31,7 +31,7 @@
 		<h2>Tutorials and explanations of the system</h2>
 
 		<ol>
-			<li>@Html.ActionLink("Basic principles of L-system rewriting", MVC.Documentation.Home.BasicRewriting())</li>
+			<li>@Html.ActionLink("Basic principles of symbol rewriting system of L-systems", MVC.Documentation.Home.BasicRewriting())</li>
 			<li>@Html.ActionLink("L-system symbols with arguments", MVC.Documentation.Home.LsystemSymbols())</li>
 			<li>@Html.ActionLink("Interpret symbols to get image", MVC.Documentation.Home.BasicInterpretation())</li>
 			<li>@Html.ActionLink("Process configurations", MVC.Documentation.Home.ProcessConfigurations())</li>

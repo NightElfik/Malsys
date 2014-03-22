@@ -39,9 +39,9 @@
 
 .malsysBox () {
 	border: 1px solid #AAA;
-	padding: 0.3em;
+	padding: 8px;
 	margin: 0;
-	background: #DDD;
+	background: #EEE;
 	.border-radius-malsys;
 	box-shadow: 2px 2px 5px 0 #AAA;
 }
@@ -114,6 +114,25 @@ a {
 	&:visited { color: @linkVisitedColor; outline: 0; }
 	&:focus { outline: thin dotted; }
 }
+
+.hideLinks a:link, .hideLinks a:visited {
+	color: @textColor;
+}
+
+.hideLinks:hover a:link, .hideLinks:hover a:visited {
+	color: @linkColor;
+}
+
+.section a.anchorLink {
+	float: right;
+	color: #FFF !important;
+	text-shadow: none;
+}
+
+.section:hover a.anchorLink {
+	float: right;
+	color: lighten(@linkColor, 30) !important;
+}
 	
 /* Redeclare monospace font family: h5bp.com/j */
 pre, code, kbd, samp { font-family: @monospaceFont; font-size: 1em; }
@@ -155,6 +174,7 @@ html, #header, #footer {
 
 #title {
 	font-size: 3.1em;
+	font-weight: bolder;
 	text-shadow: 0px 0px 8px #000;
 	letter-spacing: 0.1em;
 	display: inline;
@@ -203,8 +223,12 @@ html, #header, #footer {
 input[type="submit"] { padding: 0.5em 1em; }
 
 h1, h2, h3 {
+	color: #000;
 	border-bottom: 1px solid #BBB;
 	box-shadow: 0 6px 6px -6px #BBB;
+	margin: 0.5em 0 0 0;
+	padding: 0;
+	text-shadow: 2px 2px 2px #DDD;
 }
 
 #footer {
@@ -231,6 +255,30 @@ h1, h2, h3 {
 		}
 	}
 }
+
+.malsysExample {	
+	.malsysBox();
+	overflow: hidden;
+	h4 {
+		padding: 4px 16px;
+		margin: -9px -18px 10px -19px;
+		background-color: #DDD;
+		border-bottom: 1px solid #AAA;
+		border-top: 1px solid #AAA;
+		border-left: 1px solid #AAA;
+	}
+	.malsys {		
+		margin-bottom: 14px;
+	}
+}
+
+/*@media screen and (max-width: 979px) {
+	.malsysExample {	
+		h4 {
+			margin-top: 8px;
+		}
+	}
+}*/
 
 
 /* General styles =========================================================== */
@@ -287,16 +335,16 @@ p { text-align: justify; }
 
 /* TOC ====================================================================== */
 
-#toc {
-	&.collapsed { height: 1.5em; overflow: hidden; }
-}
-
-a.tocLink, a.anchorLink {
-	float: right; font-size: 0.8em;
-	&.autoHide {
-		opacity: 0.2;
-		&:hover { opacity: 1; }
-	}
+.toc {
+	ul { list-style: none; }
+	ul.topLevel { padding-left: 0; margin: 0; }
+	ul.topLevel > li > a { font-size: 1.2em; }
+	li { .transition(background-color 0.3s ease); }
+	li:hover { background-color: #EEE; }
+	a { display: block; padding: 2px 0.5em; }
+	a:hover { background-color: #DDD; }
+	li.current { background-color: #EEF; }
+	li.current:hover { background-color: #DDF; }
 }
 
 /* Discussion =============================================================== */
@@ -373,7 +421,7 @@ pre {
 }
 
 code {
-	background: #DDD;
+	background: #EEE;
 	padding: 0 0.2em;
 }
 
