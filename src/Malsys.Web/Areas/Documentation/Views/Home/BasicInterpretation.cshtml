@@ -5,7 +5,8 @@
 @model BasicInterpretationModel
 
 @{
-	ViewBag.Title = "Symbols interpretation";
+	ViewBag.Title = "Basic interpretation of L-system symbols";
+	const string disqusId = "BasicInterpretation";  // Do not chage!!
 
 	var exampleModel = new LsystemExampleViewModel() {
 		LsystemProcessor = Model.SimpleLsystemProcessor,

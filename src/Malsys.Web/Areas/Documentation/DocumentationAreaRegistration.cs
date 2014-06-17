@@ -12,15 +12,23 @@ namespace Malsys.Web.Areas.Documentation {
 		public override void RegisterArea(AreaRegistrationContext context) {
 
 			context.MapRoute(
-				"Documentation sitemap",
-				"Documentation/sitemap.xml",
-				new { controller = MVC.Documentation.Home.Name, action = MVC.Documentation.Home.ActionNames.Sitemap }
+				name: "Documentation articles",
+				url: MVC.Documentation.Name + "/" + MVC.Documentation.Articles.Name + "/{name}/{part}",
+				defaults: new {
+					controller = MVC.Documentation.Articles.Name,
+					action = MVC.Documentation.Articles.ActionNames.Article,
+					part = UrlParameter.Optional,
+				}
 			);
 
 			context.MapRoute(
-				"Documentation default",
-				"Documentation/{controller}/{action}/{id}",
-				new { controller = MVC.Documentation.Home.Name, action = "Index", id = UrlParameter.Optional }
+				name: "Documentation default",
+				url: MVC.Documentation.Name + "/{controller}/{action}/{id}",
+				defaults: new {
+					controller = MVC.Documentation.Home.Name,
+					action = "Index",
+					id = UrlParameter.Optional
+				}
 			);
 
 		}

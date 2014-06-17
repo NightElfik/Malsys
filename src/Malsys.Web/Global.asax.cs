@@ -1,12 +1,11 @@
 ﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
 // All rights reserved.
 using System;
+using System.Collections.Generic;
 using System.Configuration;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using System.Web;
 using System.Web.Configuration;
 using System.Web.Mvc;
@@ -18,13 +17,13 @@ using Malsys.Evaluators;
 using Malsys.Processing;
 using Malsys.Reflection;
 using Malsys.Resources;
+using Malsys.Web.Areas.Documentation.Models;
 using Malsys.Web.Entities;
 using Malsys.Web.Infrastructure;
 using Malsys.Web.Models;
 using Malsys.Web.Models.Lsystem;
 using Malsys.Web.Models.Repositories;
 using Malsys.Web.Security;
-using System.Collections.Generic;
 
 namespace Malsys.Web {
 	public class MvcApplication : HttpApplication {
@@ -40,8 +39,8 @@ namespace Malsys.Web {
 			initializeDiscussion(resolver.GetService<IDiscussionRepository>());
 			checkFileSystem(resolver.GetService<IAppSettingsProvider>());
 
-			registerGlobalFilters(GlobalFilters.Filters);
-			registerRoutes(RouteTable.Routes);
+			FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
+			RouteConfig.RegisterRoutes(RouteTable.Routes);
 
 		}
 
@@ -58,44 +57,6 @@ namespace Malsys.Web {
 			}
 
 			return base.GetVaryByCustomString(context, custom);
-		}
-
-		private void registerGlobalFilters(GlobalFilterCollection filters) {
-			filters.Add(new InvariantCultureActionFilter());
-		}
-
-		private void registerRoutes(RouteCollection routes) {
-
-			routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
-
-
-			routes.MapRoute(
-				"Main sitemap",
-				"sitemap.xml",
-				new { controller = MVC.Home.Name, action = "sitemap" },
-				new string[] { "Malsys.Web.Controllers" }
-			);
-			routes.MapRoute(
-				"Sitemaps",
-				"{controller}/sitemap.xml",
-				new { controller = MVC.Home.Name, action = "sitemap" },
-				new string[] { "Malsys.Web.Controllers" }
-			);
-
-			routes.MapRoute(
-				"Permalink",
-				MVC.Permalink.Name.ToLower() + "/{id}",
-				new { controller = MVC.Permalink.Name, action = MVC.Permalink.ActionNames.Index },
-				new string[] { "Malsys.Web.Controllers" }
-			);
-
-			routes.MapRoute(
-				 "Default",
-				 "{controller}/{action}/{id}",
-				 new { controller = "Home", action = "Index", id = UrlParameter.Optional },
-				 new string[] { "Malsys.Web.Controllers" }
-			 );
-
 		}
 
 		private IDependencyResolver buildDependencyResolver() {
@@ -133,6 +94,17 @@ namespace Malsys.Web {
 
 
 			registerMalsysStuff(builder, xmlDocReader);
+
+			var articles = typeof(HelpArticle)
+				.GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)
+				.Where(fi => fi.FieldType == typeof(HelpArticle))
+				.Select(fi => (HelpArticle)fi.GetValue(null))
+				.Where(p => !string.IsNullOrEmpty(p.ViewName))
+				.OrderByDescending(p => p.Date)
+				.ToList();
+			builder.Register(x => articles)
+				.As<IEnumerable<HelpArticle>>()
+				.SingleInstance();
 
 			return new AutofacDependencyResolver(builder.Build());
 
@@ -345,18 +317,6 @@ namespace Malsys.Web {
 			}
 
 		}
-
-
-		private class InvariantCultureActionFilter : IActionFilter {
-
-			public void OnActionExecuting(ActionExecutingContext filterContext) {
-				Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-				Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
-			}
-
-			public void OnActionExecuted(ActionExecutedContext filterContext) { }
-
-		}
-
+		
 	}
 }

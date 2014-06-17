@@ -30,11 +30,7 @@ namespace Malsys.Web.Areas.Documentation.Controllers {
 		public virtual ActionResult Index() {
 			return View();
 		}
-
-		public virtual ActionResult Sitemap() {
-			return View();
-		}
-
+		
 		public virtual ActionResult Faq() {
 			return View();
 		}

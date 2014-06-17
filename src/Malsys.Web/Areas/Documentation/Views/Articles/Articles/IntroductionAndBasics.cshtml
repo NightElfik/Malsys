@@ -1,0 +1,179 @@
+﻿@model HelpArticleViewModel
+
+@{
+	var viewModel = Model as HelpArticleViewModel;
+	var article = viewModel != null ? viewModel.DisplayedArticle : null;
+
+	var layoutMgr = Model.LayoutManager;
+	
+	
+	var rootSec = Model.SectionsManager.RootSection;
+	
+	var secIntroduction = rootSec.Subsection("Introduction");
+
+	var secRewriting = rootSec.Subsection("Rewriting");
+		var secRwSimple = secRewriting.Subsection("Simple rewrite rule");
+		var secRwParallel = secRewriting.Subsection("Rewriting is parallel");
+		var secRwOrderMatters = secRewriting.Subsection("Order of rewrite rules matters");
+		var secRwOnlyOne = secRewriting.Subsection("Only one symbol can be rewritten by rewrite rule at once");
+		var secRwNext = secRewriting.Subsection("Next steps");
+		
+	var secInterpretation = rootSec.Subsection("Interpretation");
+		var secInterpretationx = secInterpretation.Subsection("x");
+				
+	
+	var exampleModel = new LsystemExampleViewModel() {
+		LsystemProcessor = Model.LsystemProcessor,
+		UnimportantLines = new int[] { -1 },
+		SourceCodeTemplate = StringHelper.JoinLines(
+			"lsystem {0} {{",
+			"set symbols axiom = {1};",
+			"set iterations = {2};",
+			"{3}",
+			"}}",
+			"process all with SymbolPrinter;")
+	};
+	
+	
+}
+
+
+@* ================================================================================================================== *@
+@* ================================================================================================================== *@
+@* ================================================================================================================== *@
+@if (secIntroduction.IsVisible) {
+	@secIntroduction.Html
+
+}
+
+
+@* ================================================================================================================== *@
+@* ================================================================================================================== *@
+@* ================================================================================================================== *@
+@if (secRewriting.IsVisible) {
+	@secRewriting.Html
+	
+@layoutMgr.StartColumn()
+	<p>
+		In the simplest form an L-system is a set of rewrite rules and a list of initial symbols (often called an axiom).
+		In every iteration the axiom is rewritten by a set of rewrite rules to another list of symbols,
+			which is used as an axiom in the next iteration.
+		This iterative proces repeats until desired number of iterations is reached.
+	</p>
+	@layoutMgr.NextColumn()
+	<p>
+		A symbol in Malsys is represented as a string of characters but it is often jsut a single character.
+		Individual symbols are separated by whitespace characters.
+	</p>
+	<p>
+		This chapter covers absolute basics of rewrite rule mechanics of L-systems.
+		Following chapter covers how symbols can be interpreted as graphical elements to draw simple fractals.
+	</p>
+@layoutMgr.EndColumn()
+
+	
+@* ================================================================================================================== *@
+@secRwSimple.Html
+
+@layoutMgr.StartColumn()
+	<p>
+		Let's define very simple L-system called <code>MyFirstLsystem</code> that will generate a sequence of symbols <code>S</code>.
+		This can be done by defining some special symbol, in this case symbol <code>A</code>, that will be used to clone new symbols <code>S</code>.
+	</p>
+	<p>
+		Now, the cloning itself is done by rewrite rule that rewrites the symbol <code>A</code> to two symbols <code>S</code> and <code>A</code>.
+		Notice that symbol <code>A</code> is preserved and new symbol <code>S</code> appeared.
+		Other symbols <code>S</code> in the string remains untouched since there are no rewrite rule for them.
+		By setting number of iterations equal to <code>5</code> the code will generate 5 symbols <code>S</code> followed by symbol <code>A</code>.
+	</p>
+@layoutMgr.EndColumn()
+
+@Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(
+		"MyFirstLsystem", "A", "5", "rewrite A to S A;"))
+	
+
+@layoutMgr.StartColumn()
+	<p>
+		It is very simple to print result of every iteration by setting property <code>interpretEveryIteration</code> to <code>true</code> as demonstrated in next example.
+	</p>
+@layoutMgr.EndColumn()
+
+@Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(
+		"MyFirstLsystem", "A", "5", StringHelper.JoinLines(
+			"set interpretEveryIteration = true;",
+			"rewrite A to B A;")))
+	
+	
+@* ================================================================================================================== *@
+@secRwParallel.Html
+
+@layoutMgr.StartColumn()
+	<p>
+		It is possible to define any number of rewrite rules in the L-system.
+		Their application is "parallel" as if all symbols were rewritten at the same time.
+		This simply means that symbols that are result from one rule wont be rewriten again in the same iteration.
+	</p>
+@layoutMgr.EndColumn()
+
+@Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(
+		"OrderOfRulesMatters1", "X I X I X", "5", StringHelper.JoinLines(
+			"set interpretEveryIteration = true;",
+				"rewrite X to I;", "rewrite I to X;")))
+
+	
+@* ================================================================================================================== *@
+@secRwOrderMatters.Html
+
+@layoutMgr.StartColumn()
+	<p>
+		Only one rule can be applied to a particular symbol.
+		A search for rewrite rule goes from top to bottom and ends after the first match.
+		This means that the order of rewrite rules in an L-system definition is significant.
+		Compare following two L-systems, the only difference is order of rewrite rules.
+		Quite obviously the results differ.
+	</p>
+@layoutMgr.EndColumn()
+
+@Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(
+		"OrderOfRulesMatters1", "A", "5", StringHelper.JoinLines("rewrite A to B A;", "rewrite A to C A;")))
+
+<br />
+
+@Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(
+		"OrderOfRulesMatters2", "A", "5", StringHelper.JoinLines( "rewrite A to C A;", "rewrite A to B A;")))
+	
+	
+@* ================================================================================================================== *@
+@secRwOnlyOne.Html
+
+@layoutMgr.StartColumn()
+	<p>
+		It is not possible to create rewrite rule that rewrite groups of symbols at once.
+		For example, it is not possible to rewrite symbols <code>A B</code> to <code>B A</code> using one rewrite rule.
+		Every rewrite rule can rewrite only one symbol to any number symbols (including zero).
+		However, rewriting two (or more) symbols "at once" can be achieved with more context rewrite rules L-systems.
+		This is more advanced technique that is discussed in ??.
+	</p>
+@layoutMgr.EndColumn()
+
+	
+@* ================================================================================================================== *@
+@secRwNext.Html
+
+@layoutMgr.StartColumn()
+	<p>
+		This chapter is intentionally very short and coveres the very basics because rewriting bare symbols is not very fun.
+		Following chapter coveres how symbols can be interpreted as basic geometric primitives such as lines to draw some simple fractals — that's fun.
+	</p>
+@layoutMgr.EndColumn()
+	
+}
+
+
+@* ================================================================================================================== *@
+@* ================================================================================================================== *@
+@* ================================================================================================================== *@
+@if (secInterpretation.IsVisible) {
+	@secInterpretation.Html
+
+}

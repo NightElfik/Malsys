@@ -1,0 +1,55 @@
+﻿@model HelpArticleViewModel
+
+@{
+	var project = Model.DisplayedArticle;
+	var sectionsMgr = Model.SectionsManager;
+	var layoutMgr = Model.LayoutManager;
+	var currentSection = sectionsMgr.CurrentSection;
+	string title = project.Name + ": " + currentSection.Name;
+	ViewBag.Title = title;
+
+	var navigation = sectionsMgr.Navigation("Previous chapter", "Next chapter", "Back to the first chapter");
+}
+
+<span class="largerFont floatRight">@project.Date.ToString("MMMM yyyy")</span>
+<h1>@Html.ActionLink(project.Name, MVC.Documentation.Articles.Article(
+	project.Url, sectionsMgr.RootSection.Subsections[0].HtmlId),
+	new { title = sectionsMgr.RootSection.Subsections[0].SectionFullName })</h1>
+
+@navigation
+
+@{	
+	// Use RenderPartial() instead of Partial() to avoid double processing with whitespace stripper.
+	Html.RenderPartial(project.ViewName, Model);
+}
+
+
+@layoutMgr.NewBodySection()
+
+@navigation
+
+@layoutMgr.NewBodySection()
+
+
+@layoutMgr.StartColumn()
+	<h3>Comments for this chapter</h3>
+	@if (string.IsNullOrEmpty(project.DisqusId)) {
+		<p>Comments are not enabled for this project report yet.</p>
+	}
+	else {	  
+		string id = project.DisqusId + "/" + sectionsMgr.CurrentSectionNumber;
+		string url = Url.ActionAbsolute(MVC.Documentation.Articles.Article(project.Url, currentSection.HtmlId));	
+		@StaticHtml.DisqusComments(title, id, url)
+	}
+	
+@layoutMgr.NextColumn(extraClass: "toc")
+
+	<h3>Table of contents</h3>
+	@sectionsMgr.TableOfContents(false, 2)
+
+@layoutMgr.EndColumn()
+
+
+@layoutMgr.NewBodySection()
+
+@navigation

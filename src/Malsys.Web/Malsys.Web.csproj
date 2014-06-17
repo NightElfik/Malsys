@@ -256,8 +256,10 @@
       <DependentUpon>T4MVC.tt</DependentUpon>
     </Compile>
     <Compile Include="AppSettingsKeys.cs" />
+    <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RazorGeneratorMvcStart.cs" />
     <Compile Include="App_Start\RegisterClientValidationExtensions.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Areas\Administration\AdministrationAreaRegistration.cs" />
     <Compile Include="Areas\Administration\Controllers\HomeController.cs" />
     <Compile Include="Areas\Administration\Controllers\TagsController.cs" />
@@ -266,6 +268,7 @@
     <Compile Include="Areas\Administration\Models\SavedInputModel.cs" />
     <Compile Include="Areas\Administration\Models\MailModel.cs" />
     <Compile Include="Areas\Documentation\Controllers\ApiController.cs" />
+    <Compile Include="Areas\Documentation\Controllers\ArticlesController.cs" />
     <Compile Include="Areas\Documentation\Controllers\HomeController.cs" />
     <Compile Include="Areas\Documentation\Controllers\PredefinedController.cs" />
     <Compile Include="Areas\Documentation\Controllers\SyntaxReferenceController.cs" />
@@ -273,12 +276,17 @@
     <Compile Include="Areas\Documentation\Models\BasicInterpretationModel.cs" />
     <Compile Include="Areas\Documentation\Models\ComponentModel.cs" />
     <Compile Include="Areas\Documentation\Models\ConfigurationModel.cs" />
+    <Compile Include="Areas\Documentation\Models\HelpArticle.cs" />
+    <Compile Include="Areas\Documentation\Models\HelpArticleViewModel.cs" />
     <Compile Include="Areas\Documentation\Models\LsystemExampleViewModel.cs" />
     <Compile Include="Areas\Documentation\Models\PredefinedConstantsModel.cs" />
     <Compile Include="Areas\Documentation\Views\CompilerConstantsAttribute.cs" />
+    <Compile Include="ArticleTools\CodeHighlighter.cs" />
     <Compile Include="ArticleTools\IFigure.cs" />
+    <Compile Include="ArticleTools\LayoutManager.cs" />
     <Compile Include="ArticleTools\Section.cs" />
     <Compile Include="ArticleTools\SectionsManager.cs" />
+    <Compile Include="ArticleTools\TocFetcher.cs" />
     <Compile Include="AuthenticationController.generated.cs">
       <DependentUpon>T4MVC.tt</DependentUpon>
     </Compile>
@@ -308,6 +316,9 @@
       <DependentUpon>T4MVC.tt</DependentUpon>
     </Compile>
     <Compile Include="Documentation.ApiController.generated.cs">
+      <DependentUpon>T4MVC.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Documentation.ArticlesController.generated.cs">
       <DependentUpon>T4MVC.tt</DependentUpon>
     </Compile>
     <Compile Include="Documentation.HomeController.generated.cs">
@@ -360,7 +371,9 @@
     <Compile Include="Infrastructure\MalsysHelper.cs" />
     <Compile Include="Infrastructure\References.cs" />
     <Compile Include="Infrastructure\UrlHelperExtensions.cs" />
+    <Compile Include="Infrastructure\WhitespaceStripperViewPage.cs" />
     <Compile Include="LoadedPlugins.cs" />
+    <Compile Include="Models\ArticleModelBase.cs" />
     <Compile Include="Models\DiscussionCategory.cs" />
     <Compile Include="Models\IDiscussionRepository.cs" />
     <Compile Include="Models\MalsysStdLibSource.cs" />
@@ -476,6 +489,8 @@
     <Content Include="Areas\Documentation\Views\Home\LsystemFaq.cshtml" />
     <Content Include="Areas\Administration\Views\Stats\Logs.cshtml" />
     <Content Include="Download\Png-v1.zip" />
+    <Content Include="Areas\Documentation\Views\Articles\Articles\IntroductionAndBasics.cshtml" />
+    <Content Include="Areas\Documentation\Views\Articles\Article.cshtml" />
     <None Include="Img\DevDiary\SvgOptimizations\CircTile.svgz" />
     <None Include="Img\DevDiary\SvgOptimizations\DekkingsChurch.svgz" />
     <None Include="Img\DevDiary\SvgOptimizations\HexagosperSig2.svgz" />
@@ -689,9 +704,7 @@
     <Content Include="Views\Gallery\FullScreen.cshtml" />
     <Content Include="Views\Shared\_FullScreenLayout.cshtml" />
     <Content Include="Views\Home\WhyWebgl.cshtml" />
-    <Content Include="Views\Home\Sitemap.cshtml" />
     <Content Include="Views\Gallery\Sitemap.cshtml" />
-    <Content Include="Areas\Documentation\Views\Home\Sitemap.cshtml" />
     <Content Include="Views\Home\Thesis.cshtml" />
     <Content Include="Views\CurveDesigner\Index.cshtml" />
     <Content Include="Views\CurveDesigner\Show.cshtml" />

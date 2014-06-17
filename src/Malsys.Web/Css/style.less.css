@@ -259,6 +259,7 @@ h1, h2, h3 {
 .malsysExample {	
 	.malsysBox();
 	overflow: hidden;
+	margin-bottom: 20px;
 	h4 {
 		padding: 4px 16px;
 		margin: -9px -18px 10px -19px;
@@ -313,11 +314,34 @@ a.noUnderline:hover { text-decoration: none; }
 	width: 49%;
 }
 
+.floatRight { float: right; }
+
 p { text-align: justify; }
 .indent { margin: 0 0 0 2em; }
 
 .keepNl { white-space: pre-line; }
 
+
+/* ==================================================================================================================
+ * Articles
+ * ================================================================================================================== */
+
+.partsNavigation {
+	a { display: block; padding: 0.5em; .transition(background-color 0.3s ease); }
+	a:hover { background-color: #EEE; }
+}
+	
+.toc {
+	ul { list-style: none; }
+	ul.topLevel { padding-left: 0; margin: 0; }
+	ul.topLevel > li > a { font-size: 1.2em; }
+	li { .transition(background-color 0.3s ease); }
+	li:hover { background-color: #EEE; }
+	a { display: block; padding: 2px 0.5em; }
+	a:hover { background-color: #DDD; }
+	li.current { background-color: #EEF; }
+	li.current:hover { background-color: #DDF; }
+}
 
 /* Collapsation ============================================================= */
 
@@ -333,19 +357,6 @@ p { text-align: justify; }
 }
 
 
-/* TOC ====================================================================== */
-
-.toc {
-	ul { list-style: none; }
-	ul.topLevel { padding-left: 0; margin: 0; }
-	ul.topLevel > li > a { font-size: 1.2em; }
-	li { .transition(background-color 0.3s ease); }
-	li:hover { background-color: #EEE; }
-	a { display: block; padding: 2px 0.5em; }
-	a:hover { background-color: #DDD; }
-	li.current { background-color: #EEF; }
-	li.current:hover { background-color: #DDF; }
-}
 
 /* Discussion =============================================================== */
 

@@ -3,23 +3,16 @@ using System.Diagnostics;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
+using Malsys.Web.Areas.Documentation.Models;
 
 namespace Malsys.Web.ArticleTools {
 	public class SectionsManager {
-
-		public static SectionsManager CreateForLocal() {
-			return new SectionsManager((sec, url) => {
-				Debug.Assert(sec.Level == 2);
-				return "#" + sec.HtmlId;
-			});
-		}
-
-
+		
 		private readonly Func<Section, UrlHelper, string> hrefResolver;
 		private readonly UrlHelper urlHelper;
 
 
-		private SectionsManager(Func<Section, UrlHelper, string> hrefResolver) {
+		public SectionsManager(Func<Section, UrlHelper, string> hrefResolver) {
 			this.hrefResolver = hrefResolver;
 			RootSection = new Section(this);
 			CurrentSectionNumber = -1;

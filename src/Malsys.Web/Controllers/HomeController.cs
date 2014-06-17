@@ -58,10 +58,6 @@ namespace Malsys.Web.Controllers {
 			return View();
 		}
 
-		public virtual ActionResult Sitemap() {
-			return View();
-		}
-
 		public virtual ActionResult Thesis() {
 			return View();
 		}
