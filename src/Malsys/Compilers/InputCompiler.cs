@@ -34,7 +34,7 @@ namespace Malsys.Compilers {
 
 		public InputBlock Compile(Ast.InputBlock parsedInput, IMessageLogger logger) {
 
-			var statements = new List<IInputStatement>(parsedInput.Statements.Length);
+			var statements = new List<IInputStatement>(parsedInput.Statements.Count);
 
 			foreach (var stat in parsedInput.Statements) {
 				switch (stat.StatementType) {
@@ -69,7 +69,10 @@ namespace Malsys.Compilers {
 				}
 			}
 
-			return new InputBlock(parsedInput.SourceName, statements.ToImmutableList());
+			return new InputBlock(parsedInput) {
+				SourceName = parsedInput.SourceName,
+				Statements = statements,
+			};
 		}
 
 	}

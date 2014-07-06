@@ -1,5 +1,4 @@
-﻿/// <reference path="~/Js/jquery.js" />
-/**
+﻿/**
 * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
 * All rights reserved.
 */

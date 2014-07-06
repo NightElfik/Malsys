@@ -25,9 +25,12 @@ namespace Malsys.Evaluators {
 		/// </remarks>
 		public InputBlockEvaled Evaluate(InputBlock input, IExpressionEvaluatorContext exprEvalCtxt, IMessageLogger logger) {
 
+			var inBlockEvaled = new InputBlockEvaled() {
+				SourceName = input.SourceName
+			};
+
 			var lsys = MapModule.Empty<string, LsystemEvaledParams>();
 			var procConfs = MapModule.Empty<string, ProcessConfigurationStatement>();
-			var procStats = new List<ProcessStatementEvaled>();
 
 			foreach (var stat in input.Statements) {
 				switch (stat.StatementType) {
@@ -44,8 +47,11 @@ namespace Malsys.Evaluators {
 					case InputStatementType.Function:
 						var fun = (Function)stat;
 						try {
-							var funPrms = paramsEvaluator.Evaluate(fun.Parameters, exprEvalCtxt);
-							var funData = new FunctionData(fun.Name, funPrms, fun.Statements);
+							var funData = new FunctionData() {
+								Name = fun.Name,
+								Parameters = paramsEvaluator.Evaluate(fun.Parameters, exprEvalCtxt),
+								Statements = fun.Statements
+							};
 							exprEvalCtxt = exprEvalCtxt.AddFunction(funData);
 						}
 						catch (EvalException ex) {
@@ -56,8 +62,13 @@ namespace Malsys.Evaluators {
 					case InputStatementType.Lsystem:
 						var ls = (Lsystem)stat;
 						try {
-							var lsPrms = paramsEvaluator.Evaluate(ls.Parameters, exprEvalCtxt);
-							lsys = lsys.Add(ls.Name, new LsystemEvaledParams(ls.Name, ls.IsAbstract, lsPrms, ls.BaseLsystems, ls.Statements, ls.AstNode));
+							lsys = lsys.Add(ls.Name, new LsystemEvaledParams(ls.AstNode) {
+								Name = ls.Name,
+								IsAbstract = ls.IsAbstract,
+								Parameters = paramsEvaluator.Evaluate(ls.Parameters, exprEvalCtxt),
+								BaseLsystems = ls.BaseLsystems,
+								Statements = ls.Statements,
+							});
 						}
 						catch (EvalException ex) {
 							logger.LogMessage(Message.LsysParamsEvalFailed, ls.AstNode.TryGetPosition(), ls.Name, ex.GetFullMessage());
@@ -71,8 +82,13 @@ namespace Malsys.Evaluators {
 
 					case InputStatementType.ProcessStatement:
 						var procStat = (ProcessStatement)stat;
-						procStats.Add(new ProcessStatementEvaled(procStat.TargetLsystemName, exprEvalCtxt.EvaluateList(procStat.Arguments),
-							procStat.ProcessConfiName, procStat.ComponentAssignments, procStat.AdditionalLsystemStatements, procStat.AstNode));
+						inBlockEvaled.ProcessStatements.Add(new ProcessStatementEvaled(procStat.AstNode) {
+							TargetLsystemName = procStat.TargetLsystemName,
+							Arguments = exprEvalCtxt.EvaluateList(procStat.Arguments),
+							ProcessConfigName = procStat.ProcessConfiName,
+							ComponentAssignments = procStat.ComponentAssignments,
+							AdditionalLsystemStatements = procStat.AdditionalLsystemStatements,
+						});
 						break;
 
 					default:
@@ -81,7 +97,10 @@ namespace Malsys.Evaluators {
 				}
 			}
 
-			return new InputBlockEvaled(exprEvalCtxt, lsys, procConfs, procStats.ToImmutableList(), input.SourceName);
+			inBlockEvaled.ExpressionEvaluatorContext = exprEvalCtxt;
+			inBlockEvaled.Lsystems = lsys;
+			inBlockEvaled.ProcessConfigurations = procConfs;
+			return inBlockEvaled;
 		}
 
 		public enum Message {

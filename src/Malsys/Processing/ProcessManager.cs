@@ -95,7 +95,7 @@ namespace Malsys.Processing {
 		/// Changing of logic in this method may need to change similar logic in ProcessLsystem method of LsystemInLsystemProcessor class.
 		/// </remarks>
 		private void processInputStatement(ProcessStatementEvaled processStat, FSharpMap<string, ConfigurationComponent> components,
-				ImmutableList<ProcessComponentsConnection> connections, InputBlockEvaled inBlockEvaled, IOutputProvider outputProvider,
+				List<ProcessComponentsConnection> connections, InputBlockEvaled inBlockEvaled, IOutputProvider outputProvider,
 				IMessageLogger logger, TimeSpan timeout) {
 
 			IEnumerable<LsystemEvaledParams> lsystemsToProcess;
@@ -139,15 +139,15 @@ namespace Malsys.Processing {
 						}
 
 						// evaluate additional L-system statements from process statement
-						lsysEvaled = lsysEvaluator.EvaluateAdditionalStatements(lsysEvaled, processStat.AdditionalLsystemStatements, logger);
+						lsysEvaluator.EvaluateAdditionalStatements(lsysEvaled, processStat.AdditionalLsystemStatements, logger);
 						if (errBlock.ErrorOccurred) {
 							continue;
 						}
 
-						// set settable properties on components
+						// Sets settable properties on components.
 						configBuilder.SetAndCheckUserSettableProperties(components, lsysEvaled.ComponentValuesAssigns, lsysEvaled.ComponentSymbolsAssigns, logger);
 
-						// add gettable variables which can not be get before initialization
+						// Adds gettable variables which can not be get before initialization.
 						var newEec = lsysEvaled.ExpressionEvaluatorContext;
 						newEec = configBuilder.AddComponentsGettableVariables(components, newEec, false);
 						newEec = configBuilder.AddComponentsCallableFunctions(components, newEec, false);
@@ -155,7 +155,7 @@ namespace Malsys.Processing {
 						var context = new ProcessContext(lsysEvaled, outputProvider, inBlockEvaled, evaluator,
 							newEec, componentResolver, timeout, components);
 
-						// initialize components with ExpressionEvaluatorContext
+						// Initializes components with ExpressionEvaluatorContext.
 						configBuilder.InitializeComponents(components, context, logger);
 
 						procConfig = configBuilder.CreateConfiguration(components, logger);

@@ -12,7 +12,7 @@ var reolver = Model.ComponentMetadataResolver;
 @:\subsection{@config.Name}
 @:\label{@config.Name}
 
-if (config.Components.Length > 0) {
+if (config.Components.Count > 0) {
 	@:\paragraph{Components}
 	@:\begin{description*}
 	foreach (var comp in config.Components) {
@@ -22,7 +22,7 @@ if (config.Components.Length > 0) {
 	@:\end{description*}
 }
 
-if (config.Containers.Length > 0) {
+if (config.Containers.Count > 0) {
 	@:\paragraph{Containers}
 	@:\begin{description*}
 	foreach (var cont in config.Containers) {
@@ -34,7 +34,7 @@ if (config.Containers.Length > 0) {
 }
 
 
-if (config.Connections.Length > 0) {
+if (config.Connections.Count > 0) {
 	@:\paragraph{Connections}
 	@:\begin{itemize*}
 	foreach (var conn in config.Connections) {

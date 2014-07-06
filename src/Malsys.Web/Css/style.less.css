@@ -148,10 +148,26 @@ sub { bottom: -0.25em; }
 
 
 body {
-	font-size: 120%;
+	font-size: 1em;
+	line-height: 1.4;
 	font-family: @baseFont;
 	background: @bodyBgColor;
-	color: @textColor; 
+	color: @textColor;
+	word-wrap: break-word;
+	margin: 0;
+	padding: 0;
+}
+
+.externalLink {
+	padding-right: 12px;
+	background: url('data:image/gif;base64,R0lGODlhCgAOAKIHAHl5ebi4uFBQUFhYWFdXV09PT////////yH5BAEAAAcALAAAAAAKAA4AAAM0eHo09GQBYKoZi9FKRCnCEFiDUIlGQA3FNQYNQLQqXBzA0aaEcSsmi2/hAX1+maRyyWwqEgA7')
+		no-repeat center right;
+}
+
+.wikilink {
+	padding-right: 10px;
+	background: url('data:image/gif;base64,R0lGODlhCQAKALMOALGxsUJCQu/v76CgoM7OzlJSUhAQECEhIW9vb729vZCQkICAgN7e3mNjY////wAAACH5BAEAAA4ALAAAAAAJAAoAAAQmMJx01miYGYdaEovjNIhjKA7qMAdTeIw4FoQRykSpAHLv/8CgLwIAOw==')
+		no-repeat center right;
 }
 
 /* Header =================================================================== */

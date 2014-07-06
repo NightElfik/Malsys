@@ -2,18 +2,14 @@
 // All rights reserved.
 
 namespace Malsys.Ast {
-	/// <remarks>
-	/// Immutable.
-	/// </remarks>
 	public class EmptyStatement : IStatement, IInputStatement, ILsystemStatement, IProcessConfigStatement {
+
+		public PositionRange Position { get; private set; }
 
 
 		public EmptyStatement(PositionRange pos) {
 			Position = pos;
 		}
-
-
-		public PositionRange Position { get; private set; }
 
 
 

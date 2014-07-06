@@ -17,8 +17,11 @@ namespace Malsys.Compilers {
 
 
 		public ConstantDefinition Compile(Ast.ConstantDefinition constDefAst, IMessageLogger logger) {
-			var expr = exprCompiler.Compile(constDefAst.ValueExpr, logger);
-			return new ConstantDefinition(constDefAst.NameId.Name, expr, constDefAst.IsComponentAssign, constDefAst);
+			return new ConstantDefinition(constDefAst) {
+				Name = constDefAst.NameId.Name,
+				Value = exprCompiler.Compile(constDefAst.ValueExpr, logger),
+				IsComponentAssign = constDefAst.IsComponentAssign, 
+			};
 		}
 
 	}

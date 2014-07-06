@@ -130,7 +130,7 @@ namespace Malsys.Processing.Components.Rewriters {
 
 			public void Dispose() { }
 
-			#endregion
+			#endregion IEnumerator<Symbol<IValue>> Members
 
 
 			private bool tryGetInputSymbol(out Symbol symbol) {
@@ -202,7 +202,10 @@ namespace Malsys.Processing.Components.Rewriters {
 					var replac = chooseReplacement(rrule, eec);
 
 					foreach (var replacSymbol in replac.Replacement) {
-						var evaledSymbol = new Symbol<IValue>(replacSymbol.Name, eec.EvaluateList(replacSymbol.Arguments));
+						var evaledSymbol = new Symbol<IValue>(replacSymbol.AstNode) {
+							Name = replacSymbol.Name,
+							Arguments = eec.EvaluateList(replacSymbol.Arguments),
+						};
 						outputBuffer.Enqueue(evaledSymbol);
 					}
 
@@ -298,8 +301,8 @@ namespace Malsys.Processing.Components.Rewriters {
 
 			private void mapPatternConsts(SymbolPatern pattern, Symbol symbol, ref IExpressionEvaluatorContext eec) {
 
-				int paramsLen = symbol.Arguments.Length;
-				int patternLen = pattern.Arguments.Length;
+				int paramsLen = symbol.Arguments.Count;
+				int patternLen = pattern.Arguments.Count;
 
 				for (int i = 0; i < patternLen; i++) {
 					// set value to NaN if symbol has not enough actual parameters to match pattern
@@ -314,7 +317,10 @@ namespace Malsys.Processing.Components.Rewriters {
 				int rrrLen = rr.Replacements.Count;
 
 				if (rrrLen == 0) {
-					return RewriteRuleReplacement.Empty;
+					return new RewriteRuleReplacement(null) {
+						Replacement = new List<Symbol<IExpression>>(),
+						Weight = Constant.One,
+					};
 				}
 				else if (rrrLen == 1) {
 					return rr.Replacements[0];

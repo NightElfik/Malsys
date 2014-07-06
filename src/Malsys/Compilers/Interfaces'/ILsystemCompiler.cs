@@ -9,7 +9,7 @@ namespace Malsys.Compilers {
 		/// <remarks>
 		/// Explicitly defined method for compiling	statements list which will skip empty statements.
 		/// </remarks>
-		ImmutableList<ILsystemStatement> CompileList(IEnumerable<Ast.ILsystemStatement> statementsList, IMessageLogger logger);
+		List<ILsystemStatement> CompileList(IEnumerable<Ast.ILsystemStatement> statementsList, IMessageLogger logger);
 
 	}
 }

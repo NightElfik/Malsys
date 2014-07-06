@@ -1,8 +1,7 @@
 ﻿@model HelpArticleViewModel
 
 @{
-	var viewModel = Model as HelpArticleViewModel;
-	var article = viewModel != null ? viewModel.DisplayedArticle : null;
+	var article = Model != null ? Model.DisplayedArticle : null;
 
 	var layoutMgr = Model.LayoutManager;
 	
@@ -19,22 +18,8 @@
 		var secRwNext = secRewriting.Subsection("Next steps");
 		
 	var secInterpretation = rootSec.Subsection("Interpretation");
-		var secInterpretationx = secInterpretation.Subsection("x");
+		var secIntTurtle = secInterpretation.Subsection("Turtle graphics interpratation");
 				
-	
-	var exampleModel = new LsystemExampleViewModel() {
-		LsystemProcessor = Model.LsystemProcessor,
-		UnimportantLines = new int[] { -1 },
-		SourceCodeTemplate = StringHelper.JoinLines(
-			"lsystem {0} {{",
-			"set symbols axiom = {1};",
-			"set iterations = {2};",
-			"{3}",
-			"}}",
-			"process all with SymbolPrinter;")
-	};
-	
-	
 }
 
 
@@ -52,6 +37,18 @@
 @* ================================================================================================================== *@
 @if (secRewriting.IsVisible) {
 	@secRewriting.Html
+	
+	var exampleModel = new LsystemExampleViewModel() {
+		LsystemProcessor = Model.LsystemProcessor,
+		UnimportantLines = new int[] { -1 },
+		SourceCodeTemplate = StringHelper.JoinLines(
+			"lsystem {0} {{",
+			"set symbols axiom = {1};",
+			"set iterations = {2};",
+			"{3}",
+			"}}",
+			"process all with SymbolPrinter;")
+	};
 	
 @layoutMgr.StartColumn()
 	<p>
@@ -175,5 +172,80 @@
 @* ================================================================================================================== *@
 @if (secInterpretation.IsVisible) {
 	@secInterpretation.Html
+	
+	var turtleInterpreter = Model.ProcessManager.ComponentResolver.ResolveComponentMetadata("TurtleInterpreter");
+
+@layoutMgr.StartColumn()
+	<p>
+		Previous chapter described how to produce symbols and this chapter shows how to use them to draw some cool stuff!		
+		Every symbol can be associated with some action.
+		The set of available actions is given by a processor that is specified by <code>process</code> keyword.
+		For example, all examples in previous chapter were using <code>SymbolPrinter</code> processor that has no actions, it just prints the symbols as text.
+	</p>	
+@layoutMgr.EndColumn()
+	
+@* ================================================================================================================== *@
+@secIntTurtle.Html
+
+@layoutMgr.StartColumn()
+	<p>
+		The simplest interpretation of L-system symbols is using @StaticHtml.WikiLink("Turtle graphics").
+		Turtle graphics interprets symbols as basic commands for virtual pen on 2D canvas (or evein in 3D space).
+		Virtual pen was explained for kids as turtle walking on the sand with its tail.
+		The pen can move or draw forward, change direction, color or other attributes.
+		It is also possible save or load a state of the pen (using stack data structure).
+		Following list shows all actions of Turtle interpreter (withdrawn from
+			<a href="@Url.Action(MVC.Documentation.Predefined.Components())#@turtleInterpreter.ComponentType.FullName">components list</a>).
+	</p>	
+@layoutMgr.EndColumn()
+
+	var iMethods = turtleInterpreter.InterpretationMethods.ToList();	
+	
+@layoutMgr.StartColumn()
+	<ul>
+	@for (int i = 0; i < iMethods.Count / 2; ++i) {
+		var im = iMethods[i];
+		<li>
+			<p><code>@string.Join(", ", im.Names)</code> — @im.SummaryDoc</p>
+		</li>
+	}
+	</ul>
+	@layoutMgr.NextColumn()
+	<ul>
+	@for (int i = iMethods.Count / 2; i < iMethods.Count; ++i) {
+		var im = iMethods[i];
+		<li>
+			<p><code>@string.Join(", ", im.Names)</code> — @im.SummaryDoc</p>
+		</li>
+	}
+	</ul>
+@layoutMgr.EndColumn()
+
+@layoutMgr.StartColumn()
+	<p>
+		Without any further theory let's draw the first fractal using L-systems.
+		The syntax is hopefully quite self-explanatory for now and will be explained shortly.
+	</p>
+@layoutMgr.EndColumn()
+
+	var exampleModel = new LsystemExampleViewModel() {
+		LsystemProcessor = Model.LsystemProcessor,
+		UnimportantLines = new int[] { },
+		SourceCodeTemplate = string.Join(Environment.NewLine,
+			"lsystem {0} {{",
+			"set symbols axiom = {1};",
+			"set iterations = {2};",
+			"",
+			"{3}",
+			"",
+			"{4}",
+			"}}",
+			"process all with SvgRenderer;")
+	};
+
+	@Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(
+		"KochCurve", "F", "3",
+		"interpret F as DrawForward(10, 2); interpret + as TurnLeft(60); interpret - as TurnLeft(-60);",
+		"rewrite F to F + F - - F + F;"))
 
 }

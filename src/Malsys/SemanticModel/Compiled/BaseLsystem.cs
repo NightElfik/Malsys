@@ -1,22 +1,17 @@
 ﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
 // All rights reserved.
+using System.Collections.Generic;
 
 namespace Malsys.SemanticModel.Compiled {
-	/// <remarks>
-	/// Immutable.
-	/// </remarks>
 	public class BaseLsystem {
 
-		public readonly string Name;
-		public readonly ImmutableList<IExpression> Arguments;
+		public string Name;
+		public List<IExpression> Arguments;
 
 		public readonly Ast.BaseLsystem AstNode;
 
 
-		public BaseLsystem(string name, ImmutableList<IExpression> args, Ast.BaseLsystem astNode = null) {
-			Name = name;
-			Arguments = args;
-
+		public BaseLsystem(Ast.BaseLsystem astNode) {
 			AstNode = astNode;
 		}
 

@@ -1,5 +1,7 @@
 ﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
 // All rights reserved.
+using System.Collections.Generic;
+using System.Linq;
 using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Evaluated;
 
@@ -9,25 +11,14 @@ namespace Malsys.Evaluators {
 	/// </remarks>
 	public class ParametersEvaluator : IParametersEvaluator {
 
-
-		public ImmutableList<OptionalParameterEvaled> Evaluate(ImmutableList<OptionalParameter> optPrms, IExpressionEvaluatorContext exprEvalCtxt) {
-
-			var result = new OptionalParameterEvaled[optPrms.Length];
-
-			for (int i = 0; i < result.Length; i++) {
-				var currParam = optPrms[i];
-
-				if (currParam.IsOptional) {
-					result[i] = new OptionalParameterEvaled(currParam.Name, exprEvalCtxt.Evaluate(currParam.DefaultValue), currParam.AstNode);
+		public List<OptionalParameterEvaled> Evaluate(IEnumerable<OptionalParameter> optPrms, IExpressionEvaluatorContext exprEvalCtxt) {
+			return optPrms.Select(p =>
+				new OptionalParameterEvaled(p.AstNode){
+					Name = p.Name,
+					DefaultValue = p.IsOptional ? exprEvalCtxt.Evaluate(p.DefaultValue) : null,
 				}
-				else {
-					result[i] = new OptionalParameterEvaled(currParam.Name, currParam.AstNode);
-				}
-			}
-
-			return new ImmutableList<OptionalParameterEvaled>(result, true);
+			).ToList();
 		}
-
 
 	}
 }

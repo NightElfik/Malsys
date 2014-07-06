@@ -1,6 +1,7 @@
 ﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
 // All rights reserved.
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -64,7 +65,7 @@ namespace Malsys.Tests {
 		}
 
 
-		public static ImmutableList<Ast.LsystemSymbol> ParseSymbols(string input) {
+		public static List<Ast.LsystemSymbol> ParseSymbols(string input) {
 
 			var lexBuff = LexBuffer<char>.FromString(input);
 			var logger = new MessageLogger();
@@ -78,7 +79,7 @@ namespace Malsys.Tests {
 			return symbolsAst;
 		}
 
-		public static ImmutableList<Symbol<IExpression>> CompileSymbols(ImmutableList<Ast.LsystemSymbol> symbolsAst) {
+		public static List<Symbol<IExpression>> CompileSymbols(List<Ast.LsystemSymbol> symbolsAst) {
 
 			var compiler = CompilersContainer.Resolve<ISymbolCompiler>();
 			var logger = new MessageLogger();
@@ -91,7 +92,7 @@ namespace Malsys.Tests {
 			return symbols;
 		}
 
-		public static ImmutableList<Symbol<string>> CompileSymbolsAsPattern(ImmutableList<Ast.LsystemSymbol> symbolsAst) {
+		public static List<Symbol<string>> CompileSymbolsAsPattern(List<Ast.LsystemSymbol> symbolsAst) {
 
 			var compiler = CompilersContainer.Resolve<ISymbolCompiler>();
 			var logger = new MessageLogger();
@@ -104,19 +105,22 @@ namespace Malsys.Tests {
 			return symbols;
 		}
 
-		public static ImmutableList<Symbol<IExpression>> CompileSymbols(string input) {
+		public static List<Symbol<IExpression>> CompileSymbols(string input) {
 			var parsed = ParseSymbols(input);
 			return CompileSymbols(parsed);
 		}
 
-		public static ImmutableList<Symbol<string>> CompileSymbolsAsPattern(string input) {
+		public static List<Symbol<string>> CompileSymbolsAsPattern(string input) {
 			var parsed = ParseSymbols(input);
 			return CompileSymbolsAsPattern(parsed);
 		}
 
 
-		public static ImmutableList<Symbol<IValue>> EvaluateSymbols(ImmutableList<Symbol<IExpression>> input) {
-			return input.Select(s => new Symbol<IValue>(s.Name, ExpressionEvaluatorContext.EvaluateList(s.Arguments))).ToImmutableList();
+		public static List<Symbol<IValue>> EvaluateSymbols(List<Symbol<IExpression>> input) {
+			return input.Select(s => new Symbol<IValue>(null) {
+				Name = s.Name,
+				Arguments = ExpressionEvaluatorContext.EvaluateList(s.Arguments)
+			}).ToList();
 		}
 
 
@@ -216,8 +220,8 @@ namespace Malsys.Tests {
 		public static LsystemEvaled EvaluateLsystem(LsystemEvaledParams lsystem) {
 
 			var logger = new MessageLogger();
-			var result = new EvaluatorsContainer(ExpressionEvaluatorContext).ResolveLsystemEvaluator().Evaluate(lsystem, ImmutableList<IValue>.Empty,
-				ExpressionEvaluatorContext, new BaseLsystemResolver(), logger);
+			var result = new EvaluatorsContainer(ExpressionEvaluatorContext).ResolveLsystemEvaluator()
+				.Evaluate(lsystem, new List<IValue>(), ExpressionEvaluatorContext, new BaseLsystemResolver(), logger);
 
 			if (logger.ErrorOccurred) {
 				Console.WriteLine(logger.ToString());
@@ -271,7 +275,7 @@ namespace Malsys.Tests {
 
 		}
 
-		public static string Print(ImmutableList<Symbol<IValue>> symbols) {
+		public static string Print(IList<Symbol<IValue>> symbols) {
 
 			var writer = new IndentStringWriter();
 			new CanonicPrinter(writer).Print(symbols);

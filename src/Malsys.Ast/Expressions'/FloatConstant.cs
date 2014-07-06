@@ -3,13 +3,12 @@
 using System;
 
 namespace Malsys.Ast {
-	/// <remarks>
-	/// Immutable.
-	/// </remarks>
 	public class FloatConstant : IExpressionMember {
 
-		public readonly double Value;
-		public readonly ConstantFormat Format;
+		public double Value;
+		public ConstantFormat Format;
+
+		public PositionRange Position { get; private set; }
 
 
 		public FloatConstant(double value, ConstantFormat cf, PositionRange pos) {
@@ -34,10 +33,6 @@ namespace Malsys.Ast {
 					return Value.ToStringInvariant();
 			}
 		}
-
-
-
-		public PositionRange Position { get; private set; }
 
 
 		public ExpressionMemberType MemberType {

@@ -1,22 +1,19 @@
 ﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
 // All rights reserved.
+using System.Collections.Generic;
 
 namespace Malsys.SemanticModel.Compiled {
-	/// <remarks>
-	/// Immutable.
-	/// </remarks>
 	public class RewriteRuleReplacement {
+		
+		public List<Symbol<IExpression>> Replacement;
+		public IExpression Weight;
 
-		public static readonly RewriteRuleReplacement Empty
-			= new RewriteRuleReplacement(ImmutableList<Symbol<IExpression>>.Empty, Constant.One);
+		public readonly Ast.RewriteRuleReplacement AstNode;
 
 
-		public readonly ImmutableList<Symbol<IExpression>> Replacement;
-		public readonly IExpression Weight;
-
-		public RewriteRuleReplacement(ImmutableList<Symbol<IExpression>> replac, IExpression wei) {
-			Replacement = replac;
-			Weight = wei;
+		public RewriteRuleReplacement(Ast.RewriteRuleReplacement astNode) {
+			AstNode = astNode;
 		}
+
 	}
 }

@@ -1,6 +1,7 @@
-﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
+﻿using System.Collections.Generic;
+// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
 // All rights reserved.
-using System.Collections.Generic;
+using System.Linq;
 using Malsys.SemanticModel.Compiled;
 
 namespace Malsys.Compilers {
@@ -20,20 +21,28 @@ namespace Malsys.Compilers {
 
 
 		public ProcessStatement Compile(Ast.ProcessStatement statement, IMessageLogger logger) {
-
-			var assigns = statement.ComponentAssignments.Convert(a => new ProcessComponentAssignment(a.ComponentTypeNameId.Name, a.ContainerNameId.Name));
-			var args = exprCompiler.CompileList(statement.Arguments, logger);
-			var lsysStats = lsysCompiler.CompileList(statement.AdditionalLsystemStatements, logger);
-
-			return new ProcessStatement(statement.TargetLsystemNameId.Name, args, statement.ProcessConfiNameId.Name, assigns, lsysStats, statement);
+			return new ProcessStatement(statement) {
+				TargetLsystemName = statement.TargetLsystemNameId.Name,
+				Arguments = exprCompiler.CompileList(statement.Arguments, logger),
+				ProcessConfiName = statement.ProcessConfiNameId.Name,
+				ComponentAssignments = statement.ComponentAssignments.Select(a => new ProcessComponentAssignment(a) {
+					ComponentTypeName = a.ComponentTypeNameId.Name,
+					ContainerName = a.ContainerNameId.Name,
+				}).ToList(),
+				AdditionalLsystemStatements = lsysCompiler.CompileList(statement.AdditionalLsystemStatements, logger),
+			};
 		}
 
 
 		public ProcessConfigurationStatement Compile(Ast.ProcessConfigurationDefinition processConfig, IMessageLogger logger) {
 
-			var components = new List<ProcessComponent>();
-			var containers = new List<ProcessContainer>();
-			var connections = new List<ProcessComponentsConnection>();
+			var resultPcs = new ProcessConfigurationStatement(processConfig) {
+				Name = processConfig.NameId.Name,
+				Components = new List<ProcessComponent>(),
+				Containers = new List<ProcessContainer>(),
+				Connections = new List<ProcessComponentsConnection>(),
+			};
+
 			var usedNames = new HashSet<string>();
 
 			foreach (var stat in processConfig.Statements) {
@@ -51,7 +60,10 @@ namespace Malsys.Compilers {
 						}
 
 						usedNames.Add(component.NameId.Name);
-						components.Add(new ProcessComponent(component.NameId.Name, component.TypeNameId.Name));
+						resultPcs.Components.Add(new ProcessComponent(component) {
+							Name = component.NameId.Name,
+							TypeName = component.TypeNameId.Name,
+						});
 						break;
 
 					case Ast.ProcessConfigStatementType.ProcessContainer:
@@ -62,7 +74,11 @@ namespace Malsys.Compilers {
 						}
 
 						usedNames.Add(container.NameId.Name);
-						containers.Add(new ProcessContainer(container.NameId.Name, container.TypeNameId.Name, container.DefaultTypeNameId.Name));
+						resultPcs.Containers.Add(new ProcessContainer(container) {
+							Name = container.NameId.Name,
+							TypeName = container.TypeNameId.Name,
+							DefaultTypeName = container.DefaultTypeNameId.Name,
+						});
 						break;
 
 					case Ast.ProcessConfigStatementType.ProcessConfigConnection:
@@ -77,8 +93,12 @@ namespace Malsys.Compilers {
 							break;
 						}
 
-						connections.Add(new ProcessComponentsConnection(connection.IsVirtual, connection.SourceNameId.Name,
-							connection.TargetNameId.Name, connection.TargetInputNameId.Name, connection));
+						resultPcs.Connections.Add(new ProcessComponentsConnection(connection) {
+							IsVirtual = connection.IsVirtual,
+							SourceName = connection.SourceNameId.Name,
+							TargetName = connection.TargetNameId.Name,
+							TargetInputName = connection.TargetInputNameId.Name,
+						});
 						break;
 
 					default:
@@ -88,9 +108,7 @@ namespace Malsys.Compilers {
 
 			}
 
-			return new ProcessConfigurationStatement(processConfig.NameId.Name, components.ToImmutableList(),
-				containers.ToImmutableList(), connections.ToImmutableList(), processConfig);
-
+			return resultPcs;
 		}
 
 
@@ -114,7 +132,7 @@ namespace Malsys.Compilers {
 
 		}
 
-		#endregion
+		#endregion IProcessConfigVisitor Members
 
 
 		public enum Messages {

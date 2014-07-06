@@ -1,6 +1,7 @@
 ﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
 // All rights reserved.
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Malsys.Parsing;
 using Malsys.SemanticModel.Compiled;
@@ -33,7 +34,10 @@ namespace Malsys.Compilers {
 			}
 			catch (Exception ex) {
 				logger.LogMessage(Message.ParsingFailed, ex.Message);
-				return new InputBlock(sourceName, ImmutableList<IInputStatement>.Empty);
+				return new InputBlock(null) {
+					SourceName = sourceName, 
+					Statements = new List<IInputStatement>(),
+				};
 			}
 
 			return container.ResolveInputCompiler().Compile(parsedInput, logger);

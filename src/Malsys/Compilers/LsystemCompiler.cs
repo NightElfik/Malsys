@@ -34,12 +34,13 @@ namespace Malsys.Compilers {
 
 
 		public Lsystem Compile(Ast.LsystemDefinition lsysDef, IMessageLogger logger) {
-
-			var prms = paramsCompiler.CompileList(lsysDef.Parameters, logger);
-			var baseLsys = compileBaseLsystems(lsysDef.BaseLsystems, logger);
-			var stats = CompileList(lsysDef.Statements, logger);
-
-			return new Lsystem(lsysDef.NameId.Name, lsysDef.IsAbstract, prms, baseLsys, stats, lsysDef);
+			return new Lsystem(lsysDef) {
+				Name = lsysDef.NameId.Name,
+				IsAbstract = lsysDef.IsAbstract,
+				Parameters = paramsCompiler.CompileList(lsysDef.Parameters, logger),
+				BaseLsystems = compileBaseLsystems(lsysDef.BaseLsystems, logger),
+				Statements = CompileList(lsysDef.Statements, logger),
+			};
 		}
 
 		public ILsystemStatement Compile(Ast.ILsystemStatement statement, IMessageLogger logger) {
@@ -53,16 +54,21 @@ namespace Malsys.Compilers {
 
 				case Ast.LsystemStatementType.SymbolsConstDefinition:
 					var symbolConstAst = (Ast.SymbolsConstDefinition)statement;
-					var symbolsConst = symbolCompiler.CompileList<Ast.LsystemSymbol, Symbol<IExpression>>(symbolConstAst.SymbolsList, logger);
-					return new SymbolsConstDefinition(symbolConstAst.NameId.Name, symbolsConst, symbolConstAst);
+					return new SymbolsConstDefinition(symbolConstAst) {
+						Name = symbolConstAst.NameId.Name,
+						Symbols = symbolCompiler.CompileList<Ast.LsystemSymbol, Symbol<IExpression>>(symbolConstAst.SymbolsList, logger)
+					};
 
 				case Ast.LsystemStatementType.SymbolsInterpretDef:
 					var symIntDefAst = ((Ast.SymbolsInterpretDef)statement);
-					var symbolsInterpret = symIntDefAst.Symbols.Select(x => new Symbol<VoidStruct>(x.Name)).ToImmutableList();
-					var prms = paramsCompiler.CompileList(symIntDefAst.Parameters, logger);
-					var defVals = exprCompiler.CompileList(symIntDefAst.InstructionParameters, logger);
-					return new SymbolsInterpretation(symbolsInterpret, prms, symIntDefAst.Instruction.Name,
-						defVals, symIntDefAst.InstructionIsLsystemName, symIntDefAst.LsystemConfigName.Name, symIntDefAst);
+					return new SymbolsInterpretation(symIntDefAst) {
+						Symbols = symIntDefAst.Symbols.Select(x => new Symbol<VoidStruct>(x) { Name = x.Name }).ToList(),
+						Parameters = paramsCompiler.CompileList(symIntDefAst.Parameters, logger),
+						InstructionName = symIntDefAst.Instruction.Name,
+						InstructionParameters = exprCompiler.CompileList(symIntDefAst.InstructionParameters, logger),
+						InstructionIsLsystemName = symIntDefAst.InstructionIsLsystemName,
+						LsystemConfigName = symIntDefAst.LsystemConfigName.Name
+					};
 
 				case Ast.LsystemStatementType.FunctionDefinition:
 					return funDefCompiler.Compile((Ast.FunctionDefinition)statement, logger);
@@ -77,32 +83,21 @@ namespace Malsys.Compilers {
 			}
 		}
 
-		public ImmutableList<ILsystemStatement> CompileList(IEnumerable<Ast.ILsystemStatement> statementsList, IMessageLogger logger) {
-
-			var compStats = new List<ILsystemStatement>();
-
-			foreach (var stat in statementsList) {
-				var cStat = Compile(stat, logger);
-				if (cStat != null) {
-					compStats.Add(cStat);
-				}
-			}
-
-			return new ImmutableList<ILsystemStatement>(compStats);
+		public List<ILsystemStatement> CompileList(IEnumerable<Ast.ILsystemStatement> statementsList, IMessageLogger logger) {
+			return statementsList
+				.Select(stat => Compile(stat, logger))
+				.Where(cStat => cStat != null)
+				.ToList();
 		}
 
 
-		protected ImmutableList<BaseLsystem> compileBaseLsystems(ImmutableList<Ast.BaseLsystem> baseLsys, IMessageLogger logger) {
-
-			int length = baseLsys.Length;
-			BaseLsystem[] result = new BaseLsystem[length];
-
-			for (int i = 0; i < length; i++) {
-				Ast.BaseLsystem astNode = baseLsys[i];
-				result[i] = new BaseLsystem(astNode.NameId.Name, exprCompiler.CompileList(astNode.Arguments, logger), astNode);
-			}
-
-			return new ImmutableList<BaseLsystem>(result, true);
+		protected List<BaseLsystem> compileBaseLsystems(IEnumerable<Ast.BaseLsystem> baseLsys, IMessageLogger logger) {
+			return baseLsys
+				.Select(astNode => new BaseLsystem(astNode) {
+					Name = astNode.NameId.Name,
+					Arguments = exprCompiler.CompileList(astNode.Arguments, logger),
+				})
+				.ToList();
 		}
 
 	}

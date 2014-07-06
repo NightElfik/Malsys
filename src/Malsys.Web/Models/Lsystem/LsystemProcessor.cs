@@ -42,13 +42,13 @@ namespace Malsys.Web.Models.Lsystem {
 			}
 
 
-			var inputAndStdLib = stdLib.JoinWith(evaledInput);
+			evaledInput.Append(stdLib);
 
-			if (inputAndStdLib.ProcessStatements.Count > 0) {
+			if (evaledInput.ProcessStatements.Count > 0) {
 #if !DEBUG
 				try {
 #endif
-					processManager.ProcessInput(inputAndStdLib, fileMgr, logger, timeout);
+					processManager.ProcessInput(evaledInput, fileMgr, logger, timeout);
 #if !DEBUG
 				}
 				catch (Exception ex) {

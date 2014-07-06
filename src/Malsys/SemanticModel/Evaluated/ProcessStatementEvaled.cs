@@ -1,39 +1,23 @@
 ﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
 // All rights reserved.
+using System.Collections.Generic;
 using Malsys.SemanticModel.Compiled;
 
 namespace Malsys.SemanticModel.Evaluated {
-	/// <remarks>
-	/// Immutable.
-	/// </remarks>
 	public class ProcessStatementEvaled {
 
-		public readonly string TargetLsystemName;
-
-		public readonly ImmutableList<IValue> Arguments;
-
-		public readonly string ProcessConfigName;
-
-		public readonly ImmutableList<ProcessComponentAssignment> ComponentAssignments;
-
-		public readonly ImmutableList<ILsystemStatement> AdditionalLsystemStatements;
-
+		public string TargetLsystemName;
+		public List<IValue> Arguments;
+		public string ProcessConfigName;
+		public List<ProcessComponentAssignment> ComponentAssignments;
+		public List<ILsystemStatement> AdditionalLsystemStatements;
 
 		public readonly Ast.ProcessStatement AstNode;
 
 
-		public ProcessStatementEvaled(string targetLsystemName, ImmutableList<IValue> arguments, string processConfigName,
-				ImmutableList<ProcessComponentAssignment> componentAssignments, ImmutableList<ILsystemStatement> additionalLsysStats, Ast.ProcessStatement astNode = null) {
-
-			TargetLsystemName = targetLsystemName;
-			Arguments = arguments;
-			ProcessConfigName = processConfigName;
-			ComponentAssignments = componentAssignments;
-			AdditionalLsystemStatements = additionalLsysStats;
-
+		public ProcessStatementEvaled(Ast.ProcessStatement astNode) {
 			AstNode = astNode;
 		}
-
 
 	}
 }

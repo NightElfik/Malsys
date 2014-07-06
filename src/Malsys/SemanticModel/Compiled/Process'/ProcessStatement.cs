@@ -1,35 +1,21 @@
 ﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
 // All rights reserved.
+using System.Collections.Generic;
 
 namespace Malsys.SemanticModel.Compiled {
-	/// <remarks>
-	/// Immutable.
-	/// </remarks>
 	public class ProcessStatement : IInputStatement {
 
-		public readonly string TargetLsystemName;
+		public string TargetLsystemName;
+		public List<IExpression> Arguments;
 
-		public readonly ImmutableList<IExpression> Arguments;
-
-		public readonly string ProcessConfiName;
-
-		public readonly ImmutableList<ProcessComponentAssignment> ComponentAssignments;
-
-		public readonly ImmutableList<ILsystemStatement> AdditionalLsystemStatements;
-
+		public string ProcessConfiName;
+		public List<ProcessComponentAssignment> ComponentAssignments;
+		public List<ILsystemStatement> AdditionalLsystemStatements;
 
 		public readonly Ast.ProcessStatement AstNode;
 
 
-		public ProcessStatement(string targetLsystemName, ImmutableList<IExpression> arguments, string processConfiName,
-				ImmutableList<ProcessComponentAssignment> componentAssignments, ImmutableList<ILsystemStatement> additionalLsysStats, Ast.ProcessStatement astNode = null) {
-
-			TargetLsystemName = targetLsystemName;
-			Arguments = arguments;
-			ProcessConfiName = processConfiName;
-			ComponentAssignments = componentAssignments;
-			AdditionalLsystemStatements = additionalLsysStats;
-
+		public ProcessStatement(Ast.ProcessStatement astNode) {
 			AstNode = astNode;
 		}
 

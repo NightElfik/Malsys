@@ -1,5 +1,6 @@
 ﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
 // All rights reserved.
+using System.Collections.Generic;
 using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Evaluated;
 
@@ -8,31 +9,20 @@ namespace Malsys.Evaluators {
 	/// Object for storing evaluated data of function call.
 	/// This object is used in anonymous delegate as evaluate function when adding new function to the IExpressionEvaluatorContext.
 	/// </summary>
-	/// <remarks>
-	/// Immutable.
-	/// </remarks>
 	public class FunctionData {
 
-		public readonly string Name;
-		public readonly ImmutableList<OptionalParameterEvaled> Parameters;
-		public readonly ImmutableList<IFunctionStatement> Statements;
+		public string Name;
+		public List<OptionalParameterEvaled> Parameters;
+		public List<IFunctionStatement> Statements;
 
-
-		public FunctionData(string name, ImmutableList<OptionalParameterEvaled> prms, ImmutableList<IFunctionStatement> stats) {
-
-			Name = name;
-			Parameters = prms;
-			Statements = stats;
-
-		}
 
 		/// <summary>
 		/// Evaluates given function call with given arguments. Result is left on values stack.
 		/// </summary>
-		public IValue evalUserFuncCall(IValue[] args, IExpressionEvaluatorContext exprEvalCtxt) {
+		public IValue EvalUserFuncCall(IValue[] args, IExpressionEvaluatorContext exprEvalCtxt) {
 
-			// add arguments as new constants
-			for (int i = 0; i < Parameters.Length; i++) {
+			// Add arguments as new constants.
+			for (int i = 0; i < Parameters.Count; i++) {
 				IValue value;
 				if (Parameters[i].IsOptional) {
 					value = i < args.Length ? value = args[i] : Parameters[i].DefaultValue;
@@ -50,7 +40,7 @@ namespace Malsys.Evaluators {
 				exprEvalCtxt = exprEvalCtxt.AddVariable(Parameters[i].Name, value, Parameters[i].AstNode);
 			}
 
-			for (int i = 0; i < Statements.Length; i++) {
+			for (int i = 0; i < Statements.Count; i++) {
 
 				var stat = Statements[i];
 				switch (stat.StatementType) {

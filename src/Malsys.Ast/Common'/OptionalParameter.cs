@@ -2,13 +2,13 @@
 // All rights reserved.
 
 namespace Malsys.Ast {
-	/// <remarks>
-	/// Immutable.
-	/// </remarks>
 	public class OptionalParameter : IAstNode {
 
-		public readonly Identifier NameId;
-		public readonly Expression DefaultValue;
+		public Identifier NameId;
+		public Expression DefaultValue;
+
+		public PositionRange Position { get; private set; }
+		public bool IsOptional { get { return !DefaultValue.IsEmpty; } }
 
 
 		public OptionalParameter(Identifier name, Expression defValue, PositionRange pos) {
@@ -16,12 +16,6 @@ namespace Malsys.Ast {
 			DefaultValue = defValue;
 			Position = pos;
 		}
-
-
-		public bool IsOptional { get { return !DefaultValue.IsEmpty; } }
-
-
-		public PositionRange Position { get; private set; }
 
 	}
 }

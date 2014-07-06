@@ -1,35 +1,23 @@
 ﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
 // All rights reserved.
+using System.Collections.Generic;
 
 namespace Malsys.SemanticModel.Compiled {
-	/// <remarks>
-	/// Immutable.
-	/// </remarks>
 	public class RewriteRule : ILsystemStatement {
 
-		public readonly Symbol<string> SymbolPattern;
+		public Symbol<string> SymbolPattern;
+		public List<Symbol<string>> LeftContext;
+		public List<Symbol<string>> RightContext;
+		public List<ConstantDefinition> LocalConstantDefs;
+		public IExpression Condition;
 
-		public readonly SymbolsList<string> LeftContext;
-		public readonly SymbolsList<string> RightContext;
+		public List<RewriteRuleReplacement> Replacements;
 
-		public readonly ImmutableList<ConstantDefinition> LocalConstantDefs;
-
-		public readonly IExpression Condition;
-
-		public readonly ImmutableList<RewriteRuleReplacement> Replacements;
-
+		public readonly Ast.RewriteRule AstNode;
 
 
-		public RewriteRule(Symbol<string> symbolPtrn, SymbolsList<string> lCtxt, SymbolsList<string> rCtxt,
-				ImmutableList<ConstantDefinition> locConsts, IExpression cond,
-				ImmutableList<RewriteRuleReplacement> replacs) {
-
-			SymbolPattern = symbolPtrn;
-			LeftContext = lCtxt;
-			RightContext = rCtxt;
-			LocalConstantDefs = locConsts;
-			Condition = cond;
-			Replacements = replacs;
+		public RewriteRule(Ast.RewriteRule astNode) {
+			AstNode = astNode;
 		}
 
 

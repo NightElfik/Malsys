@@ -34,25 +34,31 @@ namespace Malsys.Evaluators {
 
 		}
 
+		/// <summary>
+		/// Evaluates additional statements placing them after current symbols.
+		/// New rewrite rules are placed at the beginning of the list (to be able to override current).
+		/// </summary>
 		/// <remarks>
 		/// All errors are logged to given logger (do not throws EvalException).
 		/// </remarks>
-		public LsystemEvaled EvaluateAdditionalStatements(LsystemEvaled lsystem, IEnumerable<ILsystemStatement> additionalStatements, IMessageLogger logger) {
+		public void EvaluateAdditionalStatements(LsystemEvaled lsystem,
+				IEnumerable<ILsystemStatement> additionalStatements, IMessageLogger logger) {
 
-			var exprEvalCtxt = lsystem.ExpressionEvaluatorContext;
-			var valAssigns = lsystem.ComponentValuesAssigns;
-			var symAssigns = lsystem.ComponentSymbolsAssigns;
-			var symsInt = lsystem.SymbolsInterpretation;
-			var rRules = new List<RewriteRule>();
+			List<RewriteRule> rewriteRules = new List<RewriteRule>();
 
 			foreach (var stat in additionalStatements) {
-				evaluateStatement(stat, ref exprEvalCtxt, ref valAssigns, ref symAssigns, ref symsInt, rRules, lsystem.Name, logger);
+				evaluateStatement(stat,
+					ref lsystem.ExpressionEvaluatorContext,
+					ref lsystem.ComponentValuesAssigns,
+					ref lsystem.ComponentSymbolsAssigns,
+					ref lsystem.SymbolsInterpretation,
+					rewriteRules,
+					lsystem.Name,
+					logger);
 			}
 
-			rRules.AddRange(lsystem.RewriteRules);
-
-			return new LsystemEvaled(lsystem.Name, lsystem.IsAbstract, lsystem.BaseLsystems, exprEvalCtxt,
-				valAssigns, symAssigns, symsInt, rRules.ToImmutableList(), lsystem.AstNode);
+			rewriteRules.AddRange(lsystem.RewriteRules);
+			lsystem.RewriteRules = rewriteRules;
 		}
 
 		/// <remarks>
@@ -61,13 +67,23 @@ namespace Malsys.Evaluators {
 		private LsystemEvaled evaluate(LsystemEvaledParams lsystem, IList<IValue> arguments, IExpressionEvaluatorContext exprEvalCtxt,
 				IBaseLsystemResolver baseResolver, List<LsystemEvaledParams> derivedLsystems, IMessageLogger logger) {
 
+			var resultLsystem = new LsystemEvaled(lsystem.AstNode) {
+				Name = lsystem.Name,
+				IsAbstract = lsystem.IsAbstract,
+				BaseLsystems = new List<LsystemEvaled>(),
+				ExpressionEvaluatorContext = exprEvalCtxt,
+				ComponentValuesAssigns = MapModule.Empty<string, IValue>(),
+				ComponentSymbolsAssigns = MapModule.Empty<string, List<Symbol<IValue>>>(),
+				SymbolsInterpretation = MapModule.Empty<string, SymbolInterpretationEvaled>(),
+				RewriteRules = new List<RewriteRule>(),
+			};
 
-			if (lsystem.Parameters.Length < arguments.Count) {
-				logger.LogMessage(Message.TooManyArgs, lsystem.Name, lsystem.Parameters.Length, arguments.Count);
+
+			if (lsystem.Parameters.Count < arguments.Count) {
+				logger.LogMessage(Message.TooManyArgs, lsystem.Name, lsystem.Parameters.Count, arguments.Count);
 			}
 
-			var originalExprEvalCtxt = exprEvalCtxt;  // save original context for evaluation of all base L-systems
-			for (int i = 0; i < lsystem.Parameters.Length; i++) {
+			for (int i = 0; i < lsystem.Parameters.Count; i++) {
 				IValue value;
 				if (lsystem.Parameters[i].IsOptional) {
 					value = i < arguments.Count ? value = arguments[i] : lsystem.Parameters[i].DefaultValue;
@@ -82,74 +98,84 @@ namespace Malsys.Evaluators {
 					}
 				}
 
-				exprEvalCtxt = exprEvalCtxt.AddVariable(lsystem.Parameters[i].Name, value, lsystem.Parameters[i].AstNode);
+				resultLsystem.ExpressionEvaluatorContext = resultLsystem.ExpressionEvaluatorContext.AddVariable(
+					lsystem.Parameters[i].Name, value, lsystem.Parameters[i].AstNode);
 			}
 
-			var valAssigns = MapModule.Empty<string, IValue>();
-			var symAssigns = MapModule.Empty<string, ImmutableList<Symbol<IValue>>>();
-			var symsInt = MapModule.Empty<string, SymbolInterpretationEvaled>();
+			// List of derived L-systems to detect potential loop in inheritance hierarchy.
 			var derivedRrRules = new List<RewriteRule>();
-
-			// evaluate base L-systems
-			var baseLsystems = new LsystemEvaled[lsystem.BaseLsystems.Length];
 			derivedLsystems.Add(lsystem);
-			var argumentsExprEvalCtxt = exprEvalCtxt;  // save arguments context for evaluation of all base L-systems
 
-			for (int i = 0; i < baseLsystems.Length; i++) {
-				ImmutableList<IValue> args;
+			// Evaluate base L-systems.
+			var argumentsExprEvalCtxt = resultLsystem.ExpressionEvaluatorContext;  // Save arguments context for evaluation of all base L-systems.
+
+			for (int i = 0; i < lsystem.BaseLsystems.Count; i++) {
+				List<IValue> args;
 				try {
 					args = argumentsExprEvalCtxt.EvaluateList(lsystem.BaseLsystems[i].Arguments);
 				}
 				catch (EvalException ex) {
-					logger.LogMessage(Message.BaseArgsEvalFailed, baseLsystems[i].AstNode.TryGetPosition(), lsystem.BaseLsystems[i].Name, lsystem.Name, ex.GetFullMessage());
+					logger.LogMessage(Message.BaseArgsEvalFailed, lsystem.BaseLsystems[i].AstNode.TryGetPosition(),
+						lsystem.BaseLsystems[i].Name, lsystem.Name, ex.GetFullMessage());
 					return null;
 				}
+
 				var baseLsystemCompiled = baseResolver.Resolve(lsystem.BaseLsystems[i].Name, logger);
 				if (baseLsystemCompiled == null) {
 					logger.LogMessage(Message.BaseLsestemNotDefinded, lsystem.BaseLsystems[i].Name, lsystem.Name);
 					return null;
 				}
+
 				if (derivedLsystems.Contains(baseLsystemCompiled)) {
 					logger.LogMessage(Message.InheritanceCycle, lsystem.Name);
 					return null;
 				}
-				var baseLsystem = evaluate(baseLsystemCompiled, args, originalExprEvalCtxt, baseResolver, derivedLsystems, logger);
+
+				var baseLsystem = evaluate(baseLsystemCompiled, args, exprEvalCtxt,
+					baseResolver, derivedLsystems, logger);
 				if (baseLsystem == null) {
 					return null;
 				}
-				baseLsystems[i] = baseLsystem;
 
-				// merge current L-system with base L-system
-				valAssigns = valAssigns.AddRange(baseLsystem.ComponentValuesAssigns);
-				symAssigns = symAssigns.AddRange(baseLsystem.ComponentSymbolsAssigns);
-				symsInt = symsInt.AddRange(baseLsystem.SymbolsInterpretation);
-				exprEvalCtxt = exprEvalCtxt.MergeWith(baseLsystem.ExpressionEvaluatorContext);
-				// add rewrite rules in reverse order
+				resultLsystem.BaseLsystems.Add(baseLsystem);
+
+				// Merge current L-system with base L-system.
+				resultLsystem.ComponentValuesAssigns = resultLsystem.ComponentValuesAssigns.AddRange(baseLsystem.ComponentValuesAssigns);
+				resultLsystem.ComponentSymbolsAssigns = resultLsystem.ComponentSymbolsAssigns.AddRange(baseLsystem.ComponentSymbolsAssigns);
+				resultLsystem.SymbolsInterpretation = resultLsystem.SymbolsInterpretation.AddRange(baseLsystem.SymbolsInterpretation);
+				resultLsystem.ExpressionEvaluatorContext = resultLsystem.ExpressionEvaluatorContext.MergeWith(baseLsystem.ExpressionEvaluatorContext);
+
+				// Save rewrite rules in reverse order to add them after main rules.
 				var newRrList = baseLsystem.RewriteRules.ToList();
 				newRrList.AddRange(derivedRrRules);
 				derivedRrRules = newRrList;
 			}
 
-			var baseLsystemsImm = new ImmutableList<LsystemEvaled>(baseLsystems, true);
-			var rRules = new List<RewriteRule>();
 
-			// statements evaluation
+			// Statements evaluation.
 			foreach (var stat in lsystem.Statements) {
-				evaluateStatement(stat, ref exprEvalCtxt, ref valAssigns, ref symAssigns, ref symsInt, rRules, lsystem.Name, logger);
+				evaluateStatement(stat,
+					ref resultLsystem.ExpressionEvaluatorContext,
+					ref resultLsystem.ComponentValuesAssigns,
+					ref resultLsystem.ComponentSymbolsAssigns,
+					ref resultLsystem.SymbolsInterpretation,
+					resultLsystem.RewriteRules,
+					resultLsystem.Name,
+					logger);
 			}
 
-			rRules.AddRange(derivedRrRules);
+			resultLsystem.RewriteRules.AddRange(derivedRrRules);
 
-			return new LsystemEvaled(lsystem.Name, lsystem.IsAbstract, baseLsystemsImm, exprEvalCtxt,
-				valAssigns, symAssigns, symsInt, rRules.ToImmutableList(), lsystem.AstNode);
+			return resultLsystem;
 		}
 
 
 		/// <remarks>
 		/// All errors are logged to given logger (do not throws EvalException).
 		/// </remarks>
-		private void evaluateStatement(ILsystemStatement statement, ref IExpressionEvaluatorContext exprEvalCtxt, ref FSharpMap<string, IValue> valAssigns,
-				ref FSharpMap<string, ImmutableList<Symbol<IValue>>> symAssigns, ref FSharpMap<string, SymbolInterpretationEvaled> symsInt, List<RewriteRule> rRules,
+		private void evaluateStatement(ILsystemStatement statement, ref IExpressionEvaluatorContext exprEvalCtxt,
+				ref FSharpMap<string, IValue> valAssigns, ref FSharpMap<string, List<Symbol<IValue>>> symAssigns,
+				ref FSharpMap<string, SymbolInterpretationEvaled> symsInt, List<RewriteRule> rRules,
 				string lsystemName, IMessageLogger logger) {
 
 			switch (statement.StatementType) {
@@ -173,7 +199,11 @@ namespace Malsys.Evaluators {
 					var fun = (Function)statement;
 					try {
 						var funPrms = paramsEvaluator.Evaluate(fun.Parameters, exprEvalCtxt);
-						var funData = new FunctionData(fun.Name, funPrms, fun.Statements);
+						var funData = new FunctionData() {
+							Name = fun.Name,
+							Parameters = funPrms,
+							Statements = fun.Statements,
+						};
 						exprEvalCtxt = exprEvalCtxt.AddFunction(funData);
 					}
 					catch (EvalException ex) {
@@ -198,10 +228,15 @@ namespace Malsys.Evaluators {
 				case LsystemStatementType.SymbolsInterpretation:
 					var symInt = (SymbolsInterpretation)statement;
 					try {
-						var symIntPrms = paramsEvaluator.Evaluate(symInt.Parameters, exprEvalCtxt);
 						foreach (var sym in symInt.Symbols) {
-							symsInt = symsInt.Add(sym.Name, new SymbolInterpretationEvaled(sym.Name, symIntPrms, symInt.InstructionName,
-								symInt.InstructionParameters, symInt.InstructionIsLsystemName, symInt.LsystemConfigName, symInt.AstNode));
+							symsInt = symsInt.Add(sym.Name, new SymbolInterpretationEvaled(symInt.AstNode) {
+								Symbol = sym.Name,
+								Parameters = paramsEvaluator.Evaluate(symInt.Parameters, exprEvalCtxt),
+								InstructionName = symInt.InstructionName,
+								InstructionParameters = symInt.InstructionParameters,
+								InstructionIsLsystemName = symInt.InstructionIsLsystemName,
+								LsystemConfigName = symInt.LsystemConfigName,
+							});
 						}
 					}
 					catch (EvalException ex) {

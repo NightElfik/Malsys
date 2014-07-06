@@ -27,21 +27,38 @@ namespace Malsys.Web.Models.Lsystem {
 
 			var inEvaled = processManager.CompileAndEvaluateInput(input, "simpleWebInput", logger);
 			if (logger.ErrorOccurred) {
-				return logger.Select(x => x.GetFullMessage());
+				foreach (var x in logger.Select(x => x.GetFullMessage())) {					
+					yield return x;
+				}
+				yield break;
 			}
 
-			inEvaled = stdLib.JoinWith(inEvaled);
+			inEvaled.Append(stdLib);
 			var outputProvider = new InMemoryOutputProvider();
 
 			processManager.ProcessInput(inEvaled, outputProvider, logger, new TimeSpan(0, 0, 1));
 
 			if (logger.ErrorOccurred) {
-				return logger.Select(x => x.GetFullMessage());
+				foreach (var x in logger.Select(x => x.GetFullMessage())) {
+					yield return x;
+				}
+				yield break;
 			}
 
-
 			var utfEncoding = new UTF8Encoding();
-			return outputProvider.GetOutputs().Select(x => utfEncoding.GetString(x.OutputData));
+
+			foreach (InMemoryOutput imo in outputProvider.GetOutputs()) {
+				switch (imo.MimeType) {
+					case MimeType.Image.SvgXml:
+
+						break;
+
+					case MimeType.Text.Plain:
+					default:
+						yield return utfEncoding.GetString(imo.OutputData);
+						break;
+				}
+			}
 		}
 
 	}

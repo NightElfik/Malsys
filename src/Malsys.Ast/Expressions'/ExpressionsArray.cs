@@ -2,18 +2,14 @@
 // All rights reserved.
 
 namespace Malsys.Ast {
-	/// <remarks>
-	/// Immutable.
-	/// </remarks>
-	public class ExpressionsArray : ImmutableListPos<Expression>, IExpressionMember {
+	public class ExpressionsArray : ListPos<Expression>, IExpressionMember {
 
 
-		public ExpressionsArray(PositionRange pos)
-			: base(ImmutableList<Expression>.Empty, pos) {
-
+		public ExpressionsArray(PositionRange pos) {
+			Position = pos;
 		}
 
-		public ExpressionsArray(ImmutableListPos<Expression> vals, PositionRange beginSep, PositionRange endSep)
+		public ExpressionsArray(ListPos<Expression> vals, PositionRange beginSep, PositionRange endSep)
 			: base(vals, beginSep, endSep, vals.Position) {
 
 		}

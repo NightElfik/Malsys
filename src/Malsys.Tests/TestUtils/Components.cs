@@ -102,7 +102,7 @@ namespace Malsys.Tests {
 
 			public void Abort() { }
 
-			#endregion
+			#endregion IProcessStarter Members
 		}
 
 
@@ -178,7 +178,7 @@ namespace Malsys.Tests {
 
 			public IComponent Component { get; set; }
 
-			#endregion
+			#endregion IContainer Members
 		}
 
 		public class ExceptionInCtorComponent : IComponent {

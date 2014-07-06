@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
 using Malsys.Processing;
 using Malsys.SemanticModel.Compiled;
@@ -30,7 +31,12 @@ namespace Malsys.Web.Areas.Documentation.Controllers {
 			var processConfig = stdLib.ProcessConfigurations.Where(x => x.Key == processConfigName).Select(x => x.Value).FirstOrDefault();
 
 			if (processConfig == null) {
-				processConfig = ProcessConfigurationStatement.Empty;
+				processConfig = new ProcessConfigurationStatement(null) {
+					Name = "",
+					Components = new List<ProcessComponent>(),
+					Containers = new List<ProcessContainer>(),
+					Connections = new List<ProcessComponentsConnection>(),
+				};
 			}
 
 			var allComponentsMetadata = processConfig.Components.Select(x => metadataResolver.ResolveComponentMetadata(x.TypeName))
@@ -53,7 +59,8 @@ namespace Malsys.Web.Areas.Documentation.Controllers {
 				GettableProperties = meta.GettableProperties.Select(x => new {
 					Names = x.Names,
 					ValueType = x.ExpressionValueType.ToTypeString(),
-					Doc = x.SummaryDoc })
+					Doc = x.SummaryDoc
+				})
 			}));
 		}
 

@@ -1,22 +1,18 @@
 ﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
 // All rights reserved.
+using System.Collections.Generic;
 
 namespace Malsys.SemanticModel.Compiled.Expressions {
-	/// <remarks>
-	/// Immutable.
-	/// </remarks>
-	public class ExpressionValuesArray : ImmutableList<IExpression>, IExpression {
+	public class ExpressionValuesArray : List<IExpression>, IExpression {
 
 		public readonly Ast.ExpressionsArray AstNode;
 
 
-		public ExpressionValuesArray(Ast.ExpressionsArray astNode)
-			: base(ImmutableList<IExpression>.Empty) {
-
+		public ExpressionValuesArray(Ast.ExpressionsArray astNode) {
 			AstNode = astNode;
 		}
 
-		public ExpressionValuesArray(ImmutableList<IExpression> values, Ast.ExpressionsArray astNode)
+		public ExpressionValuesArray(IEnumerable<IExpression> values, Ast.ExpressionsArray astNode)
 			: base(values) {
 
 			AstNode = astNode;

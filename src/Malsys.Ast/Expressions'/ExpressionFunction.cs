@@ -2,16 +2,13 @@
 // All rights reserved.
 
 namespace Malsys.Ast {
-	/// <remarks>
-	/// Immutable.
-	/// </remarks>
 	public class ExpressionFunction : IExpressionMember {
 
-		public readonly Identifier NameId;
-		public readonly ImmutableListPos<Expression> Arguments;
+		public Identifier NameId;
+		public ListPos<Expression> Arguments;
 
 
-		public ExpressionFunction(Identifier name, ImmutableListPos<Expression> args, PositionRange pos) {
+		public ExpressionFunction(Identifier name, ListPos<Expression> args, PositionRange pos) {
 			NameId = name;
 			Arguments = args;
 			Position = pos;

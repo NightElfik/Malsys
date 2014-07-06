@@ -20,7 +20,7 @@
 
 <dl>
 
-	@if (config.Components.Length > 0) {
+	@if (config.Components.Count > 0) {
 		<dt><strong>Components</strong> @anchorLink</dt>
 		<dd><ul class="clean">
 		@foreach (var comp in config.Components) {
@@ -29,7 +29,7 @@
 		</ul></dd>
 	}
 
-	@if (config.Containers.Length > 0) {
+	@if (config.Containers.Count > 0) {
 		<dt><strong>Containers</strong> @anchorLink</dt>
 		<dd><ul class="clean">
 		@foreach (var cont in config.Containers) {
@@ -40,7 +40,7 @@
 	}
 
 
-	@if (config.Connections.Length > 0) {
+	@if (config.Connections.Count > 0) {
 		<dt><strong>Connections</strong> @anchorLink</dt>
 		<dd><ul class="clean">
 		@foreach (var conn in config.Connections) {

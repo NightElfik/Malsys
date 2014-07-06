@@ -2,17 +2,14 @@
 // All rights reserved.
 
 namespace Malsys.Ast {
-	/// <remarks>
-	/// Immutable.
-	/// </remarks>
 	public class FunctionDefinition : NameParamsStatements<IFunctionStatement>, IInputStatement, ILsystemStatement {
 
-		public FunctionDefinition(Identifier name, ImmutableListPos<OptionalParameter> prms,
-				ImmutableListPos<IFunctionStatement> statements, PositionRange pos)
+		public int ParametersCount { get { return Parameters.Count; } }
+
+
+		public FunctionDefinition(Identifier name, ListPos<OptionalParameter> prms,
+				ListPos<IFunctionStatement> statements, PositionRange pos)
 			: base(name, prms, statements, pos) { }
-
-
-		public int ParametersCount { get { return Parameters.Length; } }
 
 
 		InputStatementType IInputStatement.StatementType {

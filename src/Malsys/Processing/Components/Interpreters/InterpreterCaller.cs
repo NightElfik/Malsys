@@ -192,15 +192,15 @@ namespace Malsys.Processing.Components.Interpreters {
 				if (debug) {
 					debugPrinter.NewLine();
 				}
-				return;  // symbol with missing interpret method is ignored
+				return;  // Symbol with missing interpret method is ignored.
 			}
 
-			if (instr.Parameters.IsEmpty) {
-				// use instruction argument as default values if no explicit arguments are defined
+			if (instr.Parameters.Count == 0) {
+				// Use instruction argument as default values if no explicit arguments are defined.
 				args.AddArgs(symbol.Arguments, exprEvalCtxt.EvaluateList(instr.InstructionParameters));
 			}
 			else {
-				var eec = exprEvalCtxt;  // create a working copy of constants
+				var eec = exprEvalCtxt;  // Create a working copy of constants.
 				mapSybolArgs(symbol, instr, ref eec);
 				args.AddArgs(eec.EvaluateList(instr.InstructionParameters));
 			}
@@ -268,9 +268,9 @@ namespace Malsys.Processing.Components.Interpreters {
 
 			var prms = instr.Parameters;
 
-			for (int i = 0; i < prms.Length; i++) {
+			for (int i = 0; i < prms.Count; i++) {
 				IValue val;
-				if (i < symbol.Arguments.Length) {
+				if (i < symbol.Arguments.Count) {
 					val = symbol.Arguments[i];
 				}
 				else {

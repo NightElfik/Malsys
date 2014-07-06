@@ -2,14 +2,13 @@
 // All rights reserved.
 
 namespace Malsys.Ast {
-	/// <remarks>
-	/// Immutable.
-	/// </remarks>
 	public class ProcessContainer : IProcessConfigStatement {
 
-		public readonly Identifier NameId;
-		public readonly Identifier TypeNameId;
-		public readonly Identifier DefaultTypeNameId;
+		public Identifier NameId;
+		public Identifier TypeNameId;
+		public Identifier DefaultTypeNameId;
+
+		public PositionRange Position { get; private set; }
 
 
 		public ProcessContainer(Identifier name, Identifier typeName, Identifier defaultTypeName, PositionRange pos) {
@@ -20,9 +19,6 @@ namespace Malsys.Ast {
 
 			Position = pos;
 		}
-
-
-		public PositionRange Position { get; private set; }
 
 
 		public ProcessConfigStatementType StatementType {

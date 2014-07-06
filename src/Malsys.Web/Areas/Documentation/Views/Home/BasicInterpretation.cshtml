@@ -25,34 +25,6 @@
 
 <h2>Symbols interpretation</h2>
 
-<p>
-	Next important feature after @Html.ActionLink("rewriting", MVC.Documentation.Home.BasicRewriting()) is interpretation of symbols.
-	Every symbol can be associated with some action.
-	The set of actions you can use is given by interpreter component in used process configuration.
-</p>
-
-<div id="toc"></div>
-
-<h3>Turtle interpreter</h3>
-
-<p>
-	Turtle Interpreter interprets symbols as basic commands for virtual "pen" on 2D canvas (or in 3D space).
-	Virtual pen is often called "turtle" (from LOGO where cybernetic turtle was controlled to draw on canvas).
-	Pen can move or draw forward, change direction, color or other attributes.
-	Interpreter can also save or load its state which allows branching.
-	The basic elements like line, circle or polygon can be rendered by renderer, more complex shapes have to be drawn using these.
-	Following list shows all actions of Turtle interpreter (withdrawn from
-		<a href="@Url.Action(MVC.Documentation.Predefined.Components())#@Model.Interpreter.ComponentType.FullName">components list</a>).
-</p>
-
-<ul>
-@foreach (var intMethod in Model.Interpreter.InterpretationMethods) {
-	<li>
-		<p><span class="monospace">@string.Join(", ", intMethod.Names)</span> — @intMethod.SummaryDoc</p>
-	</li>
-}
-</ul>
-
 
 <h3>Basic interpretation syntax</h3>
 

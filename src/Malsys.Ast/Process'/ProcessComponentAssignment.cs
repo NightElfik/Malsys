@@ -2,13 +2,12 @@
 // All rights reserved.
 
 namespace Malsys.Ast {
-	/// <remarks>
-	/// Immutable.
-	/// </remarks>
 	public class ProcessComponentAssignment : IAstNode {
 
-		public readonly Identifier ComponentTypeNameId;
-		public readonly Identifier ContainerNameId;
+		public Identifier ComponentTypeNameId;
+		public Identifier ContainerNameId;
+
+		public PositionRange Position { get; private set; }
 
 
 		public ProcessComponentAssignment(Identifier componentType, Identifier container, PositionRange pos) {
@@ -19,8 +18,6 @@ namespace Malsys.Ast {
 			Position = pos;
 		}
 
-
-		public PositionRange Position { get; private set; }
 
 	}
 }

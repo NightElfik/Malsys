@@ -4,16 +4,15 @@
 namespace Malsys.SemanticModel.Compiled {
 	public class ProcessContainer {
 
-		public readonly string Name;
-		public readonly string TypeName;
-		public readonly string DefaultTypeName;
+		public string Name;
+		public string TypeName;
+		public string DefaultTypeName;
+
+		public readonly Ast.ProcessContainer AstNode;
 
 
-		public ProcessContainer(string name, string typeName, string defaultTypeName) {
-
-			Name = name;
-			TypeName = typeName;
-			DefaultTypeName = defaultTypeName;
+		public ProcessContainer(Ast.ProcessContainer astNode) {
+			AstNode = astNode;
 		}
 
 	}

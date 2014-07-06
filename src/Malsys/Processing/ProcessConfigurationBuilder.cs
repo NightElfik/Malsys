@@ -193,7 +193,7 @@ namespace Malsys.Processing {
 		/// <param name="symbolsAssigns">Symbols to assign to symbol settable properties.</param>
 		/// <param name="logger">Logger for logging any failures during process.</param>
 		public void SetAndCheckUserSettableProperties(FSharpMap<string, ConfigurationComponent> components,
-				FSharpMap<string, IValue> valueAssigns, FSharpMap<string, ImmutableList<Symbol<IValue>>> symbolsAssigns, IMessageLogger logger) {
+				FSharpMap<string, IValue> valueAssigns, FSharpMap<string, List<Symbol<IValue>>> symbolsAssigns, IMessageLogger logger) {
 
 			var setValues = new System.Collections.Generic.HashSet<string>();
 			var setSymbols = new System.Collections.Generic.HashSet<string>();
@@ -576,15 +576,16 @@ namespace Malsys.Processing {
 
 		/// <returns>The name of successfully set variable or null.</returns>
 		private string trySetSettableSymbolProperty(ConfigurationComponent comp, ComponentSettableSybolsPropertyMetadata settSymPropMeta,
-				FSharpMap<string, ImmutableList<Symbol<IValue>>> symbolsAssigns, IMessageLogger logger) {
+				FSharpMap<string, List<Symbol<IValue>>> symbolsAssigns, IMessageLogger logger) {
 
 			string setName = null;
 			bool valueSet = false;
 
 			foreach (var name in settSymPropMeta.Names) {
-				ImmutableList<Symbol<IValue>> symbolsVal;
+				List<Symbol<IValue>> symbolsVal;
 				if (symbolsAssigns.TryGetValue(name, out symbolsVal)) {
-					valueSet = trySetPropertyValue(settSymPropMeta.PropertyInfo, comp, symbolsVal, name, logger);
+					valueSet = trySetPropertyValue(settSymPropMeta.PropertyInfo, comp,
+						new ImmutableList<Symbol<IValue>>(symbolsVal), name, logger);
 					setName = name;
 					break;
 

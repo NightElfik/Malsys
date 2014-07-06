@@ -2,20 +2,14 @@
 // All rights reserved.
 
 namespace Malsys.Ast {
-	/// <remarks>
-	/// Immutable.
-	/// </remarks>
 	public class EmptyExpression : IExpressionMember {
 
-		public static readonly EmptyExpression Instance = new EmptyExpression(PositionRange.Unknown);
+		public PositionRange Position { get; private set; }
 
 
 		public EmptyExpression(PositionRange pos) {
 			Position = pos;
 		}
-
-
-		public PositionRange Position { get; private set; }
 
 
 		public ExpressionMemberType MemberType {

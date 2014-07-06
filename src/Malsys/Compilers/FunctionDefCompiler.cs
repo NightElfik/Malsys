@@ -1,6 +1,7 @@
 ﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
 // All rights reserved.
 using System.Diagnostics;
+using System.Linq;
 using Malsys.SemanticModel.Compiled;
 
 namespace Malsys.Compilers {
@@ -22,33 +23,26 @@ namespace Malsys.Compilers {
 
 
 		public Function Compile(Ast.FunctionDefinition funDefAst, IMessageLogger logger) {
-
-			var compiledStats = new IFunctionStatement[funDefAst.Statements.Length];
-
-			for (int i = 0; i < funDefAst.Statements.Length; i++) {
-
-				var stat = funDefAst.Statements[i];
-
+			
+			var stats = funDefAst.Statements.Select(stat => {				
 				switch (stat.StatementType) {
-
 					case Ast.FunctionStatementType.ConstantDefinition:
-						compiledStats[i] = constDefCompiler.Compile((Ast.ConstantDefinition)stat, logger);
-						break;
-
+						return constDefCompiler.Compile((Ast.ConstantDefinition)stat, logger) as IFunctionStatement;
 					case Ast.FunctionStatementType.Expression:
-						compiledStats[i] = new FunctionReturnExpr(exprCompiler.Compile((Ast.Expression)stat, logger));
-						break;
-
+						return new FunctionReturnExpr(stat) { 
+							ReturnValue = exprCompiler.Compile((Ast.Expression)stat, logger),
+						} as IFunctionStatement;
 					default:
 						Debug.Fail("Unknown function statement type `{0}`.".Fmt(stat.StatementType.ToString()));
-						break;
-
+						return null as IFunctionStatement;
 				}
-			}
+			}).ToList();
 
-			var prms = paramsCompiler.CompileList(funDefAst.Parameters, logger);
-			var stats = new ImmutableList<IFunctionStatement>(compiledStats, true);
-			return new Function(funDefAst.NameId.Name, prms, stats, funDefAst);
+			return new Function(funDefAst) {
+				Name = funDefAst.NameId.Name,
+				Parameters = paramsCompiler.CompileList(funDefAst.Parameters, logger),
+				Statements = stats,
+			};
 		}
 
 	}

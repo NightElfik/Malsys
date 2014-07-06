@@ -40,12 +40,12 @@ namespace Malsys.Evaluators {
 		/// <summary>
 		/// Clears all previously stored arguments and copies all arguments from given first list.
 		/// </summary>
-		public void AddArgs(ImmutableList<IValue> arguments) {
+		public void AddArgs(List<IValue> arguments) {
 
-			ArgsCount = arguments.Length;
+			ArgsCount = arguments.Count;
 			ensureCapacity(ArgsCount);
 
-			for (int i = 0; i < arguments.Length; i++) {
+			for (int i = 0; i < arguments.Count; i++) {
 				args[i] = arguments[i];
 			}
 		}
@@ -54,18 +54,18 @@ namespace Malsys.Evaluators {
 		/// Clears all previously stored arguments and copies all arguments from first list and if second is longer,
 		/// rest from second.
 		/// </summary>
-		public void AddArgs(ImmutableList<IValue> arguments, ImmutableList<IValue> defaultValues) {
+		public void AddArgs(List<IValue> arguments, List<IValue> defaultValues) {
 
-			ArgsCount = Math.Max(arguments.Length, defaultValues.Length);
+			ArgsCount = Math.Max(arguments.Count, defaultValues.Count);
 			ensureCapacity(ArgsCount);
 
 			int i = 0;
 
-			for (; i < arguments.Length; i++) {
+			for (; i < arguments.Count; i++) {
 				args[i] = arguments[i];
 			}
 
-			for (; i < defaultValues.Length; i++) {
+			for (; i < defaultValues.Count; i++) {
 				args[i] = defaultValues[i];
 			}
 		}

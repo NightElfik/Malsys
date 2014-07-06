@@ -59,12 +59,21 @@
     <CodeContractsBaseLineFile />
     <CodeContractsCacheAnalysisResults>False</CodeContractsCacheAnalysisResults>
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
-    <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
+    <CodeContractsReferenceAssembly>DoNotBuild</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
     <DocumentationFile>
     </DocumentationFile>
     <NoWarn>
     </NoWarn>
+    <CodeContractsMissingPublicRequiresAsWarnings>True</CodeContractsMissingPublicRequiresAsWarnings>
+    <CodeContractsInferRequires>True</CodeContractsInferRequires>
+    <CodeContractsInferEnsures>False</CodeContractsInferEnsures>
+    <CodeContractsInferObjectInvariants>False</CodeContractsInferObjectInvariants>
+    <CodeContractsSuggestAssumptions>False</CodeContractsSuggestAssumptions>
+    <CodeContractsSuggestRequires>True</CodeContractsSuggestRequires>
+    <CodeContractsSuggestObjectInvariants>False</CodeContractsSuggestObjectInvariants>
+    <CodeContractsSQLServerOption />
+    <CodeContractsFailBuildOnWarnings>False</CodeContractsFailBuildOnWarnings>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -73,7 +82,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
+    <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
     <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
     <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
     <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
@@ -87,7 +96,7 @@
     <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
     <CodeContractsShowSquigglies>False</CodeContractsShowSquigglies>
     <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
-    <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
+    <CodeContractsEmitXMLDocs>True</CodeContractsEmitXMLDocs>
     <CodeContractsCustomRewriterAssembly />
     <CodeContractsCustomRewriterClass />
     <CodeContractsLibPaths />
@@ -96,7 +105,7 @@
     <CodeContractsBaseLineFile />
     <CodeContractsCacheAnalysisResults>False</CodeContractsCacheAnalysisResults>
     <CodeContractsRuntimeCheckingLevel>None</CodeContractsRuntimeCheckingLevel>
-    <CodeContractsReferenceAssembly>DoNotBuild</CodeContractsReferenceAssembly>
+    <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
     <ExcludeApp_Data>true</ExcludeApp_Data>
     <NoWarn>1591 1584</NoWarn>
@@ -506,11 +515,6 @@
     <None Include="Js\jquery.validate.js" />
     <None Include="Js\jquery.js" />
     <None Include="Js\malsys.js" />
-    <None Include="Js\MinifyJs.log">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </None>
     <None Include="Js\modernizr.js" />
     <None Include="Js\ThreeJs\Detector.js" />
     <None Include="Js\ThreeJs\malsys.three.js" />
@@ -608,39 +612,6 @@
     <None Include="Js\malsys.curveDesigner.js" />
     <None Include="Js\jquery.prettyPhoto.js" />
     <None Include="Js\jquery.tmpl.js" />
-    <Content Include="Js\jquery.min.js">
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
-    <Content Include="Js\jquery.old.min.js">
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
-    <Content Include="Js\jquery.prettyPhoto.min.js">
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
-    <Content Include="Js\jquery.textarea.min.js">
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
-    <Content Include="Js\jquery.tmpl.min.js">
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
-    <Content Include="Js\jquery.unobtrusive-ajax.min.js">
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
-    <Content Include="Js\jquery.validate.min.js">
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
-    <Content Include="Js\jquery.validate.unobtrusive.min.js">
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
-    <Content Include="Js\malsys.curveDesigner.min.js">
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
-    <Content Include="Js\malsys.min.js">
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
-    <Content Include="Js\modernizr.min.js">
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
     <Content Include="Js\ThreeJs\Detector.min.js">
       <DependentUpon>MinifyJs.tt</DependentUpon>
     </Content>

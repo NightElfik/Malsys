@@ -1,5 +1,6 @@
 ﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
 // All rights reserved.
+using System.Linq;
 using System.Collections.Generic;
 
 namespace Malsys.Compilers {
@@ -19,22 +20,14 @@ namespace Malsys.Compilers {
 	public static class ICompilerExtensions {
 
 		/// <summary>
-		/// Compiles given list with this compiler to immutable list.
+		/// Compiles given list with this compiler to a list.
 		/// </summary>
 		/// <remarks>
 		/// All compilers which are capable to compile single entry can be extended to compile list.
 		/// If any compiler needs to compile list in the other way it should define its own CompileList method.
 		/// </remarks>
-		public static ImmutableList<TResult> CompileList<TSource, TResult>(this ICompiler<TSource, TResult> compiler, IList<TSource> list, IMessageLogger logger) {
-
-			int count = list.Count;
-			TResult[] resultArr = new TResult[count];
-
-			for (int i = 0; i < count; i++) {
-				resultArr[i] = compiler.Compile(list[i], logger);
-			}
-
-			return new ImmutableList<TResult>(resultArr, true);
+		public static List<TResult> CompileList<TSource, TResult>(this ICompiler<TSource, TResult> compiler, IEnumerable<TSource> list, IMessageLogger logger) {
+			return list.Select(x => compiler.Compile(x, logger)).ToList();
 		}
 
 	}

@@ -1,25 +1,17 @@
 ﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
 // All rights reserved.
+using System.Collections.Generic;
 
 namespace Malsys.SemanticModel.Compiled.Expressions {
-	/// <remarks>
-	/// Immutable.
-	/// </remarks>
 	public class FunctionCall : IExpression {
 
+		public string Name;
+		public List<IExpression> Arguments;
 
-		public readonly string Name;
-
-		public readonly ImmutableList<IExpression> Arguments;
-
-		public readonly Ast.IExpressionMember AstNode;
+		public Ast.IExpressionMember AstNode;
 
 
-		public FunctionCall(string name, ImmutableList<IExpression> args, Ast.IExpressionMember astNode) {
-
-			Name = name;
-			Arguments = args;
-
+		public FunctionCall(Ast.IExpressionMember astNode) {
 			AstNode = astNode;
 		}
 

@@ -2,12 +2,11 @@
 // All rights reserved.
 
 namespace Malsys.Ast {
-	/// <remarks>
-	/// Immutable.
-	/// </remarks>
 	public class Comment : IAstNode {
 
-		public readonly string Text;
+		public string Text;
+
+		public PositionRange Position { get; private set; }
 
 
 		public Comment(string text, PositionRange pos) {
@@ -16,7 +15,6 @@ namespace Malsys.Ast {
 		}
 
 
-		public PositionRange Position { get; private set; }
 
 	}
 }

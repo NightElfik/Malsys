@@ -1,34 +1,22 @@
 ﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
 // All rights reserved.
+using System.Collections.Generic;
 
 namespace Malsys.SemanticModel.Compiled {
-	/// <remarks>
-	/// Immutable.
-	/// </remarks>
 	public class SymbolsInterpretation : ILsystemStatement {
 
-		public readonly ImmutableList<Symbol<VoidStruct>> Symbols;
-		public readonly ImmutableList<OptionalParameter> Parameters;
-		public readonly string InstructionName;
-		public readonly ImmutableList<IExpression> InstructionParameters;
+		public List<Symbol<VoidStruct>> Symbols;
+		public List<OptionalParameter> Parameters;
+		public string InstructionName;
+		public List<IExpression> InstructionParameters;
 
-		public readonly bool InstructionIsLsystemName;
-		public readonly string LsystemConfigName;
+		public bool InstructionIsLsystemName;
+		public string LsystemConfigName;
 
 		public readonly Ast.SymbolsInterpretDef AstNode;
 
 
-		public SymbolsInterpretation(ImmutableList<Symbol<VoidStruct>> symbols, ImmutableList<OptionalParameter> parameters,
-				string instrName, ImmutableList<IExpression> defParams, bool instructionIsLsystemName,
-				string lsystemConfigName, Ast.SymbolsInterpretDef astNode) {
-
-			Symbols = symbols;
-			Parameters = parameters;
-			InstructionName = instrName;
-			InstructionParameters = defParams;
-			InstructionIsLsystemName = instructionIsLsystemName;
-			LsystemConfigName = lsystemConfigName;
-
+		public SymbolsInterpretation(Ast.SymbolsInterpretDef astNode) {
 			AstNode = astNode;
 		}
 

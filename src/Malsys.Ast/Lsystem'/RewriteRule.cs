@@ -2,24 +2,22 @@
 // All rights reserved.
 
 namespace Malsys.Ast {
-	/// <remarks>
-	/// Immutable.
-	/// </remarks>
 	public class RewriteRule : ILsystemStatement {
 
-		public readonly LsystemSymbol Pattern;
-		public readonly ImmutableListPos<LsystemSymbol> LeftContext;
-		public readonly ImmutableListPos<LsystemSymbol> RightContext;
+		public LsystemSymbol Pattern;
+		public ListPos<LsystemSymbol> LeftContext;
+		public ListPos<LsystemSymbol> RightContext;
 
-		public readonly ImmutableListPos<ConstantDefinition> LocalConstDefs;
+		public ListPos<ConstantDefinition> LocalConstDefs;
+		public Expression Condition;
+		public ListPos<RewriteRuleReplacement> Replacements;
 
-		public readonly Expression Condition;
-
-		public readonly ImmutableListPos<RewriteRuleReplacement> Replacements;
+		public PositionRange Position { get; private set; }
 
 
-		public RewriteRule(LsystemSymbol pattern, ImmutableListPos<LsystemSymbol> lctxt, ImmutableListPos<LsystemSymbol> rctxt,
-				ImmutableListPos<ConstantDefinition> localConsts, Expression cond, ImmutableListPos<RewriteRuleReplacement> replacs, PositionRange pos) {
+		public RewriteRule(LsystemSymbol pattern, ListPos<LsystemSymbol> lctxt, ListPos<LsystemSymbol> rctxt,
+				ListPos<ConstantDefinition> localConsts, Expression cond, ListPos<RewriteRuleReplacement> replacs,
+				PositionRange pos) {
 
 			LeftContext = lctxt;
 			Pattern = pattern;
@@ -30,10 +28,6 @@ namespace Malsys.Ast {
 
 			Position = pos;
 		}
-
-
-
-		public PositionRange Position { get; private set; }
 
 
 		public LsystemStatementType StatementType {

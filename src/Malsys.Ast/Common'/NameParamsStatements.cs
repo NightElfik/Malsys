@@ -2,27 +2,23 @@
 // All rights reserved.
 
 namespace Malsys.Ast {
-	/// <remarks>
-	/// Immutable.
-	/// </remarks>
 	public abstract class NameParamsStatements<TStatement> : IAstNode where TStatement : IAstNode {
 
-		public readonly Identifier NameId;
-		public readonly ImmutableListPos<OptionalParameter> Parameters;
-		public readonly ImmutableListPos<TStatement> Statements;
+		public Identifier NameId;
+		public ListPos<OptionalParameter> Parameters;
+		public ListPos<TStatement> Statements;
+
+		public PositionRange Position { get; private set; }
 
 
-		public NameParamsStatements(Identifier name, ImmutableListPos<OptionalParameter> prms,
-				ImmutableListPos<TStatement> statements, PositionRange pos) {
+		public NameParamsStatements(Identifier name, ListPos<OptionalParameter> prms,
+				ListPos<TStatement> statements, PositionRange pos) {
 
 			NameId = name;
 			Parameters = prms;
 			Statements = statements;
 			Position = pos;
 		}
-
-
-		public PositionRange Position { get; private set; }
 
 	}
 }

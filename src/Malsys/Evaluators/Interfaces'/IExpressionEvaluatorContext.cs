@@ -1,6 +1,7 @@
 ﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
 // All rights reserved.
 using System.Collections.Generic;
+using System.Linq;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Evaluated;
@@ -71,16 +72,8 @@ namespace Malsys.Evaluators {
 
 		}
 
-		public static ImmutableList<IValue> EvaluateList(this IExpressionEvaluatorContext eec, ImmutableList<IExpression> exprs) {
-
-			var result = new IValue[exprs.Length];
-
-			for (int i = 0; i < exprs.Length; i++) {
-				result[i] = eec.Evaluate(exprs[i]);
-			}
-
-			return new ImmutableList<IValue>(result, true);
-
+		public static List<IValue> EvaluateList(this IExpressionEvaluatorContext eec, IEnumerable<IExpression> exprs) {
+			return exprs.Select(eec.Evaluate).ToList();
 		}
 
 		public static IExpressionEvaluatorContext AddVariable(this IExpressionEvaluatorContext eec, string name, IValue value, Ast.IAstNode astNode = null, bool rewrite = true) {
@@ -95,19 +88,18 @@ namespace Malsys.Evaluators {
 		internal static IExpressionEvaluatorContext AddFunction(this IExpressionEvaluatorContext eec, FunctionData fun, bool rewrite = true) {
 
 			int mandatory = 0;
-			for (int i = 0; i < fun.Parameters.Length; i++) {
+			for (int i = 0; i < fun.Parameters.Count; i++) {
 				if (fun.Parameters[i].IsOptional) {
 					break;
 				}
 				mandatory++;
 			}
 
-			for (int i = mandatory; i <= fun.Parameters.Length; i++) {
-				eec = eec.AddFunction(new FunctionInfo(fun.Name, i, fun.evalUserFuncCall, FunctionInfo.AnyParamsTypes, fun), rewrite);
+			for (int i = mandatory; i <= fun.Parameters.Count; i++) {
+				eec = eec.AddFunction(new FunctionInfo(fun.Name, i, fun.EvalUserFuncCall, FunctionInfo.AnyParamsTypes, fun), rewrite);
 			}
 
 			return eec;
-
 		}
 
 

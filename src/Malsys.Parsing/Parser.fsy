@@ -66,7 +66,7 @@ let optionToStatement parseState (option : Option<#ILsystemStatement>) =
         | Some(value) -> value
         | None -> new EmptyStatement(getPos parseState) :> ILsystemStatement
 
-type ImmutableListPos_LsystemSymbol = ImmutableListPos<LsystemSymbol>
+type ListPos_LsystemSymbol = ListPos<LsystemSymbol>
 
 %}
 
@@ -107,7 +107,7 @@ type ImmutableListPos_LsystemSymbol = ImmutableListPos<LsystemSymbol>
 %type <Expression> ParseExpression
 
 %start ParseSymbols
-%type <ImmutableListPos_LsystemSymbol> ParseSymbols
+%type <ListPos_LsystemSymbol> ParseSymbols
 
 %%
 
@@ -119,7 +119,7 @@ type ImmutableListPos_LsystemSymbol = ImmutableListPos<LsystemSymbol>
 ParseInput:
     | InputStatementsList EOF
       { let sourceName = getInpuFile parseState in
-        let statements = new ImmutableListPos<IInputStatement>($1 :> ResizeArray<IInputStatement>, getPos parseState) in
+        let statements = new ListPos<IInputStatement>($1 :> ResizeArray<IInputStatement>, getPos parseState) in
         new InputBlock(sourceName, statements) }
 
 
@@ -181,10 +181,10 @@ FunDef:
 
 FunBody:
     | LBRACE FunStatementsList RBRACE
-      { new ImmutableListPos<IFunctionStatement>($2 :> ResizeArray<IFunctionStatement>, getPosI parseState 1, getPosI parseState 3, getPos parseState)  }
+      { new ListPos<IFunctionStatement>($2 :> ResizeArray<IFunctionStatement>, getPosI parseState 1, getPosI parseState 3, getPos parseState)  }
     | LBRACE error RBRACE
       { logMsgPos ParsserMessage.FunStatementsInvalid (getPosBetween parseState 1 3);
-        new ImmutableListPos<IFunctionStatement>(getPosI parseState 1, getPosI parseState 3, getPos parseState) }
+        new ListPos<IFunctionStatement>(getPosI parseState 1, getPosI parseState 3, getPos parseState) }
 
 FunStatementsList:
     |
@@ -196,7 +196,7 @@ FunStatement:
     | ConstDef
       { $1 :?> IFunctionStatement }
     | RETURN Expression SEMI
-      { ($2) :> IFunctionStatement }
+      { $2 :> IFunctionStatement }
 
 
 //------------------------------------------------------------------------------
@@ -218,12 +218,12 @@ OptAbstract:
 
 OptBaseLsystems:
     |
-      { ImmutableListPos<BaseLsystem>.Empty }
+      { new ListPos<BaseLsystem>(getPos parseState) }
     | EXTENDS
       { logMsgPos ParsserMessage.EmptyBaseLsysBlock (getPosI parseState 1);
-        ImmutableListPos<BaseLsystem>.Empty }
+        new ListPos<BaseLsystem>(getPos parseState) }
     | EXTENDS BaseLsystemListNonEmpty
-      { new ImmutableListPos<BaseLsystem>($2 :> ResizeArray<BaseLsystem>, getPos parseState) }
+      { new ListPos<BaseLsystem>($2 :> ResizeArray<BaseLsystem>, getPos parseState) }
 
 BaseLsystemListNonEmpty:
     | BaseLsystem
@@ -237,10 +237,10 @@ BaseLsystem:
 
 LsysBody:
     | LBRACE LsysStatementsList RBRACE
-      { new ImmutableListPos<ILsystemStatement>($2 :> ResizeArray<ILsystemStatement>, getPosI parseState 1, getPosI parseState 3, getPos parseState)  }
+      { new ListPos<ILsystemStatement>($2 :> ResizeArray<ILsystemStatement>, getPosI parseState 1, getPosI parseState 3, getPos parseState)  }
     | LBRACE error RBRACE
       { logMsgPos ParsserMessage.LsystemStatementsInvalid (getPosBetween parseState 1 3);
-        new ImmutableListPos<ILsystemStatement>(getPosI parseState 1, getPosI parseState 3, getPos parseState)  }
+        new ListPos<ILsystemStatement>(getPosI parseState 1, getPosI parseState 3, getPos parseState)  }
 
 LsysStatementsList:
     |
@@ -284,10 +284,10 @@ ComponentSymbolsAssignDefNoDelim:
 
 SymbolsInterpretDefNoDelim:
     | INTERPRET LsystemSymbolNoParamsList OptParams AS Id OptExpressionsListParen
-      { let symbolsImm = new ImmutableListPos<Identifier>($2 :> ResizeArray<Identifier>, getPosI parseState 2) in
+      { let symbolsImm = new ListPos<Identifier>($2 :> ResizeArray<Identifier>, getPosI parseState 2) in
         new SymbolsInterpretDef(symbolsImm, $3, $5, $6, getPos parseState) :> ILsystemStatement }
     | INTERPRET LsystemSymbolNoParamsList OptParams AS LSYSTEM Id OptExpressionsListParen OptWithId
-      { let symbolsImm = new ImmutableListPos<Identifier>($2 :> ResizeArray<Identifier>, getPosI parseState 2) in
+      { let symbolsImm = new ListPos<Identifier>($2 :> ResizeArray<Identifier>, getPosI parseState 2) in
         new SymbolsInterpretDef(symbolsImm, $3, $6, $7, true, $8, getPos parseState) :> ILsystemStatement }
     | INTERPRET error
       { logMsgPos ParsserMessage.SymbolsInterpretationInvalid (getPos parseState);
@@ -295,7 +295,7 @@ SymbolsInterpretDefNoDelim:
 
 OptWithId:
     |
-      { Identifier.Empty }
+      { new Identifier("", getPos parseState) }
     | WITH Id
       { $2 }
 
@@ -308,35 +308,35 @@ RewriteRuleNoDelim:
       { new RewriteRule($3, $2, $4, $5, $6, $8, getPos parseState) :> ILsystemStatement }
     | REWRITE OptRrCtxt LsystemSymbol OptRrCtxt OptRrLocalConsts OptRrCondition TO error
       { logMsgPos ParsserMessage.RrReplacementInvalid (getPosBetween parseState 7 9);
-        new RewriteRule($3, $2, $4, $5, $6, ImmutableListPos<RewriteRuleReplacement>.Empty, getPos parseState) :> ILsystemStatement }
+        new RewriteRule($3, $2, $4, $5, $6, new ListPos<RewriteRuleReplacement>(), getPos parseState) :> ILsystemStatement }
     | REWRITE error
       { logMsgPos ParsserMessage.RewriteRuleInvalid (getPos parseState);
         new EmptyStatement(getPos parseState) :> ILsystemStatement }
 
 OptRrCtxt:
     |
-      { ImmutableListPos<LsystemSymbol>.Empty }
+      { new ListPos<LsystemSymbol>(getPos parseState) }
     | LBRACE LsystemSymbolList RBRACE
       { $2.AddSeparators(getPosI parseState 1, getPosI parseState 3, getPos parseState) }
     | LBRACE error RBRACE
       { logMsgPos ParsserMessage.SymbolsPatternInvalid (getPosBetween parseState 1 3);
-        ImmutableListPos<LsystemSymbol>.Empty }
+        new ListPos<LsystemSymbol>(getPos parseState) }
 
 OptRrLocalConsts:
     |
-      { ImmutableListPos<ConstantDefinition>.Empty }
+      { new ListPos<ConstantDefinition>(getPos parseState) }
     | WITH
       { logMsgPos ParsserMessage.EmptyRrConstsDefBlock (getPosI parseState 1);
-        ImmutableListPos<ConstantDefinition>(getStartPos parseState) }
+        ListPos<ConstantDefinition>(getStartPos parseState) }
     | WITH RrLocalConstsListNonEmpty
-      { new ImmutableListPos<ConstantDefinition>($2 :> ResizeArray<ConstantDefinition>, getPos parseState) }
+      { new ListPos<ConstantDefinition>($2 :> ResizeArray<ConstantDefinition>, getPos parseState) }
     | WITH error
       { logMsg ParsserMessage.RrConstsDefInvalid parseState;
-        ImmutableListPos<ConstantDefinition>(getStartPos parseState) }
+        ListPos<ConstantDefinition>(getStartPos parseState) }
 
 OptRrCondition:
     |
-      { Expression.Empty }
+      { new Expression(getEndPos parseState) }
     | WHERE
       { logMsgPos ParsserMessage.EmptyRrConditionBlock (getPosI parseState 1);
         new Expression(getEndPos parseState) }
@@ -349,9 +349,9 @@ OptRrCondition:
 RrReplacList:
     |
       { logMsgPos ParsserMessage.EmptyRrReplacementBlock (getStartPos parseState);
-        ImmutableListPos<RewriteRuleReplacement>.Empty }
+        new ListPos<RewriteRuleReplacement>(getPos parseState) }
     | RrReplacListNonEmpty
-      { new ImmutableListPos<RewriteRuleReplacement>($1 :> ResizeArray<RewriteRuleReplacement>, getPos parseState) }
+      { new ListPos<RewriteRuleReplacement>($1 :> ResizeArray<RewriteRuleReplacement>, getPos parseState) }
 
 RrReplacListNonEmpty:
     | RrReplac
@@ -367,13 +367,13 @@ RrReplac:
 
 RrReplacSymbols:
     | NOTHING
-      { new ImmutableListPos<LsystemSymbol>(getPos parseState) }
+      { new ListPos<LsystemSymbol>(getPos parseState) }
     | LsystemSymbolListNonEmpty
-      { new ImmutableListPos<LsystemSymbol>($1 :> ResizeArray<LsystemSymbol>, getPos parseState) }
+      { new ListPos<LsystemSymbol>($1 :> ResizeArray<LsystemSymbol>, getPos parseState) }
 
 OptRrWeight:
     |
-      { Expression.Empty }
+      { new Expression(getEndPos parseState) }
     | WEIGHT
       { logMsg ParsserMessage.EmptyRrProbabilityBlock parseState;
         new Expression(getEndPos parseState) }
@@ -406,15 +406,15 @@ LsystemSymbol:
 
 OptExpressionsListParen:
     |
-      { ImmutableListPos<Expression>.Empty }
+      { new ListPos<Expression>(getPos parseState) }
     | LPAREN ExpressionsList RPAREN
-      { ($2 :> ImmutableListPos<Expression>).AddSeparators(getPosI parseState 1, getPosI parseState 3) }
+      { ($2 :> ListPos<Expression>).AddSeparators(getPosI parseState 1, getPosI parseState 3) }
 
 LsystemSymbolList:
     |
-      { ImmutableListPos<LsystemSymbol>.Empty }
+      { new ListPos<LsystemSymbol>(getPos parseState) }
     | LsystemSymbolListNonEmpty
-      { new ImmutableListPos<LsystemSymbol>($1 :> ResizeArray<LsystemSymbol>, getPos parseState) }
+      { new ListPos<LsystemSymbol>($1 :> ResizeArray<LsystemSymbol>, getPos parseState) }
 
 LsystemSymbolListNonEmpty:
     | LsystemSymbol
@@ -448,22 +448,22 @@ Symbol:
 
 OptParams:
     |
-      { ImmutableListPos<OptionalParameter>.Empty }
+      { new ListPos<OptionalParameter>(getPos parseState) }
     | OptParamsParens
       { $1 }
 
 OptParamsParens:
     | LPAREN OptParamsList RPAREN
-      { ($2 :> ImmutableListPos<OptionalParameter>).AddSeparators(getPosI parseState 1, getPosI parseState 3, getPos parseState) }
+      { ($2 :> ListPos<OptionalParameter>).AddSeparators(getPosI parseState 1, getPosI parseState 3, getPos parseState) }
     | LPAREN error RPAREN
       { logMsgPos ParsserMessage.OptionalParamsInvalid (getPosBetween parseState 1 3);
-        new ImmutableListPos<OptionalParameter>(getPosI parseState 1, getPosI parseState 3, getPos parseState) }
+        new ListPos<OptionalParameter>(getPosI parseState 1, getPosI parseState 3, getPos parseState) }
 
 OptParamsList:
     |
-      { ImmutableListPos<OptionalParameter>.Empty }
+      { new ListPos<OptionalParameter>(getPos parseState) }
     | OptParamsListNonEmpty
-      { new ImmutableListPos<OptionalParameter>($1 :> ResizeArray<OptionalParameter>, getPos parseState) }
+      { new ListPos<OptionalParameter>($1 :> ResizeArray<OptionalParameter>, getPos parseState) }
 
 OptParamsListNonEmpty:
     | OptParam
@@ -473,7 +473,7 @@ OptParamsListNonEmpty:
 
 OptParam:
     | Id
-      { new OptionalParameter($1, Expression.Empty, getPos parseState) }
+      { new OptionalParameter($1, new Expression(PositionRange.Unknown), getPos parseState) }
     | Id EQUALS Expression
       { new OptionalParameter($1, $3, getPos parseState) }
 
@@ -526,9 +526,9 @@ ExpressionsArray:
 
 ExpressionsList:
     |
-      { new ImmutableListPos<Expression>(getPos parseState) }
+      { new ListPos<Expression>(getPos parseState) }
     | ExpressionsListNonEmpty
-      { new ImmutableListPos<Expression>($1 :> ResizeArray<Expression>, getPos parseState) }
+      { new ListPos<Expression>($1 :> ResizeArray<Expression>, getPos parseState) }
 
 ExpressionsListNonEmpty:
     | ExpressionNonEmpty
@@ -563,10 +563,10 @@ ProcessConfig:
 
 ProcessConfigBody:
     | LBRACE ProcessConfigStatementsList RBRACE
-      { new ImmutableListPos<IProcessConfigStatement>($2 :> ResizeArray<IProcessConfigStatement>, getPosI parseState 1, getPosI parseState 3, getPos parseState) }
+      { new ListPos<IProcessConfigStatement>($2 :> ResizeArray<IProcessConfigStatement>, getPosI parseState 1, getPosI parseState 3, getPos parseState) }
     | LBRACE error RBRACE
       { logMsgPos ParsserMessage.ProcessConfigStatementsInvalid (getPosBetween parseState 1 3);
-        new ImmutableListPos<IProcessConfigStatement>(getPosI parseState 1, getPosI parseState 3, getPos parseState)}
+        new ListPos<IProcessConfigStatement>(getPosI parseState 1, getPosI parseState 3, getPos parseState)}
 
 ProcessConfigStatementsList:
     |
@@ -620,13 +620,13 @@ FullyQualifiedTypeId:
 
 ProcessStatement:
     | PROCESS AllOrId OptExpressionsListParen WITH Id ProcessComponentAssignmentList ProcessComponentLsysStatementList SEMI
-      { let processStats = new ImmutableListPos<ProcessComponentAssignment>($6 :> ResizeArray<ProcessComponentAssignment>, getPos parseState)
-        let lsysStats = new ImmutableListPos<ILsystemStatement>($7 :> ResizeArray<ILsystemStatement>, getPos parseState)
+      { let processStats = new ListPos<ProcessComponentAssignment>($6 :> ResizeArray<ProcessComponentAssignment>, getPos parseState)
+        let lsysStats = new ListPos<ILsystemStatement>($7 :> ResizeArray<ILsystemStatement>, getPos parseState)
         new ProcessStatement($2, $3, $5, processStats, lsysStats, getPos parseState) :> IInputStatement }
 
 AllOrId:
     | ALL
-      { Identifier.Empty }
+      { new Identifier("", getPos parseState) }
     | Id
       { $1 }
 
@@ -657,9 +657,9 @@ Id:
 
 IdsCommaList:
     |
-      { new ImmutableListPos<Identifier>(getPos parseState) }
+      { new ListPos<Identifier>(getPos parseState) }
     | IdsCommaListNonEmpty
-      { new ImmutableListPos<Identifier>($1 :> ResizeArray<Identifier>, getPos parseState) }
+      { new ListPos<Identifier>($1 :> ResizeArray<Identifier>, getPos parseState) }
 
 IdsCommaListNonEmpty:
     | Id

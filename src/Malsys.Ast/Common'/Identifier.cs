@@ -4,14 +4,12 @@ using System;
 using System.Diagnostics.Contracts;
 
 namespace Malsys.Ast {
-	/// <remarks>
-	/// Immutable.
-	/// </remarks>
 	public class Identifier : IAstNode, IExpressionMember {
 
-		public static readonly Identifier Empty = new Identifier("", PositionRange.Unknown);
+		public string Name;
 
-		public readonly string Name;
+		public PositionRange Position { get; private set; }
+		public bool IsEmpty { get { return Name.Length == 0; } }
 
 
 		public Identifier(string name, PositionRange pos) {
@@ -29,15 +27,9 @@ namespace Malsys.Ast {
 		}
 
 
-		public bool IsEmpty { get { return Name.Length == 0; } }
-
-
 		public override string ToString() {
 			return Name;
 		}
-
-
-		public PositionRange Position { get; private set; }
 
 
 		public ExpressionMemberType MemberType {

@@ -1,26 +1,21 @@
 ﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
 // All rights reserved.
+using System.Collections.Generic;
 using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.SemanticModel.Compiled {
 	public class LsystemEvaledParams {
 
-		public readonly string Name;
-		public readonly bool IsAbstract;
-		public readonly ImmutableList<OptionalParameterEvaled> Parameters;
-		public readonly ImmutableList<BaseLsystem> BaseLsystems;
-		public readonly ImmutableList<ILsystemStatement> Statements;
+		public string Name;
+		public bool IsAbstract;
+		public List<OptionalParameterEvaled> Parameters;
+		public List<BaseLsystem> BaseLsystems;
+		public List<ILsystemStatement> Statements;
+
 		public readonly Ast.LsystemDefinition AstNode;
 
 
-		public LsystemEvaledParams(string name, bool isAbstract, ImmutableList<OptionalParameterEvaled> prms,
-				ImmutableList<BaseLsystem> baseLsystems, ImmutableList<ILsystemStatement> statements, Ast.LsystemDefinition astNode) {
-
-			Name = name;
-			IsAbstract = isAbstract;
-			Parameters = prms;
-			BaseLsystems = baseLsystems;
-			Statements = statements;
+		public LsystemEvaledParams(Ast.LsystemDefinition astNode) {
 			AstNode = astNode;
 		}
 

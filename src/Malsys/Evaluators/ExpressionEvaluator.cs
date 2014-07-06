@@ -50,7 +50,7 @@ namespace Malsys.Evaluators {
 
 				case ExpressionType.ExpressionValuesArray:
 					var exprValArr = (ExpressionValuesArray)expr;
-					var valArr = new IValue[exprValArr.Length];
+					var valArr = new IValue[exprValArr.Count];
 
 					for (int i = 0; i < valArr.Length; i++) {
 						valArr[i] = Evaluate(exprValArr[i], exprMemberProvider);
@@ -90,11 +90,11 @@ namespace Malsys.Evaluators {
 						return Evaluate(arg, exprMemberProvider);
 					}
 
-					#endregion
+					#endregion Extra evaluation of IF function
 
 					// evaluate arguments
 					var funCallArgs = funCall.Arguments;
-					var funArgs = new IValue[funCallArgs.Length];
+					var funArgs = new IValue[funCallArgs.Count];
 					for (int i = 0; i < funArgs.Length; i++) {
 						funArgs[i] = Evaluate(funCallArgs[i], exprMemberProvider);
 					}

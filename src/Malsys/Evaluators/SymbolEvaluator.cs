@@ -10,11 +10,12 @@ namespace Malsys.Evaluators {
 	/// </remarks>
 	public class SymbolEvaluator : ISymbolEvaluator {
 
-
 		public Symbol<IValue> Evaluate(Symbol<IExpression> symbol, IExpressionEvaluatorContext exprEvalCtxt) {
-			return new Symbol<IValue>(symbol.Name, exprEvalCtxt.EvaluateList(symbol.Arguments), symbol.AstNode);
+			return new Symbol<IValue>(symbol.AstNode) {
+				Name = symbol.Name,
+				Arguments = exprEvalCtxt.EvaluateList(symbol.Arguments),
+			};
 		}
-
 
 	}
 }

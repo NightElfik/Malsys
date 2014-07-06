@@ -1,6 +1,7 @@
 ﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
 // All rights reserved.
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Media.Media3D;
@@ -21,8 +22,17 @@ namespace Malsys.Tests.Interpreters {
 	[TestClass]
 	public class TurtleInterpreterTests {
 
-		private static ImmutableList<OptionalParameterEvaled> emptyParams = ImmutableList<OptionalParameterEvaled>.Empty;
-		private static ImmutableList<IExpression> emptyInstrParams = ImmutableList<IExpression>.Empty;
+		private SymbolInterpretationEvaled buildSymbolInterpretation(string symbol, List<OptionalParameterEvaled> parameters,
+		string instructionName, List<IExpression> instructionParameters) {
+
+			return new SymbolInterpretationEvaled(null) {
+				Symbol = symbol,
+				Parameters = parameters ?? new List<OptionalParameterEvaled>(),
+				InstructionName = instructionName,
+				InstructionParameters = instructionParameters ?? new List<IExpression>(),
+				InstructionIsLsystemName = false,
+			};
+		}
 
 		private FSharpMap<string, SymbolInterpretationEvaled> symToInstr;
 
@@ -36,11 +46,11 @@ namespace Malsys.Tests.Interpreters {
 		public void Initialize() {
 
 			var intArr = new SymbolInterpretationEvaled[] {
-				new SymbolInterpretationEvaled("F", emptyParams, "DrawForward", emptyInstrParams),
-				new SymbolInterpretationEvaled("f", emptyParams, "MoveForward", emptyInstrParams),
-				new SymbolInterpretationEvaled("+", emptyParams, "Yaw", emptyInstrParams),
-				new SymbolInterpretationEvaled("^", emptyParams, "Pitch", emptyInstrParams),
-				new SymbolInterpretationEvaled("/", emptyParams, "Roll", emptyInstrParams)
+				buildSymbolInterpretation("F", null, "DrawForward", null),
+				buildSymbolInterpretation("f", null, "MoveForward", null),
+				buildSymbolInterpretation("+", null, "Yaw", null),
+				buildSymbolInterpretation("^", null, "Pitch", null),
+				buildSymbolInterpretation("/", null, "Roll", null)
 			};
 
 			symToInstr = MapModule.Empty<string, SymbolInterpretationEvaled>();
@@ -268,7 +278,10 @@ namespace Malsys.Tests.Interpreters {
 
 			var symbols = TestUtils.CompileSymbols(inputSymbols);
 
-			var lsystem = new LsystemEvaled("", false, null, TestUtils.ExpressionEvaluatorContext, null, null, symToInstr, null, null);
+			var lsystem = new LsystemEvaled("Test L-system") {
+				ExpressionEvaluatorContext = TestUtils.ExpressionEvaluatorContext,
+				SymbolsInterpretation = symToInstr,
+			};
 
 			var logger = new MessageLogger();
 			var evaluator = new EvaluatorsContainer(TestUtils.ExpressionEvaluatorContext);

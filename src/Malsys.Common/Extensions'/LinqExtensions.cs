@@ -11,7 +11,7 @@ namespace Malsys {
 	public static class LinqExtensions {
 
 		/// <summary>
-		/// Finds all indices of pairs with equal value.
+		/// Reports indices of pairs that evaluated as true.
 		/// </summary>
 		public static IEnumerable<Tuple<int, int>> GetEqualValuesIndices<T>(this IList<T> source, Func<T, T, bool> eqFunc) {
 
@@ -22,6 +22,22 @@ namespace Malsys {
 					}
 				}
 			}
+
+		}
+
+		/// <summary>
+		/// Reports pairs that evaluated as true.
+		/// </summary>
+		public static IEnumerable<Tuple<T, T>> GetValuePairs<T>(this IList<T> source, Func<T, T, bool> eqFunc) {
+
+			for (int i = 0; i < source.Count; i++) {
+				for (int j = 0; j < i; j++) {
+					if (eqFunc(source[i], source[j])) {
+						yield return new Tuple<T, T>(source[j], source[i]);
+					}
+				}
+			}
+
 		}
 
 

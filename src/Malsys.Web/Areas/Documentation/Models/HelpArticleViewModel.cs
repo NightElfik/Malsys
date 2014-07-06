@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Collections.Generic;
+using Malsys.Processing;
 using Malsys.Web.Models;
 using Malsys.Web.Models.Lsystem;
 
@@ -14,6 +12,8 @@ namespace Malsys.Web.Areas.Documentation.Models {
 
 
 		public SimpleLsystemProcessor LsystemProcessor;
+
+		public ProcessManager ProcessManager;
 		
 	}
 }

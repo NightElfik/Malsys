@@ -2,12 +2,12 @@
 // All rights reserved.
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Malsys.Evaluators;
 using Malsys.Processing.Context;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Evaluated;
 using Symbol = Malsys.SemanticModel.Symbol<Malsys.SemanticModel.Evaluated.IValue>;
-using System.Text;
 
 
 namespace Malsys.Processing.Components.Rewriters {
@@ -46,7 +46,7 @@ namespace Malsys.Processing.Components.Rewriters {
 
 		private bool collectStatistics;
 		protected ulong totalRewrittenSymbolsCount;
-		Dictionary<string, ulong> rewriteSymbolsStatistics = new Dictionary<string, ulong>();
+		private Dictionary<string, ulong> rewriteSymbolsStatistics = new Dictionary<string, ulong>();
 
 
 
@@ -111,7 +111,7 @@ namespace Malsys.Processing.Components.Rewriters {
 		public Constant ReportStatistics { get; set; }
 
 
-		#endregion
+		#endregion User gettable & settable properties
 
 
 		[UserConnectable]
@@ -161,13 +161,13 @@ namespace Malsys.Processing.Components.Rewriters {
 				.GroupBy(rr => rr.SymbolPattern.Name)
 				.ToDictionary(g => g.Key, g => g.ToArray());
 
-			leftCtxtMaxLen = lsystem.RewriteRules.Select(rr => rr.LeftContext.Length).DefaultIfEmpty().Max();
-			rightCtxtMaxLen = lsystem.RewriteRules.Select(rr => rr.RightContext.Length).DefaultIfEmpty().Max();
+			leftCtxtMaxLen = lsystem.RewriteRules.Select(rr => rr.LeftContext.Count).DefaultIfEmpty().Max();
+			rightCtxtMaxLen = lsystem.RewriteRules.Select(rr => rr.RightContext.Count).DefaultIfEmpty().Max();
 			rrReplacementMaxLen = lsystem.RewriteRules
-				.Select(rr => rr.Replacements.Select(replac => replac.Replacement.Length).DefaultIfEmpty().Max())
+				.Select(rr => rr.Replacements.Select(replac => replac.Replacement.Count).DefaultIfEmpty().Max())
 				.DefaultIfEmpty().Max();
 
-			stochasticRules = lsystem.RewriteRules.Any(rr => rr.Replacements.Length > 1);
+			stochasticRules = lsystem.RewriteRules.Any(rr => rr.Replacements.Count > 1);
 
 			collectStatistics = ReportStatistics.IsTrue;
 		}
@@ -197,7 +197,7 @@ namespace Malsys.Processing.Components.Rewriters {
 			SymbolProvider.EndProcessing();
 		}
 
-		#endregion
+		#endregion IComponent Members
 
 
 		/// <summary>

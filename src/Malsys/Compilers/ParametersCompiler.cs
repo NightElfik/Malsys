@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
-// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
+﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
 // All rights reserved.
+using System.Collections.Generic;
+using System.Linq;
 using Malsys.SemanticModel.Compiled;
 
 namespace Malsys.Compilers {
@@ -18,33 +19,33 @@ namespace Malsys.Compilers {
 
 
 		public OptionalParameter Compile(Ast.OptionalParameter optParam, IMessageLogger logger) {
-			return new OptionalParameter(optParam.NameId.Name, exprCompiler.Compile(optParam.DefaultValue, logger), optParam);
+			return new OptionalParameter(optParam) {
+				Name = optParam.NameId.Name,
+				DefaultValue = exprCompiler.Compile(optParam.DefaultValue, logger),
+			};
 		}
 
-		public ImmutableList<OptionalParameter> CompileList(IList<Ast.OptionalParameter> parameters, IMessageLogger logger) {
+		public List<OptionalParameter> CompileList(IEnumerable<Ast.OptionalParameter> parameters, IMessageLogger logger) {
 
-			int parametersCount = parameters.Count;
 			bool wasOptional = false;
-			var result = new OptionalParameter[parametersCount];
-
-			for (int i = 0; i < parametersCount; i++) {
-
-				result[i] = Compile(parameters[i], logger);
-
-				if (result[i].IsOptional) {
+			var result = parameters.Select(param => {
+				var p = Compile(param, logger);
+				if (p.IsOptional) {
 					wasOptional = true;
 				}
 				else if (wasOptional) {
-					logger.LogMessage(Message.RequiredParamAfterOptional, parameters[i].Position, parameters[i].NameId.Name);
+					logger.LogMessage(Message.RequiredParamAfterOptional, param.Position, param.NameId.Name);
 				}
+				return p;
+			}).ToList();
+
+
+			// Check whether parameters names are unique.
+			foreach (var values in result.GetValuePairs((l, r) => { return l.Name.Equals(r.Name); })) {
+				logger.LogMessage(Message.ParamNameNotUnique, values.Item1.AstNode.Position, values.Item1.Name, values.Item1.AstNode.Position);
 			}
 
-			// check whether parameters names are unique
-			foreach (var indices in result.GetEqualValuesIndices((l, r) => { return l.Name.Equals(r.Name); })) {
-				logger.LogMessage(Message.ParamNameNotUnique, parameters[indices.Item1].Position, result[indices.Item1].Name, parameters[indices.Item2].Position);
-			}
-
-			return new ImmutableList<OptionalParameter>(result, true);
+			return result;
 		}
 
 

@@ -4,39 +4,30 @@ using System.Collections;
 using System.Collections.Generic;
 
 namespace Malsys.Ast {
-	/// <remarks>
-	/// Immutable.
-	/// </remarks>
 	public class Expression : IEnumerable<IExpressionMember>, IFunctionStatement {
 
-		public static readonly Expression Empty = new Expression(PositionRange.Unknown);
-
-
-		public readonly ImmutableList<IExpressionMember> Members;
-
-
-		public Expression(PositionRange pos) {
-
-			Members = ImmutableList<IExpressionMember>.Empty;
-			Position = pos;
-		}
-
-		public Expression(IEnumerable<IExpressionMember> mmbrs, PositionRange pos) {
-
-			Members = new ImmutableList<IExpressionMember>(mmbrs);
-			Position = pos;
-		}
+		public List<IExpressionMember> Members;
 
 
 		public IExpressionMember this[int i] { get { return Members[i]; } }
 
-		public int MembersCount { get { return Members.Length; } }
+		public int MembersCount { get { return Members.Count; } }
 
-		public bool IsEmpty { get { return Members.Length == 0; } }
-
+		public bool IsEmpty { get { return Members.Count == 0; } }
 
 
 		public PositionRange Position { get; private set; }
+
+
+		public Expression(PositionRange pos) {
+			Members = new List<IExpressionMember>();
+			Position = pos;
+		}
+
+		public Expression(IEnumerable<IExpressionMember> mmbrs, PositionRange pos) {
+			Members = new List<IExpressionMember>(mmbrs);
+			Position = pos;
+		}
 
 
 		IEnumerator IEnumerable.GetEnumerator() {

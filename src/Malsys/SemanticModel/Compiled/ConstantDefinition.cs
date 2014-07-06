@@ -2,24 +2,16 @@
 // All rights reserved.
 
 namespace Malsys.SemanticModel.Compiled {
-	/// <remarks>
-	/// Immutable.
-	/// </remarks>
 	public class ConstantDefinition : IInputStatement, ILsystemStatement, IFunctionStatement {
 
-		public readonly string Name;
-
-		public readonly IExpression Value;
-
-		public readonly bool IsComponentAssign;
+		public string Name;
+		public IExpression Value;
+		public bool IsComponentAssign;
 
 		public readonly Ast.ConstantDefinition AstNode;
 
 
-		public ConstantDefinition(string name, IExpression value, bool isComponentAssign, Ast.ConstantDefinition astNode) {
-			Name = name;
-			Value = value;
-			IsComponentAssign = isComponentAssign;
+		public ConstantDefinition(Ast.ConstantDefinition astNode) {
 			AstNode = astNode;
 		}
 

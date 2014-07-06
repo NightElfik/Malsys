@@ -22,9 +22,17 @@ namespace Malsys.Tests.Interpreters {
 	[TestClass]
 	public class InterpreterCallerTests {
 
-		private static ImmutableList<OptionalParameterEvaled> emptyParams = ImmutableList<OptionalParameterEvaled>.Empty;
-		private static ImmutableList<IExpression> emptyInstrParams = ImmutableList<IExpression>.Empty;
+		private SymbolInterpretationEvaled buildSymbolInterpretation(string symbol, List<OptionalParameterEvaled> parameters,
+				string instructionName, List<IExpression> instructionParameters) {
 
+			return new SymbolInterpretationEvaled(null) {
+				Symbol = symbol,
+				Parameters = parameters ?? new List<OptionalParameterEvaled>(),
+				InstructionName = instructionName,
+				InstructionParameters = instructionParameters ?? new List<IExpression>(),
+				InstructionIsLsystemName = false,
+			};
+		}
 
 		[TestMethod]
 		public void EmptyInputTests() {
@@ -35,9 +43,9 @@ namespace Malsys.Tests.Interpreters {
 		public void ExistingActionsTests() {
 
 			var sym2Instr = new SymbolInterpretationEvaled[] {
-				new SymbolInterpretationEvaled("A", emptyParams, "ActionA", emptyInstrParams),
-				new SymbolInterpretationEvaled("B", emptyParams, "ActionB", emptyInstrParams),
-				new SymbolInterpretationEvaled("C", emptyParams, "ActionC", emptyInstrParams)
+				buildSymbolInterpretation("A", null, "ActionA", null),
+				buildSymbolInterpretation("B", null, "ActionB", null),
+				buildSymbolInterpretation("C", null, "ActionC", null)
 			};
 
 			doTest(sym2Instr,
@@ -53,7 +61,7 @@ namespace Malsys.Tests.Interpreters {
 		public void UnknownSymbolsTests() {
 
 			var sym2Instr = new SymbolInterpretationEvaled[] {
-				new SymbolInterpretationEvaled("A", emptyParams, "ActionA", emptyInstrParams)
+				buildSymbolInterpretation("A", null, "ActionA", null)
 			};
 
 			doTest(sym2Instr,
@@ -65,8 +73,8 @@ namespace Malsys.Tests.Interpreters {
 		[ExpectedException(typeof(InterpretationException))]
 		public void UnknownActionsTests() {
 			var sym2Instr = new SymbolInterpretationEvaled[] {
-			    new SymbolInterpretationEvaled("A", emptyParams, "ActionA", emptyInstrParams),
-			    new SymbolInterpretationEvaled("C", emptyParams, "??", emptyInstrParams)
+			    buildSymbolInterpretation("A", null, "ActionA", null),
+			    buildSymbolInterpretation("C", null, "??", null)
 			};
 
 			doTest(sym2Instr,
@@ -78,7 +86,7 @@ namespace Malsys.Tests.Interpreters {
 		public void ParametersFromSymbolTests() {
 
 			var sym2Instr = new SymbolInterpretationEvaled[] {
-				new SymbolInterpretationEvaled("A", emptyParams, "ActionA", emptyInstrParams)
+				buildSymbolInterpretation("A", null, "ActionA", null)
 			};
 
 			doTest(sym2Instr,
@@ -93,18 +101,18 @@ namespace Malsys.Tests.Interpreters {
 		[TestMethod]
 		public void ParametersTests() {
 
-			var opParamsX = new ImmutableList<OptionalParameterEvaled>(
-				new OptionalParameterEvaled("x")
-			);
-			var opParamsXY = new ImmutableList<OptionalParameterEvaled>(
-				new OptionalParameterEvaled("x"),
-				new OptionalParameterEvaled("y")
-			);
+			var opParamsX = new List<OptionalParameterEvaled>() {
+				new OptionalParameterEvaled(null) { Name = "x" },
+			};
+			var opParamsXY = new List<OptionalParameterEvaled>() {
+				new OptionalParameterEvaled(null) { Name = "x" },
+				new OptionalParameterEvaled(null) { Name = "y" },
+			};
 
 			var sym2Instr = new SymbolInterpretationEvaled[] {
-				new SymbolInterpretationEvaled("A", opParamsX, "ActionA", new ImmutableList<IExpression>(5.ToConst())),
-				new SymbolInterpretationEvaled("B", opParamsX, "ActionB", new ImmutableList<IExpression>("x".ToVar())),
-				new SymbolInterpretationEvaled("C", opParamsXY, "ActionC", new ImmutableList<IExpression>("x".ToVar(), 5.ToConst(), "y".ToVar())),
+				buildSymbolInterpretation("A", opParamsX, "ActionA", new List<IExpression>() { 5.ToConst() }),
+				buildSymbolInterpretation("B", opParamsX, "ActionB", new List<IExpression>() { "x".ToVar() }),
+				buildSymbolInterpretation("C", opParamsXY, "ActionC", new List<IExpression>() { "x".ToVar(), 5.ToConst(), "y".ToVar() }),
 			};
 
 			doTest(sym2Instr,
@@ -124,8 +132,8 @@ namespace Malsys.Tests.Interpreters {
 		public void NativelyOptionalParametersTests() {
 
 			var sym2Instr = new SymbolInterpretationEvaled[] {
-				new SymbolInterpretationEvaled("A", emptyParams, "ActionA", new ImmutableList<IExpression>(5.ToConst())),
-				new SymbolInterpretationEvaled("B", emptyParams, "ActionB", new ImmutableList<IExpression>(5.ToConst(), 4.ToConst())),
+				buildSymbolInterpretation("A", null, "ActionA", new List<IExpression>() { 5.ToConst() }),
+				buildSymbolInterpretation("B", null, "ActionB", new List<IExpression>() { 5.ToConst(), 4.ToConst() }),
 			};
 
 			doTest(sym2Instr,
@@ -140,17 +148,17 @@ namespace Malsys.Tests.Interpreters {
 		[TestMethod]
 		public void OptionalParametersTests() {
 
-			var opParamsX = new ImmutableList<OptionalParameterEvaled>(
-				new OptionalParameterEvaled("x", 1.ToConst())
-			);
-			var opParamsXY = new ImmutableList<OptionalParameterEvaled>(
-				new OptionalParameterEvaled("x", 1.ToConst()),
-				new OptionalParameterEvaled("y", 2.ToConst())
-			);
+			var opParamsX = new List<OptionalParameterEvaled>() {
+				new OptionalParameterEvaled(null) { Name = "x", DefaultValue = 1.ToConst() },
+			};
+			var opParamsXY = new List<OptionalParameterEvaled>() {
+				new OptionalParameterEvaled(null) { Name = "x", DefaultValue = 1.ToConst() },
+				new OptionalParameterEvaled(null) { Name = "y", DefaultValue = 2.ToConst() },
+			};
 
 			var sym2Instr = new SymbolInterpretationEvaled[] {
-				new SymbolInterpretationEvaled("A", opParamsX, "ActionA", new ImmutableList<IExpression>("x".ToVar())),
-				new SymbolInterpretationEvaled("B", opParamsXY, "ActionB", new ImmutableList<IExpression>("x".ToVar(), "y".ToVar())),
+				buildSymbolInterpretation("A", opParamsX, "ActionA", new List<IExpression>() { "x".ToVar() }),
+				buildSymbolInterpretation("B", opParamsXY, "ActionB", new List<IExpression>() { "x".ToVar(), "y".ToVar() }),
 			};
 
 			doTest(sym2Instr,
@@ -175,7 +183,10 @@ namespace Malsys.Tests.Interpreters {
 			foreach (var item in symbolToInstr) {
 				symToInstr = symToInstr.Add(item.Symbol, item);
 			}
-			var lsystem = new LsystemEvaled("", false, null, TestUtils.ExpressionEvaluatorContext, null, null, symToInstr, null, null);
+			var lsystem = new LsystemEvaled("Test L-system") {
+				ExpressionEvaluatorContext = TestUtils.ExpressionEvaluatorContext,
+				SymbolsInterpretation = symToInstr,
+			};
 			var logger = new MessageLogger();
 
 			var dummyInterpreter = new DummyInterpreter();
@@ -212,8 +223,8 @@ namespace Malsys.Tests.Interpreters {
 		private class DummyInterpreter : IInterpreter {
 
 			public List<string> Actions = new List<string>();
-			IndentStringWriter writer;
-			CanonicPrinter printer;
+			private IndentStringWriter writer;
+			private CanonicPrinter printer;
 
 
 			public DummyInterpreter() {
@@ -246,7 +257,7 @@ namespace Malsys.Tests.Interpreters {
 
 			public void EndProcessing() { }
 
-			#endregion
+			#endregion IComponent Members
 
 
 			[SymbolInterpretation]

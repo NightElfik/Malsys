@@ -2,16 +2,13 @@
 // All rights reserved.
 
 namespace Malsys.Ast {
-	/// <remarks>
-	/// Immutable.
-	/// </remarks>
 	public class ConstantDefinition : IInputStatement, ILsystemStatement, IFunctionStatement {
 
-		public readonly Identifier NameId;
+		public Identifier NameId;
+		public Expression ValueExpr;
+		public bool IsComponentAssign;
 
-		public readonly Expression ValueExpr;
-
-		public readonly bool IsComponentAssign;
+		public PositionRange Position { get; private set; }
 
 
 		public ConstantDefinition(Identifier name, Expression value, PositionRange pos) {
@@ -29,7 +26,6 @@ namespace Malsys.Ast {
 		}
 
 
-		public PositionRange Position { get; private set; }
 
 
 		InputStatementType IInputStatement.StatementType {

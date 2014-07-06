@@ -1,9 +1,9 @@
-﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
+﻿using System.Threading;
+// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
 // All rights reserved.
 using Malsys.Evaluators;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Evaluated;
-using System.Threading;
 
 namespace Malsys.Processing.Context {
 	/// <summary>
@@ -205,8 +205,8 @@ namespace Malsys.Processing.Context {
 
 		private IExpressionEvaluatorContext mapPatternConsts(Symbol<string> pattern, Symbol<IValue> symbol, IExpressionEvaluatorContext eec) {
 
-			int paramsLen = symbol.Arguments.Length;
-			int patternLen = pattern.Arguments.Length;
+			int paramsLen = symbol.Arguments.Count;
+			int patternLen = pattern.Arguments.Count;
 
 			for (int i = 0; i < patternLen; i++) {
 				// set value to NaN if symbol has not enough actual parameters to match pattern

@@ -2,26 +2,22 @@
 // All rights reserved.
 
 namespace Malsys.Ast {
-	/// <remarks>
-	/// Immutable.
-	/// </remarks>
 	public class ProcessConfigurationDefinition : IInputStatement {
 
-		public readonly Identifier NameId;
+		public Identifier NameId;
 
-		public readonly ImmutableListPos<IProcessConfigStatement> Statements;
+		public ListPos<IProcessConfigStatement> Statements;
+
+		public PositionRange Position { get; private set; }
 
 
-		public ProcessConfigurationDefinition(Identifier name, ImmutableListPos<IProcessConfigStatement> statements, PositionRange pos) {
+		public ProcessConfigurationDefinition(Identifier name, ListPos<IProcessConfigStatement> statements, PositionRange pos) {
 
 			NameId = name;
 			Statements = statements;
 
 			Position = pos;
 		}
-
-
-		public PositionRange Position { get; private set; }
 
 
 		public InputStatementType StatementType {

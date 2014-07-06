@@ -2,20 +2,17 @@
 // All rights reserved.
 
 namespace Malsys.Ast {
-	/// <remarks>
-	/// Immutable.
-	/// </remarks>
 	public class ExpressionBracketed : IExpressionMember {
 
-		public readonly Expression Expression;
+		public Expression Expression;
+
+		public PositionRange Position { get; private set; }
+
 
 		public ExpressionBracketed(Expression expression, PositionRange pos) {
 			Expression = expression;
 			Position = pos;
 		}
-
-
-		public PositionRange Position { get; private set; }
 
 
 		public ExpressionMemberType MemberType {

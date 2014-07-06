@@ -262,9 +262,9 @@ namespace Malsys.Tests.Rewriters {
 
 			var rewriter = new SymbolRewriter();
 			rewriter.Reset();
-			rewriter.ContextIgnore = new ImmutableList<Symbol<IValue>>(new Symbol<IValue>("I"));
-			rewriter.StartBranchSymbols = new ImmutableList<Symbol<IValue>>(new Symbol<IValue>("["));
-			rewriter.EndBranchSymbols = new ImmutableList<Symbol<IValue>>(new Symbol<IValue>("]"));
+			rewriter.ContextIgnore = new ImmutableList<Symbol<IValue>>(new Symbol<IValue>(null) { Name = "I" });
+			rewriter.StartBranchSymbols = new ImmutableList<Symbol<IValue>>(new Symbol<IValue>(null) { Name = "[" });
+			rewriter.EndBranchSymbols = new ImmutableList<Symbol<IValue>>(new Symbol<IValue>(null) { Name = "]" });
 
 			rewriter.Initialize(context);
 			rewriter.SymbolProvider = new SymbolProvider(lsystem.ComponentSymbolsAssigns["axiom"]);

@@ -12,7 +12,6 @@ namespace Malsys.SemanticModel.Evaluated {
 		new public static readonly ValuesArray Empty = new ValuesArray((Ast.ExpressionsArray)null);
 
 
-
 		public readonly Ast.ExpressionsArray AstNode;
 
 

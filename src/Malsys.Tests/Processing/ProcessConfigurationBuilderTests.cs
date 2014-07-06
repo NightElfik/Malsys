@@ -437,7 +437,7 @@ namespace Malsys.Tests.Process {
 
 			var input = TestUtils.EvaluateInput(configDefinition + configStatement);
 
-			if (input.ProcessStatements.Length != 1) {
+			if (input.ProcessStatements.Count != 1) {
 				Assert.Fail("Expected 1 process statement.");
 			}
 

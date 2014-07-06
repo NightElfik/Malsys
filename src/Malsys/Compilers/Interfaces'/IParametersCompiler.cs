@@ -10,7 +10,7 @@ namespace Malsys.Compilers {
 		/// Compiles list of optional parameters.
 		/// Checks if no mandatory parameters are after optional. Also checks is parameters names are unique.
 		/// </summary>
-		ImmutableList<OptionalParameter> CompileList(IList<Ast.OptionalParameter> list, IMessageLogger logger);
+		List<OptionalParameter> CompileList(IEnumerable<Ast.OptionalParameter> list, IMessageLogger logger);
 
 	}
 }

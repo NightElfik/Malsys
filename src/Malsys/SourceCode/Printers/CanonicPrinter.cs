@@ -111,10 +111,8 @@ namespace Malsys.SourceCode.Printers {
 		}
 
 
-		public void Print(ImmutableList<Symbol<IValue>> symbols) {
-
+		public void Print(IList<Symbol<IValue>> symbols) {
 			PrintSeparated(symbols, s => Print(s), " ");
-
 		}
 
 		public void Print(Symbol<VoidStruct> symbol) {
@@ -124,7 +122,7 @@ namespace Malsys.SourceCode.Printers {
 		public void Print(Symbol<string> symbol) {
 			writer.Write(symbol.Name);
 
-			if (!symbol.Arguments.IsEmpty) {
+			if (symbol.Arguments.Count != 0) {
 				writer.Write("(");
 				writer.Write(string.Join(", ", symbol.Arguments));
 				writer.Write(")");
@@ -134,7 +132,7 @@ namespace Malsys.SourceCode.Printers {
 		public void Print(Symbol<IExpression> symbol) {
 			writer.Write(symbol.Name);
 
-			if (!symbol.Arguments.IsEmpty) {
+			if (symbol.Arguments.Count != 0) {
 				writer.Write("(");
 				PrintSeparated(symbol.Arguments, s => Print(s));
 				writer.Write(")");
@@ -144,7 +142,7 @@ namespace Malsys.SourceCode.Printers {
 		public void Print(Symbol<IValue> symbol) {
 			writer.Write(symbol.Name);
 
-			if (!symbol.Arguments.IsEmpty) {
+			if (symbol.Arguments.Count != 0) {
 				writer.Write("(");
 				PrintSeparated(symbol.Arguments, s => Print(s));
 				writer.Write(")");
@@ -167,9 +165,9 @@ namespace Malsys.SourceCode.Printers {
 		}
 
 
-		public void Print(ImmutableList<OptionalParameterEvaled> optParamsEvaled, bool forceParens = false) {
+		public void Print(IList<OptionalParameterEvaled> optParamsEvaled, bool forceParens = false) {
 
-			if (forceParens || !optParamsEvaled.IsEmpty) {
+			if (forceParens || optParamsEvaled.Count != 0) {
 				writer.Write("(");
 				PrintSeparated(optParamsEvaled, op => Print(op));
 				writer.Write(")");
@@ -187,8 +185,7 @@ namespace Malsys.SourceCode.Printers {
 			}
 		}
 
-		public void Print(ImmutableList<OptionalParameter> optParams) {
-
+		public void Print(IList<OptionalParameter> optParams) {
 			writer.Write("(");
 			PrintSeparated(optParams, op => Print(op));
 			writer.Write(")");
@@ -235,7 +232,7 @@ namespace Malsys.SourceCode.Printers {
 			Print(lsysEvaledParams.Parameters, false);
 			writer.Write(" ");
 
-			if (!lsysEvaledParams.BaseLsystems.IsEmpty) {
+			if (lsysEvaledParams.BaseLsystems.Count != 0) {
 				Print(Ast.Keyword.Extends);
 				PrintSeparated(lsysEvaledParams.BaseLsystems, x => Print(x));
 				writer.Write(" ");
@@ -286,7 +283,7 @@ namespace Malsys.SourceCode.Printers {
 
 		public void Print(BaseLsystem baseLsys) {
 			writer.Write(baseLsys.Name);
-			if (!baseLsys.Arguments.IsEmpty) {
+			if (baseLsys.Arguments.Count != 0) {
 				writer.Write("(");
 				PrintSeparated(baseLsys.Arguments, x => Print(x));
 				writer.Write(")");
@@ -330,7 +327,7 @@ namespace Malsys.SourceCode.Printers {
 		public void Print(RewriteRule rewriteRule) {
 			Print(Ast.Keyword.Rewrite);
 
-			if (!rewriteRule.LeftContext.IsEmpty) {
+			if (rewriteRule.LeftContext.Count != 0) {
 				writer.Write("{");
 				PrintSeparated(rewriteRule.LeftContext, s => Print(s), " ");
 				writer.Write("} ");
@@ -338,7 +335,7 @@ namespace Malsys.SourceCode.Printers {
 
 			Print(rewriteRule.SymbolPattern);
 
-			if (!rewriteRule.RightContext.IsEmpty) {
+			if (rewriteRule.RightContext.Count != 0) {
 				writer.Write(" {");
 				PrintSeparated(rewriteRule.RightContext, s => Print(s), " ");
 				writer.Write("}");
@@ -346,7 +343,7 @@ namespace Malsys.SourceCode.Printers {
 
 			writer.Indent();
 
-			if (!rewriteRule.LocalConstantDefs.IsEmpty) {
+			if (rewriteRule.LocalConstantDefs.Count != 0) {
 				writer.NewLine();
 				Print(Ast.Keyword.With);
 				PrintSeparated(rewriteRule.LocalConstantDefs,
@@ -385,7 +382,7 @@ namespace Malsys.SourceCode.Printers {
 
 			Print(Ast.Keyword.To);
 
-			if (rrReplacment.Replacement.IsEmpty) {
+			if (rrReplacment.Replacement.Count == 0) {
 				Print(Ast.Keyword.Nothing, false);
 			}
 			else {
@@ -404,7 +401,7 @@ namespace Malsys.SourceCode.Printers {
 			Print(Ast.Keyword.Interpret);
 			PrintSeparated(symInt.Symbols, s => Print(s), " ");
 
-			if (!symInt.Parameters.IsEmpty) {
+			if (symInt.Parameters.Count != 0) {
 				writer.Write("(");
 				PrintSeparated(symInt.Parameters, e => Print(e));
 				writer.Write(")");
@@ -418,7 +415,7 @@ namespace Malsys.SourceCode.Printers {
 
 			writer.Write(symInt.InstructionName);
 
-			if (!symInt.InstructionParameters.IsEmpty) {
+			if (symInt.InstructionParameters.Count != 0) {
 				writer.Write("(");
 				PrintSeparated(symInt.InstructionParameters, e => Print(e));
 				writer.Write(")");
@@ -426,7 +423,7 @@ namespace Malsys.SourceCode.Printers {
 		}
 
 
-		#endregion
+		#endregion L-system statements
 
 
 		#region Expression members
@@ -530,7 +527,7 @@ namespace Malsys.SourceCode.Printers {
 			writer.Write(")");
 		}
 
-		#endregion
+		#endregion Expression members
 
 
 		#region Function statements
@@ -557,7 +554,7 @@ namespace Malsys.SourceCode.Printers {
 			writer.Write(";");
 		}
 
-		#endregion
+		#endregion Function statements
 
 
 		#region Process configuration statements
@@ -600,7 +597,7 @@ namespace Malsys.SourceCode.Printers {
 				writer.Write(procStat.TargetLsystemName);
 			}
 
-			if (!procStat.Arguments.IsEmpty) {
+			if (procStat.Arguments.Count != 0) {
 				writer.Write("(");
 				PrintSeparated(procStat.Arguments, x => Print(x));
 				writer.Write(")");
@@ -668,10 +665,10 @@ namespace Malsys.SourceCode.Printers {
 			writer.Write(";");
 		}
 
-		#endregion
+		#endregion Process configuration statements
 
 
-		private bool isTrue(IExpression expr){
+		private bool isTrue(IExpression expr) {
 			return expr.ExpressionType == ExpressionType.Constant && ((Constant)expr).Value.EpsilonCompareTo(1) == 0;
 		}
 

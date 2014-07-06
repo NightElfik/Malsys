@@ -109,7 +109,8 @@ namespace Malsys.Tests.Processing {
 
 			if (!logger.ErrorOccurred) {
 				var outProvider = new InMemoryOutputProvider();
-				processManager.ProcessInput(TestUtils.StdLib.JoinWith(inputEvalueated), outProvider, logger, TimeSpan.MaxValue);
+				inputEvalueated.Append(TestUtils.StdLib);
+				processManager.ProcessInput(inputEvalueated, outProvider, logger, TimeSpan.MaxValue);
 
 				actualOutputs.AddRange(outProvider.GetOutputs().SelectMany(x => Encoding.UTF8.GetString(x.OutputData).Trim().SplitToLines()));
 

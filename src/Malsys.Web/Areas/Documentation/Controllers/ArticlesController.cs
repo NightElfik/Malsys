@@ -32,10 +32,10 @@ namespace Malsys.Web.Areas.Documentation.Controllers {
 
 
 		public ArticlesController(IEnumerable<HelpArticle> articles, ProcessManager processManager, InputBlockEvaled stdLib) {
-
 			viewModel = new HelpArticleViewModel() {
 				AllArticles = articles,
 				LsystemProcessor =  new SimpleLsystemProcessor(processManager, stdLib),
+				ProcessManager = processManager,
 			};
 		}
 

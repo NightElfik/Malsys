@@ -51,7 +51,7 @@ namespace Malsys.Compilers {
 			const bool expectingOperand = true;
 			const bool expectingOperator = false;
 
-			Ast.IExpressionMember previousMember = Ast.EmptyExpression.Instance;
+			Ast.IExpressionMember previousMember = new Ast.EmptyExpression(PositionRange.Unknown);
 
 			foreach (var member in expr) {
 
@@ -84,15 +84,21 @@ namespace Malsys.Compilers {
 						var funExpr = (Ast.ExpressionFunction)member;
 
 						if (state == expectingOperand) {
-							operandsStack.Push(new FunctionCall(funExpr.NameId.Name, this.CompileList(funExpr.Arguments, logger), funExpr));
+							operandsStack.Push(new FunctionCall(funExpr) {
+								Name = funExpr.NameId.Name,
+								Arguments = this.CompileList(funExpr.Arguments, logger),
+							});
 							state = expectingOperator;
 						}
 						else {
 							if (previousMember is Ast.FloatConstant) {
-								operandsStack.Push(new FunctionCall(funExpr.NameId.Name, this.CompileList(funExpr.Arguments, logger), funExpr));
-								// implicit multiplication in situation like: 5 f(...) => 5*f(...)
+								operandsStack.Push(new FunctionCall(funExpr) {
+									Name = funExpr.NameId.Name,
+									Arguments = this.CompileList(funExpr.Arguments, logger),
+								});
+								// Implicit multiplication in situation like: 5 f(...) => 5*f(...).
 								optorsStack.Push(new OperatorCoreAst(StdOperators.Multiply, new Ast.Operator(null, funExpr.Position.GetBeginPos())));
-								// still expecting operator
+								// Still expecting operator.
 							}
 							else {
 								logger.LogMessage(Message.UnexcpectedOperand, funExpr.Position, "function");

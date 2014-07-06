@@ -10,17 +10,15 @@ namespace Malsys.Ast {
 		/// <remarks>
 		/// Can be null for procedurally created operators like implicit multiplication.
 		/// </remarks>
-		public readonly string Syntax;
+		public string Syntax;
+
+		public PositionRange Position { get; private set; }
 
 
 		public Operator(string syntax, PositionRange pos) {
 			Syntax = syntax;
 			Position = pos;
 		}
-
-
-
-		public PositionRange Position { get; private set; }
 
 
 		public ExpressionMemberType MemberType {

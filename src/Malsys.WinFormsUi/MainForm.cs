@@ -128,10 +128,10 @@ namespace Malsys.WinFormsUi {
 			}
 
 
-			var inputAndStdLib = stdLib.JoinWith(evaledInput);
+			evaledInput.Append(stdLib);
 
-			if (inputAndStdLib.ProcessStatements.Count > 0) {
-				processManager.ProcessInput(inputAndStdLib, outProvider, logger, TimeSpan.MaxValue);
+			if (evaledInput.ProcessStatements.Count > 0) {
+				processManager.ProcessInput(evaledInput, outProvider, logger, TimeSpan.MaxValue);
 			}
 
 			if (logger.ErrorOccurred) {

@@ -2,33 +2,32 @@
 // All rights reserved.
 
 namespace Malsys.Ast {
-	/// <remarks>
-	/// Immutable.
-	/// </remarks>
 	public class SymbolsInterpretDef : ILsystemStatement {
 
-		public readonly ImmutableListPos<Identifier> Symbols;
-		public readonly ImmutableListPos<OptionalParameter> Parameters;
-		public readonly Identifier Instruction;
-		public readonly ImmutableListPos<Expression> InstructionParameters;
+		public ListPos<Identifier> Symbols;
+		public ListPos<OptionalParameter> Parameters;
+		public Identifier Instruction;
+		public ListPos<Expression> InstructionParameters;
 
-		public readonly bool InstructionIsLsystemName;
-		public readonly Identifier LsystemConfigName;
+		public bool InstructionIsLsystemName;
+		public Identifier LsystemConfigName;
+
+		public PositionRange Position { get; private set; }
 
 
-		public SymbolsInterpretDef(ImmutableListPos<Identifier> symbols, ImmutableListPos<OptionalParameter> prms,
-				Identifier instr, ImmutableListPos<Expression> instrParams, PositionRange pos) {
+		public SymbolsInterpretDef(ListPos<Identifier> symbols, ListPos<OptionalParameter> prms,
+				Identifier instr, ListPos<Expression> instrParams, PositionRange pos) {
 
 			Symbols = symbols;
 			Parameters = prms;
 			Instruction = instr;
 			InstructionParameters = instrParams;
 			InstructionIsLsystemName = false;
-			LsystemConfigName = Identifier.Empty;
+			LsystemConfigName = new Identifier("", PositionRange.Unknown);
 		}
 
-		public SymbolsInterpretDef(ImmutableListPos<Identifier> symbols, ImmutableListPos<OptionalParameter> prms,
-				Identifier instr, ImmutableListPos<Expression> instrParams, bool instructionIsLsystemName,
+		public SymbolsInterpretDef(ListPos<Identifier> symbols, ListPos<OptionalParameter> prms,
+				Identifier instr, ListPos<Expression> instrParams, bool instructionIsLsystemName,
 				Identifier lsystemConfigName, PositionRange pos) {
 
 			Symbols = symbols;
@@ -40,7 +39,6 @@ namespace Malsys.Ast {
 		}
 
 
-		public PositionRange Position { get; private set; }
 
 
 		public LsystemStatementType StatementType {

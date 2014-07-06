@@ -1,5 +1,6 @@
 ﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
 // All rights reserved.
+using System.Collections.Generic;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Compiled;
 
@@ -19,23 +20,28 @@ namespace Malsys.Compilers {
 
 		Symbol<string> ICompiler<Ast.LsystemSymbol, Symbol<string>>.Compile(Ast.LsystemSymbol symbol, IMessageLogger logger) {
 
-			string[] names = new string[symbol.Arguments.Length];
+			List<string> names = new List<string>(symbol.Arguments.Count);
 
-			for (int i = 0; i < symbol.Arguments.Length; i++) {
-					if (symbol.Arguments[i].Members.Length != 1 || !(symbol.Arguments[i].Members[0] is Ast.Identifier)) {
-						logger.LogMessage(Message.PatternParamCanBeOnlyId, symbol.Arguments[i].Position);
-					}
+			for (int i = 0; i < symbol.Arguments.Count; i++) {
+				if (symbol.Arguments[i].Members.Count != 1 || !(symbol.Arguments[i].Members[0] is Ast.Identifier)) {
+					logger.LogMessage(Message.PatternParamCanBeOnlyId, symbol.Arguments[i].Position);
+				}
 
-					names[i] = ((Ast.Identifier)symbol.Arguments[i].Members[0]).Name;
+				names.Add(((Ast.Identifier)symbol.Arguments[i].Members[0]).Name);
 
 			}
 
-			var namesImm = new ImmutableList<string>(names, true);
-			return new Symbol<string>(symbol.Name, namesImm, symbol);
+			return new Symbol<string>(symbol) {
+				Name = symbol.Name,
+				Arguments = names,
+			};
 		}
 
 		Symbol<IExpression> ICompiler<Ast.LsystemSymbol, Symbol<IExpression>>.Compile(Ast.LsystemSymbol symbol, IMessageLogger logger) {
-			return new Symbol<IExpression>(symbol.Name, exprCompiler.CompileList(symbol.Arguments, logger), symbol);
+			return new Symbol<IExpression>(symbol) {
+				Name = symbol.Name,
+				Arguments = exprCompiler.CompileList(symbol.Arguments, logger),
+			};
 		}
 
 

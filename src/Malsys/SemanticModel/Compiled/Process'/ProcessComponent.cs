@@ -2,19 +2,16 @@
 // All rights reserved.
 
 namespace Malsys.SemanticModel.Compiled {
-	/// <remarks>
-	/// Immutable.
-	/// </remarks>
 	public class ProcessComponent {
 
-		public readonly string Name;
-		public readonly string TypeName;
+		public string Name;
+		public string TypeName;
+
+		public readonly Ast.ProcessComponent AstNode;
 
 
-		public ProcessComponent(string name, string typeName) {
-
-			Name = name;
-			TypeName = typeName;
+		public ProcessComponent(Ast.ProcessComponent astNode) {
+			AstNode = astNode;
 		}
 
 	}

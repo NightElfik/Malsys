@@ -2,24 +2,20 @@
 // All rights reserved.
 
 namespace Malsys.Ast {
-	/// <remarks>
-	/// Immutable.
-	/// </remarks>
 	public class BaseLsystem : IAstNode {
 
 		public readonly Identifier NameId;
-		public readonly ImmutableListPos<Expression> Arguments;
+		public readonly ListPos<Expression> Arguments;
+
+		public PositionRange Position { get; private set; }
 
 
-		public BaseLsystem(Identifier name, ImmutableListPos<Expression> args, PositionRange pos) {
+		public BaseLsystem(Identifier name, ListPos<Expression> args, PositionRange pos) {
 			NameId = name;
 			Arguments = args;
 
 			Position = pos;
 		}
-
-
-		public PositionRange Position { get; private set; }
 
 	}
 }

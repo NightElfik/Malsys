@@ -70,7 +70,7 @@ namespace Malsys.Tests.Processing {
 				throw new Exception("Failed to build std lib. " + logger.AllMessagesToFullString());
 			}
 
-			evaledInput = stdLib.JoinWith(evaledInput);
+			evaledInput.Append(stdLib);
 
 			var outProvider = new InMemoryOutputProvider();
 

@@ -24,6 +24,12 @@ namespace Malsys {
 
 		}
 
+		public static void AddRange<TKey, TValue>(this Dictionary<TKey, TValue> dict, IEnumerable<KeyValuePair<TKey, TValue>> values) {
+			foreach (var kvp in values) {
+				dict.Add(kvp.Key, kvp.Value);
+			}
+		}
+
 		public static bool ContainsValue<TKey, TValue>(this Dictionary<TKey, TValue> dict, TKey key, TValue value) {
 
 			TValue val;
@@ -33,6 +39,18 @@ namespace Malsys {
 			}
 			else {
 				return false;
+			}
+
+		}
+
+		public static TValue TryGetValue<TKey, TValue>(this Dictionary<TKey, TValue> map, TKey key, TValue defaultValue = default(TValue)) {
+
+			TValue val;
+			if (map.TryGetValue(key, out val)) {
+				return val;
+			}
+			else {
+				return defaultValue;
 			}
 
 		}

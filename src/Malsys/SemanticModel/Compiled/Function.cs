@@ -1,24 +1,17 @@
 ﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
 // All rights reserved.
+using System.Collections.Generic;
 
 namespace Malsys.SemanticModel.Compiled {
-	/// <remarks>
-	/// Immutable.
-	/// </remarks>
 	public class Function : IInputStatement, ILsystemStatement {
 
-		public readonly string Name;
-		public readonly ImmutableList<OptionalParameter> Parameters;
-		public readonly ImmutableList<IFunctionStatement> Statements;
-		public readonly Ast.FunctionDefinition AstNode;
+		public string Name;
+		public List<OptionalParameter> Parameters;
+		public List<IFunctionStatement> Statements;
+		public Ast.FunctionDefinition AstNode;
 
 
-		public Function(string name, ImmutableList<OptionalParameter> prms, ImmutableList<IFunctionStatement> stats,
-				Ast.FunctionDefinition astNode) {
-
-			Name = name;
-			Parameters = prms;
-			Statements = stats;
+		public Function(Ast.FunctionDefinition astNode) {
 			AstNode = astNode;
 		}
 
