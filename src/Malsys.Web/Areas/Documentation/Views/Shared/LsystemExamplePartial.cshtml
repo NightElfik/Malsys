@@ -27,14 +27,12 @@
 	<div class="grid-50 mobile-grid-100">
 		<h4>Output</h4>
 	@if (output.Count == 1) {
-<pre>
-@output[0].Trim()
-</pre>
+		@output[0]
 	}
 	else {
 		<ol>
 		@foreach (var str in output) {
-			<li><pre>@str.Trim()</pre></li>
+			<li>@str</li>
 		}
 		</ol>
 	}

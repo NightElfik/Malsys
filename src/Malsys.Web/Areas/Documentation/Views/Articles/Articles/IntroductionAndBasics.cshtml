@@ -191,7 +191,7 @@
 	<p>
 		The simplest interpretation of L-system symbols is using @StaticHtml.WikiLink("Turtle graphics").
 		Turtle graphics interprets symbols as basic commands for virtual pen on 2D canvas (or evein in 3D space).
-		Virtual pen was explained for kids as turtle walking on the sand with its tail.
+		Virtual pen was explained for kids as a turtle walking on a beach drawing to sand with its tail.
 		The pen can move or draw forward, change direction, color or other attributes.
 		It is also possible save or load a state of the pen (using stack data structure).
 		Following list shows all actions of Turtle interpreter (withdrawn from
@@ -224,7 +224,8 @@
 @layoutMgr.StartColumn()
 	<p>
 		Without any further theory let's draw the first fractal using L-systems.
-		The syntax is hopefully quite self-explanatory for now and will be explained shortly.
+		Let's start with simple Koch curve.
+		The syntax is hopefully quite self-explanatory for now and will be explained in more detail shortly.
 	</p>
 @layoutMgr.EndColumn()
 
@@ -234,18 +235,59 @@
 		SourceCodeTemplate = string.Join(Environment.NewLine,
 			"lsystem {0} {{",
 			"set symbols axiom = {1};",
-			"set iterations = {2};",
-			"",
-			"{3}",
+			"set iterations = {2};{3}",
 			"",
 			"{4}",
+			"",
+			"{5}",
 			"}}",
 			"process all with SvgRenderer;")
 	};
 
 	@Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(
-		"KochCurve", "F", "3",
-		"interpret F as DrawForward(10, 2); interpret + as TurnLeft(60); interpret - as TurnLeft(-60);",
+		"KochCurve", "F", "3", "",
+		"interpret F as DrawForward(20); interpret + as TurnLeft(60); interpret - as TurnLeft(-60);",
 		"rewrite F to F + F - - F + F;"))
+	
+@layoutMgr.StartColumn()
+	<p>
+		Cool, right? 
+		Let's dig into details of the Koch curve L-systems a little bit.
+		To see what is happening we can visualize every iteration by setting property
+			<code>interpretEveryIteration</code> to <code>true</code>.
+		As you can see, koch curve starts as a single line represented by symbol <code>F</code> and this symbol
+			is rewritten to a sequence <code>F + F - - F + F</code>.
+		If you dont understand what the <code>F + F - - F + F</code> sequence represents just grab a piece of paper
+			with pencil and try to draw it.
+		Symbol <code>F</code> means draw a line segment and symbolse <code>+</code> and <code>-</code> represents
+			60 degrees turn left or right respectively.
+		Every line segment gets replaced by a line with a triangle in the middle.
+	</p>
+@layoutMgr.EndColumn()
+
+	@Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(
+		"KochCurve", "F", "3",
+		"\nset interpretEveryIteration = true;",
+		"interpret F as DrawForward(20); interpret + as TurnLeft(60); interpret - as TurnLeft(-60);",
+		"rewrite F to F + F - - F + F;"))
+	
+@layoutMgr.StartColumn()
+	<p>
+		The example can be improved even further by scaling down the line lengths every iteration so the whole
+			image has the same size.
+		If you think about the math a little bit, every line of length <code>x</code> gets rewritten to a line
+			with a triangle where distance between starting and ending points is <code>3 x</code>.
+		We need to make lines three-times shorter every iteration.
+		This can be achieved in many ways but the simplest way is to use variable <code>currentIteration</code>
+			that represents number of current iteration.
+	</p>
+@layoutMgr.EndColumn()
+
+	@Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(
+		"KochCurve", "F", "3",
+		"\nset interpretEveryIteration = true;",
+		"interpret F as DrawForward(300 * 3 ^ -currentIteration); interpret + as TurnLeft(60); interpret - as TurnLeft(-60);",
+		"rewrite F to F + F - - F + F;"))
+
 
 }

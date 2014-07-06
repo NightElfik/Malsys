@@ -4,8 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Web;
 using Malsys.Processing;
 using Malsys.Processing.Output;
+using Malsys.SemanticModel;
+using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Web.Models.Lsystem {
@@ -21,14 +24,14 @@ namespace Malsys.Web.Models.Lsystem {
 		}
 
 
-		public IEnumerable<string> Process(string input) {
+		public IEnumerable<HtmlString> Process(string input) {
 
 			var logger = new MessageLogger();
 
 			var inEvaled = processManager.CompileAndEvaluateInput(input, "simpleWebInput", logger);
 			if (logger.ErrorOccurred) {
-				foreach (var x in logger.Select(x => x.GetFullMessage())) {					
-					yield return x;
+				foreach (var x in logger.Select(x => x.GetFullMessage())) {
+					yield return new HtmlString(HttpUtility.HtmlEncode(x));
 				}
 				yield break;
 			}
@@ -36,11 +39,20 @@ namespace Malsys.Web.Models.Lsystem {
 			inEvaled.Append(stdLib);
 			var outputProvider = new InMemoryOutputProvider();
 
+			// Set plain text rendering for SVG renderer (in case there is SVG rendering).
+			foreach (var lsys in inEvaled.Lsystems) {
+				lsys.Value.Statements.Add(new ConstantDefinition(null) {
+					Name = "compressSvg",
+					Value = Constant.False,
+					IsComponentAssign = true,
+				});
+			}
+
 			processManager.ProcessInput(inEvaled, outputProvider, logger, new TimeSpan(0, 0, 1));
 
 			if (logger.ErrorOccurred) {
 				foreach (var x in logger.Select(x => x.GetFullMessage())) {
-					yield return x;
+					yield return new HtmlString(HttpUtility.HtmlEncode(x));
 				}
 				yield break;
 			}
@@ -49,14 +61,24 @@ namespace Malsys.Web.Models.Lsystem {
 
 			foreach (InMemoryOutput imo in outputProvider.GetOutputs()) {
 				switch (imo.MimeType) {
-					case MimeType.Image.SvgXml:
-
-						break;
+					case MimeType.Image.SvgXml: {
+							var sb = new StringBuilder();
+							foreach (var str in utfEncoding.GetString(imo.OutputData).SplitToLines().Skip(2)) {
+								sb.AppendLine(str);
+							}
+							yield return new HtmlString(sb.ToString());
+							break;
+						}
 
 					case MimeType.Text.Plain:
-					default:
-						yield return utfEncoding.GetString(imo.OutputData);
-						break;
+					default: {
+							var sb = new StringBuilder();
+							sb.Append("<pre>");
+							sb.Append(HttpUtility.HtmlEncode(utfEncoding.GetString(imo.OutputData).Trim()));
+							sb.Append("</pre>");
+							yield return new HtmlString(sb.ToString());
+							break;
+						}
 				}
 			}
 		}
