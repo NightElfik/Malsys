@@ -1,8 +1,7 @@
 
-# rubbish
-/backup
+**/[Bb]ackup/*
 
-# .NET rubbish
+# Visual Studio
 *.suo
 *.vsmdi
 
@@ -17,11 +16,6 @@ obj/
 /src/Malsys.Web/ErrorLogs
 /src/Malsys.Web/Malsys.Web.Publish.xml
 /src/Documentation/Help/Working
-/src/packages
-
-# Dependencies
-/src/MvcContrib
-/src/dotless.Core.dll
 
 # T4 templaates generated files & rubbsih
 *.min.js
