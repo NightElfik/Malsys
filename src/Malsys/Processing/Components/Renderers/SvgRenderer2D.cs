@@ -24,6 +24,7 @@ namespace Malsys.Processing.Components.Renderers {
 			+ "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">";
 		public const string SvgHeader = "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\""
 			+ " viewBox=\"{0} {1} {2} {3}\" width=\"{4}px\" height=\"{5}px\" style=\"fill:none;stroke-linecap:{6}\">";
+		public const string SvgBackground = "<rect x=\"0\" y=\"0\" width=\"100%\" height=\"100%\" style=\"fill:#{0}\" />";
 		public const string SvgFooter = "</svg>";
 
 		private TextWriter writer;
@@ -180,7 +181,17 @@ namespace Malsys.Processing.Components.Renderers {
 		[UserSettable]
 		public Constant OutputSignificantDigitsCount { get; set; }
 
-		#endregion
+		/// <summary>
+		/// Background color of rendered image.
+		/// </summary>
+		/// <expected>Number representing ARGB color (in range from 0 to 2^32 - 1) or array of numbers (in range from 0.0 to 1.0) of length of 3 (RGB) or 4 (ARGB).</expected>
+		/// <default>transparent</default>
+		[AccessName("bgColor")]
+		[UserSettable]
+		public IValue BackgroundColor { get; set; }
+		protected ColorF bgColor;
+
+		#endregion User gettable and settable properties
 
 
 		#region IComponent Members
@@ -203,6 +214,7 @@ namespace Malsys.Processing.Components.Renderers {
 			canvasOriginSize = null;
 			scaleOutputToFit = Size.Empty;
 			OutputSignificantDigitsCount = new Constant(4);
+			BackgroundColor = ((double)0xFFFFFFFF).ToConst();
 		}
 
 
@@ -218,6 +230,9 @@ namespace Malsys.Processing.Components.Renderers {
 				writer = null;
 				return;
 			}
+
+			var colorParser = new ColorParser(Logger);
+			colorParser.TryParseColor(BackgroundColor, out bgColor, Logger);
 
 
 			double minX, minY, maxX, maxY;
@@ -273,6 +288,9 @@ namespace Malsys.Processing.Components.Renderers {
 				svgWidthScaled,
 				svgHeighScaled,
 				getLineCapString(LineCap)));
+			if (!bgColor.IsTransparent) {
+				writer.WriteLine(SvgBackground.FmtInvariant(bgColor.ToRgbHexStringOptimized()));
+			}
 
 		}
 
@@ -293,7 +311,7 @@ namespace Malsys.Processing.Components.Renderers {
 			outputStream = null;
 		}
 
-		#endregion
+		#endregion IComponent Members
 
 
 		#region IRenderer2D Members
@@ -387,7 +405,7 @@ namespace Malsys.Processing.Components.Renderers {
 			}
 		}
 
-		#endregion
+		#endregion IRenderer2D Members
 
 
 		private string getLineCapString(Constant c) {

@@ -225,7 +225,6 @@
     <Compile Include="Processing\Components\Renderers\DebugRendererBase.cs" />
     <Compile Include="Processing\Components\Renderers\IRenderer3D.cs" />
     <Compile Include="Processing\Components\Renderers\ITextRenderer.cs" />
-    <Compile Include="Processing\Components\Renderers\ThreeJsSceneRenderer3D.cs" />
     <Compile Include="Processing\Components\Renderers\TextRenderer.cs" />
     <Compile Include="Processing\Components\UserConnectableAttribute.cs" />
     <Compile Include="Processing\Components\Interfaces%27\ISymbolProvider.cs" />

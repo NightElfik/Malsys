@@ -234,6 +234,7 @@
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.AspNet.WebPages.WebData.2.0.20505.0\lib\net40\WebMatrix.WebData.dll</HintPath>
     </Reference>
+    <Reference Include="WindowsBase" />
     <Reference Include="Yahoo.Yui.Compressor, Version=2.4.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\YUICompressor.NET.2.4.0.0\lib\NET20\Yahoo.Yui.Compressor.dll</HintPath>
@@ -515,9 +516,8 @@
     <None Include="Js\jquery.validate.js" />
     <None Include="Js\jquery.js" />
     <None Include="Js\malsys.js" />
-    <None Include="Js\modernizr.js" />
     <None Include="Js\ThreeJs\Detector.js" />
-    <None Include="Js\ThreeJs\malsys.three.js" />
+    <None Include="Js\ThreeJs\Malsys.three.js" />
     <Content Include="google4412977e75e1f8f1.html" />
     <Content Include="humans.txt" />
     <None Include="Js\ThreeJs\Stats.js" />
@@ -612,16 +612,10 @@
     <None Include="Js\malsys.curveDesigner.js" />
     <None Include="Js\jquery.prettyPhoto.js" />
     <None Include="Js\jquery.tmpl.js" />
-    <Content Include="Js\ThreeJs\Detector.min.js">
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
-    <Content Include="Js\ThreeJs\malsys.three.min.js">
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
-    <Content Include="Js\ThreeJs\Stats.min.js">
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
+    <Content Include="Js\ThreeJs\MTLLoader.js" />
+    <Content Include="Js\ThreeJs\OBJMTLLoader.js" />
     <Content Include="Js\ThreeJs\Three.js" />
+    <Content Include="Js\ThreeJs\TrackballControls.js" />
     <Content Include="robots.txt" />
     <None Include="T4MVC.tt.settings.xml" />
     <Content Include="Web.config">
@@ -675,7 +669,6 @@
     <Content Include="Views\Gallery\FullScreen.cshtml" />
     <Content Include="Views\Shared\_FullScreenLayout.cshtml" />
     <Content Include="Views\Home\WhyWebgl.cshtml" />
-    <Content Include="Views\Gallery\Sitemap.cshtml" />
     <Content Include="Views\Home\Thesis.cshtml" />
     <Content Include="Views\CurveDesigner\Index.cshtml" />
     <Content Include="Views\CurveDesigner\Show.cshtml" />

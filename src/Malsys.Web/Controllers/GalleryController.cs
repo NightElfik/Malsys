@@ -3,8 +3,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Packaging;
 using System.Linq;
+using System.Text;
 using System.Web.Mvc;
+using System.Web.UI;
 using Elmah;
 using Malsys.Processing;
 using Malsys.Processing.Output;
@@ -14,7 +17,6 @@ using Malsys.Web.Infrastructure;
 using Malsys.Web.Models;
 using Malsys.Web.Models.Lsystem;
 using MvcContrib.Pagination;
-using System.Web.UI;
 
 namespace Malsys.Web.Controllers {
 	public partial class GalleryController : Controller {
@@ -35,16 +37,6 @@ namespace Malsys.Web.Controllers {
 			this.appSettingsProvider = appSettingsProvider;
 			this.dateTimeProvider = dateTimeProvider;
 
-		}
-
-		public virtual ActionResult Sitemap() {
-
-			var inputs = malsysInputRepository.InputDb.SavedInputs
-				.Where(x => x.IsPublished && !x.IsDeleted)
-				.OrderByDescending(x => (float)x.RatingSum / ((float)x.RatingCount + 1) + x.RatingCount)
-				.Take(100);
-
-			return View(inputs);
 		}
 
 
@@ -216,17 +208,17 @@ namespace Malsys.Web.Controllers {
 		}
 
 		[OutputCache(CacheProfile = "GalleryCache")]
-		public virtual ActionResult GetOutput(string id, string t = null) {
-			return getOutput(id, false);
+		public virtual ActionResult GetOutput(string id, string cacheBust, string extra = null) {
+			return getOutput(id, extra, false);
 		}
 
 		[OutputCache(CacheProfile = "GalleryCache")]
-		public virtual ActionResult GetThumbnail(string id, string t = null) {
-			return getOutput(id, true);
+		public virtual ActionResult GetThumbnail(string id, string cacheBust, string extra = null) {
+			return getOutput(id, extra, true);
 		}
 
 
-		private ActionResult getOutput(string id, bool thumbnail) {
+		private ActionResult getOutput(string id, string extra, bool thumbnail) {
 			var input = malsysInputRepository.InputDb.SavedInputs
 				.Where(x => x.UrlId == id && !x.IsDeleted)
 				.SingleOrDefault();
@@ -251,6 +243,41 @@ namespace Malsys.Web.Controllers {
 
 			if (metadata.Contains(new KeyValuePair<string, object>(OutputMetadataKeyHelper.OutputIsGZipped, true))) {
 				Response.AppendHeader("Content-Encoding", "gzip");
+			}
+
+			// Handle requests OBJ and MTL files from ZIP package.
+			if (extra == "obj" || extra == "mtl" || extra == "meta") {
+				object obj = metadata.FirstOrDefault(x => x.Key == OutputMetadataKeyHelper.ObjMetadata).Value;
+				if (obj == null || !(obj is string) || string.IsNullOrWhiteSpace((string)obj)) {
+					return HttpNotFound();
+				}
+				string[] paths = ((string)obj).Split(' ');
+				if (paths.Length != 3) {
+					return HttpNotFound();
+				}
+
+				string path;
+				switch (extra) {
+					case "obj": path = paths[0]; break;
+					case "mtl": path = paths[1]; break;
+					case "meta": path = paths[2]; break;
+					default: return HttpNotFound();
+				}
+
+				var ms = new MemoryStream();
+
+				using (Package package = Package.Open(filePath, FileMode.Open, FileAccess.Read)) {
+					var part = package.GetParts().FirstOrDefault(p => p.Uri.OriginalString.TrimStart('/') == path);
+					if (part == null) {
+						return HttpNotFound();
+					}
+
+					using (Stream source = part.GetStream(FileMode.Open, FileAccess.Read)) {
+						source.CopyTo(ms);
+					}
+				}
+				ms.Seek(0, SeekOrigin.Begin);
+				return File(ms, MimeType.Text.Plain);
 			}
 
 			return File(filePath, input.MimeType);

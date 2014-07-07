@@ -20,11 +20,6 @@ namespace Malsys.Web {
 		}
 
 
-		public const int DefaultOrder = 10;
-		public const int SoonerOrder = 5;
-		public const int LaterOrder = 15;
-		public const int VeryFirstOrder = 0;
-
 		/// <summary>
 		/// Registers script path and automatically includes the script at the bottom of the loaded page.
 		/// Redundant scripts with the same path are filtered and included only once.
@@ -34,12 +29,13 @@ namespace Malsys.Web {
 		/// </remarks>
 		/// <param name="path">Local or global path to the script that will be put to "src" attribute of a script tag.</param>
 		/// <param name="order">Order of all included scripts (the lower, the sooner included).</param>
-		public static void RequireScript(string path, int order = DefaultOrder) {
+		public static void RequireScript(string path, LoadingOrder order = LoadingOrder.Default) {
 			var requiredScripts = HttpContext.Current.Items[reqScriptKey] as Dictionary<string, int>;
 			if (requiredScripts == null) {
 				HttpContext.Current.Items[reqScriptKey] = requiredScripts = new Dictionary<string, int>();
 			}
-			requiredScripts[path] = order;
+
+			requiredScripts[path] = (int)order;
 		}
 
 		public static HtmlString EmitRequiredScripts() {
@@ -63,16 +59,17 @@ namespace Malsys.Web {
 		/// </summary>
 		/// <param name="script">Javascript code.</param>
 		/// <param name="order">Order of all inlined scripts (the lower, the sooner included).</param>
-		public static void InlineScript(int order, params string[] script) {
+		public static void InlineScript(LoadingOrder order, params string[] script) {
 			var inlineScripts = HttpContext.Current.Items[inlineScriptKey] as Dictionary<string, int>;
 			if (inlineScripts == null) {
 				HttpContext.Current.Items[inlineScriptKey] = inlineScripts = new Dictionary<string, int>();
 			}
-			inlineScripts[string.Join("", script)] = order;
+
+			inlineScripts[string.Join("", script)] = (int)order;
 		}
 
 		public static void InlineScript(params string[] script) {
-			InlineScript(DefaultOrder, script);
+			InlineScript(LoadingOrder.Default, script);
 		}
 
 		public static HtmlString EmitInlineScripts() {
@@ -188,4 +185,15 @@ var disqus_url = '{3}';
 			return new HtmlString(@"<div id=""disqus_thread""></div><a href=""http://disqus.com"" class=""dsq-brlink"">comments powered by <span class=""logo-disqus"">Disqus</span></a>");
 		}
 	}
+
+
+	public enum LoadingOrder {
+
+		VeryFirst = 0,
+		Sooner = 5,
+		Default = 10,
+		Later = 15,
+
+	}
+
 }

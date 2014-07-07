@@ -11,10 +11,6 @@ namespace Malsys.Web.Models {
 
 		public int MaxHeight;
 
-		/// <summary>
-		/// This member is set by partial view and should be read by caller a include Three.js.
-		/// </summary>
-		public bool NeedsThreeJs;
 
 	}
 }

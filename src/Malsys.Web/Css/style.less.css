@@ -531,16 +531,21 @@ pre.asciiArt {
 .gallery {
 	text-align: justify;
 
-	.thn { float: left; margin: 2px; }
+	.thn { 
+		float: left; margin: 2px;
+		a {
+			display: block; padding: 0; margin: 0; line-height: 0;
+			p { line-height: normal; }
+		}
+		.threeJsScene {
+			width: 341px;
+			height: 256px;
+			border: none;
+			box-shadow: 0px 0px 0px 0 #000;
+		}
+	}
 }
-
-.thn .threeJsScene {
-	width: 341px;
-	height: 256px;
-	border: none;
-	box-shadow: 0px 0px 0px 0 #000;
-}
-
+	
 a.tag {
 	padding: 3px 6px;
 	margin: 1px 2px;

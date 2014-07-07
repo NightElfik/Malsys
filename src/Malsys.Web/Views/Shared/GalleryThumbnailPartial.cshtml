@@ -13,14 +13,10 @@
 	HtmlString linkStrBegin = new HtmlString("<a href=\"" + Url.Action(MVC.Gallery.Detail(Model.SavedInput.UrlId))
 		+ "\" title=\"" + Model.SavedInput.PublishName + " \">");
 	HtmlString linkStrEnd = new HtmlString("</a>");
-
-	Model.NeedsThreeJs = false;
-}
-
-<div class="thn">
-@linkStrBegin
-
-@switch (Model.SavedInput.MimeType) {
+	
+	HtmlString content;
+	
+	switch (Model.SavedInput.MimeType) {
 
 	case MimeType.Image.SvgXml:
 		int svgWidth = OutputMetadataHelper.TryGetValue(metadata, OutputMetadataKeyHelper.OutputWidth, -1);
@@ -32,7 +28,11 @@
 		else {
 			svgHeight = Model.MaxHeight;
 		}
-		<img src="@Url.Action(MVC.Gallery.GetThumbnail(Model.SavedInput.UrlId, Model.SavedInput.EditDate.Hash()))" @if (svgWidth > 0) { <text>width="@(svgWidth)px" </text> } height="@(svgHeight)px" alt="@Model.SavedInput.PublishName" />
+		content = new HtmlString("<img src=\"{0}\" {1} height=\"{2}px\" alt=\"{3}\" />".FmtInvariant(			
+			Url.Action(MVC.Gallery.GetThumbnail(Model.SavedInput.UrlId, Model.SavedInput.EditDate.Hash())),
+			svgWidth > 0 ? "width=\"" + svgWidth + "px\"" : "",
+			svgHeight,
+			Model.SavedInput.PublishName));
 		break;
 
 	case MimeType.Image.Png:
@@ -47,22 +47,42 @@
 		else {
 			bmpHeight = Model.MaxHeight;
 		}
-		<img src="@Url.Action(MVC.Gallery.GetThumbnail(Model.SavedInput.UrlId, Model.SavedInput.EditDate.Hash()))" @if (bmpWidth > 0) { <text>width="@(bmpWidth)px" </text> } height="@(bmpHeight)px" alt="@Model.SavedInput.PublishName" />
+		content = new HtmlString("<img src=\"{0}\" {1} height=\"{2}px\" alt=\"{3}\" />".FmtInvariant(			
+			Url.Action(MVC.Gallery.GetThumbnail(Model.SavedInput.UrlId, Model.SavedInput.EditDate.Hash())),
+			bmpWidth > 0 ? "width=\"" + bmpWidth + "px\"" : "",
+			bmpHeight,
+			Model.SavedInput.PublishName));
 		break;
 
-	case MimeType.Application.Javascript:
-		Model.NeedsThreeJs = true;
-		<div class="threeJsScene" data-scene="@Url.Action(MVC.Gallery.GetThumbnail(Model.SavedInput.UrlId, Model.SavedInput.EditDate.Hash()))" data-clear-color="FFFFFF" data-anti-alias="false"></div>
+	case MimeType.Application.Zip:
+		string objMeta = OutputMetadataHelper.TryGetValue(metadata, OutputMetadataKeyHelper.ObjMetadata, "");
+		if (string.IsNullOrWhiteSpace(objMeta)) {
+			goto default;  // Unknown ZIP archive
+		}
+
+		content = new HtmlString("<div class=\"threeJsScene\" data-url=\"{0}\"><p>Loading...</p></div>".FmtInvariant(
+			@Url.Action(MVC.Gallery.GetThumbnail(Model.SavedInput.UrlId, Model.SavedInput.EditDate.Hash()))));
+		 
+		StaticHtml.RequireScript(Links.Js.ThreeJs.Three_js, LoadingOrder.Default);
+		StaticHtml.RequireScript(Links.Js.ThreeJs.Detector_js, LoadingOrder.Default);
+		StaticHtml.RequireScript(Links.Js.ThreeJs.Stats_js, LoadingOrder.Default);
+		StaticHtml.RequireScript(Links.Js.ThreeJs.TrackballControls_js, LoadingOrder.Default);
+		StaticHtml.RequireScript(Links.Js.ThreeJs.MTLLoader_js, LoadingOrder.Default);
+		StaticHtml.RequireScript(Links.Js.ThreeJs.OBJMTLLoader_js, LoadingOrder.Default);
+		StaticHtml.RequireScript(Links.Js.ThreeJs.Malsys_three_js, LoadingOrder.Default);
 		break;
 
 	default:
-		<div style="width: @(Model.MaxWidth / 3)px; height: @(Model.MaxHeight)px;">
-			<p>@Model.SavedInput.PublishName</p>
-			<p>Thumbnail for this type of output is not supported. Please click to see the output.</p>
-		</div>
+		content = new HtmlString(("<div style=\"width: {0}px; height: {1}px;\"><div class=\"clearfix\"><p>{2}</p>"
+				+ "<p>Thumbnail for this type of output is not supported. Please click to see the output.</p></div></div>").FmtInvariant(
+			Model.MaxWidth / 3,
+			Model.MaxHeight,
+			Model.SavedInput.PublishName));			
+		
 		break;
 
+	}
+	
 }
 
-@linkStrEnd
-</div>
+<div class="thn">@linkStrBegin@content@linkStrEnd</div>

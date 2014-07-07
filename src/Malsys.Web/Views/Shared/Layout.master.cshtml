@@ -116,9 +116,9 @@
 	</footer>
 
 	@{
-		StaticHtml.RequireScript("//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js", 1);
-		StaticHtml.RequireScript(Links.Js.malsys_js, 2);
-		StaticHtml.RequireScript("https://apis.google.com/js/plusone.js", StaticHtml.LaterOrder); // Google +1 button.
+		StaticHtml.RequireScript("//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js", LoadingOrder.Sooner);
+		StaticHtml.RequireScript(Links.Js.malsys_js, LoadingOrder.Later);
+		StaticHtml.RequireScript("https://apis.google.com/js/plusone.js", LoadingOrder.Later);  // Google +1 button.
 	}
 	
 	@StaticHtml.EmitRequiredScripts()

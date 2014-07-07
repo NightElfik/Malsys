@@ -205,7 +205,7 @@ configuration HexAsciiRenderer {
 }
 
 /**
- * Renders symbols as 3D scene for Three.js engine.
+ * Legacy for backwards compalibity.
  */
 configuration ThreeJsRenderer {
 
@@ -217,7 +217,7 @@ configuration ThreeJsRenderer {
 	container Iterator typeof IIterator default MemoryBufferedIterator;
 	container InterpreterCaller typeof IInterpreterCaller default InterpreterCaller;
 	container Interpreter typeof IInterpreter default TurtleInterpreter;
-	container Renderer typeof IRenderer default ThreeJsSceneRenderer3D;
+	container Renderer typeof IRenderer default ObjExporter3D;
 
 	connect RandomGeneratorProvider to Iterator.RandomGeneratorProvider;
 	connect AxiomProvider to Iterator.AxiomProvider;

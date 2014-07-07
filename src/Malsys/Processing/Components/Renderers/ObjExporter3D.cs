@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Packaging;
 using System.Windows.Media.Media3D;
 using Malsys.IO;
 using Malsys.Media;
@@ -10,22 +11,18 @@ using Malsys.Media.Triangulation;
 using Malsys.Resources;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Evaluated;
-using System.IO.Packaging;
 
 namespace Malsys.Processing.Components.Renderers {
 	/// <summary>
 	/// Provides commands for rendering 3D scene.
-	/// Result is JavaScript script defining 3D scene in JavaScript 3D engine Three.js.
+	/// Returns a 3D model in OBJ format together with MTL material description for colors.
 	/// </summary>
-	/// <name>3D Three.js renderer</name>
+	/// <name>OBJ exporter</name>
 	/// <group>Renderers</group>
 	public class ObjExporter3D : BaseRenderer3D {
 
-		const string objFileName = "model{0}.obj";
-		const string mtlFileName = "model{0}.mtl";
-
-		private Stream objStream, mtlStream;
-		private TextWriter objWriter, mtlWriter;
+		private Stream objStream, mtlStream, metaStream;
+		private TextWriter objWriter, mtlWriter, metaWriter;
 		private Polygon3DTrianguler polygonTrianguler = new Polygon3DTrianguler();
 		private Polygon3DTriangulerParameters polygonTriangulerParameters;
 
@@ -42,7 +39,7 @@ namespace Malsys.Processing.Components.Renderers {
 		private int triangulationStrategy;
 
 
-		protected long absoluteVertexNumber;
+		protected uint absoluteVertexNumber;
 
 
 
@@ -78,7 +75,7 @@ namespace Malsys.Processing.Components.Renderers {
 		private bool addFileNameSuffix;
 
 		/// <summary>
-		/// Set to false to turn off crappy detection of planar polygons and potentionally speedup processing.
+		/// Set to false to turn off (crappy) detection of planar polygons and potentially speedup processing.
 		/// </summary>
 		/// <expected>Number.</expected>
 		/// <default>true</default>
@@ -87,7 +84,72 @@ namespace Malsys.Processing.Components.Renderers {
 		[UserSettable]
 		public Constant DetectPlanarPloygons { get; set; }
 
-		#endregion
+		/// <summary>
+		/// Camera position. If not set it is counted automatically.
+		/// </summary>
+		/// <expected>Array 3 numbers representing x, y and z coordinate of camera position.</expected>
+		/// <default>counted dynamically</default>
+		[AccessName("cameraPosition")]
+		[UserSettable]
+		public ValuesArray CameraPosition {
+			get { return cameraPosition; }
+			set {
+				if (!value.IsConstArrayOfLength(3)) {
+					throw new InvalidUserValueException("Camera position must be array of 3 numbers representing x, y and z coordinate.");
+				}
+				cameraPosition = value;
+			}
+		}
+		private ValuesArray cameraPosition;
+
+		/// <summary>
+		/// Camera up vector.
+		/// </summary>
+		/// <expected>Array 3 numbers representing x, y and z up vector of camera.</expected>
+		/// <default>{0, 1, 0}</default>
+		[AccessName("cameraUpVector")]
+		[UserSettable]
+		public ValuesArray CameraUpVector {
+			get { return cameraUpVector; }
+			set {
+				if (!value.IsConstArrayOfLength(3)) {
+					throw new InvalidUserValueException("Camera up vector must be array of 3 numbers representing x, y and z coordinate.");
+				}
+				cameraUpVector = value;
+			}
+		}
+		private ValuesArray cameraUpVector;
+
+		/// <summary>
+		/// Camera target. If not set it is counted automatically.
+		/// </summary>
+		/// <expected>Array 3 numbers representing x, y and z coordinate of camera target.</expected>
+		/// <default>counted dynamically</default>
+		[AccessName("cameraTarget")]
+		[UserSettable]
+		public ValuesArray CameraTarget {
+			get { return cameraTarget; }
+			set {
+				if (!value.IsConstArrayOfLength(3)) {
+					throw new InvalidUserValueException("Camera target must be array of 3 numbers representing x, y and z coordinate.");
+				}
+				cameraTarget = value;
+			}
+		}
+		private ValuesArray cameraTarget;
+
+		/// <summary>
+		/// Background color of rendered image.
+		/// Some output formats may not support transparent backgrounds.
+		/// </summary>
+		/// <expected>Number representing ARGB color (in range from 0 to 2^32 - 1) or array of numbers (in range from 0.0 to 1.0) of length of 3 (RGB) or 4 (ARGB).</expected>
+		/// <default>#FFFFFF (white)</default>
+		[AccessName("bgColor")]
+		[UserSettable]
+		public IValue BackgroundColor { get; set; }
+		protected ColorF bgColor;
+
+		#endregion User gettable & settable properties
 
 
 		public ObjExporter3D() {
@@ -102,6 +164,10 @@ namespace Malsys.Processing.Components.Renderers {
 			PolygonTriangulationStrategy = Constant.Two;
 			addFileNameSuffix = false;
 			DetectPlanarPloygons = Constant.True;
+			BackgroundColor = 0xFFFFFF.ToConst();
+			cameraPosition = null;
+			cameraUpVector = null;
+			cameraTarget = null;
 		}
 
 		public override void Initialize(ProcessContext ctxt) {
@@ -133,6 +199,9 @@ namespace Malsys.Processing.Components.Renderers {
 				return;
 			}
 
+			var colorParser = new ColorParser(Logger);
+			colorParser.TryParseColor(BackgroundColor, out bgColor, Logger);
+
 			currMaterial = null;
 			createdMetarials.Clear();
 
@@ -144,6 +213,10 @@ namespace Malsys.Processing.Components.Renderers {
 			mtlStream = context.OutputProvider.GetOutputStream<ObjExporter3D>(
 				"MTL temp", MimeType.Application.OctetStream, true);
 			mtlWriter = new StreamWriter(mtlStream);
+
+			metaStream = context.OutputProvider.GetOutputStream<ObjExporter3D>(
+				"Metadata temp", MimeType.Application.Json, true);
+			metaWriter = new StreamWriter(metaStream);
 
 			outputStream = context.OutputProvider.GetOutputStream<ObjExporter3D>(
 				"OBJ result from `{0}`".Fmt(context.Lsystem.Name),
@@ -162,8 +235,15 @@ namespace Malsys.Processing.Components.Renderers {
 
 			createdMetarials.Clear();
 
+			generateMetadata();
+
 			objWriter.Flush();
 			mtlWriter.Flush();
+			metaWriter.Flush();
+
+
+			AddCurrentOutputData(OutputMetadataKeyHelper.ObjMetadata,
+				getObjFileName() + " " + getMtlFileName() + " " + getMetadataFileName());
 
 			using (Package package = Package.Open(outputStream, FileMode.Create)) {
 				Uri objFileUri = PackUriHelper.CreatePartUri(new Uri(getObjFileName(), UriKind.Relative));
@@ -172,9 +252,14 @@ namespace Malsys.Processing.Components.Renderers {
 				objStream.CopyTo(objPackagePart.GetStream());
 
 				Uri mtlFileUri = PackUriHelper.CreatePartUri(new Uri(getMtlFileName(), UriKind.Relative));
-				PackagePart mtlackagePart = package.CreatePart(mtlFileUri, MimeType.Application.OctetStream, CompressionOption.Normal);
+				PackagePart mtlPackagePart = package.CreatePart(mtlFileUri, MimeType.Application.OctetStream, CompressionOption.Normal);
 				mtlStream.Seek(0, SeekOrigin.Begin);
-				mtlStream.CopyTo(mtlackagePart.GetStream());
+				mtlStream.CopyTo(mtlPackagePart.GetStream());
+
+				Uri metaFileUri = PackUriHelper.CreatePartUri(new Uri(getMetadataFileName(), UriKind.Relative));
+				PackagePart metaPackagePart = package.CreatePart(metaFileUri, MimeType.Application.Json, CompressionOption.Normal);
+				metaStream.Seek(0, SeekOrigin.Begin);
+				metaStream.CopyTo(metaPackagePart.GetStream());
 			}
 
 			objWriter.Close();
@@ -182,6 +267,9 @@ namespace Malsys.Processing.Components.Renderers {
 
 			mtlWriter.Close();
 			mtlWriter = null;
+
+			metaWriter.Close();
+			metaWriter = null;
 
 			outputStream.Flush();
 			outputStream = null;
@@ -235,14 +323,16 @@ namespace Malsys.Processing.Components.Renderers {
 
 			switchToMaterial(polygon.Color);
 
+			uint baseI = absoluteVertexNumber + 1;  // OBJ indices are one-based.
 			foreach (var pt in polygon.Ponits) {
 				writeVertex(pt);
 			}
 
 			int polVertCount = polygon.Ponits.Count;
 			var indices = polygonTrianguler.Triangularize(polygon.Ponits, polygonTriangulerParameters);
+
 			for (int i = 0; i < indices.Count; i += 3) {
-				writeFace(indices[i] - polVertCount, indices[i + 1] - polVertCount, indices[i + 2] - polVertCount);
+				writeFace(baseI + indices[i], baseI + indices[i + 1], baseI + indices[i + 2]);
 			}
 
 			objWriter.WriteLine();
@@ -286,29 +376,26 @@ namespace Malsys.Processing.Components.Renderers {
 				writeVertex(v);
 			}
 
-			/*writer.WriteLine("f -8 -7 -6");  // y+
-			writer.WriteLine("f -8 -5 -6");
-			writer.WriteLine("f -4 -3 -2");  // y-
-			writer.WriteLine("f -4 -1 -2");
+			uint baseI = absoluteVertexNumber + 1;  // OBJ vertex indices are one-based.
 
-			writer.WriteLine("f -8 -5 -1");  // x+
-			writer.WriteLine("f -8 -4 -1");
-			writer.WriteLine("f -7 -6 -2");  // x-
-			writer.WriteLine("f -7 -3 -2");
+			objWriter.WriteLine("f {0} {1} {2} {3}", baseI - 5, baseI - 6, baseI - 7, baseI - 8);  // y+
+			objWriter.WriteLine("f {0} {1} {2} {3}", baseI - 4, baseI - 3, baseI - 2, baseI - 1);  // y-
 
-			writer.WriteLine("f -8 -7 -3");  // z+
-			writer.WriteLine("f -8 -4 -3");
-			writer.WriteLine("f -6 -5 -1");  // z-
-			writer.WriteLine("f -6 -2 -1");*/
+			objWriter.WriteLine("f {0} {1} {2} {3}", baseI - 4, baseI - 1, baseI - 5, baseI - 8);  // x+
+			objWriter.WriteLine("f {0} {1} {2} {3}", baseI - 7, baseI - 6, baseI - 2, baseI - 3);  // x-
 
-			objWriter.WriteLine("f -8 -7 -6 -5");  // y+
-			objWriter.WriteLine("f -4 -3 -2 -1");  // y-
+			objWriter.WriteLine("f {0} {1} {2} {3}", baseI - 8, baseI - 7, baseI - 3, baseI - 4);  // z+
+			objWriter.WriteLine("f {0} {1} {2} {3}", baseI - 6, baseI - 5, baseI - 1, baseI - 2);  // z-
 
-			objWriter.WriteLine("f -8 -5 -1 -4");  // x+
-			objWriter.WriteLine("f -7 -6 -2 -3");  // x-
 
-			objWriter.WriteLine("f -8 -7 -3 -4");  // z+
-			objWriter.WriteLine("f -6 -5 -1 -2");  // z-
+			//objWriter.WriteLine("f -8 -7 -6 -5");  // y+
+			//objWriter.WriteLine("f -4 -3 -2 -1");  // y-
+
+			//objWriter.WriteLine("f -8 -5 -1 -4");  // x+
+			//objWriter.WriteLine("f -7 -6 -2 -3");  // x-
+
+			//objWriter.WriteLine("f -8 -7 -3 -4");  // z+
+			//objWriter.WriteLine("f -6 -5 -1 -2");  // z-
 
 		}
 
@@ -332,7 +419,7 @@ namespace Malsys.Processing.Components.Renderers {
 		protected void switchToMaterial(ColorF color) {
 
 			string colorHexa = color.ToRgbHexString();
-			string name = "material" + colorHexa;
+			string name = "m" + colorHexa;
 
 			if (!createdMetarials.Contains(name)) {
 				mtlWriter.WriteLine("newmtl " + name);
@@ -355,11 +442,15 @@ namespace Malsys.Processing.Components.Renderers {
 
 
 		private string getObjFileName() {
-			return objFileName.Fmt(addFileNameSuffix ? fileSuffixNum.ToString("D5") : "");
+			return "model{0}.obj".Fmt(addFileNameSuffix ? fileSuffixNum.ToString("D5") : "");
 		}
 
 		private string getMtlFileName() {
-			return mtlFileName.Fmt(addFileNameSuffix ? fileSuffixNum.ToString("D5") : "");
+			return "model{0}.mtl".Fmt(addFileNameSuffix ? fileSuffixNum.ToString("D5") : "");
+		}
+
+		private string getMetadataFileName() {
+			return "model{0}.json".Fmt(addFileNameSuffix ? fileSuffixNum.ToString("D5") : "");
 		}
 
 
@@ -367,16 +458,60 @@ namespace Malsys.Processing.Components.Renderers {
 
 			absoluteVertexNumber = 0;
 
-			objWriter.WriteLine("# Created by Malsys – http://malsys.cz");
-			objWriter.WriteLine("# generated by L-system " + context.Lsystem.Name);
+			objWriter.WriteLine("# Created by Malsys: http://malsys.cz");
+			objWriter.WriteLine("# L-system name: " + context.Lsystem.Name);
 			objWriter.WriteLine();
 			objWriter.WriteLine("mtllib " + getMtlFileName());
 			objWriter.WriteLine();
 
-			mtlWriter.WriteLine("# Created by Malsys – http://malsys.cz");
-			mtlWriter.WriteLine("# generated by L-system " + context.Lsystem.Name);
+			mtlWriter.WriteLine("# Created by Malsys: http://malsys.cz");
+			mtlWriter.WriteLine("# L-system name: " + context.Lsystem.Name);
 			mtlWriter.WriteLine();
 
+		}
+
+		private void generateMetadata() {
+			Point3D camTarget = Math3D.ZeroPoint;
+			if (cameraTarget != null) {
+				camTarget.X = ((Constant)cameraTarget[0]).Value;
+				camTarget.Y = ((Constant)cameraTarget[1]).Value;
+				camTarget.Z = ((Constant)cameraTarget[2]).Value;
+			}
+			else {
+				camTarget = Math3D.CountMiddlePoint(measuredMin, measuredMax);
+			}
+
+			Point3D camPosition = Math3D.ZeroPoint;
+			if (cameraPosition != null) {
+				camPosition.X = ((Constant)cameraPosition[0]).Value;
+				camPosition.Y = ((Constant)cameraPosition[1]).Value;
+				camPosition.Z = ((Constant)cameraPosition[2]).Value;
+			}
+			else {
+				camPosition = Math3D.AddPoints(camTarget, measuredMax);
+			}
+
+			Point3D camUp = Math3D.ZeroPoint;
+			if (cameraUpVector != null) {
+				camUp.X = ((Constant)cameraUpVector[0]).Value;
+				camUp.Y = ((Constant)cameraUpVector[1]).Value;
+				camUp.Z = ((Constant)cameraUpVector[2]).Value;
+			}
+			else {
+				camUp = new Point3D(0, 1, 0);
+			}
+
+			camUp.Normalize();
+
+			metaWriter.WriteLine("{");
+			metaWriter.WriteLine("  \"source\": \"http://malsys.cz\",");
+			metaWriter.WriteLine("  \"timestamp\": \"{0}\",", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+			metaWriter.WriteLine("  \"name\": \"{0}\",", context.Lsystem.Name);
+			metaWriter.WriteLine("  \"bgColor\": \"{0}\",", bgColor.ToRgbHexString());
+			metaWriter.WriteLine("  \"cameraPosition\": [{0}, {1}, {2}],", camPosition.X, camPosition.Y, camPosition.Z);
+			metaWriter.WriteLine("  \"cameraUpVector\": [{0}, {1}, {2}],", camUp.X, camUp.Y, camUp.Z);
+			metaWriter.WriteLine("  \"cameraTarget\": [{0}, {1}, {2}]", camTarget.X, camTarget.Y, camTarget.Z);
+			metaWriter.WriteLine("}");
 		}
 
 

@@ -11,9 +11,7 @@
 	ViewBag.Title = Model.Input.PublishName;
 }
 
-@section submenu {
-	<li>@Html.ActionLink("Edit or change publish settings", MVC.Gallery.Edit(Model.Input.UrlId))</li>
-}
+<li>@Html.ActionLink("Edit or change publish settings", MVC.Gallery.Edit(Model.Input.UrlId))</li>
 
 
 <div class="right">permalink: @Html.InputPermaLink(Model.Input.UrlId)</div>
@@ -72,7 +70,6 @@
 				If you don't see any animation, please use @Html.Link("supported browser", "http://en.wikipedia.org/wiki/APNG#Application_support", "List of supported applications on Wikipedia", true).
 			</p>
 		}
-
 		break;
 
 	case MimeType.Application.Javascript:
@@ -88,7 +85,7 @@
 		StaticHtml.RequireScript(Links.Js.ThreeJs.Three_js);
 		StaticHtml.RequireScript(Links.Js.ThreeJs.Detector_js);
 		StaticHtml.RequireScript(Links.Js.ThreeJs.Stats_js);
-		StaticHtml.RequireScript(Links.Js.ThreeJs.malsys_three_js);
+		StaticHtml.RequireScript(Links.Js.ThreeJs.Malsys_three_js);
 break;
 
 	default:
@@ -170,8 +167,8 @@ else {
 <h3>Comments</h3>
 
 @{	
-	string id = "gallery/" + Model.Input.UrlId;
-	string url = Url.ActionAbsolute(MVC.Permalink.Index(Model.Input.UrlId));	
-	@StaticHtml.DisqusComments(Model.Input.PublishName, id, url)
+	//string id = "gallery/" + Model.Input.UrlId;
+	///string url = Url.ActionAbsolute(MVC.Permalink.Index(Model.Input.UrlId));	
+	//@StaticHtml.DisqusComments(Model.Input.PublishName, id, url)
 }
 
