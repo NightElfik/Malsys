@@ -120,10 +120,6 @@ namespace Malsys.Web.Controllers {
 			return View(model);
 		}
 
-		public virtual ActionResult FullScreen(string id) {
-			return Detail(id);
-		}
-
 
 		[Authorize]
 		public virtual ActionResult Vote(string id, int rating) {
