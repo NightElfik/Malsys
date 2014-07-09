@@ -393,7 +393,7 @@
     <Compile Include="Models\Repositories\DiscussionRepository.cs" />
     <Compile Include="Models\ViewModels%27\DesignerModel.cs" />
     <Compile Include="Models\ViewModels%27\DiscusThreadViewModel.cs" />
-    <Compile Include="Models\ViewModels%27\GalleryThumbnailModel.cs" />
+    <Compile Include="Models\ViewModels%27\GalleryEntryViewModel.cs" />
     <Compile Include="Models\ViewModels%27\GalleryModel.cs" />
     <Compile Include="Models\ViewModels%27\TagModel.cs" />
     <Compile Include="Models\ViewModels%27\InputDetail.cs" />
@@ -664,7 +664,7 @@
     <Content Include="Views\Gallery\Detail.cshtml" />
     <Content Include="Views\Gallery\Edit.cshtml" />
     <Content Include="Views\Gallery\Tags.cshtml" />
-    <Content Include="Views\Shared\GalleryThumbnailPartial.cshtml" />
+    <Content Include="Views\Shared\GalleryEntry.partial.cshtml" />
     <Content Include="Views\Home\WhyWebgl.cshtml" />
     <Content Include="Views\Home\Thesis.cshtml" />
     <Content Include="Views\CurveDesigner\Index.cshtml" />

@@ -1,0 +1,100 @@
+﻿@**
+ * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+ * All rights reserved.
+ *@
+@model GalleryEntryViewModel
+@using Malsys.Processing;
+@using Malsys.Web.Models.Lsystem;
+@{
+
+	var metadata = OutputMetadataHelper.DeserializeMetadata(Model.SavedInput.OutputThnMetadata);
+	int width, height;
+
+	HtmlString content;
+
+	switch (Model.SavedInput.MimeType) {
+
+	case MimeType.Image.SvgXml:
+		width = OutputMetadataHelper.TryGetValue(metadata, OutputMetadataKeyHelper.OutputWidth, -1);
+		height = OutputMetadataHelper.TryGetValue(metadata, OutputMetadataKeyHelper.OutputHeight, -1);
+
+		if (width > 0 && height > 0) {
+			MathHelper.ScaleSizeToFit(ref width, ref height, Model.MaxWidth, Model.MaxHeight);
+		}
+		else {
+			height = Model.MaxHeight;
+			width = -1;  // Do now put width;
+		}
+		content = new HtmlString("<img src=\"{0}\" {1} height=\"{2}px\" alt=\"{3}\" />".FmtInvariant(
+			Url.Action(MVC.Gallery.GetThumbnail(Model.SavedInput.UrlId, Model.SavedInput.EditDate.Hash())),
+			width > 0 ? "width=\"" + width + "px\"" : "",
+			height,
+			Model.SavedInput.PublishName));
+		break;
+
+	case MimeType.Image.Png:
+	case MimeType.Image.Jpeg:
+	case MimeType.Image.Gif:
+		width = OutputMetadataHelper.TryGetValue(metadata, OutputMetadataKeyHelper.OutputWidth, -1);
+		height = OutputMetadataHelper.TryGetValue(metadata, OutputMetadataKeyHelper.OutputHeight, -1);
+
+		if (width > 0 && height > 0) {
+			MathHelper.ScaleSizeToFit(ref width, ref height, Model.MaxWidth, Model.MaxHeight);
+		}
+		else {
+			height = Model.MaxHeight;
+		}
+		content = new HtmlString("<img src=\"{0}\" {1} height=\"{2}px\" alt=\"{3}\" />".FmtInvariant(
+			Url.Action(MVC.Gallery.GetThumbnail(Model.SavedInput.UrlId, Model.SavedInput.EditDate.Hash())),
+			width > 0 ? "width=\"" + width + "px\"" : "",
+			height,
+			Model.SavedInput.PublishName));
+		break;
+
+	case MimeType.Application.Zip:
+		string objMeta = OutputMetadataHelper.TryGetValue(metadata, OutputMetadataKeyHelper.ObjMetadata, "");
+		if (string.IsNullOrWhiteSpace(objMeta)) {
+			goto default;  // Unknown ZIP archive
+		}
+
+		width = Model.MaxWidth;
+		height = Model.MaxHeight;
+
+		content = new HtmlString("<div class=\"threeJsScene\" data-url=\"{0}\" style=\"width: {1}px; height: {2}px;\"><div class=\"clearfix\"><p class=\"loading\">Loading <br>3D model<br><span class=\"dots\">.</p></div></div>".FmtInvariant(
+			@Url.Action(MVC.Gallery.GetThumbnail(Model.SavedInput.UrlId, Model.SavedInput.EditDate.Hash())),
+			Model.MaxWidth,
+			Model.MaxHeight));
+
+		StaticHtml.RequireScript(Links.Js.ThreeJs.Three_js, LoadingOrder.Default);
+		StaticHtml.RequireScript(Links.Js.ThreeJs.Detector_js, LoadingOrder.Default);
+		StaticHtml.RequireScript(Links.Js.ThreeJs.Stats_js, LoadingOrder.Default);
+		StaticHtml.RequireScript(Links.Js.ThreeJs.TrackballControls_js, LoadingOrder.Default);
+		StaticHtml.RequireScript(Links.Js.ThreeJs.MTLLoader_js, LoadingOrder.Default);
+		StaticHtml.RequireScript(Links.Js.ThreeJs.OBJMTLLoader_js, LoadingOrder.Default);
+		StaticHtml.RequireScript(Links.Js.ThreeJs.Malsys_three_js, LoadingOrder.Default);
+		break;
+
+	default:
+		width = Model.MaxWidth / 2;
+		height = Model.MaxHeight;
+
+		content = new HtmlString(("<div class=\"clearfix\"><p>{0}</p>"
+				+ "<p>Thumbnail for this type of output is not supported. Please click to see the output.</p></div>").FmtInvariant(
+			Model.SavedInput.PublishName));
+
+		break;
+
+	}
+
+	if (Model.FillHeight) {
+		height = Model.MaxHeight;
+	}
+
+	string widthStr = width > 0 ? "width:" + width + "px;" : "";
+
+	<div class="thn" style="@widthStr height:@(height)px;">@content</div>
+	if (Model.ShowCaption) {
+		<div class="caption" style="@widthStr">@Model.SavedInput.PublishName</div>
+	}
+
+}

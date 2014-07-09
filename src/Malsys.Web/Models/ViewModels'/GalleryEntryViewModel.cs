@@ -3,14 +3,15 @@
 using Malsys.Web.Entities;
 
 namespace Malsys.Web.Models {
-	public class GalleryThumbnailModel {
+	public class GalleryEntryViewModel {
 
 		public SavedInput SavedInput;
 
 		public int MaxWidth;
-
 		public int MaxHeight;
+		public bool FillHeight;
 
+		public bool ShowCaption;
 
 	}
 }

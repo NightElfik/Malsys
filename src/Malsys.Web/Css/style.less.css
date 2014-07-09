@@ -8,7 +8,7 @@
   * Using LESS CSS -- The dynamic stylesheet language http://lesscss.org/
   * Derived from HTML5 ✰ Boilerplate http://html5boilerplate.com/docs/css/
   * ========================================================================= */
- 
+
 @themeColor: lighten(#0F4D92, 5%);  /* Yale Blue http://en.wikipedia.org/wiki/Yale_Blue_(color) */
 @themeColorLighter: lighten(@themeColor, 10%);
 @themeColorDarker: darken(@themeColor, 10%);
@@ -79,13 +79,13 @@
 		display: inline-block;
 		padding: 10px;
 	}
-}	
+}
 
 #main {
 	.grid-container { margin: 0em auto 2em auto; }
 }
 
-#footer {	
+#footer {
 	ul {
 		list-style: none;
 		margin: 0 0 4px 0;
@@ -133,7 +133,7 @@ a {
 	float: right;
 	color: lighten(@linkColor, 30) !important;
 }
-	
+
 /* Redeclare monospace font family: h5bp.com/j */
 pre, code, kbd, samp { font-family: @monospaceFont; font-size: 1em; }
 
@@ -180,7 +180,7 @@ html, #header, #footer {
 	box-shadow: 0 40px 40px -40px #777;
 	margin-bottom: 1em;
 	a {
-		color: #FFF; 
+		color: #FFF;
 		.transition(all 0.5s ease);
 		&:hover { color: #FFF; text-decoration: none; }
 		&:link { color: #FFF; }
@@ -272,7 +272,7 @@ h1, h2, h3 {
 	}
 }
 
-.malsysExample {	
+.malsysExample {
 	.malsysBox();
 	overflow: hidden;
 	margin-bottom: 20px;
@@ -284,13 +284,13 @@ h1, h2, h3 {
 		border-top: 1px solid #AAA;
 		border-left: 1px solid #AAA;
 	}
-	.malsys {		
+	.malsys {
 		margin-bottom: 14px;
 	}
 }
 
 /*@media screen and (max-width: 979px) {
-	.malsysExample {	
+	.malsysExample {
 		h4 {
 			margin-top: 8px;
 		}
@@ -346,7 +346,7 @@ p { text-align: justify; }
 	a { display: block; padding: 0.5em; .transition(background-color 0.3s ease); }
 	a:hover { background-color: #EEE; }
 }
-	
+
 .toc {
 	ul { list-style: none; }
 	ul.topLevel { padding-left: 0; margin: 0; }
@@ -500,11 +500,11 @@ pre.asciiArt {
 }
 
 .threeJsScene {
-	position: relative;
+	/*position: relative;
 	border: solid 1px #000000;
 	width: 800px;
 	height: 600px;
-	box-shadow: 0px 0px 5px 0 #000;
+	box-shadow: 0px 0px 5px 0 #000;*/
 
 	.fullscreen { position: absolute; top: 4px; left: 4px; margin: 0; font-size: 0.8em; color: #888; }
 	.webgl { position: absolute; top: 4px; left: 100px; margin: 0; font-size: 0.8em; color: #888; }
@@ -529,23 +529,44 @@ pre.asciiArt {
 /* Gallery ================================================================== */
 
 .gallery {
-	text-align: justify;
-
-	.thn { 
-		float: left; margin: 2px;
-		a {
-			display: block; padding: 0; margin: 0; line-height: 0;
-			p { line-height: normal; }
-		}
-		.threeJsScene {
-			width: 341px;
-			height: 256px;
-			border: none;
-			box-shadow: 0px 0px 0px 0 #000;
+	text-align: center;
+	ul {
+		margin: 2px;
+		padding: 2px;
+		display: block;
+	}
+	li {
+		vertical-align: top;
+		display: -moz-inline-box;
+		display: inline-block;
+	}
+	img {
+		display: block;
+	}
+	a {
+		text-decoration: none;
+	}
+	.thn {
+		margin: 2px;
+		.loading {
+			text-align: center;
+			font-size: 1.5em;
+			color: #AAA;
 		}
 	}
+	.thnWrap {
+		margin: 4px 2px;
+		padding: 4px;
+		border: 1px solid transparent;
+		.border-radius-malsys;
+		.transition(~"box-shadow 0.5s ease, border 0.5s ease");
+	}
+	.thnWrap:hover {
+		border: 1px solid #AAA;
+		box-shadow: 2px 2px 5px 0 #AAA;
+	}
 }
-	
+
 a.tag {
 	padding: 3px 6px;
 	margin: 1px 2px;

@@ -11,9 +11,8 @@
 	ViewBag.Title = "Gallery of L-systems";
 	var serializer = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
 
-	int thnMaxWidth = 512;
-	int thnMaxHeight = 256;
-	bool loadThreeJs = false;
+	int thnMaxWidth = 400;
+	int thnMaxHeight = 300;
 	IHtmlString pager = Html.Pager(Model.Inputs);
 }
 
@@ -32,14 +31,24 @@
 }
 
 <div class="gallery clearfix">
+	<ul>
 @foreach (var input in Model.Inputs) {
-	var thnModel = new GalleryThumbnailModel() {
+	var thnModel = new GalleryEntryViewModel() {
 		SavedInput = input,
 		MaxWidth = thnMaxWidth,
-		MaxHeight = thnMaxHeight
+		MaxHeight = thnMaxHeight,
+		ShowCaption = true,
+		FillHeight = true,
 	};
-	@Html.Partial(MVC.Shared.Views.GalleryThumbnailPartial, thnModel);
+	HtmlString linkStrBegin = new HtmlString("<a href=\"{0}\" title=\"{1}\">".Fmt(
+		Url.Action(MVC.Gallery.Detail(input.UrlId)),
+		input.PublishName));
+	HtmlString linkStrEnd = new HtmlString("</a>");
+	<li>
+		<div class="thnWrap">@linkStrBegin@{Html.RenderPartial(MVC.Shared.Views.GalleryEntry_partial, thnModel);}@linkStrEnd</div>
+	</li>
 }
+	</ul>
 </div>
 
 <div class="clearfix">

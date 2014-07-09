@@ -38,16 +38,16 @@ namespace Malsys.Web.Controllers {
 				.OrderByDescending(x => x.CreationDate)
 				.Take(3);
 
-			GalleryThumbnailModel thumb = null;
+			GalleryEntryViewModel thumb = null;
 			if (input != null) {
-				thumb = new GalleryThumbnailModel() {
+				thumb = new GalleryEntryViewModel() {
 					SavedInput = input,
 					MaxWidth = 256,
 					MaxHeight = 256
 				};
 			}
 
-			return View(new Tuple<GalleryThumbnailModel, IEnumerable<DiscusThread>>(thumb, news));
+			return View(new Tuple<GalleryEntryViewModel, IEnumerable<DiscusThread>>(thumb, news));
 		}
 
 		public virtual ActionResult LoadedPlugins() {
