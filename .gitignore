@@ -17,12 +17,7 @@ obj/
 /src/Malsys.Web/Malsys.Web.Publish.xml
 /src/Documentation/Help/Working
 
-# T4 templaates generated files & rubbsih
 *.min.js
-*.generated.cs
-/src/Malsys.Web/Css/style.css
-/src/Malsys.Web/T4MVC.cs
-/src/Malsys.Web/T4MVC1.cs
 
 # documentation
 /doc/RelatedApps
