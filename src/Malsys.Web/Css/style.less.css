@@ -22,8 +22,7 @@
 @bgColorLight: lighten(@themeColor, 50%);
 
 @linkColor: @themeColor;
-@linkHoverColor: darken(@linkColor, 10%);
-@linkVisitedColor: spin(@linkColor, 30);
+@linkHoverColor: spin(@linkColor, 60);
 
 @baseFont: "Trebuchet MS", Helvetica, Arial, sans-serif;
 @monospaceFont: Consolas, "Courier New", monospace;
@@ -109,10 +108,10 @@ a {
 	color: @linkColor;
 	text-decoration: none;
 	.transition(color 0.5s ease);
-	&:hover { color: @linkHoverColor; outline: 0; text-decoration: underline; }
-	&:link { color: @linkVisitedColor; outline: 0; }
-	&:visited { color: @linkVisitedColor; outline: 0; }
+	&:link { color: @linkColor; outline: 0; }
+	&:visited { color: @linkColor; outline: 0; }
 	&:focus { outline: thin dotted; }
+	&:hover { color: @linkHoverColor; outline: 0; text-decoration: underline; }
 }
 
 .hideLinks a:link, .hideLinks a:visited {
@@ -506,6 +505,11 @@ pre.asciiArt {
 	height: 600px;
 	box-shadow: 0px 0px 5px 0 #000;*/
 
+	.loading {
+		text-align: center;
+		font-size: 1.5em;
+		color: #AAA;
+	}
 	.fullscreen { position: absolute; top: 4px; left: 4px; margin: 0; font-size: 0.8em; color: #888; }
 	.webgl { position: absolute; top: 4px; left: 100px; margin: 0; font-size: 0.8em; color: #888; }
 	.controls { position: absolute; bottom: 4px; left: 4px; margin: 0; font-size: 0.8em; color: #888; }
@@ -545,14 +549,6 @@ pre.asciiArt {
 	}
 	a {
 		text-decoration: none;
-	}
-	.thn {
-		margin: 2px;
-		.loading {
-			text-align: center;
-			font-size: 1.5em;
-			color: #AAA;
-		}
 	}
 	.thnWrap {
 		margin: 4px 2px;
@@ -624,6 +620,8 @@ a.tag {
 .pagination {
 	margin: 0 auto;
 	display: block;
+	font-size: 1.2em;
+	a { margin: 2px; padding: 2px; }
 	.paginationLeft { float: left; }
 	.paginationRight { float: right; }
 }

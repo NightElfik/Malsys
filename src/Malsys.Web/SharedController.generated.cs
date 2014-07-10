@@ -36,11 +36,9 @@ namespace T4MVC
             public _ViewNamesClass ViewNames { get { return s_ViewNames; } }
             public class _ViewNamesClass
             {
-                public readonly string GalleryEntry_partial = "GalleryEntry.partial";
                 public readonly string Layout_master = "Layout.master";
                 public readonly string LogOnPartial = "LogOnPartial";
             }
-            public readonly string GalleryEntry_partial = "~/Views/Shared/GalleryEntry.partial.cshtml";
             public readonly string Layout_master = "~/Views/Shared/Layout.master.cshtml";
             public readonly string LogOnPartial = "~/Views/Shared/LogOnPartial.cshtml";
         }

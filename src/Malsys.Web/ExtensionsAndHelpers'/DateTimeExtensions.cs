@@ -2,7 +2,7 @@
 // All rights reserved.
 using System;
 
-namespace Malsys.Web.Infrastructure {
+namespace Malsys.Web {
 	public static class DateTimeExtensions {
 
 		public static string Hash(this DateTime dt) {

@@ -2,7 +2,7 @@
  * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
  * All rights reserved.
  *@
-@model Tuple<GalleryThumbnailModel, IEnumerable<DiscusThread>>
+@model IEnumerable<DiscusThread>
 
 @{
 	ViewBag.Title = "Malsys";
@@ -20,7 +20,7 @@
 			Malsys was created as a Bachelor work called <i>L-systems online</i>.
 			Details about the thesis can be found on @Html.ActionLink("this page", MVC.Home.Thesis()).
 		</p>
-		
+
 		<h3>Gallery</h3>
 		<p>
 			The @Html.ActionLink("gallery", MVC.Gallery.Index()) contains examples of many L-systems from various publications and places on the web.
@@ -53,7 +53,7 @@
 	<div class="grid-100 mobile-grid-100 ">
 		<h3>Latest news</h3>
 		@{ int? newsCatId = null; }
-		@foreach (var thread in Model.Item2) {
+		@foreach (var thread in Model) {
 			newsCatId = thread.CategoryId;
 			var commentsNum = thread.DiscusMessages.Count() - 1;
 			var firstMessage = thread.DiscusMessages.OrderBy(m => m.CreationDate).First();

@@ -25,12 +25,6 @@ namespace Malsys.Web.Controllers {
 
 		public virtual ActionResult Index() {
 
-			var input = inputDb.SavedInputs
-				.Where(x => x.IsPublished && !x.IsDeleted)
-				.Where(x => x.MimeType == MimeType.Image.SvgXml || x.MimeType == MimeType.Application.Javascript || x.MimeType == MimeType.Image.Png)
-				.Where(x => (double)x.RatingSum / ((double)x.RatingCount + 1) > 2)
-				.OrderBy(x => x.SavedInputId)
-				.RandomOrDefault();
 
 			var cat = discusDb.GetKnownDiscussCat(DiscussionCategory.News);
 			var news = discusDb.DiscusThreads
@@ -38,16 +32,7 @@ namespace Malsys.Web.Controllers {
 				.OrderByDescending(x => x.CreationDate)
 				.Take(3);
 
-			GalleryEntryViewModel thumb = null;
-			if (input != null) {
-				thumb = new GalleryEntryViewModel() {
-					SavedInput = input,
-					MaxWidth = 256,
-					MaxHeight = 256
-				};
-			}
-
-			return View(new Tuple<GalleryEntryViewModel, IEnumerable<DiscusThread>>(thumb, news));
+			return View(news);
 		}
 
 		public virtual ActionResult LoadedPlugins() {

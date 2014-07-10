@@ -6,6 +6,7 @@ using System.IO;
 using System.IO.Packaging;
 using System.Linq;
 using System.Text;
+using System.Web;
 using System.Web.Mvc;
 using System.Web.UI;
 using Elmah;
@@ -71,7 +72,8 @@ namespace Malsys.Web.Controllers {
 				}
 			}
 
-			model.Inputs = inputs.OrderByDescending(x => (float)x.RatingSum / ((float)x.RatingCount + 1) + x.RatingCount)
+			model.Inputs = inputs
+				.OrderByDescending(x => (float)x.RatingSum / ((float)x.RatingCount + 1) + x.RatingCount)
 				.AsPagination(page.Value, 10);
 
 			return View(model);
@@ -374,7 +376,8 @@ namespace Malsys.Web.Controllers {
 				System.IO.File.Copy(output.FilePath, outputFilePath, true);
 			}
 			catch (Exception ex) {
-				Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("Failed to write output file (over old one if older existed).", ex));
+				Elmah.ErrorSignal.FromCurrentContext()
+					.Raise(new Exception("Failed to write output file (over old one if older existed).", ex));
 				error = true;
 			}
 
@@ -383,7 +386,8 @@ namespace Malsys.Web.Controllers {
 					System.IO.File.Delete(o.FilePath);
 				}
 				catch (Exception ex) {
-					Elmah.ErrorSignal.FromCurrentContext().Raise(new Exception("Failed to delete temp gallery file.", ex));
+					Elmah.ErrorSignal.FromCurrentContext()
+						.Raise(new Exception("Failed to delete temp gallery file.", ex));
 					error = true;
 				}
 			}

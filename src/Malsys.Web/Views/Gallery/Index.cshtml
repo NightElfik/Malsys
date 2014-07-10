@@ -13,49 +13,48 @@
 
 	int thnMaxWidth = 400;
 	int thnMaxHeight = 300;
-	IHtmlString pager = Html.Pager(Model.Inputs);
+	HtmlString pager = Html.CleverPager(Model.Inputs, i => Url.Action(MVC.Gallery.Index(
+		string.IsNullOrWhiteSpace(Model.UserFilter) ? null : Model.UserFilter.Trim(),
+		Model.TagFilter == null ? null : Model.TagFilter.Name,
+		i)));
+	var outputHtmlGenerator = new OutputHtmlGenerator();
 }
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-100 mobile-grid-100 ">
+		<h1>Gallery of L-systems</h1>
 
-<h1>Gallery of L-systems</h1>
+		<div class="clearfix">
+		@pager
+		</div>
 
-<div class="clearfix">
-@pager
+		@if (!string.IsNullOrWhiteSpace(Model.UserFilter)) {
+			<p>Filtered by user @Model.UserFilter</p>
+		}
+
+		@if (Model.TagFilter != null) {
+			<p>Filtered by tag @Html.Tag(Model.TagFilter.Name) @if (!string.IsNullOrWhiteSpace(Model.TagFilter.Description)) { <text>— @Model.TagFilter.Description</text> }</p>
+		}
+
+		<div class="gallery">
+			<ul>
+		@foreach (var input in Model.Inputs) {
+			int width = thnMaxWidth;
+			int height = thnMaxHeight;
+			var outHtml = outputHtmlGenerator.GetOutputHtml(Url, input, ref width, ref height, true);
+			HtmlString linkStrBegin = new HtmlString("<a href=\"{0}\" title=\"{1}\">".Fmt(
+				Url.Action(MVC.Gallery.Detail(input.UrlId)),
+				input.PublishName));
+			HtmlString linkStrEnd = new HtmlString("</a>");
+			<li>
+				<div class="thnWrap">@linkStrBegin@outHtml<div class="caption" style="@width">@input.PublishName</div>@linkStrEnd</div>
+			</li>
+
+		}
+			</ul>
+		</div>
+
+		<div class="clearfix">
+		@pager
+		</div>
+	</div>
 </div>
-
-@if (!string.IsNullOrWhiteSpace(Model.UserFilter)) {
-	<p>Filtered by user @Model.UserFilter</p>
-}
-
-@if (Model.TagFilter != null) {
-	<p>Filtered by tag @Html.Tag(Model.TagFilter.Name) @if (!string.IsNullOrWhiteSpace(Model.TagFilter.Description)) { <text>— @Model.TagFilter.Description</text> }</p>
-}
-
-<div class="gallery clearfix">
-	<ul>
-@foreach (var input in Model.Inputs) {
-	var thnModel = new GalleryEntryViewModel() {
-		SavedInput = input,
-		MaxWidth = thnMaxWidth,
-		MaxHeight = thnMaxHeight,
-		ShowCaption = true,
-		FillHeight = true,
-	};
-	HtmlString linkStrBegin = new HtmlString("<a href=\"{0}\" title=\"{1}\">".Fmt(
-		Url.Action(MVC.Gallery.Detail(input.UrlId)),
-		input.PublishName));
-	HtmlString linkStrEnd = new HtmlString("</a>");
-	<li>
-		<div class="thnWrap">@linkStrBegin@{Html.RenderPartial(MVC.Shared.Views.GalleryEntry_partial, thnModel);}@linkStrEnd</div>
-	</li>
-}
-	</ul>
-</div>
-
-<div class="clearfix">
-@pager
-</div>
-
-<p class="note">
-	Images on this page are just thumbnails.
-	Click them to see the original image, details, ratings and their L-system source code.
-</p>
