@@ -243,6 +243,8 @@ namespace Malsys.Web.Controllers {
 				Response.AppendHeader("Content-Encoding", "gzip");
 			}
 
+			string downFileName = StaticUrl.UrlizeString(input.PublishName) + MimeType.ToFileExtension(input.MimeType);
+
 			// Handle requests OBJ and MTL files from ZIP package.
 			if (extra == "obj" || extra == "mtl" || extra == "meta") {
 				object obj = metadata.FirstOrDefault(x => x.Key == OutputMetadataKeyHelper.ObjMetadata).Value;
@@ -275,10 +277,10 @@ namespace Malsys.Web.Controllers {
 					}
 				}
 				ms.Seek(0, SeekOrigin.Begin);
-				return File(ms, MimeType.Text.Plain);
+				return File(ms, MimeType.Text.Plain, downFileName + "." + extra);
 			}
 
-			return File(filePath, input.MimeType);
+			return File(filePath, input.MimeType, downFileName);
 		}
 
 

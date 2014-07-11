@@ -10,147 +10,120 @@
 @{
 	ViewBag.Title = Model.Input.PublishName;
 }
+<h1>@Model.Input.PublishName</h1>
 
-<li>@Html.ActionLink("Edit or change publish settings", MVC.Gallery.Edit(Model.Input.UrlId))</li>
-
-
-<div class="right">permalink: @Html.InputPermaLink(Model.Input.UrlId)</div>
-<h2>@Model.Input.PublishName</h2>
-<h4>by @Html.ActionLink(Model.Input.User.Name, MVC.Gallery.Index(Model.Input.User.Name)) @if (Model.CurrentUserIsOwner) { <text>(you)</text> }</h4>
-
-@{
-	var fi = new FileInfo(Model.FilePath);
-	if (!fi.Exists) {
-		<p>File not found!</p>
-		return;
-	}
-
-	if (!Model.Input.IsPublished) {
-		<p>Not published</p>
-	}
-
-}
-
-@switch (Model.Input.MimeType) {
-
-	case MimeType.Text.Plain:
-		<a class="noUnderline" href="@Url.Action(MVC.Gallery.GetOutput(Model.Input.UrlId, Model.Input.EditDate.Hash()))" title="@Model.Input.PublishName">
-		@using (var sr = fi.OpenText()) {
-			bool asciiArt = OutputMetadataHelper.TryGetValue(Model.Metadata, OutputMetadataKeyHelper.OutputIsAsciiArt, false);
-			<pre class="box @(asciiArt ? "asciiArt" : "")">@sr.ReadToEnd()</pre>
-		}
-		</a>
-		break;
-
-	case MimeType.Image.SvgXml:
-		int svgWidth = OutputMetadataHelper.TryGetValue(Model.Metadata, OutputMetadataKeyHelper.OutputWidth, -1);
-		int svgHeight = OutputMetadataHelper.TryGetValue(Model.Metadata, OutputMetadataKeyHelper.OutputHeight, -1);
-		bool svgHasValidSize = svgWidth > 0 && svgHeight > 0;
-		<div class="scrollBox">
-			<a href="@Url.Action(MVC.Gallery.GetOutput(Model.Input.UrlId, Model.Input.EditDate.Hash()))" title="@Model.Input.PublishName">
-			<img src="@Url.Action(MVC.Gallery.GetOutput(Model.Input.UrlId, Model.Input.EditDate.Hash()))" @if (svgHasValidSize) { <text>width="@(svgWidth)px" height="@(svgHeight)px"</text> } alt="@Model.Input.PublishName" />
-			</a>
-		</div>
-		break;
-
-	case MimeType.Image.Png:
-	case MimeType.Image.Jpeg:
-	case MimeType.Image.Gif:
-		int bmpWidth = OutputMetadataHelper.TryGetValue(Model.Metadata, OutputMetadataKeyHelper.OutputWidth, -1);
-		int bmpHeight = OutputMetadataHelper.TryGetValue(Model.Metadata, OutputMetadataKeyHelper.OutputHeight, -1);
-		bool bmpHasValidSize = bmpWidth > 0 && bmpHeight > 0;
-		<div class="scrollBox">
-			<a href="@Url.Action(MVC.Gallery.GetOutput(Model.Input.UrlId, Model.Input.EditDate.Hash()))" title="@Model.Input.PublishName">
-			<img src="@Url.Action(MVC.Gallery.GetOutput(Model.Input.UrlId, Model.Input.EditDate.Hash()))" @if (bmpHasValidSize) { <text>width="@(bmpWidth)px" height="@(bmpHeight)px"</text> } alt="@Model.Input.PublishName" />
-			</a>
-		</div>
-		if (OutputMetadataHelper.TryGetValue(Model.Metadata, OutputMetadataKeyHelper.OutputInPngAnimation, false)) {
-			<p class="note">
-				This output is @Html.Link("PNG animation", "http://en.wikipedia.org/wiki/APNG", "Animated PNG on Wikipedia", true).
-				If you don't see any animation, please use @Html.Link("supported browser", "http://en.wikipedia.org/wiki/APNG#Application_support", "List of supported applications on Wikipedia", true).
-			</p>
-		}
-		break;
-
-	case MimeType.Application.Javascript:
-		<div class="threeJsScene" data-scene="@Url.Action(MVC.Gallery.GetOutput(Model.Input.UrlId, Model.Input.EditDate.Hash()))" data-clear-color="FFFFFF" data-anti-alias="true">
-			<p class="webgl">WebGL is not supported by your browser. Please @Html.Link("get supported browser", "http://get.webgl.org/", "get supported browser"). @Html.ActionLink("Why?", MVC.Home.WhyWebgl())</p>
-			<p class="controls">Controls: Move mouse &amp; press LEFT/A: rotate, MIDDLE/S: zoom, RIGHT/D: pan</p>
-		</div>
-		<p class="note">
-			Rendered L-system is not plain image, it is actual 3D scene rendered by your browser and you can rotate, zoom or pan with it.
-		</p>
-		<p>@Html.ActionLink("Download JavaScript source code", MVC.Gallery.GetOutput(Model.Input.UrlId, Model.Input.EditDate.Hash()))</p>
-		StaticHtml.RequireScript(Links.Js.ThreeJs.Three_js);
-		StaticHtml.RequireScript(Links.Js.ThreeJs.Detector_js);
-		StaticHtml.RequireScript(Links.Js.ThreeJs.Stats_js);
-		StaticHtml.RequireScript(Links.Js.ThreeJs.Malsys_three_js);
-break;
-
-	default:
-		<p class="outputTruncated">Unknown output type `@Model.Input.MimeType`.</p>
-											 break;
-}
-
-@if (!string.IsNullOrWhiteSpace(Model.Input.Description)) {
-	<h3>Description</h3>
-
-	<p style="white-space: pre-line;">@Model.Input.Description</p>
-}
-
-<h3>Views & rating</h3>
-
-@{
-	Malsys.Media.ColorF ratingColor;
-	var rating = (float)Model.Input.RatingSum / (float)Model.Input.RatingCount;
-	float half = 2.5f;
-	if (float.IsNaN(rating)) {
-		ratingColor = Malsys.Media.ColorF.Black;
-	}
-	else if (rating > half) {
-		ratingColor = new Malsys.Media.ColorF(0.0, (rating - half) / half, 0.0);  // 2.5 -- 5
-	}
-	else {
-		ratingColor = new Malsys.Media.ColorF((half - rating) / half, 0.0, 0.0);
-	}
-}
-
-<p>Views: <span class="huge">@Model.Input.Views</span></p>
-
-<p>Rating: <span class="huge" style="color: #@ratingColor.ToRgbHexString();">@rating</span></p>
-<div class="votes">
-@if (User.Identity.IsAuthenticated) {
-	<span class="vote">worst</span>
-	for (int i = 0; i <= 5; i++) {
-		var text = i.ToString() + CharHelper.ShadowedWhiteStar;
-		<span class="vote">
-		@if (Model.UserVote == null || Model.UserVote != i) {
-			@Html.ActionLink(text, MVC.Gallery.Vote(Model.Input.UrlId, i))
-  }
-  else {
-			@text
-  }
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100 ">
+		<span>by @Html.ActionLink(Model.Input.User.Name, MVC.Gallery.Index(Model.Input.User.Name))
+			@if (Model.CurrentUserIsOwner) { <text>(you)</text> }</span>
+	</div>
+	<div class="grid-50 mobile-grid-100 ">
+		<span class="right">permalink: @Html.InputPermaLink(Model.Input.UrlId)
+			@if (!Model.Input.IsPublished) { <text>[Not published]</text> }
 		</span>
-	}
-	<span class="vote">best</span>
-}
-else {
-	<p>Only registered users can vote.</p>
-}
+	</div>
+</div>
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-100 mobile-grid-100">
+		@{
+			int width = 800, height = 600;
+			@(new OutputHtmlGenerator().GetOutputHtml(Url, Model.Input, ref width, ref height, pan3d: true, zoom3d: true))
+
+			if (!new FileInfo(Model.FilePath).Exists) {
+				<p>File not found!</p>
+			}
+		}
+	</div>
+</div>
+
+<div class="grid-100 mobile-grid-100 grid-parent">
+
+	<div class="grid-50 mobile-grid-100 ">
+		@if (Model.CurrentUserIsOwner) {
+			<h3>Administration</h3>
+			<ul>
+				<li>@Html.ActionLink("Edit or change publish settings", MVC.Gallery.Edit(Model.Input.UrlId))</li>
+			</ul>
+		}
+
+		<h3>Description</h3>
+		@if (string.IsNullOrWhiteSpace(Model.Input.Description)) {
+			<p>No description given.</p>
+		}
+		else {
+			<p style="white-space: pre-line;">@Model.Input.Description</p>
+		}
+		<p>@Html.ActionLink("Download output", MVC.Gallery.GetOutput(Model.Input.UrlId, Model.Input.EditDate.Hash()))</p>
+
+		<h3>Views & rating</h3>
+		@{
+			Malsys.Media.ColorF ratingColor;
+			var rating = (float)Model.Input.RatingSum / (float)Model.Input.RatingCount;
+			float half = 2.5f;
+			if (float.IsNaN(rating)) {
+				ratingColor = Malsys.Media.ColorF.Black;
+			}
+			else if (rating > half) {
+				ratingColor = new Malsys.Media.ColorF(0.0, (rating - half) / half, 0.0);  // 2.5 -- 5
+			}
+			else {
+				ratingColor = new Malsys.Media.ColorF((half - rating) / half, 0.0, 0.0);
+			}
+		}
+		<div class="grid-50 mobile-grid-50 ">
+			<p>Views: <span class="huge">@Model.Input.Views</span></p>
+		</div>
+		<div class="grid-50 mobile-grid-50 ">
+			<p>Rating: <span class="huge" style="color: #@ratingColor.ToRgbHexString();">@rating</span></p>
+		</div>
+		<div class="votes">
+			<span>Your vode:</span>
+			@if (User.Identity.IsAuthenticated) {
+				<span class="vote">worst</span>
+				for (int i = 0; i <= 5; i++) {
+					var text = i.ToString() + CharHelper.ShadowedWhiteStar;
+					<span class="vote">
+					@if (Model.UserVote == null || Model.UserVote != i) {
+						@Html.ActionLink(text, MVC.Gallery.Vote(Model.Input.UrlId, i))
+					}
+					else {
+						<b>@text</b>
+					}
+				</span>
+				}
+				<span class="vote">best</span>
+			}
+			else {
+				<p>Only registered users can vote.</p>
+			}
+		</div>
+
+		<h3>Tags</h3>
+		@if (Model.Input.Tags.Count > 0) {
+			foreach (var tag in Model.Input.Tags) {
+				@Html.Tag(tag.Name)
+			}
+		}
+		else {
+			<p>No tags.</p>
+		}
+	</div>
+
+	<div class="grid-50 mobile-grid-100 ">
+		<h3>Comments</h3>
+		@{
+		//string id = "gallery/" + Model.Input.UrlId;
+		///string url = Url.ActionAbsolute(MVC.Permalink.Index(Model.Input.UrlId));
+		//@StaticHtml.DisqusComments(Model.Input.PublishName, id, url)
+		}
+	</div>
 </div>
 
 
-@if (Model.Input.Tags.Count > 0) {
-	<h3>Tags</h3>
-	foreach (var tag in Model.Input.Tags) {
-		@Html.Tag(tag.Name)
-	}
-}
-
-
-<h3>Source</h3>
-
-<pre class="malsys box">
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-100 mobile-grid-100 ">
+		<h3>Source code</h3>
+		<pre class="malsys box">
 @Model.Input.SourceCode
 @if (!string.IsNullOrWhiteSpace(Model.Input.ThumbnailSourceExtension)) {
 <text>
@@ -161,13 +134,12 @@ else {
 */
 </text>
 }
-</pre>
+		</pre>
+	</div>
+</div>
 
-<h3>Comments</h3>
 
-@{	
-	//string id = "gallery/" + Model.Input.UrlId;
-	///string url = Url.ActionAbsolute(MVC.Permalink.Index(Model.Input.UrlId));	
-	//@StaticHtml.DisqusComments(Model.Input.PublishName, id, url)
-}
+
+
+
 

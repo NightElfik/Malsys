@@ -579,11 +579,6 @@ THREE.TrackballControls = function (object, domElement, disableZoom) {
 
 	this.domElement.addEventListener('mousedown', mousedown, false);
 
-	if (!disableZoom) {
-		this.domElement.addEventListener('mousewheel', mousewheel, false);
-		this.domElement.addEventListener('DOMMouseScroll', mousewheel, false); // firefox
-	}
-
 	this.domElement.addEventListener('touchstart', touchstart, false);
 	this.domElement.addEventListener('touchend', touchend, false);
 	this.domElement.addEventListener('touchmove', touchmove, false);

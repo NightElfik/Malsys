@@ -10,7 +10,8 @@ using Malsys.Web.Models.Lsystem;
 namespace Malsys.Web.Models {
 	public class OutputHtmlGenerator {
 
-		public HtmlString GetOutputHtml(UrlHelper url, SavedInput input, ref int maxWidth, ref int maxHeight, bool fillHeight) {
+		public HtmlString GetOutputHtml(UrlHelper url, SavedInput input, ref int maxWidth, ref int maxHeight,
+				bool fillHeight = false, bool pan3d = false, bool zoom3d = false) {
 			var metadata = OutputMetadataHelper.DeserializeMetadata(input.OutputThnMetadata);
 			int width, height;
 
@@ -64,13 +65,15 @@ namespace Malsys.Web.Models {
 					width = maxWidth;
 					height = maxHeight;
 
-					content = ("<div class=\"threeJsScene\" data-url=\"{0}\" style=\"width: {1}px; height: {2}px;\">"
+					content = ("<div class=\"threeJsScene\" data-url=\"{0}\" {4}{5} style=\"width: {1}px; height: {2}px;\">"
 							+ "<div class=\"clearfix\"><p class=\"loading\">Loading 3D model<br>of {3}<br>"
 							+ "<span class=\"dots\"></p></div></div>").Fmt(
 						url.Action(MVC.Gallery.GetThumbnail(input.UrlId, input.EditDate.Hash())),
 						maxWidth,
 						maxHeight,
-						input.PublishName);
+						input.PublishName,
+						pan3d ? "data-pan=\"true\"" : "",
+						zoom3d ? "data-zoom=\"true\"" : "");
 
 					StaticHtml.RequireScript(Links.Js.ThreeJs.Three_js, LoadingOrder.Default);
 					StaticHtml.RequireScript(Links.Js.ThreeJs.Detector_js, LoadingOrder.Default);
@@ -98,7 +101,10 @@ namespace Malsys.Web.Models {
 
 			string widthStr = width > 0 ? "width:" + width + "px; " : "";
 
-			return new HtmlString("<div style=\"{0}height:{1}px;\">{2}</div>".
+			maxWidth = width;
+			maxHeight = height;
+
+			return new HtmlString("<div style=\"{0}height:{1}px; margin:auto;\">{2}</div>".
 				Fmt(widthStr, height, content));
 		}
 	}

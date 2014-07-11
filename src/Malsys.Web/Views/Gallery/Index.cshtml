@@ -23,7 +23,7 @@
 	<div class="grid-100 mobile-grid-100 ">
 		<h1>Gallery of L-systems</h1>
 
-		<div class="clearfix">
+		<div class="clearfix hideLinks">
 		@pager
 		</div>
 
@@ -40,20 +40,29 @@
 		@foreach (var input in Model.Inputs) {
 			int width = thnMaxWidth;
 			int height = thnMaxHeight;
-			var outHtml = outputHtmlGenerator.GetOutputHtml(Url, input, ref width, ref height, true);
+	  var outHtml = outputHtmlGenerator.GetOutputHtml(Url, input, ref width, ref height, fillHeight: true);
 			HtmlString linkStrBegin = new HtmlString("<a href=\"{0}\" title=\"{1}\">".Fmt(
 				Url.Action(MVC.Gallery.Detail(input.UrlId)),
 				input.PublishName));
 			HtmlString linkStrEnd = new HtmlString("</a>");
 			<li>
-				<div class="thnWrap">@linkStrBegin@outHtml<div class="caption" style="@width">@input.PublishName</div>@linkStrEnd</div>
+				<div class="thnWrap hideLinks">
+					@linkStrBegin@outHtml@linkStrEnd
+					<div class="caption" style="width:@(width)px">@linkStrBegin<h4>@input.PublishName</h4>@linkStrEnd</div>
+					<div class="misc clearfix" style="width:@(width)px;">
+						@foreach (Tag tag in input.Tags) {
+							@Html.Tag(tag.Name)
+						}
+						<span class="author">by @Html.ActionLink(input.User.Name, MVC.Gallery.Index(input.User.Name))</span>
+					</div>
+				</div>
 			</li>
 
 		}
 			</ul>
 		</div>
 
-		<div class="clearfix">
+		<div class="clearfix hideLinks">
 		@pager
 		</div>
 	</div>

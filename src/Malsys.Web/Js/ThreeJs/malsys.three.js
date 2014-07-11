@@ -60,20 +60,15 @@ var controls = [];
 		camera.up = new THREE.Vector3(cu[0], cu[1], cu[2]);
 		scene.add(camera);
 
-		var ctrl = new THREE.TrackballControls(camera, $domElement[0], true);
+
+		var noZoom = $domElement.attr('data-zoom') !== 'true';
+		var ctrl = new THREE.TrackballControls(camera, $domElement[0], noZoom);
 		controls.push(ctrl);
 
 		var ct = metadata.cameraTarget;
 		ctrl.target = new THREE.Vector3(ct[0], ct[1], ct[2]);
 
-		ctrl.rotateSpeed = 1.0;
-		ctrl.zoomSpeed = 1.2;
-		ctrl.panSpeed = 0.8;
-
-		ctrl.noPan = true;
-
-		//ctrl.staticMoving = true;
-		//ctrl.dynamicDampingFactor = 0.3;
+		ctrl.noPan = $domElement.attr('data-pan') !== 'true';
 
 		ctrl.addEventListener('change', function () {
 			renderer.render(scene, camera);
@@ -126,6 +121,7 @@ var controls = [];
 			renderer.render(scene, camera);
 			$domElement.empty();
 			$domElement.append(renderer.domElement);
+			$domElement.append('<div class="threed"> </div>');
 			callback();
 		});
 
@@ -136,9 +132,6 @@ var controls = [];
 	}
 
 	function update($domElement, ctrl) {
-		if ($domElement.is(":hover")) {
-			ctrl.rotate();
-		}
 		//$domElement.children('.cameraPosition').each(function () {
 		//	var pos = ctrl.object.position;
 		//	$(this).text('set cameraPosition = {' + Math.round(pos.x) + ', ' + Math.round(pos.y) + ', ' + Math.round(pos.z) + '};');
