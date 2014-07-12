@@ -12,9 +12,9 @@ namespace Malsys.Web.Models.Lsystem {
 		private static KeyValuePair<string, object>[] emptyMetadata = new KeyValuePair<string, object>[0];
 
 
-		public static byte[] SerializeMetadata(FSharpMap<string, object> metadata) {
+		public static byte[] SerializeMetadata(KeyValuePair<string, object>[] metadata) {
 
-			if (metadata == null || metadata.Count == 0) {
+			if (metadata == null || metadata.Length == 0) {
 				return emptyData;
 			}
 

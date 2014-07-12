@@ -9,8 +9,8 @@ using Malsys.IO;
 using Malsys.Processing.Output;
 using Malsys.SemanticModel.Evaluated;
 using Malsys.SourceCode.Printers;
-using Malsys.Web.Infrastructure;
 using Malsys.Web.Entities;
+using Malsys.Web.Infrastructure;
 using Malsys.Web.Models;
 using Malsys.Web.Models.Lsystem;
 using Microsoft.FSharp.Collections;
@@ -44,7 +44,7 @@ namespace Malsys.Web.Controllers {
 			autoPackTreshold = int.Parse(appSettingsProvider[AppSettingsKeys.AutoPackTreshold]);
 
 #if DEBUG
-			autoPackTreshold = 50;  // for debugging purposes
+			autoPackTreshold = 50;  // For debugging purposes.
 #endif
 
 		}
@@ -82,7 +82,7 @@ namespace Malsys.Web.Controllers {
 				timeout = new TimeSpan(0, 0, int.Parse(appSettingsProvider[AppSettingsKeys.UnregisteredUserProcessTime]));
 			}
 #if DEBUG
-			timeout = TimeSpan.MaxValue;  // for debugging purposes
+			timeout = TimeSpan.MaxValue;  // For debugging purposes.
 #endif
 			string workDirFullPath = Server.MapPath(Url.Content(workDir));
 			malsysInputRepository.CleanProcessOutputs(workDirFullPath, maxWorkDirFiles, workDirCleanAmount);

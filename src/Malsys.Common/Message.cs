@@ -3,20 +3,16 @@
 using System;
 
 namespace Malsys {
-	/// <remarks>
-	/// Immutable.
-	/// </remarks>
 	public class Message {
 
-		public readonly string Id;
-		public readonly string MessageStr;
-		public readonly MessageType Type;
-		public readonly PositionRange Position;
-		public readonly DateTime Time;
+		public string Id;
+		public string MessageStr;
+		public MessageType Type;
+		public PositionRange Position;
+		public DateTime Time;
 
 
 		public Message(string id, MessageType type, string message, PositionRange position, DateTime time) {
-
 			Id = id;
 			MessageStr = message;
 			Type = type;

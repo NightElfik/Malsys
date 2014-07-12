@@ -6,160 +6,150 @@
 
 @{
 	ViewBag.Title = "Malsys L-system processor";
-	ViewBag.MainClass = "twoColumns";
 }
 
-@section submenu {
-	<li>@Html.ActionLink("Curve designer", MVC.CurveDesigner.Index())</li>
-	<li>@Html.ActionLink("Documentation & FAQ", MVC.Documentation.Home.Index())</li>
-}
+<h1>L-system processor</h1>
 
-
-<h2>L-system processor</h2>
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-100 mobile-grid-100">
 
 @if (Model.IsEmpty) {
-	<p class="okBlock">
-		If you don't know how to start writing L-systems, take a look in @Html.ActionLink("Documentation", MVC.Documentation.Home.Index()) at
+	<div class="info msg">
+		If you don't know how to start writing L-systems, take a look in
+			@Html.ActionLink("Documentation", MVC.Documentation.Home.Index()) at
 			@Html.ActionLink("basic principles of L-system rewriting", MVC.Documentation.Home.BasicRewriting()).
-	</p>
+	</div>
 }
 
 @if (Model.SavedInputUrlId != null) {
-	<p>
+	<div class="ok msg">
 		Your input was saved under ID `@Model.SavedInputUrlId`.
 		You can share it by URL @Html.InputPermaLink(Model.SavedInputUrlId)
 			or you can @Html.ActionLink("publish it", MVC.Gallery.Edit(Model.SavedInputUrlId)) to public gallery!
-	</p>
+	</div>
 }
 
 @if (Model.NoProcessStatement) {
-	<p class="errorBlock">
+	<div class="warning msg">
 		No process statements found.
-		Please look at the @Html.ActionLink("Documentation", MVC.Documentation.Home.Index()) to learn how to write process statements or use one from list below (put it at the very end of the input).
-	</p>
-	<ul>
-		<li><code>process all with SymbolPrinter;</code></li>
-		<li><code>process all with SvgRenderer;</code></li>
-		<li><code>process all with ThreeJsRenderer;</code></li>
-	</ul>
+		Please look at the @Html.ActionLink("Documentation", MVC.Documentation.Home.Index())
+			to learn how to write process statements or use one from list below (put it at the very end of the input).
+		<ul>
+			<li><code>process all with SvgRenderer;</code></li>
+			<li><code>process all with ObjExporter;</code></li>
+		</ul>
+	</div>
 }
 
 @if (Model.CompiledSourceCode != null) {
 	if (Model.Logger.ErrorOccurred) {
-		<p class="errorBlock">
+		<div class="error msg">
 			Compilation was not successful.
-		</p>
+		</div>
 	}
 	else {
-		<p class="okBlock">
+		<div class="ok msg">
 			Compilation was successful.
 			@Html.AnchorLink("See compiled source code below", "compiledSource")
-		</p>
+		</div>
 	}
 }
 
 @if (Model.OutputFiles != null) {
-	<p>
+	<div class="ok msg">
 		Processing of input
 		@if (Model.OutputFiles.Count > 0) {
 			@:resulted in @Html.AnchorLink(Model.OutputFiles.Count + " file(s)", "results") and
 		}
 		took @Math.Round(Model.ProcessDuration.TotalSeconds, 2) second(s).
-	</p>
-}
-
-@if (Model.Logger != null && Model.Logger.Count > 0) {
-	<table class="w100">
-	<tr>
-		<th style="width: 24px;"></th>
-		<th>Message</th>
-		<th style="width: 160px;">Position</th>
-	</tr>
-@foreach (var msgGroup in Model.Logger.GroupBy(x => x.MessageStr)) {
-	var count = msgGroup.Count();
-	var messages = msgGroup.Aggregate(new System.Text.StringBuilder(), (sb, m) => sb.AppendLine(m.GetFullMessage())).ToString();
-	var msg = msgGroup.First();
-	<tr class="@msg.Type.ToString().ToLower()">
-		<td class="center"><abbr title="@msg.Type (@msg.Id)">@msg.Type.ToString()[0]</abbr></td>
-		<td>
-			@if (count > 1) {
-				<p class="malsysMsg"><abbr title="@messages">[@(count)x]</abbr> @MalsysHelper.SimplifyMessage(msg.MessageStr)</p>
-			}
-			else {
-				<p class="malsysMsg">@MalsysHelper.SimplifyMessage(msg.MessageStr)</p>
-			}
-		</td>
-		<td>
-			@if (!msg.Position.IsUnknown) {
-				@:ln: @msg.Position.BeginLine
-				@:col: @msg.Position.BeginColumn
-			}
-		</td>
-	</tr>
-}
-	</table>
-	<hr />
-}
-
-<div class="floating_container clearfix">
-
-<div class="floating_box">
-@using (Html.BeginForm(MVC.Process.Index(), FormMethod.Post, new {
-		id = "processForm",
-		data_max_process_time = Model.MaxProcessDuration.TotalSeconds > int.MaxValue ? -1 : (int)Model.MaxProcessDuration.TotalSeconds })) {
-	<fieldset class="malsysSource">
-		<legend>Source code</legend>
-
-		@if(Model.UsedProcessConfigurationsNames != null){
-			<div class="inlineDoc" data-config-names="@Model.UsedProcessConfigurationsNames.JoinToString(";")"
-				data-fetch-url="@Url.ActionAbsolute(MVC.Documentation.Api.ProcessConfigMembers())"></div>
-		}
-
-		@Html.ValidationSummary(true)
-
-		@Html.TextAreaFor(m => m.SourceCode, Math.Max(20, (Model.SourceCode ?? "").CountLines() / 3), 60, null)
-
-		@* Do not use @Html.HiddenFor(m => m.ReferenceId) since it inserts old value from POST instead of updated value from model *@
-		<input id="ReferenceId" name="ReferenceId" type="hidden" value="@Model.ReferenceId" />
-
-		<p id="submitControls">
-			<input type="submit" name="Process" value="Process & display results" />
-			<input type="submit" name="Compile" value="Try to compile" />
-			<input type="submit" name="Save" value="Save & get permanent link" />
-		</p>
-	</fieldset>
-}
-</div>
-@{
-	bool loadThreeJs = false;
-	if (Model.OutputFiles != null && Model.OutputFiles.Count > 0) {
-		<div class="floating_box">
-			<h3 id="results">Process results</h3>
-		</div>
-		foreach (var result in Model.OutputFiles) {
-			if (result.MimeType == Malsys.MimeType.Application.Javascript) {
-				// TODO: this should be returned from partial view somehow
-				// the condition is on two places => place for mistakes
-				loadThreeJs = true;
-			}
-			<div class="floating_box">
-			@Html.Partial(MVC.Process.Views.OutputPartial, result)
-			</div>
-		}
-	}
-}
-
-@if (Model.CompiledSourceCode != null) {
-	<div class="floating_box">
-		<h3 id="compiledSource">Compiled source code</h3>
-		<pre class="malsys box">
-		@Model.CompiledSourceCode
-		</pre>
 	</div>
 }
 
+@if (Model.Logger != null && Model.Logger.Count > 0) {
+	foreach (var msgGroup in Model.Logger.GroupBy(x => x.MessageStr)) {
+		var count = msgGroup.Count();
+		var messages = msgGroup.Aggregate(new System.Text.StringBuilder(), (sb, m) => sb.AppendLine(m.GetFullMessage())).ToString();
+		var msg = msgGroup.First();
+		<div class="@msg.Type.ToString().ToLower() msg">
+			<abbr title="@msg.Type (@msg.Id)">@msg.Type.ToString()</abbr>:
+			@if (count > 1) {
+				<abbr title="@messages">[@(count)x]</abbr>
+			}
+			@MalsysHelper.SimplifyMessage(msg.MessageStr)
+
+			@if (!msg.Position.IsUnknown) {
+				@:[line: @(msg.Position.BeginLine), column: @(msg.Position.BeginColumn)]
+			}
+		</div>
+	}
+}
+	</div>
 </div>
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
+@using (Html.BeginForm(MVC.Process.Index(), FormMethod.Post, new {
+		id = "processForm",
+		data_max_process_time = Model.MaxProcessDuration.TotalSeconds > int.MaxValue ? -1 : (int)Model.MaxProcessDuration.TotalSeconds })) {
+	<h2>Source code</h2>
+	if(Model.UsedProcessConfigurationsNames != null){
+		<div class="inlineDoc" data-config-names="@Model.UsedProcessConfigurationsNames.JoinToString(";")"
+			data-fetch-url="@Url.ActionAbsolute(MVC.Documentation.Api.ProcessConfigMembers())"></div>
+	}
+
+	@Html.ValidationSummary(true)
+
+	@Html.TextAreaFor(m => m.SourceCode, Math.Max(20, (Model.SourceCode ?? "").CountLines() / 3), 60,
+		new { @style = "width:98%" })
+
+	@* Do not use @Html.HiddenFor(m => m.ReferenceId) since it inserts old value from POST instead of updated value from model *@
+	<input id="ReferenceId" name="ReferenceId" type="hidden" value="@Model.ReferenceId" />
+
+	<p id="submitControls">
+		<input type="submit" name="Process" value="Process & display results" />
+		<input type="submit" name="Compile" value="Try to compile" />
+		<input type="submit" name="Save" value="Save & get permanent link" />
+	</p>
+}
+	</div>
+	<div class="grid-50 mobile-grid-100">
+@{
+	if (Model.OutputFiles != null && Model.OutputFiles.Count > 0) {
+		<h2 id="results">Processing results</h2>
+		var ohg = new OutputHtmlGenerator();
+		foreach (var result in Model.OutputFiles) {
+			int width = 800, height = 600;
+			var output = ohg.GetOutputHtml(Url, result, ref width, ref height);
+
+			<div class="grid-100 mobile-grid-100 ">
+			<p>
+				<b>@result.Name</b> (by <abbr title="@result.SourceType.FullName">@result.SourceType.Name</abbr>)
+				@{ var fi = new FileInfo(result.FilePath); }
+				@Html.ActionLink(string.Format("download [{0}]", Malsys.DataSizeHelper.ToOptimalUnitString(fi.Length)),
+					MVC.ProcessOutput.Download(fi.Name))
+				<span class="note">
+				Metadata:
+				@foreach (var meta in result.Metadata) {
+					@meta.Key @:= @meta.Value;
+				}
+				</span>
+			</p>
+			@output
+			</div>
+		}
+	}
+
+	if (Model.CompiledSourceCode != null) {
+		<h2 id="compiledSource">Compiled source code</h2>
+		<pre class="malsys box">
+@Model.CompiledSourceCode
+		</pre>
+	}
+}
+
+
+	</div>
+</div>
 
 
 @{
@@ -167,13 +157,7 @@
 	StaticHtml.RequireScript(Links.Js.jquery_textarea_js);
 	StaticHtml.InlineScript("jQuery(document).ready(function () { $('#SourceCode').tabby() });");
 
-	if (loadThreeJs) {
-		StaticHtml.RequireScript(Links.Js.ThreeJs.Three_js);
-		StaticHtml.RequireScript(Links.Js.ThreeJs.Detector_js);
-		StaticHtml.RequireScript(Links.Js.ThreeJs.Stats_js);
-		StaticHtml.RequireScript(Links.Js.ThreeJs.Malsys_three_js);
-	}
-		
+
 	StaticHtml.InlineScript(@"(function ($) {
 		$('#processForm').submit(function () {
 			var container = $('#submitControls');

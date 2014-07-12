@@ -27,7 +27,7 @@
 	<div class="grid-100 mobile-grid-100">
 		@{
 			int width = 800, height = 600;
-			@(new OutputHtmlGenerator().GetOutputHtml(Url, Model.Input, ref width, ref height, pan3d: true, zoom3d: true))
+			@(new OutputHtmlGenerator().GetOutputHtml(Url, Model.Input, false, ref width, ref height))
 
 			if (!new FileInfo(Model.FilePath).Exists) {
 				<p>File not found!</p>
@@ -37,7 +37,6 @@
 </div>
 
 <div class="grid-100 mobile-grid-100 grid-parent">
-
 	<div class="grid-50 mobile-grid-100 ">
 		@if (Model.CurrentUserIsOwner) {
 			<h3>Administration</h3>

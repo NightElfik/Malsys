@@ -746,9 +746,6 @@
     <Content Include="Areas\Administration\Views\Roles\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Process\OutputPartial.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Areas\Administration\Views\Stats\Input.cshtml" />
   </ItemGroup>
   <ItemGroup>

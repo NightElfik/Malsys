@@ -61,14 +61,14 @@ var controls = [];
 		scene.add(camera);
 
 
-		var noZoom = $domElement.attr('data-zoom') !== 'true';
+		var noZoom = $domElement.attr('data-no-zoom') === 'true';
 		var ctrl = new THREE.TrackballControls(camera, $domElement[0], noZoom);
 		controls.push(ctrl);
 
 		var ct = metadata.cameraTarget;
 		ctrl.target = new THREE.Vector3(ct[0], ct[1], ct[2]);
 
-		ctrl.noPan = $domElement.attr('data-pan') !== 'true';
+		ctrl.noPan = $domElement.attr('data-no-pan') === 'true';
 
 		ctrl.addEventListener('change', function () {
 			renderer.render(scene, camera);
@@ -160,7 +160,7 @@ var controls = [];
 		}, 500);
 	}
 
-	processNext();
+	$(document).ready(processNext());
 
 }(jQuery));
 

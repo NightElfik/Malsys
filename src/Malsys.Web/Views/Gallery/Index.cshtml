@@ -40,11 +40,14 @@
 		@foreach (var input in Model.Inputs) {
 			int width = thnMaxWidth;
 			int height = thnMaxHeight;
-	  var outHtml = outputHtmlGenerator.GetOutputHtml(Url, input, ref width, ref height, fillHeight: true);
+			var outHtml = outputHtmlGenerator.GetOutputHtml(Url, input, true, ref width, ref height,
+				fillHeight: true, noPan3d: true, noZoom3d: true);
+
 			HtmlString linkStrBegin = new HtmlString("<a href=\"{0}\" title=\"{1}\">".Fmt(
 				Url.Action(MVC.Gallery.Detail(input.UrlId)),
 				input.PublishName));
 			HtmlString linkStrEnd = new HtmlString("</a>");
+
 			<li>
 				<div class="thnWrap hideLinks">
 					@linkStrBegin@outHtml@linkStrEnd

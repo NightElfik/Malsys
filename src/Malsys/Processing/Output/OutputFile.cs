@@ -1,6 +1,7 @@
 ﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
 // All rights reserved.
 using System;
+using System.Collections.Generic;
 using Microsoft.FSharp.Collections;
 
 namespace Malsys.Processing.Output {
@@ -17,10 +18,10 @@ namespace Malsys.Processing.Output {
 
 		public readonly Type SourceType;
 
-		public readonly FSharpMap<string, object> Metadata;
+		public readonly KeyValuePair<string, object>[] Metadata;
 
 
-		public OutputFile(string name, string filePath, string mimeType, Type sourceType, FSharpMap<string, object> metadata) {
+		public OutputFile(string name, string filePath, string mimeType, Type sourceType, KeyValuePair<string, object>[] metadata) {
 
 			Name = name;
 			FilePath = filePath;

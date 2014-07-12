@@ -1,23 +1,79 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
+using System.Net;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using Malsys.Processing;
+using Malsys.Processing.Output;
 using Malsys.Web.Entities;
 using Malsys.Web.Models.Lsystem;
 
 namespace Malsys.Web.Models {
 	public class OutputHtmlGenerator {
 
-		public HtmlString GetOutputHtml(UrlHelper url, SavedInput input, ref int maxWidth, ref int maxHeight,
-				bool fillHeight = false, bool pan3d = false, bool zoom3d = false) {
-			var metadata = OutputMetadataHelper.DeserializeMetadata(input.OutputThnMetadata);
+
+		public HtmlString GetOutputHtml(UrlHelper url, OutputFile output, ref int maxWidth, ref int maxHeight,
+				bool fillHeight = false, bool noPan3d = false, bool noZoom3d = false) {
+
+			return GetOutputHtml(url.Action(MVC.ProcessOutput.Show(Path.GetFileName(output.FilePath))),
+				output.Name, output.MimeType, output.Metadata, ref maxWidth, ref maxHeight, fillHeight, noPan3d, noZoom3d);
+		}
+
+		public HtmlString GetOutputHtml(UrlHelper url, SavedInput input, bool thumbnail, ref int maxWidth, ref int maxHeight,
+				bool fillHeight = false, bool noPan3d = false, bool noZoom3d = false) {
+
+			return GetOutputHtml(
+				thumbnail
+					? url.Action(MVC.Gallery.GetThumbnail(input.UrlId, input.EditDate.Hash()))
+					: url.Action(MVC.Gallery.GetOutput(input.UrlId, input.EditDate.Hash())),
+				input.PublishName,
+				input.MimeType,
+				OutputMetadataHelper.DeserializeMetadata(thumbnail ? input.OutputThnMetadata : input.OutputMetadata),
+				ref maxWidth, ref maxHeight, fillHeight, noPan3d, noZoom3d);
+		}
+
+
+		public HtmlString GetOutputHtml(string url, string name, string mimeType, KeyValuePair<string, object>[] metadata,
+				ref int maxWidth, ref int maxHeight, bool fillHeight = false, bool noPan3d = false, bool noZoom3d = false) {
+
 			int width, height;
 
 			string content;
+			string extraStyle = "";
 
-			switch (input.MimeType) {
+			switch (mimeType) {
+
+
+				case MimeType.Text.Plain:
+					width = maxWidth;
+					height = maxHeight;
+					int readChars = 8192;
+
+					// Make an internal request to retrieve data request to avoid any JS
+					// that would have to make the request anyways.
+					try {
+						var webClient = new WebClient();
+						content = webClient.DownloadString(StaticUrl.ToAbsolute(url));
+					}
+					catch (Exception ex) {
+						goto default;
+					}
+
+					string msg = "";
+					if (content.Length > readChars) {
+						msg = "... output trimmed from {0} to {1} characters.".Fmt(content.Length, readChars - 192);
+						content = content.Substring(0, readChars - 192);
+					}
+					content = content.Replace("\r", "").Replace("\n", "<br>").Replace(" ", "&nbsp;");
+					var sb = new StringBuilder();
+					sb.Append("<pre style='text-decoration: none;' class='asciiArt'>");
+					sb.Append(content);
+					sb.Append(msg);
+					sb.Append("</pre>");
+					content = sb.ToString();
+					break;
 
 				case MimeType.Image.SvgXml:
 					width = OutputMetadataHelper.TryGetValue(metadata, OutputMetadataKeyHelper.OutputWidth, -1);
@@ -31,10 +87,10 @@ namespace Malsys.Web.Models {
 						width = -1;  // Do now put width;
 					}
 					content = "<img src=\"{0}\" {1} height=\"{2}px\" alt=\"{3}\" />".Fmt(
-						url.Action(MVC.Gallery.GetThumbnail(input.UrlId, input.EditDate.Hash())),
+						url,
 						width > 0 ? "width=\"" + width + "px\"" : "",
 						height,
-						input.PublishName);
+						name);
 					break;
 
 				case MimeType.Image.Png:
@@ -50,15 +106,23 @@ namespace Malsys.Web.Models {
 						height = maxHeight;
 					}
 					content = "<img src=\"{0}\" {1} height=\"{2}px\" alt=\"{3}\" />".Fmt(
-						url.Action(MVC.Gallery.GetThumbnail(input.UrlId, input.EditDate.Hash())),
+						url,
 						width > 0 ? "width=\"" + width + "px\"" : "",
 						height,
-						input.PublishName);
+						name);
 					break;
 
 				case MimeType.Application.Zip:
 					string objMeta = OutputMetadataHelper.TryGetValue(metadata, OutputMetadataKeyHelper.ObjMetadata, "");
 					if (string.IsNullOrWhiteSpace(objMeta)) {
+						bool packedOutputs = OutputMetadataHelper.TryGetValue(metadata, OutputMetadataKeyHelper.PackedOutputs, false);
+						if (packedOutputs) {
+							width = maxWidth / 2;
+							height = maxHeight;
+							content = ("<div class='clearfix'><p>Too many outputs to display. All outputs were packed. "
+								+ "Please download the package to see the results.</p></div>");
+							break;
+						}
 						goto default;  // Unknown ZIP archive
 					}
 
@@ -68,12 +132,12 @@ namespace Malsys.Web.Models {
 					content = ("<div class=\"threeJsScene\" data-url=\"{0}\" {4}{5} style=\"width: {1}px; height: {2}px;\">"
 							+ "<div class=\"clearfix\"><p class=\"loading\">Loading 3D model<br>of {3}<br>"
 							+ "<span class=\"dots\"></p></div></div>").Fmt(
-						url.Action(MVC.Gallery.GetThumbnail(input.UrlId, input.EditDate.Hash())),
+						url,
 						maxWidth,
 						maxHeight,
-						input.PublishName,
-						pan3d ? "data-pan=\"true\"" : "",
-						zoom3d ? "data-zoom=\"true\"" : "");
+						name,
+						noPan3d ? "data-no-pan=\"true\"" : "",
+						noZoom3d ? "data-no-zoom=\"true\"" : "");
 
 					StaticHtml.RequireScript(Links.Js.ThreeJs.Three_js, LoadingOrder.Default);
 					StaticHtml.RequireScript(Links.Js.ThreeJs.Detector_js, LoadingOrder.Default);
@@ -88,9 +152,7 @@ namespace Malsys.Web.Models {
 					width = maxWidth / 2;
 					height = maxHeight;
 
-					content = ("<div class=\"clearfix\"><p>{0}</p><p>Thumbnail for this type of output is not supported. "
-							+ "Please click to see the output.</p></div>").Fmt(input.PublishName);
-
+					content = ("<div class='clearfix'><p>{0}</p><p>Unknown type of output.</p></div>").Fmt(name);
 					break;
 
 			}
@@ -104,8 +166,8 @@ namespace Malsys.Web.Models {
 			maxWidth = width;
 			maxHeight = height;
 
-			return new HtmlString("<div style=\"{0}height:{1}px; margin:auto;\">{2}</div>".
-				Fmt(widthStr, height, content));
+			return new HtmlString("<div class='lsystemOutput' style='{0}height:{1}px; margin:auto; {3}'>{2}</div>".
+				Fmt(widthStr, height, content, extraStyle));
 		}
 	}
 }

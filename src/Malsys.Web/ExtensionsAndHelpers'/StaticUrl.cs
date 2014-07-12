@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.Contracts;
 using System.Text.RegularExpressions;
+using System.Web;
 
 namespace Malsys.Web {
 	public class StaticUrl {
@@ -22,6 +23,15 @@ namespace Malsys.Web {
 			str = multiDash.Replace(str, "-");
 			str = str.Trim('-');
 			return str;
+		}
+
+		public static string ToAbsolute(string relativeUrl) {
+			var request = HttpContext.Current.Request;
+
+			return string.Format("{0}://{1}{2}",
+				(request.IsSecureConnection) ? "https" : "http",
+				request.Headers["Host"],
+				VirtualPathUtility.ToAbsolute(relativeUrl));
 		}
 
 	}

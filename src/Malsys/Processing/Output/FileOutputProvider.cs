@@ -105,7 +105,7 @@ namespace Malsys.Processing.Output {
 				.FirstOrDefault();
 		}
 
-		#endregion
+		#endregion IOutputProvider Members
 
 
 		public int OutputsCount {
@@ -155,7 +155,7 @@ namespace Malsys.Processing.Output {
 					x.FilePath,
 					x.MimeType,
 					x.Caller,
-					x.Metadata.ToFsharpMap(y => y.Key, y => y.Value)));
+					x.Metadata.ToArray()));
 		}
 
 		/// <summary>
@@ -192,7 +192,9 @@ namespace Malsys.Processing.Output {
 			managedFiles.Clear();
 			FSharpMap<string, object> additionalData = MapModule.Empty<string, object>();
 			additionalData = additionalData.Add(OutputMetadataKeyHelper.PackedOutputs, true);
-			return new OutputFile[] { new OutputFile("Packed output files", packagePath, MimeType.Application.Zip, typeof(FileOutputProvider), additionalData) };
+			return new OutputFile[] {
+				new OutputFile("Packed output files", packagePath, MimeType.Application.Zip, typeof(FileOutputProvider), additionalData.ToArray())
+			};
 
 		}
 

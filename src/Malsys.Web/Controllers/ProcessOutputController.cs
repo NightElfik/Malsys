@@ -44,10 +44,10 @@ namespace Malsys.Web.Controllers {
 
 		private ActionResult download(string fileName, string mimeType, bool download) {
 
-			var procOutput = inputProcessesRepository.InputDb.ProcessOutputs.Where(po => po.FileName == fileName).SingleOrDefault();
+			var procOutput = inputProcessesRepository.InputDb.ProcessOutputs.SingleOrDefault(po => po.FileName == fileName);
 
 			if (procOutput == null) {
-				return new HttpNotFoundResult("File `" + fileName + "` not found.");
+				return new HttpNotFoundResult();
 			}
 
 			procOutput.LastOpenDate = dateTimeProvider.Now;

@@ -411,6 +411,46 @@ p { text-align: justify; }
 
 /* Processing =============================================================== */
 
+.monospace { font-family: @monospaceFont; }
+
+#ajaxLoader {
+	display: none;
+	text-align: center;
+}
+
+.msg {
+	padding: 2px 4px 2px 25px;
+	margin-top: 2px;
+	background-repeat: no-repeat;
+	background-position-y: center;
+	background-position-x: 4px;
+	ul { margin: 0px; }
+}
+
+.info {
+	background-color: lighten(#3670FF, 30%);
+	border: 1px solid #3670FF;
+	background-image: url('/Img/Icons/information.png');
+}
+
+.ok {
+	background-color: lighten(#34B52B, 40%);
+	border: 1px solid #34B52B;
+	background-image: url('/Img/Icons/tick.png');
+}
+
+.warning {
+	background-color: lighten(#FF9800, 40%);
+	border: 1px solid #FF9800;
+	background-image: url('/Img/Icons/exclamation.png');
+}
+
+.error {
+	background-color: lighten(#FF0000, 40%);
+	border: 1px solid #FF0000;
+	background-image: url('/Img/Icons/cross.png');
+}
+
 .inlineDoc {
 	font-size: 90%;
 	p { text-align: left; }
@@ -443,7 +483,7 @@ pre {
 	a:hover { text-decoration: underline; color: @srcColor; }
 	.lsysTryMe { right: 8px; border-bottom: none; }
 	.collapseSwitch { right: 96px; }
-	&.collapsed { height: 1.5em; overflow: hidden;  }
+	&.collapsed { height: 1.5em; overflow: hidden; }
 }
 
 code {
@@ -488,40 +528,10 @@ pre .lsysTryMe, pre .collapseSwitch {
 	&:hover { color: #000; background: #FFF; }
 }
 
-.malsysSource textarea { font-family: @monospaceFont; width: 98%; }
+.malsysSource textarea { width: 98%; }
 
 .outputTruncated { font-size: 0.8em; color: #888888; }
 
-pre.asciiArt {
-	font-size: 0.5em;
-	line-height: 1em;
-	word-wrap: normal;
-}
-
-.threeJsScene {
-	position: relative;
-
-	.loading {
-		text-align: center;
-		font-size: 1.5em;
-		color: #AAA;
-	}
-	.threed {
-		position: absolute;
-		bottom: 2px;
-		right: 2px;
-		z-index: 10;
-		width: 16px;
-		height: 12px;
-		background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAMCAQAAADB7vUKAAABAUlEQVQY02XPP0vbYRTF8c8vKYhghC6SrYvvQSQoiGAFg1v2QicFB8X5CbmLbqVDdejgaCn4AgRBHDIoWAQRXARHQVH8g6KDj0Ns+UHPdu453Pu9lBSIodiKgb+O4l805VP6GV9s4MSm7+kBKhDrnvKCo458YB+rJt3Hn2hQRM2pWp5oH/aWJrFiNd3GrF/6tYpYM2c6bftPvXMVX3EZ78NOGfiqx3CdWU6I4Wi2EQK5piNTxLwfuDDjxbGusZSJEXv6cFHJ676h7tARGu5iEfu56ca90UqR05JJB55VZQyYiY+0d3I9DabzokTd8tur8dQt/1ItUX/wmD+3z8JuqfAG0aBXHQzFr54AAAAASUVORK5CYII=") 0 50% no-repeat transparent;
-	}
-	.fullscreen { position: absolute; top: 4px; left: 4px; margin: 0; font-size: 0.8em; color: #888; }
-	.webgl { position: absolute; top: 4px; left: 100px; margin: 0; font-size: 0.8em; color: #888; }
-	.controls { position: absolute; bottom: 4px; left: 4px; margin: 0; font-size: 0.8em; color: #888; }
-	.cameraPosition { position: absolute; bottom: 64px; left: 4px; margin: 0; font-size: 0.8em; color: #888; }
-	.cameraUp { position: absolute; bottom: 44px; left: 4px; margin: 0; font-size: 0.8em; color: #888; }
-	.cameraTarget { position: absolute; bottom: 24px; left: 4px; margin: 0; font-size: 0.8em; color: #888; }
-}
 
 /* Gallery ================================================================== */
 
@@ -561,6 +571,32 @@ pre.asciiArt {
 	}
 }
 
+.threeJsScene {
+	position: relative;
+
+	.loading {
+		text-align: center;
+		font-size: 1.5em;
+		color: #AAA;
+	}
+	.threed {
+		position: absolute;
+		bottom: 2px;
+		right: 2px;
+		z-index: 10;
+		width: 16px;
+		height: 12px;
+		background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAMCAQAAADB7vUKAAABAUlEQVQY02XPP0vbYRTF8c8vKYhghC6SrYvvQSQoiGAFg1v2QicFB8X5CbmLbqVDdejgaCn4AgRBHDIoWAQRXARHQVH8g6KDj0Ns+UHPdu453Pu9lBSIodiKgb+O4l805VP6GV9s4MSm7+kBKhDrnvKCo458YB+rJt3Hn2hQRM2pWp5oH/aWJrFiNd3GrF/6tYpYM2c6bftPvXMVX3EZ78NOGfiqx3CdWU6I4Wi2EQK5piNTxLwfuDDjxbGusZSJEXv6cFHJ676h7tARGu5iEfu56ca90UqR05JJB55VZQyYiY+0d3I9DabzokTd8tur8dQt/1ItUX/wmD+3z8JuqfAG0aBXHQzFr54AAAAASUVORK5CYII=") 0 50% no-repeat transparent;
+	}
+	.fullscreen { position: absolute; top: 4px; left: 4px; margin: 0; font-size: 0.8em; color: #888; }
+	.webgl { position: absolute; top: 4px; left: 100px; margin: 0; font-size: 0.8em; color: #888; }
+	.controls { position: absolute; bottom: 4px; left: 4px; margin: 0; font-size: 0.8em; color: #888; }
+	.cameraPosition { position: absolute; bottom: 64px; left: 4px; margin: 0; font-size: 0.8em; color: #888; }
+	.cameraUp { position: absolute; bottom: 44px; left: 4px; margin: 0; font-size: 0.8em; color: #888; }
+	.cameraTarget { position: absolute; bottom: 24px; left: 4px; margin: 0; font-size: 0.8em; color: #888; }
+}
+
+
 a.tag {
 	font-size: 90%;
 	line-height: 1.3;
@@ -581,6 +617,16 @@ a.tag {
 
 .votes .vote { margin: 0.2em; }
 
+.lsystemOutput {
+	overflow: auto;
+}
+
+.asciiArt {
+	font-size: 0.5em;
+	line-height: 1em;
+	word-wrap: normal;
+}
+a:hover .asciiArt { text-decoration: none !important; }
 
 /* Components ============================================================== */
 .component {
@@ -650,30 +696,6 @@ a.tag {
 	}
 }
 
-
-/* Uncategorized ============================================================ */
-
-
-.scrollBox { overflow: auto; margin: 0 auto; }
-
-p.malsysMsg {
-	margin: 0;
-	padding: 0;
-	.quoted { font-family: @monospaceFont; font-weight: bolder; }
-}
-
-.error { background-color: #FFDDDD; }
-.errorBlock { background-color: #FFDDDD; padding: 0.5em; border: 1px solid #FF0000; }
-.warning { background-color: #FBEC5D; }
-
-.okBlock { background-color: #DDFFDD; padding: 0.5em; border: 1px solid #00FF00; }
-
-.monospace { font-family: @monospaceFont; }
-
-#ajaxLoader {
-	display: none;
-	text-align: center;
-}
 
 /* Media queries ============================================================ */
 
