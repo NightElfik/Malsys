@@ -15,14 +15,14 @@ namespace Malsys.Web.Models {
 
 
 		public HtmlString GetOutputHtml(UrlHelper url, OutputFile output, ref int maxWidth, ref int maxHeight,
-				bool fillHeight = false, bool noPan3d = false, bool noZoom3d = false) {
+				bool fillHeight = false, bool noPan3d = false, bool noZoom3d = false, bool noFullScreen = false) {
 
 			return GetOutputHtml(url.Action(MVC.ProcessOutput.Show(Path.GetFileName(output.FilePath))),
-				output.Name, output.MimeType, output.Metadata, ref maxWidth, ref maxHeight, fillHeight, noPan3d, noZoom3d);
+				output.Name, output.MimeType, output.Metadata, ref maxWidth, ref maxHeight, fillHeight, noPan3d, noZoom3d, noFullScreen);
 		}
 
 		public HtmlString GetOutputHtml(UrlHelper url, SavedInput input, bool thumbnail, ref int maxWidth, ref int maxHeight,
-				bool fillHeight = false, bool noPan3d = false, bool noZoom3d = false) {
+				bool fillHeight = false, bool noPan3d = false, bool noZoom3d = false, bool noFullScreen = false) {
 
 			return GetOutputHtml(
 				thumbnail
@@ -31,12 +31,12 @@ namespace Malsys.Web.Models {
 				input.PublishName,
 				input.MimeType,
 				OutputMetadataHelper.DeserializeMetadata(thumbnail ? input.OutputThnMetadata : input.OutputMetadata),
-				ref maxWidth, ref maxHeight, fillHeight, noPan3d, noZoom3d);
+				ref maxWidth, ref maxHeight, fillHeight, noPan3d, noZoom3d, noFullScreen);
 		}
 
 
 		public HtmlString GetOutputHtml(string url, string name, string mimeType, KeyValuePair<string, object>[] metadata,
-				ref int maxWidth, ref int maxHeight, bool fillHeight = false, bool noPan3d = false, bool noZoom3d = false) {
+				ref int maxWidth, ref int maxHeight, bool fillHeight = false, bool noPan3d = false, bool noZoom3d = false, bool noFullScreen = false) {
 
 			int width, height;
 
@@ -166,8 +166,12 @@ namespace Malsys.Web.Models {
 			maxWidth = width;
 			maxHeight = height;
 
-			return new HtmlString("<div class='lsystemOutput' style='{0}height:{1}px; margin:auto; {3}'>{2}</div>".
-				Fmt(widthStr, height, content, extraStyle));
+			noFullScreen = true;  // Disable FS for now.
+
+			return new HtmlString("<div class='lsystemOutput' style='{0}height:{1}px; {3}'>{2}{4}</div>".Fmt(
+				widthStr, height, content, extraStyle,
+				noFullScreen ? "" : "<div class='fullScreenToggle'>&nbsp;</div>"
+			));
 		}
 	}
 }

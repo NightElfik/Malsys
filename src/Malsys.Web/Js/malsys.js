@@ -459,5 +459,15 @@
 	});
 
 
+	$('.fullScreenToggle').each(function (i) {
+		var $btnElement = $(this);
+		var $domElement = $btnElement.parent();
+
+		$btnElement.click(function () {
+			$domElement.toggleClass('fullScreen');
+		});
+	});
+
+
 } (jQuery));
 

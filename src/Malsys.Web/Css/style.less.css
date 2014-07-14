@@ -618,15 +618,56 @@ a.tag {
 .votes .vote { margin: 0.2em; }
 
 .lsystemOutput {
-	overflow: auto;
+	position: relative;
+	margin: auto;
+	overflow: hidden;
 }
 
 .asciiArt {
 	font-size: 0.5em;
 	line-height: 1em;
 	word-wrap: normal;
+	text-decoration: none !important;
 }
-a:hover .asciiArt { text-decoration: none !important; }
+
+.asciiArt:hover {
+	text-decoration: none !important;
+}
+
+.fullScreenToggle {
+	position: absolute;
+	right: 0;
+	top: 0;
+	width: 16px;
+	height: 16px;
+	z-index: 10;
+	background-image: url('/Img/Icons/application-resize-full.png');
+	background-repeat: no-repeat;
+	opacity: 0.0;
+	cursor: pointer;
+	.transition(opacity 0.5s ease);
+}
+
+.lsystemOutput:hover .fullScreenToggle {
+	opacity: 0.5;
+}
+
+.fullScreenToggle:hover {
+	opacity: 1.0 !important;
+}
+
+.fullScreen {
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 5;
+	width: auto !important;
+	height: auto !important;
+	background-color: white;
+	img { width: auto !important; height: auto !important; }
+}
 
 /* Components ============================================================== */
 .component {

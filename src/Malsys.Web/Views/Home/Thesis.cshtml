@@ -2,36 +2,32 @@
 	ViewBag.Title = "Bachelor thesis – L-systems online";
 }
 
-@section submenu {
-	<li>@Html.ActionLink("Curve designer", MVC.CurveDesigner.Index())</li>
-	<li>@Html.ActionLink("Development diary", MVC.DevDiary.Index())</li>
-	<li>@Html.ActionLink("Thesis", MVC.Home.Thesis())</li>
-	<li>@Html.ActionLink("Documentation", MVC.Documentation.Home.Index())</li>
-}
+<h1>Bachelor thesis – L-systems online</h1>
 
-<h2>Bachelor thesis – L-systems online</h2>
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 
 <p>
 	This site was created as bachelors work called <b>L-systems online</b> under the leadership of
 		@Html.Link("Josef Pelikán", "http://cgg.mff.cuni.cz/~pepca/", null, true)
 		on @Html.Link("Faculty of Mathematics and Physics", "http://www.mff.cuni.cz/", null, true)
 		of @Html.Link("Charles University in Prague", "http://www.cuni.cz/", null, true).
-	As a part of the work is Bachelor thesis which describes whole project in details.
+	This bachelor's thesis describe this project in great details.
 	You can download it using following links.
 </p>
 
-<h3>Download of the thesis (v 1.01, May 2012)</h3>
+<h2>Download of the thesis (v 1.01, May 2012)</h2>
 @Html.Link("L-systems online (PDF)", Links.Download.MarekFiser_LsystemsOnline_v101_pdf) ~ 6 MB<br />
 @Html.Link("L-systems online (ZIPped PDF)", Links.Download.MarekFiser_LsystemsOnline_v101_pdf_zip) ~ 5 MB<br />
 @Html.Link("L-systems online (Google doc)", "https://docs.google.com/open?id=0Bw3uJH_ZleRNMTc5VUctQTRfQlE", null, true) (online)
 
 <p>
-	Feel free to @Html.ActionLink("contact me", MVC.Feedback.EmailToAuthor()) (the author) if you want to ask me about anything (or if you find typo or mistake).
-	This thesis is my first large text in the English, there will be typos and grammar mistakes.
+	Feel free to @Html.ActionLink("contact me", MVC.Feedback.EmailToAuthor()) (the author) if you want to ask me about anything.
+	This thesis is my first large text in the English so please excuse occasional typos and grammar mistakes.
 </p>
 
 
-<h3>Abstract of the thesis</h3>
+<h2>Abstract of the thesis</h2>
 <p>
 	An L-system in its simplest form is a variant of a context-free grammar.
 	Originally, L-systems were developed and are still mainly used for modeling plant growth, though with L-systems it is possible to create general fractals, models of towns or even music.
@@ -51,9 +47,8 @@
 	Part of the site is a gallery of L-systems to which each user can contribute and which thus helps to create a user-community.
 	The web interface takes full advantage of the library and thus serves as an example of its use.
 </p>
-
-
-<h3>Preview of some pages from the thesis</h3>
+	</div>
+	<div class="grid-50 mobile-grid-100">
 <a href="/Img/Thesis/00.png" rel="prettyPhoto[pp_gal]" title="Preview of the title">
 	<img src="/Img/Thesis/thn/00.png" width="293" height="414" alt="Preview of the title" /></a>
 <a href="/Img/Thesis/05.png" rel="prettyPhoto[pp_gal]" title="Preview of the introduction">
@@ -67,6 +62,9 @@
 	<img src="/Img/Thesis/thn/30.png" width="293" height="414" alt="Preview of 30th page" /></a>
 <a href="/Img/Thesis/83.png" rel="prettyPhoto[pp_gal]" title="Preview of the conclusion">
 	<img src="/Img/Thesis/thn/83.png" width="293" height="414" alt="Preview of the conclusion" /></a>
+
+	</div>
+</div>
 @*
 @section scripts {
 	@Content.Css(Links.Css.prettyPhoto_css)
