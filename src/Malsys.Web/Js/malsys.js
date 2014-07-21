@@ -468,6 +468,35 @@
 		});
 	});
 
+	$('.flipContainer').each(function (i, ele) {
+		var container = $(ele);
+		var flipper = container.find('.flipper');
+		var front = container.find('.front');
+		var back = container.find('.back');
+		var fontFlipLink = front.find('.flipLink');
+		var backFlipLink = back.find('.flipLink');
+
+		fontFlipLink.click(function () {
+			fontFlipLink.hide();
+			back.show();
+			flipper.addClass('flipped');
+			// Swap for browsers that did not perform animation.
+			window.setTimeout(function () { front.hide(); backFlipLink.show(); }, 600);
+		});
+
+		backFlipLink.click(function () {
+			backFlipLink.hide();
+			front.show();
+			flipper.removeClass('flipped');
+			// Swap for browsers that did not perform animation.
+			window.setTimeout(function () { back.hide(); fontFlipLink.show(); }, 600);
+		});
+
+		back.hide();
+		backFlipLink.hide();
+		fontFlipLink.show();
+	});
+
 
 } (jQuery));
 

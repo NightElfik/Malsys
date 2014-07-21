@@ -29,6 +29,17 @@ namespace Malsys {
 			);
 
 			routes.MapRoute(
+				name: "Dev diary",
+				url: MVC.DevDiary.Name + "/{name}/{part}",
+				defaults: new {
+					controller = MVC.DevDiary.Name,
+					action = MVC.DevDiary.ActionNames.Entry,
+					part = UrlParameter.Optional,
+				},
+				namespaces: new string[] { "Malsys.Web.Controllers" }
+			);
+
+			routes.MapRoute(
 				name: "Default",
 				url: "{controller}/{action}/{id}",
 				defaults: new {

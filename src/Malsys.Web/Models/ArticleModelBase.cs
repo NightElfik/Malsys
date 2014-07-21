@@ -16,25 +16,25 @@ namespace Malsys.Web.Models {
 			}
 		}
 
-		//private FiguresManager figuresManager;
-		//public FiguresManager FiguresManager {
-		//	get {
-		//		if (figuresManager == null) {
-		//			figuresManager = new FiguresManager();
-		//		}
-		//		return figuresManager;
-		//	}
-		//}
+		private FiguresManager figuresManager;
+		public FiguresManager FiguresManager {
+			get {
+				if (figuresManager == null) {
+					figuresManager = new FiguresManager();
+				}
+				return figuresManager;
+			}
+		}
 
-		//private CodeListingsManager codeListingsManager;
-		//public CodeListingsManager CodeListingsManager {
-		//	get {
-		//		if (codeListingsManager == null) {
-		//			codeListingsManager = new CodeListingsManager();
-		//		}
-		//		return codeListingsManager;
-		//	}
-		//}
+		private CodeListingsManager codeListingsManager;
+		public CodeListingsManager CodeListingsManager {
+			get {
+				if (codeListingsManager == null) {
+					codeListingsManager = new CodeListingsManager();
+				}
+				return codeListingsManager;
+			}
+		}
 
 		//private EquationManager equationManager;
 		//public EquationManager EquationManager {

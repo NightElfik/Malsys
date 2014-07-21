@@ -53,6 +53,38 @@
 	transition: @arguments;
 }
 
+.transform(@value) {
+	-webkit-transform: @arguments;
+	-moz-transform: @arguments;
+	-o-transform: @arguments;
+	-ms-transform: @arguments;
+	transform: @arguments;
+}
+
+.transform-style(@value) {
+	-webkit-transform-style: @arguments;
+	-moz-transform-style: @arguments;
+	-o-transform-style: @arguments;
+	-ms-transform-style: @arguments;
+	transform-style: @arguments;
+}
+
+.backface-visibility(@value) {
+	-webkit-backface-visibility: @arguments;
+	-moz-backface-visibility: @arguments;
+	-o-backface-visibility: @arguments;
+	-ms-backface-visibility: @arguments;
+	backface-visibility: @arguments;
+}
+
+.perspective(@value) {
+	-webkit-perspective: @arguments;
+	-moz-perspective: @arguments;
+	-o-perspective: @arguments;
+	-ms-perspective: @arguments;
+	perspective: @arguments;
+}
+
 
 /* ==================================================================================================================
  * Layout
@@ -134,7 +166,7 @@ a {
 }
 
 /* Redeclare monospace font family: h5bp.com/j */
-pre, code, kbd, samp { font-family: @monospaceFont; font-size: 1em; }
+pre, code, kbd, samp { font-family: @monospaceFont; font-size: 0.9em; }
 
 /* Position subscript and superscript content without affecting line-height: h5bp.com/k */
 sub, sup { font-size: 75%; line-height: 0; position: relative; vertical-align: baseline; }
@@ -237,7 +269,20 @@ html, #header, #footer {
 
 input[type="submit"] { padding: 0.5em 1em; }
 
-h1, h2, h3 {
+h1, .h1Like {
+	color: #000;
+	margin: 0.5em 0;
+	padding: 0;
+	border: none;
+	text-align: center;
+	a {
+		text-decoration: none;
+		color: #000 !important;
+		&:hover, &:focus { text-decoration: none; }
+	}
+}
+
+h2, h3 {
 	color: #000;
 	border-bottom: 1px solid #BBB;
 	box-shadow: 0 6px 6px -6px #BBB;
@@ -296,6 +341,54 @@ h1, h2, h3 {
 	}
 }*/
 
+/* ==================================================================================================================
+ * Flipper
+ * ================================================================================================================== */
+
+.flipContainer {
+	margin: 0 auto;
+	.perspective(1000);
+
+	.flipper {
+		position: relative;
+		.transition(~"0.6s");
+		.transform-style(~"preserve-3d");
+	}
+
+	.front, .back {
+		position: absolute;
+		top: 0;
+		left: 0;
+		border: 1px solid #DDD;
+		.backface-visibility(hidden);
+	}
+
+	.front {
+		z-index: 2;  // Front pane is placed above back.
+	}
+
+	.back {
+		.transform(rotateY(-180deg));  // Back pane is initially hidden.
+	}
+
+	.flipLink {
+		position: absolute;
+		top: 0;
+		right: 20px;
+		padding: 4px 6px 4px 20px;
+		z-index: 1;
+		background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAMCAQAAADB7vUKAAABAUlEQVQY02XPP0vbYRTF8c8vKYhghC6SrYvvQSQoiGAFg1v2QicFB8X5CbmLbqVDdejgaCn4AgRBHDIoWAQRXARHQVH8g6KDj0Ns+UHPdu453Pu9lBSIodiKgb+O4l805VP6GV9s4MSm7+kBKhDrnvKCo458YB+rJt3Hn2hQRM2pWp5oH/aWJrFiNd3GrF/6tYpYM2c6bftPvXMVX3EZ78NOGfiqx3CdWU6I4Wi2EQK5piNTxLwfuDDjxbGusZSJEXv6cFHJ676h7tARGu5iEfu56ca90UqR05JJB55VZQyYiY+0d3I9DabzokTd8tur8dQt/1ItUX/wmD+3z8JuqfAG0aBXHQzFr54AAAAASUVORK5CYII=") 0 50% no-repeat transparent;
+		opacity: 0.4;
+		cursor: pointer;
+		.transition(all 0.4s);
+		&:hover { opacity: 1.0; background-color: #FFF; }
+	}
+
+	.flipped {
+		.transform(rotateY(180deg));
+	}
+}
+
 
 /* General styles =========================================================== */
 
@@ -313,7 +406,7 @@ h1, h2, h3 {
 .note { font-size: 80%; color: @textNoteColor; }
 .box {
 	.malsysBox();
-	margin-bottom: 0.5em;
+	margin: 0.5em 0;
 }
 a.noUnderline:hover { text-decoration: none; }
 
@@ -397,15 +490,19 @@ p { text-align: justify; }
 /* Figures ================================================================== */
 
 .figure {
-	margin: 8px;
+	margin: 1em 0;
 	text-align: center;
-	p { text-align: center; margin: 0; padding: 4px 0 0 0; }
-	.subfigure{
-		display: inline-block;
-		margin: 8px;
+	h5 { text-align: center; margin: 0; padding: 4px 0 0 0; }
+	h6 { text-align: center; margin: 0; padding: 4px 0 0 0; }
+	.img img {
+		border: 1px solid #BBB;
+		max-width: 100%;  // Scale to fit the width or parent ...
+		height: auto;  // ... and resize height while keeping aspect ratio
+		margin: 0 auto 8px auto;
 	}
-	.graph div {
-		margin: 0 auto;
+	.subfigure {
+		display: inline-block;
+		margin: 0 4px;
 	}
 }
 
@@ -424,7 +521,8 @@ p { text-align: justify; }
 	background-repeat: no-repeat;
 	background-position-y: center;
 	background-position-x: 4px;
-	ul { margin: 0px; }
+	ul { margin: 0; }
+	p { margin: 0; }
 }
 
 .info {
@@ -468,7 +566,9 @@ p { text-align: justify; }
 	}
 }
 
-/* Source code ============================================================== */
+/* ==================================================================================================================
+ * Source code and code listings
+ * ================================================================================================================== */
 
 @srcColor: #000;
 @srcKeywordColor: #7F0055;
@@ -476,56 +576,55 @@ p { text-align: justify; }
 @srcCommentColor: #007700;
 @srcUnimportantColor: #999;
 
-pre {
-	margin: 0;
-	position: relative; /* for button placement */
-	color: @srcColor;
-	a:hover { text-decoration: underline; color: @srcColor; }
-	.lsysTryMe { right: 8px; border-bottom: none; }
-	.collapseSwitch { right: 96px; }
-	&.collapsed { height: 1.5em; overflow: hidden; }
+.code {
+	margin: 1em 0;
+	.caption {
+		text-align: center;
+		h5 { padding: 0; margin: 0.2em; }
+	}
+	.alt { background-color: #EEE; }
+	.lineNumbers{
+		width: 2em;
+		div {
+			font-size: 80%;
+			font-family: @monospaceFont;
+			text-align: right;
+			padding: 0 0.5em;
+			border-right: 3px solid #BBB;
+		}
+	}
+	.codeBody div {
+		font-size: 80%;
+		font-family: @monospaceFont;
+		white-space: pre;
+		padding: 0 0.5em;
+	}
+	.scroll {
+		overflow: auto;
+		background-color: #F6F6F6;
+		box-shadow: 0 0 4px 1px #BBB;
+		table { width: 100%; }
+	}
+	.kw { color: #00F; }
+	.kwAlt { color: #6F008A; }
+	.func { color: #800; }
+	.cm { color: #080; }
+	.tp { color: #2B91AF; }
+	.str { color: #A31515; }
 }
 
 code {
-	background: #EEE;
+	font-family: @monospaceFont;
+	background-color: #EEE;
 	padding: 0 0.2em;
 }
 
-pre .unimportant { color: @srcUnimportantColor; }
-
-pre .grTerminal, code .grTerminal { color: @srcStringColor; }
-
-pre .grQuantifier, code .grQuantifier { font-weight: bold; }
-
-pre .keyword, code .keyword { color: @srcKeywordColor; font-weight: bold; }
-pre .comment, code .comment { color: @srcCommentColor; }
-
-pre a:link, pre a:visited, pre a:active {
-	border-bottom: 1px solid #777;
-	text-decoration: none;
-	color: #000;
-}
-
-code.match {
-	border: 1px solid #ccc;
-	background: none;
-}
-
-pre .lsysTryMe, pre .collapseSwitch {
+pre.code {
+	font-family: @monospaceFont;
 	display: block;
-	position: absolute;
-	top: 4px;
-	padding: 0.1em 0.3em;
-
-	color: #444;
-	text-align: center;
-	border: solid 1px #AAA;
-	background: #DDD;
-
-	.border-radius-malsys(4px);
-	box-shadow: 0 0 4px 0 #BBB inset;
-
-	&:hover { color: #000; background: #FFF; }
+	padding: 0 0.5em;
+	box-shadow: 0 0 4px 1px #BBB;
+	background-color: #EEE;
 }
 
 .malsysSource textarea { width: 98%; }

@@ -1,0 +1,664 @@
+﻿@model DevDiaryViewModel
+
+@{
+	var layoutMgr = Model.LayoutManager;
+	var figsMgr = Model.FiguresManager;
+	var codeMgr = Model.CodeListingsManager;
+	codeMgr.DefaultProgLang = ProgLang.Malsys;
+
+	var rootSec = Model.SectionsManager.RootSection;
+
+	var secIntro = rootSec.Subsection("Introduction and prerequsities");
+		var subsecPossibSols = secIntro.Subsection("Possible solutions");
+			var subsecJs = subsecPossibSols.Subsection("JavaScript animation");
+			var subsecGif = subsecPossibSols.Subsection("GIF animation");
+			var subsecPng = subsecPossibSols.Subsection("PNG animation");
+			var subsecWebp = subsecPossibSols.Subsection("Update on WebP");
+		var subsecBmpRen = secIntro.Subsection("Implementation of Bitmap renderer");
+	var secApngImpl = rootSec.Subsection("Implementation of APNG renderer");
+		var subsecPngFormat = secApngImpl.Subsection("PNG format");
+		var subsecApngRw = secApngImpl.Subsection("Implementation of PNG reader/writer");
+		var subsecResults = secApngImpl.Subsection("Results");
+		var subsecApngPreview = secApngImpl.Subsection("Preview image for unsupported viewers");
+	var secSizeReduction = rootSec.Subsection("Animation file size reduction");
+		var subsecAa = secSizeReduction.Subsection("Anti-aliasing");
+		var subsecTrim = secSizeReduction.Subsection("Trimming frames & relative positioning");
+		var subsecSizeRedResults = secSizeReduction.Subsection("Results");
+	var secConclusion = rootSec.Subsection("Conclusion");
+		var subsecDownloads = secConclusion.Subsection("Downloads");
+
+}
+
+@* ================================================================================================================== *@
+@* ================================================================================================================== *@
+@* ================================================================================================================== *@
+@if (secIntro.IsVisible) {
+	@secIntro.Html
+
+@layoutMgr.StartColumn()
+	<p>
+		An L-systems are developing in iterations.
+		They were developed to simulate plant growth so the progression of some L-system is more important than final state.
+		To capture the progression, we need some sort of animation showing each iteration as an image — animated image.
+		There are many ways how to approach this problem but I've chosen animated PNG (APNG).
+	</p>
+@layoutMgr.NextColumn()
+	@figsMgr.Image("All frames from animated L-system", 600, 300, Links.Img.DevDiary.apng.Teaser_png).Html
+@layoutMgr.EndColumn()
+
+@layoutMgr.StartColumn(100, extraClass: "error msg")
+	<p>
+		Disclaimer: In this development diary are used @Html.Link("animated PNGs (APNG)", "http://en.wikipedia.org/wiki/APNG")
+			as some figures.
+		To fully enjoy the reading, use @Html.Link("supported browser", "http://en.wikipedia.org/wiki/APNG#Application_support", true).
+	</p>
+@layoutMgr.EndColumn()
+
+
+@* ================================================================================================================== *@
+	@subsecPossibSols.Html
+
+@layoutMgr.StartColumn()
+	<p>
+		There are multiple ways how to create an animation of L-systems iterations.
+		The first two ideas which came to my mind were scripted animation (with JavaScript) and GIF animated image.
+		But I didn't like any of them so I've decided to create PNG animation.
+		Pros and cons of all three techniques are summarized in following sections.
+	</p>
+@layoutMgr.EndColumn()
+
+
+@layoutMgr.StartColumn()
+	@subsecJs.Html
+	<p>
+		Malsys already supports rendering L-systems to vector graphic in SVG format.
+		So the easiest way is to generate bunch of SVG images and animate them using JavaScript code.
+		This solution is pretty easy to implement and it will work in all common browsers.
+	</p>
+
+	<p>
+		However, there are problems with such animation.
+		It is hard to save because it is composed of many files.
+		This problem is not only on the client side (if user wants to save it) but also on server side.
+		For example @Html.ActionLink("L-systems Gallery", MVC.Gallery.Index()) can save only one file as main file and another one as thumbnail.
+		It is possible to solve these problems but it would require large changes on server side and also I am not fan of JavaScript at all!
+	</p>
+
+@layoutMgr.NextColumn()
+	@subsecGif.Html
+	<p>
+		File format which supports animations should be used to overcome problems with multiple files per animation.
+		Graphics Interchange Format (GIF) is one candidate for creating L-system animations.
+		All iterations can be rendered as GIF images and then converted to final animation as one GIF file.
+		However, animation in GIF format has many drawbacks:
+	</p>
+
+	<ul>
+		<li>GIF uses color palette of max. 256 distinct colors (per frame).</li>
+		<li>24 bit color depth (RGB) which means no semi-transparency (pixel can be fully transparent or not transparent at all).</li>
+		<li>Some software discontinue support of animated GIFs (for example Win7).</li>
+		<li>Gif has relatively complicated binary format.</li>
+	</ul>
+
+	<p>
+		Limited color palette may cause lossy compression of individual frames.
+		The problem is that each frame is compressed separately which may cause noise in animation which is so typical for animated GIFs.
+	</p>
+
+	<p>
+		GIF's binary format is relatively complicated and I want to avoid using any 3rd party libraries
+			(or at least do not use those which are not written in .NET to preserve portability).
+		I'd like to "<b>do it myself</b>" (to be able to tweak the solution to the perfection :).
+	</p>
+
+@layoutMgr.NextColumn()
+	@subsecPng.Html
+	<p>
+		Portable Network Graphics (PNG) image format was created to improve and replace GIF.
+		It has many advantages over GIF (no limited palette, simple binary format),
+			but	PNG itself does not support animation at all.
+		Extension called MNG was designed by members of the PNG Group, but it is relatively complex and has a different file signature,
+			which automatically makes it incompatible with standard PNG decoders.
+		Luckily, developers of the Mozilla Foundation created simpler format for PNG animations called APNG (animated PNG)
+			which offers fallback to single-image display for PNG decoders that do not support APNG.
+	</p>
+
+	<p>
+		APNG is by now already supported in Mozilla Firefox and Opera web browsers.
+		Plugins for some other web browsers can be downloaded to display APNGs correctly.
+		It is also possible that APNG format wont be successful and the support will not improve (or it will be deprecated), but I take that risk!
+	</p>
+
+@layoutMgr.NextColumn()
+	@subsecWebp.Html
+	<p>
+		In the time of writing this (July 2012), I did not know that WebP format exists and I think that
+			WebP would be probably better option than animated PNG because it supports compression of animated images, much better than PNG.
+	</p>
+
+	<p>
+		If WebP becomes popular, and if users would appreciate it, I will rewrite animations to WebP.
+		Till then, enjoy APNGs!
+	</p>
+@layoutMgr.EndColumn()
+
+
+@* ================================================================================================================== *@
+	@subsecBmpRen.Html
+
+	var irenInterfaceCode = codeMgr.Code(ProgLang.Csharp, "IRenderer2D interface code.", @"
+public interface IRenderer2D : IRenderer {
+	void InitializeState(Point startPoint, double width, ColorF color);
+	void MoveTo(Point endPoint, double width, ColorF color);
+	void DrawTo(Point endPoint, double width, ColorF color);
+	void DrawPolygon(Polygon2D polygon);
+	void DrawCircle(double radius, ColorF color);
+}
+");
+
+@layoutMgr.StartColumn()
+	<p>
+		To create APNG, PNG renderer is needed to produce images from which will be composed the APNG.
+		Malsys is capable to render L-systems as SVGs, 3D scene and ASCII art (in hexagonal grid) but not as bitmap images, yet.
+		So the first step is creation of bitmap renderer.
+	</p>
+	<p>
+		Because L-systems processing is highly modular, the only think which is needed is to implement one component for rendering bitmap images.
+		Such component needs to implement <code>IRenderer2D</code> interface which is shown in @irenInterfaceCode.Ref.
+	</p>
+@layoutMgr.NextColumn()
+	@irenInterfaceCode.Html
+@layoutMgr.EndColumn()
+
+	var figCoordSpaces = figsMgr.MultiFigure("Difference between Malsys and bitmap coordinate spaces.");
+	figCoordSpaces.SubImage("Malsys coordinates", 280, 200, Links.Img.DevDiary.apng.MalsysCoords_png);
+	figCoordSpaces.SubImage("Bitmap coordinates", 280, 200, Links.Img.DevDiary.apng.ImageCoords_png);
+
+@layoutMgr.StartColumn()
+	<p>
+		Implementation of <code>IRenderer2D</code> is simple and straightforward.
+		Drawing itself is done by GDI+ (System.Drawing namespace) which also allows to save the result to many image formats.
+		Bitmap renderer component allows to save the result as JPEG, PNG and GIF.
+	</p>
+
+	<p>
+		Lastly, it is necessary to convert coordinates from L-system coordinate space to Bitmap's.
+		Malsys interprets L-systems in @StaticHtml.WikiLink("Cartesian coordinate system")
+			where positive coordinates of x axis are to the right from the origin
+			and positive coordinates of y axis are up from the origin
+		However, GDI+ bitmap have inversed y axis (positive coordinates are down from origin) and
+			image can be drawn only to the quadrant with both coordinates positive.
+		@figCoordSpaces.Ref shows the difference.
+	</p>
+@layoutMgr.NextColumn()
+	@figCoordSpaces.Html
+@layoutMgr.EndColumn()
+
+
+var coordTransformCode = codeMgr.Code(ProgLang.Csharp, "Set-up of Graphics class that automatically transforms drawn image from malsys to image coordinate space.", @"
+	Graphics g = Graphics.FromImage(bitmap);
+	g.TranslateTransform(-minX, -minY, MatrixOrder.Append);
+	g.MultiplyTransform(new Matrix(1f, 0f, 0f, -1f, 0, 0), MatrixOrder.Append);
+	g.TranslateTransform(0f, height, MatrixOrder.Append);
+");
+
+@layoutMgr.StartColumn()
+	<p>
+		The conversion is done by matrix transfromations on GDI <code>Graphics</code> class.
+		@coordTransformCode.Ref shows the code smippet that sets up the transfromation.
+		Variables <code>minX</code> and <code>minY</code> and minimum coordinates of drawn L-system and
+			<code>height</code> is height of L-system.
+	</p>
+@layoutMgr.NextColumn()
+	@coordTransformCode.Html
+@layoutMgr.EndColumn()
+
+}
+
+@* ================================================================================================================== *@
+@* ================================================================================================================== *@
+@* ================================================================================================================== *@
+@if (secApngImpl.IsVisible) {
+	@secApngImpl.Html
+
+@layoutMgr.StartColumn()
+	<p>
+		APNG renderer is extension of Bitmap renderer.
+		The extension is located in <i>Cleanup</i> method which is called at the end of processing of all iterations.
+		APNG renderer just takes all images (outputs) generated by its base Bitmap renderer and composes an animation from them.
+	</p>
+
+	<p>
+		To be able to create animated PNG it is necessary to be able to decode and encode PNGs.
+		Since PNG format is quite simple I decided to write own decoder and encoder classes (available for download).
+	</p>
+@layoutMgr.EndColumn()
+
+
+@* ================================================================================================================== *@
+	@subsecPngFormat.Html
+
+	var pngChunks = figsMgr.MultiFigure(null);
+	pngChunks.SubImage("Minimal PNG image structure", 384, 52, Links.Img.DevDiary.apng.MinimalPng_png);
+	pngChunks.SubImage("PNG chunk structure", 292, 52, Links.Img.DevDiary.apng.PngChunk_png);
+
+@layoutMgr.StartColumn()
+	<p>
+		PNG image is composed from PNG signature (special 8 bytes) and blocks called chunks.
+		Chunks carry all the necessary information about the PNG image.
+		Each chunk have its length, type (4 chars), data and checksum.
+		@pngChunks.Ref shows PNG format visually.
+	</p>
+	<p>
+		There are around @StaticHtml.ExternalLink("20 different chunk types", "http://www.w3.org/TR/PNG/#11Chunks"),
+			but for a minimal PNG, only 3 are required: IHDR, IDAT, and IEND.
+		The IHDR chunk which specifies image size and other necessary information,
+			the IDAT chunk which contains compressed image data,
+			and the IEND chunk which signalize end of PNG image.
+		For detail see @StaticHtml.ExternalLink("Official Portable Network Graphics (PNG) Specification (Second Edition)",
+			"http://www.w3.org/TR/PNG/").
+	</p>
+@layoutMgr.NextColumn()
+	@pngChunks.Html
+@layoutMgr.EndColumn()
+
+
+	var apngComposition = figsMgr.Image("Composition of animated PNG from PNG images", 600, 272,
+		Links.Img.DevDiary.apng.ApngStructure_png);
+
+@layoutMgr.StartColumn()
+	<p>
+		As mentioned in the first chapter, the Mozilla Foundation created simple format for animated PNG called APNG.
+		Big advantage of this format is backwards compatibility with PNG format.
+		Decoders that do not support APNG format will show the first frame (which may or may not be included in the animation itself).
+		This is because specification of PNG says that unknown chunks should be ignored.
+	</p>
+	<p>
+		In my case, another advantage of APNG is that there is no need for decoding compressed PNG data from IDAT chunk.
+		IDAT chunks canbe just copied over from PNG.
+		APNG composition is shown in @apngComposition.Ref.
+	</p>
+@layoutMgr.NextColumn()
+	@apngComposition.Html
+@layoutMgr.EndColumn()
+
+@layoutMgr.StartColumn()
+	<p>
+		The Image header (IHDR) chunk of animation specifies size of animation, color depth, compression method and other information for all frames.
+		The Animation Control Chunk (acTL) chunk contains number of frames and number of loops of the animation (zero means forever).
+		The Frame Control Chunk (fcTL) is before each frame and specifies dimension and offset of the frame as well as its delay (time to be shown) and blend operation.
+		For details see the APNG specification @StaticHtml.ExternalLink("APNG Specification", "https://wiki.mozilla.org/APNG_Specification")).
+	</p>
+
+	<p>
+		One last note to PNG format.
+		The IDAT chunk is usually "divided" into more smaller IDAT chunks.
+		PNG standard allows more consecutive IDAT chunks which should be considered as one "data stream".
+		For example standard .NET Bitmap class divides IDAT chunks to 64 kB pieces.
+	</p>
+@layoutMgr.EndColumn()
+
+
+@layoutMgr.StartColumn()
+	<p>
+		The Image header (IHDR) chunk of animation specifies size of animation, color depth, compression method and other information for all frames.
+		The Animation Control Chunk (acTL) chunk contains number of frames and number of loops of the animation (zero means forever).
+		The Frame Control Chunk (fcTL) is before each frame and specifies dimension and offset of the frame as well as its delay (time to be shown) and blend operation.
+		For details see the APNG specification @StaticHtml.ExternalLink("APNG Specification", "https://wiki.mozilla.org/APNG_Specification")).
+	</p>
+
+	<p>
+		One last note to PNG format.
+		The IDAT chunk is usually "divided" into more smaller IDAT chunks.
+		PNG standard allows more consecutive IDAT chunks which should be considered as one "data stream".
+		For example standard .NET Bitmap class divides IDAT chunks to 64 kB pieces.
+	</p>
+@layoutMgr.EndColumn()
+
+
+@* ================================================================================================================== *@
+	@subsecApngRw.Html
+
+	var pngReaderCode = codeMgr.Code(ProgLang.Csharp, "Interface of PngReader class (unimportant members are omitted).", @"
+public class PngReader {
+	public void ReadPngHeader();
+	public ChunkReader ReadChunk();
+
+	public class ChunkReader {
+		public readonly string Name;
+		public readonly uint Length;
+
+		public int Read(byte[] buffer, int offset, int count);
+	}
+}
+");
+
+	var pngReaderUsageCode = codeMgr.Code(ProgLang.Csharp, "usage of PngReader class to print chunk names and sizes to console.", @"
+using (var stream = FileStream(""test.png"", FileMode.Open, FileAccess.Read)) {
+	var buffer = new byte[1024];
+	var pngReader = new PngReader(stream);
+	pngReader.ReadPngHeader();
+
+	PngReader.ChunkReader chunkReader;
+	while ((chunkReader = pngReader.ReadChunk()) != null) {
+		Console.WriteLine(""{0} [{1}]"", chunkReader.Name, chunkReader.Length);
+
+		int readedLength;
+		while ((readedLength = chunkReader.Read(buffer, 0, buffer.Length)) > 0) {
+			Console.WriteLine(""Readed {0} B"", readedLength);
+		}
+	}
+}
+");
+
+@layoutMgr.StartColumn()
+	<p>
+		To be able to assemble APNG as shows @apngComposition.Ref we need PNG reader and writer.
+		As already mentioned, we do not need to touch IDAT chunks which are encoded (compressed) so implementation of PNG reader is then relatively simple.
+		The reader is designed to work as stream reader to minimize memory consumption, thus, improve performance.
+		Its interface is shown in @pngReaderCode.Ref (unimportant members are omitted).
+	</p>
+@layoutMgr.NextColumn()
+	@pngReaderCode.Html
+@layoutMgr.EndColumn()
+
+
+	var pngWriterCode = codeMgr.Code(ProgLang.Csharp, "Interface of PngWriter class (unimportant members are omitted).", @"
+public class PngWriter {
+	public void WritePngHeader();
+	public ChunkWriter StartChunk(string name, uint length);
+
+	public class ChunkWriter {
+		public readonly string Name;
+		public readonly uint Length;
+
+		public void Write(byte[] buffer, int offset, int count);
+	}
+}
+");
+
+
+@layoutMgr.StartColumn()
+<p>
+	PNG writer class has similar design as reader.
+	Only difference is that it needs to be able to compute checksum of chunks.
+	@pngWriterCode.Ref shows interface of PNG writer (unimportant members omitted).
+</p>
+@layoutMgr.NextColumn()
+	@pngWriterCode.Html
+@layoutMgr.EndColumn()
+
+
+@layoutMgr.StartColumn()
+	<p>
+		The usage of PngReader class is demonstrated in @pngReaderUsageCode.Ref.
+		Shown code prints chunk names and lengths to the console.
+	</p>
+	<p>
+		Note: described simple PNG reader/writer can be downloaded in @subsecDownloads.Ref at the end of this article.
+	</p>
+@layoutMgr.NextColumn()
+	@pngReaderUsageCode.Html
+@layoutMgr.EndColumn()
+
+
+@* ================================================================================================================== *@
+	@subsecResults.Html
+
+	var simplePythagorasAnim = figsMgr.Image("Simple animation of Pythagoras tree.", 502, 382,
+		Links.Img.DevDiary.apng.SimplePythagorasAnim_png);
+
+	var simplePythagorasAnimCode = codeMgr.Code("L-system that produces a simple animation of Pythagoras tree.", @"
+lsystem SimpleAnimation extends Branches {
+
+	set symbols axiom = F(128, 16);
+	set iterations = 11;
+	set initialAngle = 90;
+
+	set interpretEveryIteration = true;  // to render all iterations as frames
+	set canvasOriginSize = {-251, 0, 502, 382};  // to ensure same sizes of frames
+
+	interpret E as DrawForward;
+	interpret + as TurnLeft(45);
+	interpret - as TurnLeft(-45);
+
+	let sq2 = sqrt(2);
+
+	rewrite F(step, w) to E(step, w)
+		[ + F(step / sq2, w / sq2) ] - F(step / sq2, w / sq2);
+}
+process all with AnimationRenderer;
+");
+
+@layoutMgr.StartColumn()
+	<p>
+		Now we have everything what is needed for creation of animated PNG renderer.
+		I will not be describing it in details here, it jsut reads all PNGs and takes theirs IDAT chunk and writes
+			new PNG with correct chunks around.
+		If you are interested in reading more about this process, let me know in the comments below!
+	</p>
+	<p>
+		One of the limitations is that every frame of the animation has to have the same size.
+		Fortunately, property <code>canvasOriginSize</code> do just that.
+		L-system in @simplePythagorasAnimCode.Ref creates a "growing" Pythagoras tree and rendered result can be seen in
+			@simplePythagorasAnim.Ref.
+	</p>
+	@simplePythagorasAnimCode.Html
+@layoutMgr.NextColumn()
+	@simplePythagorasAnim.Html
+@layoutMgr.EndColumn()
+
+
+@* ================================================================================================================== *@
+	@subsecApngPreview.Html
+
+	var fallbackImg = figsMgr.Image("Fallback image for unsupported viewers.", 502, 382,
+		Links.Img.DevDiary.apng.SimplePythagorasAnimFallback_png);
+
+@layoutMgr.StartColumn()
+	<p>
+		Because APNG is not well supported it is important to provide reasonable default image
+			with some information that the file is an animation.
+		This image is also used in previews so it is not good idea to put there things like "Your browser sucks!".
+	</p>
+
+	<p>
+		The easiest approach is to leave the first image as default fallback.
+		This solution however do not allow to place some warning that file is animation because it would be also in animation loop.
+		Next disadvantage is that animations of L-systems tend to be "empty" at beginning so preview would be white in the most cases.
+	</p>
+
+	<p>
+		Hopefully, APNG allows to separate first (default) fallback image from animation so it is simple to put there some warning.
+		I've decided to take middle frame as representative preview of animation and put some warning text there.
+		The fallback image of previous animationis shown in @fallbackImg.Ref.
+	</p>
+@layoutMgr.NextColumn()
+	@fallbackImg.Html
+@layoutMgr.EndColumn()
+
+}
+
+@* ================================================================================================================== *@
+@* ================================================================================================================== *@
+@* ================================================================================================================== *@
+@if (secSizeReduction.IsVisible) {
+	@secSizeReduction.Html
+
+@layoutMgr.StartColumn()
+	<p>
+		APNGs have one issue, the file size is pretty large because every frame is standalone PNG image.
+		I've addressed this issue by implementing two optimizations described below.
+	</p>
+@layoutMgr.EndColumn()
+
+
+
+@* ================================================================================================================== *@
+	@subsecAa.Html
+
+	var figAa = figsMgr.MultiFigure("Comparison of Anti-aliasing effect on quality and file size.");
+	figAa.SubImage("Anti-aliased (514 KB)", 270, 360, Links.Img.DevDiary.apng.ApngNoTrim_png);
+	figAa.SubImage("No anti-aliasing (263 KB)", 270, 360, Links.Img.DevDiary.apng.ApngNoTrimNoAA_png);
+
+@layoutMgr.StartColumn()
+	<p>
+		To allow better PNG compression, anti-aliasing could be turned off.
+		This will result in worst quality of images but interestingly enough the savings are quite large.
+		@figAa.Ref shows example of animated plant where disabling of anti-aliasing saved around 50% of file size.
+	</p>
+	<p>
+		By default, anti-aliasing is on but you can turn it off using <code>set antiAlias = false;</code>.
+	</p>
+@layoutMgr.NextColumn()
+	@figAa.Html
+@layoutMgr.EndColumn()
+
+
+@* ================================================================================================================== *@
+	@subsecTrim.Html
+
+	var figTrimVis = figsMgr.Image("Visualization of frame trimming.", 270, 370, Links.Img.DevDiary.apng.ApngTrimVis_png);
+
+@layoutMgr.StartColumn()
+	<p>
+		More advanced optimization is taking advantage of the fact, that APNg allows to position individual frames
+			on arbitrary position in the resulting animation frame.
+		Thanks to this feature, background of individual frames can be trimmed and positioned to original position.
+	</p>
+
+	<p>
+		Background of each frame is trimmed and the correct offset is set in the Frame Control Chunk (fcTL) of APNG.
+		However this brings a bunch of problems.
+	</p>
+
+	<p>
+		L-systems in Malsys are rendered in floating-point space but bitmap (png image) has integer space as well as PNG offset.
+		If every frame would be trimmed in floating-point space (which is the easiest way), frames will be jumping on sub-pixel level because offset is integral.
+		Trimming must be by integer-amount.
+	</p>
+
+	<p>
+		The second problem is with background.
+		Some browsers (good old Opera :) do not "turn on" transparency if PNG frames are without transparency channel (24 bpp).
+		This makes background around frames black.
+		To avoid this behavior, we can force 32 bpp rendering by for example this
+			<code>set bgColor = #FF000000;</code> which will set background color to fully transparent black.
+	</p>
+	<p>
+		To visualize how trimming optimizes frames we can set background color to some non-fully transparent color
+			(like <code class="malsys">set bgColor = #01AAAAAA;</code>) to see individual frames background (@figTrimVis.Ref).
+		This is also a limitation, only transparent background are supported.
+	</p>
+	<p>
+		By default, trimming is off but you can turn it on using <code class="malsys">set autoTrim = true;</code>.
+	</p>
+@layoutMgr.NextColumn()
+	@figTrimVis.Html
+@layoutMgr.EndColumn()
+
+	var figAnimFrames = figsMgr.MultiFigure("All trimmed animation frames");
+	string baseUrl = Links.Img.DevDiary.apng.Frames.Url();
+	string baseDir = Server.MapPath(Links.Img.DevDiary.apng.Frames.URLPATH);
+
+	foreach (var filePath in Directory.EnumerateFiles(baseDir).OrderBy(x => x)) {
+		string fileName = Path.GetFileNameWithoutExtension(filePath);
+		fileName = fileName.Substring(fileName.IndexOf('-') + 1);
+		var size = fileName.Split('x');
+		int width = int.Parse(size[0]);
+		int height = int.Parse(size[1]);
+		figAnimFrames.SubImage(null, width, height, baseUrl + "/" + Path.GetFileName(filePath));
+	}
+
+
+@layoutMgr.StartColumn()
+<p>
+	For those who do not see animation, @figAnimFrames.Ref shows all frames as individual PNGs.
+	Note the gray background — every frame has different size.
+</p>
+@layoutMgr.EndColumn()
+
+@layoutMgr.StartColumn(100)
+	@figAnimFrames.Html
+@layoutMgr.EndColumn()
+
+
+@* ================================================================================================================== *@
+	@subsecSizeRedResults.Html
+
+	var resultChart = figsMgr.Chart(400, 300, "", "kB",
+			new string[] { "", "No optimization", "Frame trimming", "No anti-aliasing", "Both optimizations" },
+			chartType: "ColumnChart")
+		.AddDataRow("Growing flower (46 frames)", 514, 436, 263, 235)
+		.AddDataRow("Dragon curve (15 frames)", 186, 174, 183, 172);
+	var figResultGraph = figsMgr.HtmlFigure("Comparison of file sizes with different optimization", resultChart.Html);
+
+	var figSizeGraphImgs = figsMgr.MultiFigure("L-systems from " + resultChart.Ref);
+	figSizeGraphImgs.SubImage("Growing flower", 270, 360, Links.Img.DevDiary.apng.Apng_png);
+	figSizeGraphImgs.SubImage("Dragon curve", 520, 352, Links.Img.DevDiary.apng.DragonApng_png);
+
+@layoutMgr.StartColumn()
+	<p>
+		Size reduction depends on actual L-sytem.
+		Some benefit from disabled anti-aliasing, some from trimming, some are the same no matter the optimizations.
+		@figResultGraph.Ref shows results on images from @figSizeGraphImgs.Ref.
+	</p>
+@layoutMgr.NextColumn()
+	@figResultGraph.Html
+@layoutMgr.EndColumn()
+
+
+@layoutMgr.StartColumn(100)
+	@figSizeGraphImgs.Html
+@layoutMgr.EndColumn()
+
+}
+
+
+@* ================================================================================================================== *@
+@* ================================================================================================================== *@
+@* ================================================================================================================== *@
+@if (secConclusion.IsVisible) {
+	@secConclusion.Html
+
+@layoutMgr.StartColumn()
+	<p>
+		By writing this extension, I demonstrated how modular design of Malsys allows to do non-trivial extensions to L-system rendering.
+		Animations are awesome!
+		Also, I've learned a lot about PNG binary format structure.
+	</p>
+
+	<p>
+		Recently I discovered WebP image format which seems to be better for animated images.
+		I might write WebP renderer some day.
+	</p>
+
+	<p>
+		By the way, in pre-Malsys days, I wrote an L-system animation and made a video of it.
+		I thought it would be appropriate to show it here since it would be quite simple to transform the old L-system source
+			to syntax of Malsys and make an animation out of it.
+		The only problem might be that it has around 160 frames :)
+	</p>
+	<p>
+		Anyways, thanks for reading all the way to the and don't forget to leave some comment!
+	</p>
+@layoutMgr.NextColumn()
+	<div class="center" style="margin: 1em 0;">
+		<iframe width="640" height="480" src="//www.youtube.com/embed/jEmSxcr-rRc?wmode=opaque&rel=0" frameborder="0" allowfullscreen></iframe>
+	</div>
+@layoutMgr.EndColumn()
+
+
+@* ================================================================================================================== *@
+	@subsecDownloads.Html
+
+@layoutMgr.StartColumn()
+	<p>
+		Simple PNG reader and writer described in this article can be downloaded here.
+	</p>
+	<ul>
+		<li>@Html.Link("PNG reader/writer download.", Links.Download.Png_v1_zip)</li>
+	</ul>
+@layoutMgr.EndColumn()
+
+}

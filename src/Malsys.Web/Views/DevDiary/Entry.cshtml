@@ -1,0 +1,55 @@
+﻿@model DevDiaryViewModel
+
+@{
+	var entry = Model.DisplayedEntry;
+	var sectionsMgr = Model.SectionsManager;
+	var layoutMgr = Model.LayoutManager;
+	var currentSection = sectionsMgr.CurrentSection;
+	string title = "Dev diary: " + entry.Name + ": " + currentSection.Name;
+	ViewBag.Title = title;
+
+	var navigation = sectionsMgr.Navigation("Previous chapter", "Next chapter", "Back to the first chapter");
+}
+
+<span class="largerFont floatRight">@entry.Date.ToString("MMMM yyyy")</span>
+<h1>@Html.ActionLink("Dev diary: " + entry.Name, MVC.Documentation.Articles.Article(
+	entry.Url, sectionsMgr.RootSection.Subsections[0].HtmlId),
+	new { title = sectionsMgr.RootSection.Subsections[0].SectionFullName })</h1>
+
+@navigation
+
+@{
+	// Use RenderPartial() instead of Partial() to avoid double processing with whitespace stripper.
+	Html.RenderPartial(entry.ViewName, Model);
+}
+
+
+@layoutMgr.NewBodySection()
+
+@navigation
+
+@layoutMgr.NewBodySection()
+
+
+@layoutMgr.StartColumn()
+	<h3>Comments for this chapter</h3>
+	@if (string.IsNullOrEmpty(entry.DisqusId)) {
+		<p>Comments are not enabled for this project report yet.</p>
+	}
+	else {
+		string id = entry.DisqusId + "/" + sectionsMgr.CurrentSectionNumber;
+		string url = Url.ActionAbsolute(MVC.DevDiary.Entry(entry.Url, currentSection.HtmlId));
+		@StaticHtml.DisqusComments(title, id, url)
+	}
+
+@layoutMgr.NextColumn(extraClass: "toc")
+
+	<h3>Table of contents</h3>
+	@sectionsMgr.TableOfContents(false, 3)
+
+@layoutMgr.EndColumn()
+
+
+@layoutMgr.NewBodySection()
+
+@navigation

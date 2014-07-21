@@ -159,7 +159,14 @@ namespace Malsys.Web {
 
 
 		public static HtmlString DisqusComments(string title, string id, string url) {
+#if DEBUG
+			return null;  // Do not show Disqus comments in debug mode.
+#endif
 			var req = HttpContext.Current.Request;
+			if (req.IsLocal) {
+				return null;  // Do not show on localhost.
+			}
+
 			string currentDomain = req.Url.Scheme + System.Uri.SchemeDelimiter + req.Url.Host
 				+ (req.Url.IsDefaultPort ? "" : ":" + req.Url.Port);
 
@@ -184,6 +191,7 @@ var disqus_url = '{3}';
 
 			return new HtmlString(@"<div id=""disqus_thread""></div><a href=""http://disqus.com"" class=""dsq-brlink"">comments powered by <span class=""logo-disqus"">Disqus</span></a>");
 		}
+
 	}
 
 

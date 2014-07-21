@@ -106,6 +106,17 @@ namespace Malsys.Web {
 				.As<IEnumerable<HelpArticle>>()
 				.SingleInstance();
 
+			var devDiaryEntries = typeof(DevDiaryEntry)
+				.GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)
+				.Where(fi => fi.FieldType == typeof(DevDiaryEntry))
+				.Select(fi => (DevDiaryEntry)fi.GetValue(null))
+				.Where(p => !string.IsNullOrEmpty(p.ViewName))
+				.OrderByDescending(p => p.Date)
+				.ToList();
+			builder.Register(x => devDiaryEntries)
+				.As<IEnumerable<DevDiaryEntry>>()
+				.SingleInstance();
+
 			return new AutofacDependencyResolver(builder.Build());
 
 		}
@@ -317,6 +328,6 @@ namespace Malsys.Web {
 			}
 
 		}
-		
+
 	}
 }

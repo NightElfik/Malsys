@@ -1,13 +1,11 @@
 ﻿@model HelpArticleViewModel
 
 @{
-	var article = Model != null ? Model.DisplayedArticle : null;
-
 	var layoutMgr = Model.LayoutManager;
-	
-	
+
+
 	var rootSec = Model.SectionsManager.RootSection;
-	
+
 	var secIntroduction = rootSec.Subsection("Introduction");
 
 	var secRewriting = rootSec.Subsection("Rewriting");
@@ -16,10 +14,10 @@
 		var secRwOrderMatters = secRewriting.Subsection("Order of rewrite rules matters");
 		var secRwOnlyOne = secRewriting.Subsection("Only one symbol can be rewritten by rewrite rule at once");
 		var secRwNext = secRewriting.Subsection("Next steps");
-		
+
 	var secInterpretation = rootSec.Subsection("Interpretation");
 		var secIntTurtle = secInterpretation.Subsection("Turtle graphics interpratation");
-				
+
 }
 
 
@@ -37,7 +35,7 @@
 @* ================================================================================================================== *@
 @if (secRewriting.IsVisible) {
 	@secRewriting.Html
-	
+
 	var exampleModel = new LsystemExampleViewModel() {
 		LsystemProcessor = Model.LsystemProcessor,
 		UnimportantLines = new int[] { -1 },
@@ -49,7 +47,7 @@
 			"}}",
 			"process all with SymbolPrinter;")
 	};
-	
+
 @layoutMgr.StartColumn()
 	<p>
 		In the simplest form an L-system is a set of rewrite rules and a list of initial symbols (often called an axiom).
@@ -68,7 +66,7 @@
 	</p>
 @layoutMgr.EndColumn()
 
-	
+
 @* ================================================================================================================== *@
 @secRwSimple.Html
 
@@ -87,7 +85,7 @@
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(
 		"MyFirstLsystem", "A", "5", "rewrite A to S A;"))
-	
+
 
 @layoutMgr.StartColumn()
 	<p>
@@ -99,8 +97,8 @@
 		"MyFirstLsystem", "A", "5", StringHelper.JoinLines(
 			"set interpretEveryIteration = true;",
 			"rewrite A to B A;")))
-	
-	
+
+
 @* ================================================================================================================== *@
 @secRwParallel.Html
 
@@ -117,7 +115,7 @@
 			"set interpretEveryIteration = true;",
 				"rewrite X to I;", "rewrite I to X;")))
 
-	
+
 @* ================================================================================================================== *@
 @secRwOrderMatters.Html
 
@@ -138,8 +136,8 @@
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(
 		"OrderOfRulesMatters2", "A", "5", StringHelper.JoinLines( "rewrite A to C A;", "rewrite A to B A;")))
-	
-	
+
+
 @* ================================================================================================================== *@
 @secRwOnlyOne.Html
 
@@ -153,7 +151,7 @@
 	</p>
 @layoutMgr.EndColumn()
 
-	
+
 @* ================================================================================================================== *@
 @secRwNext.Html
 
@@ -163,7 +161,7 @@
 		Following chapter coveres how symbols can be interpreted as basic geometric primitives such as lines to draw some simple fractals — that's fun.
 	</p>
 @layoutMgr.EndColumn()
-	
+
 }
 
 
@@ -172,18 +170,18 @@
 @* ================================================================================================================== *@
 @if (secInterpretation.IsVisible) {
 	@secInterpretation.Html
-	
+
 	var turtleInterpreter = Model.ProcessManager.ComponentResolver.ResolveComponentMetadata("TurtleInterpreter");
 
 @layoutMgr.StartColumn()
 	<p>
-		Previous chapter described how to produce symbols and this chapter shows how to use them to draw some cool stuff!		
+		Previous chapter described how to produce symbols and this chapter shows how to use them to draw some cool stuff!
 		Every symbol can be associated with some action.
 		The set of available actions is given by a processor that is specified by <code>process</code> keyword.
 		For example, all examples in previous chapter were using <code>SymbolPrinter</code> processor that has no actions, it just prints the symbols as text.
-	</p>	
+	</p>
 @layoutMgr.EndColumn()
-	
+
 @* ================================================================================================================== *@
 @secIntTurtle.Html
 
@@ -196,11 +194,11 @@
 		It is also possible save or load a state of the pen (using stack data structure).
 		Following list shows all actions of Turtle interpreter (withdrawn from
 			<a href="@Url.Action(MVC.Documentation.Predefined.Components())#@turtleInterpreter.ComponentType.FullName">components list</a>).
-	</p>	
+	</p>
 @layoutMgr.EndColumn()
 
-	var iMethods = turtleInterpreter.InterpretationMethods.ToList();	
-	
+	var iMethods = turtleInterpreter.InterpretationMethods.ToList();
+
 @layoutMgr.StartColumn()
 	<ul>
 	@for (int i = 0; i < iMethods.Count / 2; ++i) {
@@ -248,10 +246,10 @@
 		"KochCurve", "F", "3", "",
 		"interpret F as DrawForward(20); interpret + as TurnLeft(60); interpret - as TurnLeft(-60);",
 		"rewrite F to F + F - - F + F;"))
-	
+
 @layoutMgr.StartColumn()
 	<p>
-		Cool, right? 
+		Cool, right?
 		Let's dig into details of the Koch curve L-systems a little bit.
 		To see what is happening we can visualize every iteration by setting property
 			<code>interpretEveryIteration</code> to <code>true</code>.
@@ -270,7 +268,7 @@
 		"\nset interpretEveryIteration = true;",
 		"interpret F as DrawForward(20); interpret + as TurnLeft(60); interpret - as TurnLeft(-60);",
 		"rewrite F to F + F - - F + F;"))
-	
+
 @layoutMgr.StartColumn()
 	<p>
 		The example can be improved even further by scaling down the line lengths every iteration so the whole

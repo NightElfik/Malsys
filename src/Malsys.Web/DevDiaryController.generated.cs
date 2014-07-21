@@ -26,9 +26,6 @@ namespace Malsys.Web.Controllers
     public partial class DevDiaryController
     {
         [GeneratedCode("T4MVC", "2.0"), DebuggerNonUserCode]
-        public DevDiaryController() { }
-
-        [GeneratedCode("T4MVC", "2.0"), DebuggerNonUserCode]
         protected DevDiaryController(Dummy d) { }
 
         [GeneratedCode("T4MVC", "2.0"), DebuggerNonUserCode]
@@ -57,6 +54,12 @@ namespace Malsys.Web.Controllers
             return RedirectToActionPermanent(taskResult.Result);
         }
 
+        [NonAction]
+        [GeneratedCode("T4MVC", "2.0"), DebuggerNonUserCode]
+        public virtual System.Web.Mvc.ActionResult Entry()
+        {
+            return new T4MVC_System_Web_Mvc_ActionResult(Area, Name, ActionNames.Entry);
+        }
 
         [GeneratedCode("T4MVC", "2.0"), DebuggerNonUserCode]
         public DevDiaryController Actions { get { return MVC.DevDiary; } }
@@ -74,19 +77,26 @@ namespace Malsys.Web.Controllers
         public class ActionNamesClass
         {
             public readonly string Index = "Index";
-            public readonly string SvgOptimizations = "SvgOptimizations";
-            public readonly string PngAnimationRenderer = "PngAnimationRenderer";
+            public readonly string Entry = "Entry";
         }
 
         [GeneratedCode("T4MVC", "2.0"), DebuggerNonUserCode]
         public class ActionNameConstants
         {
             public const string Index = "Index";
-            public const string SvgOptimizations = "SvgOptimizations";
-            public const string PngAnimationRenderer = "PngAnimationRenderer";
+            public const string Entry = "Entry";
         }
 
 
+        static readonly ActionParamsClass_Entry s_params_Entry = new ActionParamsClass_Entry();
+        [GeneratedCode("T4MVC", "2.0"), DebuggerNonUserCode]
+        public ActionParamsClass_Entry EntryParams { get { return s_params_Entry; } }
+        [GeneratedCode("T4MVC", "2.0"), DebuggerNonUserCode]
+        public class ActionParamsClass_Entry
+        {
+            public readonly string name = "name";
+            public readonly string part = "part";
+        }
         static readonly ViewsClass s_views = new ViewsClass();
         [GeneratedCode("T4MVC", "2.0"), DebuggerNonUserCode]
         public ViewsClass Views { get { return s_views; } }
@@ -97,13 +107,26 @@ namespace Malsys.Web.Controllers
             public _ViewNamesClass ViewNames { get { return s_ViewNames; } }
             public class _ViewNamesClass
             {
+                public readonly string Entry = "Entry";
                 public readonly string Index = "Index";
-                public readonly string PngAnimationRenderer = "PngAnimationRenderer";
-                public readonly string SvgOptimizations = "SvgOptimizations";
             }
+            public readonly string Entry = "~/Views/DevDiary/Entry.cshtml";
             public readonly string Index = "~/Views/DevDiary/Index.cshtml";
-            public readonly string PngAnimationRenderer = "~/Views/DevDiary/PngAnimationRenderer.cshtml";
-            public readonly string SvgOptimizations = "~/Views/DevDiary/SvgOptimizations.cshtml";
+            static readonly _EntriesClass s_Entries = new _EntriesClass();
+            public _EntriesClass Entries { get { return s_Entries; } }
+            [GeneratedCode("T4MVC", "2.0"), DebuggerNonUserCode]
+            public partial class _EntriesClass
+            {
+                static readonly _ViewNamesClass s_ViewNames = new _ViewNamesClass();
+                public _ViewNamesClass ViewNames { get { return s_ViewNames; } }
+                public class _ViewNamesClass
+                {
+                    public readonly string PngAnimationRenderer = "PngAnimationRenderer";
+                    public readonly string SvgOptimizations = "SvgOptimizations";
+                }
+                public readonly string PngAnimationRenderer = "~/Views/DevDiary/Entries/PngAnimationRenderer.cshtml";
+                public readonly string SvgOptimizations = "~/Views/DevDiary/Entries/SvgOptimizations.cshtml";
+            }
         }
     }
 
@@ -124,24 +147,15 @@ namespace Malsys.Web.Controllers
         }
 
         [NonAction]
-        partial void SvgOptimizationsOverride(T4MVC_System_Web_Mvc_ActionResult callInfo);
+        partial void EntryOverride(T4MVC_System_Web_Mvc_ActionResult callInfo, string name, string part);
 
         [NonAction]
-        public override System.Web.Mvc.ActionResult SvgOptimizations()
+        public override System.Web.Mvc.ActionResult Entry(string name, string part)
         {
-            var callInfo = new T4MVC_System_Web_Mvc_ActionResult(Area, Name, ActionNames.SvgOptimizations);
-            SvgOptimizationsOverride(callInfo);
-            return callInfo;
-        }
-
-        [NonAction]
-        partial void PngAnimationRendererOverride(T4MVC_System_Web_Mvc_ActionResult callInfo);
-
-        [NonAction]
-        public override System.Web.Mvc.ActionResult PngAnimationRenderer()
-        {
-            var callInfo = new T4MVC_System_Web_Mvc_ActionResult(Area, Name, ActionNames.PngAnimationRenderer);
-            PngAnimationRendererOverride(callInfo);
+            var callInfo = new T4MVC_System_Web_Mvc_ActionResult(Area, Name, ActionNames.Entry);
+            ModelUnbinderHelpers.AddRouteValues(callInfo.RouteValueDictionary, "name", name);
+            ModelUnbinderHelpers.AddRouteValues(callInfo.RouteValueDictionary, "part", part);
+            EntryOverride(callInfo, name, part);
             return callInfo;
         }
 

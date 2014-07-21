@@ -1,20 +1,13 @@
-﻿@{
-	ViewBag.Title = "Dev diary";
+﻿@model DevDiaryViewModel
+
+@{
+	ViewBag.Title = "Index";
 }
 
-@section submenu {
-	<li>@Html.ActionLink("Curve designer", MVC.CurveDesigner.Index())</li>
-	<li>@Html.ActionLink("Development diary", MVC.DevDiary.Index())</li>
-	<li>@Html.ActionLink("Thesis", MVC.Home.Thesis())</li>
-	<li>@Html.ActionLink("Documentation", MVC.Documentation.Home.Index())</li>
+<h1>Development diary</h1>
+
+<ul>
+@foreach (var entry in Model.AllEntries) {
+	<li>@Html.ActionLink(entry.Name, MVC.DevDiary.Entry(entry.Url))</li>
 }
-
-<h2>Dev diary</h2>
-
-<p>
-	May 2013 - @Html.ActionLink("SVG markup optimizations", MVC.DevDiary.SvgOptimizations())
-</p>
-
-<p>
-	July 2012 - @Html.ActionLink("Creating of PNG animation renderer", MVC.DevDiary.PngAnimationRenderer())
-</p>
+</ul>

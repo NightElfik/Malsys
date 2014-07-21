@@ -291,7 +291,8 @@
     <Compile Include="Areas\Documentation\Models\LsystemExampleViewModel.cs" />
     <Compile Include="Areas\Documentation\Models\PredefinedConstantsModel.cs" />
     <Compile Include="Areas\Documentation\Views\CompilerConstantsAttribute.cs" />
-    <Compile Include="ArticleTools\CodeHighlighter.cs" />
+    <Compile Include="ArticleTools\CodeListingsManager.cs" />
+    <Compile Include="ArticleTools\FiguresManager.cs" />
     <Compile Include="ArticleTools\IFigure.cs" />
     <Compile Include="ArticleTools\LayoutManager.cs" />
     <Compile Include="ArticleTools\Section.cs" />
@@ -384,6 +385,8 @@
     <Compile Include="Infrastructure\WhitespaceStripperViewPage.cs" />
     <Compile Include="LoadedPlugins.cs" />
     <Compile Include="Models\ArticleModelBase.cs" />
+    <Compile Include="Models\DevDiaryEntry.cs" />
+    <Compile Include="Models\DevDiaryViewModel.cs" />
     <Compile Include="Models\DiscussionCategory.cs" />
     <Compile Include="Models\IDiscussionRepository.cs" />
     <Compile Include="Models\MalsysStdLibSource.cs" />
@@ -668,8 +671,8 @@
     <Content Include="Views\Home\Thesis.cshtml" />
     <Content Include="Views\CurveDesigner\Index.cshtml" />
     <Content Include="Views\CurveDesigner\Show.cshtml" />
-    <Content Include="Views\DevDiary\PngAnimationRenderer.cshtml" />
-    <Content Include="Views\DevDiary\Index.cshtml" />
+    <Content Include="Views\DevDiary\Entries\PngAnimationRenderer.cshtml" />
+    <Content Include="Views\DevDiary\Entry.cshtml" />
     <Content Include="Views\Discussion\Thread.cshtml" />
     <Content Include="Views\Discussion\AutoThreadInline.cshtml" />
     <Content Include="Views\Discussion\MessagePartial.cshtml" />
@@ -680,12 +683,13 @@
     <Content Include="Views\Discussion\LockThread.cshtml" />
     <Content Include="Views\Discussion\Index.cshtml" />
     <Content Include="Views\Home\LoadedPlugins.cshtml" />
-    <Content Include="Views\DevDiary\SvgOptimizations.cshtml" />
+    <Content Include="Views\DevDiary\Entries\SvgOptimizations.cshtml" />
     <None Include="T4MVC.tt.hooks.t4" />
     <None Include="T4MVC.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>T4MVC.cs</LastGenOutput>
     </None>
+    <Content Include="Views\DevDiary\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Code\" />

@@ -135,11 +135,9 @@ namespace Malsys.Web.Controllers
             {
                 public readonly string Index = "Index";
                 public readonly string Load = "Load";
-                public readonly string OutputPartial = "OutputPartial";
             }
             public readonly string Index = "~/Views/Process/Index.cshtml";
             public readonly string Load = "~/Views/Process/Load.cshtml";
-            public readonly string OutputPartial = "~/Views/Process/OutputPartial.cshtml";
         }
     }
 
