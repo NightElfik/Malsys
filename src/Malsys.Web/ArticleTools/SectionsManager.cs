@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
@@ -7,7 +8,7 @@ using Malsys.Web.Areas.Documentation.Models;
 
 namespace Malsys.Web.ArticleTools {
 	public class SectionsManager {
-		
+
 		private readonly Func<Section, UrlHelper, string> hrefResolver;
 		private readonly UrlHelper urlHelper;
 
@@ -20,13 +21,12 @@ namespace Malsys.Web.ArticleTools {
 		}
 
 
-		public bool IsSectionInitMode { get { return CurrentSectionNumber < 0; } }
-
 		public Section RootSection { get; private set; }
 
 		public int CurrentSectionNumber { get; private set; }
 
 		public Section CurrentSection { get; private set; }
+
 
 		public bool SetDisplayOfSection(int sectionNumber) {
 			CurrentSectionNumber = sectionNumber;
@@ -38,6 +38,13 @@ namespace Malsys.Web.ArticleTools {
 			return true;
 		}
 
+		public void SetCurrentSection(Section sec) {
+			Contract.Requires(sec != null);
+			Contract.Ensures(CurrentSectionNumber >= 0 && CurrentSectionNumber < RootSection.Subsections.Count);
+
+			CurrentSection = sec;
+			CurrentSectionNumber = RootSection.Subsections.IndexOf(sec);
+		}
 
 		public HtmlString TableOfContents(bool twoColumns, int maxLevel) {
 			var sb = new StringBuilder();

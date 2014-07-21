@@ -1,0 +1,25 @@
+﻿@model NewsArchiveViewModel
+
+@{
+	var sec = Model.SectionsManager.CurrentSection;
+	string title = sec.Name;
+	ViewBag.Title = title;
+	var layoutMgr = Model.LayoutManager;
+
+	<h1>@sec.Name</h1>
+
+@layoutMgr.StartColumn()
+	// Use RenderPartial() instead of Partial() to avoid double processing with whitespace stripper.
+	Html.RenderPartial(MVC.Home.Views.ViewNames.NewsData, Model);
+
+	@Html.ActionLink("Back to news archive", MVC.Home.NewsArchive());
+@layoutMgr.NextColumn()
+	<h3>Comments for this news post</h3>
+	string disqusId = StaticUrl.UrlizeString(sec.Name);
+	string id = "news/" + disqusId;
+	string url = Url.ActionAbsolute(MVC.Home.NewsArchive(disqusId));
+	@StaticHtml.DisqusComments(title, id, url)
+@layoutMgr.EndColumn();
+
+
+}

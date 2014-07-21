@@ -1,0 +1,89 @@
+﻿@model ArticleModelBase
+
+@{
+	var layoutMgr = Model.LayoutManager;
+
+	var rootSec = Model.SectionsManager.RootSection;
+
+
+	var sec2014_07_27 = rootSec.Subsection("Web modernization");
+	var sec2013_06_10 = rootSec.Subsection("Optimized SVGs and Dev Diary");
+	var sec2012_12_12 = rootSec.Subsection("Cool video and optimizations");
+	var sec2012_08_23 = rootSec.Subsection("New discussion and in-line help");
+
+}
+
+
+@* ================================================================================================================== *@
+@if (sec2014_07_27.IsVisible) {
+	<p>
+		<span class="newsDate">27<sup>th</sup> of July 2014:</span>
+		Malsys was modernized and some features were improved.
+		This was done because I was "forced" to move it from school's server to my own so I decided to make some improvements on the way.
+	</p>
+	<p>
+		I would like to thank @StaticHtml.ExternalLink("Faculty of Mathematics and Physics", "http://www.mff.cuni.cz/")
+			for hostig this web for two years after my graduation.
+		Now it is on my private server.
+	</p>
+	<p>
+		Currently I am considering to allow embed L-systems in iframes on ther websites (in the similar ways as YouTube videos)
+			so if you think this is good idea, let me know!
+	</p>
+}
+
+@* ================================================================================================================== *@
+@if (sec2013_06_10.IsVisible) {
+	<p>
+		<span class="newsDate">on 10<sup>th</sup> of June 2013:</span>
+		And here it is, an update after a half of year (exactly 180 days :)!
+		SVG renderer is now generating much smaller SVGs.
+		The optimizations are described in newly added @Html.ActionLink("Dev Diary", MVC.DevDiary.Index()).
+	</p>
+	<p>
+		The Dev diary was on the web for a long time but I never published it.
+		Now you can read about implementation of APNG renderer which was done a long time ago.
+	</p>
+	<p>
+		I also linked my G+ page in the page footer so you can see what I am up to.
+	</p>
+}
+
+@* ================================================================================================================== *@
+@if (sec2012_12_12.IsVisible) {
+	<p>
+		<span class="newsDate">on 12<sup>th</sup> of December 2012:</span>
+		To demonstrate strength of modular design of Malsys, I've created an environmental module — a component
+			which allows to query position of current point against given height-map image (environment).
+		With the environmental module I've made a simulation of growth of trees in shape of
+			HPCG lab at Purdue University (where I am currently studying).
+		Here is a link for the video: @StaticHtml.ExternalLink("http://youtu.be/NUyar1wrcaQ").
+	</p>
+	<p>
+		Environmental module do not work on web though.
+	</p>
+	<p>
+		Thanks to this endevour I've found huge performance issue and processing is now roughly 4-times faster.
+	</p>
+}
+
+@* ================================================================================================================== *@
+@if (sec2012_08_23.IsVisible) {
+	<p>
+		<span class="newsDate">on 23<sup>rd</sup> of August 2012:</span>
+		New simple discussion system was implemented.
+		Now it is possible to ask and talk about Malsys right on the page and comment saved L-systems in the gallery!
+		Also there is new in-line help in L-system processor which will help with creating new L-systems in a great way!
+	</p>
+	<p>
+		I decided to implement my own discussion system instead of using some third party solution.
+		This showed as quite good idea because this system is used as simple forum, as comments in the gallery and as this news system.
+	</p>
+	<p>
+		L-system processor have been upgraded with in-line help which will help with finding of possible
+			gettable/settable properties of currently used process configurations along with them description.
+	</p>
+	<p>
+		Also, Google +1 button was added to allow sharing this page more easily!
+	</p>
+}

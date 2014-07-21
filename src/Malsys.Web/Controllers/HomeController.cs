@@ -4,35 +4,45 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using Malsys.Web.ArticleTools;
 using Malsys.Web.Entities;
 using Malsys.Web.Models;
 
 namespace Malsys.Web.Controllers {
 	public partial class HomeController : Controller {
 
+		private static SectionsManager createSectionsManager() {
+			return new SectionsManager((sec, url) => {
+				Section parent = sec;
+				while (parent.Parent.Parent != null) {
+					parent = parent.Parent;
+				}
+				string baseHref = url.Action(MVC.Home.NewsArchive(StaticUrl.UrlizeString(sec.Name)));
 
-		private readonly IInputDb inputDb;
-		private readonly IDiscusDb discusDb;
+				if (sec.Level >= 3) {
+					baseHref += "#" + sec.HtmlId;
+				}
+				return baseHref;
+			});
+		}
+
+
+
 		private readonly LoadedPlugins loadedPlugins;
 
 
-		public HomeController(IInputDb inputDb, IDiscusDb discusDb, LoadedPlugins loadedPlugins) {
-			this.inputDb = inputDb;
-			this.discusDb = discusDb;
+		public HomeController(LoadedPlugins loadedPlugins) {
 			this.loadedPlugins = loadedPlugins;
 		}
 
 
 		public virtual ActionResult Index() {
+			NewsArchiveViewModel viewModel = new NewsArchiveViewModel();
+			viewModel.SectionsManager = createSectionsManager();
+			new TocFetcher().FetchToc(ControllerContext, Views.ViewNames.NewsData, viewModel);
+			viewModel.SectionsManager.SetDisplayOfSection(0);
 
-
-			var cat = discusDb.GetKnownDiscussCat(DiscussionCategory.News);
-			var news = discusDb.DiscusThreads
-				.Where(x => x.CategoryId == cat.CategoryId)
-				.OrderByDescending(x => x.CreationDate)
-				.Take(3);
-
-			return View(news);
+			return View(viewModel);
 		}
 
 		public virtual ActionResult LoadedPlugins() {
@@ -45,6 +55,28 @@ namespace Malsys.Web.Controllers {
 
 		public virtual ActionResult Thesis() {
 			return View();
+		}
+
+		public virtual ActionResult NewsArchive(string id = null) {
+			NewsArchiveViewModel viewModel = new NewsArchiveViewModel();
+			viewModel.SectionsManager = createSectionsManager();
+
+			new TocFetcher().FetchToc(ControllerContext, Views.ViewNames.NewsData, viewModel);
+
+			if (id == null) {
+				return View(viewModel);
+			}
+
+			var currSec = viewModel.SectionsManager.RootSection.Subsections
+				.FirstOrDefault(s => StaticUrl.UrlizeString(s.Name) == id);
+
+			if (currSec == null) {
+				// TODO: Display warning that project was not found.
+				return HttpNotFound();
+			}
+
+			viewModel.SectionsManager.SetCurrentSection(currSec);
+			return View(Views.ViewNames.NewsDetail, viewModel);
 		}
 
 	}

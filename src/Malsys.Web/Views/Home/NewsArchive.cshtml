@@ -1,0 +1,38 @@
+﻿@model NewsArchiveViewModel
+
+@{
+	ViewBag.Title = "News archive";
+	var layoutMgr = Model.LayoutManager;
+
+
+<h1>News archive</h1>
+
+
+	int i = 0;
+
+	foreach (var sec in Model.SectionsManager.RootSection.Subsections) {
+
+		if (i % 2 == 0) {
+			if (i > 0) {
+				@layoutMgr.EndColumn();
+			}
+			@layoutMgr.StartColumn();
+		}
+		else {
+			@layoutMgr.NextColumn();
+		}
+		++i;
+
+		<a href="@Url.Action(MVC.Home.NewsArchive(StaticUrl.UrlizeString(sec.Name)))">@sec.PlainHtml</a>
+
+		Model.SectionsManager.SetCurrentSection(sec);
+		// Use RenderPartial() instead of Partial() to avoid double processing with whitespace stripper.
+		Html.RenderPartial(MVC.Home.Views.ViewNames.NewsData, Model);
+
+		@Html.ActionLink("Comments", MVC.Home.NewsArchive(StaticUrl.UrlizeString(sec.Name)));
+	}
+
+@layoutMgr.EndColumn();
+
+}
+

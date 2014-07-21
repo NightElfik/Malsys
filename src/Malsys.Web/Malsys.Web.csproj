@@ -392,6 +392,7 @@
     <Compile Include="Models\MalsysStdLibSource.cs" />
     <Compile Include="Models\NewDiscusMessageModel.cs" />
     <Compile Include="Models\NewDiscusThreadModel.cs" />
+    <Compile Include="Models\NewsArchiveViewModel.cs" />
     <Compile Include="Models\OutputHtmlGenerator.cs" />
     <Compile Include="OperationResult.cs" />
     <Compile Include="Models\Repositories\DiscussionRepository.cs" />
@@ -690,6 +691,9 @@
       <LastGenOutput>T4MVC.cs</LastGenOutput>
     </None>
     <Content Include="Views\DevDiary\Index.cshtml" />
+    <Content Include="Views\Home\NewsData.cshtml" />
+    <Content Include="Views\Home\NewsArchive.cshtml" />
+    <Content Include="Views\Home\NewsDetail.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Code\" />

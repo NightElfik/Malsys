@@ -429,6 +429,9 @@ p { text-align: justify; }
 
 .keepNl { white-space: pre-line; }
 
+.relative { position: relative; }
+
+.newsDate { color: #777; }
 
 /* ==================================================================================================================
  * Articles

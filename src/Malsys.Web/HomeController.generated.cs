@@ -74,6 +74,7 @@ namespace Malsys.Web.Controllers
             public readonly string LoadedPlugins = "LoadedPlugins";
             public readonly string WhyWebgl = "WhyWebgl";
             public readonly string Thesis = "Thesis";
+            public readonly string NewsArchive = "NewsArchive";
         }
 
         [GeneratedCode("T4MVC", "2.0"), DebuggerNonUserCode]
@@ -83,9 +84,18 @@ namespace Malsys.Web.Controllers
             public const string LoadedPlugins = "LoadedPlugins";
             public const string WhyWebgl = "WhyWebgl";
             public const string Thesis = "Thesis";
+            public const string NewsArchive = "NewsArchive";
         }
 
 
+        static readonly ActionParamsClass_NewsArchive s_params_NewsArchive = new ActionParamsClass_NewsArchive();
+        [GeneratedCode("T4MVC", "2.0"), DebuggerNonUserCode]
+        public ActionParamsClass_NewsArchive NewsArchiveParams { get { return s_params_NewsArchive; } }
+        [GeneratedCode("T4MVC", "2.0"), DebuggerNonUserCode]
+        public class ActionParamsClass_NewsArchive
+        {
+            public readonly string id = "id";
+        }
         static readonly ViewsClass s_views = new ViewsClass();
         [GeneratedCode("T4MVC", "2.0"), DebuggerNonUserCode]
         public ViewsClass Views { get { return s_views; } }
@@ -98,11 +108,17 @@ namespace Malsys.Web.Controllers
             {
                 public readonly string Index = "Index";
                 public readonly string LoadedPlugins = "LoadedPlugins";
+                public readonly string NewsArchive = "NewsArchive";
+                public readonly string NewsData = "NewsData";
+                public readonly string NewsDetail = "NewsDetail";
                 public readonly string Thesis = "Thesis";
                 public readonly string WhyWebgl = "WhyWebgl";
             }
             public readonly string Index = "~/Views/Home/Index.cshtml";
             public readonly string LoadedPlugins = "~/Views/Home/LoadedPlugins.cshtml";
+            public readonly string NewsArchive = "~/Views/Home/NewsArchive.cshtml";
+            public readonly string NewsData = "~/Views/Home/NewsData.cshtml";
+            public readonly string NewsDetail = "~/Views/Home/NewsDetail.cshtml";
             public readonly string Thesis = "~/Views/Home/Thesis.cshtml";
             public readonly string WhyWebgl = "~/Views/Home/WhyWebgl.cshtml";
         }
@@ -154,6 +170,18 @@ namespace Malsys.Web.Controllers
         {
             var callInfo = new T4MVC_System_Web_Mvc_ActionResult(Area, Name, ActionNames.Thesis);
             ThesisOverride(callInfo);
+            return callInfo;
+        }
+
+        [NonAction]
+        partial void NewsArchiveOverride(T4MVC_System_Web_Mvc_ActionResult callInfo, string id);
+
+        [NonAction]
+        public override System.Web.Mvc.ActionResult NewsArchive(string id)
+        {
+            var callInfo = new T4MVC_System_Web_Mvc_ActionResult(Area, Name, ActionNames.NewsArchive);
+            ModelUnbinderHelpers.AddRouteValues(callInfo.RouteValueDictionary, "id", id);
+            NewsArchiveOverride(callInfo, id);
             return callInfo;
         }
 

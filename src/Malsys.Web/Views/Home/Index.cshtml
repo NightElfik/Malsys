@@ -2,15 +2,21 @@
  * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
  * All rights reserved.
  *@
-@model IEnumerable<DiscusThread>
+@model NewsArchiveViewModel
 
 @{
-	ViewBag.Title = "Malsys";
-}
+	ViewBag.Title = "Malsys home page";
 
 <div class="grid-100 mobile-grid-100 grid-parent hideLinks">
 	<div class="grid-50 mobile-grid-100 ">
-		<h3>What is Malsys?</h3>
+		<h2>Latest news post: @Model.SectionsManager.CurrentSection.Name</h2>
+		@{Html.RenderPartial(MVC.Home.Views.ViewNames.NewsData, Model);}
+
+		@Html.ActionLink("Comments", MVC.Home.NewsArchive(StaticUrl.UrlizeString(Model.SectionsManager.CurrentSection.Name)))
+		|
+		@Html.ActionLink("News archive", MVC.Home.NewsArchive())
+
+		<h2>What is Malsys?</h2>
 		<p>
 			Malsys is online L-system generator designed for working and experimenting with L-systems.
 			Malsys interface is friendly for new users and also offers advanced features for experienced users.
@@ -21,7 +27,14 @@
 			Details about the thesis can be found on @Html.ActionLink("this page", MVC.Home.Thesis()).
 		</p>
 
-		<h3>Gallery</h3>
+		<h2>How to use Malsys?</h2>
+		<p>
+			Check @Html.ActionLink("Documentation", MVC.Documentation.Home.Index()) or examples in @Html.ActionLink("gallery", MVC.Gallery.Index()).
+			Or you can try to create an L-system curve with @Html.ActionLink("curve designer", MVC.CurveDesigner.Index()).
+		</p>
+	</div>
+	<div class="grid-50 mobile-grid-100">
+		<h2>Gallery</h2>
 		<p>
 			The @Html.ActionLink("gallery", MVC.Gallery.Index()) contains examples of many L-systems from various publications and places on the web.
 			The most of them are represented as 2D vector images in @Html.Link("SVG", "http://en.wikipedia.org/wiki/Scalable_Vector_Graphics", "Scalable Vector Graphics - Wikipedia").
@@ -31,15 +44,8 @@
 			3D L-systems are rendered by your browser and you can rotate, zoom or pan them.
 			You can check whether your browser supports WebGL at @Html.Link("http://get.webgl.org/").
 		</p>
-	</div>
-	<div class="grid-50 mobile-grid-100">
-		<h3>How to use Malsys?</h3>
-		<p>
-			Check @Html.ActionLink("Documentation", MVC.Documentation.Home.Index()) or examples in @Html.ActionLink("gallery", MVC.Gallery.Index()).
-			Or you can try to create an L-system curve with @Html.ActionLink("curve designer", MVC.CurveDesigner.Index()).
-		</p>
 
-		<h3>What can be achieved with Malsys</h3>
+		<h2>What can be achieved with Malsys</h2>
 		<p>
 			This video sequence was generated using Malsys extended by a custom enviromental plugin.
 		</p>
@@ -50,51 +56,11 @@
 </div>
 
 <div class="grid-100 mobile-grid-100 grid-parent hideLinks">
-	<div class="grid-100 mobile-grid-100 ">
-		<h3>Latest news</h3>
-		@{ int? newsCatId = null; }
-		@foreach (var thread in Model) {
-			newsCatId = thread.CategoryId;
-			var commentsNum = thread.DiscusMessages.Count() - 1;
-			var firstMessage = thread.DiscusMessages.OrderBy(m => m.CreationDate).First();
-			var firstMsgText = firstMessage.Text;
-			int endOfFirstPar = firstMsgText.IndexOf("\n\n");
-			bool readMore = true;
-			if (endOfFirstPar < 0) {
-				endOfFirstPar = firstMsgText.Length;
-				readMore = false;
-			}
-			var firstParagraph = firstMsgText.Substring(0, endOfFirstPar);
-
-			<div class="right">@thread.CreationDate.ToString("dddd, dd. MMMM yyyy")</div>
-			<h4>@thread.Title</h4>
-			<p class="keepNl">@firstParagraph @if (readMore) { <span>@Html.ActionLink("... read more", MVC.Discussion.Thread(thread.ThreadId))</span> }</p>
-			<div>@Html.ActionLink(commentsNum + " comments", MVC.Discussion.Thread(thread.ThreadId))</div>
-
-			<hr />
-		}
-
-		@if (newsCatId != null) {
-			@Html.ActionLink("News archive", MVC.Discussion.Category(newsCatId))
-		}
+	<div class="grid-50 mobile-grid-100 ">
 	</div>
 </div>
 
-@*
-<ul>
-	<li>
-		Added simple submenu for specialized actions on some pages.
-	</li>
-	<li>
-		Animation renderer was added for creating PNG animations! See gallery for examples.
-	</li>
-	<li>
-		Simple @Html.ActionLink("curve designer", MVC.CurveDesigner.Index()) was added.
-		It is created using HTML5 canvas element.
-	</li>
-</ul>
-*@
-
+}
 
 @*
 <h3>Features</h3>

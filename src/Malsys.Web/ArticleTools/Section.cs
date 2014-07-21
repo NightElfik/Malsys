@@ -97,23 +97,18 @@ namespace Malsys.Web.ArticleTools {
 		/// </summary>
 		public HtmlString Html {
 			get {
-				var sb = new StringBuilder();
-				sb.Append("<h");
-				sb.Append(Level);
-				sb.Append(" id=\"");
-				sb.Append(HtmlId);
-				sb.Append("\"");
-				sb.Append(" class=\"section bracesHover\">");
-				sb.Append(CumulativeId);
-				sb.Append(" ");
-				sb.Append(Name);
-				//sb.Append("<a href=\"#");
-				//sb.Append(HtmlId);
-				//sb.Append("\" class=\"anchorLink\">#</a>");
-				sb.Append("</h");
-				sb.Append(Level);
-				sb.Append(">");
-				return new HtmlString(sb.ToString());
+				return new HtmlString("<h{0} id='{1}' class='section'>{2} {3}</h{0}>"
+					.Fmt(Level, HtmlId, CumulativeId, Name));
+			}
+		}
+
+		/// <summary>
+		/// Returns HTML for this section without the section number.
+		/// </summary>
+		public HtmlString PlainHtml {
+			get {
+				return new HtmlString("<h{0} id='{1}' class='section'>{2}</h{0}>"
+					.Fmt(Level, HtmlId, Name));
 			}
 		}
 
@@ -143,8 +138,9 @@ namespace Malsys.Web.ArticleTools {
 		/// Creates sub-section of this section.
 		/// </summary>
 		public Section Subsection(string name) {
-			if (!parentMgr.IsSectionInitMode) {
-				return childSections.FirstOrDefault(x => x.Name == name);
+			var existing = childSections.FirstOrDefault(x => x.Name == name);
+			if (existing != null) {
+				return existing;
 			}
 
 			string id = getNextId();
