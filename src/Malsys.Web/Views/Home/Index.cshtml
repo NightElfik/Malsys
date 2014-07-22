@@ -27,22 +27,22 @@
 			Details about the thesis can be found on @Html.ActionLink("this page", MVC.Home.Thesis()).
 		</p>
 
-		<h2>How to use Malsys?</h2>
+		@*<h2>How to use Malsys?</h2>
 		<p>
 			Check @Html.ActionLink("Documentation", MVC.Documentation.Home.Index()) or examples in @Html.ActionLink("gallery", MVC.Gallery.Index()).
 			Or you can try to create an L-system curve with @Html.ActionLink("curve designer", MVC.CurveDesigner.Index()).
-		</p>
+		</p>*@
 	</div>
 	<div class="grid-50 mobile-grid-100">
 		<h2>Gallery</h2>
 		<p>
 			The @Html.ActionLink("gallery", MVC.Gallery.Index()) contains examples of many L-systems from various publications and places on the web.
-			The most of them are represented as 2D vector images in @Html.Link("SVG", "http://en.wikipedia.org/wiki/Scalable_Vector_Graphics", "Scalable Vector Graphics - Wikipedia").
-			Malsys alsos upports amazing 3D L-systems rendered with modern @Html.Link("WebGL", "http://en.wikipedia.org/wiki/WebGL", "WebGL - Wikipedia")
+			The most of them are represented as 2D vector images in @StaticHtml.ExternalLink("SVG", "http://en.wikipedia.org/wiki/Scalable_Vector_Graphics", "Scalable Vector Graphics - Wikipedia").
+			Malsys alsos upports amazing 3D L-systems rendered with modern @StaticHtml.ExternalLink("WebGL", "http://en.wikipedia.org/wiki/WebGL", "WebGL - Wikipedia")
 				in the browser.
 			You need to have modern browser in order to see them properly (see @Html.ActionLink("the comparison", MVC.Home.WhyWebgl())).
 			3D L-systems are rendered by your browser and you can rotate, zoom or pan them.
-			You can check whether your browser supports WebGL at @Html.Link("http://get.webgl.org/").
+			You can check whether your browser supports WebGL at @StaticHtml.ExternalLink("http://get.webgl.org/").
 		</p>
 
 		<h2>What can be achieved with Malsys</h2>

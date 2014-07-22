@@ -121,19 +121,14 @@
 
 <div class="grid-100 mobile-grid-100 grid-parent">
 	<div class="grid-100 mobile-grid-100 ">
+		@{
+			string code = Model.Input.SourceCode;
+			if (!string.IsNullOrWhiteSpace(Model.Input.ThumbnailSourceExtension)) {
+				code += "// thumbnail extension\n/*\n" + Model.Input.ThumbnailSourceExtension + "\n*/";
+			}
+		}
 		<h3>Source code</h3>
-		<pre class="malsys box">
-@Model.Input.SourceCode
-@if (!string.IsNullOrWhiteSpace(Model.Input.ThumbnailSourceExtension)) {
-<text>
-// thumbnail extension
-/*</text>
-@Model.Input.ThumbnailSourceExtension
-<text>
-*/
-</text>
-}
-		</pre>
+		@(new CodeListingsManager().CodeNoFigure(ProgLang.Malsys, code, shadow: true))
 	</div>
 </div>
 

@@ -6,23 +6,17 @@
 
 @{
 	HtmlString unimportantLinesAttr;
-	if (Model.UnimportantLines.Length > 0) {
-		unimportantLinesAttr = new HtmlString("data-unimportant-lines=\"" + string.Join(" ", Model.UnimportantLines.Select(x => x.ToString())) + "\"");
-	}
-	else {
-		unimportantLinesAttr = new HtmlString("");
-	}
+	//if (Model.UnimportantLines.Length > 0) {
 
 	string input = Model.SourceCodeWithArgsAutoIndented();
 	var output = Model.LsystemProcessor.Process(input).ToList();
+	var codeMgr = new CodeListingsManager();
 }
 
 <div class="grid-100 mobile-grid-100 grid-parent malsysExample">
 	<div class="grid-50 mobile-grid-100">
 		<h4>Input</h4>
-<pre class="malsys" @unimportantLinesAttr>
-@input
-</pre>
+		@codeMgr.CodeNoFigure(ProgLang.Malsys, input)
 	</div>
 	<div class="grid-50 mobile-grid-100">
 		<h4>Output</h4>

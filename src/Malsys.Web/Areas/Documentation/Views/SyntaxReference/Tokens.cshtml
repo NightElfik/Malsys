@@ -6,39 +6,50 @@
 	ViewBag.Title = "Tokens";
 }
 
-<h2>Tokens</h2>
+<h1>Tokens</h1>
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	Token is atomic element of Malsys grammar.
 	In token can not be any whitespace character, however whitespace characters are often used to separate individual tokens.
-	More about tokens syntax can be found on @Html.ActionLink("grammar syntax page", MVC.Documentation.SyntaxReference.Grammar()).
 </p>
+	</div>
+</div>
 
-<div id="toc"></div>
 
 @* ================================================================================================================== *@
-<h3>Identifier</h3>
+<h2>Identifier</h2>
 
-@MalsysHelper.GrammarBox("ID = (ALPHABETIC_CHAR | '_') (ALPHABETIC_CHAR | DIGIT | '_' | ''')*")
+@(new CodeListingsManager().CodeNoFigure(ProgLang.Grammar, @"
+ID = (ALPHABETIC_CHAR | '_') (ALPHABETIC_CHAR | DIGIT | '_' | ''')*
+", shadow: true))
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	Formal grammar of identifier is simplified, to avoid using characters groups in unicode.
 	<code>ALPHABETIC_CHAR</code> matches any letter and <code>DIGIT</code> matches any digit.
 	From definition is obvious, that identifier can not start with digit.
 </p>
+	</div>
+</div>
 
 
 @* ================================================================================================================== *@
-<h3>Number</h3>
+<h2>Number</h2>
 
-@MalsysHelper.GrammarBox(
-	"NUMBER =",
-	"	| [0-9]+ ('.' [0-9]+)? ([eE] ('+'|'-')? [0-9]+)?",
-	"	| '0'[bB] [01]+",
-	"	| '0'[oO] [0-7]+",
-	"	| '0'[xX] ([0-9] | [a-f] | [A-F])+",
-	"	| '#' ([0-9] | [a-f] | [A-F])+")
+@(new CodeListingsManager().CodeNoFigure(ProgLang.Grammar, @"
+NUMBER =
+	| [0-9]+ ('.' [0-9]+)? ([eE] ('+'|'-')? [0-9]+)?
+	| '0'[bB] [01]+
+	| '0'[oO] [0-7]+
+	| '0'[xX] ([0-9] | [a-f] | [A-F])+
+	| '#' ([0-9] | [a-f] | [A-F])+
+", shadow: true))
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	Malsys supports 5 different formats of number literal.
 </p>
@@ -52,22 +63,28 @@
 </ul>
 
 <p>
-	All numbers in Malsys are stored in @Html.Link("double-precision floating-point format", "http://en.wikipedia.org/wiki/Double-precision_floating-point_format").
+	All numbers in Malsys are stored in @StaticHtml.WikiLink("double-precision floating-point format").
 	Precision of numbers is about 16 decimal digits.
 </p>
+	</div>
+</div>
 
 
 @* ================================================================================================================== *@
-<h3>Operator</h3>
+<h2>Operator</h2>
 
-@MalsysHelper.GrammarBox(
-	"OPERATOR = (first_op_char op_char*) | '==' | '/'",
-	"",
-	"first_op_char = '!'|'$'|'%'|'&'|'*'|'+'|'\\'|'<'|'>'|'@'|'^'|'|'|'~'|'?'|':'|'-'",
-	"",
-	"op_char = first_op_char | '=' | '/'")
+@(new CodeListingsManager().CodeNoFigure(ProgLang.Grammar, @"
+OPERATOR = (first_op_char op_char*) | '==' | '/'
 
+first_op_char = '!'|'$'|'%'|'&'|'*'|'+'|'\\'|'<'|'>'|'@'|'^'|'|'|'~'|'?'|':'|'-'
 
+op_char = first_op_char | '=' | '/'
+", shadow: true))
+
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	Not all combinations of characters are defined as operator in Malsys, see @Html.ActionLink("list of predefined operators", MVC.Documentation.Predefined.Operators()).
 </p>
+	</div>
+</div>

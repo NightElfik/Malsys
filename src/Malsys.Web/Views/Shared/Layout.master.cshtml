@@ -52,9 +52,10 @@
 					</ul>
 					<div id="subnav" class="grid-100 mobile-grid-100">
 						<ul>
-							<li>@Html.ActionLink("Curve designer", MVC.CurveDesigner.Index())</li>
+							@*<li>@Html.ActionLink("Curve designer", MVC.CurveDesigner.Index())</li>*@
 							<li>@Html.ActionLink("Development diary", MVC.DevDiary.Index())</li>
 							<li>@Html.ActionLink("Thesis", MVC.Home.Thesis())</li>
+							<li>@Html.ActionLink("Feedback", MVC.Feedback.Index())</li>
 						</ul>
 					</div>
 				</nav>
@@ -89,10 +90,9 @@
 				</ul>
 				<ul>
 					<li>@Html.ActionLink("L-system processor", MVC.Process.Index())</li>
-					<li>@Html.ActionLink("L-system curve designer", MVC.CurveDesigner.Index())</li>
+					@*<li>@Html.ActionLink("L-system curve designer", MVC.CurveDesigner.Index())</li>*@
 					<li>@Html.ActionLink("Documentation", MVC.Documentation.Home.Index())</li>
-					<li>@Html.ActionLink("General FAQ", MVC.Documentation.Home.Faq())</li>
-					<li>@Html.ActionLink("L-systems FAQ", MVC.Documentation.Home.LsystemFaq())</li>
+					<li>@Html.ActionLink("FAQ", MVC.Documentation.Home.Faq())</li>
 				</ul>
 			</div>
 			<div class="grid-25 mobile-grid-100">

@@ -1,7 +1,7 @@
 ﻿@**
- * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
- * All rights reserved.
- *@
+	* Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
+	* All rights reserved.
+*@
 @model Malsys.Web.Models.Lsystem.SimpleLsystemProcessor
 
 @{
@@ -14,41 +14,40 @@
 	};
 }
 
-<h2>L-system definition</h2>
+<h1>L-system definition</h1>
 
-<p>
-	To learn now to write L-systems take a look at @Html.ActionLink("rewriting basics", MVC.Documentation.Home.BasicRewriting()) page.
-	Another good place for learning is @Html.ActionLink("gallery", MVC.Gallery.Index()).
-	All entries have source included in details, just pick some simple one and experiment with their source.
-	To further explore capabilities of L-systems visit reference pages for individual L-system statements.
-</p>
-<ul>
-	<li>@Html.ActionLink("constant definition", MVC.Documentation.SyntaxReference.ConstantDefinition())</li>
-	<li>@Html.ActionLink("function definition", MVC.Documentation.SyntaxReference.FunctionDefinition())</li>
-	<li>@Html.ActionLink("component property assign definition", MVC.Documentation.SyntaxReference.ComponentPropertyAssignDefinition())</li>
-	<li>@Html.ActionLink("symbol interpretation definition", MVC.Documentation.SyntaxReference.SymbolInterpretation())</li>
-	<li>@Html.ActionLink("rewrite rule", MVC.Documentation.SyntaxReference.RewriteRule())</li>
-</ul>
-
-<div id="toc"></div>
-
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
+		<p>
+			To learn basics of Malsys and L-systems work, please take a look at
+			@Html.ActionLink("basic topics", MVC.Documentation.Home.Index()) on documentation page.
+			Another good place for learning is @Html.ActionLink("gallery", MVC.Gallery.Index()).
+			All entries in gallery have source included in details, just pick some simple one and experiment with their source.
+		</p>
+	</div>
+</div>
 
 @* ================================================================================================================== *@
-<h3 id="LsystemInheritance">L-system inheritance</h3>
+<h2>L-system inheritance</h2>
 
-<p>
-	L-system can inherit (extend) all features from some other L-system.
-	The pre-existing L-system is called base or ancestor and the new L-system is called derived L-system or child L-system.
-	Inheritance behavior of individual L-system statements can be found on their reference pages along with examples but they all follows simple rule:
-		derived L-system will redefine definitions in base L-system.
-</p>
-
-<p>
-	In following example there are defined two L-systems, <code>BaseLsystem</code> and <code>DerivedLsystem</code> which derives <code>BaseLsystem</code>.
-	<code>BaseLsystem</code> will produce <code>B B B B B A</code> but <code>DerivedLsystem</code> overrides number of iterations to 2
-		and overrides rewrite rule for symbol <code>A</code>.
-	Due to overrides <code>DerivedLsystem</code> will produce <code>X X A</code>.
-</p>
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
+		<p>
+			L-system can inherit (extend) all features from some other L-system.
+			The pre-existing L-system is called base or ancestor and the new L-system is called derived L-system or child L-system.
+			Inheritance behavior of individual L-system statements can be found on their reference pages along with examples but they all follows simple rule:
+			derived L-system will redefine definitions in base L-system.
+		</p>
+	</div>
+	<div class="grid-50 mobile-grid-100">
+		<p>
+			In following example there are defined two L-systems, <code>BaseLsystem</code> and <code>DerivedLsystem</code> which derives <code>BaseLsystem</code>.
+			<code>BaseLsystem</code> will produce <code>B B B B B A</code> but <code>DerivedLsystem</code> overrides number of iterations to 2
+			and overrides rewrite rule for symbol <code>A</code>.
+			Due to overrides <code>DerivedLsystem</code> will produce <code>X X A</code>.
+		</p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(StringHelper.JoinLines(
 		"lsystem BaseLsystem {",
@@ -64,12 +63,16 @@
 		"",
 		"process BaseLsystem with SymbolPrinter;",
 		"process DerivedLsystem with SymbolPrinter;")))
-<hr />
 
-<p>
-	It is possible to inherit more than one L-system.
-	Their features are overridden in appropriate order.
-</p>
+
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
+		<p>
+			It is possible to inherit more than one L-system.
+			Their features are overridden in appropriate order.
+		</p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(StringHelper.JoinLines(
 		"lsystem BaseLsystemX {",
@@ -90,13 +93,17 @@
 
 
 @* ================================================================================================================== *@
-<h3 id="AbstractLsystems">Abstract L-systems</h3>
+<h2>Abstract L-systems</h2>
 
-<p>
-	Only difference between abstract and normal (non-abstract) L-system is in processing with <code class="malsys">all</code> keyword.
-	Abstract L-systems are not processed by @Html.ActionLink("process statement", MVC.Documentation.SyntaxReference.ProcessStatements()) with <code class="malsys">all</code> keyword but non-abstract are.
-	Abstract L-systems are designed for creating base (ancestor) L-systems in L-system inheritance.
-</p>
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
+		<p>
+			Only difference between abstract and normal (non-abstract) L-system is in processing with <code class="malsys">all</code> keyword.
+			Abstract L-systems are not processed by @Html.ActionLink("process statement", MVC.Documentation.SyntaxReference.ProcessStatements()) with <code class="malsys">all</code> keyword but non-abstract are.
+			Abstract L-systems are designed for creating base (ancestor) L-systems in L-system inheritance.
+		</p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(StringHelper.JoinLines(
 		"abstract lsystem AbstarctLsystem {",
@@ -114,32 +121,36 @@
 
 
 @* ================================================================================================================== *@
-<h3>Formal grammar</h3>
+<h2>Formal grammar</h2>
 
-@MalsysHelper.GrammarBox(
-	"lsystem_def = 'abstract'? 'lsystem' ID ('(' params_list? ')')? baseLsystems? '{' lsystem_statement* '}'",
-	"",
-	"params_list = ID ('=' expression)?  (',' params_list)?",
-	"",
-	"baseLsystems = 'extends' baseLsystemsList",
-	"",
-	"baseLsystemsList = ID ('(' expression (',' expression)+ ')')? baseLsystemsList?",
-	"",
-	"lsystem_statement =",
-	"	| empty_statement",
-	"	| constant_def",
-	"	| function_def",
-	"	| component_property_assign",
-	"	| symbols_interpretation_def",
-	"	| rewrite_rule"
-)
+@(new CodeListingsManager().CodeNoFigure(ProgLang.Grammar, @"
+lsystem_def = 'abstract'? 'lsystem' ID ('(' params_list? ')')? baseLsystems? '{' lsystem_statement* '}'
 
-<p>
-	For formal grammar for L-system statements see @Html.ActionLink("constant definition", MVC.Documentation.SyntaxReference.ConstantDefinition()),
-		@Html.ActionLink("function definition", MVC.Documentation.SyntaxReference.FunctionDefinition()),
-		@Html.ActionLink("component property assign definition", MVC.Documentation.SyntaxReference.ComponentPropertyAssignDefinition()),
-		@Html.ActionLink("symbol interpretation definition", MVC.Documentation.SyntaxReference.SymbolInterpretation()) and
-		@Html.ActionLink("rewrite rule", MVC.Documentation.SyntaxReference.RewriteRule()) documentation pages.
-</p>
+params_list = ID ('=' expression)?  (',' params_list)?
+
+baseLsystems = 'extends' baseLsystemsList
+
+baseLsystemsList = ID ('(' expression (',' expression)+ ')')? baseLsystemsList?
+
+lsystem_statement =
+	| empty_statement
+	| constant_def
+	| function_def
+	| component_property_assign
+	| symbols_interpretation_def
+	| rewrite_rule
+", shadow: true))
+
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
+		<p>
+			For formal grammar for L-system statements see @Html.ActionLink("constant definition", MVC.Documentation.SyntaxReference.ConstantDefinition()),
+			@Html.ActionLink("function definition", MVC.Documentation.SyntaxReference.FunctionDefinition()),
+			@Html.ActionLink("component property assign definition", MVC.Documentation.SyntaxReference.ComponentPropertyAssignDefinition()),
+			@Html.ActionLink("symbol interpretation definition", MVC.Documentation.SyntaxReference.SymbolInterpretation()), and
+			@Html.ActionLink("rewrite rule", MVC.Documentation.SyntaxReference.RewriteRule()) documentation pages.
+		</p>
+	</div>
+</div>
 
 

@@ -76,6 +76,16 @@ namespace Malsys.Web.ArticleTools {
 		}
 
 		/// <summary>
+		/// Returns HTML code for reference on this section with only name.
+		/// </summary>
+		public HtmlString BareRef {
+			get {
+				return new HtmlString("<a href=\"{0}\" title=\"{1}\">{1}</a>"
+					.Fmt(GetHref(), Name));
+			}
+		}
+
+		/// <summary>
 		/// Returns HTML ID of this section.
 		/// </summary>
 		public string HtmlId { get; private set; }

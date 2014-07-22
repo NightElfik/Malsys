@@ -438,8 +438,9 @@ p { text-align: justify; }
  * ================================================================================================================== */
 
 .partsNavigation {
+	background-color: #EEF;
 	a { display: block; padding: 0.5em; .transition(background-color 0.3s ease); }
-	a:hover { background-color: #EEE; }
+	a:hover { background-color: #DDD; }
 }
 
 .toc {
@@ -614,6 +615,13 @@ p { text-align: justify; }
 	.cm { color: #080; }
 	.tp { color: #2B91AF; }
 	.str { color: #A31515; }
+	.quant { font-weight: bolder; }
+}
+
+.noShadow {
+	.scroll {
+		box-shadow: none;
+	}
 }
 
 code {
@@ -769,6 +777,12 @@ a.tag {
 	height: auto !important;
 	background-color: white;
 	img { width: auto !important; height: auto !important; }
+}
+
+.borderTable {
+
+	td { border: 1px solid gray; }
+
 }
 
 /* Components ============================================================== */

@@ -27,7 +27,18 @@
 @if (secIntroduction.IsVisible) {
 	@secIntroduction.Html
 
+@layoutMgr.StartColumn()
+	<p>
+		Malsys is online @StaticHtml.WikiLink("L-system") generator designed for working and experimenting with L-systems.
+		The focus is on simple and friendly interface for new users and also offers advanced features for experienced users.
+	</p>
+	<p>
+		To read on, please follow linkt to second chapter about rewriting.
+	</p>
+@layoutMgr.EndColumn()
 }
+
+<div class="warning msg">This article is not fully finished yet, it will be extended in the future.</div>
 
 
 @* ================================================================================================================== *@
@@ -287,5 +298,5 @@
 		"interpret F as DrawForward(300 * 3 ^ -currentIteration); interpret + as TurnLeft(60); interpret - as TurnLeft(-60);",
 		"rewrite F to F + F - - F + F;"))
 
-
+	<div class="warning msg">This article is not fully finished yet, it will be extended in the future.</div>
 }

@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using Malsys.Processing;
 using Malsys.SemanticModel.Evaluated;
@@ -12,7 +10,7 @@ using Malsys.Web.Models.Lsystem;
 namespace Malsys.Web.Areas.Documentation.Controllers {
 	public partial class ArticlesController : Controller {
 
-		private static SectionsManager createSectionsManager(HelpArticle article) {
+		public static SectionsManager CreateSectionsManager(HelpArticle article) {
 			return new SectionsManager((sec, url) => {
 				Section parent = sec;
 				while (parent.Parent.Parent != null) {
@@ -42,13 +40,13 @@ namespace Malsys.Web.Areas.Documentation.Controllers {
 		public virtual ActionResult Article(string name, string part = null) {
 			var currArticle = viewModel.AllArticles
 				.FirstOrDefault(x => x.Url == name && !string.IsNullOrEmpty(x.ViewName));
- 
+
 			if (currArticle == null) {
 				// TODO: Display warning that project was not found.
 				return HttpNotFound();
 			}
 
-			viewModel.SectionsManager = createSectionsManager(currArticle);
+			viewModel.SectionsManager = CreateSectionsManager(currArticle);
 
 			viewModel.DisplayedArticle = currArticle;
 			new TocFetcher().FetchToc(ControllerContext, viewModel.DisplayedArticle.ViewName, viewModel);

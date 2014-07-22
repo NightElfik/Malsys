@@ -32,11 +32,10 @@ namespace Malsys {
 		}
 
 		public static HtmlString GrammarBox(params string[] lines) {
-
 			string code = HtmlEncode(StringHelper.JoinLines(lines));
 			code = highlightGrammar(code);
-			return new HtmlString("<pre class=\"grammar box\">" + code + "</pre>");
-
+			return new HtmlString("<div class='grid-100 mobile-grid-100 grid-parent'><div class='grid-100 mobile-grid-100'>"
+				+ "<pre class='grammar box'>" + code + "</pre></div></div>");
 		}
 
 		public static HtmlString SimplifyMessage(string msg) {
@@ -85,14 +84,12 @@ namespace Malsys {
 
 
 		private static string highlightGrammar(string code) {
-
 			code = terminal.Replace(code, "<span class=\"grTerminal\">$1</span>");
 			code = terminalRange.Replace(code, "[<span class=\"grTerminal\">$1</span>-<span class=\"grTerminal\">$2</span>]");
 			code = terminalList.Replace(code, "[<span class=\"grTerminal\">$1</span>]");
 			// quantifiers needs to be after terminals because of quantifiers after terminal
 			code = quantifier.Replace(code, "$1<span class=\"grQuantifier\">$2</span>");
 			return code;
-
 		}
 
 

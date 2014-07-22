@@ -14,10 +14,8 @@ namespace Malsys.Processing.Components.Interpreters {
 	/// <group>Interpreters</group>
 	public class HexaAsciiInterpreter : IInterpreter {
 
-		const int angleStates = 6;
-
 		// pre-draw delta x, y; post-draw delta x, y
-		private static readonly int[,] angleToXyDelta = {
+		private static readonly int[,] angleToXyDeltaHexa = {
 			{ 0, 0, 1, 0 },  // _ (left)
 			{ 0, 0, 1, 1 }, // / (up)
 			{ -1, 0, 0, 1 },  // \ (up)
@@ -25,7 +23,20 @@ namespace Malsys.Processing.Components.Interpreters {
 			{ -1, -1, 0, 0 },  // / (down)
 			{ 0, -1, 1, 0 } };  // \ (down)
 
-		private static readonly char[] angleToChar = { '_', '/', '\\', '_', '/', '\\' };
+		private static readonly char[] angleToCharHexa = { '_', '/', '\\', '_', '/', '\\' };
+
+		private static readonly int[,] angleToXyDeltaRightAngleSlash = {
+			{ 0, 0, 1, 1 }, // / (up)
+			{ -1, 0, 0, 1 },  // \ (up)
+			{ -1, -1, 0, 0 },  // / (down)
+			{ 0, -1, 1, 0 } };  // \ (down)
+
+		private static readonly char[] angleToCharRightAngleSlash = { '/', '\\', '/', '\\' };
+
+		private int angleStates;
+		private int[,] angleToXyDelta;
+		private char[] angleToChar;
+
 
 		private ITextRenderer renderer;
 
@@ -34,8 +45,10 @@ namespace Malsys.Processing.Components.Interpreters {
 
 		private int scale;
 		private float horizontalScaleMult;
+		private bool rightAngleSlashMode;
 
 
+		#region User gettable and settable properties
 
 		/// <summary>
 		/// Scale of result ASCII art.
@@ -59,6 +72,18 @@ namespace Malsys.Processing.Components.Interpreters {
 
 
 		/// <summary>
+		/// If set to true, renderer will draw right angles using slashes only.
+		/// </summary>
+		/// <expected>true or false</expected>
+		/// <default>false</default>
+		[AccessName("rightAngleSlashMode")]
+		[UserSettable]
+		public Constant RightAngleSlashMode { get; set; }
+
+
+		#endregion User gettable and settable properties
+
+		/// <summary>
 		/// Render for rendering of ASCII art.
 		/// Connected renderer must implement ITextRenderer interface.
 		/// </summary>
@@ -79,12 +104,25 @@ namespace Malsys.Processing.Components.Interpreters {
 		public void Reset() {
 			Scale = Constant.One;
 			HorizontalScaleMultiplier = Constant.Two;
+			RightAngleSlashMode = Constant.False;
 		}
 
 		public void Initialize(ProcessContext ctxt) {
 			scale = Scale.RoundedIntValue;
 			horizontalScaleMult = (float)HorizontalScaleMultiplier.Value;
 			renderer.AddGlobalOutputData(OutputMetadataKeyHelper.OutputIsAsciiArt, true);
+			rightAngleSlashMode = RightAngleSlashMode.IsTrue;
+
+			if (rightAngleSlashMode) {
+				angleStates = angleToCharRightAngleSlash.Length;
+				angleToXyDelta = angleToXyDeltaRightAngleSlash;
+				angleToChar = angleToCharRightAngleSlash;
+			}
+			else {
+				angleStates = angleToCharHexa.Length;
+				angleToXyDelta = angleToXyDeltaHexa;
+				angleToChar = angleToCharHexa;
+			}
 		}
 
 		public void Cleanup() { }
@@ -130,10 +168,9 @@ namespace Malsys.Processing.Components.Interpreters {
 		/// </summary>
 		[SymbolInterpretation]
 		public void DrawLine(ArgsStorage args) {
-
 			int repeat = scale;
 
-			if (currState.Angle % 3 == 0) {
+			if (!rightAngleSlashMode && currState.Angle % 3 == 0) {
 				repeat = (int)Math.Round(repeat * horizontalScaleMult);
 			}
 
@@ -167,7 +204,7 @@ namespace Malsys.Processing.Components.Interpreters {
 		/// </summary>
 		[SymbolInterpretation]
 		public void TurnAround(ArgsStorage args) {
-			currState.Angle = (currState.Angle + 3) % angleStates;
+			currState.Angle = (currState.Angle + angleStates / 2) % angleStates;
 		}
 
 		/// <summary>
@@ -191,7 +228,7 @@ namespace Malsys.Processing.Components.Interpreters {
 			}
 		}
 
-		#endregion
+		#endregion Symbols interpretation methods
 
 
 

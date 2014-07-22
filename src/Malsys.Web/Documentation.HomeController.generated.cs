@@ -109,7 +109,6 @@ namespace Malsys.Web.Areas.Documentation.Controllers
                 public readonly string BasicSyntax = "BasicSyntax";
                 public readonly string Faq = "Faq";
                 public readonly string Index = "Index";
-                public readonly string LsystemFaq = "LsystemFaq";
                 public readonly string LsystemSymbols = "LsystemSymbols";
                 public readonly string ProcessConfigurations = "ProcessConfigurations";
                 public readonly string StdLib = "StdLib";
@@ -119,7 +118,6 @@ namespace Malsys.Web.Areas.Documentation.Controllers
             public readonly string BasicSyntax = "~/Areas/Documentation/Views/Home/BasicSyntax.cshtml";
             public readonly string Faq = "~/Areas/Documentation/Views/Home/Faq.cshtml";
             public readonly string Index = "~/Areas/Documentation/Views/Home/Index.cshtml";
-            public readonly string LsystemFaq = "~/Areas/Documentation/Views/Home/LsystemFaq.cshtml";
             public readonly string LsystemSymbols = "~/Areas/Documentation/Views/Home/LsystemSymbols.cshtml";
             public readonly string ProcessConfigurations = "~/Areas/Documentation/Views/Home/ProcessConfigurations.cshtml";
             public readonly string StdLib = "~/Areas/Documentation/Views/Home/StdLib.cshtml";

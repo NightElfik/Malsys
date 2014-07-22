@@ -2,7 +2,7 @@
  * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
  * All rights reserved.
  *@
-
+@model HelpIndexViewModel
 @{
 	ViewBag.Title = "Malsys docummentation";
 }
@@ -12,15 +12,9 @@
 <div class="grid-100 mobile-grid-100 grid-parent hideLinks">
 	<div class="grid-100 mobile-grid-100 ">
 		<p>
-			Malsys is quite complicated systems but it offeres a lot of pre-defined stuff that makes it easy to use even for beginners.	
-			The best way how to start using Malsys is to read .....
-
-				and look at some examples in @Html.ActionLink("the gallery", MVC.Gallery.Index()).
-		</p>
-
-		<p>
-			If you have any questions try look at @Html.ActionLink("general FAQ page", MVC.Documentation.Home.Faq()).
-			There is also @Html.ActionLink("specialized FAQ for L-systems", MVC.Documentation.Home.LsystemFaq()).
+			Malsys is quite complicated system but it offeres a lot of pre-defined stuff that makes it easy to use even for beginners.
+			If you did not find your andwer here, try @Html.ActionLink("FAQ", MVC.Documentation.Home.Faq())
+				or even @StaticHtml.ExternalLink("StackOverflow", "http://stackoverflow.com/") (don't forget to use tags L-system and Malsys :).
 		</p>
 	</div>
 </div>
@@ -31,15 +25,18 @@
 		<h2>Introduction and basic principles</h2>
 
 		<ol>
-			<li>@Html.ActionLink("Basic principles of symbol rewriting system of L-systems", MVC.Documentation.Home.BasicRewriting())</li>
-			<li>@Html.ActionLink("Basic interpretation of L-system symbols", MVC.Documentation.Home.BasicInterpretation())</li>
+			@*<li>@Html.ActionLink("Basic principles of symbol rewriting system of L-systems", MVC.Documentation.Home.BasicRewriting())</li>
+			<li>@Html.ActionLink("Basic interpretation of L-system symbols", MVC.Documentation.Home.BasicInterpretation())</li>*@
+			@foreach (var sec in Model.BasicsArticleModel.SectionsManager.RootSection.Subsections) {
+				<li>@sec.BareRef</li>
+			}
 		</ol>
 
-		<h2>Advanced techniques</h2>
-		
+		@*<h2>Advanced techniques</h2>
+
 		<ol>
 			<li>@Html.ActionLink("Process configurations", MVC.Documentation.Home.ProcessConfigurations())</li>
-		</ol>
+		</ol>*@
 
 		<h2>Predefined stuff</h2>
 
@@ -70,8 +67,6 @@
 
 		<ol>
 			<li>@Html.ActionLink("Tokens definition", MVC.Documentation.SyntaxReference.Tokens())</li>
-			<li>@Html.ActionLink("Grammar syntax reference", MVC.Documentation.SyntaxReference.Grammar())</li>
-			<li>@Html.ActionLink("Regular expressions reference", MVC.Documentation.SyntaxReference.GrammarRegexps())</li>
 		</ol>
 	</div>
 </div>

@@ -13,27 +13,34 @@
 	};
 }
 
-<h2>Operators</h2>
+<h1>Operators</h1>
 
-<p>
-	All defined operator are shown in table below.
-	At this time it is not possible to define custom operators but it can change in the future
-		(the system offers it but I found no benefit from it, if you have different opinion send me @Html.ActionLink("feedback", MVC.Feedback.Index())).
-</p>
+<div class="grid-100 mobile-grid-100 grid-parent hideLinks">
+	<div class="grid-50 mobile-grid-100 ">
+		<p>
+			All defined operators are shown in table below.
+			At this time it is not possible to define custom operators but it can change in the future
+				(the system offers it but there is no syntax for it)
+		</p>
+		<p>
+			Operators are grouped by their precedence, they have equal precedence within each group.
+			If there are two operators in a row the one with lower precedence will be applied first
+				(the left operator will use precedence number but right one will use active precedence number).
+			If they have same precedence their associativity will determine if left or right one will be applied first.
+			If you are not sure about precedence use parenthesis in expression to force execution order.
+		</p>
+	</div>
+</div>
 
-<p>
-	Operators are grouped by their precedence, they have equal precedence within each group.
-	If there are two operators in a row the one with lower precedence will be applied first
-		(the left operator will use precedence number but right one will use active precedence number).
-	If they have same precedence their associativity will determine if left or right one will be applied first.
-	If you are not sure about precedence use parenthesis in expression to force execution order.
-</p>
 
 
 @* ================================================================================================================== *@
+
+<div class="grid-100 mobile-grid-100 grid-parent hideLinks">
+	<div class="grid-100 mobile-grid-100 ">
 <h2>Defined operators</h2>
 
-<table>
+<table class="borderTable">
 	<tr>
 		<th style="width: 80px;">Syntax</th>
 		<th style="width: 80px;">Arity</th>
@@ -56,6 +63,11 @@
 }
 </table>
 
+	</div>
+</div>
+
+<div class="grid-100 mobile-grid-100 grid-parent hideLinks">
+	<div class="grid-100 mobile-grid-100 ">
 
 @* ================================================================================================================== *@
 <h2>Examples</h2>
@@ -84,3 +96,6 @@
 		"let c' = -(2^2);",
 		"let c'' = (-2)^2;",
 		"process Constants with ConstantDumper;")))
+
+	</div>
+</div>

@@ -3,50 +3,128 @@
  * All rights reserved.
  *@
 
-@section submenu {
-	<li>@Html.ActionLink("Back to Help", MVC.Documentation.Home.Index())</li>
-}
 
 @{
-	ViewBag.Title = "Frequently asked questions (general)";
+	ViewBag.Title = "Frequently asked questions";
+	var codeMgr = new CodeListingsManager();
 }
 
-<h2>Frequently asked questions (general)</h2>
-
-<p>
-	If you have questions which are not answered here you may visit @Html.ActionLink("discussion", MVC.Discussion.Index()) and ask there.
-	For FAQ related to L-system processing is @Html.ActionLink("see this page", MVC.Documentation.Home.LsystemFaq()).
-</p>
-
-<div id="toc"></div>
-
-<h3>What is L-system?</h3>
-
-<p>
-	<span class="huge">Q:</span>
-	What the hell is L-system?
-</p>
-
-<p>
-	<span class="huge">A:</span>
-	An L-system or Lindenmayer system is a parallel rewriting system, namely a variant of a formal grammar,
-		most famously used to model the growth processes of plant development, but also able to model the morphology of a variety of organisms.
-	More about L-system theory on @Html.Link("Wikipedia", "http://en.wikipedia.org/wiki/L-system").
-</p>
+<h1>Frequently asked questions</h1>
 
 
 @* ================================================================================================================== *@
-
-<h3>No more Q & A?</h3>
+<div class="grid-100 mobile-grid-100 grid-parent hideLinks">
+	<div class="grid-50 mobile-grid-100 ">
+<h2>List and explanation of all properties usable in L-systems</h2>
 
 <p>
 	<span class="huge">Q:</span>
-	Why there are no more questions and answers?
+	Whey I'm exploring the @Html.ActionLink("gallery", MVC.Gallery.Index()) I can see many different properties like <code>continuousColoring</code> or <code>initialAngle</code> used in L-systems.
+	Where can I find complete list with explanation?
 </p>
 
 <p>
 	<span class="huge">A:</span>
-	Because I didn't think them out yet.
-	Maybe you can help me!
-	You can check @Html.ActionLink("L-system FAQ", MVC.Documentation.Home.LsystemFaq()), there are some Q & A ;)
+	Properties depends on used components in process configuration.
+	If you use predefined process configurations like <code>SvgRenderer</code> or <code>SymbolPrinter</code> there is consolidated list
+	of all properties in @Html.ActionLink("Predefined process configurations", MVC.Documentation.Predefined.Configurations()) section of
+	@Html.ActionLink("documentation", MVC.Documentation.Home.Index()).
 </p>
+
+<p>
+	Recently was added list of some properties directly on @Html.ActionLink("process page", MVC.Process.Index()).
+	It will show documentation for used process configurations so you have to use some first (for example with: <code>process all with SvgRenderer;</code>).
+	It looks like this, try to hover over links (JavaScript must be enabled):
+</p>
+
+<div class="inlineDoc" data-config-names="SvgRenderer" data-fetch-url="@Url.ActionAbsolute(MVC.Documentation.Api.ProcessConfigMembers())"></div>
+	</div>
+
+@* ================================================================================================================== *@
+	<div class="grid-50 mobile-grid-100 ">
+<h2>Symbol rewriting is not working properly!</h2>
+
+<p>
+	<span class="huge">Q:</span>
+	In following L-system rewriting do not work, nothing is rendered:
+</p>
+
+@codeMgr.CodeNoFigure(ProgLang.Malsys, @"
+lsystem RewritingProblem {
+	set symbols axiom = F;
+	set iterations = 2;
+	interpret F as DrawForward(10);
+	rewrite F to FFF;
+}
+process all with SvgRenderer;
+", shadow: true)
+
+<p>
+	<span class="huge">A:</span>
+	Problem is in symbols, <code>FFF</code> is one symbol for Malsys, you need to separate individual symbols with space to <code>F F F</code>.
+	This problem can be easily debugged setting <code>debugInterpretation</code> property to true.
+	If you do so you will see <code>FFF =></code> which means that symbol <code>FFF</code> was interpreted as nothing which is correct to L-system definition.
+</p>
+
+@codeMgr.CodeNoFigure(ProgLang.Malsys, @"
+lsystem RewritingProblem {
+	set symbols axiom = F;
+	set iterations = 2;
+	set debugInterpretation = true;
+	interpret F as DrawForward(10);
+	rewrite F to FFF;
+}
+process all with SvgRenderer;
+", shadow: true)
+	</div>
+</div>
+
+@* ================================================================================================================== *@
+<div class="grid-100 mobile-grid-100 grid-parent hideLinks">
+	<div class="grid-50 mobile-grid-100 ">
+<h2>How to render animated L-systems</h2>
+
+<p>
+	<span class="huge">Q:</span>
+	I saw some animations in gallery, how to do them?
+</p>
+
+<p>
+	<span class="huge">A:</span>
+	There are more ways.
+	The simplest way is to render individual frames with <code>set interpretEveryIteration = true;</code> and then download all images and make animation by your own.
+	However, this will not allow you to publish animations in Malsys' Gallery.
+</p>
+
+<p>
+	Malsys can generate animations in @StaticHtml.ExternalLink("animated PNG format", "http://en.wikipedia.org/wiki/APNG") (APNG).
+	This format is not supported by all browsers.
+	I order to generate APNG in Malsys, you need to use	<code>AnimationRenderer</code>.
+	Following example is animated Dragon curve.
+</p>
+
+@codeMgr.CodeNoFigure(ProgLang.Malsys, @"
+lsystem DragonCurve {
+	set symbols axiom = L(400);
+	set iterations = 14;
+	// interpret every iteration to form an animation
+	set interpretEveryIteration = true;
+	// set canvas origin and size to ensure that all
+	// frames have the same size
+	set canvasOriginSize = {-100, -150, 650, 440};
+	let sq2 = sqrt(2);
+	rewrite R(d) to - R(d / sq2) + + L(d / sq2) -;
+	rewrite L(d) to + R(d / sq2) - - L(d / sq2) +;
+	interpret R L as DrawForward(0, 3);
+	interpret + as TurnLeft(45);
+	interpret - as TurnLeft(-45);
+}
+process all with AnimationRenderer;
+", shadow: true)
+
+<p>
+	Important parts are <code>set interpretEveryIteration = true;</code> and <code>set canvasOriginSize = {-100, -150, 650, 440};</code>
+</p>
+
+	</div>
+</div>

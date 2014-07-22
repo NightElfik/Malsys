@@ -8,9 +8,10 @@
 	ViewBag.Title = "Email to author";
 }
 
-<h2>Email to author</h2>
+<h1>Email to author</h1>
 
-
+<div class="grid-100 mobile-grid-100 grid-parent hideLinks">
+	<div class="grid-50 mobile-grid-100 ">
 @if (Model != null) {
 	<p>
 		Marek Fišer &lt;@Html.EmailLink(Model)&gt;
@@ -34,3 +35,5 @@ else {
 
 	}
 }
+	</div>
+</div>

@@ -14,8 +14,10 @@
 	@Html.ActionLink("List of sent feedbacks", MVC.Feedback.List())
 }
 
-<h2>Send a feedback</h2>
+<h1>Send a feedback</h1>
 
+<div class="grid-100 mobile-grid-100 grid-parent hideLinks">
+	<div class="grid-50 mobile-grid-100 ">
 <p>
 	Please let me know what do you think about Malsys.
 	I appreciate all comments, suggestions, complaints, bug reports...
@@ -27,8 +29,10 @@
 	Both positive and negative feedback motivates me to improve Malsys.
 </p>
 
-<p>Thank you, Marek Fišer.</p>
+<p>Thank you, Marek.</p>
 
+	</div>
+	<div class="grid-50 mobile-grid-100">
 @using (Html.BeginForm()) {
 
 	<fieldset>
@@ -47,4 +51,6 @@
 
 	</fieldset>
 }
+	</div>
+</div>
 

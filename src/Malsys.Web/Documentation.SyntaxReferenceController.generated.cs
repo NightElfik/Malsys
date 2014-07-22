@@ -119,8 +119,6 @@ namespace Malsys.Web.Areas.Documentation.Controllers
                 public readonly string ComponentPropertyAssignDefinition = "ComponentPropertyAssignDefinition";
                 public readonly string ConstantDefinition = "ConstantDefinition";
                 public readonly string FunctionDefinition = "FunctionDefinition";
-                public readonly string Grammar = "Grammar";
-                public readonly string GrammarRegexps = "GrammarRegexps";
                 public readonly string LsystemDefinition = "LsystemDefinition";
                 public readonly string ProcessStatements = "ProcessStatements";
                 public readonly string RewriteRule = "RewriteRule";
@@ -132,8 +130,6 @@ namespace Malsys.Web.Areas.Documentation.Controllers
             public readonly string ComponentPropertyAssignDefinition = "~/Areas/Documentation/Views/SyntaxReference/ComponentPropertyAssignDefinition.cshtml";
             public readonly string ConstantDefinition = "~/Areas/Documentation/Views/SyntaxReference/ConstantDefinition.cshtml";
             public readonly string FunctionDefinition = "~/Areas/Documentation/Views/SyntaxReference/FunctionDefinition.cshtml";
-            public readonly string Grammar = "~/Areas/Documentation/Views/SyntaxReference/Grammar.cshtml";
-            public readonly string GrammarRegexps = "~/Areas/Documentation/Views/SyntaxReference/GrammarRegexps.cshtml";
             public readonly string LsystemDefinition = "~/Areas/Documentation/Views/SyntaxReference/LsystemDefinition.cshtml";
             public readonly string ProcessStatements = "~/Areas/Documentation/Views/SyntaxReference/ProcessStatements.cshtml";
             public readonly string RewriteRule = "~/Areas/Documentation/Views/SyntaxReference/RewriteRule.cshtml";

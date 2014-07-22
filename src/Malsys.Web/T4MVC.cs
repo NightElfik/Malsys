@@ -192,14 +192,6 @@ namespace Links
                 public static readonly string ApngStructure_png = Url("ApngStructure.png");
                 public static readonly string ApngTrimNoBg_png = Url("ApngTrimNoBg.png");
                 public static readonly string ApngTrimVis_png = Url("ApngTrimVis.png");
-                public static readonly string CoordConversion_1_png = Url("CoordConversion-1.png");
-                public static readonly string CoordConversion_2_png = Url("CoordConversion-2.png");
-                public static readonly string CoordConversion_3_png = Url("CoordConversion-3.png");
-                public static readonly string CoordConversion_4_png = Url("CoordConversion-4.png");
-                public static readonly string CoordConversion_5_png = Url("CoordConversion-5.png");
-                public static readonly string CoordConversionMatrix_12_png = Url("CoordConversionMatrix-12.png");
-                public static readonly string CoordConversionMatrix_23_png = Url("CoordConversionMatrix-23.png");
-                public static readonly string CoordConversionMatrix_34_png = Url("CoordConversionMatrix-34.png");
                 public static readonly string DragonApng_png = Url("DragonApng.png");
                 [GeneratedCode("T4MVC", "2.0"), DebuggerNonUserCode]
                 public static class Frames {

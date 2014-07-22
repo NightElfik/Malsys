@@ -15,14 +15,14 @@
 	int exampleId = 1;
 }
 
-<h2>Constant definition</h2>
-
-<div id="toc"></div>
+<h1>Constant definition</h1>
 
 
 @* ================================================================================================================== *@
-<h3>Basic definitions</h3>
+<h2>Basic definitions</h2>
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	Constant is defined by keyword <code class="malsys">let</code> followed by its name.
 	Then follows equals sign <code>=</code> and its value which can be any expression.
@@ -32,6 +32,8 @@
 		@Html.ActionLink("functions", MVC.Documentation.Predefined.Functions()) and @Html.ActionLink("operators", MVC.Documentation.Predefined.Operators()).
 	It is also possible to define new function, details about that are on @Html.ActionLink("function definition page", MVC.Documentation.SyntaxReference.FunctionDefinition()).
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, StringHelper.JoinLines(
 		"let a = 3;",
@@ -42,11 +44,15 @@
 
 
 @* ================================================================================================================== *@
-<h3>Global and local scope</h3>
+<h2>Global and local scope</h2>
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	Constants can be defined in global scope or in local scope of some L-system.
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, StringHelper.JoinLines(
 		"let glob = 8;",
@@ -56,9 +62,13 @@
 		"}",
 		"process all with SymbolPrinter;")))
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	Constants defined in local scope overlays constants from global scope, but they do not affect them.
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, StringHelper.JoinLines(
 		"let x = 8;",
@@ -74,12 +84,16 @@
 
 
 @* ================================================================================================================== *@
-<h3>Inheritance of constants</h3>
+<h2>Inheritance of constants</h2>
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	Inheritance of constants works as expected.
 	Constants from derived L-systems are defined and new constants can redefine them.
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, StringHelper.JoinLines(
 		"abstract lsystem Base {",
@@ -94,13 +108,20 @@
 
 
 @* ================================================================================================================== *@
-<h3>Formal grammar</h3>
+<h2>Formal grammar</h2>
 
-@MalsysHelper.GrammarBox("constant_def = 'let' ID '=' expression ';'")
-
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	Defines constant with name represented by token <code>ID</code> as value of <code>expression</code>.
 	If constant with same name already exists, it is redefined by new definition.
 </p>
+	</div>
+</div>
+
+@(new CodeListingsManager().CodeNoFigure(ProgLang.Grammar, @"
+constant_def = 'let' ID '=' expression ';'
+", shadow: true))
+
 
 

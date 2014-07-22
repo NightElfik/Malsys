@@ -8,16 +8,21 @@
 	ViewBag.Title = "Malsys standard library";
 }
 
-<h2>Malsys standard library</h2>
+<h1>Malsys standard library</h1>
 
+<div class="grid-100 mobile-grid-100 grid-parent hideLinks">
+	<div class="grid-50 mobile-grid-100 ">
 <p>
 	For simplifying work with Malsys before every processed input is "pasted" standard library.
 	It defines few basic constants, L-systems (which can be @Html.AnchorLink("inherited", "LsystemInheritance", MVC.Documentation.SyntaxReference.LsystemDefinition()))
 		and process configurations.
 	Its source code is printed on this page.
 </p>
+	</div>
+</div>
 
-
-<pre class="malsys box">
-@Model.SourceCode
-</pre>
+<div class="grid-100 mobile-grid-100 grid-parent hideLinks">
+	<div class="grid-100 mobile-grid-100 ">
+		@(new CodeListingsManager().Code(ProgLang.Malsys, "Standard library of Malsys", Model.SourceCode).Html)
+	</div>
+</div>

@@ -141,9 +141,7 @@
 
 	if (Model.CompiledSourceCode != null) {
 		<h2 id="compiledSource">Compiled source code</h2>
-		<pre class="malsys box">
-@Model.CompiledSourceCode
-		</pre>
+		@(new CodeListingsManager().CodeNoFigure(ProgLang.Malsys, Model.CompiledSourceCode, shadow: true))
 	}
 }
 

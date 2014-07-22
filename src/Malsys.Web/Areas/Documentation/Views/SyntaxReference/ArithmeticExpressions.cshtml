@@ -6,35 +6,45 @@
 	ViewBag.Title = "Arithmetic expressions";
 }
 
-<h2>Arithmetic expressions</h2>
+<h1>Arithmetic expressions</h1>
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
-	<i>To be done in the near future.</i>
+	<i>TODO</i>
 </p>
+	</div>
+</div>
 
 @* ================================================================================================================== *@
-<h3>Formal grammar</h3>
+<h2>Formal grammar</h2>
 
-@MalsysHelper.GrammarBox(
-	"expression = expr_member+",
-	"",
-	"expr_member =",
-	"	| NUMBER",
-	"	| ID",
-	"	| OPERATOR",
-	"	| expr_indexer",
-	"	| expr_array",
-	"	| expr_function",
-	"	| '(' expression ')'",
-	"",
-	"expr_indexer = '[' expression ']'",
-	"",
-	"expr_array = '{' (expression (',' expression)*)? '}'",
-	"",
-	"expr_function = ID '(' params_expr_list? ')'",
-	"",
-	"params_expr_list = expression (',' params_expr_list)?")
-
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
-	Expression grammar is not strict, correctness of expression will ensure compiler or interpreter.
+	Expression grammar is not "strict", correctness of expression will ensure compiler or interpreter.
 </p>
+	</div>
+</div>
+
+@(new CodeListingsManager().CodeNoFigure(ProgLang.Grammar, @"
+expression = expr_member+
+
+expr_member =
+	| NUMBER
+	| ID
+	| OPERATOR
+	| expr_indexer
+	| expr_array
+	| expr_function
+	| '(' expression ')'
+
+expr_indexer = '[' expression ']'
+
+expr_array = '{' (expression (',' expression)*)? '}'
+
+expr_function = ID '(' params_expr_list? ')'
+
+params_expr_list = expression (',' params_expr_list)?
+", shadow: true))
+

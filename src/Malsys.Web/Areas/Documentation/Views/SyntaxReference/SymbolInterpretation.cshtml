@@ -22,33 +22,43 @@
 	int exampleId = 1;
 }
 
-<h2>Symbol interpretation definition</h2>
+<h1>Symbol interpretation definition</h1>
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	Defines interpretation action to set of symbols.
 	In following examples <code>debugInterpretation</code> property is set to show actual calls on renderer.
 </p>
+	</div>
+</div>
 
-<div id="toc"></div>
 
 
 @* ================================================================================================================== *@
-<h3>Basic interpretation definition</h3>
+<h2>Basic interpretation definition</h2>
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	Arguments from symbols are forwarded to interpreter actions.
 	Symbol with no defined interpretation is ignored.
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++,
 		"F(2.5) + F(5, 0) G H",
 		"interpret F as DrawForward;"))
 
-<hr />
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 
 <p>
 	More than one symbol can be specified for one action.
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++,
 		"B A A C",
@@ -56,11 +66,15 @@
 
 
 @* ================================================================================================================== *@
-<h3>Interpretation action default parameters</h3>
+<h2>Interpretation action default parameters</h2>
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	Arguments that are not supplied by symbol are taken from action's defaults.
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++,
 		"F  F(5)  F(5, 6, 7)",
@@ -68,42 +82,52 @@
 
 
 @* ================================================================================================================== *@
-<h3>Custom action invoking</h3>
+<h2>Custom action invoking</h2>
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	Arguments from symbols are matched on local variables listed after symbol.
 	Unmapped symbol's arguments are ignored.
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++,
 			"F(1, 2)  F(2, 2, 2)",
 		"interpret F(a, b) as DrawForward(a + b);"))
 
-<hr />
-
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	Not enough custom arguments supplied by symbol to map all parameters causes an error.
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++,
 		"F  F(5)",
 		"interpret F(a, b) as DrawForward(a + b);"))
 
-<hr />
-
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	When custom parameters are specified, no automatic argument forwarding is done.
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++,
 		"F(5)  F(2, 4)",
 		"interpret F(a) as DrawForward(0);"))
 
-<hr />
-
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	More symbols can be specified, custom parameters are after last.
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++,
 		"A(1)  B(2)  C(3)  B(4)",
@@ -111,31 +135,39 @@
 
 
 @* ================================================================================================================== *@
-<h3>Default values of custom parameters</h3>
+<h2>Default values of custom parameters</h2>
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	Default values of custom parameters can be also specified.
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++,
 		"F  F(2)  F(2,4)",
 		"interpret F(a = 5) as DrawForward(a);"))
 
-<hr />
-
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	All parameters with default values have to be after parameters without default value.
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++,
 		"F(1, 2)  F(1, 2, 3)",
 		"interpret F(a, b, c = 5) as DrawForward(a, b, c);"))
 
-<hr />
-
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	More symbols can be specified, custom parameters are after last.
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++,
 		"A(2)  C(8, 8, 8)  B(2, 2)",
@@ -143,14 +175,18 @@
 
 
 @* ================================================================================================================== *@
-<h3>Prevent implicit argument forwarding</h3>
+<h2>Prevent implicit argument forwarding</h2>
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	Sometimes we use symbol's arguments only in rewrite rules to control rewriting process and we do not want to forward them to interpretation method.
 	Imagine we want to call <code>DrawForward(10)</code> on all symbols <code>A</code> but A's have some parameters.
 	Because argument forwarding is disabled when explicit parameters are specified we can just specify "dummy" parameter that we don't use.
 	Do not forget to specify default value of dummy parameter to allow interpreting symbols without arguments.
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++,
 		"A(-5)  A(20, 5)  A  A(0.01)",
@@ -158,12 +194,16 @@
 
 
 @* ================================================================================================================== *@
-<h3>Arguments and default values are expressions</h3>
+<h2>Arguments and default values are expressions</h2>
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	Arguments of action and default values of custom parameters can be expressions.
 	Global or local constants can be also used.
 </p>
+	</div>
+</div>
 
 @{
 	var specialModelArgs = new LsystemExampleViewModel() {
@@ -186,23 +226,29 @@
 
 
 @* ================================================================================================================== *@
-<h3>Redefinition of interpret actions</h3>
+<h2>Redefinition of interpret actions</h2>
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	If there are two interpret definitions for one symbol the older definition is replaced by newer one.
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++,
 		"A B", StringHelper.JoinLines(
 		"interpret A B as StartBranch;",
 		"interpret B as Nothing;")))
 
-<hr />
-
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	Interpretation redefinition is especially important in L-system inheritance.
 	If base L-system defines some interpretations the definitions in derived L-system always replaces old ones.
 </p>
+	</div>
+</div>
 
 @{
 	var specialModelInt = new LsystemExampleViewModel() {
@@ -226,13 +272,14 @@
 		"interpret A as Nothing;"))
 
 @* ================================================================================================================== *@
-<h3>Formal grammar</h3>
+<h2>Formal grammar</h2>
 
-@MalsysHelper.GrammarBox(
-	"symbols_interpretation_def = 'interpret' SYMBOL+ symbol_params? 'as' ID action_params? ';'",
-	"",
-	"symbol_params = '(' params_list? ')'",
-	"params_list = ID ('=' expression)?  (',' params_list)?",
-	"",
-	"action_params = '(' params_expr_list? ')'",
-	"params_expr_list = expression  (',' params_expr_list)?")
+@(new CodeListingsManager().CodeNoFigure(ProgLang.Grammar, @"
+symbols_interpretation_def = 'interpret' SYMBOL+ symbol_params? 'as' ID action_params? ';'
+
+symbol_params = '(' params_list? ')'
+params_list = ID ('=' expression)?  (',' params_list)?
+
+action_params = '(' params_expr_list? ')'
+params_expr_list = expression  (',' params_expr_list)?
+", shadow: true))

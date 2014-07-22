@@ -18,8 +18,11 @@
 	int exampleId = 1;
 }
 
-<h2>Component property assign definition</h2>
+<h1>Component property assign definition</h1>
 
+
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	Malsys process inputs by system of connected components.
 	Concrete set and connection of component is defined by @Html.ActionLink("component configuration", MVC.Documentation.SyntaxReference.ComponentConfigurationDefinition()).
@@ -28,13 +31,16 @@
 	This is done by component property assign definition in L-system.
 	To learn what properties are settable see @Html.ActionLink("components reference", MVC.Documentation.Predefined.Components()).
 </p>
+	</div>
+</div>
 
-<div id="toc"></div>
 
 
 @* ================================================================================================================== *@
-<h3>Basic examples</h3>
+<h2>Basic examples</h2>
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	The most important properties are probably <code>axiom</code> and <code>iterations</code>.
 	If you look in @Html.ActionLink("components list", MVC.Documentation.Predefined.Components()) you will find that this properties are on component
@@ -42,20 +48,23 @@
 	The <code>axiom</code> is symbol property so its definition starts with <code class="malsys">set symbols</code> and its value is string of symbols.
 	The <code>iterations</code> property is constant so its definition starts with just <code class="malsys">set</code>.
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, StringHelper.JoinLines(
 		"set symbols axiom = A B(20) C(5, 0) D;", "set iterations = 1;")))
 
 @* ================================================================================================================== *@
-<h3>Formal grammar</h3>
+<h2>Formal grammar</h2>
 
-@MalsysHelper.GrammarBox(
-	"component_property_assign =",
-	"	| 'set' ID '=' expression ';'",
-	"	| 'set' 'symbols' ID '=' symbol* ';'",
-	"",
-	"symbol = symbol_char+ '(' expr_args? ')'",
-	"",
-	"symbol_char = ID | OPERATOR | '[' | ']'",
-	"",
-	"expr_args = expression (',' expr_args)?")
+@(new CodeListingsManager().CodeNoFigure(ProgLang.Grammar, @"
+	component_property_assign =
+	| 'set' ID '=' expression ';'
+	| 'set' 'symbols' ID '=' symbol* ';'
+
+symbol = symbol_char+ '(' expr_args? ')'
+
+symbol_char = ID | OPERATOR | '[' | ']'
+
+expr_args = expression (',' expr_args)?
+", shadow: true))

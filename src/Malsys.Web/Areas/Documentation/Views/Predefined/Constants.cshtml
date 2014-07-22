@@ -8,22 +8,28 @@
 	ViewBag.Title = "Predefined constants";
 }
 
-<h2>Predefined constants</h2>
+<h1>Predefined constants</h1>
 
-<p>
-	In Malsys are two types of predefined constants.
-</p>
+<div class="grid-100 mobile-grid-100 grid-parent hideLinks">
+	<div class="grid-50 mobile-grid-100 ">
+		<p>
+			In Malsys there are two types of predefined constants.
+		</p>
+	</div>
+</div>
 
 
-@* ================================================================================================================== *@
-<h3>Built-in compiler constants</h3>
+<div class="grid-100 mobile-grid-100 grid-parent hideLinks">
+	<div class="grid-50 mobile-grid-100 ">
+
+<h2>Built-in compiler constants</h2>
 
 <p>
 	Following constants are recognized by the compiler though it is not possible to change their value.
 	Their names are case-sensitive.
 </p>
 
-<table>
+<table class="borderTable">
 	<tr><th style="width: 128px;">Name</th><th style="width: 192px;">Value</th><th></th></tr>
 @foreach (var constGroup in Model.CompilerConstants.GroupBy(x => x.GroupDoc)) {
 
@@ -33,7 +39,7 @@
 		bool first = true;
 		foreach (var c in valGroup) {
 		<tr>
-			<td class="monospace center">@c.Name</td>
+			<td class="monospace">@c.Name</td>
 			@if (first) {
 				first = false;
 				<td class="center" rowspan="@count">@c.Value</td>
@@ -47,15 +53,18 @@
 </table>
 
 
-@* ================================================================================================================== *@
-<h3>Constants from standard library</h3>
+	</div>
+	<div class="grid-50 mobile-grid-100 ">
+
+
+<h2>Constants from standard library</h2>
 
 <p>
 	This group of constants is defined in the same way how user can define global constants.
 	They are case-sensitive and they can be redefined (overlaid) by user-defined constants.
 </p>
 
-<table class="center">
+<table class="borderTable">
 	<tr><th style="width: 128px;">Name</th><th style="width: 192px;">Value</th></tr>
 @foreach (var constKvpGroup in Model.StdLibConstants.GroupBy(x => x.ValueFunc())) {
 	var count = constKvpGroup.Count();
@@ -71,5 +80,7 @@
 	}
 }
 </table>
+	</div>
+</div>
 
 

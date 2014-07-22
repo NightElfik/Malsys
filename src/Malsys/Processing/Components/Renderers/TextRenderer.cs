@@ -25,9 +25,6 @@ namespace Malsys.Processing.Components.Renderers {
 
 		private char[][] resultBuffer;
 
-
-
-
 		#region IComponent Members
 
 		public IMessageLogger Logger { get; set; }
@@ -83,19 +80,19 @@ namespace Malsys.Processing.Components.Renderers {
 				measuredHeight = maxY - minY + 1;
 			}
 			else {
-				var stream = context.OutputProvider.GetOutputStream<SvgRenderer2D>(
+				var stream = context.OutputProvider.GetOutputStream<TextRenderer>(
 					"Text result from `{0}`".Fmt(context.Lsystem.Name), MimeType.Text.Plain, false, localAdditionalData);
 
 				using (var writer = new StreamWriter(stream)) {
 					foreach (var row in resultBuffer) {
-						writer.WriteLine(new string(row));
+						writer.WriteLine(new string(row).TrimEnd());
 					}
 				}
 			}
 
 		}
 
-		#endregion
+		#endregion IComponent Members
 
 
 		#region ITextRenderer
@@ -122,7 +119,7 @@ namespace Malsys.Processing.Components.Renderers {
 
 		}
 
-		#endregion
+		#endregion ITextRenderer
 
 
 		private void measure(int x, int y) {

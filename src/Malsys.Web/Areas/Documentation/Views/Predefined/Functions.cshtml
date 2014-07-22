@@ -8,49 +8,73 @@
 @{
 	ViewBag.Title = "Functions";
 	var anyParams = Malsys.Evaluators.FunctionInfo.AnyParamsCount;
+
+	var layoutMgr = new LayoutManager();
+	int l = 0;
 }
 
-<h2>Functions</h2>
+<h1>Functions</h1>
 
-<p>
-	Functions listed on this page can be used anywhere in code.
-	This means that they can be used in global scope as well as in lsystem or in symbol parameter.
-	Names of functions are case-sensitive but all usual case variants are defined.
-</p>
 
-@foreach (var funGroup in Model.GroupBy(x => x.GroupDoc).OrderBy(x => x.Key)) {
+<div class="grid-100 mobile-grid-100 grid-parent hideLinks">
+	<div class="grid-50 mobile-grid-100 ">
+		<p>
+			Functions listed on this page can be used anywhere in code.
+			This means that they can be used in global scope as well as in lsystem or in symbol parameter.
+			Names of functions are case-sensitive but all usual case variants are defined.
+		</p>
+	</div>
+</div>
 
-<h3>@funGroup.Key</h3>
+@{
 
-<table class="w100">
-	<tr>
-		<th style="width: 150px;">Name</th>
-		<th style="width: 80px;">Num of params</th>
-		<th style="width: 128px;">Parameters type pattern</th>
-		<th>Description</th>
-	</tr>
-
-@foreach (var equalFunGroup in funGroup.GroupBy(x => x.FunctionBody)) {
-	 var count = equalFunGroup.Count();
-	 bool first = true;
-	 foreach (var fun in equalFunGroup) {
-		<tr>
-			<td class="monospace">@fun.Name</td>
-			@if (first) {
-				first = false;
-				<td rowspan="@count" class="center">@(fun.ParamsCount == anyParams ? "any" : fun.ParamsCount.ToString())</td>
-				<td rowspan="@count" class="center">
-					@for (int i = 0; i < fun.ParamsTypesCyclicPattern.Length; i++) {
-						if (i != 0) { <br /> }
-						@Malsys.SemanticModel.Evaluated.ExpressionValueTypeExtensions.ToTypeString(fun.ParamsTypesCyclicPattern[i])
-					}
-				</td>
-				<td rowspan="@count">@fun.SummaryDoc</td>
+	foreach (var funGroup in Model.GroupBy(x => x.GroupDoc).OrderBy(x => x.Key)) {
+		if (l % 2 == 0) {
+			if (l > 0) {
+				@layoutMgr.EndColumn();
 			}
-		</tr>
+			@layoutMgr.StartColumn();
+		}
+		else {
+			@layoutMgr.NextColumn();
+		}
+		++l;
+
+		<h2>@funGroup.Key</h2>
+
+		<table class="w100 borderTable">
+			<tr>
+				<th style="width: 150px;">Name</th>
+				<th style="width: 80px;">Num of params</th>
+				<th style="width: 128px;">Parameters type pattern</th>
+				<th>Description</th>
+			</tr>
+
+			@foreach (var equalFunGroup in funGroup.GroupBy(x => x.FunctionBody)) {
+				 var count = equalFunGroup.Count();
+				 bool first = true;
+				 foreach (var fun in equalFunGroup) {
+					<tr>
+						<td class="monospace">@fun.Name</td>
+						@if (first) {
+							first = false;
+							<td rowspan="@count" class="center">@(fun.ParamsCount == anyParams ? "any" : fun.ParamsCount.ToString())</td>
+							<td rowspan="@count" class="center">
+								@for (int i = 0; i < fun.ParamsTypesCyclicPattern.Length; i++) {
+									if (i != 0) { <br /> }
+									@Malsys.SemanticModel.Evaluated.ExpressionValueTypeExtensions.ToTypeString(fun.ParamsTypesCyclicPattern[i])
+								}
+							</td>
+							<td rowspan="@count">@fun.SummaryDoc</td>
+						}
+					</tr>
+				}
+			}
+
+		</table>
 	}
-}
 
-</table>
-
+	if (l > 0) {
+		@layoutMgr.EndColumn();
+	}
 }

@@ -288,6 +288,7 @@
     <Compile Include="Areas\Documentation\Models\ConfigurationModel.cs" />
     <Compile Include="Areas\Documentation\Models\HelpArticle.cs" />
     <Compile Include="Areas\Documentation\Models\HelpArticleViewModel.cs" />
+    <Compile Include="Areas\Documentation\Models\HelpIndexViewModel.cs" />
     <Compile Include="Areas\Documentation\Models\LsystemExampleViewModel.cs" />
     <Compile Include="Areas\Documentation\Models\PredefinedConstantsModel.cs" />
     <Compile Include="Areas\Documentation\Views\CompilerConstantsAttribute.cs" />
@@ -500,7 +501,6 @@
     <Content Include="Global.asax" />
     <Content Include="Download\MarekFiser-LsystemsOnline.v101.pdf" />
     <Content Include="Download\MarekFiser-LsystemsOnline.v101.pdf.zip" />
-    <Content Include="Areas\Documentation\Views\Home\LsystemFaq.cshtml" />
     <Content Include="Areas\Administration\Views\Stats\Logs.cshtml" />
     <Content Include="Download\Png-v1.zip" />
     <Content Include="Areas\Documentation\Views\Articles\Articles\IntroductionAndBasics.cshtml" />
@@ -533,14 +533,6 @@
     <Content Include="Img\DevDiary\apng\ApngStructure.png" />
     <Content Include="Img\DevDiary\apng\ApngTrimNoBg.png" />
     <Content Include="Img\DevDiary\apng\ApngTrimVis.png" />
-    <Content Include="Img\DevDiary\apng\CoordConversion-1.png" />
-    <Content Include="Img\DevDiary\apng\CoordConversion-2.png" />
-    <Content Include="Img\DevDiary\apng\CoordConversion-3.png" />
-    <Content Include="Img\DevDiary\apng\CoordConversion-4.png" />
-    <Content Include="Img\DevDiary\apng\CoordConversion-5.png" />
-    <Content Include="Img\DevDiary\apng\CoordConversionMatrix-12.png" />
-    <Content Include="Img\DevDiary\apng\CoordConversionMatrix-23.png" />
-    <Content Include="Img\DevDiary\apng\CoordConversionMatrix-34.png" />
     <Content Include="Img\DevDiary\apng\DragonApng.png" />
     <Content Include="Img\DevDiary\apng\Frames\AFrmae00-12x34.png" />
     <Content Include="Img\DevDiary\apng\Frames\AFrmae01-20x50.png" />
@@ -621,6 +613,7 @@
     <Content Include="Js\ThreeJs\Three.js" />
     <Content Include="Js\ThreeJs\TrackballControls.js" />
     <Content Include="robots.txt" />
+    <None Include="Properties\PublishProfiles\FilesystemPublish.pubxml" />
     <None Include="T4MVC.tt.settings.xml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -651,8 +644,6 @@
     <Content Include="Areas\Administration\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Documentation\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Documentation\Views\Home\BasicRewriting.cshtml" />
-    <Content Include="Areas\Documentation\Views\SyntaxReference\Grammar.cshtml" />
-    <Content Include="Areas\Documentation\Views\SyntaxReference\GrammarRegexps.cshtml" />
     <Content Include="Areas\Documentation\Views\Predefined\Constants.cshtml" />
     <Content Include="Areas\Documentation\Views\Predefined\Functions.cshtml" />
     <None Include="Js\MinifyJs.tt">

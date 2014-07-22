@@ -4,6 +4,7 @@ using System.Web.Mvc;
 using Malsys.Processing;
 using Malsys.SemanticModel.Evaluated;
 using Malsys.Web.Areas.Documentation.Models;
+using Malsys.Web.ArticleTools;
 using Malsys.Web.Models;
 using Malsys.Web.Models.Lsystem;
 
@@ -28,9 +29,15 @@ namespace Malsys.Web.Areas.Documentation.Controllers {
 		}
 
 		public virtual ActionResult Index() {
-			return View();
+			var model = new HelpIndexViewModel();
+			model.BasicsArticleModel = new HelpArticleViewModel();
+
+			model.BasicsArticleModel.SectionsManager = ArticlesController.CreateSectionsManager(HelpArticle.Basics);
+			new TocFetcher().FetchToc(ControllerContext, HelpArticle.Basics.ViewName, model.BasicsArticleModel);
+
+			return View(model);
 		}
-		
+
 		public virtual ActionResult Faq() {
 			return View();
 		}

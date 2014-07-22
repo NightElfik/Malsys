@@ -23,44 +23,55 @@
 	int exampleId = 1;
 }
 
-<h2>Rewrite rule definition</h2>
+<h1>Rewrite rule definition</h1>
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	Rewrite rule will define what symbol under what conditions is rewritten (replaced) to sting of another symbols.
 	Rewrite rule can rewrite just one symbol but its replacement can be string of symbols or nothing.
 	In L-system can be defined any number of rewrite rules.
 </p>
+	</div>
+</div>
 
-<div id="toc"></div>
 
 
 @* ================================================================================================================== *@
-<h3>Basic rewrite rules</h3>
+<h2>Basic rewrite rules</h2>
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	Rewrite rule can define rewriting one symbol for another (<code>A</code> for <code>B</code> in following example).
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++,
 		"A A", "1", "false",
 		"rewrite A to B;"))
 
-<hr />
-
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	It is also possible to rewrite symbol for string of symbols.
 	Individual symbols are separated by space.
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++,
 		"A", "5", "true",
 		"rewrite A to B A;"))
 
-<hr />
-
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	We cal also "delete" symbol by defining replacement as <code class="malsys">nothing</code>.
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++,
 		"A B A B", "1", "false",
@@ -68,13 +79,17 @@
 
 
 @* ================================================================================================================== *@
-<h3>Order of rewrite rules matters</h3>
+<h2>Order of rewrite rules matters</h2>
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	We can define any number of rewrite rules to L-system, but searching for matching rewrite rule will end after first success.
 	This means that order if rewrite rule is significant.
 	Compare following two L-systems.
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++,
 		"A", "5", "false", StringHelper.JoinLines(
@@ -88,24 +103,30 @@
 
 
 @* ================================================================================================================== *@
-<h3>Using arguments from symbols</h3>
+<h2>Using arguments from symbols</h2>
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	Symbols can hold some arguments.
 	To be able to work with them in rewrite rule we need to name them.
 	This is done by adding list of names separated by comma after matching symbol.
 	We can use matched arguments as local variables.
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++,
 		"A(1)", "4", "true",
 		"rewrite A(x) to B(x) A(x + 1);"))
 
-<hr />
-
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	If symbol do not have enough actual parameters to match all names NaN (not a number) value is set to them.
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++,
 		"A(1, 2)", "1", "false",
@@ -113,26 +134,33 @@
 
 
 @* ================================================================================================================== *@
-<h3>Context rewriting</h3>
+<h2>Context rewriting</h2>
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	Rewriting may be conditioned by context of primary symbol.
 	Context is symbols around main symbol (on left or on right).
 	Left (resp. right) context is specified by putting symbols left (resp. right) of main symbol in braces.
 	Rewrite rule in following example will match on symbol <code>A</code> only if before it is symbol <code>B</code>.
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++,
 		"B A A A A", "5", "true", StringHelper.JoinLines(
 		"rewrite {B} A to B;",
 		"rewrite     B to A;")))
 
-<hr />
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 
 <p>
 	Arguments of symbols in context can be matched in the same way as arguments of main symbol.
 	Following L-system counts @Html.Link("Fibonacci sequence", "http://en.wikipedia.org/wiki/Fibonacci_sequence") by using context rewrite rules and symbol's arguments.
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++,
 		"A(0) B(1)", "6", "true", StringHelper.JoinLines(
@@ -141,30 +169,41 @@
 
 
 @* ================================================================================================================== *@
-<h3>Branches and context</h3>
+<h2>Branches and context</h2>
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
-	<i>To be done in the near future.</i>
+	<i>TODO</i>
 </p>
+	</div>
+</div>
 
 
 @* ================================================================================================================== *@
-<h3>Local constant definition in rewrite rule</h3>
+<h2>Local constant definition in rewrite rule</h2>
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	Sometimes can be handy to define constant locally in the rewrite rule to get rid of repetitive expressions.
 	This is possible using keyword <code class="malsys">with</code> after main symbol (and its context).
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++,
 		"A(2)", "4", "true",
 		"rewrite A(x) with z = x*(x-1) to B(z) A(z+1);"))
 
-<hr />
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 
 <p>
 	It is possible to define more than one local constant, they are separated with comma.
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++,
 		"A(1)", "4", "true",
@@ -172,34 +211,43 @@
 
 
 @* ================================================================================================================== *@
-<h3>Conditional rewriting</h3>
+<h2>Conditional rewriting</h2>
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	Condition can be defined to determine whether to rewrite symbol or not.
 	If the expression in condition (after keyword <code class="malsys">where</code>) is true (non-zero) then the rewrite rule is applied.
 	Otherwise is rewrite skipped and rewrite engine will try to find another rewrite rule for symbol.
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++,
 		"A(1) A(2) A(3) A(4) A(5)", "3", "true", StringHelper.JoinLines(
 		"rewrite A(x) where x % 3 == 0 to X;",
 		"rewrite A(x) to A(x + 1);")))
 
-<hr />
-
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	Local constant definition and condition can be used together (first must be constant definition).
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++,
 		"A(1) A(2) A(-1) A(3) A(1)", "1", "false",
 		"rewrite A(x) with a = x*x where a == abs(x) to X;"))
 
-<hr />
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 
 <p>
 	Context with condition works as expected.
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++,
 		"A(1) A(2) A(-1) A(3) A(1)", "1", "false",
@@ -207,8 +255,10 @@
 
 
 @* ================================================================================================================== *@
-<h3>Stochastic rewriting</h3>
+<h2>Stochastic rewriting</h2>
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	In rewrite rule can be defined more replacements than one.
 	Then will be picked one replacement by random.
@@ -217,18 +267,22 @@
 	If you want to experiment with stochastic rewrite rules just delete definition of <code>randomSeed</code>, it will be generated seed by random.
 	If you use stochastic rewrite rule and you randomly created output you especially like you can save random seed and use it to reproduce the output.
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++,
 		"A", "7", "true", StringHelper.JoinLines(
 		"set randomSeed = 1;",
 		"rewrite A to B A or to C A;")))
 
-<hr />
-
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	Probability weight can be specified after each replacement to affect probability of individual replacements.
 	Keyword <code class="malsys">or</code> can be omitted.
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++,
 		"I I I I I I I I", "7", "true", StringHelper.JoinLines(
@@ -236,12 +290,14 @@
 		"rewrite I to I weight 4",
 		"          to X weight 1;")))
 
-<hr />
-
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	Probability weight value can be expression (not only constant).
 	If weight is less or equal to zero there is no chance to rewrite.
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++,
 		"I(-1) I(0) I(1) I(2)", "7", "true", StringHelper.JoinLines(
@@ -251,8 +307,10 @@
 
 
 @* ================================================================================================================== *@
-<h3>Inheritance of rewrite rules</h3>
+<h2>Inheritance of rewrite rules</h2>
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	Basic rule which is applied in inheritance (and also in single L-system definition) is that newer definitions will replaces new ones.
 	This is problem because rewrite rules can not be redefined.
@@ -261,6 +319,8 @@
 	Order of rewrite rules is inverted by inheritance to allow redefine rewrite rules from base class,
 		first are defined rewrite rules from derived L-system then r-rules from base class.
 </p>
+	</div>
+</div>
 
 @{
 	var specialModelRrInh = new LsystemExampleViewModel() {
@@ -285,53 +345,71 @@
 
 
 @* ================================================================================================================== *@
-<h3>Everything at once</h3>
+<h2>Everything at once</h2>
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	Every feature described on this page can be used in any combination.
-	<i>To be done in the near future.</i>
+	<i>TODO</i>
 </p>
+	</div>
+</div>
 
 
 @* ================================================================================================================== *@
-<h3>Formal grammar</h3>
+<h2>Formal grammar</h2>
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <h4>Rewrite rule</h4>
 
-@MalsysHelper.GrammarBox("rewrite_rule = 'rewrite' rr_pattern rr_consts? rr_condition? 'to' rr_replacement ';'")
+@(new CodeListingsManager().CodeNoFigure(ProgLang.Grammar, @"
+rewrite_rule = 'rewrite' rr_pattern rr_consts? rr_condition? 'to' rr_replacement ';'
+", shadow: true))
 
 
 <h4>Rewrite rule pattern</h4>
 
-@MalsysHelper.GrammarBox(
-	"rr_pattern = rr_context? symbol_opt_params rr_context?",
-	"",
-	"symbol_opt_params = SYMBOL symbol_params?",
-	"symbol_params = '(' params_list? ')'",
-	"params_list = ID (',' ID)*",
-	"",
-	"rr_context = '{' symbol_opt_params* '}'")
+@(new CodeListingsManager().CodeNoFigure(ProgLang.Grammar, @"
+rr_pattern = rr_context? symbol_opt_params rr_context?
 
+symbol_opt_params = SYMBOL symbol_params?
+symbol_params = '(' params_list? ')'
+params_list = ID (',' ID)*
+
+rr_context = '{' symbol_opt_params* '}'
+", shadow: true))
+
+
+	</div>
+	<div class="grid-50 mobile-grid-100">
 
 <h4>Rewrite rule constants definition</h4>
 
-@MalsysHelper.GrammarBox(
-	"rr_consts = 'with' rr_cost_defs_list",
-	"",
-	"rr_cost_defs_list = ID '=' expression  (',' rr_cost_defs_list)?")
+@(new CodeListingsManager().CodeNoFigure(ProgLang.Grammar, @"
+rr_consts = 'with' rr_cost_defs_list
+
+rr_cost_defs_list = ID '=' expression  (',' rr_cost_defs_list)?
+", shadow: true))
 
 
 <h4>Rewrite rule condition</h4>
 
-@MalsysHelper.GrammarBox("rr_condition = 'where' expression")
+@(new CodeListingsManager().CodeNoFigure(ProgLang.Grammar, @"
+rr_condition = 'where' expression
+", shadow: true))
 
 
 <h4>Rewrite rule replacement</h4>
 
-@MalsysHelper.GrammarBox(
-	"rr_replacements =",
-	"	| symbol_expr_params* rr_weight? ('or'? 'to' rr_replacements)?",
-	"	| 'nothing'",
-	"",
-	"rr_weight = 'weight' expression")
+@(new CodeListingsManager().CodeNoFigure(ProgLang.Grammar, @"
+rr_replacements =
+	| symbol_expr_params* rr_weight? ('or'? 'to' rr_replacements)?
+	| 'nothing'
 
+rr_weight = 'weight' expression
+", shadow: true))
+
+	</div>
+</div>

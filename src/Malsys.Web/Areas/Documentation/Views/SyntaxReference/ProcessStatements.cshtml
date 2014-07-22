@@ -19,23 +19,30 @@
 	int exampleId = 1;
 }
 
-<h2>Process statements</h2>
+<h1>Process statements</h1>
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	Process statement defines processing of L-system with process configuration.
 </p>
+	</div>
+</div>
 
-<div id="toc"></div>
 
 @* ================================================================================================================== *@
-<h3>Basic process statement</h3>
+<h2>Basic process statement</h2>
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	Basic syntax of process statement is <code class="malsys">process LsystemName with ConfigurationName;</code>
 		where <code>LsystemName</code> is name of processed L-system and <code>ConfigurationName</code> is name of used process configuration.
 	There are @Html.ActionLink("predefined process configurations", MVC.Documentation.Predefined.Configurations()) that can be used right away.
 	One of them is <code>SymbolPrinter</code> which will print all symbols of L-system.
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, StringHelper.JoinLines(
 		lsystemStr.Fmt("LsystemA"),
@@ -43,12 +50,16 @@
 
 
 @* ================================================================================================================== *@
-<h3>Processing all defined L-systems</h3>
+<h2>Processing all defined L-systems</h2>
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	If there are more L-systems and we want to render them all we can write one process statement for each L-system or we can just use <code class="malsys">all</code>
 		to process all defined (@Html.AnchorLink("non-abstract", "AbstractLsystems", MVC.Documentation.SyntaxReference.LsystemDefinition())) L-systems.
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, StringHelper.JoinLines(
 		"abstract " + lsystemStr.Fmt("LsystemA"),
@@ -58,11 +69,15 @@
 
 
 @* ================================================================================================================== *@
-<h3>Passing arguments to processed L-systems</h3>
+<h2>Passing arguments to processed L-systems</h2>
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	If L-system has some parameters it is possible to pass arguments to them with process statement.
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, StringHelper.JoinLines(
 		"lsystem ParameterizedLsystem(x = 0, i = 1) {",
@@ -77,8 +92,10 @@
 
 
 @* ================================================================================================================== *@
-<h3>Adding additional L-system statements to process statement</h3>
+<h2>Adding additional L-system statements to process statement</h2>
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	If you need to process L-system with minor changes you can write L-system statements after process statement.
 	You can only write following statements: @Html.ActionLink("component property assign", MVC.Documentation.SyntaxReference.ComponentPropertyAssignDefinition()),
@@ -91,6 +108,8 @@
 	This can be used in L-system gallery in thumbnail source.
 	you can just invoke original L-system with for example lower iteration number.
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, StringHelper.JoinLines(
 		"lsystem Lsystem {",
@@ -106,13 +125,17 @@
 
 
 @* ================================================================================================================== *@
-<h3>Specifying components for containers</h3>
+<h2>Specifying components for containers</h2>
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	In process statement components in containers in process configurations can be specified.
 	By default each container have specified default component but definition will override it.
 	To be able to assign component to container component type must be compatible with container's type.
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, StringHelper.JoinLines(
 		"lsystem Lsystem {",
@@ -124,19 +147,24 @@
 		"process Lsystem with SvgRenderer",
 			"\tuse DebugRenderer2D as Renderer;")))
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	You can  use <code>DebugRenderer3D</code> instead of <code>ThreeJsSceneRenderer3D</code> or
 		<code>InterpreterCallerDebugger</code> instead of <code>InterpreterCaller</code>.
 </p>
+	</div>
+</div>
 
 @* ================================================================================================================== *@
-<h3>Formal grammar</h3>
+<h2>Formal grammar</h2>
 
-@MalsysHelper.GrammarBox(
-	"process_statement = 'process' name params? 'with' ID use_components* ';'",
-	"",
-	"name = 'all' | ID",
-	"",
-	"params = '(' ( expression (',' expression)+ )? ')'",
-	"",
-	"use_components = 'use' ID 'as' ID")
+@(new CodeListingsManager().CodeNoFigure(ProgLang.Grammar, @"
+process_statement = 'process' name params? 'with' ID use_components* ';'
+
+name = 'all' | ID
+
+params = '(' ( expression (',' expression)+ )? ')'
+
+use_components = 'use' ID 'as' ID
+", shadow: true))

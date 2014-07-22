@@ -23,6 +23,7 @@ namespace Malsys.Web.Areas.Documentation.Models {
 		public string SourceCodeWithArgsAutoIndented() {
 			string src = SourceCodeTemplate.FmtInvariant(Args);
 			src = src.Replace("; ", ";\n");
+			src = src.Replace("{ ", "{\n");
 			var lines = src.SplitToLines();
 			return StringHelper.AppendLinesAutoIndent(' ', 4, lines);
 		}

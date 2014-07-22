@@ -15,21 +15,24 @@
 	int exampleId = 1;
 }
 
-<h2>Function definition</h2>
+<h1>Function definition</h1>
 
-<div id="toc"></div>
 
 @* ================================================================================================================== *@
-<h3>Basic definition</h3>
+<h2>Basic definition</h2>
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	With functions is lot of fun.
-	Their definition starts with keyword <code class="malsys">fun</code> followed by its name and arguments list in parenthesis.
+	Their definition starts with keyword <code>fun</code> followed by its name and arguments list in parenthesis.
 	Then follows function body enclosed in braces which contains function statements.
 	There are two valid function statements.
 	First is @Html.ActionLink("constant definition", MVC.Documentation.Predefined.Constants()), second is return expression which
-		should be last statement and it is <code class="malsys">return</code> keyword followed by return expression.
+		should be last statement and it is <code>return</code> keyword followed by return expression.
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, StringHelper.JoinLines(
 		"fun one() {",
@@ -44,11 +47,14 @@
 		"",
 		"process Constants with ConstantDumper;")))
 
-<hr />
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	Local constant definition.
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, StringHelper.JoinLines(
 		"fun pythagoras(a, b) {",
@@ -59,11 +65,14 @@
 		"let x = pythagoras(3, 4);",
 		"",
 		"process Constants with ConstantDumper;")))
-<hr />
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	Function's parameters can have their default values.
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, StringHelper.JoinLines(
 		"fun add(a, b = 0) {",
@@ -82,12 +91,16 @@
 
 
 @* ================================================================================================================== *@
-<h3>Global and local scope</h3>
+<h2>Global and local scope</h2>
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	Function can be defined on both local or global scopes and they behave in the same way like
 		@Html.ActionLink("constants", MVC.Documentation.SyntaxReference.ConstantDefinition()) (local definitions overlays global).
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, StringHelper.JoinLines(
 		"fun alpha() { return 1; }",
@@ -103,12 +116,16 @@
 
 
 @* ================================================================================================================== *@
-<h3>Parameters overlays constants</h3>
+<h2>Parameters overlays constants</h2>
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	Parameters have greater precedence than any constants.
 	Local constants overlays parameters.
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, StringHelper.JoinLines(
 		"let x = 7;",
@@ -126,12 +143,16 @@
 		"process Constants with ConstantDumper;")))
 
 @* ================================================================================================================== *@
-<h3>Inheritance of functions</h3>
+<h2>Inheritance of functions</h2>
 
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	Inheritance of functions works as expected.
 	Functions from derived L-systems are defined and new functions can redefine them.
 </p>
+	</div>
+</div>
 
 @Html.Partial(MVC.Documentation.Shared.Views.LsystemExamplePartial, exampleModel.WithArgs(exampleId++, StringHelper.JoinLines(
 		"abstract lsystem Base {",
@@ -146,17 +167,21 @@
 
 
 @* ================================================================================================================== *@
-<h3>Formal grammar</h3>
+<h2>Formal grammar</h2>
 
-@MalsysHelper.GrammarBox(
-	"function_def = 'fun' ID '(' params_list? ')' '{' constant_def* 'return' expression ';' '}'",
-	"",
-	"params_list = ID ('=' expression)?  (',' params_list)?")
-
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
 <p>
 	Defines function with name represented by <code>ID</code>, parameters <code>params_list</code>,
 		local constants <code>constant_def</code> and return value <code>expression</code>.
 </p>
+	</div>
+</div>
+
+@(new CodeListingsManager().CodeNoFigure(ProgLang.Grammar, @"
+function_def = 'fun' ID '(' params_list? ')' '{' constant_def* 'return' expression ';' '}'
+params_list = ID ('=' expression)?  (',' params_list)?
+", shadow: true))
 
 
 
