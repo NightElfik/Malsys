@@ -6,15 +6,15 @@
 
 @{
 	const string title = "Basic principles of symbol rewriting system of L-systems";
-	const string disqusId = "BasicRewriting";  // Do not chage!!
-	
+	//const string disqusId = "BasicRewriting";  // Do not chage!!
+
 	ViewBag.Title = title;
 
 	var layoutMgr = new LayoutManager();
 	SectionsManager sectionsManager = null;// SectionsManager.CreateForLocal();
 	var rootSec = sectionsManager.RootSection;
 
-	
+
 	var exampleModel = new LsystemExampleViewModel() {
 		LsystemProcessor = Model,
 		UnimportantLines = new int[] { -1 },

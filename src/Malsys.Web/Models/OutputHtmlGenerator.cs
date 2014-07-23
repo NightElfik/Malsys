@@ -57,7 +57,7 @@ namespace Malsys.Web.Models {
 						var webClient = new WebClient();
 						content = webClient.DownloadString(StaticUrl.ToAbsolute(url));
 					}
-					catch (Exception ex) {
+					catch (Exception /*ex*/) {
 						goto default;
 					}
 

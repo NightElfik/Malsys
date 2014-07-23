@@ -3,13 +3,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Packaging;
 using System.Linq;
-using System.Text;
-using System.Web;
 using System.Web.Mvc;
-using System.Web.UI;
-using Elmah;
 using Malsys.Processing;
 using Malsys.Processing.Output;
 using Malsys.SemanticModel.Evaluated;
@@ -41,6 +36,7 @@ namespace Malsys.Web.Controllers {
 		}
 
 
+		[OutputCache(CacheProfile = "VaryByUserCache", VaryByParam="*")]
 		public virtual ActionResult Index(string user = null, string tag = null, int? page = null) {
 
 			if (page == null || page <= 0) {
@@ -74,11 +70,12 @@ namespace Malsys.Web.Controllers {
 
 			model.Inputs = inputs
 				.OrderByDescending(x => (float)x.RatingSum / ((float)x.RatingCount + 1) + x.RatingCount)
-				.AsPagination(page.Value, 10);
+				.AsPagination(page.Value, 8);
 
 			return View(model);
 		}
 
+		[OutputCache(CacheProfile = "VaryByUserCache")]
 		public virtual ActionResult Tags() {
 			var tags = malsysInputRepository.InputDb.Tags.Select(t => new TagModel() {
 				TagName = t.Name,
@@ -88,6 +85,7 @@ namespace Malsys.Web.Controllers {
 			return View(tags);
 		}
 
+		[OutputCache(CacheProfile = "VaryByUserCache")]
 		public virtual ActionResult Detail(string id) {
 
 			var input = malsysInputRepository.InputDb.SavedInputs
@@ -205,12 +203,12 @@ namespace Malsys.Web.Controllers {
 			return RedirectToAction(Actions.Detail(input.UrlId));
 		}
 
-		[OutputCache(CacheProfile = "GalleryCache")]
+		[OutputCache(CacheProfile = "LongClientCache")]
 		public virtual ActionResult GetOutput(string id, string cacheBust, string extra = null) {
 			return getOutput(id, extra, false);
 		}
 
-		[OutputCache(CacheProfile = "GalleryCache")]
+		[OutputCache(CacheProfile = "LongClientCache")]
 		public virtual ActionResult GetThumbnail(string id, string cacheBust, string extra = null) {
 			return getOutput(id, extra, true);
 		}
@@ -244,41 +242,17 @@ namespace Malsys.Web.Controllers {
 			}
 
 			string downFileName = StaticUrl.UrlizeString(input.PublishName) + MimeType.ToFileExtension(input.MimeType);
+			string mimeType;
+			MemoryStream ms;
 
 			// Handle requests OBJ and MTL files from ZIP package.
-			if (extra == "obj" || extra == "mtl" || extra == "meta") {
-				object obj = metadata.FirstOrDefault(x => x.Key == OutputMetadataKeyHelper.ObjMetadata).Value;
-				if (obj == null || !(obj is string) || string.IsNullOrWhiteSpace((string)obj)) {
+			if (OutputHelper.HandleAdvancedOutput(filePath, extra, metadata, ref downFileName, out ms, out mimeType)) {
+				if (ms == null || downFileName == null || mimeType == null) {
 					return HttpNotFound();
 				}
-				string[] paths = ((string)obj).Split(' ');
-				if (paths.Length != 3) {
-					return HttpNotFound();
-				}
-
-				string path;
-				switch (extra) {
-					case "obj": path = paths[0]; break;
-					case "mtl": path = paths[1]; break;
-					case "meta": path = paths[2]; break;
-					default: return HttpNotFound();
-				}
-
-				var ms = new MemoryStream();
-
-				using (Package package = Package.Open(filePath, FileMode.Open, FileAccess.Read)) {
-					var part = package.GetParts().FirstOrDefault(p => p.Uri.OriginalString.TrimStart('/') == path);
-					if (part == null) {
-						return HttpNotFound();
-					}
-
-					using (Stream source = part.GetStream(FileMode.Open, FileAccess.Read)) {
-						source.CopyTo(ms);
-					}
-				}
-				ms.Seek(0, SeekOrigin.Begin);
-				return File(ms, MimeType.Text.Plain, downFileName + "." + extra);
+				return File(ms, mimeType, downFileName);
 			}
+
 
 			return File(filePath, input.MimeType, downFileName);
 		}

@@ -9,7 +9,7 @@ using Malsys.Web.Models;
 using Malsys.Web.Models.Lsystem;
 
 namespace Malsys.Web.Areas.Documentation.Controllers {
-	[OutputCache(CacheProfile = "HelpCache")]
+	[OutputCache(CacheProfile = "VaryByUserCache")]
 	public partial class HomeController : Controller {
 
 		private readonly SimpleLsystemProcessor simpleLsystemProcessor;

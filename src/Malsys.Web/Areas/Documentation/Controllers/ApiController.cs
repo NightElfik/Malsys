@@ -7,7 +7,7 @@ using Malsys.SemanticModel.Evaluated;
 using Malsys.Web.Entities;
 
 namespace Malsys.Web.Areas.Documentation.Controllers {
-	[OutputCache(CacheProfile = "HelpCache")]
+	[OutputCache(CacheProfile = "VaryByUserCache")]
 	public partial class ApiController : Controller {
 
 		private readonly IComponentMetadataResolver metadataResolver;

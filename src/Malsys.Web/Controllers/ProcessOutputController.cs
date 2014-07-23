@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web.Mvc;
 using Malsys.Web.Infrastructure;
 using Malsys.Web.Models;
+using Malsys.Web.Models.Lsystem;
 
 namespace Malsys.Web.Controllers {
 	public partial class ProcessOutputController : Controller {
@@ -23,31 +24,21 @@ namespace Malsys.Web.Controllers {
 		}
 
 
-		public virtual ActionResult Show(string fileName) {
-
-			string mimeType = MimeType.Text.Plain;
-			if (fileName.EndsWith(".svg")) {
-				mimeType = MimeType.Image.SvgXml;
-			}
-			else if (fileName.EndsWith(".svgz")) {
-				Response.AppendHeader("Content-Encoding", "gzip");
-				mimeType = MimeType.Image.SvgXml;
-			}
-
-			return download(fileName, mimeType, false);
+		public virtual ActionResult Show(string id, string extra = null) {
+			return download(id, false, extra);
 		}
 
-		public virtual ActionResult Download(string fileName) {
-			return download(fileName, "application/octet-stream", true);
+		public virtual ActionResult Download(string id, string extra = null) {
+			return download(id, true, extra);
 		}
 
 
-		private ActionResult download(string fileName, string mimeType, bool download) {
+		private ActionResult download(string fileName, bool download, string extra) {
 
 			var procOutput = inputProcessesRepository.InputDb.ProcessOutputs.SingleOrDefault(po => po.FileName == fileName);
 
 			if (procOutput == null) {
-				return new HttpNotFoundResult();
+				return HttpNotFound();
 			}
 
 			procOutput.LastOpenDate = dateTimeProvider.Now;
@@ -56,10 +47,31 @@ namespace Malsys.Web.Controllers {
 			string realPath = Server.MapPath(Url.Content(workDir));
 			string filePath = Path.Combine(realPath, fileName);
 
+
+			var metadata = OutputMetadataHelper.DeserializeMetadata(procOutput.Metadata);
+			string mimeType;
+			MemoryStream ms;
+
+			if (OutputHelper.HandleAdvancedOutput(filePath, extra, metadata, ref fileName, out ms, out mimeType)) {
+				// Handle requests OBJ and MTL files from ZIP package.
+				if (ms == null || fileName == null || mimeType == null) {
+					return HttpNotFound();
+				}
+				return File(ms, download ? MimeType.Application.OctetStream : mimeType, fileName);
+			}
+
 			if (download) {
-				return File(filePath, "application/octet-stream", fileName);
+				return File(filePath, MimeType.Application.OctetStream, fileName);
 			}
 			else {
+				if (fileName.EndsWith(".svg")) {
+					mimeType = MimeType.Image.SvgXml;
+				}
+				else if (fileName.EndsWith(".svgz")) {
+					Response.AppendHeader("Content-Encoding", "gzip");
+					mimeType = MimeType.Image.SvgXml;
+				}
+
 				return File(filePath, mimeType);
 			}
 		}

@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using Malsys.Web.ArticleTools;
 using Malsys.Web.Models;
@@ -34,11 +32,13 @@ namespace Malsys.Web.Controllers {
 			};
 		}
 
+		[OutputCache(CacheProfile = "VaryByUserCache")]
 		public virtual ActionResult Index() {
 			return View(viewModel);
 		}
 
 
+		[OutputCache(CacheProfile = "VaryByUserCache", VaryByParam="*")]
 		public virtual ActionResult Entry(string name, string part = null) {
 			var currEntry = viewModel.AllEntries
 				.FirstOrDefault(x => x.Url == name && !string.IsNullOrEmpty(x.ViewName));

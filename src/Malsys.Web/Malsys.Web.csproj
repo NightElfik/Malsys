@@ -27,6 +27,7 @@
     <IISExpressUseClassicPipelineMode />
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
+    <NuGetPackageImportStamp>94be0d66</NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -171,8 +172,9 @@
     <Reference Include="MvcContrib, Version=3.0.51.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\MvcContrib\MvcContrib.dll</HintPath>
     </Reference>
-    <Reference Include="RazorGenerator.Mvc">
-      <HintPath>..\packages\RazorGenerator.Mvc.2.1.2\lib\net40\RazorGenerator.Mvc.dll</HintPath>
+    <Reference Include="RazorGenerator.Mvc, Version=2.0.0.0, Culture=neutral, PublicKeyToken=7b26dc2a43f6a0d4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\RazorGenerator.Mvc.2.2.3\lib\net40\RazorGenerator.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="System.Data.Entity" />
     <Reference Include="System.Runtime.Serialization" />
@@ -310,7 +312,6 @@
     <Compile Include="Areas\Administration\Controllers\UsersController.cs" />
     <Compile Include="Controllers\CurveDesignerController.cs" />
     <Compile Include="Controllers\DevDiaryController.cs" />
-    <Compile Include="Controllers\DiscussionController.cs" />
     <Compile Include="Controllers\FeedbackController.cs" />
     <Compile Include="Controllers\GalleryController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -322,9 +323,6 @@
       <DependentUpon>T4MVC.tt</DependentUpon>
     </Compile>
     <Compile Include="DevDiaryController.generated.cs">
-      <DependentUpon>T4MVC.tt</DependentUpon>
-    </Compile>
-    <Compile Include="DiscussionController.generated.cs">
       <DependentUpon>T4MVC.tt</DependentUpon>
     </Compile>
     <Compile Include="Documentation.ApiController.generated.cs">
@@ -357,6 +355,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>MalsysDbModel.edmx</DependentUpon>
     </Compile>
+    <Compile Include="ExtensionsAndHelpers%27\OutputHelper.cs" />
     <Compile Include="ExtensionsAndHelpers%27\StaticHtml.cs" />
     <Compile Include="ExtensionsAndHelpers%27\StaticUrl.cs" />
     <Compile Include="FeedbackController.generated.cs">
@@ -487,7 +486,7 @@
     <Content Include="Areas\Administration\Views\Tags\Delete.cshtml" />
     <Content Include="Areas\Documentation\Views\Home\StdLib.cshtml" />
     <Content Include="Css\normalize.less.css" />
-    <Content Include="Css\prettyPhoto.css" />
+    <Content Include="Css\prettyPhoto.less.css" />
     <Content Include="Css\style.less.css" />
     <Content Include="Areas\Documentation\Views\Predefined\ComponentsLatex.cshtml" />
     <Content Include="Areas\Documentation\Views\Predefined\ComponentLatexPartial.cshtml" />
@@ -516,14 +515,53 @@
     <None Include="Img\DevDiary\SvgOptimizations\Plant3Oo.svgz" />
     <None Include="Img\DevDiary\SvgOptimizations\SierpinskiTrangle.svgz" />
     <None Include="Img\DevDiary\SvgOptimizations\Tree.svgz" />
+    <Content Include="Js\jquery.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\jquery.prettyPhoto.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
     <None Include="Js\jquery.textarea.js" />
+    <Content Include="Js\jquery.textarea.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\jquery.tmpl.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\jquery.unobtrusive-ajax.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
     <None Include="Js\jquery.validate.js" />
     <None Include="Js\jquery.js" />
+    <Content Include="Js\jquery.validate.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\jquery.validate.unobtrusive.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\malsys.curveDesigner.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
     <None Include="Js\malsys.js" />
+    <Content Include="Js\malsys.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
     <None Include="Js\ThreeJs\Detector.js" />
+    <Content Include="Js\ThreeJs\Detector.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
     <None Include="Js\ThreeJs\Malsys.three.js" />
     <Content Include="google4412977e75e1f8f1.html" />
     <Content Include="humans.txt" />
+    <Content Include="Js\ThreeJs\Malsys.three.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\ThreeJs\MTLLoader.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\ThreeJs\OBJMTLLoader.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
     <None Include="Js\ThreeJs\Stats.js" />
     <Content Include="Img\ajax-loader.gif" />
     <Content Include="Img\designerExample.png" />
@@ -608,11 +646,29 @@
     <None Include="Js\malsys.curveDesigner.js" />
     <None Include="Js\jquery.prettyPhoto.js" />
     <None Include="Js\jquery.tmpl.js" />
-    <Content Include="Js\ThreeJs\MTLLoader.js" />
-    <Content Include="Js\ThreeJs\OBJMTLLoader.js" />
-    <Content Include="Js\ThreeJs\Three.js" />
-    <Content Include="Js\ThreeJs\TrackballControls.js" />
+    <None Include="Js\ThreeJs\MTLLoader.js" />
+    <None Include="Js\ThreeJs\OBJMTLLoader.js" />
+    <Content Include="Js\ThreeJs\Stats.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <None Include="Js\ThreeJs\Three.js" />
+    <None Include="Js\ThreeJs\TrackballControls.js" />
+    <Content Include="Js\ThreeJs\Three.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\ThreeJs\TrackballControls.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
     <Content Include="robots.txt" />
+    <Content Include="Js\MinifyJs.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>MinifyJs.log</LastGenOutput>
+    </Content>
+    <Content Include="Js\MinifyJs.log">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
     <None Include="Properties\PublishProfiles\FilesystemPublish.pubxml" />
     <None Include="T4MVC.tt.settings.xml" />
     <Content Include="Web.config">
@@ -646,10 +702,6 @@
     <Content Include="Areas\Documentation\Views\Home\BasicRewriting.cshtml" />
     <Content Include="Areas\Documentation\Views\Predefined\Constants.cshtml" />
     <Content Include="Areas\Documentation\Views\Predefined\Functions.cshtml" />
-    <None Include="Js\MinifyJs.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>MinifyJs.log</LastGenOutput>
-    </None>
     <Content Include="App_Data\StdLibExtension.malsys" />
     <Content Include="Views\Feedback\EmailToAuthor.cshtml" />
     <Content Include="Views\Process\Load.cshtml" />
@@ -665,15 +717,6 @@
     <Content Include="Views\CurveDesigner\Show.cshtml" />
     <Content Include="Views\DevDiary\Entries\PngAnimationRenderer.cshtml" />
     <Content Include="Views\DevDiary\Entry.cshtml" />
-    <Content Include="Views\Discussion\Thread.cshtml" />
-    <Content Include="Views\Discussion\AutoThreadInline.cshtml" />
-    <Content Include="Views\Discussion\MessagePartial.cshtml" />
-    <Content Include="Views\Discussion\AddMessagePartial.cshtml" />
-    <Content Include="Views\Discussion\Category.cshtml" />
-    <Content Include="Views\Discussion\DeleteMessage.cshtml" />
-    <Content Include="Views\Discussion\DeleteThread.cshtml" />
-    <Content Include="Views\Discussion\LockThread.cshtml" />
-    <Content Include="Views\Discussion\Index.cshtml" />
     <Content Include="Views\Home\LoadedPlugins.cshtml" />
     <Content Include="Views\DevDiary\Entries\SvgOptimizations.cshtml" />
     <None Include="T4MVC.tt.hooks.t4" />
@@ -778,7 +821,6 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
-  <Import Project="..\packages\RazorGenerator.MsBuild.2.1.6\build\RazorGenerator.MsBuild.targets" Condition="Exists('..\packages\RazorGenerator.MsBuild.2.1.6\build\RazorGenerator.MsBuild.targets')" />
   <Target Name="BeforeBuild">
     <ItemGroup>
       <Content Remove="Views\**\*.cshtml" />
@@ -786,5 +828,12 @@
     </ItemGroup>
   </Target>
   <Target Name="AfterBuild">
+  </Target>
+  <Import Project="..\packages\RazorGenerator.MsBuild.2.2.4\build\RazorGenerator.MsBuild.targets" Condition="Exists('..\packages\RazorGenerator.MsBuild.2.2.4\build\RazorGenerator.MsBuild.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\RazorGenerator.MsBuild.2.2.4\build\RazorGenerator.MsBuild.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\RazorGenerator.MsBuild.2.2.4\build\RazorGenerator.MsBuild.targets'))" />
   </Target>
 </Project>

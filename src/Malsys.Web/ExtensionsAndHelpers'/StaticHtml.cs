@@ -11,12 +11,42 @@ using System.Web.Mvc;
 namespace Malsys.Web {
 	public static class StaticHtml {
 
+		private const string reqCssKey = "RequiredCss";
 		private const string reqScriptKey = "RequiredScripts";
 		private const string inlineScriptKey = "InlineScripts";
 		private static readonly Regex htmlTagRegex = new Regex(@"<.*?>", RegexOptions.Compiled);
 
 		public static HtmlString Js(string filePath) {
-			return new HtmlString("<script src=\"" + filePath + "\"></script>");
+			return new HtmlString("<script src='" + filePath + "'></script>");
+		}
+
+		public static HtmlString Css(string filePath) {
+			return new HtmlString("<link rel='stylesheet' type='text/css' href='" + filePath + "' />");
+		}
+
+
+		public static void RequireCss(string path, LoadingOrder order = LoadingOrder.Default) {
+			var requiredCss = HttpContext.Current.Items[reqCssKey] as Dictionary<string, int>;
+			if (requiredCss == null) {
+				HttpContext.Current.Items[reqCssKey] = requiredCss = new Dictionary<string, int>();
+			}
+
+			requiredCss[path] = (int)order;
+		}
+
+		public static object EmitRequiredCss() {
+			var requiredCss = HttpContext.Current.Items[reqCssKey] as Dictionary<string, int>;
+			if (requiredCss == null) {
+				return new HtmlString("");
+			}
+
+			var sb = new StringBuilder();
+			foreach (var scriptPath in requiredCss.OrderBy(x => x.Value).Select(x => x.Key)) {
+				sb.Append("<link rel='stylesheet' type='text/css' href='");
+				sb.Append(scriptPath);
+				sb.Append("' />");
+			}
+			return new HtmlString(sb.ToString());
 		}
 
 
@@ -46,9 +76,9 @@ namespace Malsys.Web {
 
 			var sb = new StringBuilder();
 			foreach (var scriptPath in requiredScripts.OrderBy(x => x.Value).Select(x => x.Key)) {
-				sb.Append("<script src=\"");
+				sb.Append("<script src='");
 				sb.Append(scriptPath);
-				sb.Append("\"></script>");
+				sb.Append("'></script>");
 			}
 			return new HtmlString(sb.ToString());
 		}
@@ -159,18 +189,12 @@ namespace Malsys.Web {
 
 
 		public static HtmlString DisqusComments(string title, string id, string url) {
-#if DEBUG
-			return null;  // Do not show Disqus comments in debug mode.
-#endif
-			var req = HttpContext.Current.Request;
-			if (req.IsLocal) {
-				return null;  // Do not show on localhost.
-			}
 
+			var req = HttpContext.Current.Request;
 			string currentDomain = req.Url.Scheme + System.Uri.SchemeDelimiter + req.Url.Host
 				+ (req.Url.IsDefaultPort ? "" : ":" + req.Url.Port);
 
-			if (!url.StartsWith(currentDomain)) {
+			if (!url.StartsWith(currentDomain) || !url.Contains(GlobalSettings.Domain)) {
 				return null;
 			}
 
@@ -191,7 +215,6 @@ var disqus_url = '{3}';
 
 			return new HtmlString(@"<div id=""disqus_thread""></div><a href=""http://disqus.com"" class=""dsq-brlink"">comments powered by <span class=""logo-disqus"">Disqus</span></a>");
 		}
-
 	}
 
 

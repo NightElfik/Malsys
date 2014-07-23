@@ -1,6 +1,6 @@
 ﻿using System.Web.Mvc;
-using Malsys.Web.Models;
 using Malsys.Web.Entities;
+using Malsys.Web.Models;
 
 namespace Malsys.Web.Controllers {
 	public partial class CurveDesignerController : Controller {

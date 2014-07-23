@@ -1,10 +1,9 @@
 ﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
 // All rights reserved.
-using System.Linq;
 using System.Web.Mvc;
+using Malsys.Web.Entities;
 using Malsys.Web.Models;
 using Malsys.Web.Security;
-using Malsys.Web.Entities;
 
 namespace Malsys.Web.Controllers {
 	public partial class AuthenticationController : Controller {

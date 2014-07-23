@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using Malsys.Web.Models;
-using Malsys.Web.Infrastructure;
-using Malsys.Web.Entities;
-using Malsys.Web.Models.Lsystem;
-using Malsys.Processing.Output;
-using Malsys.SemanticModel.Evaluated;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Web.Mvc;
+using Malsys.Processing.Output;
+using Malsys.SemanticModel.Evaluated;
+using Malsys.Web.Entities;
+using Malsys.Web.Infrastructure;
+using Malsys.Web.Models;
+using Malsys.Web.Models.Lsystem;
 
 namespace Malsys.Web.Controllers {
 	public partial class ApiController : Controller {

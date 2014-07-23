@@ -12,15 +12,15 @@ namespace Malsys.Web.Models {
 		public static readonly DevDiaryEntry SvgOptimizations = new DevDiaryEntry() {
 			Name = "SVG markup optimizations",
 			Url = "SVG-markup-optimizations",
-			//DisqusId = "",
+			DisqusId = "SvgMarkupOptimizations",
 			Date = new DateTime(2013, 5, 1),
 			ViewName = MVC.DevDiary.Views.Entries.SvgOptimizations,
 		};
 
 		public static readonly DevDiaryEntry PngAnimationRenderer = new DevDiaryEntry() {
 			Name = "Creation of PNG animation renderer",
-			Url = "Creation-of-PNG-animation-renderer",
-			//DisqusId = "",
+			Url = "PngAnimationRenderer",
+			DisqusId = "",
 			Date = new DateTime(2012, 7, 1),
 			ViewName = MVC.DevDiary.Views.Entries.PngAnimationRenderer,
 		};

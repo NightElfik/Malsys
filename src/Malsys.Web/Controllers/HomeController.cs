@@ -1,11 +1,8 @@
 ﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
 // All rights reserved.
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using Malsys.Web.ArticleTools;
-using Malsys.Web.Entities;
 using Malsys.Web.Models;
 
 namespace Malsys.Web.Controllers {
@@ -36,6 +33,7 @@ namespace Malsys.Web.Controllers {
 		}
 
 
+		[OutputCache(CacheProfile = "VaryByUserCache")]
 		public virtual ActionResult Index() {
 			NewsArchiveViewModel viewModel = new NewsArchiveViewModel();
 			viewModel.SectionsManager = createSectionsManager();
@@ -45,18 +43,22 @@ namespace Malsys.Web.Controllers {
 			return View(viewModel);
 		}
 
+		[OutputCache(CacheProfile = "VaryByUserCache")]
 		public virtual ActionResult LoadedPlugins() {
 			return View(loadedPlugins);
 		}
 
+		[OutputCache(CacheProfile = "VaryByUserCache")]
 		public virtual ActionResult WhyWebgl() {
 			return View();
 		}
 
+		[OutputCache(CacheProfile = "VaryByUserCache")]
 		public virtual ActionResult Thesis() {
 			return View();
 		}
 
+		[OutputCache(CacheProfile = "VaryByUserCache", VaryByParam="*")]
 		public virtual ActionResult NewsArchive(string id = null) {
 			NewsArchiveViewModel viewModel = new NewsArchiveViewModel();
 			viewModel.SectionsManager = createSectionsManager();

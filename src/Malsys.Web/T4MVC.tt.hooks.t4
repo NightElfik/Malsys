@@ -7,37 +7,45 @@ to fork the 'official' template in order to achieve what they want.
 */
 
 static bool AddTimestampToStaticLink(ProjectItem projectItem) {
-    // By default, this just returns the static flag, but you can add additional logic to make more complex
-    // decisions about which files should have the timestamp
-    // See http://mvccontrib.codeplex.com/workitem/7129 for details
-    return settings.AddTimestampToStaticLinks;
+	// By default, this just returns the static flag, but you can add additional logic to make more complex
+	// decisions about which files should have the timestamp
+	// See http://mvccontrib.codeplex.com/workitem/7129 for details
+	return settings.AddTimestampToStaticLinks;
 }
 
 void RenderAdditionalCode() {
 #>
 [GeneratedCode("T4MVC", "2.0"), DebuggerNonUserCode]
 internal static class T4MVCHelpers {
-    // You can change the ProcessVirtualPath method to modify the path that gets returned to the client.
-    // e.g. you can prepend a domain, or append a query string:
-    //      return "http://localhost" + path + "?foo=bar";
-    private static string ProcessVirtualPathDefault(string virtualPath) {
-        // The path that comes in starts with ~/ and must first be made absolute
-        string path = VirtualPathUtility.ToAbsolute(virtualPath);
-        
-        // Add your own modifications here before returning the path
-        return path;
-    }
+	// You can change the ProcessVirtualPath method to modify the path that gets returned to the client.
+	// e.g. you can prepend a domain, or append a query string:
+	//      return "http://localhost" + path + "?foo=bar";
+	private static string ProcessVirtualPathDefault(string virtualPath) {
+		// The path that comes in starts with ~/ and must first be made absolute
+		string path = VirtualPathUtility.ToAbsolute(virtualPath);
 
-    // Calling ProcessVirtualPath through delegate to allow it to be replaced for unit testing
-    public static Func<string, string> ProcessVirtualPath = ProcessVirtualPathDefault;
+		// Add time substring to file name.
+		int dotIndex = path.IndexOf('.');
+		if (dotIndex >= 0) {
+			string beforeDotExcl = path.Substring(0, dotIndex);
+			string afterDotIncl = path.Substring(dotIndex);
+			string date = System.IO.File.GetLastAccessTime(HttpContext.Current.Server.MapPath(virtualPath)).ToString("yyMMdd");
+			path = beforeDotExcl + "." + date + afterDotIncl;
+		}
 
-    // Calling T4Extension.TimestampString through delegate to allow it to be replaced for unit testing and other purposes
-    public static Func<string, string> TimestampString = System.Web.Mvc.T4Extensions.TimestampString;
+		return path;
+	}
 
-    // Logic to determine if the app is running in production or dev environment
-    public static bool IsProduction() { 
-        return (HttpContext.Current != null && !HttpContext.Current.IsDebuggingEnabled); 
-    }
+	// Calling ProcessVirtualPath through delegate to allow it to be replaced for unit testing
+	public static Func<string, string> ProcessVirtualPath = ProcessVirtualPathDefault;
+
+	// Calling T4Extension.TimestampString through delegate to allow it to be replaced for unit testing and other purposes
+	public static Func<string, string> TimestampString = System.Web.Mvc.T4Extensions.TimestampString;
+
+	// Logic to determine if the app is running in production or dev environment
+	public static bool IsProduction() { 
+		return (HttpContext.Current != null && !HttpContext.Current.IsDebuggingEnabled); 
+	}
 }
 
 <#+

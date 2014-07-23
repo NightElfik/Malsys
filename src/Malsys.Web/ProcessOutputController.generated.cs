@@ -100,7 +100,8 @@ namespace Malsys.Web.Controllers
         [GeneratedCode("T4MVC", "2.0"), DebuggerNonUserCode]
         public class ActionParamsClass_Show
         {
-            public readonly string fileName = "fileName";
+            public readonly string id = "id";
+            public readonly string extra = "extra";
         }
         static readonly ActionParamsClass_Download s_params_Download = new ActionParamsClass_Download();
         [GeneratedCode("T4MVC", "2.0"), DebuggerNonUserCode]
@@ -108,7 +109,8 @@ namespace Malsys.Web.Controllers
         [GeneratedCode("T4MVC", "2.0"), DebuggerNonUserCode]
         public class ActionParamsClass_Download
         {
-            public readonly string fileName = "fileName";
+            public readonly string id = "id";
+            public readonly string extra = "extra";
         }
         static readonly ViewsClass s_views = new ViewsClass();
         [GeneratedCode("T4MVC", "2.0"), DebuggerNonUserCode]
@@ -130,26 +132,28 @@ namespace Malsys.Web.Controllers
         public T4MVC_ProcessOutputController() : base(Dummy.Instance) { }
 
         [NonAction]
-        partial void ShowOverride(T4MVC_System_Web_Mvc_ActionResult callInfo, string fileName);
+        partial void ShowOverride(T4MVC_System_Web_Mvc_ActionResult callInfo, string id, string extra);
 
         [NonAction]
-        public override System.Web.Mvc.ActionResult Show(string fileName)
+        public override System.Web.Mvc.ActionResult Show(string id, string extra)
         {
             var callInfo = new T4MVC_System_Web_Mvc_ActionResult(Area, Name, ActionNames.Show);
-            ModelUnbinderHelpers.AddRouteValues(callInfo.RouteValueDictionary, "fileName", fileName);
-            ShowOverride(callInfo, fileName);
+            ModelUnbinderHelpers.AddRouteValues(callInfo.RouteValueDictionary, "id", id);
+            ModelUnbinderHelpers.AddRouteValues(callInfo.RouteValueDictionary, "extra", extra);
+            ShowOverride(callInfo, id, extra);
             return callInfo;
         }
 
         [NonAction]
-        partial void DownloadOverride(T4MVC_System_Web_Mvc_ActionResult callInfo, string fileName);
+        partial void DownloadOverride(T4MVC_System_Web_Mvc_ActionResult callInfo, string id, string extra);
 
         [NonAction]
-        public override System.Web.Mvc.ActionResult Download(string fileName)
+        public override System.Web.Mvc.ActionResult Download(string id, string extra)
         {
             var callInfo = new T4MVC_System_Web_Mvc_ActionResult(Area, Name, ActionNames.Download);
-            ModelUnbinderHelpers.AddRouteValues(callInfo.RouteValueDictionary, "fileName", fileName);
-            DownloadOverride(callInfo, fileName);
+            ModelUnbinderHelpers.AddRouteValues(callInfo.RouteValueDictionary, "id", id);
+            ModelUnbinderHelpers.AddRouteValues(callInfo.RouteValueDictionary, "extra", extra);
+            DownloadOverride(callInfo, id, extra);
             return callInfo;
         }
 

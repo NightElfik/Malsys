@@ -11,14 +11,14 @@ namespace Malsys.Web.App_Start {
 			var engine = new PrecompiledMvcEngine(typeof(RazorGeneratorMvcStart).Assembly) {
 #if DEBUG
 				UsePhysicalViewsIfNewer = true
-#else				
+#else
 				UsePhysicalViewsIfNewer = HttpContext.Current.Request.IsLocal
 #endif
 			};
 
 			ViewEngines.Engines.Insert(0, engine);
 
-			// StartPage lookups are done by WebPages. 
+			// StartPage lookups are done by WebPages.
 			VirtualPathFactoryManager.RegisterVirtualPathFactory(engine);
 		}
 	}

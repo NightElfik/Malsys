@@ -34,7 +34,6 @@ public static partial class MVC
     public static Malsys.Web.Controllers.AuthenticationController Authentication = new Malsys.Web.Controllers.T4MVC_AuthenticationController();
     public static Malsys.Web.Controllers.CurveDesignerController CurveDesigner = new Malsys.Web.Controllers.T4MVC_CurveDesignerController();
     public static Malsys.Web.Controllers.DevDiaryController DevDiary = new Malsys.Web.Controllers.T4MVC_DevDiaryController();
-    public static Malsys.Web.Controllers.DiscussionController Discussion = new Malsys.Web.Controllers.T4MVC_DiscussionController();
     public static Malsys.Web.Controllers.FeedbackController Feedback = new Malsys.Web.Controllers.T4MVC_FeedbackController();
     public static Malsys.Web.Controllers.GalleryController Gallery = new Malsys.Web.Controllers.T4MVC_GalleryController();
     public static Malsys.Web.Controllers.HomeController Home = new Malsys.Web.Controllers.T4MVC_HomeController();
@@ -130,7 +129,7 @@ namespace Links
         public static string Url(string fileName) { return T4MVCHelpers.ProcessVirtualPath(URLPATH + "/" + fileName); }
         public static readonly string normalize_less_css = T4MVCHelpers.IsProduction() && T4Extensions.FileExists(URLPATH + "/normalize.less.min.css") ? Url("normalize.less.min.css") : Url("normalize.less.css");
              
-        public static readonly string prettyPhoto_css = T4MVCHelpers.IsProduction() && T4Extensions.FileExists(URLPATH + "/prettyPhoto.min.css") ? Url("prettyPhoto.min.css") : Url("prettyPhoto.css");
+        public static readonly string prettyPhoto_less_css = T4MVCHelpers.IsProduction() && T4Extensions.FileExists(URLPATH + "/prettyPhoto.less.min.css") ? Url("prettyPhoto.less.min.css") : Url("prettyPhoto.less.css");
              
         public static readonly string style_less_css = T4MVCHelpers.IsProduction() && T4Extensions.FileExists(URLPATH + "/style.less.min.css") ? Url("style.less.min.css") : Url("style.less.css");
              
@@ -153,6 +152,23 @@ namespace Links
         public static readonly string malsys_curveDesigner_js = T4MVCHelpers.IsProduction() && T4Extensions.FileExists(URLPATH + "/malsys.curveDesigner.min.js") ? Url("malsys.curveDesigner.min.js") : Url("malsys.curveDesigner.js");
         public static readonly string malsys_js = T4MVCHelpers.IsProduction() && T4Extensions.FileExists(URLPATH + "/malsys.min.js") ? Url("malsys.min.js") : Url("malsys.js");
         public static readonly string MinifyJs_tt = Url("MinifyJs.tt");
+        public static readonly string Detector_min_js = Url("Detector.min.js");
+        public static readonly string jquery_min_js = Url("jquery.min.js");
+        public static readonly string jquery_prettyPhoto_min_js = Url("jquery.prettyPhoto.min.js");
+        public static readonly string jquery_textarea_min_js = Url("jquery.textarea.min.js");
+        public static readonly string jquery_tmpl_min_js = Url("jquery.tmpl.min.js");
+        public static readonly string jquery_unobtrusive_ajax_min_js = Url("jquery.unobtrusive-ajax.min.js");
+        public static readonly string jquery_validate_min_js = Url("jquery.validate.min.js");
+        public static readonly string jquery_validate_unobtrusive_min_js = Url("jquery.validate.unobtrusive.min.js");
+        public static readonly string malsys_curveDesigner_min_js = Url("malsys.curveDesigner.min.js");
+        public static readonly string malsys_min_js = Url("malsys.min.js");
+        public static readonly string Malsys_three_min_js = Url("Malsys.three.min.js");
+        public static readonly string MinifyJs_log = Url("MinifyJs.log");
+        public static readonly string MTLLoader_min_js = Url("MTLLoader.min.js");
+        public static readonly string OBJMTLLoader_min_js = Url("OBJMTLLoader.min.js");
+        public static readonly string Stats_min_js = Url("Stats.min.js");
+        public static readonly string Three_min_js = Url("Three.min.js");
+        public static readonly string TrackballControls_min_js = Url("TrackballControls.min.js");
         [GeneratedCode("T4MVC", "2.0"), DebuggerNonUserCode]
         public static class ThreeJs {
             public const string URLPATH = "~/Js/ThreeJs";
@@ -335,27 +351,35 @@ namespace Links
 
 [GeneratedCode("T4MVC", "2.0"), DebuggerNonUserCode]
 internal static class T4MVCHelpers {
-    // You can change the ProcessVirtualPath method to modify the path that gets returned to the client.
-    // e.g. you can prepend a domain, or append a query string:
-    //      return "http://localhost" + path + "?foo=bar";
-    private static string ProcessVirtualPathDefault(string virtualPath) {
-        // The path that comes in starts with ~/ and must first be made absolute
-        string path = VirtualPathUtility.ToAbsolute(virtualPath);
-        
-        // Add your own modifications here before returning the path
-        return path;
-    }
+	// You can change the ProcessVirtualPath method to modify the path that gets returned to the client.
+	// e.g. you can prepend a domain, or append a query string:
+	//      return "http://localhost" + path + "?foo=bar";
+	private static string ProcessVirtualPathDefault(string virtualPath) {
+		// The path that comes in starts with ~/ and must first be made absolute
+		string path = VirtualPathUtility.ToAbsolute(virtualPath);
 
-    // Calling ProcessVirtualPath through delegate to allow it to be replaced for unit testing
-    public static Func<string, string> ProcessVirtualPath = ProcessVirtualPathDefault;
+		// Add time substring to file name.
+		int dotIndex = path.IndexOf('.');
+		if (dotIndex >= 0) {
+			string beforeDotExcl = path.Substring(0, dotIndex);
+			string afterDotIncl = path.Substring(dotIndex);
+			string date = System.IO.File.GetLastAccessTime(HttpContext.Current.Server.MapPath(virtualPath)).ToString("yyMMdd");
+			path = beforeDotExcl + "." + date + afterDotIncl;
+		}
 
-    // Calling T4Extension.TimestampString through delegate to allow it to be replaced for unit testing and other purposes
-    public static Func<string, string> TimestampString = System.Web.Mvc.T4Extensions.TimestampString;
+		return path;
+	}
 
-    // Logic to determine if the app is running in production or dev environment
-    public static bool IsProduction() { 
-        return (HttpContext.Current != null && !HttpContext.Current.IsDebuggingEnabled); 
-    }
+	// Calling ProcessVirtualPath through delegate to allow it to be replaced for unit testing
+	public static Func<string, string> ProcessVirtualPath = ProcessVirtualPathDefault;
+
+	// Calling T4Extension.TimestampString through delegate to allow it to be replaced for unit testing and other purposes
+	public static Func<string, string> TimestampString = System.Web.Mvc.T4Extensions.TimestampString;
+
+	// Logic to determine if the app is running in production or dev environment
+	public static bool IsProduction() { 
+		return (HttpContext.Current != null && !HttpContext.Current.IsDebuggingEnabled); 
+	}
 }
 
 

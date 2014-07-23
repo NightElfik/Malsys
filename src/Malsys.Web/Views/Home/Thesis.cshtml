@@ -1,5 +1,17 @@
 ﻿@{
 	ViewBag.Title = "Bachelor thesis – L-systems online";
+
+	StaticHtml.RequireCss(Links.Css.prettyPhoto_less_css);
+
+	StaticHtml.RequireScript(Links.Js.jquery_prettyPhoto_js);
+	StaticHtml.InlineScript(@"
+		$(document).ready(function () {
+			$(""a[rel^='prettyPhoto']"").prettyPhoto({
+				animation_speed: 'fast', theme: 'light_square', social_tools: false
+			});
+		});
+	");
+
 }
 
 <h1>Bachelor thesis – L-systems online</h1>
@@ -9,9 +21,9 @@
 
 <p>
 	This site was created as bachelors work called <b>L-systems online</b> under the leadership of
-		@Html.Link("Josef Pelikán", "http://cgg.mff.cuni.cz/~pepca/", null, true)
-		on @Html.Link("Faculty of Mathematics and Physics", "http://www.mff.cuni.cz/", null, true)
-		of @Html.Link("Charles University in Prague", "http://www.cuni.cz/", null, true).
+		@StaticHtml.ExternalLink("Josef Pelikán", "http://cgg.mff.cuni.cz/~pepca/")
+		on @StaticHtml.ExternalLink("Faculty of Mathematics and Physics", "http://www.mff.cuni.cz/")
+		of @StaticHtml.ExternalLink("Charles University in Prague", "http://www.cuni.cz/").
 	This bachelor's thesis describe this project in great details.
 	You can download it using following links.
 </p>
@@ -19,7 +31,7 @@
 <h2>Download of the thesis (v 1.01, May 2012)</h2>
 @Html.Link("L-systems online (PDF)", Links.Download.MarekFiser_LsystemsOnline_v101_pdf) ~ 6 MB<br />
 @Html.Link("L-systems online (ZIPped PDF)", Links.Download.MarekFiser_LsystemsOnline_v101_pdf_zip) ~ 5 MB<br />
-@Html.Link("L-systems online (Google doc)", "https://docs.google.com/open?id=0Bw3uJH_ZleRNMTc5VUctQTRfQlE", null, true) (online)
+@StaticHtml.ExternalLink("L-systems online (Google doc)", "https://docs.google.com/open?id=0Bw3uJH_ZleRNMTc5VUctQTRfQlE") (online)
 
 <p>
 	Feel free to @Html.ActionLink("contact me", MVC.Feedback.EmailToAuthor()) (the author) if you want to ask me about anything.
@@ -65,16 +77,3 @@
 
 	</div>
 </div>
-@*
-@section scripts {
-	@Content.Css(Links.Css.prettyPhoto_css)
-	@Content.Js(Links.Js.jquery_prettyPhoto_js)
-	<script type="text/javascript">
-		$(document).ready(function () {
-			$("a[rel^='prettyPhoto']").prettyPhoto({
-				animation_speed: 'fast', theme: 'light_square', social_tools: false
-			});
-		});
-	</script>
-}
-*@

@@ -6,7 +6,7 @@ using Malsys.SemanticModel.Evaluated;
 using Malsys.Web.Models.Lsystem;
 
 namespace Malsys.Web.Areas.Documentation.Controllers {
-	[OutputCache(CacheProfile="HelpCache")]
+	[OutputCache(CacheProfile = "VaryByUserCache")]
 	public partial class SyntaxReferenceController : Controller {
 
 		private readonly SimpleLsystemProcessor simpleLsystemProcessor;

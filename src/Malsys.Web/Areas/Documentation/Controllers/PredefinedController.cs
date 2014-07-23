@@ -14,7 +14,7 @@ using Malsys.Web.Areas.Documentation.Models;
 using Malsys.Web.Models.Lsystem;
 
 namespace Malsys.Web.Areas.Documentation.Controllers {
-	[OutputCache(CacheProfile = "HelpCache")]
+	[OutputCache(CacheProfile = "VaryByUserCache")]
 	public partial class PredefinedController : Controller {
 
 		private readonly InputBlockEvaled stdLib;

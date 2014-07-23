@@ -469,28 +469,6 @@ p { text-align: justify; }
 }
 
 
-
-/* Discussion =============================================================== */
-
-.discusThread {
-	.msgCount { font-size: 80%; }
-	.author { font-size: 80%; }
-	.lastMessage { font-size: 80%; margin: 0; padding: 0; }
-}
-
-.discusMsg {
-	.message { width: 70%; }
-	.author {
-		display: block;
-		padding: 0 0.5em;
-		float: right;
-		width: 25%;
-		border-left: 1px solid #CCC;
-		p { text-align: center; }
-		.date { font-size: 80%; }
-	}
-}
-
 /* Figures ================================================================== */
 
 .figure {
@@ -738,6 +716,7 @@ a.tag {
 	line-height: 1em;
 	word-wrap: normal;
 	text-decoration: none !important;
+	text-align: left;
 }
 
 .asciiArt:hover {

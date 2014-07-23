@@ -1,6 +1,0 @@
-﻿@model DiscusThread
-
-<div class="discusAddMsg" data-thread-id="@Model.ThreadId" data-url="@Url.Action(MVC.Discussion.NewMessage())"
-		@if(User.Identity.IsAuthenticated) { <text>data-user="@User.Identity.IsAuthenticated.ToString().ToLower()"</text> }>
-	<p>JavaScript must be enabled to add new messages.</p>
-</div>
