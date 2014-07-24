@@ -297,6 +297,7 @@ namespace Malsys.Processing.Components.Renderers {
 			objWriter.WriteLine();
 
 			saveLastState(endPoint, rotation, width, color);
+			measure(endPoint, width);
 		}
 
 		public override void DrawPolygon(Polygon3D polygon) {
@@ -318,6 +319,7 @@ namespace Malsys.Processing.Components.Renderers {
 				MoveTo(polygon.Ponits[0], polygon.Rotations[0], polygon.StrokeWidth, polygon.StrokeColor);
 				for (int i = 1; i < polygon.Ponits.Count; i++) {
 					DrawTo(polygon.Ponits[i], polygon.Rotations[i], polygon.StrokeWidth, polygon.StrokeColor, 1);
+					measure(polygon.Ponits[i]);
 				}
 			}
 
@@ -343,7 +345,7 @@ namespace Malsys.Processing.Components.Renderers {
 			if (measuring) {
 				return;
 			}
-
+			// TODO.
 		}
 
 
@@ -478,7 +480,7 @@ namespace Malsys.Processing.Components.Renderers {
 				camTarget.Z = ((Constant)cameraTarget[2]).Value;
 			}
 			else {
-				camTarget = Math3D.CountMiddlePoint(measuredMin, measuredMax);
+				camTarget = Math3D.CountMiddlePoint(currentMeasuredMin, currentMeasuredMax);
 			}
 
 			Point3D camPosition = Math3D.ZeroPoint;
@@ -488,7 +490,7 @@ namespace Malsys.Processing.Components.Renderers {
 				camPosition.Z = ((Constant)cameraPosition[2]).Value;
 			}
 			else {
-				camPosition = Math3D.AddPoints(camTarget, measuredMax);
+				camPosition = Math3D.AddPoints(camTarget, currentMeasuredMax);
 			}
 
 			Point3D camUp = Math3D.ZeroPoint;

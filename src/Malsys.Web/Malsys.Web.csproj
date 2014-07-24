@@ -515,53 +515,25 @@
     <None Include="Img\DevDiary\SvgOptimizations\Plant3Oo.svgz" />
     <None Include="Img\DevDiary\SvgOptimizations\SierpinskiTrangle.svgz" />
     <None Include="Img\DevDiary\SvgOptimizations\Tree.svgz" />
-    <Content Include="Js\jquery.min.js">
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
-    <Content Include="Js\jquery.prettyPhoto.min.js">
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
     <None Include="Js\jquery.textarea.js" />
-    <Content Include="Js\jquery.textarea.min.js">
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
-    <Content Include="Js\jquery.tmpl.min.js">
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
-    <Content Include="Js\jquery.unobtrusive-ajax.min.js">
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
     <None Include="Js\jquery.validate.js" />
     <None Include="Js\jquery.js" />
-    <Content Include="Js\jquery.validate.min.js">
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
-    <Content Include="Js\jquery.validate.unobtrusive.min.js">
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
-    <Content Include="Js\malsys.curveDesigner.min.js">
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
     <None Include="Js\malsys.js" />
-    <Content Include="Js\malsys.min.js">
+    <Content Include="Img\Icons\application-resize-full.png" />
+    <Content Include="Img\Icons\cross.png" />
+    <Content Include="Img\Icons\exclamation.png" />
+    <Content Include="Img\Icons\FlipGray.png" />
+    <Content Include="Img\Icons\information.png" />
+    <Content Include="Img\Icons\tick.png" />
+    <Content Include="Js\MinifyJs.log">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
       <DependentUpon>MinifyJs.tt</DependentUpon>
     </Content>
     <None Include="Js\ThreeJs\Detector.js" />
-    <Content Include="Js\ThreeJs\Detector.min.js">
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
     <None Include="Js\ThreeJs\Malsys.three.js" />
     <Content Include="google4412977e75e1f8f1.html" />
     <Content Include="humans.txt" />
-    <Content Include="Js\ThreeJs\Malsys.three.min.js">
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
-    <Content Include="Js\ThreeJs\MTLLoader.min.js">
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
-    <Content Include="Js\ThreeJs\OBJMTLLoader.min.js">
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
     <None Include="Js\ThreeJs\Stats.js" />
     <Content Include="Img\ajax-loader.gif" />
     <Content Include="Img\designerExample.png" />
@@ -648,14 +620,51 @@
     <None Include="Js\jquery.tmpl.js" />
     <None Include="Js\ThreeJs\MTLLoader.js" />
     <None Include="Js\ThreeJs\OBJMTLLoader.js" />
+    <None Include="Js\ThreeJs\Three.js" />
+    <None Include="Js\ThreeJs\TrackballControls.js" />
+    <Content Include="Js\jquery.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\jquery.prettyPhoto.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\jquery.textarea.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\jquery.tmpl.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\jquery.unobtrusive-ajax.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\jquery.validate.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\jquery.validate.unobtrusive.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\malsys.curveDesigner.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\malsys.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\ThreeJs\Detector.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\ThreeJs\Malsys.three.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\ThreeJs\MTLLoader.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\ThreeJs\OBJMTLLoader.min.js">
+      <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
     <Content Include="Js\ThreeJs\Stats.min.js">
       <DependentUpon>MinifyJs.tt</DependentUpon>
     </Content>
-    <None Include="Js\ThreeJs\Three.js" />
-    <None Include="Js\ThreeJs\TrackballControls.js" />
-    <Content Include="Js\ThreeJs\Three.min.js">
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
+    <Content Include="Js\ThreeJs\Three.min.js" />
     <Content Include="Js\ThreeJs\TrackballControls.min.js">
       <DependentUpon>MinifyJs.tt</DependentUpon>
     </Content>
@@ -664,13 +673,9 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>MinifyJs.log</LastGenOutput>
     </Content>
-    <Content Include="Js\MinifyJs.log">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>MinifyJs.tt</DependentUpon>
-    </Content>
     <None Include="Properties\PublishProfiles\FilesystemPublish.pubxml" />
     <None Include="T4MVC.tt.settings.xml" />
+    <None Include="Troubleshooting.txt" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>

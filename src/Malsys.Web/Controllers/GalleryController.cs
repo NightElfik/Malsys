@@ -36,7 +36,6 @@ namespace Malsys.Web.Controllers {
 		}
 
 
-		[OutputCache(CacheProfile = "VaryByUserCache", VaryByParam="*")]
 		public virtual ActionResult Index(string user = null, string tag = null, int? page = null) {
 
 			if (page == null || page <= 0) {
@@ -75,7 +74,6 @@ namespace Malsys.Web.Controllers {
 			return View(model);
 		}
 
-		[OutputCache(CacheProfile = "VaryByUserCache")]
 		public virtual ActionResult Tags() {
 			var tags = malsysInputRepository.InputDb.Tags.Select(t => new TagModel() {
 				TagName = t.Name,
@@ -85,7 +83,6 @@ namespace Malsys.Web.Controllers {
 			return View(tags);
 		}
 
-		[OutputCache(CacheProfile = "VaryByUserCache")]
 		public virtual ActionResult Detail(string id) {
 
 			var input = malsysInputRepository.InputDb.SavedInputs
@@ -96,7 +93,7 @@ namespace Malsys.Web.Controllers {
 				return HttpNotFound();
 			}
 
-			bool owner = User.Identity.Name.ToLower() == input.User.NameLowercase;
+			bool owner = User.Identity.Name.ToLower() == input.User.NameLowercase || User.IsInRole(UserRoles.Administrator);
 			if (!input.IsPublished && !owner) {
 				return HttpNotFound();
 			}
@@ -134,10 +131,11 @@ namespace Malsys.Web.Controllers {
 		public virtual ActionResult Edit(string id) {
 
 			string userNameLower = User.Identity.Name.ToLower();
+			bool isAdmin = User.IsInRole(UserRoles.Administrator);
 
 			var input = malsysInputRepository.InputDb.SavedInputs
 				.Where(x => x.UrlId == id && !x.IsDeleted)
-				.Where(x => x.User.NameLowercase == userNameLower)
+				.Where(x => isAdmin || x.User.NameLowercase == userNameLower)
 				.SingleOrDefault();
 
 			var model = new EditSavedInputModel() {
@@ -159,10 +157,11 @@ namespace Malsys.Web.Controllers {
 		public virtual ActionResult Edit(string id, EditSavedInputModel model) {
 
 			string userNameLower = User.Identity.Name.ToLower();
+			bool isAdmin = User.IsInRole(UserRoles.Administrator);
 
 			var input = malsysInputRepository.InputDb.SavedInputs
 				.Where(x => x.UrlId == id && !x.IsDeleted)
-				.Where(x => x.User.NameLowercase == userNameLower)
+				.Where(x => isAdmin || x.User.NameLowercase == userNameLower)
 				.SingleOrDefault();
 
 			if (input == null) {

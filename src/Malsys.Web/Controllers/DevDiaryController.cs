@@ -32,13 +32,11 @@ namespace Malsys.Web.Controllers {
 			};
 		}
 
-		[OutputCache(CacheProfile = "VaryByUserCache")]
 		public virtual ActionResult Index() {
 			return View(viewModel);
 		}
 
 
-		[OutputCache(CacheProfile = "VaryByUserCache", VaryByParam="*")]
 		public virtual ActionResult Entry(string name, string part = null) {
 			var currEntry = viewModel.AllEntries
 				.FirstOrDefault(x => x.Url == name && !string.IsNullOrEmpty(x.ViewName));

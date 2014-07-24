@@ -31,6 +31,7 @@ namespace Malsys.Web.Infrastructure {
 
 		bool ignoreWs = false;
 
+
 		public override void Write(object value) {
 			base.Write(value);
 		}

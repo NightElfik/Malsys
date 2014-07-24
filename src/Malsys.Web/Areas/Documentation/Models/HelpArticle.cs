@@ -12,7 +12,7 @@ namespace Malsys.Web.Areas.Documentation.Models {
 		public static readonly HelpArticle Basics = new HelpArticle() {
 			Name = "Introduction and basics",
 			Url = "Introduction-and-basics",
-			//DisqusId = "IntroductionAndBasics",
+			DisqusId = "IntroductionAndBasics",
 			Date = new DateTime(2014, 6, 16),
 			ViewName = MVC.Documentation.Articles.Views.Articles.IntroductionAndBasics,
 		};

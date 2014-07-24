@@ -111,9 +111,9 @@
 	<div class="grid-50 mobile-grid-100 ">
 		<h3>Comments</h3>
 		@{
-		//string id = "gallery/" + Model.Input.UrlId;
-		///string url = Url.ActionAbsolute(MVC.Permalink.Index(Model.Input.UrlId));
-		//@StaticHtml.DisqusComments(Model.Input.PublishName, id, url)
+			string id = "gallery/" + Model.Input.UrlId;
+			string url = Url.ActionAbsolute(MVC.Permalink.Index(Model.Input.UrlId));
+			@StaticHtml.DisqusComments(Model.Input.PublishName, id, url)
 		}
 	</div>
 </div>

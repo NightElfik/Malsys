@@ -33,7 +33,6 @@ namespace Malsys.Web.Controllers {
 		}
 
 
-		[OutputCache(CacheProfile = "VaryByUserCache")]
 		public virtual ActionResult Index() {
 			NewsArchiveViewModel viewModel = new NewsArchiveViewModel();
 			viewModel.SectionsManager = createSectionsManager();
@@ -43,22 +42,18 @@ namespace Malsys.Web.Controllers {
 			return View(viewModel);
 		}
 
-		[OutputCache(CacheProfile = "VaryByUserCache")]
 		public virtual ActionResult LoadedPlugins() {
 			return View(loadedPlugins);
 		}
 
-		[OutputCache(CacheProfile = "VaryByUserCache")]
 		public virtual ActionResult WhyWebgl() {
 			return View();
 		}
 
-		[OutputCache(CacheProfile = "VaryByUserCache")]
 		public virtual ActionResult Thesis() {
 			return View();
 		}
 
-		[OutputCache(CacheProfile = "VaryByUserCache", VaryByParam="*")]
 		public virtual ActionResult NewsArchive(string id = null) {
 			NewsArchiveViewModel viewModel = new NewsArchiveViewModel();
 			viewModel.SectionsManager = createSectionsManager();

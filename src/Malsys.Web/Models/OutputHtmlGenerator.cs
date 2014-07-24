@@ -45,7 +45,6 @@ namespace Malsys.Web.Models {
 
 			switch (mimeType) {
 
-
 				case MimeType.Text.Plain:
 					width = maxWidth;
 					height = maxHeight;

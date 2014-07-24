@@ -71,8 +71,11 @@ namespace Malsys.Web.Controllers {
 					Response.AppendHeader("Content-Encoding", "gzip");
 					mimeType = MimeType.Image.SvgXml;
 				}
+				else {
+					mimeType = MimeType.Text.Plain;
+				}
 
-				return File(filePath, mimeType);
+				return File(filePath, download ? MimeType.Application.OctetStream : mimeType);
 			}
 		}
 

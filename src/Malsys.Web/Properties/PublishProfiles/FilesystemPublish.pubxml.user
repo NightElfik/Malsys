@@ -76,7 +76,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>05/11/2012 08:59:10</publishTime>
     </File>
     <File Include="Areas/Administration/Views/Web.config">
-      <publishTime>03/21/2014 19:53:46</publishTime>
+      <publishTime>07/23/2014 00:58:57</publishTime>
     </File>
     <File Include="Areas/Administration/Views/_ViewStart.cshtml">
       <publishTime>03/21/2014 11:00:34</publishTime>
@@ -178,7 +178,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>07/22/2014 00:11:21</publishTime>
     </File>
     <File Include="Areas/Documentation/Views/Web.config">
-      <publishTime>03/21/2014 19:53:30</publishTime>
+      <publishTime>07/23/2014 00:58:58</publishTime>
     </File>
     <File Include="Areas/Documentation/Views/_ViewStart.cshtml">
       <publishTime>03/21/2014 11:00:44</publishTime>
@@ -211,31 +211,31 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>04/06/2012 10:47:39</publishTime>
     </File>
     <File Include="bin/ExamplePlugin.dll">
-      <publishTime>07/22/2014 23:14:08</publishTime>
+      <publishTime>07/23/2014 01:50:22</publishTime>
     </File>
     <File Include="bin/log4net.dll">
       <publishTime>03/20/2014 18:29:31</publishTime>
     </File>
     <File Include="bin/Malsys.Ast.dll">
-      <publishTime>07/22/2014 23:13:48</publishTime>
+      <publishTime>07/23/2014 01:50:04</publishTime>
     </File>
     <File Include="bin/Malsys.BitmapRenderers.dll">
-      <publishTime>07/22/2014 23:14:17</publishTime>
+      <publishTime>07/23/2014 01:50:32</publishTime>
     </File>
     <File Include="bin/Malsys.Common.dll">
-      <publishTime>07/22/2014 23:13:41</publishTime>
+      <publishTime>07/23/2014 01:49:58</publishTime>
     </File>
     <File Include="bin/Malsys.dll">
-      <publishTime>07/22/2014 23:14:02</publishTime>
+      <publishTime>07/23/2014 01:50:18</publishTime>
     </File>
     <File Include="bin/Malsys.Parsing.dll">
-      <publishTime>07/22/2014 23:13:57</publishTime>
+      <publishTime>07/23/2014 01:50:12</publishTime>
     </File>
     <File Include="bin/Malsys.Web.dll">
-      <publishTime>07/22/2014 23:37:51</publishTime>
+      <publishTime>07/23/2014 02:02:59</publishTime>
     </File>
     <File Include="bin/Malsys.Web.XML">
-      <publishTime>07/22/2014 23:37:57</publishTime>
+      <publishTime>07/23/2014 02:03:05</publishTime>
     </File>
     <File Include="bin/Microsoft.Web.Helpers.dll">
       <publishTime>03/20/2014 22:43:26</publishTime>
@@ -295,7 +295,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/30/2012 08:13:37</publishTime>
     </File>
     <File Include="Css/style.less.css">
-      <publishTime>07/22/2014 22:32:14</publishTime>
+      <publishTime>07/22/2014 23:54:08</publishTime>
     </File>
     <File Include="Css/unsemantic.less.css">
       <publishTime>03/21/2014 15:25:53</publishTime>
@@ -510,6 +510,24 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="Img/DevDiary/apng/Teaser.png">
       <publishTime>06/09/2013 17:05:26</publishTime>
     </File>
+    <File Include="Img/Icons/application-resize-full.png">
+      <publishTime>05/10/2009 10:02:30</publishTime>
+    </File>
+    <File Include="Img/Icons/cross.png">
+      <publishTime>05/10/2009 10:03:56</publishTime>
+    </File>
+    <File Include="Img/Icons/exclamation.png">
+      <publishTime>03/05/2010 07:54:02</publishTime>
+    </File>
+    <File Include="Img/Icons/FlipGray.png">
+      <publishTime>03/02/2014 10:58:49</publishTime>
+    </File>
+    <File Include="Img/Icons/information.png">
+      <publishTime>03/05/2010 07:54:02</publishTime>
+    </File>
+    <File Include="Img/Icons/tick.png">
+      <publishTime>03/05/2010 07:54:04</publishTime>
+    </File>
     <File Include="Img/Lilac-DiffWebGL.png">
       <publishTime>04/16/2012 10:49:00</publishTime>
     </File>
@@ -565,76 +583,76 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/30/2012 06:56:34</publishTime>
     </File>
     <File Include="Js/jquery.min.js">
-      <publishTime>07/22/2014 23:12:03</publishTime>
+      <publishTime>07/22/2014 23:43:01</publishTime>
     </File>
     <File Include="Js/jquery.prettyPhoto.min.js">
-      <publishTime>07/22/2014 23:12:03</publishTime>
+      <publishTime>07/22/2014 23:43:01</publishTime>
     </File>
     <File Include="Js/jquery.textarea.min.js">
-      <publishTime>07/22/2014 23:12:03</publishTime>
+      <publishTime>07/22/2014 23:43:01</publishTime>
     </File>
     <File Include="Js/jquery.tmpl.min.js">
-      <publishTime>07/22/2014 23:12:03</publishTime>
+      <publishTime>07/22/2014 23:43:01</publishTime>
     </File>
     <File Include="Js/jquery.unobtrusive-ajax.min.js">
-      <publishTime>07/22/2014 23:12:03</publishTime>
+      <publishTime>07/22/2014 23:43:01</publishTime>
     </File>
     <File Include="Js/jquery.validate.min.js">
-      <publishTime>07/22/2014 23:12:03</publishTime>
+      <publishTime>07/22/2014 23:43:01</publishTime>
     </File>
     <File Include="Js/jquery.validate.unobtrusive.min.js">
-      <publishTime>07/22/2014 23:12:03</publishTime>
+      <publishTime>07/22/2014 23:43:01</publishTime>
     </File>
     <File Include="Js/malsys.curveDesigner.min.js">
-      <publishTime>07/22/2014 23:12:03</publishTime>
+      <publishTime>07/22/2014 23:43:01</publishTime>
     </File>
     <File Include="Js/malsys.min.js">
-      <publishTime>07/22/2014 23:12:03</publishTime>
+      <publishTime>07/22/2014 23:43:01</publishTime>
     </File>
     <File Include="Js/MinifyJs.log">
-      <publishTime>07/22/2014 23:34:58</publishTime>
+      <publishTime>07/22/2014 23:43:33</publishTime>
     </File>
     <File Include="Js/ThreeJs/Detector.min.js">
-      <publishTime>07/22/2014 23:12:03</publishTime>
+      <publishTime>07/22/2014 23:43:31</publishTime>
     </File>
     <File Include="Js/ThreeJs/Malsys.three.min.js">
-      <publishTime>07/22/2014 23:12:03</publishTime>
+      <publishTime>07/22/2014 23:43:31</publishTime>
     </File>
     <File Include="Js/ThreeJs/MTLLoader.js">
       <publishTime>07/06/2014 00:21:04</publishTime>
     </File>
     <File Include="Js/ThreeJs/MTLLoader.min.js">
-      <publishTime>07/22/2014 23:12:03</publishTime>
+      <publishTime>07/22/2014 23:43:31</publishTime>
     </File>
     <File Include="Js/ThreeJs/OBJMTLLoader.js">
       <publishTime>07/06/2014 00:21:04</publishTime>
     </File>
     <File Include="Js/ThreeJs/OBJMTLLoader.min.js">
-      <publishTime>07/22/2014 23:12:03</publishTime>
+      <publishTime>07/22/2014 23:43:31</publishTime>
     </File>
     <File Include="Js/ThreeJs/Stats.min.js">
-      <publishTime>07/22/2014 23:12:03</publishTime>
+      <publishTime>07/22/2014 23:43:31</publishTime>
     </File>
     <File Include="Js/ThreeJs/Three.js">
       <publishTime>07/06/2014 00:20:56</publishTime>
     </File>
     <File Include="Js/ThreeJs/Three.min.js">
-      <publishTime>07/22/2014 23:34:58</publishTime>
+      <publishTime>07/06/2014 00:20:56</publishTime>
     </File>
     <File Include="Js/ThreeJs/TrackballControls.js">
       <publishTime>07/10/2014 23:59:00</publishTime>
     </File>
     <File Include="Js/ThreeJs/TrackballControls.min.js">
-      <publishTime>07/22/2014 23:12:03</publishTime>
+      <publishTime>07/22/2014 23:43:31</publishTime>
     </File>
     <File Include="robots.txt">
       <publishTime>04/23/2012 05:02:26</publishTime>
     </File>
     <File Include="Views/Web.config">
-      <publishTime>03/21/2014 19:53:22</publishTime>
+      <publishTime>07/23/2014 00:58:58</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>07/22/2014 23:28:56</publishTime>
+      <publishTime>07/23/2014 01:50:51</publishTime>
     </File>
   </ItemGroup>
 </Project>

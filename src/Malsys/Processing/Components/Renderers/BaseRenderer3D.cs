@@ -104,8 +104,8 @@ namespace Malsys.Processing.Components.Renderers {
 		/// </summary>
 		public virtual void InitializeState(Point3D startPoint, Quaternion rotation, double width, ColorF color) {
 			if (measuring) {
-				measuredMin = startPoint;
-				measuredMax = startPoint;
+				currentMeasuredMin = startPoint;
+				currentMeasuredMax = startPoint;
 			}
 			else {
 				lastPoint = startPoint;
@@ -123,7 +123,7 @@ namespace Malsys.Processing.Components.Renderers {
 
 		public abstract void DrawSphere(double radius, ColorF color, double quality);
 
-		#endregion
+		#endregion IRenderer3D Members
 
 
 		protected void saveLastState(Point3D point, Quaternion rotation, double width, ColorF color) {
