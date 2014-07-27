@@ -3,7 +3,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
-using Malsys.Web.Infrastructure;
 
 namespace Malsys.Web.ArticleTools {
 	public class CodeListingsManager {
@@ -84,25 +83,9 @@ namespace Malsys.Web.ArticleTools {
 
 		public HtmlString InlineCode(ProgLang lang, string code) {
 			sharedStringBuilder.Length = 0;
-			sharedStringBuilder.Append(WhitespaceStripperViewPage<int>.StopEatingWhitespces);
 			sharedStringBuilder.Append("<code class=\"code\">");
 			sharedStringBuilder.Append(highlight(lang, code));
 			sharedStringBuilder.Append("</code>");
-			sharedStringBuilder.Append(WhitespaceStripperViewPage<int>.StartEatingWhitespces);
-			return new HtmlString(sharedStringBuilder.ToString());
-		}
-
-		public HtmlString BlockCode(string code) {
-			return BlockCode(DefaultProgLang, code);
-		}
-
-		public HtmlString BlockCode(ProgLang lang, string code) {
-			sharedStringBuilder.Length = 0;
-			sharedStringBuilder.Append(WhitespaceStripperViewPage<int>.StopEatingWhitespces);
-			sharedStringBuilder.Append("<pre class=\"code\">");
-			sharedStringBuilder.Append(highlight(lang, code));
-			sharedStringBuilder.Append("</pre>");
-			sharedStringBuilder.Append(WhitespaceStripperViewPage<int>.StartEatingWhitespces);
 			return new HtmlString(sharedStringBuilder.ToString());
 		}
 
@@ -164,14 +147,13 @@ namespace Malsys.Web.ArticleTools {
 		private void toTable(StringBuilder sb, string code, int maxHeight, int startingLineNumber) {
 			var lines = code.Replace("\t", "  ").SplitToLines().ToList();
 			int linesCount = lines.Count;
-			sb.Append(WhitespaceStripperViewPage<int>.StopEatingWhitespces);
 			sb.Append("<div class='scroll'");
 			if (maxHeight != int.MaxValue) {
 				sb.Append(" style='height:");
 				sb.Append(maxHeight);
 				sb.Append("px;'");
 			}
-			sb.Append("><table border='0' cellpadding='0' cellspacing='0'><tr><td class='lineNumbers'>");
+			sb.Append("><table><tr><td class='lineNumbers'>");
 			for (int i = 0; i < linesCount; ++i) {
 				sb.Append("<div");
 				if (i % 2 == 1) {
@@ -192,7 +174,6 @@ namespace Malsys.Web.ArticleTools {
 				sb.Append("</div>");
 			}
 			sb.Append("</td></tr></table></div>");
-			sb.Append(WhitespaceStripperViewPage<int>.StartEatingWhitespces);
 		}
 
 

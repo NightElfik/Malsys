@@ -348,6 +348,7 @@ namespace Malsys.Web.Controllers {
 			}
 			else {
 				input.OutputMetadata = meta;
+				input.OutputSize = new FileInfo(output.FilePath).Length;
 			}
 
 			bool error = false;

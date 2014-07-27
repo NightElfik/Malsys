@@ -15,9 +15,6 @@ namespace Malsys.Web.Infrastructure {
 	/// </remarks>
 	public abstract class WhitespaceStripperViewPage<TModel> : System.Web.Mvc.WebViewPage<TModel> {
 
-		public const string StopEatingWhitespces = "<WHITESPACES>";
-		public const string StartEatingWhitespces = "</WHITESPACES>";
-
 		private static readonly Regex wsBetweenTagsRegex = new Regex(@">\s+<", RegexOptions.Compiled);
 		private static readonly Regex wsBeforeTagRegex = new Regex(@"^\s+<", RegexOptions.Compiled);
 		private static readonly Regex wsAfterTagRegex = new Regex(@">\s+$", RegexOptions.Compiled);
@@ -28,8 +25,6 @@ namespace Malsys.Web.Infrastructure {
 #else
 		public static bool Enabled = true;
 #endif
-
-		bool ignoreWs = false;
 
 
 		public override void Write(object value) {
@@ -46,25 +41,12 @@ namespace Malsys.Web.Infrastructure {
 			}
 
 			string html = value.ToString();
-			if (html.Contains(StopEatingWhitespces)) {
-				html = html.Replace(StopEatingWhitespces, "");
-				ignoreWs = !html.Contains(StartEatingWhitespces);
-				if (!ignoreWs) {
-					html = html.Replace(StartEatingWhitespces, "");
-				}
-			}
-			else if (html.Contains(StartEatingWhitespces)) {
-				html = html.Replace(StartEatingWhitespces, "");
-				ignoreWs = false;
-			}
-			else if (!ignoreWs) {
-				html = wsBetweenTagsRegex.Replace(html, "><");
-				html = wsBeforeTagRegex.Replace(html, "<");
-				html = wsAfterTagRegex.Replace(html, ">");
-				html = wsGlobalRegex.Replace(html, " ");
-			}
-			var type = value.GetType();
-			if (type == typeof(HtmlString) || type == typeof(MvcHtmlString)) {
+			html = wsBetweenTagsRegex.Replace(html, "><");
+			html = wsBeforeTagRegex.Replace(html, "<");
+			html = wsAfterTagRegex.Replace(html, ">");
+			html = wsGlobalRegex.Replace(html, " ");
+
+			if (value is HtmlString || value is MvcHtmlString) {
 				return new HtmlString(html);
 			}
 			else {

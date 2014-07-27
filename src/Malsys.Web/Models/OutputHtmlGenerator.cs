@@ -89,9 +89,9 @@ namespace Malsys.Web.Models {
 						height = maxHeight;
 						width = -1;  // Do now put width;
 					}
-					content = "<img src='{0}' {1} height='{2}px' alt='{3}' />".Fmt(
+					content = "<img src='{0}' {1} height='{2}' alt='{3}' />".Fmt(
 						url,
-						width > 0 ? "width='" + width + "px'" : "",
+						width > 0 ? "width='" + width + "'" : "",
 						height,
 						name);
 					break;
@@ -108,9 +108,9 @@ namespace Malsys.Web.Models {
 					else {
 						height = maxHeight;
 					}
-					content = "<img src='{0}' {1} height='{2}px' alt='{3}' />".Fmt(
+					content = "<img src='{0}' {1} height='{2}' alt='{3}' />".Fmt(
 						url,
-						width > 0 ? "width='" + width + "px'" : "",
+						width > 0 ? "width='" + width + "'" : "",
 						height,
 						name);
 					break;
@@ -134,7 +134,7 @@ namespace Malsys.Web.Models {
 
 					content = ("<div class='threeJsScene' data-url='{0}' {4} {5} {6} {7} style='width: {1}px; height: {2}px;'>"
 							+ "<div class='clearfix'><p class='loading'>Loading 3D model<br>of {3}<br>"
-							+ "<span class='dots'></p></div></div>").Fmt(
+							+ "<span class='dots'></span></p></div></div>").Fmt(
 						url,
 						maxWidth,
 						maxHeight,
