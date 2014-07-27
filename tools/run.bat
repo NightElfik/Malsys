@@ -1,0 +1,1 @@
+Get-ChildItem .\ -Recurse | where { $_.extension -eq ".png" } | % { .\optipng.exe -o7 $_.FullName }
