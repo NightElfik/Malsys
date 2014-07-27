@@ -1,8 +1,11 @@
-﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
+﻿using System;
+using System.Collections.Generic;
+// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
 // All rights reserved.
 using System.Linq;
 using System.Web.Mvc;
 using Malsys.Web.ArticleTools;
+using Malsys.Web.Entities;
 using Malsys.Web.Models;
 
 namespace Malsys.Web.Controllers {
@@ -24,12 +27,22 @@ namespace Malsys.Web.Controllers {
 		}
 
 
+		private readonly Lazy<IInputDb> inputDb;
+		private readonly Lazy<IUsersDb> usersDb;
+		private readonly Lazy<IActionLogDb> actionLogDb;
+
 
 		private readonly LoadedPlugins loadedPlugins;
 
 
-		public HomeController(LoadedPlugins loadedPlugins) {
+		public HomeController(LoadedPlugins loadedPlugins, Lazy<IInputDb> inputDb,
+				Lazy<IUsersDb> usersDb, Lazy<IActionLogDb> actionLogDb) {
+
 			this.loadedPlugins = loadedPlugins;
+
+			this.inputDb = inputDb;
+			this.usersDb = usersDb;
+			this.actionLogDb = actionLogDb;
 		}
 
 
@@ -74,6 +87,39 @@ namespace Malsys.Web.Controllers {
 
 			viewModel.SectionsManager.SetCurrentSection(currSec);
 			return View(Views.ViewNames.NewsDetail, viewModel);
+		}
+
+		public virtual ActionResult Stats() {
+
+			var processHistByMonth = inputDb.Value.InputProcesses
+				.Select(p => p.ProcessDate.Year * 100 + p.ProcessDate.Month)
+				.GroupBy(d => d)
+				.OrderBy(d => d.Key)
+				.AsEnumerable()
+				.Select(g => new KeyValuePair<string, int>(
+					(g.Key / 100).ToString("0000") + "-" + (g.Key % 100).ToString("00"),
+					g.Count()));
+
+			var savedOverTime = inputDb.Value.SavedInputs
+				.Where(i => i.IsPublished && !i.IsDeleted)
+				.Select(i => i.CreationDate.Year * 100 + i.CreationDate.Month)
+				.GroupBy(i => i)
+				.OrderBy(i => i.Key)
+				.AsEnumerable()
+				.Select(g => new KeyValuePair<string, int>(
+					(g.Key / 100).ToString("0000") + "-" + (g.Key % 100).ToString("00"),
+					g.Count()));
+
+			int runningTotal = 0;
+			savedOverTime = savedOverTime.Select(kvp => {
+				runningTotal += kvp.Value;
+				return new KeyValuePair<string, int>(kvp.Key, runningTotal);
+			});
+
+			return View(new StatsViewModel() {
+				ProcessHistByMonth = processHistByMonth,
+				SavedLsysByMonth = savedOverTime,
+			});
 		}
 
 	}

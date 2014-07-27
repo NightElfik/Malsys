@@ -8,14 +8,23 @@
 	ViewBag.Title = "Edit " + Model.UrlId;
 }
 
-<h2>Edit @Model.UrlId</h2>
+<h1>Edit @Model.UrlId</h1>
 
-@using (Html.BeginForm()) {
+@using (Html.BeginForm(MVC.Gallery.Edit(), FormMethod.Post, new { id = "processForm" })) {
+
+<div class="grid-100 mobile-grid-100 grid-parent hideLinks">
+	<div class="grid-50 mobile-grid-100 ">
+
+<h2>Details</h2>
 
 	@Html.ValidationSummary(true)
 
 	<div class="editor-label">
-		@Html.LabelFor(m => m.Name)
+		<b>@Html.LabelFor(m => m.Name)</b>
+		<p class="detail">
+			This name will be displayed as a title in the gallery.
+			Please choose human-readable name that is not too long.
+		</p>
 	</div>
 	<div class="editor-field">
 		@Html.EditorFor(m => m.Name)
@@ -23,58 +32,113 @@
 	</div>
 
 	<div class="editor-label">
-		@Html.LabelFor(m => m.Tags) (space separated)
+		<b>@Html.LabelFor(m => m.Tags)</b>
+		<p class="detail">
+			A list of space-separated tags.
+			You can choose from list of existing tags or make a new one if appropriate.
+		</p>
 	</div>
 	<div class="editor-field">
 		@Html.EditorFor(m => m.Tags)
 		@Html.ValidationMessageFor(m => m.Tags)
+		<p class="detail"> Available tags:
+			@(string.Join(", ", ((IEnumerable<Tag>)ViewData["tags"]).Select(t => t.Name)))
+		</p>
 	</div>
 
 	<div class="editor-label">
-		@Html.LabelFor(m => m.Publish) — this L-system will be shown in public gallery
-	</div>
-	<div class="editor-field">
 		@Html.EditorFor(m => m.Publish)
+		<b>@Html.LabelFor(m => m.Publish)</b>
 		@Html.ValidationMessageFor(m => m.Publish)
+		<p class="detail">
+			If checked, this L-system will be listed in public gallery.
+			If not, this L-system will be only accessible through this website or through a direct link.
+			Fell free to share this link woth your friends.
+		</p>
 	</div>
 
 	<div class="editor-label">
-		@Html.LabelFor(m => m.Description) — description of L-system, sources, references, etc...
+		<b>@Html.LabelFor(m => m.Description)</b>
+		<p class="detail">
+			A description of this L-system.
+			Please take a minute and saya  few words about your creation — how did you make it, what inspired you, etc.
+			You can also list references or sources.
+			No HTML allowed.
+		</p>
 	</div>
 	<div class="editor-field">
 		@Html.EditorFor(m => m.Description)
 		@Html.ValidationMessageFor(m => m.Description)
 	</div>
 
-	<fieldset class="malsysSource">
-		<legend>Source code</legend>
-		<p>
-			If processing results in more than 1 output the last one will be displayed.
+	</div>
+</div>
+
+<div class="grid-100 mobile-grid-100 grid-parent hideLinks">
+	<div class="grid-100 mobile-grid-100 ">
+
+		<h2>Source code</h2>
+		<p class="detail">
+			Source code of the L-system.
+			Please make sure that it s displayable — it does not contain too much lines, vertices, etc.
+			You can leave a set of alternative parameters commented out in the source code.
+			If processing of results yields more than 1 output the last one will be displayed.
 		</p>
-		@Html.TextAreaFor(m => m.SourceCode, 20, 60, null)
+		@Html.TextAreaFor(m => m.SourceCode, Math.Max(20, (Model.SourceCode ?? "").CountLines() + 1), 60,
+			new { @style = "width:98%" })
+	</div>
+</div>
 
-	</fieldset>
-
-	<fieldset class="malsysSource">
-		<legend>Thumbnail source code extension (optional)</legend>
-		<p>
-			This code will be added at the end of main source code if thumbnail is generated.
-			Since last output is displayed this code can produce another output with different parameters as thumbnail.
-			@Html.ActionLink("L-system statements in process statement", MVC.Documentation.SyntaxReference.ProcessStatements()) or
-				@Html.ActionLink("L-system inheritance", MVC.Documentation.SyntaxReference.LsystemDefinition()) can be used to easily change parameters of main L-system
-				(for example to lower amount of iterations for thumbnail).
+<div class="grid-100 mobile-grid-100 grid-parent hideLinks">
+	<div class="grid-100 mobile-grid-100 ">
+		<h2>Thumbnail source code extension (optional)</h2>
+		<p class="detail">
+			Thumbnail extension is available to alternate a look of your L-system in Gallery thumbnail — to make it simplier.
+			Thumbnail should be smaller to not slow down loading of Gallery too much.
 		</p>
-		@Html.TextAreaFor(m => m.SourceCodeThn, 15, 60, null)
+		<p class="detail">
+			In order to alter an output for thumbnail, following code will be appended to your main file.
+			Usually you want to use second <code>process</code> statement with lower number of iterations, for example:
+		</p>
+		@(new CodeListingsManager().CodeNoFigure(ProgLang.Malsys, @"
+process all with SvgRenderer
+	set iterations = 2;
+"))
+		<p class="detail">
+			Alternatively, if you L-system utilizes parameters, you can just call it with diffferent set of parameters
+				just like in @Html.ActionLink("Sunflower L-system", MVC.Permalink.Index("8NgebrCP")):
+		</p>
+		@(new CodeListingsManager().CodeNoFigure(ProgLang.Malsys, @"
+process MyLsystem(2, 3) with SvgRenderer;
+"))
+		<p class="detail">For advanced techniques plase check @Html.ActionLink("L-system statements in process statement", MVC.Documentation.SyntaxReference.ProcessStatements())
+			or @Html.ActionLink("L-system inheritance", MVC.Documentation.SyntaxReference.LsystemDefinition())
+			that can be used to easily change parameters of main L-system.</p>
+		@Html.TextAreaFor(m => m.SourceCodeThn, Math.Max(10, (Model.SourceCodeThn ?? "").CountLines() + 1), 60,
+			new { @style = "width:98%" })
+	</div>
+</div>
 
-	</fieldset>
-
-	<p>
+<div class="grid-100 mobile-grid-100 grid-parent hideLinks">
+	<div class="grid-50 mobile-grid-100">
+	<p id="submitControls">
 		@Html.SubmitButton("Save")
 	</p>
+	</div>
+</div>
 
 }
-@{	
+@{
 	StaticHtml.RequireScript(Links.Js.jquery_textarea_js);
-	StaticHtml.InlineScript("jQuery(document).ready(function () { $('#SourceCode').tabby() })");
-	StaticHtml.InlineScript("jQuery(document).ready(function () { $('#SourceCodeThn').tabby() })");
+	StaticHtml.InlineScript("jQuery(document).ready(function () { $('#SourceCode').tabby(); });");
+	StaticHtml.InlineScript("jQuery(document).ready(function () { $('#SourceCodeThn').tabby(); });");
+
+
+	StaticHtml.InlineScript(@"(function ($) {
+		$('#processForm').submit(function () {
+			var container = $('#submitControls');
+			container.children().hide();
+			container.append($('<i>Processing, please wait</i>'));
+		});
+	} (jQuery));");
 }

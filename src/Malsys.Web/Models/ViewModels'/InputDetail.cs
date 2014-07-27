@@ -8,7 +8,9 @@ namespace Malsys.Web.Models {
 
 		public SavedInput Input { get; set; }
 
-		public bool CurrentUserIsOwner { get; set; }
+		public bool IsAuthor { get; set; }
+
+		public bool CanEdit { get; set; }
 
 		public int? UserVote { get; set; }
 

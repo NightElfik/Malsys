@@ -99,7 +99,7 @@
 			++i;
 
 			Html.RenderPartial(MVC.Documentation.Shared.Views.ComponentPartial, comp);
-			@MalsysHelper.TocLink();
+			@StaticHtml.TocLink();
 		}
 
 		if (i > 0) {
@@ -127,7 +127,7 @@
 			++i;
 
 			Html.RenderPartial(MVC.Documentation.Shared.Views.ComponentPartial, comp);
-			@MalsysHelper.TocLink(true);
+			@StaticHtml.TocLink(true);
 		}
 
 		if (i > 0) {

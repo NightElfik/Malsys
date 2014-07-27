@@ -355,6 +355,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>MalsysDbModel.edmx</DependentUpon>
     </Compile>
+    <Compile Include="ExtensionsAndHelpers%27\LongExtensions.cs" />
+    <Compile Include="ExtensionsAndHelpers%27\MalsysHelper.cs" />
     <Compile Include="ExtensionsAndHelpers%27\OutputHelper.cs" />
     <Compile Include="ExtensionsAndHelpers%27\StaticHtml.cs" />
     <Compile Include="ExtensionsAndHelpers%27\StaticUrl.cs" />
@@ -373,15 +375,12 @@
     </Compile>
     <Compile Include="Infrastructure\AppSettingsProvider.cs" />
     <Compile Include="ExtensionsAndHelpers%27\DateTimeExtensions.cs" />
-    <Compile Include="Infrastructure\Figures.cs" />
-    <Compile Include="Infrastructure\HtmlHelperExtensions.cs">
+    <Compile Include="ExtensionsAndHelpers%27\HtmlHelperExtensions.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Infrastructure\IAppSettingsProvider.cs" />
     <Compile Include="Infrastructure\LatexHelper.cs" />
-    <Compile Include="Infrastructure\MalsysHelper.cs" />
-    <Compile Include="Infrastructure\References.cs" />
-    <Compile Include="Infrastructure\UrlHelperExtensions.cs" />
+    <Compile Include="ExtensionsAndHelpers%27\UrlHelperExtensions.cs" />
     <Compile Include="Infrastructure\WhitespaceStripperViewPage.cs" />
     <Compile Include="LoadedPlugins.cs" />
     <Compile Include="Models\ArticleModelBase.cs" />
@@ -394,6 +393,7 @@
     <Compile Include="Models\NewDiscusThreadModel.cs" />
     <Compile Include="Models\NewsArchiveViewModel.cs" />
     <Compile Include="Models\OutputHtmlGenerator.cs" />
+    <Compile Include="Models\ViewModels%27\StatsViewModel.cs" />
     <Compile Include="OperationResult.cs" />
     <Compile Include="Models\Repositories\DiscussionRepository.cs" />
     <Compile Include="Models\ViewModels%27\DesignerModel.cs" />
@@ -733,6 +733,7 @@
     <Content Include="Views\Home\NewsData.cshtml" />
     <Content Include="Views\Home\NewsArchive.cshtml" />
     <Content Include="Views\Home\NewsDetail.cshtml" />
+    <Content Include="Views\Home\Stats.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Code\" />

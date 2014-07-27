@@ -9,16 +9,17 @@
 
 @{
 	ViewBag.Title = Model.Input.PublishName;
+	var shortLink = StaticHtml.Link("http://" + Url.ActionAbsolute(MVC.Permalink.Index(Model.Input.UrlId)).TrimStart("http://").TrimStart("www."));
 }
 <h1>@Model.Input.PublishName</h1>
 
 <div class="grid-100 mobile-grid-100 grid-parent">
 	<div class="grid-50 mobile-grid-100 ">
 		<span>by @Html.ActionLink(Model.Input.User.Name, MVC.Gallery.Index(Model.Input.User.Name))
-			@if (Model.CurrentUserIsOwner) { <text>(you)</text> }</span>
+			@(Model.IsAuthor ? "(you)" : "")</span>
 	</div>
 	<div class="grid-50 mobile-grid-100 ">
-		<span class="right">permalink: @Html.InputPermaLink(Model.Input.UrlId)
+		<span class="right">Short link: @shortLink
 			@if (!Model.Input.IsPublished) { <text>[Not published]</text> }
 		</span>
 	</div>
@@ -37,8 +38,8 @@
 </div>
 
 <div class="grid-100 mobile-grid-100 grid-parent">
-	<div class="grid-50 mobile-grid-100 ">
-		@if (Model.CurrentUserIsOwner) {
+	<div class="grid-50 mobile-grid-100 hideLinks">
+		@if (Model.CanEdit) {
 			<h3>Administration</h3>
 			<ul>
 				<li>@Html.ActionLink("Edit or change publish settings", MVC.Gallery.Edit(Model.Input.UrlId))</li>
@@ -53,6 +54,17 @@
 			<p style="white-space: pre-line;">@Model.Input.Description</p>
 		}
 		<p>@Html.ActionLink("Download output", MVC.Gallery.GetOutput(Model.Input.UrlId, Model.Input.EditDate.Hash()))</p>
+
+		<h3>Additional information</h3>
+		<ul>
+			<li>Author: @Html.ActionLink(Model.Input.User.Name, MVC.Gallery.Index(Model.Input.User.Name)) @(Model.IsAuthor ? "(you)" : "")</li>
+			<li>Created: @Model.Input.CreationDate.ToLongDateString()</li>
+			<li>Edited: @Model.Input.EditDate.ToLongDateString()</li>
+			<li>Output size: @Model.Input.OutputSize.ToOptimalByteUnitString()</li>
+			<li>Source code size: @(((long)Model.Input.SourceSize).ToOptimalByteUnitString())</li>
+			<li>Link: @shortLink</li>
+		</ul>
+
 
 		<h3>Views & rating</h3>
 		@{
@@ -76,7 +88,7 @@
 			<p>Rating: <span class="huge" style="color: #@ratingColor.ToRgbHexString();">@rating</span></p>
 		</div>
 		<div class="votes">
-			<span>Your vode:</span>
+			<span>Your vote:</span>
 			@if (User.Identity.IsAuthenticated) {
 				<span class="vote">worst</span>
 				for (int i = 0; i <= 5; i++) {

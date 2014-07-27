@@ -319,7 +319,6 @@ namespace Malsys.Processing.Components.Renderers {
 				MoveTo(polygon.Ponits[0], polygon.Rotations[0], polygon.StrokeWidth, polygon.StrokeColor);
 				for (int i = 1; i < polygon.Ponits.Count; i++) {
 					DrawTo(polygon.Ponits[i], polygon.Rotations[i], polygon.StrokeWidth, polygon.StrokeColor, 1);
-					measure(polygon.Ponits[i]);
 				}
 			}
 
@@ -328,6 +327,7 @@ namespace Malsys.Processing.Components.Renderers {
 			uint baseI = absoluteVertexNumber + 1;  // OBJ indices are one-based.
 			foreach (var pt in polygon.Ponits) {
 				writeVertex(pt);
+				measure(pt);
 			}
 
 			int polVertCount = polygon.Ponits.Count;

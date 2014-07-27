@@ -6,7 +6,7 @@ using System.Web;
 using System.Web.Mvc;
 using MvcContrib.Pagination;
 
-namespace Malsys.Web.Infrastructure {
+namespace Malsys.Web {
 	public static class HtmlHelperExtensions {
 
 		public static HtmlString Link(this HtmlHelper html, string link, bool newWindow = false) {

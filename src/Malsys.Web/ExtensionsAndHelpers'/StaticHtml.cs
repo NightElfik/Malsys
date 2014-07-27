@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
-using System.Web.Mvc;
 
 
 namespace Malsys.Web {
@@ -132,6 +129,12 @@ namespace Malsys.Web {
 			return new HtmlString(sb.ToString());
 		}
 
+		public static HtmlString Link(string link) {
+			var sb = new StringBuilder();
+			Link(sb, link, null, link, null, false);
+			return new HtmlString(sb.ToString());
+		}
+
 		public static HtmlString Link(string text, string title, string link, string htmlClass, bool newWindow) {
 			var sb = new StringBuilder();
 			Link(sb, text, title, link, htmlClass, newWindow);
@@ -171,6 +174,11 @@ namespace Malsys.Web {
 			wikiLink = wikiLink.Replace(" ", "_");
 			string title = char.ToUpperInvariant(text[0]) + text.Substring(1);
 			return Link(text, title + " at Wikipedia", "http://en.wikipedia.org/wiki/" + wikiLink, "wikilink", true);
+		}
+
+		public static HtmlString TocLink(bool autoHide = false) {
+			return new HtmlString("<div class='clearfix'><a href='#toc' class='tocLink {0}'>↑ table of contents ↑</a></div>"
+				.Fmt(autoHide ? " autoHide" : ""));
 		}
 
 		public static string StripHtmlTags(string str) {

@@ -24,12 +24,22 @@
 </p>
 
 <p>
-	Please note that I might not respond to all submissions.
-	If you want to contact directly me (the author), e-mail can be found on @Html.ActionLink("this page", MVC.Feedback.EmailToAuthor()).
-	Both positive and negative feedback motivates me to improve Malsys.
+	If you want to contact me (the author) directly, e-mail can be found on @Html.ActionLink("this page", MVC.Feedback.EmailToAuthor()).
+	Both positive and negative feedback is welcome and it motivates me to improve Malsys.
 </p>
 
 <p>Thank you, Marek.</p>
+
+
+<h2>Feedback via comments</h2>
+	<p>Cou can also use this comments section to leave public feedback.</p>
+@{
+	string title = "Feedback";
+	string disqusId = "Feedback";  // DO NOT CHANGE!
+	string url = Url.ActionAbsolute(MVC.Feedback.Index());
+	@StaticHtml.DisqusComments(title, disqusId, url)
+}
+
 
 	</div>
 	<div class="grid-50 mobile-grid-100">

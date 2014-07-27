@@ -1,5 +1,6 @@
 ﻿@{
-	ViewBag.Title = "Bachelor thesis – L-systems online";
+	string title = "Bachelor thesis – L-systems online";
+	ViewBag.Title = title;
 
 	StaticHtml.RequireCss(Links.Css.prettyPhoto_less_css);
 
@@ -59,6 +60,14 @@
 	Part of the site is a gallery of L-systems to which each user can contribute and which thus helps to create a user-community.
 	The web interface takes full advantage of the library and thus serves as an example of its use.
 </p>
+
+<h2>Comments</h2>
+@{
+	string disqusId = "Thesis";  // DO NOT CHANGE!
+	string url = Url.ActionAbsolute(MVC.Home.Thesis());
+	@StaticHtml.DisqusComments(title, disqusId, url)
+}
+
 	</div>
 	<div class="grid-50 mobile-grid-100">
 <a href="/Img/Thesis/00.png" rel="prettyPhoto[pp_gal]" title="Preview of the title">

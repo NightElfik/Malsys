@@ -118,8 +118,8 @@
 		<h2 id="results">Processing results</h2>
 		var ohg = new OutputHtmlGenerator();
 		foreach (var result in Model.OutputFiles) {
-			int width = 800, height = 600;
-			var output = ohg.GetOutputHtml(Url, result, ref width, ref height);
+			int width = 600, height = 400;
+			var output = ohg.GetOutputHtml(Url, result, ref width, ref height, showCameraCoords: true);
 
 			<div class="grid-100 mobile-grid-100 ">
 			<p>
@@ -153,13 +153,12 @@
 @{
 	StaticHtml.RequireScript(Links.Js.jquery_tmpl_js);
 	StaticHtml.RequireScript(Links.Js.jquery_textarea_js);
-	StaticHtml.InlineScript("jQuery(document).ready(function () { $('#SourceCode').tabby() });");
+	StaticHtml.InlineScript("jQuery(document).ready(function () { $('#SourceCode').tabby(); });");
 
 
 	StaticHtml.InlineScript(@"(function ($) {
 		$('#processForm').submit(function () {
 			var container = $('#submitControls');
-			console.log(container.children());
 			container.children().hide();
 			container.append($('<i>Processing, please wait</i>'));
 		});

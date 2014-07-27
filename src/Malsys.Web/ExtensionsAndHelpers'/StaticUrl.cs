@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 using System.Web;
 
 namespace Malsys.Web {
-	public class StaticUrl {
+	public static class StaticUrl {
 
 		private static readonly Regex nonAlphanumRegex = new Regex("[^a-zA-Z0-9_]", RegexOptions.Compiled);
 		private static readonly Regex multiDash = new Regex("[-]+", RegexOptions.Compiled);

@@ -1,3 +1,5 @@
 ﻿
 If razor generator is doing weird things or if changes related to views are not propagated just delete /bin and /obj
 output directories.
+
+Sometimes, it is trying to compile views in publish - clean publish if needed.

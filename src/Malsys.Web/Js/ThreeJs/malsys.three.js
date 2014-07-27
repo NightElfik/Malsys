@@ -22,7 +22,7 @@ var controls = [];
 			createScene($domElement, sceneBaseUrl + '/obj', sceneBaseUrl + '/mtl', metadata, $loaderElement, callback);
 		}).fail(function (jqxhr, textStatus, error) {
 			var err = textStatus + ", " + error;
-			console.log("Request Failed: " + err);
+			//console.log("Request Failed: " + err);
 		});
 
 		//var statsDisplay = domElement.attr('data-stats-display');
@@ -58,22 +58,27 @@ var controls = [];
 		camera.position = new THREE.Vector3(cp[0], cp[1], cp[2]);
 		var cu = metadata.cameraUpVector;
 		camera.up = new THREE.Vector3(cu[0], cu[1], cu[2]);
-		scene.add(camera);
+		//scene.add(camera);
 
+		var renderer;
+		if (Detector.webgl) {
+			renderer = new THREE.WebGLRenderer({
+				preserveDrawingBuffer: true  // Allow screenshot.
+			});
+		}
+		else {
+			renderer = new THREE.CanvasRenderer();
+			renderer.sortObjects = true;
+		}
 
-		var noZoom = $domElement.attr('data-no-zoom') === 'true';
-		var ctrl = new THREE.TrackballControls(camera, $domElement[0], noZoom);
-		controls.push(ctrl);
+		renderer.setSize(width, height);
 
-		var ct = metadata.cameraTarget;
-		ctrl.target = new THREE.Vector3(ct[0], ct[1], ct[2]);
+		var clearClrHex = parseInt(metadata.bgColor || 'FFFFFF', 16);
+		var bgColor = new THREE.Color(0);
+		bgColor.setHex(clearClrHex);
+		renderer.setClearColor(bgColor, 1);
+		renderer.render(scene, camera);  // Clear BG.
 
-		ctrl.noPan = $domElement.attr('data-no-pan') === 'true';
-
-		ctrl.addEventListener('change', function () {
-			renderer.render(scene, camera);
-			update($domElement, ctrl);
-		});
 
 		var directionalLight = new THREE.DirectionalLight(0xF0F0F0);
 		directionalLight.position.set(-0.9, -1.2, -1.1).normalize();
@@ -87,29 +92,10 @@ var controls = [];
 		directionalLight.position.set(1, 1.1, 0).normalize();
 		scene.add(directionalLight);
 
-		var renderer;
-		if (Detector.webgl) {
-			renderer = new THREE.WebGLRenderer({
-				preserveDrawingBuffer: true  // Allow screenshot.
-			});
-			// $domElement.children('.webgl').remove();
-		}
-		else {
-			renderer = new THREE.CanvasRenderer();
-			renderer.sortObjects = true;
-		}
-
-		renderer.setSize(width, height);
-
-
-		var clearClrHex = parseInt(metadata.bgColor || 'FFFFFF', 16);
-
-		var bgColor = new THREE.Color(0);
-		bgColor.setHex(clearClrHex);
-		renderer.setClearColor(bgColor, 1);
 
 		var loader = new THREE.OBJMTLLoader();
 		$loaderElement.append('.');
+
 		loader.load(objUrl, mtlUrl, function (object) {
 			$loaderElement.append('.');
 			object.traverse(function (node) {
@@ -118,10 +104,45 @@ var controls = [];
 				}
 			});
 			scene.add(object);
-			renderer.render(scene, camera);
 			$domElement.empty();
 			$domElement.append(renderer.domElement);
 			$domElement.append('<div class="threed"> </div>');
+
+			// The renderer.domElement has to be in DOM in order to initialize trackball contorls.
+			var noZoom = $domElement.attr('data-no-zoom') === 'true';
+			var autoRotate = $domElement.attr('data-auto-rotate') === 'true';
+			var ctrl = new THREE.TrackballControls(camera, renderer.domElement, noZoom, autoRotate);
+			controls.push(ctrl);
+
+			var ct = metadata.cameraTarget;
+			ctrl.target = new THREE.Vector3(ct[0], ct[1], ct[2]);
+
+			ctrl.noPan = $domElement.attr('data-no-pan') === 'true';
+			ctrl.update();
+
+			if ($domElement.attr('data-show-cam-coords') === 'true') {
+				$pos = $('<li class="pos"></li>');
+				$up = $('<li class="pos"></li>');
+				$tgt = $('<li class="tgt"></li>');
+				$cont = $('<div class="camDetails"></div>').append(
+					$('<ul></ul>').append($pos).append($up).append($tgt));
+				$domElement.append($cont);
+				update(ctrl, $pos, $up, $tgt);
+
+				ctrl.addEventListener('change', function () {
+					renderer.render(scene, camera);
+					if ($cont) {
+						update(ctrl, $pos, $up, $tgt);
+					}
+				});
+			}
+			else {
+				ctrl.addEventListener('change', function () {
+					renderer.render(scene, camera);
+				});
+			}
+
+			renderer.render(scene, camera);
 			callback();
 		});
 
@@ -131,19 +152,16 @@ var controls = [];
 		return Math.round(number * 100) / 100;
 	}
 
-	function update($domElement, ctrl) {
-		//$domElement.children('.cameraPosition').each(function () {
-		//	var pos = ctrl.object.position;
-		//	$(this).text('set cameraPosition = {' + Math.round(pos.x) + ', ' + Math.round(pos.y) + ', ' + Math.round(pos.z) + '};');
-		//});
-		//$domElement.children('.cameraUp').each(function () {
-		//	var pos = ctrl.object.up;
-		//	$(this).text('set cameraUpVector = {' + round(pos.x) + ', ' + round(pos.y) + ', ' + round(pos.z) + '};');
-		//});
-		//$domElement.children('.cameraTarget').each(function () {
-		//	var pos = ctrl.target;
-		//	$(this).text('set cameraTarget = {' + Math.round(pos.x) + ', ' + Math.round(pos.y) + ', ' + Math.round(pos.z) + '};');
-		//});
+	function update(ctrl, $pos, $up, $tgt) {
+		//console.log('updatepos');
+		var pos = ctrl.object.position;
+		$pos.text('set cameraPosition = {' + Math.round(pos.x) + ', ' + Math.round(pos.y) + ', ' + Math.round(pos.z) + '};');
+
+		var up = ctrl.object.up;
+		$up.text('set cameraUpVector = {' + round(up.x) + ', ' + round(up.y) + ', ' + round(up.z) + '};');
+
+		var tgt = ctrl.target;
+		$tgt.text('set cameraTarget = {' + Math.round(tgt.x) + ', ' + Math.round(tgt.y) + ', ' + Math.round(tgt.z) + '};');
 	};
 
 

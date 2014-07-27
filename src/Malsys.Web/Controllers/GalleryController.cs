@@ -25,8 +25,8 @@ namespace Malsys.Web.Controllers {
 
 
 
-		public GalleryController(IMalsysInputRepository malsysInputRepository, IAppSettingsProvider appSettingsProvider, LsystemProcessor lsystemProcessor,
-				IDateTimeProvider dateTimeProvider) {
+		public GalleryController(IMalsysInputRepository malsysInputRepository, IAppSettingsProvider appSettingsProvider,
+				LsystemProcessor lsystemProcessor, IDateTimeProvider dateTimeProvider) {
 
 			this.malsysInputRepository = malsysInputRepository;
 			this.lsystemProcessor = lsystemProcessor;
@@ -93,8 +93,9 @@ namespace Malsys.Web.Controllers {
 				return HttpNotFound();
 			}
 
-			bool owner = User.Identity.Name.ToLower() == input.User.NameLowercase || User.IsInRole(UserRoles.Administrator);
-			if (!input.IsPublished && !owner) {
+			bool isOwner = User.Identity.Name.ToLower() == input.User.NameLowercase;
+			bool canEdit = isOwner || User.IsInRole(UserRoles.Administrator);
+			if (!input.IsPublished && !canEdit) {
 				return HttpNotFound();
 			}
 
@@ -105,7 +106,8 @@ namespace Malsys.Web.Controllers {
 
 			var model = new InputDetail() {
 				Input = input,
-				CurrentUserIsOwner = owner,
+				IsAuthor = isOwner,
+				CanEdit = canEdit,
 				UserVote = malsysInputRepository.GetUserVote(input.UrlId, User.Identity.Name),
 				FilePath = getFilePath(input.UrlId, false),
 				ThnFilePath = getFilePath(input.UrlId, true),
@@ -148,6 +150,8 @@ namespace Malsys.Web.Controllers {
 				Description = input.Description
 			};
 
+			ViewData["tags"] = malsysInputRepository.InputDb.Tags;
+
 			return View(model);
 
 		}
@@ -168,6 +172,8 @@ namespace Malsys.Web.Controllers {
 				return HttpNotFound();
 			}
 
+			ViewData["tags"] = malsysInputRepository.InputDb.Tags;
+
 			if (!ModelState.IsValid) {
 				return View(model);
 			}
@@ -181,7 +187,7 @@ namespace Malsys.Web.Controllers {
 			if (model.Tags == null) {
 				model.Tags = "";
 			}
-			var tags = malsysInputRepository.GetTags(model.Tags.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries));
+			var tags = malsysInputRepository.GetTags(model.Tags.Split(new char[] { ' ', ',', ';' }, StringSplitOptions.RemoveEmptyEntries));
 			input.Tags.Clear();
 			foreach (var tag in tags) {
 				input.Tags.Add(tag);
@@ -318,7 +324,7 @@ namespace Malsys.Web.Controllers {
 
 			string source = input.SourceCode;
 			if (thumbnail && !string.IsNullOrEmpty(input.ThumbnailSourceExtension)) {
-				source += input.ThumbnailSourceExtension;
+				source += "\n" + input.ThumbnailSourceExtension;
 			}
 
 			InputBlockEvaled evaledInput;

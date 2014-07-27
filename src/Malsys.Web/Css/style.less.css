@@ -173,6 +173,13 @@ sub, sup { font-size: 75%; line-height: 0; position: relative; vertical-align: b
 sup { top: -0.5em; }
 sub { bottom: -0.25em; }
 
+.detail {
+	margin: 0;
+	font-size: 0.9em;
+	color: #888;
+}
+
+
 /* Chrome Frame Prompt ====================================================== */
 
 .chromeframe { margin: 0.2em 0; background: #CCC; color: black; padding: 0.2em 1em; }
@@ -286,7 +293,7 @@ h2, h3 {
 	color: #000;
 	border-bottom: 1px solid #BBB;
 	box-shadow: 0 6px 6px -6px #BBB;
-	margin: 0.5em 0 0 0;
+	margin: 0.5em 0;
 	padding: 0;
 	text-shadow: 2px 2px 2px #DDD;
 }
@@ -368,6 +375,7 @@ h2, h3 {
 	}
 
 	.back {
+		overflow: auto;
 		.transform(rotateY(-180deg));  // Back pane is initially hidden.
 	}
 
@@ -675,6 +683,18 @@ pre.code {
 		width: 16px;
 		height: 12px;
 		background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAMCAQAAADB7vUKAAABAUlEQVQY02XPP0vbYRTF8c8vKYhghC6SrYvvQSQoiGAFg1v2QicFB8X5CbmLbqVDdejgaCn4AgRBHDIoWAQRXARHQVH8g6KDj0Ns+UHPdu453Pu9lBSIodiKgb+O4l805VP6GV9s4MSm7+kBKhDrnvKCo458YB+rJt3Hn2hQRM2pWp5oH/aWJrFiNd3GrF/6tYpYM2c6bftPvXMVX3EZ78NOGfiqx3CdWU6I4Wi2EQK5piNTxLwfuDDjxbGusZSJEXv6cFHJ676h7tARGu5iEfu56ca90UqR05JJB55VZQyYiY+0d3I9DabzokTd8tur8dQt/1ItUX/wmD+3z8JuqfAG0aBXHQzFr54AAAAASUVORK5CYII=") 0 50% no-repeat transparent;
+	}
+	.camDetails {
+		position: absolute;
+		bottom: 2px;
+		left: 2px;
+		z-index: 10;
+		font-size: 0.9em;
+		opacity: 0.5;
+		.transition(opacity 0.5s ease);
+		&:hover { opacity: 1; }
+		ul { margin: 2px; padding: 0; }
+		li { list-style: none; }
 	}
 	.fullscreen { position: absolute; top: 4px; left: 4px; margin: 0; font-size: 0.8em; color: #888; }
 	.webgl { position: absolute; top: 4px; left: 100px; margin: 0; font-size: 0.8em; color: #888; }

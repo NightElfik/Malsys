@@ -75,6 +75,7 @@ namespace Malsys.Web.Controllers
             public readonly string WhyWebgl = "WhyWebgl";
             public readonly string Thesis = "Thesis";
             public readonly string NewsArchive = "NewsArchive";
+            public readonly string Stats = "Stats";
         }
 
         [GeneratedCode("T4MVC", "2.0"), DebuggerNonUserCode]
@@ -85,6 +86,7 @@ namespace Malsys.Web.Controllers
             public const string WhyWebgl = "WhyWebgl";
             public const string Thesis = "Thesis";
             public const string NewsArchive = "NewsArchive";
+            public const string Stats = "Stats";
         }
 
 
@@ -111,6 +113,7 @@ namespace Malsys.Web.Controllers
                 public readonly string NewsArchive = "NewsArchive";
                 public readonly string NewsData = "NewsData";
                 public readonly string NewsDetail = "NewsDetail";
+                public readonly string Stats = "Stats";
                 public readonly string Thesis = "Thesis";
                 public readonly string WhyWebgl = "WhyWebgl";
             }
@@ -119,6 +122,7 @@ namespace Malsys.Web.Controllers
             public readonly string NewsArchive = "~/Views/Home/NewsArchive.cshtml";
             public readonly string NewsData = "~/Views/Home/NewsData.cshtml";
             public readonly string NewsDetail = "~/Views/Home/NewsDetail.cshtml";
+            public readonly string Stats = "~/Views/Home/Stats.cshtml";
             public readonly string Thesis = "~/Views/Home/Thesis.cshtml";
             public readonly string WhyWebgl = "~/Views/Home/WhyWebgl.cshtml";
         }
@@ -182,6 +186,17 @@ namespace Malsys.Web.Controllers
             var callInfo = new T4MVC_System_Web_Mvc_ActionResult(Area, Name, ActionNames.NewsArchive);
             ModelUnbinderHelpers.AddRouteValues(callInfo.RouteValueDictionary, "id", id);
             NewsArchiveOverride(callInfo, id);
+            return callInfo;
+        }
+
+        [NonAction]
+        partial void StatsOverride(T4MVC_System_Web_Mvc_ActionResult callInfo);
+
+        [NonAction]
+        public override System.Web.Mvc.ActionResult Stats()
+        {
+            var callInfo = new T4MVC_System_Web_Mvc_ActionResult(Area, Name, ActionNames.Stats);
+            StatsOverride(callInfo);
             return callInfo;
         }
 

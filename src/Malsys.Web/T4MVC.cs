@@ -152,23 +152,6 @@ namespace Links
         public static readonly string malsys_curveDesigner_js = T4MVCHelpers.IsProduction() && T4Extensions.FileExists(URLPATH + "/malsys.curveDesigner.min.js") ? Url("malsys.curveDesigner.min.js") : Url("malsys.curveDesigner.js");
         public static readonly string malsys_js = T4MVCHelpers.IsProduction() && T4Extensions.FileExists(URLPATH + "/malsys.min.js") ? Url("malsys.min.js") : Url("malsys.js");
         public static readonly string MinifyJs_tt = Url("MinifyJs.tt");
-        public static readonly string Detector_min_js = Url("Detector.min.js");
-        public static readonly string jquery_min_js = Url("jquery.min.js");
-        public static readonly string jquery_prettyPhoto_min_js = Url("jquery.prettyPhoto.min.js");
-        public static readonly string jquery_textarea_min_js = Url("jquery.textarea.min.js");
-        public static readonly string jquery_tmpl_min_js = Url("jquery.tmpl.min.js");
-        public static readonly string jquery_unobtrusive_ajax_min_js = Url("jquery.unobtrusive-ajax.min.js");
-        public static readonly string jquery_validate_min_js = Url("jquery.validate.min.js");
-        public static readonly string jquery_validate_unobtrusive_min_js = Url("jquery.validate.unobtrusive.min.js");
-        public static readonly string malsys_curveDesigner_min_js = Url("malsys.curveDesigner.min.js");
-        public static readonly string malsys_min_js = Url("malsys.min.js");
-        public static readonly string Malsys_three_min_js = Url("Malsys.three.min.js");
-        public static readonly string MinifyJs_log = Url("MinifyJs.log");
-        public static readonly string MTLLoader_min_js = Url("MTLLoader.min.js");
-        public static readonly string OBJMTLLoader_min_js = Url("OBJMTLLoader.min.js");
-        public static readonly string Stats_min_js = Url("Stats.min.js");
-        public static readonly string Three_min_js = Url("Three.min.js");
-        public static readonly string TrackballControls_min_js = Url("TrackballControls.min.js");
         [GeneratedCode("T4MVC", "2.0"), DebuggerNonUserCode]
         public static class ThreeJs {
             public const string URLPATH = "~/Js/ThreeJs";
@@ -180,6 +163,7 @@ namespace Links
             public static readonly string OBJMTLLoader_js = T4MVCHelpers.IsProduction() && T4Extensions.FileExists(URLPATH + "/OBJMTLLoader.min.js") ? Url("OBJMTLLoader.min.js") : Url("OBJMTLLoader.js");
             public static readonly string Stats_js = T4MVCHelpers.IsProduction() && T4Extensions.FileExists(URLPATH + "/Stats.min.js") ? Url("Stats.min.js") : Url("Stats.js");
             public static readonly string Three_js = T4MVCHelpers.IsProduction() && T4Extensions.FileExists(URLPATH + "/Three.min.js") ? Url("Three.min.js") : Url("Three.js");
+            public static readonly string Three_min_js = Url("Three.min.js");
             public static readonly string TrackballControls_js = T4MVCHelpers.IsProduction() && T4Extensions.FileExists(URLPATH + "/TrackballControls.min.js") ? Url("TrackballControls.min.js") : Url("TrackballControls.js");
         }
     
@@ -289,6 +273,19 @@ namespace Links
                 public static readonly string Tree_svgz = Url("Tree.svgz");
             }
         
+        }
+    
+        [GeneratedCode("T4MVC", "2.0"), DebuggerNonUserCode]
+        public static class Icons {
+            public const string URLPATH = "~/Img/Icons";
+            public static string Url() { return T4MVCHelpers.ProcessVirtualPath(URLPATH); }
+            public static string Url(string fileName) { return T4MVCHelpers.ProcessVirtualPath(URLPATH + "/" + fileName); }
+            public static readonly string application_resize_full_png = Url("application-resize-full.png");
+            public static readonly string cross_png = Url("cross.png");
+            public static readonly string exclamation_png = Url("exclamation.png");
+            public static readonly string FlipGray_png = Url("FlipGray.png");
+            public static readonly string information_png = Url("information.png");
+            public static readonly string tick_png = Url("tick.png");
         }
     
         public static readonly string Lilac_DiffWebGL_png = Url("Lilac-DiffWebGL.png");

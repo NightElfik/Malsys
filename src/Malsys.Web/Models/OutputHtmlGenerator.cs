@@ -15,14 +15,17 @@ namespace Malsys.Web.Models {
 
 
 		public HtmlString GetOutputHtml(UrlHelper url, OutputFile output, ref int maxWidth, ref int maxHeight,
-				bool fillHeight = false, bool noPan3d = false, bool noZoom3d = false, bool noFullScreen = false) {
+				bool fillHeight = false, bool noPan3d = false, bool noZoom3d = false, bool noFullScreen = false,
+				bool showCameraCoords = false, bool autoRotate = false) {
 
 			return GetOutputHtml(url.Action(MVC.ProcessOutput.Show(Path.GetFileName(output.FilePath))),
-				output.Name, output.MimeType, output.Metadata, ref maxWidth, ref maxHeight, fillHeight, noPan3d, noZoom3d, noFullScreen);
+				output.Name, output.MimeType, output.Metadata, ref maxWidth, ref maxHeight, fillHeight, noPan3d,
+				noZoom3d, noFullScreen, showCameraCoords, autoRotate);
 		}
 
 		public HtmlString GetOutputHtml(UrlHelper url, SavedInput input, bool thumbnail, ref int maxWidth, ref int maxHeight,
-				bool fillHeight = false, bool noPan3d = false, bool noZoom3d = false, bool noFullScreen = false) {
+				bool fillHeight = false, bool noPan3d = false, bool noZoom3d = false, bool noFullScreen = false,
+				bool showCameraCoords = false, bool autoRotate = false) {
 
 			return GetOutputHtml(
 				thumbnail
@@ -31,12 +34,13 @@ namespace Malsys.Web.Models {
 				input.PublishName,
 				input.MimeType,
 				OutputMetadataHelper.DeserializeMetadata(thumbnail ? input.OutputThnMetadata : input.OutputMetadata),
-				ref maxWidth, ref maxHeight, fillHeight, noPan3d, noZoom3d, noFullScreen);
+				ref maxWidth, ref maxHeight, fillHeight, noPan3d, noZoom3d, noFullScreen, showCameraCoords, autoRotate);
 		}
 
 
 		public HtmlString GetOutputHtml(string url, string name, string mimeType, KeyValuePair<string, object>[] metadata,
-				ref int maxWidth, ref int maxHeight, bool fillHeight = false, bool noPan3d = false, bool noZoom3d = false, bool noFullScreen = false) {
+				ref int maxWidth, ref int maxHeight, bool fillHeight = false, bool noPan3d = false,
+				bool noZoom3d = false, bool noFullScreen = false, bool showCameraCoords = false, bool autoRotate = false) {
 
 			int width, height;
 
@@ -85,9 +89,9 @@ namespace Malsys.Web.Models {
 						height = maxHeight;
 						width = -1;  // Do now put width;
 					}
-					content = "<img src=\"{0}\" {1} height=\"{2}px\" alt=\"{3}\" />".Fmt(
+					content = "<img src='{0}' {1} height='{2}px' alt='{3}' />".Fmt(
 						url,
-						width > 0 ? "width=\"" + width + "px\"" : "",
+						width > 0 ? "width='" + width + "px'" : "",
 						height,
 						name);
 					break;
@@ -104,9 +108,9 @@ namespace Malsys.Web.Models {
 					else {
 						height = maxHeight;
 					}
-					content = "<img src=\"{0}\" {1} height=\"{2}px\" alt=\"{3}\" />".Fmt(
+					content = "<img src='{0}' {1} height='{2}px' alt='{3}' />".Fmt(
 						url,
-						width > 0 ? "width=\"" + width + "px\"" : "",
+						width > 0 ? "width='" + width + "px'" : "",
 						height,
 						name);
 					break;
@@ -128,15 +132,17 @@ namespace Malsys.Web.Models {
 					width = maxWidth;
 					height = maxHeight;
 
-					content = ("<div class=\"threeJsScene\" data-url=\"{0}\" {4}{5} style=\"width: {1}px; height: {2}px;\">"
-							+ "<div class=\"clearfix\"><p class=\"loading\">Loading 3D model<br>of {3}<br>"
-							+ "<span class=\"dots\"></p></div></div>").Fmt(
+					content = ("<div class='threeJsScene' data-url='{0}' {4} {5} {6} {7} style='width: {1}px; height: {2}px;'>"
+							+ "<div class='clearfix'><p class='loading'>Loading 3D model<br>of {3}<br>"
+							+ "<span class='dots'></p></div></div>").Fmt(
 						url,
 						maxWidth,
 						maxHeight,
 						name,
-						noPan3d ? "data-no-pan=\"true\"" : "",
-						noZoom3d ? "data-no-zoom=\"true\"" : "");
+						noPan3d ? "data-no-pan='true'" : "",
+						noZoom3d ? "data-no-zoom='true'" : "",
+						showCameraCoords ? "data-show-cam-coords='true'" : "",
+						autoRotate ? "data-auto-rotate='true'" : "");
 
 					StaticHtml.RequireScript(Links.Js.ThreeJs.Three_js, LoadingOrder.Default);
 					StaticHtml.RequireScript(Links.Js.ThreeJs.Detector_js, LoadingOrder.Default);

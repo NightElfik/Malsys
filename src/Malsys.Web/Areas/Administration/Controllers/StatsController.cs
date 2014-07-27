@@ -1,6 +1,6 @@
-﻿using System.IO;
-// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
+﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
 // All rights reserved.
+using System.IO;
 using System.Linq;
 using System.Web.Mvc;
 using Malsys.Web.Areas.Administration.Models;

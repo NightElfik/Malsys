@@ -9,6 +9,16 @@ namespace Malsys {
 			routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
 			routes.MapRoute(
+				name: "Permalink short",
+				url: "g/{id}",
+				defaults: new {
+					controller = MVC.Permalink.Name,
+					action = MVC.Permalink.ActionNames.Index,
+				},
+				namespaces: new string[] { "Malsys.Web.Controllers" }
+			);
+
+			routes.MapRoute(
 				name: "Permalink",
 				url: MVC.Permalink.Name.ToLower() + "/{id}",
 				defaults: new {

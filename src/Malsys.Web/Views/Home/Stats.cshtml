@@ -1,0 +1,45 @@
+﻿@model StatsViewModel
+
+@{
+	ViewBag.Title = "Stats";
+	var figsMgr = new FiguresManager();
+}
+
+<h1>Statistics of Malsys</h1>
+
+
+<div class="grid-100 mobile-grid-100 grid-parent">
+	<div class="grid-50 mobile-grid-100">
+
+<h2>Processed L-systems over time</h2>
+@{
+	var processCountChart = figsMgr.Chart(int.MaxValue, 400, "", "Number of processed L-systems",
+		new string[] { "", "Time" },
+		chartType: "ColumnChart",
+		displayLegend: false);
+
+	foreach (var kvp in Model.ProcessHistByMonth) {
+		processCountChart.AddDataRow(kvp.Key, kvp.Value);
+	}
+
+	@processCountChart.Html
+}
+
+	</div>
+	<div class="grid-50 mobile-grid-100">
+
+<h2>Number of L-systems in public gallery</h2>
+@{
+	var lsysCountChart = figsMgr.Chart(int.MaxValue, 400, "", "Number of published L-systems",
+		new string[] { "", "Time" },
+		displayLegend: false);
+
+	foreach (var kvp in Model.SavedLsysByMonth) {
+		lsysCountChart.AddDataRow(kvp.Key, kvp.Value);
+	}
+
+	@lsysCountChart.Html
+}
+
+	</div>
+</div>
