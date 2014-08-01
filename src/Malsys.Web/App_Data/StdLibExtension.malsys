@@ -1,0 +1,54 @@
+﻿
+//------------------------------------------------------------------------------
+// More process configurations for plugins.
+//------------------------------------------------------------------------------
+
+/**
+ * Renders symbols as bitmap image.
+ */
+configuration BitmapRenderer {
+
+	component AxiomProvider typeof AxiomProvider;
+	component RandomGeneratorProvider typeof RandomGeneratorProvider;
+	component LsystemInLsystemProcessor typeof LsystemInLsystemProcessor;
+
+	container Rewriter typeof IRewriter default SymbolRewriter;
+	container Iterator typeof IIterator default MemoryBufferedIterator;
+	container InterpreterCaller typeof IInterpreterCaller default InterpreterCaller;
+	container Interpreter typeof IInterpreter default TurtleInterpreter;
+	container Renderer typeof IRenderer default GdiBitmapRenderer;
+
+	connect RandomGeneratorProvider to Iterator.RandomGeneratorProvider;
+	connect AxiomProvider to Iterator.AxiomProvider;
+	connect Iterator to Rewriter.SymbolProvider;
+	connect Rewriter to Iterator.SymbolProvider;
+	connect InterpreterCaller to Iterator.OutputProcessor;
+	connect LsystemInLsystemProcessor to InterpreterCaller.LsystemInLsystemProcessor;
+	connect Renderer to Interpreter.Renderer;
+
+}
+
+/**
+ * Renders iterations as PNG images and creates animation from them.
+ */
+configuration AnimationRenderer {
+
+	component AxiomProvider typeof AxiomProvider;
+	component RandomGeneratorProvider typeof RandomGeneratorProvider;
+	component LsystemInLsystemProcessor typeof LsystemInLsystemProcessor;
+
+	container Rewriter typeof IRewriter default SymbolRewriter;
+	container Iterator typeof IIterator default MemoryBufferedIterator;
+	container InterpreterCaller typeof IInterpreterCaller default InterpreterCaller;
+	container Interpreter typeof IInterpreter default TurtleInterpreter;
+	container Renderer typeof IRenderer default PngAnimationRenderer;
+
+	connect RandomGeneratorProvider to Iterator.RandomGeneratorProvider;
+	connect AxiomProvider to Iterator.AxiomProvider;
+	connect Iterator to Rewriter.SymbolProvider;
+	connect Rewriter to Iterator.SymbolProvider;
+	connect InterpreterCaller to Iterator.OutputProcessor;
+	connect LsystemInLsystemProcessor to InterpreterCaller.LsystemInLsystemProcessor;
+	connect Renderer to Interpreter.Renderer;
+
+}
