@@ -135,6 +135,9 @@
     <Compile Include="Compilers\CompilerConstant.cs" />
     <Compile Include="Compilers\Interfaces%27\IOperatorsContainer.cs" />
     <Compile Include="Compilers\Interfaces%27\ICompilerConstantsContainer.cs" />
+    <Compile Include="Media\Point3Di.cs" />
+    <Compile Include="Media\SubdividableSphere.cs" />
+    <Compile Include="Media\SubdividableSphereStaticCache.cs" />
     <Compile Include="Media\Triangulation\CyclicIndexedLinkedList.cs" />
     <Compile Include="Media\Triangulation\Polygon3DTrianguler.cs" />
     <Compile Include="Media\Triangulation\Polygon3DTriangulerParameters.cs" />

@@ -21,6 +21,8 @@ namespace Malsys.Processing.Components.Renderers {
 	/// <group>Renderers</group>
 	public class ObjExporter3D : BaseRenderer3D {
 
+		private const int maxSphereQuality = 4;
+
 		private Stream objStream, mtlStream, metaStream;
 		private TextWriter objWriter, mtlWriter, metaWriter;
 		private Polygon3DTrianguler polygonTrianguler = new Polygon3DTrianguler();
@@ -39,7 +41,8 @@ namespace Malsys.Processing.Components.Renderers {
 		private int triangulationStrategy;
 
 
-		protected uint absoluteVertexNumber;
+		protected int absoluteVertexNumber;
+		protected int absoluteNormalNumber;
 
 
 
@@ -324,7 +327,7 @@ namespace Malsys.Processing.Components.Renderers {
 
 			switchToMaterial(polygon.Color);
 
-			uint baseI = absoluteVertexNumber + 1;  // OBJ indices are one-based.
+			int baseI = absoluteVertexNumber + 1;  // OBJ indices are one-based.
 			foreach (var pt in polygon.Ponits) {
 				writeVertex(pt);
 				measure(pt);
@@ -333,8 +336,8 @@ namespace Malsys.Processing.Components.Renderers {
 			int polVertCount = polygon.Ponits.Count;
 			var indices = polygonTrianguler.Triangularize(polygon.Ponits, polygonTriangulerParameters);
 
-			for (int i = 0; i < indices.Count; i += 3) {
-				writeFace(baseI + indices[i], baseI + indices[i + 1], baseI + indices[i + 2]);
+			foreach (var ind in indices) {
+				writeFace(baseI, ind);
 			}
 
 			objWriter.WriteLine();
@@ -345,7 +348,35 @@ namespace Malsys.Processing.Components.Renderers {
 			if (measuring) {
 				return;
 			}
-			// TODO.
+
+			int qual = (int)Math.Round(quality);
+
+			if (qual > maxSphereQuality) {
+				Logger.LogMessage(Message.TooHighQualityOfSphere, maxSphereQuality);
+				qual = maxSphereQuality;
+			}
+
+			var sphere = SubdividableSphereStaticCache.GetSubdividedSphere(qual);
+
+			switchToMaterial(color);
+
+			int baseI = absoluteVertexNumber + 1;  // OBJ indices are one-based.
+			foreach (var pt in sphere.Vertices) {
+				var p = new Point3D(pt.X * radius + lastPoint.X, pt.Y * radius + lastPoint.Y, pt.Z * radius + lastPoint.Z);
+				writeVertex(p);
+				measure(p);
+			}
+
+			int baseNormalIndex = absoluteNormalNumber + 1;  // OBJ indices are one-based.
+			foreach (var pt in sphere.Vertices) {
+				writeNormal(pt);
+			}
+
+			foreach (var ind in sphere.Indices) {
+				writeFace(baseI, ind, baseNormalIndex);
+			}
+
+			objWriter.WriteLine();
 		}
 
 
@@ -378,7 +409,7 @@ namespace Malsys.Processing.Components.Renderers {
 				writeVertex(v);
 			}
 
-			uint baseI = absoluteVertexNumber + 1;  // OBJ vertex indices are one-based.
+			int baseI = absoluteVertexNumber + 1;  // OBJ vertex indices are one-based.
 
 			objWriter.WriteLine("f {0} {1} {2} {3}", baseI - 5, baseI - 6, baseI - 7, baseI - 8);  // y+
 			objWriter.WriteLine("f {0} {1} {2} {3}", baseI - 4, baseI - 3, baseI - 2, baseI - 1);  // y-
@@ -401,20 +432,29 @@ namespace Malsys.Processing.Components.Renderers {
 
 		}
 
-		protected long writeVertex(Point3D pt) {
-
-			const int roundingPrec = 6;
-
-			string str = "v {0} {1} {2}".FmtInvariant(Math.Round(pt.X, roundingPrec), Math.Round(pt.Y, roundingPrec), Math.Round(pt.Z, roundingPrec));
-			objWriter.WriteLine(str);
+		protected int writeVertex(Point3D pt) {
+			objWriter.WriteLine("v {0} {1} {2}", pt.X.ToStringInvariant("F6"), pt.Y.ToStringInvariant("F6"),
+				pt.Z.ToStringInvariant("F6"));
 
 			return absoluteVertexNumber++;
 		}
 
-		protected void writeFace(params long[] vertices) {
+		protected void writeFace(int baseIndex, Point3Di indices) {
+			objWriter.WriteLine("f {0} {1} {2}", baseIndex + indices.X, baseIndex + indices.Y, baseIndex + indices.Z);
+		}
 
-			objWriter.WriteLine("f " + vertices.JoinToString(" "));
+		protected void writeFace(int baseIndex, Point3Di indices, int baseNormal) {
+			objWriter.WriteLine("f {0}//{1} {2}//{3} {4}//{5}",
+				baseIndex + indices.X, baseNormal + indices.X,
+				baseIndex + indices.Y, baseNormal + indices.Y,
+				baseIndex + indices.Z, baseNormal + indices.Z);
+		}
 
+		protected int writeNormal(Point3D normal) {
+			objWriter.WriteLine("vn {0} {1} {2}", normal.X.ToStringInvariant("F3"), normal.Y.ToStringInvariant("F3"),
+				normal.Z.ToStringInvariant("F3"));
+
+			return absoluteNormalNumber++;
 		}
 
 
@@ -459,6 +499,7 @@ namespace Malsys.Processing.Components.Renderers {
 		private void startFiles() {
 
 			absoluteVertexNumber = 0;
+			absoluteNormalNumber = 0;
 
 			objWriter.WriteLine("# Created by Malsys: http://malsys.cz");
 			objWriter.WriteLine("# L-system name: " + context.Lsystem.Name);
@@ -533,6 +574,8 @@ namespace Malsys.Processing.Components.Renderers {
 			InvalidPolygon,
 			[Message(MessageType.Warning, "Invalid polygon with different number of points and rotations, ignored.")]
 			InvalidPolygonPtRotCount,
+			[Message(MessageType.Warning, "Quality of sphere is too high, maximum is {0}.")]
+			TooHighQualityOfSphere,
 		}
 
 	}

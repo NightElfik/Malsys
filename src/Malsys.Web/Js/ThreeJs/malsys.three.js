@@ -84,12 +84,16 @@ var controls = [];
 		directionalLight.position.set(-0.9, -1.2, -1.1).normalize();
 		scene.add(directionalLight);
 
-		var directionalLight = new THREE.DirectionalLight(0x999999);
-		directionalLight.position.set(0, 1.2, 0.9).normalize();
+		var directionalLight = new THREE.DirectionalLight(0x888888);
+		directionalLight.position.set(0, 1.3, 0.9).normalize();
 		scene.add(directionalLight);
 
-		var directionalLight = new THREE.DirectionalLight(0x999999);
-		directionalLight.position.set(1, 1.1, 0).normalize();
+		var directionalLight = new THREE.DirectionalLight(0x777777);
+		directionalLight.position.set(1, 0.8, 0).normalize();
+		scene.add(directionalLight);
+
+		var directionalLight = new THREE.DirectionalLight(0x444444);
+		directionalLight.position.set(1, -0.5, 1).normalize();
 		scene.add(directionalLight);
 
 

@@ -49,16 +49,7 @@ namespace Malsys.Media {
 		}
 
 		public static Point3D CountMiddlePoint(Point3D pt1, Point3D pt2) {
-
-			pt1.X += pt2.X;
-			pt1.Y += pt2.Y;
-			pt1.Z += pt2.Z;
-
-			pt1.X /= 2;
-			pt1.Y /= 2;
-			pt1.Z /= 2;
-
-			return pt1;
+			return new Point3D((pt1.X + pt2.X) / 2.0, (pt1.Y + pt2.Y) / 2.0, (pt1.Z + pt2.Z) / 2.0);
 		}
 
 		public static double Distance(Point3D pt1, Point3D pt2) {
@@ -72,7 +63,7 @@ namespace Malsys.Media {
 
 
 		public static Point3D Normalize(this Point3D pt) {
-			// Wtf m$soft!
+			// WTF M$oft! Normalization of points is not cool huh?
 			Vector3D v = (Vector3D)pt;
 			v.Normalize();
 			return (Point3D)pt;

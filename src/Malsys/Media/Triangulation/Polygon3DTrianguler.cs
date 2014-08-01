@@ -6,7 +6,6 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media.Media3D;
-using System.Diagnostics;
 
 namespace Malsys.Media.Triangulation {
 
@@ -55,21 +54,20 @@ namespace Malsys.Media.Triangulation {
 		/// Triangulates given polygon specified by points on border with given parameters and
 		/// returns list of indexes of triangles (each 3 indexes are one triangle).
 		/// </summary>
-		public List<int> Triangularize(IList<Point3D> points, Polygon3DTriangulerParameters prms) {
+		public List<Point3Di> Triangularize(IList<Point3D> points, Polygon3DTriangulerParameters prms) {
 
 			Contract.Requires<ArgumentNullException>(points != null);
 			Contract.Requires<ArgumentNullException>(prms != null);
 			Contract.Requires<ArgumentException>(points.Count >= 3);
 			Contract.Requires<ArgumentException>(prms.TriangleEvalDelegate != null);
-			Contract.Ensures(Contract.Result<List<int>>() != null);
-			Contract.Ensures(Contract.Result<List<int>>().Count % 3 == 0);
+			Contract.Ensures(Contract.Result<List<Point3Di>>() != null);
 
 			if (points.Count == 3) {
-				return new List<int>() { 0, 1, 2 };
+				return new List<Point3Di>() { new Point3Di(0, 1, 2) };
 			}
 
 			if (prms.DetectPlanarPolygons) {
-				List<int> result;
+				List<Point3Di> result;
 				if (tryTriangulizeAsPlanar(points, prms, out result)) {
 					// triangulated as planar
 					return result;
@@ -87,7 +85,7 @@ namespace Malsys.Media.Triangulation {
 				earsScore[i] = earEvalDel(i, polygon);
 			}
 
-			List<int> triangleIndices = new List<int>(points.Count);
+			var triangleIndices = new List<Point3Di>(points.Count);
 
 			//for (int i = 2; i < points.Length; i++) {
 			while (true) {
@@ -115,9 +113,7 @@ namespace Malsys.Media.Triangulation {
 				int previousIndex = polygon[winnerIndex].Previous.Index;
 				int nextIndex = polygon[winnerIndex].Next.Index;
 
-				triangleIndices.Add(winnerIndex);
-				triangleIndices.Add(previousIndex);
-				triangleIndices.Add(nextIndex);
+				triangleIndices.Add(new Point3Di(winnerIndex, previousIndex, nextIndex));
 
 				// remove point from polygon
 				polygon[winnerIndex].Remove();
@@ -150,9 +146,10 @@ namespace Malsys.Media.Triangulation {
 		}
 
 
-		private bool tryTriangulizeAsPlanar(IList<Point3D> points, Polygon3DTriangulerParameters prms, out List<int> tringleIndices) {
+		private bool tryTriangulizeAsPlanar(IList<Point3D> points, Polygon3DTriangulerParameters prms,
+				out List<Point3Di> tringleIndices) {
 
-			// TODO: enhance detection of optimal plane and computation of goodness of that plane
+			// TODO: enhance detection of optimal plane and computation of goodness of that plane.
 
 			Point3D p1, p2, p3;
 			if (!tryGetPlaneFromPoints(points, out p1, out p2, out p3)) {
@@ -177,7 +174,7 @@ namespace Malsys.Media.Triangulation {
 			}
 
 
-			tringleIndices = new List<int>();
+			tringleIndices = new List<Point3Di>();
 
 			var planePoints = projectToPlane(p1, p2, p3, points);
 
@@ -223,10 +220,7 @@ namespace Malsys.Media.Triangulation {
 					return false;
 				}
 
-				tringleIndices.Add(node.Previous.Index);
-				tringleIndices.Add(node.Index);
-				tringleIndices.Add(node.Next.Index);
-
+				tringleIndices.Add(new Point3Di(node.Previous.Index, node.Index, node.Next.Index));
 				node.Remove();
 			}
 

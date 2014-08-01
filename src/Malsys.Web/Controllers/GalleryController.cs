@@ -68,7 +68,7 @@ namespace Malsys.Web.Controllers {
 			}
 
 			model.Inputs = inputs
-				.OrderByDescending(x => (float)x.RatingSum / ((float)x.RatingCount + 1) + x.RatingCount)
+				.OrderByDescending(x => (float)x.RatingSum / ((float)x.RatingCount + 1) + x.RatingCount)  // TODO: FIX THIS!
 				.AsPagination(page.Value, 8);
 
 			return View(model);
