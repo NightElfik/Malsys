@@ -99,19 +99,20 @@ namespace Malsys.Web.Controllers {
 
 			bool compileOnly = compile != null;
 
-			InputBlockEvaled evaledInput;
+			InputBlockEvaled evaledInput, evaledInputNoStdlib;
 
 			var sw = new Stopwatch();
 			sw.Start();
-			bool result = lsystemProcessor.TryProcess(sourceCode, timeout, fileMgr, logger, out evaledInput, true, compileOnly);
+			bool result = lsystemProcessor.TryProcess(sourceCode, timeout, fileMgr, logger, out evaledInput,
+				out evaledInputNoStdlib, true, compileOnly);
 			sw.Stop();
 
 			resultModel.ProcessDuration = sw.Elapsed;
 
 			if (compileOnly) {
-				if (evaledInput != null) {
+				if (evaledInputNoStdlib != null) {
 					var writer = new IndentStringWriter();
-					new CanonicPrinter(writer).Print(evaledInput);
+					new CanonicPrinter(writer).Print(evaledInputNoStdlib);
 					resultModel.CompiledSourceCode = writer.GetResult();
 				}
 				else {
@@ -147,7 +148,7 @@ namespace Malsys.Web.Controllers {
 			}
 
 			if (outputs.Count > 0) {
-				var ip = malsysInputRepository.AddInputProcess(evaledInput, referenceId, outputs, User.Identity.Name, sw.Elapsed);
+				var ip = malsysInputRepository.AddInputProcess(evaledInputNoStdlib, referenceId, outputs, User.Identity.Name, sw.Elapsed);
 				resultModel.ReferenceId = ip.InputProcessId;
 				resultModel.OutputFiles = outputs;
 			}

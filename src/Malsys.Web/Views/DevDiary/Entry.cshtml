@@ -12,7 +12,7 @@
 }
 
 <span class="largerFont floatRight">@entry.Date.ToString("MMMM yyyy")</span>
-<h1>@Html.ActionLink("Dev diary: " + entry.Name, MVC.Documentation.Articles.Article(
+<h1>@Html.ActionLink("Dev diary: " + entry.Name, MVC.DevDiary.Entry(
 	entry.Url, sectionsMgr.RootSection.Subsections[0].HtmlId),
 	new { title = sectionsMgr.RootSection.Subsections[0].SectionFullName })</h1>
 

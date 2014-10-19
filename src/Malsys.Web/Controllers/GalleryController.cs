@@ -327,8 +327,9 @@ namespace Malsys.Web.Controllers {
 				source += "\n" + input.ThumbnailSourceExtension;
 			}
 
-			InputBlockEvaled evaledInput;
-			bool result = lsystemProcessor.TryProcess(source, timeout, fileMgr, logger, out evaledInput);
+			InputBlockEvaled evaledInput, evaledInputNoStdlib;
+			bool result = lsystemProcessor.TryProcess(source, timeout, fileMgr, logger, out evaledInput,
+				out evaledInputNoStdlib);
 			if (!result) {
 				return false;
 			}

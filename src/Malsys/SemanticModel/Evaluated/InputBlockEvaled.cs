@@ -15,13 +15,22 @@ namespace Malsys.SemanticModel.Evaluated {
 
 		public string SourceName;
 
-		
+
 
 		public void Append(InputBlockEvaled inputBlock) {
 			ExpressionEvaluatorContext = ExpressionEvaluatorContext.MergeWith(inputBlock.ExpressionEvaluatorContext);
 			Lsystems = Lsystems.AddRange(inputBlock.Lsystems);
 			ProcessConfigurations = ProcessConfigurations.AddRange(inputBlock.ProcessConfigurations);
 			ProcessStatements.AddRange(inputBlock.ProcessStatements);
+		}
+
+		public InputBlockEvaled ShallowClone() {
+			return new InputBlockEvaled() {
+				ExpressionEvaluatorContext = ExpressionEvaluatorContext,
+				Lsystems = Lsystems,
+				ProcessConfigurations = ProcessConfigurations,
+				ProcessStatements = new List<ProcessStatementEvaled>(ProcessStatements),
+			};
 		}
 
 

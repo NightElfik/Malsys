@@ -21,7 +21,7 @@ namespace Malsys.Web.Models.Lsystem {
 
 
 		public bool TryProcess(string sourceCode, TimeSpan timeout, FileOutputProvider fileMgr, IMessageLogger logger,
-				out InputBlockEvaled evaledInput, bool cleanupFilesOnError = true, bool compileOnly = false) {
+				out InputBlockEvaled evaledInput, out InputBlockEvaled evaledInputNoStdlib, bool cleanupFilesOnError = true, bool compileOnly = false) {
 
 #if !DEBUG
 			try {
@@ -33,15 +33,17 @@ namespace Malsys.Web.Models.Lsystem {
 				ErrorSignal.FromCurrentContext().Raise(ex);  // log exception by Elmah
 				logger.LogMessage(Message.ExceptionThrownWhileProcessingInput, ex.GetType().Name);
 				evaledInput = null;
+				evaledInputNoStdlib = null;
 				return false;
 			}
 #endif
 
-				if (compileOnly || logger.ErrorOccurred) {
+			if (compileOnly || logger.ErrorOccurred) {
+				evaledInputNoStdlib = null;
 				return !logger.ErrorOccurred;
 			}
 
-
+			evaledInputNoStdlib = evaledInput.ShallowClone();
 			evaledInput.Append(stdLib);
 
 			if (evaledInput.ProcessStatements.Count > 0) {

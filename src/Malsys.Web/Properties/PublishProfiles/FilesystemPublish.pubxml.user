@@ -211,7 +211,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>04/06/2012 10:47:39</publishTime>
     </File>
     <File Include="bin/ExamplePlugin.dll">
-      <publishTime>07/31/2014 23:26:53</publishTime>
+      <publishTime>08/01/2014 00:25:26</publishTime>
     </File>
     <File Include="bin/log4net.dll">
       <publishTime>03/20/2014 18:29:31</publishTime>
@@ -220,22 +220,22 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>07/31/2014 23:26:40</publishTime>
     </File>
     <File Include="bin/Malsys.BitmapRenderers.dll">
-      <publishTime>07/31/2014 23:26:55</publishTime>
+      <publishTime>08/01/2014 00:25:25</publishTime>
     </File>
     <File Include="bin/Malsys.Common.dll">
       <publishTime>07/31/2014 23:26:36</publishTime>
     </File>
     <File Include="bin/Malsys.dll">
-      <publishTime>07/31/2014 23:26:48</publishTime>
+      <publishTime>08/01/2014 00:25:18</publishTime>
     </File>
     <File Include="bin/Malsys.Parsing.dll">
       <publishTime>07/31/2014 23:26:43</publishTime>
     </File>
     <File Include="bin/Malsys.Web.dll">
-      <publishTime>07/31/2014 23:27:00</publishTime>
+      <publishTime>08/01/2014 23:24:13</publishTime>
     </File>
     <File Include="bin/Malsys.Web.XML">
-      <publishTime>07/31/2014 23:26:57</publishTime>
+      <publishTime>08/01/2014 23:24:10</publishTime>
     </File>
     <File Include="bin/Microsoft.Web.Helpers.dll">
       <publishTime>03/20/2014 22:43:26</publishTime>
@@ -509,6 +509,39 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     </File>
     <File Include="Img/DevDiary/apng/Teaser.png">
       <publishTime>06/09/2013 17:05:26</publishTime>
+    </File>
+    <File Include="Img/DevDiary/SvgOptimizations/CircTile.svgz">
+      <publishTime>05/27/2013 20:35:19</publishTime>
+    </File>
+    <File Include="Img/DevDiary/SvgOptimizations/DekkingsChurch.svgz">
+      <publishTime>05/27/2013 22:52:31</publishTime>
+    </File>
+    <File Include="Img/DevDiary/SvgOptimizations/HexagosperSig2.svgz">
+      <publishTime>05/27/2013 20:28:53</publishTime>
+    </File>
+    <File Include="Img/DevDiary/SvgOptimizations/HexagosperSig3.svgz">
+      <publishTime>05/27/2013 20:28:41</publishTime>
+    </File>
+    <File Include="Img/DevDiary/SvgOptimizations/HexagosperSig4.svgz">
+      <publishTime>05/27/2013 20:28:38</publishTime>
+    </File>
+    <File Include="Img/DevDiary/SvgOptimizations/HexaGosperSmall.svgz">
+      <publishTime>05/27/2013 20:08:15</publishTime>
+    </File>
+    <File Include="Img/DevDiary/SvgOptimizations/HtreeSmall.svgz">
+      <publishTime>05/27/2013 20:03:11</publishTime>
+    </File>
+    <File Include="Img/DevDiary/SvgOptimizations/Plant3.svgz">
+      <publishTime>06/09/2013 13:19:03</publishTime>
+    </File>
+    <File Include="Img/DevDiary/SvgOptimizations/Plant3Oo.svgz">
+      <publishTime>05/27/2013 16:54:27</publishTime>
+    </File>
+    <File Include="Img/DevDiary/SvgOptimizations/SierpinskiTrangle.svgz">
+      <publishTime>05/27/2013 22:29:30</publishTime>
+    </File>
+    <File Include="Img/DevDiary/SvgOptimizations/Tree.svgz">
+      <publishTime>06/09/2013 13:12:50</publishTime>
     </File>
     <File Include="Img/Icons/application-resize-full.png">
       <publishTime>05/10/2009 10:02:30</publishTime>

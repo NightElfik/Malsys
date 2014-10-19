@@ -67,11 +67,12 @@ namespace Malsys.Web.Controllers {
 			var fileMgr = new FileOutputProvider(workDirFullPath);
 			var logger = new MessageLogger();
 
-			InputBlockEvaled evaledInput;
+			InputBlockEvaled evaledInput, evaledInputNoStdlib;
 
 			var sw = new Stopwatch();
 			sw.Start();
-			bool success = lsystemProcessor.TryProcess(sourceCode, timeout, fileMgr, logger, out evaledInput, true, false);
+			bool success = lsystemProcessor.TryProcess(sourceCode, timeout, fileMgr, logger, out evaledInput,
+				out evaledInputNoStdlib, true, false);
 			sw.Stop();
 
 			if (!success) {

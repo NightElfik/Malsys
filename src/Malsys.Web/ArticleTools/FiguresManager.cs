@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
 using System.Text;
 using System.Web;
 
@@ -10,13 +9,8 @@ namespace Malsys.Web.ArticleTools {
 	public class FiguresManager {
 
 		public const string DefaultFigureClass = "figure";
-
-
-		//private Dictionary<string, string> tags = new Dictionary<string, string>();
-
 		private int figuresCounter = 1;
 		private int chartsCounter = 1;
-
 
 
 		public CustomFigureData CustomFigure(string caption) {
