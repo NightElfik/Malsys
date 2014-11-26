@@ -18,7 +18,6 @@ obj/
 /src/Malsys.Web/WorkDir
 /src/Malsys.Web/GalleryWorkDir
 /src/Malsys.Web/ErrorLogs
-/src/Malsys.Web/Malsys.Web.Publish.xml
 /src/Documentation/Help/Working
 
 *.min.js

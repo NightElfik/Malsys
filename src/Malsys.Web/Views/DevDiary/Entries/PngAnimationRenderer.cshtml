@@ -299,23 +299,6 @@ var coordTransformCode = codeMgr.Code(ProgLang.Csharp, "Set-up of Graphics class
 @layoutMgr.EndColumn()
 
 
-@layoutMgr.StartColumn()
-	<p>
-		The Image header (IHDR) chunk of animation specifies size of animation, color depth, compression method and other information for all frames.
-		The Animation Control Chunk (acTL) chunk contains number of frames and number of loops of the animation (zero means forever).
-		The Frame Control Chunk (fcTL) is before each frame and specifies dimension and offset of the frame as well as its delay (time to be shown) and blend operation.
-		For details see the APNG specification @StaticHtml.ExternalLink("APNG Specification", "https://wiki.mozilla.org/APNG_Specification")).
-	</p>
-
-	<p>
-		One last note to PNG format.
-		The IDAT chunk is usually "divided" into more smaller IDAT chunks.
-		PNG standard allows more consecutive IDAT chunks which should be considered as one "data stream".
-		For example standard .NET Bitmap class divides IDAT chunks to 64 kB pieces.
-	</p>
-@layoutMgr.EndColumn()
-
-
 @* ================================================================================================================== *@
 	@subsecApngRw.Html
 
