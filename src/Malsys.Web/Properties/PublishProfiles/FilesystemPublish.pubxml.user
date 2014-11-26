@@ -10,10 +10,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
   </PropertyGroup>
   <ItemGroup>
     <File Include="404.html">
-      <publishTime>05/11/2012 08:59:09</publishTime>
+      <publishTime>05/11/2012 11:59:09</publishTime>
     </File>
     <File Include="apple-touch-icon.png">
-      <publishTime>04/24/2012 07:43:34</publishTime>
+      <publishTime>04/24/2012 10:43:34</publishTime>
     </File>
     <File Include="App_Data/MalsysDb.mdf">
       <publishTime>07/22/2014 00:11:18</publishTime>
@@ -25,667 +25,667 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>07/12/2012 13:30:29</publishTime>
     </File>
     <File Include="Areas/Administration/Views/Home/Index.cshtml">
-      <publishTime>05/11/2012 08:59:10</publishTime>
+      <publishTime>05/11/2012 11:59:10</publishTime>
     </File>
     <File Include="Areas/Administration/Views/Home/TrySendMail.cshtml">
-      <publishTime>05/11/2012 08:59:10</publishTime>
+      <publishTime>05/11/2012 11:59:10</publishTime>
     </File>
     <File Include="Areas/Administration/Views/Roles/Create.cshtml">
-      <publishTime>03/21/2014 11:15:47</publishTime>
+      <publishTime>03/21/2014 14:15:47</publishTime>
     </File>
     <File Include="Areas/Administration/Views/Roles/Edit.cshtml">
-      <publishTime>03/21/2014 11:16:10</publishTime>
+      <publishTime>03/21/2014 14:16:10</publishTime>
     </File>
     <File Include="Areas/Administration/Views/Roles/Index.cshtml">
-      <publishTime>05/11/2012 08:59:10</publishTime>
+      <publishTime>05/11/2012 11:59:10</publishTime>
     </File>
     <File Include="Areas/Administration/Views/Stats/Index.cshtml">
-      <publishTime>08/11/2012 14:01:15</publishTime>
+      <publishTime>08/11/2012 17:01:15</publishTime>
     </File>
     <File Include="Areas/Administration/Views/Stats/Input.cshtml">
-      <publishTime>08/11/2012 14:12:09</publishTime>
+      <publishTime>08/11/2012 17:12:09</publishTime>
     </File>
     <File Include="Areas/Administration/Views/Stats/Logs.cshtml">
-      <publishTime>08/11/2012 14:10:57</publishTime>
+      <publishTime>08/11/2012 17:10:57</publishTime>
     </File>
     <File Include="Areas/Administration/Views/Stats/SavedInputs.cshtml">
-      <publishTime>08/11/2012 14:13:24</publishTime>
+      <publishTime>08/11/2012 17:13:24</publishTime>
     </File>
     <File Include="Areas/Administration/Views/Stats/Statistics.cshtml">
-      <publishTime>05/22/2012 17:18:24</publishTime>
+      <publishTime>05/22/2012 20:18:24</publishTime>
     </File>
     <File Include="Areas/Administration/Views/Tags/Delete.cshtml">
-      <publishTime>05/11/2012 08:59:10</publishTime>
+      <publishTime>05/11/2012 11:59:10</publishTime>
     </File>
     <File Include="Areas/Administration/Views/Tags/Edit.cshtml">
-      <publishTime>05/11/2012 08:59:10</publishTime>
+      <publishTime>05/11/2012 11:59:10</publishTime>
     </File>
     <File Include="Areas/Administration/Views/Tags/Index.cshtml">
-      <publishTime>05/11/2012 08:59:10</publishTime>
+      <publishTime>05/11/2012 11:59:10</publishTime>
     </File>
     <File Include="Areas/Administration/Views/Users/Details.cshtml">
-      <publishTime>05/11/2012 08:59:10</publishTime>
+      <publishTime>05/11/2012 11:59:10</publishTime>
     </File>
     <File Include="Areas/Administration/Views/Users/Edit.cshtml">
-      <publishTime>03/21/2014 11:16:18</publishTime>
+      <publishTime>03/21/2014 14:16:18</publishTime>
     </File>
     <File Include="Areas/Administration/Views/Users/Index.cshtml">
-      <publishTime>05/11/2012 08:59:10</publishTime>
+      <publishTime>05/11/2012 11:59:10</publishTime>
     </File>
     <File Include="Areas/Administration/Views/Users/Roles.cshtml">
-      <publishTime>05/11/2012 08:59:10</publishTime>
+      <publishTime>05/11/2012 11:59:10</publishTime>
     </File>
     <File Include="Areas/Administration/Views/Web.config">
-      <publishTime>07/23/2014 00:58:57</publishTime>
+      <publishTime>07/23/2014 03:58:57</publishTime>
     </File>
     <File Include="Areas/Administration/Views/_ViewStart.cshtml">
-      <publishTime>03/21/2014 11:00:34</publishTime>
+      <publishTime>03/21/2014 14:00:34</publishTime>
     </File>
     <File Include="Areas/Documentation/Views/Articles/Article.cshtml">
-      <publishTime>06/16/2014 22:30:34</publishTime>
+      <publishTime>06/17/2014 01:30:34</publishTime>
     </File>
     <File Include="Areas/Documentation/Views/Articles/Articles/IntroductionAndBasics.cshtml">
-      <publishTime>07/21/2014 22:27:06</publishTime>
+      <publishTime>07/22/2014 01:27:06</publishTime>
     </File>
     <File Include="Areas/Documentation/Views/Home/BasicInterpretation.cshtml">
-      <publishTime>07/22/2014 23:18:57</publishTime>
+      <publishTime>07/23/2014 02:18:57</publishTime>
     </File>
     <File Include="Areas/Documentation/Views/Home/BasicRewriting.cshtml">
-      <publishTime>07/22/2014 23:19:02</publishTime>
+      <publishTime>07/23/2014 02:19:02</publishTime>
     </File>
     <File Include="Areas/Documentation/Views/Home/BasicSyntax.cshtml">
-      <publishTime>05/11/2012 08:59:11</publishTime>
+      <publishTime>05/11/2012 11:59:11</publishTime>
     </File>
     <File Include="Areas/Documentation/Views/Home/Faq.cshtml">
-      <publishTime>07/22/2014 00:03:56</publishTime>
+      <publishTime>07/22/2014 03:03:56</publishTime>
     </File>
     <File Include="Areas/Documentation/Views/Home/Index.cshtml">
-      <publishTime>07/26/2014 18:47:02</publishTime>
+      <publishTime>07/26/2014 21:47:02</publishTime>
     </File>
     <File Include="Areas/Documentation/Views/Home/LsystemSymbols.cshtml">
-      <publishTime>08/09/2012 06:02:36</publishTime>
+      <publishTime>08/09/2012 09:02:36</publishTime>
     </File>
     <File Include="Areas/Documentation/Views/Home/ProcessConfigurations.cshtml">
-      <publishTime>07/21/2014 22:01:06</publishTime>
+      <publishTime>07/22/2014 01:01:06</publishTime>
     </File>
     <File Include="Areas/Documentation/Views/Home/StdLib.cshtml">
-      <publishTime>07/21/2014 21:11:37</publishTime>
+      <publishTime>07/22/2014 00:11:37</publishTime>
     </File>
     <File Include="Areas/Documentation/Views/Predefined/ComponentLatexPartial.cshtml">
-      <publishTime>05/18/2012 14:08:04</publishTime>
+      <publishTime>05/18/2012 17:08:04</publishTime>
     </File>
     <File Include="Areas/Documentation/Views/Predefined/Components.cshtml">
-      <publishTime>07/26/2014 18:46:23</publishTime>
+      <publishTime>07/26/2014 21:46:23</publishTime>
     </File>
     <File Include="Areas/Documentation/Views/Predefined/ComponentsLatex.cshtml">
-      <publishTime>08/09/2012 05:58:40</publishTime>
+      <publishTime>08/09/2012 08:58:40</publishTime>
     </File>
     <File Include="Areas/Documentation/Views/Predefined/ConfigurationLatexPartial.cshtml">
-      <publishTime>07/05/2014 18:49:08</publishTime>
+      <publishTime>07/05/2014 21:49:08</publishTime>
     </File>
     <File Include="Areas/Documentation/Views/Predefined/Configurations.cshtml">
-      <publishTime>07/26/2014 18:54:03</publishTime>
+      <publishTime>07/26/2014 21:54:03</publishTime>
     </File>
     <File Include="Areas/Documentation/Views/Predefined/ConfigurationsLatex.cshtml">
-      <publishTime>08/09/2012 05:58:51</publishTime>
+      <publishTime>08/09/2012 08:58:51</publishTime>
     </File>
     <File Include="Areas/Documentation/Views/Predefined/Constants.cshtml">
-      <publishTime>07/21/2014 21:29:17</publishTime>
+      <publishTime>07/22/2014 00:29:17</publishTime>
     </File>
     <File Include="Areas/Documentation/Views/Predefined/Functions.cshtml">
-      <publishTime>07/21/2014 21:31:21</publishTime>
+      <publishTime>07/22/2014 00:31:21</publishTime>
     </File>
     <File Include="Areas/Documentation/Views/Predefined/Operators.cshtml">
-      <publishTime>07/21/2014 21:40:10</publishTime>
+      <publishTime>07/22/2014 00:40:10</publishTime>
     </File>
     <File Include="Areas/Documentation/Views/Shared/ComponentPartial.cshtml">
-      <publishTime>08/09/2012 06:01:22</publishTime>
+      <publishTime>08/09/2012 09:01:22</publishTime>
     </File>
     <File Include="Areas/Documentation/Views/Shared/ConfigurationPartial.cshtml">
-      <publishTime>07/05/2014 18:48:38</publishTime>
+      <publishTime>07/05/2014 21:48:38</publishTime>
     </File>
     <File Include="Areas/Documentation/Views/Shared/LsystemExamplePartial.cshtml">
-      <publishTime>07/22/2014 23:19:21</publishTime>
+      <publishTime>07/23/2014 02:19:21</publishTime>
     </File>
     <File Include="Areas/Documentation/Views/SyntaxReference/ArithmeticExpressions.cshtml">
-      <publishTime>07/21/2014 23:44:04</publishTime>
+      <publishTime>07/22/2014 02:44:04</publishTime>
     </File>
     <File Include="Areas/Documentation/Views/SyntaxReference/ComponentConfigurationDefinition.cshtml">
-      <publishTime>07/21/2014 23:41:08</publishTime>
+      <publishTime>07/22/2014 02:41:08</publishTime>
     </File>
     <File Include="Areas/Documentation/Views/SyntaxReference/ComponentPropertyAssignDefinition.cshtml">
-      <publishTime>07/21/2014 23:21:41</publishTime>
+      <publishTime>07/22/2014 02:21:41</publishTime>
     </File>
     <File Include="Areas/Documentation/Views/SyntaxReference/ConstantDefinition.cshtml">
-      <publishTime>07/21/2014 23:23:14</publishTime>
+      <publishTime>07/22/2014 02:23:14</publishTime>
     </File>
     <File Include="Areas/Documentation/Views/SyntaxReference/FunctionDefinition.cshtml">
-      <publishTime>07/21/2014 23:30:15</publishTime>
+      <publishTime>07/22/2014 02:30:15</publishTime>
     </File>
     <File Include="Areas/Documentation/Views/SyntaxReference/LsystemDefinition.cshtml">
-      <publishTime>07/21/2014 23:20:09</publishTime>
+      <publishTime>07/22/2014 02:20:09</publishTime>
     </File>
     <File Include="Areas/Documentation/Views/SyntaxReference/ProcessStatements.cshtml">
-      <publishTime>07/21/2014 23:42:54</publishTime>
+      <publishTime>07/22/2014 02:42:54</publishTime>
     </File>
     <File Include="Areas/Documentation/Views/SyntaxReference/RewriteRule.cshtml">
-      <publishTime>07/21/2014 23:37:55</publishTime>
+      <publishTime>07/22/2014 02:37:55</publishTime>
     </File>
     <File Include="Areas/Documentation/Views/SyntaxReference/SymbolInterpretation.cshtml">
-      <publishTime>07/21/2014 23:40:26</publishTime>
+      <publishTime>07/22/2014 02:40:26</publishTime>
     </File>
     <File Include="Areas/Documentation/Views/SyntaxReference/Tokens.cshtml">
-      <publishTime>07/22/2014 00:11:21</publishTime>
+      <publishTime>07/22/2014 03:11:21</publishTime>
     </File>
     <File Include="Areas/Documentation/Views/Web.config">
-      <publishTime>07/23/2014 00:58:58</publishTime>
+      <publishTime>07/23/2014 03:58:58</publishTime>
     </File>
     <File Include="Areas/Documentation/Views/_ViewStart.cshtml">
-      <publishTime>03/21/2014 11:00:44</publishTime>
+      <publishTime>03/21/2014 14:00:44</publishTime>
     </File>
     <File Include="bin/Autofac.dll">
-      <publishTime>03/20/2014 19:57:05</publishTime>
+      <publishTime>03/20/2014 22:57:05</publishTime>
     </File>
     <File Include="bin/Autofac.Integration.Mvc.dll">
-      <publishTime>03/20/2014 20:04:30</publishTime>
+      <publishTime>03/20/2014 23:04:30</publishTime>
     </File>
     <File Include="bin/DataAnnotationsExtensions.ClientValidation.dll">
-      <publishTime>03/20/2014 20:05:29</publishTime>
+      <publishTime>03/20/2014 23:05:29</publishTime>
     </File>
     <File Include="bin/DataAnnotationsExtensions.dll">
-      <publishTime>03/20/2014 20:05:29</publishTime>
+      <publishTime>03/20/2014 23:05:29</publishTime>
     </File>
     <File Include="bin/dotless.Core.dll">
-      <publishTime>03/20/2014 18:26:35</publishTime>
+      <publishTime>03/20/2014 21:26:35</publishTime>
     </File>
     <File Include="bin/EcmaScript.NET.dll">
-      <publishTime>03/20/2014 18:27:01</publishTime>
+      <publishTime>03/20/2014 21:27:01</publishTime>
     </File>
     <File Include="bin/EcmaScript.NET.modified.dll">
-      <publishTime>04/06/2012 10:49:13</publishTime>
+      <publishTime>04/06/2012 13:49:13</publishTime>
     </File>
     <File Include="bin/Elmah.dll">
-      <publishTime>03/20/2014 18:25:53</publishTime>
+      <publishTime>03/20/2014 21:25:53</publishTime>
     </File>
     <File Include="bin/EntityFramework.dll">
-      <publishTime>04/06/2012 10:47:39</publishTime>
+      <publishTime>04/06/2012 13:47:39</publishTime>
     </File>
     <File Include="bin/ExamplePlugin.dll">
-      <publishTime>08/01/2014 00:25:26</publishTime>
+      <publishTime>11/25/2014 21:56:59</publishTime>
     </File>
     <File Include="bin/log4net.dll">
-      <publishTime>03/20/2014 18:29:31</publishTime>
+      <publishTime>03/20/2014 21:29:31</publishTime>
     </File>
     <File Include="bin/Malsys.Ast.dll">
-      <publishTime>07/31/2014 23:26:40</publishTime>
+      <publishTime>11/25/2014 21:56:36</publishTime>
     </File>
     <File Include="bin/Malsys.BitmapRenderers.dll">
-      <publishTime>08/01/2014 00:25:25</publishTime>
+      <publishTime>11/25/2014 21:57:13</publishTime>
     </File>
     <File Include="bin/Malsys.Common.dll">
-      <publishTime>07/31/2014 23:26:36</publishTime>
+      <publishTime>11/25/2014 21:56:27</publishTime>
     </File>
     <File Include="bin/Malsys.dll">
-      <publishTime>08/01/2014 00:25:18</publishTime>
+      <publishTime>11/25/2014 21:56:53</publishTime>
     </File>
     <File Include="bin/Malsys.Parsing.dll">
-      <publishTime>07/31/2014 23:26:43</publishTime>
+      <publishTime>11/25/2014 21:56:44</publishTime>
     </File>
     <File Include="bin/Malsys.Web.dll">
-      <publishTime>08/01/2014 23:24:13</publishTime>
+      <publishTime>11/25/2014 21:57:33</publishTime>
     </File>
     <File Include="bin/Malsys.Web.XML">
-      <publishTime>08/01/2014 23:24:10</publishTime>
+      <publishTime>11/25/2014 21:57:40</publishTime>
     </File>
     <File Include="bin/Microsoft.Web.Helpers.dll">
-      <publishTime>03/20/2014 22:43:26</publishTime>
+      <publishTime>03/21/2014 01:43:26</publishTime>
     </File>
     <File Include="bin/Microsoft.Web.Infrastructure.dll">
-      <publishTime>04/06/2012 10:51:51</publishTime>
+      <publishTime>04/06/2012 13:51:51</publishTime>
     </File>
     <File Include="bin/MvcContrib.dll">
-      <publishTime>01/15/2011 07:06:00</publishTime>
+      <publishTime>01/15/2011 10:06:00</publishTime>
     </File>
     <File Include="bin/RazorGenerator.Mvc.dll">
-      <publishTime>07/22/2014 00:27:18</publishTime>
+      <publishTime>07/22/2014 03:27:18</publishTime>
     </File>
     <File Include="bin/System.Web.Helpers.dll">
-      <publishTime>03/20/2014 22:49:56</publishTime>
+      <publishTime>03/21/2014 01:49:56</publishTime>
     </File>
     <File Include="bin/System.Web.Mvc.dll">
-      <publishTime>03/20/2014 21:56:35</publishTime>
+      <publishTime>03/21/2014 00:56:35</publishTime>
     </File>
     <File Include="bin/System.Web.WebPages.Deployment.dll">
-      <publishTime>03/20/2014 22:49:56</publishTime>
+      <publishTime>03/21/2014 01:49:56</publishTime>
     </File>
     <File Include="bin/System.Web.WebPages.dll">
-      <publishTime>03/20/2014 22:49:56</publishTime>
+      <publishTime>03/21/2014 01:49:56</publishTime>
     </File>
     <File Include="bin/System.Web.WebPages.Razor.dll">
-      <publishTime>03/20/2014 22:49:56</publishTime>
+      <publishTime>03/21/2014 01:49:56</publishTime>
     </File>
     <File Include="bin/T4MVCExtensions.dll">
-      <publishTime>03/20/2014 19:12:39</publishTime>
+      <publishTime>03/20/2014 22:12:39</publishTime>
     </File>
     <File Include="bin/WebActivator.dll">
-      <publishTime>03/20/2014 20:05:29</publishTime>
+      <publishTime>03/20/2014 23:05:29</publishTime>
     </File>
     <File Include="bin/WebActivatorEx.dll">
-      <publishTime>03/20/2014 21:55:53</publishTime>
+      <publishTime>03/21/2014 00:55:53</publishTime>
     </File>
     <File Include="bin/WebMatrix.Data.dll">
-      <publishTime>03/20/2014 18:26:09</publishTime>
+      <publishTime>03/20/2014 21:26:09</publishTime>
     </File>
     <File Include="bin/WebMatrix.WebData.dll">
-      <publishTime>03/20/2014 18:26:09</publishTime>
+      <publishTime>03/20/2014 21:26:09</publishTime>
     </File>
     <File Include="bin/Yahoo.Yui.Compressor.dll">
-      <publishTime>03/20/2014 18:27:01</publishTime>
+      <publishTime>03/20/2014 21:27:01</publishTime>
     </File>
     <File Include="bin/Yahoo.Yui.Compressor.MsBuildTask.dll">
-      <publishTime>04/06/2012 10:49:13</publishTime>
+      <publishTime>04/06/2012 13:49:13</publishTime>
     </File>
     <File Include="Css/normalize.less.css">
-      <publishTime>07/07/2013 19:35:13</publishTime>
+      <publishTime>07/07/2013 22:35:13</publishTime>
     </File>
     <File Include="Css/prettyPhoto.css">
       <publishTime>06/30/2012 08:13:37</publishTime>
     </File>
     <File Include="Css/prettyPhoto.less.css">
-      <publishTime>06/30/2012 08:13:37</publishTime>
+      <publishTime>06/30/2012 11:13:37</publishTime>
     </File>
     <File Include="Css/style.less.css">
-      <publishTime>07/27/2014 14:14:04</publishTime>
+      <publishTime>09/29/2014 20:18:03</publishTime>
     </File>
     <File Include="Css/unsemantic.less.css">
-      <publishTime>03/21/2014 15:25:53</publishTime>
+      <publishTime>03/21/2014 18:25:53</publishTime>
     </File>
     <File Include="Download/MarekFiser-LsystemsOnline.v101.pdf">
-      <publishTime>06/30/2012 06:33:51</publishTime>
+      <publishTime>06/30/2012 09:33:51</publishTime>
     </File>
     <File Include="Download/MarekFiser-LsystemsOnline.v101.pdf.zip">
-      <publishTime>06/30/2012 06:35:35</publishTime>
+      <publishTime>06/30/2012 09:35:35</publishTime>
     </File>
     <File Include="Download/Png-v1.zip">
-      <publishTime>06/09/2013 20:03:54</publishTime>
+      <publishTime>06/09/2013 23:03:54</publishTime>
     </File>
     <File Include="Error.html">
-      <publishTime>05/11/2012 08:59:11</publishTime>
+      <publishTime>05/11/2012 11:59:11</publishTime>
     </File>
     <File Include="favicon.ico">
-      <publishTime>04/24/2012 07:36:00</publishTime>
+      <publishTime>04/24/2012 10:36:00</publishTime>
     </File>
     <File Include="Global.asax">
-      <publishTime>11/18/2011 15:57:50</publishTime>
+      <publishTime>11/18/2011 18:57:50</publishTime>
     </File>
     <File Include="google4412977e75e1f8f1.html">
-      <publishTime>05/11/2012 05:08:04</publishTime>
+      <publishTime>05/11/2012 08:08:04</publishTime>
     </File>
     <File Include="humans.txt">
-      <publishTime>06/30/2012 07:21:43</publishTime>
+      <publishTime>06/30/2012 10:21:43</publishTime>
     </File>
     <File Include="Img/ajax-loader.gif">
-      <publishTime>07/05/2012 05:45:32</publishTime>
+      <publishTime>07/05/2012 08:45:32</publishTime>
     </File>
     <File Include="Img/designerExample.png">
-      <publishTime>07/05/2012 13:31:37</publishTime>
+      <publishTime>07/05/2012 16:31:37</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Apng.png">
-      <publishTime>06/09/2013 14:51:42</publishTime>
+      <publishTime>06/09/2013 17:51:42</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/ApngNoTrim.png">
-      <publishTime>08/23/2012 07:12:49</publishTime>
+      <publishTime>08/23/2012 10:12:49</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/ApngNoTrimNoAA.png">
-      <publishTime>08/23/2012 07:09:38</publishTime>
+      <publishTime>08/23/2012 10:09:38</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/ApngStructure.png">
-      <publishTime>07/20/2014 18:51:51</publishTime>
+      <publishTime>07/20/2014 21:51:51</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/ApngTrimNoBg.png">
-      <publishTime>08/23/2012 07:08:18</publishTime>
+      <publishTime>08/23/2012 10:08:18</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/ApngTrimVis.png">
-      <publishTime>06/09/2013 15:45:22</publishTime>
+      <publishTime>06/09/2013 18:45:22</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/DragonApng.png">
-      <publishTime>06/09/2013 17:47:01</publishTime>
+      <publishTime>06/09/2013 20:47:01</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae00-12x34.png">
-      <publishTime>06/09/2013 16:22:29</publishTime>
+      <publishTime>06/09/2013 19:22:29</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae01-20x50.png">
-      <publishTime>06/09/2013 16:22:29</publishTime>
+      <publishTime>06/09/2013 19:22:29</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae02-20x66.png">
-      <publishTime>06/09/2013 16:22:29</publishTime>
+      <publishTime>06/09/2013 19:22:29</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae03-20x82.png">
-      <publishTime>06/09/2013 16:22:29</publishTime>
+      <publishTime>06/09/2013 19:22:29</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae04-20x98.png">
-      <publishTime>06/09/2013 16:22:29</publishTime>
+      <publishTime>06/09/2013 19:22:29</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae05-20x114.png">
-      <publishTime>06/09/2013 16:22:29</publishTime>
+      <publishTime>06/09/2013 19:22:29</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae06-20x130.png">
-      <publishTime>06/09/2013 16:22:29</publishTime>
+      <publishTime>06/09/2013 19:22:29</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae07-20x132.png">
-      <publishTime>06/09/2013 16:22:29</publishTime>
+      <publishTime>06/09/2013 19:22:29</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae08-22x134.png">
-      <publishTime>06/09/2013 16:22:29</publishTime>
+      <publishTime>06/09/2013 19:22:29</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae09-22x134.png">
-      <publishTime>06/09/2013 16:22:29</publishTime>
+      <publishTime>06/09/2013 19:22:29</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae10-22x136.png">
-      <publishTime>06/09/2013 16:39:55</publishTime>
+      <publishTime>06/09/2013 19:39:55</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae11-36x136.png">
-      <publishTime>06/09/2013 16:39:55</publishTime>
+      <publishTime>06/09/2013 19:39:55</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae12-48x138.png">
-      <publishTime>06/09/2013 16:39:55</publishTime>
+      <publishTime>06/09/2013 19:39:55</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae13-48x138.png">
-      <publishTime>06/09/2013 16:39:55</publishTime>
+      <publishTime>06/09/2013 19:39:55</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae14-48x140.png">
-      <publishTime>06/09/2013 16:39:55</publishTime>
+      <publishTime>06/09/2013 19:39:55</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae15-50x140.png">
-      <publishTime>06/09/2013 16:39:55</publishTime>
+      <publishTime>06/09/2013 19:39:55</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae16-56x142.png">
-      <publishTime>06/09/2013 16:39:55</publishTime>
+      <publishTime>06/09/2013 19:39:55</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae17-64x144.png">
-      <publishTime>06/09/2013 16:39:55</publishTime>
+      <publishTime>06/09/2013 19:39:55</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae18-66x138.png">
-      <publishTime>06/09/2013 16:39:57</publishTime>
+      <publishTime>06/09/2013 19:39:57</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae19-66x138.png">
-      <publishTime>06/09/2013 16:39:57</publishTime>
+      <publishTime>06/09/2013 19:39:57</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae20-68x138.png">
-      <publishTime>06/09/2013 16:39:57</publishTime>
+      <publishTime>06/09/2013 19:39:57</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae21-82x138.png">
-      <publishTime>06/09/2013 16:39:57</publishTime>
+      <publishTime>06/09/2013 19:39:57</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae22-82x138.png">
-      <publishTime>06/09/2013 16:39:57</publishTime>
+      <publishTime>06/09/2013 19:39:57</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae23-82x138.png">
-      <publishTime>06/09/2013 16:39:57</publishTime>
+      <publishTime>06/09/2013 19:39:57</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae24-84x138.png">
-      <publishTime>06/09/2013 16:39:57</publishTime>
+      <publishTime>06/09/2013 19:39:57</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae25-86x138.png">
-      <publishTime>06/09/2013 16:39:57</publishTime>
+      <publishTime>06/09/2013 19:39:57</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae26-88x138.png">
-      <publishTime>06/09/2013 16:39:57</publishTime>
+      <publishTime>06/09/2013 19:39:57</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae27-90x138.png">
-      <publishTime>06/09/2013 16:39:59</publishTime>
+      <publishTime>06/09/2013 19:39:59</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae28-90x138.png">
-      <publishTime>06/09/2013 16:39:59</publishTime>
+      <publishTime>06/09/2013 19:39:59</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae29-92x138.png">
-      <publishTime>06/09/2013 16:39:59</publishTime>
+      <publishTime>06/09/2013 19:39:59</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae30-94x138.png">
-      <publishTime>06/09/2013 16:39:59</publishTime>
+      <publishTime>06/09/2013 19:39:59</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae31-96x138.png">
-      <publishTime>06/09/2013 16:40:01</publishTime>
+      <publishTime>06/09/2013 19:40:01</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae32-98x138.png">
-      <publishTime>06/09/2013 16:40:01</publishTime>
+      <publishTime>06/09/2013 19:40:01</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae33-100x138.png">
-      <publishTime>06/09/2013 16:40:01</publishTime>
+      <publishTime>06/09/2013 19:40:01</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae34-98x138.png">
-      <publishTime>06/09/2013 16:40:03</publishTime>
+      <publishTime>06/09/2013 19:40:03</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae35-100x138.png">
-      <publishTime>06/09/2013 16:40:03</publishTime>
+      <publishTime>06/09/2013 19:40:03</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae36-102x138.png">
-      <publishTime>06/09/2013 16:40:03</publishTime>
+      <publishTime>06/09/2013 19:40:03</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae37-100x138.png">
-      <publishTime>06/09/2013 16:40:05</publishTime>
+      <publishTime>06/09/2013 19:40:05</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae38-100x138.png">
-      <publishTime>06/09/2013 16:40:05</publishTime>
+      <publishTime>06/09/2013 19:40:05</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae39-102x138.png">
-      <publishTime>06/09/2013 16:40:05</publishTime>
+      <publishTime>06/09/2013 19:40:05</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae40-102x138.png">
-      <publishTime>06/09/2013 16:40:05</publishTime>
+      <publishTime>06/09/2013 19:40:05</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae41-100x138.png">
-      <publishTime>06/09/2013 16:40:07</publishTime>
+      <publishTime>06/09/2013 19:40:07</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae42-100x138.png">
-      <publishTime>06/09/2013 16:40:07</publishTime>
+      <publishTime>06/09/2013 19:40:07</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae43-100x138.png">
-      <publishTime>06/09/2013 16:40:07</publishTime>
+      <publishTime>06/09/2013 19:40:07</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae44-100x138.png">
-      <publishTime>06/09/2013 16:40:09</publishTime>
+      <publishTime>06/09/2013 19:40:09</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Frames/AFrmae45-100x138.png">
-      <publishTime>06/09/2013 16:40:09</publishTime>
+      <publishTime>06/09/2013 19:40:09</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/ImageCoords.png">
-      <publishTime>07/28/2012 12:48:35</publishTime>
+      <publishTime>07/28/2012 15:48:35</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/MalsysCoords.png">
-      <publishTime>07/28/2012 12:44:15</publishTime>
+      <publishTime>07/28/2012 15:44:15</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/MinimalPng.png">
-      <publishTime>07/29/2012 06:28:27</publishTime>
+      <publishTime>07/29/2012 09:28:27</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/PngChunk.png">
-      <publishTime>07/29/2012 06:46:50</publishTime>
+      <publishTime>07/29/2012 09:46:50</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/SimplePythagorasAnim.png">
-      <publishTime>11/20/2012 23:08:24</publishTime>
+      <publishTime>11/21/2012 02:08:24</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/SimplePythagorasAnimFallback.png">
-      <publishTime>11/20/2012 23:37:31</publishTime>
+      <publishTime>11/21/2012 02:37:31</publishTime>
     </File>
     <File Include="Img/DevDiary/apng/Teaser.png">
-      <publishTime>06/09/2013 17:05:26</publishTime>
+      <publishTime>06/09/2013 20:05:26</publishTime>
     </File>
     <File Include="Img/DevDiary/SvgOptimizations/CircTile.svgz">
-      <publishTime>05/27/2013 20:35:19</publishTime>
+      <publishTime>05/27/2013 23:35:19</publishTime>
     </File>
     <File Include="Img/DevDiary/SvgOptimizations/DekkingsChurch.svgz">
-      <publishTime>05/27/2013 22:52:31</publishTime>
+      <publishTime>05/28/2013 01:52:31</publishTime>
     </File>
     <File Include="Img/DevDiary/SvgOptimizations/HexagosperSig2.svgz">
-      <publishTime>05/27/2013 20:28:53</publishTime>
+      <publishTime>05/27/2013 23:28:53</publishTime>
     </File>
     <File Include="Img/DevDiary/SvgOptimizations/HexagosperSig3.svgz">
-      <publishTime>05/27/2013 20:28:41</publishTime>
+      <publishTime>05/27/2013 23:28:41</publishTime>
     </File>
     <File Include="Img/DevDiary/SvgOptimizations/HexagosperSig4.svgz">
-      <publishTime>05/27/2013 20:28:38</publishTime>
+      <publishTime>05/27/2013 23:28:38</publishTime>
     </File>
     <File Include="Img/DevDiary/SvgOptimizations/HexaGosperSmall.svgz">
-      <publishTime>05/27/2013 20:08:15</publishTime>
+      <publishTime>05/27/2013 23:08:15</publishTime>
     </File>
     <File Include="Img/DevDiary/SvgOptimizations/HtreeSmall.svgz">
-      <publishTime>05/27/2013 20:03:11</publishTime>
+      <publishTime>05/27/2013 23:03:11</publishTime>
     </File>
     <File Include="Img/DevDiary/SvgOptimizations/Plant3.svgz">
-      <publishTime>06/09/2013 13:19:03</publishTime>
+      <publishTime>06/09/2013 16:19:03</publishTime>
     </File>
     <File Include="Img/DevDiary/SvgOptimizations/Plant3Oo.svgz">
-      <publishTime>05/27/2013 16:54:27</publishTime>
+      <publishTime>05/27/2013 19:54:27</publishTime>
     </File>
     <File Include="Img/DevDiary/SvgOptimizations/SierpinskiTrangle.svgz">
-      <publishTime>05/27/2013 22:29:30</publishTime>
+      <publishTime>05/28/2013 01:29:30</publishTime>
     </File>
     <File Include="Img/DevDiary/SvgOptimizations/Tree.svgz">
-      <publishTime>06/09/2013 13:12:50</publishTime>
+      <publishTime>06/09/2013 16:12:50</publishTime>
     </File>
     <File Include="Img/Icons/application-resize-full.png">
-      <publishTime>05/10/2009 10:02:30</publishTime>
+      <publishTime>05/10/2009 13:02:30</publishTime>
     </File>
     <File Include="Img/Icons/cross.png">
-      <publishTime>05/10/2009 10:03:56</publishTime>
+      <publishTime>05/10/2009 13:03:56</publishTime>
     </File>
     <File Include="Img/Icons/exclamation.png">
-      <publishTime>03/05/2010 07:54:02</publishTime>
+      <publishTime>03/05/2010 10:54:02</publishTime>
     </File>
     <File Include="Img/Icons/FlipGray.png">
-      <publishTime>03/02/2014 10:58:49</publishTime>
+      <publishTime>03/02/2014 13:58:49</publishTime>
     </File>
     <File Include="Img/Icons/information.png">
-      <publishTime>03/05/2010 07:54:02</publishTime>
+      <publishTime>03/05/2010 10:54:02</publishTime>
     </File>
     <File Include="Img/Icons/tick.png">
-      <publishTime>03/05/2010 07:54:04</publishTime>
+      <publishTime>03/05/2010 10:54:04</publishTime>
     </File>
     <File Include="Img/Lilac-DiffWebGL.png">
-      <publishTime>04/16/2012 10:49:00</publishTime>
+      <publishTime>04/16/2012 13:49:00</publishTime>
     </File>
     <File Include="Img/prettyPhoto/light_square/btnNext.png">
-      <publishTime>01/31/2011 06:33:42</publishTime>
+      <publishTime>01/31/2011 09:33:42</publishTime>
     </File>
     <File Include="Img/prettyPhoto/light_square/btnPrevious.png">
-      <publishTime>01/31/2011 06:33:42</publishTime>
+      <publishTime>01/31/2011 09:33:42</publishTime>
     </File>
     <File Include="Img/prettyPhoto/light_square/default_thumbnail.gif">
-      <publishTime>01/31/2011 06:33:42</publishTime>
+      <publishTime>01/31/2011 09:33:42</publishTime>
     </File>
     <File Include="Img/prettyPhoto/light_square/loader.gif">
-      <publishTime>01/31/2011 06:33:42</publishTime>
+      <publishTime>01/31/2011 09:33:42</publishTime>
     </File>
     <File Include="Img/prettyPhoto/light_square/sprite.png">
-      <publishTime>01/31/2011 06:33:42</publishTime>
+      <publishTime>01/31/2011 09:33:42</publishTime>
     </File>
     <File Include="Img/Thesis/00.png">
-      <publishTime>06/30/2012 06:38:02</publishTime>
+      <publishTime>06/30/2012 09:38:02</publishTime>
     </File>
     <File Include="Img/Thesis/05.png">
-      <publishTime>06/30/2012 06:38:58</publishTime>
+      <publishTime>06/30/2012 09:38:58</publishTime>
     </File>
     <File Include="Img/Thesis/12.png">
-      <publishTime>06/30/2012 06:40:54</publishTime>
+      <publishTime>06/30/2012 09:40:54</publishTime>
     </File>
     <File Include="Img/Thesis/18.png">
-      <publishTime>06/30/2012 06:41:38</publishTime>
+      <publishTime>06/30/2012 09:41:38</publishTime>
     </File>
     <File Include="Img/Thesis/30.png">
-      <publishTime>06/30/2012 06:42:55</publishTime>
+      <publishTime>06/30/2012 09:42:55</publishTime>
     </File>
     <File Include="Img/Thesis/83.png">
-      <publishTime>06/30/2012 06:44:13</publishTime>
+      <publishTime>06/30/2012 09:44:13</publishTime>
     </File>
     <File Include="Img/Thesis/thn/00.png">
-      <publishTime>06/30/2012 06:47:35</publishTime>
+      <publishTime>06/30/2012 09:47:35</publishTime>
     </File>
     <File Include="Img/Thesis/thn/05.png">
-      <publishTime>06/30/2012 06:48:18</publishTime>
+      <publishTime>06/30/2012 09:48:18</publishTime>
     </File>
     <File Include="Img/Thesis/thn/12.png">
-      <publishTime>06/30/2012 06:48:37</publishTime>
+      <publishTime>06/30/2012 09:48:37</publishTime>
     </File>
     <File Include="Img/Thesis/thn/18.png">
-      <publishTime>06/30/2012 06:48:52</publishTime>
+      <publishTime>06/30/2012 09:48:52</publishTime>
     </File>
     <File Include="Img/Thesis/thn/30.png">
-      <publishTime>06/30/2012 06:56:19</publishTime>
+      <publishTime>06/30/2012 09:56:19</publishTime>
     </File>
     <File Include="Img/Thesis/thn/83.png">
-      <publishTime>06/30/2012 06:56:34</publishTime>
+      <publishTime>06/30/2012 09:56:34</publishTime>
     </File>
     <File Include="Js/jquery.min.js">
-      <publishTime>07/31/2014 23:07:01</publishTime>
+      <publishTime>08/01/2014 02:07:01</publishTime>
     </File>
     <File Include="Js/jquery.prettyPhoto.min.js">
-      <publishTime>07/31/2014 23:07:01</publishTime>
+      <publishTime>08/01/2014 02:07:01</publishTime>
     </File>
     <File Include="Js/jquery.textarea.min.js">
-      <publishTime>07/31/2014 23:07:01</publishTime>
+      <publishTime>08/01/2014 02:07:01</publishTime>
     </File>
     <File Include="Js/jquery.tmpl.min.js">
-      <publishTime>07/31/2014 23:07:01</publishTime>
+      <publishTime>08/01/2014 02:07:01</publishTime>
     </File>
     <File Include="Js/jquery.unobtrusive-ajax.min.js">
-      <publishTime>07/31/2014 23:07:01</publishTime>
+      <publishTime>08/01/2014 02:07:01</publishTime>
     </File>
     <File Include="Js/jquery.validate.min.js">
-      <publishTime>07/31/2014 23:07:01</publishTime>
+      <publishTime>08/01/2014 02:07:01</publishTime>
     </File>
     <File Include="Js/jquery.validate.unobtrusive.min.js">
-      <publishTime>07/31/2014 23:07:01</publishTime>
+      <publishTime>08/01/2014 02:07:01</publishTime>
     </File>
     <File Include="Js/malsys.curveDesigner.min.js">
-      <publishTime>07/31/2014 23:07:01</publishTime>
+      <publishTime>08/01/2014 02:07:01</publishTime>
     </File>
     <File Include="Js/malsys.min.js">
-      <publishTime>07/31/2014 23:07:01</publishTime>
+      <publishTime>08/01/2014 02:07:01</publishTime>
     </File>
     <File Include="Js/MinifyJs.log">
-      <publishTime>07/31/2014 23:07:05</publishTime>
+      <publishTime>08/01/2014 02:07:05</publishTime>
     </File>
     <File Include="Js/ThreeJs/Detector.min.js">
-      <publishTime>07/31/2014 23:07:01</publishTime>
+      <publishTime>08/01/2014 02:07:01</publishTime>
     </File>
     <File Include="Js/ThreeJs/Malsys.three.min.js">
-      <publishTime>07/31/2014 23:07:01</publishTime>
+      <publishTime>08/01/2014 02:07:01</publishTime>
     </File>
     <File Include="Js/ThreeJs/MTLLoader.js">
       <publishTime>07/06/2014 00:21:04</publishTime>
     </File>
     <File Include="Js/ThreeJs/MTLLoader.min.js">
-      <publishTime>07/31/2014 23:07:01</publishTime>
+      <publishTime>08/01/2014 02:07:01</publishTime>
     </File>
     <File Include="Js/ThreeJs/OBJMTLLoader.js">
       <publishTime>07/06/2014 00:21:04</publishTime>
     </File>
     <File Include="Js/ThreeJs/OBJMTLLoader.min.js">
-      <publishTime>07/31/2014 23:07:01</publishTime>
+      <publishTime>08/01/2014 02:07:01</publishTime>
     </File>
     <File Include="Js/ThreeJs/Stats.min.js">
-      <publishTime>07/31/2014 23:07:01</publishTime>
+      <publishTime>08/01/2014 02:07:01</publishTime>
     </File>
     <File Include="Js/ThreeJs/Three.js">
       <publishTime>07/06/2014 00:20:56</publishTime>
     </File>
     <File Include="Js/ThreeJs/Three.min.js">
-      <publishTime>07/06/2014 00:20:56</publishTime>
+      <publishTime>07/06/2014 03:20:56</publishTime>
     </File>
     <File Include="Js/ThreeJs/TrackballControls.js">
       <publishTime>07/10/2014 23:59:00</publishTime>
     </File>
     <File Include="Js/ThreeJs/TrackballControls.min.js">
-      <publishTime>07/26/2014 22:11:11</publishTime>
+      <publishTime>07/27/2014 01:11:11</publishTime>
     </File>
     <File Include="robots.txt">
-      <publishTime>04/23/2012 05:02:26</publishTime>
+      <publishTime>04/23/2012 08:02:26</publishTime>
     </File>
     <File Include="Views/Web.config">
-      <publishTime>07/23/2014 00:58:58</publishTime>
+      <publishTime>07/23/2014 03:58:58</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>07/31/2014 23:11:29</publishTime>
+      <publishTime>08/01/2014 02:11:29</publishTime>
     </File>
   </ItemGroup>
 </Project>
