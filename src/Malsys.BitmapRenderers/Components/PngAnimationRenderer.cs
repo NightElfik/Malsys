@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -9,7 +10,6 @@ using Malsys.Processing;
 using Malsys.Processing.Components;
 using Malsys.SemanticModel;
 using Microsoft.FSharp.Collections;
-using System;
 
 namespace Malsys.BitmapRenderers.Components {
 	/// <summary>
@@ -32,7 +32,7 @@ namespace Malsys.BitmapRenderers.Components {
 		[UserSettable]
 		public Constant FrameDelay { get; set; }
 
-		#endregion
+		#endregion User settable properties
 
 		public override void Reset() {
 			base.Reset();

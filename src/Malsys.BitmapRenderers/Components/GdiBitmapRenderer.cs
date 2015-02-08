@@ -188,7 +188,7 @@ namespace Malsys.BitmapRenderers.Components {
 		[UserSettable]
 		public Constant AntiAlias { get; set; }
 
-		#endregion
+		#endregion User settable properties
 
 
 		#region IRenderer2D Members
@@ -467,7 +467,7 @@ namespace Malsys.BitmapRenderers.Components {
 		}
 
 
-		#endregion
+		#endregion IRenderer2D Members
 
 
 		protected virtual Stream createStream(FSharpMap<string, object> metadata) {

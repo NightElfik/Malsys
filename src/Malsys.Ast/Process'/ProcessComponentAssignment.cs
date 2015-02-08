@@ -16,6 +16,5 @@ namespace Malsys.Ast {
 			Position = pos;
 		}
 
-
 	}
 }

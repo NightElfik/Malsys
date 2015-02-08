@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
-using System.Globalization;
 
 namespace Malsys {
 	public static class MathHelper {

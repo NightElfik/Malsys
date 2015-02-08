@@ -4,9 +4,9 @@ using System.Security.Cryptography;
 namespace Malsys {
 	public class CryptographicRandomGenerator : IRandomGenerator, IDisposable {
 
-		RNGCryptoServiceProvider randomGenrator;
+		private RNGCryptoServiceProvider randomGenrator;
 
-		byte[] buffer = new byte[4];
+		private byte[] buffer = new byte[4];
 
 
 		public CryptographicRandomGenerator() {

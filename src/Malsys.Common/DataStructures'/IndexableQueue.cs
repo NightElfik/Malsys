@@ -55,7 +55,7 @@ namespace Malsys {
 			size = 0;
 		}
 
-		#endregion
+		#endregion Constructors
 
 
 		#region Properties and indexers
@@ -85,7 +85,7 @@ namespace Malsys {
 			get { return data.Length; }
 		}
 
-		#endregion
+		#endregion Properties and indexers
 
 
 		#region Public methods
@@ -149,7 +149,7 @@ namespace Malsys {
 			size = 0;
 		}
 
-		#endregion
+		#endregion Public methods
 
 
 		#region Private methods
@@ -171,6 +171,6 @@ namespace Malsys {
 			tail = (size == capacity) ? 0 : size;
 		}
 
-		#endregion
+		#endregion Private methods
 	}
 }

@@ -37,8 +37,6 @@ namespace Malsys.Ast {
 		}
 
 
-
-
 		public LsystemStatementType StatementType {
 			get { return LsystemStatementType.SymbolsInterpretDef; }
 		}

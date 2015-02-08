@@ -10,8 +10,7 @@ namespace Malsys.Ast {
 		public Identifier ProcessConfiNameId;
 		public ListPos<ProcessComponentAssignment> ComponentAssignments;
 		public ListPos<ILsystemStatement> AdditionalLsystemStatements;
-
-
+		
 		public PositionRange Position { get; private set; }
 
 

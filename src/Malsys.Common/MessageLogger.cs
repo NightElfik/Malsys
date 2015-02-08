@@ -31,7 +31,7 @@ namespace Malsys {
 			return block;
 		}
 
-		#endregion
+		#endregion IMessageLogger Members
 
 
 		public int Count { get { return messages.Count; } }

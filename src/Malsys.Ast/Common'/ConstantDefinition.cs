@@ -22,20 +22,16 @@ namespace Malsys.Ast {
 			IsComponentAssign = isComponentAssign;
 			Position = pos;
 		}
-
-
-
+		
 
 		InputStatementType IInputStatement.StatementType {
 			get { return InputStatementType.ConstantDefinition; }
 		}
-
-
+		
 		LsystemStatementType ILsystemStatement.StatementType {
 			get { return LsystemStatementType.ConstantDefinition; }
 		}
-
-
+		
 		FunctionStatementType IFunctionStatement.StatementType {
 			get { return FunctionStatementType.ConstantDefinition; }
 		}

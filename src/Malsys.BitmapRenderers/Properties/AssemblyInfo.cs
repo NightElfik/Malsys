@@ -2,7 +2,6 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-
 [assembly: AssemblyTitle("Malsys.BitmapRenderers")]
 [assembly: AssemblyDescription("Malsys plugin adding some bitmap renderers.")]
 [assembly: AssemblyConfiguration("")]

@@ -85,7 +85,7 @@ namespace Malsys {
 			}
 		}
 
-		#endregion
+		#endregion Constructors
 
 
 		public bool IsEmpty { get { return Length == 0; } }
@@ -146,7 +146,7 @@ namespace Malsys {
 			}
 		}
 
-		#endregion
+		#endregion IList<T> Members
 
 		#region ICollection<T> Members
 
@@ -178,7 +178,7 @@ namespace Malsys {
 			throw new NotSupportedException();
 		}
 
-		#endregion
+		#endregion ICollection<T> Members
 
 		#region IEnumerable<T> Members
 
@@ -190,7 +190,7 @@ namespace Malsys {
 			return ((IEnumerable<T>)values).GetEnumerator();
 		}
 
-		#endregion
+		#endregion IEnumerable<T> Members
 
 	}
 

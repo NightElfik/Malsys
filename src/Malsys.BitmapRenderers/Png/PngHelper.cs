@@ -1,7 +1,7 @@
 ﻿using System;
-using Malsys.BitmapRenderers.Png.Chunks;
 using System.Diagnostics.Contracts;
 using System.Text;
+using Malsys.BitmapRenderers.Png.Chunks;
 
 namespace Malsys.BitmapRenderers.Png {
 	/// <summary>
@@ -63,7 +63,7 @@ namespace Malsys.BitmapRenderers.Png {
 			return ihdr;
 		}
 
-		#endregion
+		#endregion Reader
 
 
 		#region Writer
@@ -149,7 +149,7 @@ namespace Malsys.BitmapRenderers.Png {
 		}
 
 
-		#endregion
+		#endregion Writer
 
 
 	}

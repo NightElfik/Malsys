@@ -28,7 +28,7 @@ namespace Malsys {
 
 		/// <param name="initialCapacity">Initial capacity of the stack.</param>
 		/// <param name="growFactor">The old capacity is multiplied by the growFactor while extending the capacity of the stack.</param>
-		public IndexableStack(int initialCapacity = defaultCapacity, float growFactor=defaultGrowFactor) {
+		public IndexableStack(int initialCapacity = defaultCapacity, float growFactor = defaultGrowFactor) {
 			if (initialCapacity < 0) {
 				throw new ArgumentOutOfRangeException("initialCapacity", "Capacity should be greater than zero.");
 			}
@@ -41,7 +41,7 @@ namespace Malsys {
 			size = 0;
 		}
 
-		#endregion
+		#endregion Constructors
 
 
 		#region Properties and indexers
@@ -74,7 +74,7 @@ namespace Malsys {
 		}
 
 
-		#endregion
+		#endregion Properties and indexers
 
 
 		#region Public methods
@@ -120,7 +120,7 @@ namespace Malsys {
 			data[size++] = item;
 		}
 
-		#endregion
+		#endregion Public methods
 
 
 		#region Private methods
@@ -131,6 +131,6 @@ namespace Malsys {
 			data = newData;
 		}
 
-		#endregion
+		#endregion Private methods
 	}
 }

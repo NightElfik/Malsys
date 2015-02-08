@@ -14,7 +14,7 @@ namespace Malsys {
 		/// <returns>
 		/// True if key was already in dictionary and value was updated. False if key was added to dictionary
 		/// </returns>
-		public static bool AddOrUpdate<TKey, TValue>(this Dictionary<TKey, TValue> dict, TKey key, TValue value){
+		public static bool AddOrUpdate<TKey, TValue>(this Dictionary<TKey, TValue> dict, TKey key, TValue value) {
 
 			bool wasInDict = dict.ContainsKey(key);
 			dict[key] = value;
@@ -32,7 +32,7 @@ namespace Malsys {
 
 			TValue val;
 
-			if(dict.TryGetValue(key, out val)) {
+			if (dict.TryGetValue(key, out val)) {
 				return value != null ? value.Equals(val) : val == null;
 			}
 			else {

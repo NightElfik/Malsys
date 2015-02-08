@@ -11,7 +11,7 @@ namespace Malsys.Ast {
 	}
 
 
-	public enum ExpressionMemberType{
+	public enum ExpressionMemberType {
 
 		EmptyExpression,
 		ExpressionBracketed,
