@@ -1,6 +1,4 @@
-﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
-// All rights reserved.
-using System.Text;
+﻿using System.Text;
 using Malsys.Processing;
 using Malsys.Processing.Context;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

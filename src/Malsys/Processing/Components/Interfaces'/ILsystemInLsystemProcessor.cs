@@ -1,6 +1,4 @@
-﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
-// All rights reserved.
-using Malsys.SemanticModel.Evaluated;
+﻿using Malsys.SemanticModel.Evaluated;
 using System.Collections.Generic;
 
 namespace Malsys.Processing.Components.Common {

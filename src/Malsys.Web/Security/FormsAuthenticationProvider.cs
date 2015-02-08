@@ -1,6 +1,4 @@
-﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
-// All rights reserved.
-using System.Web.Security;
+﻿using System.Web.Security;
 
 namespace Malsys.Web.Security {
 	public class FormsAuthenticationProvider : IAuthenticationProvider {

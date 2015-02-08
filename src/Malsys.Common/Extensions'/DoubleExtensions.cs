@@ -1,6 +1,4 @@
-﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
-// All rights reserved.
-using System.Globalization;
+﻿using System.Globalization;
 
 namespace Malsys {
 	public static class DoubleExtensions {

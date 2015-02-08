@@ -1,6 +1,4 @@
-﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
-// All rights reserved.
-using Malsys.Web.Entities;
+﻿using Malsys.Web.Entities;
 
 namespace Malsys.Web.Security {
 	public interface IUserAuthenticator {

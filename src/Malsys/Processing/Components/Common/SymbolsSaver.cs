@@ -1,6 +1,4 @@
-﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
-// All rights reserved.
-using System.IO;
+﻿using System.IO;
 using Malsys.IO;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Evaluated;

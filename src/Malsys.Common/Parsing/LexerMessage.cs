@@ -1,6 +1,4 @@
-﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
-// All rights reserved.
-
+﻿
 namespace Malsys.Parsing {
 	/// <summary>
 	/// Message enumeration for the lexer from the Malsys.Parser (I don't know how to write this in the F#).

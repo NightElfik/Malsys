@@ -1,5 +1,3 @@
-// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
-// All rights reserved.
 /* Exported by SQL Server Management Studio */
 /****** Object:  Table [dbo].[Users]    Script Date: 04/12/2012 17:35:33 ******/
 SET ANSI_NULLS ON

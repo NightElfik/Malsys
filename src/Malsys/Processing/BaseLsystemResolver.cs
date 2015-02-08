@@ -1,6 +1,4 @@
-﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
-// All rights reserved.
-using Malsys.Evaluators;
+﻿using Malsys.Evaluators;
 using Malsys.SemanticModel.Compiled;
 using Microsoft.FSharp.Collections;
 

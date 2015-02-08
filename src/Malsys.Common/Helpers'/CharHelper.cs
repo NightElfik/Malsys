@@ -1,6 +1,4 @@
-﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
-// All rights reserved.
-
+﻿
 namespace Malsys {
 	/// <summary>
 	/// Helper with ASCII-safe definitions of some unicode characters.

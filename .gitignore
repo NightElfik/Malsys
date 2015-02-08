@@ -4,6 +4,7 @@
 # Visual Studio
 *.suo
 *.vsmdi
+*.user
 
 bin/
 obj/

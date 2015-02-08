@@ -1,6 +1,4 @@
-﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
-// All rights reserved.
-using System;
+﻿using System;
 using System.Data.Objects.DataClasses;
 using System.Diagnostics.Contracts;
 using System.Linq;

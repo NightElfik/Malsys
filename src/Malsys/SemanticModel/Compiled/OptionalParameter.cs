@@ -1,6 +1,4 @@
-﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
-// All rights reserved.
-using Malsys.SemanticModel.Compiled.Expressions;
+﻿using Malsys.SemanticModel.Compiled.Expressions;
 
 namespace Malsys.SemanticModel.Compiled {
 	public class OptionalParameter {

@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Malsys.Processing.Components;
+using System.Diagnostics.Contracts;
+using System.Drawing;
+using System.Windows.Media.Media3D;
 using Malsys;
+using Malsys.Evaluators;
 using Malsys.Processing;
+using Malsys.Processing.Components;
+using Malsys.Processing.Components.Interpreters;
 using Malsys.SemanticModel;
 using Malsys.SemanticModel.Evaluated;
-using System.Diagnostics.Contracts;
-using Malsys.Evaluators;
-using System.Drawing;
+
 using Symbol = Malsys.SemanticModel.Symbol<Malsys.SemanticModel.Evaluated.IValue>;
-using Malsys.Processing.Components.Interpreters;
-using System.Windows.Media.Media3D;
 
 namespace ExamplePlugin.Components {
 	public class SimpleEnvironmentModule : ISymbolProvider {

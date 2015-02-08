@@ -1,6 +1,4 @@
-﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
-// All rights reserved.
-
+﻿
 namespace Malsys {
 	/// <summary>
 	/// Implementation if IMessageLogger interface which do not log anything.

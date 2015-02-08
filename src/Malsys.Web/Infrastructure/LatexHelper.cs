@@ -1,6 +1,4 @@
-﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
-// All rights reserved.
-using System.Web;
+﻿using System.Web;
 
 namespace Malsys.Web.Infrastructure {
 	public static class LatexHelper {

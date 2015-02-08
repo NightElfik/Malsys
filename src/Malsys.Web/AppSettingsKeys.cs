@@ -1,6 +1,4 @@
-﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
-// All rights reserved.
-
+﻿
 
 /// <summary>
 /// Helper class to avoid typos in app settings keys.

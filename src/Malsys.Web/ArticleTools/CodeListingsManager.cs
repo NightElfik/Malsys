@@ -38,13 +38,13 @@ namespace Malsys.Web.ArticleTools {
 			RegexOptions.Compiled);
 
 
-		private static Regex terminal = new Regex("('(.[^']*|')')", RegexOptions.Compiled);
-		private static Regex terminalRange = new Regex(@"\[(.)\-(.)\]", RegexOptions.Compiled);
-		private static Regex terminalList = new Regex(@"\[([^'\-<\]]+)\]", RegexOptions.Compiled);
-		private static Regex quantifier = new Regex("([^'])([?+*])", RegexOptions.Compiled);
+		private static readonly Regex terminal = new Regex("('(.[^']*|')')", RegexOptions.Compiled);
+		private static readonly Regex terminalRange = new Regex(@"\[(.)\-(.)\]", RegexOptions.Compiled);
+		private static readonly Regex terminalList = new Regex(@"\[([^'\-<\]]+)\]", RegexOptions.Compiled);
+		private static readonly Regex quantifier = new Regex("([^'])([?+*])", RegexOptions.Compiled);
 
-		private static Regex fullName = new Regex(@"`(([a-zA-Z0-9\+]+\.)+([a-zA-Z0-9\+]+))`", RegexOptions.Compiled);
-		private static Regex quoted = new Regex(@"`(.+?)`", RegexOptions.Compiled);
+		private static readonly Regex fullName = new Regex(@"`(([a-zA-Z0-9\+]+\.)+([a-zA-Z0-9\+]+))`", RegexOptions.Compiled);
+		private static readonly Regex quoted = new Regex(@"`(.+?)`", RegexOptions.Compiled);
 
 
 

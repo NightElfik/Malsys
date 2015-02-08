@@ -1,6 +1,4 @@
-﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
-// All rights reserved.
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 
 namespace Malsys.Web.Areas.Documentation {
 	public class DocumentationAreaRegistration : AreaRegistration {

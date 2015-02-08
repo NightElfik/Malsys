@@ -1,0 +1,9 @@
+abstract lsystem BloomTest {
+
+	set symbols axiom = ^(90) B(0);
+
+	interpret B as lsystem Bloom;
+
+	rewrite B(l, x) to B(l, x + 1);
+
+}

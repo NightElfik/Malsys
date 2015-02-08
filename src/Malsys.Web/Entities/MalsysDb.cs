@@ -1,6 +1,4 @@
-﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
-// All rights reserved.
-using System.Linq;
+﻿using System.Linq;
 
 namespace Malsys.Web.Entities {
 	public partial class MalsysDb : IUsersDb, IInputDb, IFeedbackDb, IDiscusDb, IActionLogDb {

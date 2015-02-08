@@ -1,6 +1,4 @@
-﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
-// All rights reserved.
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Media.Media3D;
 using Malsys.Media;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

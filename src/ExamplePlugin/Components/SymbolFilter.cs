@@ -1,7 +1,4 @@
-﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
-// All rights reserved.
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Malsys;
 using Malsys.Processing;
 using Malsys.Processing.Components;

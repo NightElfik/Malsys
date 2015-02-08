@@ -1,6 +1,4 @@
-﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
-// All rights reserved.
-
+﻿
 namespace Malsys.Processing {
 	/// <summary>
 	/// Helper class for easy work with magic metadata keys.

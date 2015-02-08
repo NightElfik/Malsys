@@ -1,6 +1,4 @@
-﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
-// All rights reserved.
-using System.IO;
+﻿using System.IO;
 using Microsoft.FSharp.Collections;
 
 namespace Malsys.Processing.Components.Renderers {

@@ -1,6 +1,4 @@
-﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
-// All rights reserved.
-
+﻿
 namespace Malsys.Processing.Components {
 	/// <summary>
 	///	Interpreter callers are responsible for converting symbols for calls of interpreter methods.

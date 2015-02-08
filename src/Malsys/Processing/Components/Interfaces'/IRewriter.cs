@@ -1,6 +1,4 @@
-﻿// Copyright © 2012-2013 Marek Fišer [malsys@marekfiser.cz]
-// All rights reserved.
-
+﻿
 namespace Malsys.Processing.Components {
 	/// <summary>
 	/// Rewriters are responsible for rewriting L-system symbols by defined rewrite rules.
