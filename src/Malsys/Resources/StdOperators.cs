@@ -6,32 +6,32 @@ namespace Malsys.Resources {
 	[MalsysOpertors]
 	public static class StdOperators {
 
-		const int POW_PREC = 100;
-		const int POW_PREC_A = 100;
+		private const int POW_PREC = 100;
+		private const int POW_PREC_A = 100;
 
-		const int UNARY_PREC = 150;
-		const int UNARY_PREC_A = 50;  // 2^-3 = 2^(-3)
+		private const int UNARY_PREC = 150;
+		private const int UNARY_PREC_A = 50;  // 2^-3 = 2^(-3)
 
-		const int MULT_PREC = 200;
-		const int MULT_PREC_A = 220;
+		private const int MULT_PREC = 200;
+		private const int MULT_PREC_A = 220;
 
-		const int ADD_PREC = 300;
-		const int ADD_PREC_A = 320;
+		private const int ADD_PREC = 300;
+		private const int ADD_PREC_A = 320;
 
-		const int CMP_PREC = 400;
-		const int CMP_PREC_A = 420;
+		private const int CMP_PREC = 400;
+		private const int CMP_PREC_A = 420;
 
-		const int EQ_PREC = 500;
-		const int EQ_PREC_A = 520;
+		private const int EQ_PREC = 500;
+		private const int EQ_PREC_A = 520;
 
-		const int AND_PREC = 500;
-		const int AND_PREC_A = 520;
+		private const int AND_PREC = 500;
+		private const int AND_PREC_A = 520;
 
-		const int XOR_PREC = 600;
-		const int XOR_PREC_A = 620;
+		private const int XOR_PREC = 600;
+		private const int XOR_PREC_A = 620;
 
-		const int OR_PREC = 700;
-		const int OR_PREC_A = 720;
+		private const int OR_PREC = 700;
+		private const int OR_PREC_A = 720;
 
 
 		/// <summary>
@@ -66,7 +66,7 @@ namespace Malsys.Resources {
 			ExpressionValueTypeFlags.Constant,
 			(a) => a.IsNaN
 				? Constant.NaN
-				: (((Constant)a).IsTrue ? Constant.False : Constant.True ));
+				: (((Constant)a).IsTrue ? Constant.False : Constant.True));
 
 		/// <summary>
 		/// Multiply operator.

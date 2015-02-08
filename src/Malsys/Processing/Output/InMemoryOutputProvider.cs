@@ -56,7 +56,7 @@ namespace Malsys.Processing.Output {
 					x.Caller,
 					x.Metadata.ToFsharpMap(y => y.Key, y => y.Value)));
 		}
-		
+
 		public int OutputsCount {
 			get { return managedFiles.Where(x => !x.IsTemporary).Count(); }
 		}

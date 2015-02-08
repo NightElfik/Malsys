@@ -21,13 +21,13 @@ namespace Malsys.Compilers {
 
 
 		public Function Compile(Ast.FunctionDefinition funDefAst, IMessageLogger logger) {
-			
-			var stats = funDefAst.Statements.Select(stat => {				
+
+			var stats = funDefAst.Statements.Select(stat => {
 				switch (stat.StatementType) {
 					case Ast.FunctionStatementType.ConstantDefinition:
 						return constDefCompiler.Compile((Ast.ConstantDefinition)stat, logger) as IFunctionStatement;
 					case Ast.FunctionStatementType.Expression:
-						return new FunctionReturnExpr(stat) { 
+						return new FunctionReturnExpr(stat) {
 							ReturnValue = exprCompiler.Compile((Ast.Expression)stat, logger),
 						} as IFunctionStatement;
 					default:

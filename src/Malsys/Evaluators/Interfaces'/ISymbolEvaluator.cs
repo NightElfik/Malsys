@@ -17,7 +17,7 @@ namespace Malsys.Evaluators {
 
 		public static List<Symbol<IValue>> EvaluateList(this ISymbolEvaluator evaluator, List<Symbol<IExpression>> symbols,
 				IExpressionEvaluatorContext exprEvalCtxt) {
-	
+
 			return symbols.Select(s => evaluator.Evaluate(s, exprEvalCtxt)).ToList();
 		}
 

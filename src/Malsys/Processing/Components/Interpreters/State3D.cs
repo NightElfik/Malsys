@@ -1,5 +1,4 @@
 ﻿using System.Windows.Media.Media3D;
-using Malsys.Media;
 using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Collections;
 

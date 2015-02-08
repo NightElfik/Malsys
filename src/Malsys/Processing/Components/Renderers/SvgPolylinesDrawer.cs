@@ -9,7 +9,7 @@ using Malsys.Media;
 namespace Malsys.Processing.Components.Renderers {
 	public class SvgPolylinesDrawer {
 
-		TextWriter writer;
+		private TextWriter writer;
 
 		private int roundDigits;
 
@@ -27,7 +27,7 @@ namespace Malsys.Processing.Components.Renderers {
 		private string lastOptWidthStr;
 		private string lastOptColorStr;
 
-		Dictionary<string, SvgPolyline> polylines;
+		private Dictionary<string, SvgPolyline> polylines;
 
 
 

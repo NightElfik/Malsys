@@ -11,7 +11,7 @@ namespace Malsys.Evaluators {
 
 		public List<OptionalParameterEvaled> Evaluate(IEnumerable<OptionalParameter> optPrms, IExpressionEvaluatorContext exprEvalCtxt) {
 			return optPrms.Select(p =>
-				new OptionalParameterEvaled(p.AstNode){
+				new OptionalParameterEvaled(p.AstNode) {
 					Name = p.Name,
 					DefaultValue = p.IsOptional ? exprEvalCtxt.Evaluate(p.DefaultValue) : null,
 				}

@@ -1,8 +1,7 @@
 ﻿using System.IO;
-using System.Windows.Media.Media3D;
+using System.Windows;
 using Malsys.Media;
 using Microsoft.FSharp.Collections;
-using System.Windows;
 
 namespace Malsys.Processing.Components.Renderers {
 	/// <summary>
@@ -112,7 +111,7 @@ namespace Malsys.Processing.Components.Renderers {
 
 		public abstract void DrawCircle(double radius, ColorF color);
 
-		#endregion
+		#endregion IRenderer2D Members
 
 
 		/// <summary>

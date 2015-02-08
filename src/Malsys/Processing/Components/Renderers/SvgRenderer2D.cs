@@ -33,7 +33,7 @@ namespace Malsys.Processing.Components.Renderers {
 
 		private int roundingSigDigits;
 
-		SvgPolylinesDrawer linesDrawer = new SvgPolylinesDrawer();
+		private SvgPolylinesDrawer linesDrawer = new SvgPolylinesDrawer();
 
 		#region User gettable and settable properties
 

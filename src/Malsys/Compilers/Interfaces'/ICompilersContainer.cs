@@ -33,7 +33,7 @@ namespace Malsys.Compilers {
 			catch (Exception ex) {
 				logger.LogMessage(Message.ParsingFailed, ex.Message);
 				return new InputBlock(null) {
-					SourceName = sourceName, 
+					SourceName = sourceName,
 					Statements = new List<IInputStatement>(),
 				};
 			}

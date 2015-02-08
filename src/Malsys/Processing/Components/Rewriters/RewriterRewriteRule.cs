@@ -5,7 +5,7 @@ using Malsys.SemanticModel;
 using Malsys.SemanticModel.Compiled;
 
 namespace Malsys.Processing.Components.Rewriters {
-	class RewriterRewriteRule {
+	internal class RewriterRewriteRule {
 
 		public Symbol<string> SymbolPattern;
 

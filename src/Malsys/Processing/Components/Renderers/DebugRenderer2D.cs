@@ -58,7 +58,7 @@ namespace Malsys.Processing.Components.Renderers {
 			logState(logFormat, DrawCircleName, lastPoint, radius, color);
 		}
 
-		#endregion
+		#endregion IRenderer2D Members
 
 		protected void saveLastState(Point point, double width, ColorF color) {
 			lastPoint = point;

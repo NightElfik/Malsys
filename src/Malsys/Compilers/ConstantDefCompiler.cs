@@ -18,7 +18,7 @@ namespace Malsys.Compilers {
 			return new ConstantDefinition(constDefAst) {
 				Name = constDefAst.NameId.Name,
 				Value = exprCompiler.Compile(constDefAst.ValueExpr, logger),
-				IsComponentAssign = constDefAst.IsComponentAssign, 
+				IsComponentAssign = constDefAst.IsComponentAssign,
 			};
 		}
 

@@ -143,7 +143,7 @@ namespace Malsys.Processing.Context {
 				return new Enumerator(First);
 			}
 
-			#endregion
+			#endregion IEnumerable<ContextListNode<T>> Members
 
 			#region IEnumerable Members
 
@@ -151,7 +151,7 @@ namespace Malsys.Processing.Context {
 				return new Enumerator(First);
 			}
 
-			#endregion
+			#endregion IEnumerable Members
 
 
 			private class Enumerator : IEnumerator<ContextListNode<T>> {

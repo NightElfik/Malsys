@@ -1,5 +1,4 @@
-﻿using Malsys.SemanticModel.Compiled.Expressions;
-
+﻿
 namespace Malsys.SemanticModel.Compiled {
 	public class OptionalParameter {
 

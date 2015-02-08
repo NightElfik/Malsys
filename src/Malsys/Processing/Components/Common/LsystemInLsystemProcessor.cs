@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Malsys.Evaluators;
+using Malsys.Processing.Components.Interpreters;
 using Malsys.SemanticModel.Compiled;
 using Malsys.SemanticModel.Evaluated;
 using Microsoft.FSharp.Collections;
-using Malsys.Processing.Components.Interpreters;
 
 namespace Malsys.Processing.Components.Common {
 	/// <summary>

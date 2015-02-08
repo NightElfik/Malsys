@@ -19,7 +19,7 @@ namespace Malsys.Processing.Components.Renderers {
 
 		public void DrawCircle(double radius, Media.ColorF color) { }
 
-		#endregion
+		#endregion IRenderer2D Members
 
 		#region IRenderer Members
 
@@ -27,7 +27,7 @@ namespace Malsys.Processing.Components.Renderers {
 
 		public void AddCurrentOutputData(string key, object value) { }
 
-		#endregion
+		#endregion IRenderer Members
 
 		#region IProcessComponent Members
 
@@ -37,7 +37,7 @@ namespace Malsys.Processing.Components.Renderers {
 
 		public void EndProcessing() { }
 
-		#endregion
+		#endregion IProcessComponent Members
 
 		#region IComponent Members
 
@@ -51,7 +51,7 @@ namespace Malsys.Processing.Components.Renderers {
 
 		public void Dispose() { }
 
-		#endregion
+		#endregion IComponent Members
 
 		#region IRenderer3D Members
 
@@ -65,6 +65,6 @@ namespace Malsys.Processing.Components.Renderers {
 
 		public void DrawSphere(double radius, Media.ColorF color, double quality) { }
 
-		#endregion
+		#endregion IRenderer3D Members
 	}
 }

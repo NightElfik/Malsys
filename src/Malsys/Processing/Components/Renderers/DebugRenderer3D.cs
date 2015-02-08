@@ -52,6 +52,6 @@ namespace Malsys.Processing.Components.Renderers {
 			logState(logFormat, DrawSphereName, new Point3D(), new Quaternion(), radius, color);
 		}
 
-		#endregion
+		#endregion IRenderer3D Members
 	}
 }

@@ -74,7 +74,7 @@ namespace Malsys.Resources {
 			(a, e) => Math.Log((Constant)a[0], (Constant)a[1]).ToConst()
 		);
 
-		#endregion
+		#endregion Mathematical functions -- sqrt, factorial, log, log10
 
 
 		#region Rounding functions -- round, floor, ceiling
@@ -110,7 +110,7 @@ namespace Malsys.Resources {
 			(a, e) => Math.Ceiling((Constant)a[0]).ToConst()
 		);
 
-		#endregion
+		#endregion Rounding functions -- round, floor, ceiling
 
 
 		#region Multi-values functions -- min, max, sum, product, average
@@ -164,7 +164,7 @@ namespace Malsys.Resources {
 		);
 
 
-		#endregion
+		#endregion Multi-values functions -- min, max, sum, product, average
 
 
 		#region Trigonometric functions -- sin, cos, tan, asin, acos, atan, atan2
@@ -239,7 +239,7 @@ namespace Malsys.Resources {
 			(a, e) => Math.Atan2((Constant)a[0], (Constant)a[1]).ToConst()
 		);
 
-		#endregion
+		#endregion Trigonometric functions -- sin, cos, tan, asin, acos, atan, atan2
 
 
 		#region Array functions -- length, min, max, sum, product, average
@@ -308,7 +308,7 @@ namespace Malsys.Resources {
 				return (arr.Aggregate(0.0, (acc, val) => acc + (Constant)val) / arr.Length).ToConst();
 			});
 
-		#endregion
+		#endregion Array functions -- length, min, max, sum, product, average
 
 
 		#region Special functions -- isNan, isInfinity, if
@@ -351,7 +351,7 @@ namespace Malsys.Resources {
 			new ImmutableList<ExpressionValueTypeFlags>(ExpressionValueTypeFlags.Constant, ExpressionValueTypeFlags.Any, ExpressionValueTypeFlags.Any),
 			(a, e) => { throw new InvalidOperationException(); });
 
-		#endregion
+		#endregion Special functions -- isNan, isInfinity, if
 
 
 		#region Other functions -- abs, sign, deg2rad, rad2deg, toColorGradient
@@ -426,7 +426,7 @@ namespace Malsys.Resources {
 			});
 
 
-		#endregion
+		#endregion Other functions -- abs, sign, deg2rad, rad2deg, toColorGradient
 
 
 		#region Color functions -- lighten, darken
@@ -481,7 +481,7 @@ namespace Malsys.Resources {
 			}
 		);
 
-		#endregion
+		#endregion Color functions -- lighten, darken
 
 
 	}

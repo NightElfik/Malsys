@@ -1,5 +1,5 @@
-﻿using Malsys.SemanticModel.Evaluated;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Malsys.SemanticModel.Evaluated;
 
 namespace Malsys.Processing.Components.Common {
 	/// <summary>

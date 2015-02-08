@@ -19,7 +19,7 @@ namespace Malsys.Processing.Components.Common {
 		private IndentTextWriter writer;
 		private CanonicPrinter printer;
 
-		bool notMeasuring;
+		private bool notMeasuring;
 
 
 		public IMessageLogger Logger { get; set; }

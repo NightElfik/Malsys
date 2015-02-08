@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Packaging;
 using System.Windows.Media.Media3D;
-using Malsys.IO;
 using Malsys.Media;
 using Malsys.Media.Triangulation;
 using Malsys.Resources;

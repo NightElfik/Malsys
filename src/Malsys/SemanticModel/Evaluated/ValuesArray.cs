@@ -16,7 +16,7 @@ namespace Malsys.SemanticModel.Evaluated {
 		public ValuesArray(Ast.ExpressionsArray astNode = null)
 			: base(ImmutableList<IValue>.Empty) {
 
-				AstNode = astNode;
+			AstNode = astNode;
 		}
 
 		public ValuesArray(IEnumerable<IValue> vals, Ast.ExpressionsArray astNode = null)

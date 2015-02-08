@@ -156,7 +156,7 @@ namespace Malsys.Processing.Components.RewriterIterators {
 		[UserConnectable(IsOptional = true)]
 		public RandomGeneratorProvider RandomGeneratorProvider { get; set; }
 
-		#endregion
+		#endregion User gettable & settable & connectable properties
 
 
 

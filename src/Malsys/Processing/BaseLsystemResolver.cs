@@ -5,7 +5,7 @@ using Microsoft.FSharp.Collections;
 namespace Malsys.Processing {
 	public class BaseLsystemResolver : IBaseLsystemResolver {
 
-		FSharpMap<string, LsystemEvaledParams> lsystems;
+		private FSharpMap<string, LsystemEvaledParams> lsystems;
 
 
 		public BaseLsystemResolver() {

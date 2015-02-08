@@ -2,7 +2,7 @@
 
 namespace Malsys.SemanticModel.Compiled {
 	public class RewriteRuleReplacement {
-		
+
 		public List<Symbol<IExpression>> Replacement;
 		public IExpression Weight;
 

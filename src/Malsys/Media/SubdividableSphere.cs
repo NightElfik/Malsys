@@ -107,7 +107,7 @@ namespace Malsys.Media {
 			Contract.Requires(Indices != null && Indices.Count > 0);
 
 			List<Point3Di> newIndices = new List<Point3Di>();
-			Dictionary<Tuple<int, int>, int> newVertIndicesMap = new Dictionary<Tuple<int,int>,int>();
+			Dictionary<Tuple<int, int>, int> newVertIndicesMap = new Dictionary<Tuple<int, int>, int>();
 
 			foreach (var triIndices in Indices) {
 				int i1 = triIndices.X;

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Windows.Media.Media3D;
 using Malsys.Evaluators;
 using Malsys.Media;
@@ -246,7 +245,7 @@ namespace Malsys.Processing.Components.Interpreters {
 		[UserSettable]
 		public Constant TropismCoefficient { get; set; }
 
-		#endregion
+		#endregion User gettable & settable properties
 
 		/// <summary>
 		/// All render events will be called on connected renderer.
@@ -483,7 +482,7 @@ namespace Malsys.Processing.Components.Interpreters {
 
 		}
 
-		#endregion
+		#endregion Component-related stuff
 
 
 		#region Interpretation methods
@@ -829,7 +828,7 @@ namespace Malsys.Processing.Components.Interpreters {
 		}
 
 
-		#endregion
+		#endregion Interpretation methods
 
 
 		private double getArgumentAsDouble(ArgsStorage args, int index, double defaultValue = 0d) {

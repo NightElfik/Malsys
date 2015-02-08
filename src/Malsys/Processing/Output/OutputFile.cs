@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.FSharp.Collections;
 
 namespace Malsys.Processing.Output {
 	/// <remarks>

@@ -121,7 +121,7 @@ namespace ExamplePlugin.Components {
 
 		public void Dispose() { }
 
-		#endregion
+		#endregion IComponent Members
 
 		#region IEnumerable Members
 
@@ -133,7 +133,7 @@ namespace ExamplePlugin.Components {
 			return new Enumerator(this);
 		}
 
-		#endregion
+		#endregion IEnumerable Members
 
 		#region IProcessComponent Members
 
@@ -149,16 +149,16 @@ namespace ExamplePlugin.Components {
 			SymbolProvider.EndProcessing();
 		}
 
-		#endregion
+		#endregion IProcessComponent Members
 
 
 		private class Enumerator : IEnumerator<Symbol> {
 
-			ISymbolProvider symbolProvider;
-			IEnumerator<Symbol> symbolProviderEnumerator;
-			IInterpreterCaller interpreterCaller;
+			private ISymbolProvider symbolProvider;
+			private IEnumerator<Symbol> symbolProviderEnumerator;
+			private IInterpreterCaller interpreterCaller;
 
-			Symbol current = null;
+			private Symbol current = null;
 
 			public Enumerator(SimpleEnvironmentModule parent) {
 				symbolProvider = parent.SymbolProvider;

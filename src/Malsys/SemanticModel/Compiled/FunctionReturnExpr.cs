@@ -1,6 +1,6 @@
 ﻿
 namespace Malsys.SemanticModel.Compiled {
-	class FunctionReturnExpr : IFunctionStatement {
+	public class FunctionReturnExpr : IFunctionStatement {
 
 		public IExpression ReturnValue;
 
@@ -11,7 +11,7 @@ namespace Malsys.SemanticModel.Compiled {
 			AstNode = astNode;
 		}
 
-		
+
 		public FunctionStatementType StatementType {
 			get { return FunctionStatementType.ReturnExpression; }
 		}

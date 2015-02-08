@@ -21,7 +21,7 @@ namespace Malsys.Processing.Components.RewriterIterators {
 		/// <summary>
 		/// To allow not connecting AxiomProvider component.
 		/// </summary>
-		[UserConnectable(IsOptional=true)]
+		[UserConnectable(IsOptional = true)]
 		new public ISymbolProvider AxiomProvider { get; set; }
 
 
