@@ -14,7 +14,7 @@ namespace Malsys.Tests {
 			doQuatToEuclidTest(new Vector3D(0, 0, 0), new Quaternion(new Vector3D(1, 2, 3), 0));
 
 			doQuatToEuclidTest(new Vector3D(90, 0, 0), new Quaternion(new Vector3D(1, 0, 0), 90));
-			doQuatToEuclidTest(new Vector3D(0, 90 ,0), new Quaternion(new Vector3D(0, 1, 0), 90));
+			doQuatToEuclidTest(new Vector3D(0, 90, 0), new Quaternion(new Vector3D(0, 1, 0), 90));
 			doQuatToEuclidTest(new Vector3D(0, 0, 90), new Quaternion(new Vector3D(0, 0, 1), 90));
 
 			// TODO

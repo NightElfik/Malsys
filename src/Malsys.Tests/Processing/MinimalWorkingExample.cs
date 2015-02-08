@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -7,11 +8,10 @@ using Malsys.Evaluators;
 using Malsys.Processing;
 using Malsys.Processing.Output;
 using Malsys.Reflection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.IO;
 using Malsys.Resources;
-using Malsys.SemanticModel.Evaluated;
 using Malsys.SemanticModel;
+using Malsys.SemanticModel.Evaluated;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Malsys.Tests.Processing {
 	[TestClass]

@@ -1,8 +1,4 @@
-﻿(**
- * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
- * All rights reserved.
- *)
-module Malsys.Parsing.Logger
+﻿module Malsys.Parsing.Logger
 
 open Microsoft.FSharp.Text.Parsing
 

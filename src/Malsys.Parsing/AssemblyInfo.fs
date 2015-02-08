@@ -1,8 +1,4 @@
-﻿(**
- * Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
- * All rights reserved.
- *)
-namespace Malsys.Parsing
+﻿namespace Malsys.Parsing
 
 open System.Reflection
 open System.Runtime.CompilerServices

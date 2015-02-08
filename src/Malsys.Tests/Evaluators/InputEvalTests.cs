@@ -99,7 +99,7 @@ namespace Malsys.Tests.Evaluators {
 				"lsystem b(x) {", "}");
 		}
 
-		
+
 
 		[TestMethod]
 		public void ProcessConfigTests() {

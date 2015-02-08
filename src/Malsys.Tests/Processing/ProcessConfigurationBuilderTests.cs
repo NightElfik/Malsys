@@ -44,26 +44,26 @@ namespace Malsys.Tests.Process {
 
 		[TestMethod]
 		public void InvalidConnectionSourceTests() {
-		    doTest(string.Join("\n", "configuration Config {",
-		            "component Starter typeof StarterComponent;",
-		            "component ConnProp typeof ConnectablePropertyComponent;",
-		            "component Empty typeof EmptyComponent;",
-		            "virtual connect XXXX to ConnProp.Component;",
-		            "}"),
-		        "process all with Config;",
-		        new string[] {
+			doTest(string.Join("\n", "configuration Config {",
+					"component Starter typeof StarterComponent;",
+					"component ConnProp typeof ConnectablePropertyComponent;",
+					"component Empty typeof EmptyComponent;",
+					"virtual connect XXXX to ConnProp.Component;",
+					"}"),
+				"process all with Config;",
+				new string[] {
 		            toId(ProcessConfigurationBuilder.Message.FailedToConnect)});
 		}
 
 		[TestMethod]
 		public void InvalidConnectionDestinationTests() {
-		    doTest(string.Join("\n", "configuration Config {",
-		            "component Starter typeof StarterComponent;",
-		            "component Empty typeof EmptyComponent;",
+			doTest(string.Join("\n", "configuration Config {",
+					"component Starter typeof StarterComponent;",
+					"component Empty typeof EmptyComponent;",
 					"virtual connect Empty to XXX.Component;",
-		            "}"),
-		        "process all with Config;",
-		        new string[] {
+					"}"),
+				"process all with Config;",
+				new string[] {
 		            toId(ProcessConfigurationBuilder.Message.InvalidConnection) });
 		}
 
@@ -381,7 +381,7 @@ namespace Malsys.Tests.Process {
 				"process all with Config;",
 				new string[] {
 					"StarterComponent",
-					"SettableSymbolPropertiesComponent:A B C"} );
+					"SettableSymbolPropertiesComponent:A B C"});
 
 			doTest(string.Join("\n", "lsystem l {",
 				 "set symbols Symbols = X(8,{1,2}) Y();",
@@ -393,7 +393,7 @@ namespace Malsys.Tests.Process {
 				 "process all with Config;",
 				 new string[] {
 					"StarterComponent",
-					"SettableSymbolPropertiesComponent:X(8, {1, 2}) Y"} );
+					"SettableSymbolPropertiesComponent:X(8, {1, 2}) Y"});
 
 		}
 

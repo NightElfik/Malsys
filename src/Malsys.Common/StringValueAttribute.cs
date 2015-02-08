@@ -9,7 +9,4 @@ namespace Malsys {
 			String = str;
 		}
 	}
-
-
-
 }

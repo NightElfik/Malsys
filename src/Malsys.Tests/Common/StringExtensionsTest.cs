@@ -41,8 +41,8 @@ namespace Malsys.Tests.Common {
 			var actual = string.Join(newLineSeparator, lines).SplitToLines().ToArray();
 
 			if (!lines.SequenceEqual(actual)) {
-			    Console.WriteLine(string.Join(" | ", lines) + " != " + string.Join(" | ", actual));
-			    Assert.Fail();
+				Console.WriteLine(string.Join(" | ", lines) + " != " + string.Join(" | ", actual));
+				Assert.Fail();
 			}
 		}
 	}
