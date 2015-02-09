@@ -6,6 +6,7 @@
 	var rootSec = Model.SectionsManager.RootSection;
 
 
+	var sec2015_02_08 = rootSec.Subsection("Malsys is open-source!");
 	var sec2014_07_21 = rootSec.Subsection("Web modernization");
 	var sec2013_06_10 = rootSec.Subsection("Optimized SVGs and Dev Diary");
 	var sec2012_12_12 = rootSec.Subsection("Cool video and optimizations");
@@ -13,6 +14,19 @@
 
 }
 
+
+@* ================================================================================================================== *@
+@if (sec2015_02_08.IsVisible) {
+	<p>
+		<span class="newsDate">8<sup>th</sup> of February 2015:</span>
+		Finally! After three years of postponing I have managed to find some time to open the source codes.
+		Check out the @StaticHtml.ExternalLink("GitHub repository", "https://github.com/NightElfik/Malsys").
+	</p>
+	<p>
+		The primary idea behind opening the source is to share some nice solutions and techniques with the community.
+		Also, there is no reason to keep the sources in secret.
+	</p>
+}
 
 @* ================================================================================================================== *@
 @if (sec2014_07_21.IsVisible) {

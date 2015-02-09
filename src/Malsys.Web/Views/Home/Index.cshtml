@@ -5,7 +5,7 @@
 
 <div class="grid-100 mobile-grid-100 grid-parent hideLinks">
 	<div class="grid-50 mobile-grid-100 ">
-		<h2>Latest news post: @Model.SectionsManager.CurrentSection.Name</h2>
+		<h2>@Model.SectionsManager.CurrentSection.Name</h2>
 		@{Html.RenderPartial(MVC.Home.Views.ViewNames.NewsData, Model);}
 
 		@Html.ActionLink("Comments", MVC.Home.NewsArchive(StaticUrl.UrlizeString(Model.SectionsManager.CurrentSection.Name)))
