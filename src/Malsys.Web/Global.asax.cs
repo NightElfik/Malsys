@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -27,23 +28,33 @@ namespace Malsys.Web {
 	public class MvcApplication : HttpApplication {
 
 		protected void Application_Start() {
+			IAppSettingsProvider appSettings = new AppSettingsProvider();						
+			loadPrivateData(appSettings[AppSettingsKeys.PrivateDir]);
 
-			var resolver = buildDependencyResolver();
+			var resolver = buildDependencyResolver(appSettings);
 			DependencyResolver.SetResolver(resolver);
 
 			AreaRegistration.RegisterAllAreas();
 
+
 			initializeDb(resolver.GetService<IUsersRepository>());
 			initializeDiscussion(resolver.GetService<IDiscussionRepository>());
-			checkFileSystem(resolver.GetService<IAppSettingsProvider>());
+			checkFileSystem(appSettings);
+
 
 			FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
 			RouteConfig.RegisterRoutes(RouteTable.Routes);
+		}
 
+		private void loadPrivateData(string virtPath) {
+			string absPath = Server.MapPath(virtPath);
+			PrivateData.LoadFormDir(absPath);
+			Debug.Assert(!string.IsNullOrWhiteSpace(PrivateData.GoogleAnalyticsKey));
+			Debug.Assert(!string.IsNullOrWhiteSpace(PrivateData.ReCaptchaPrivate));
+			Debug.Assert(!string.IsNullOrWhiteSpace(PrivateData.ReCaptchaPublic));
 		}
 
 		public override string GetVaryByCustomString(HttpContext context, string custom) {
-
 			if (custom == "user") {
 				// cache vary by individual users
 				if (context.User.Identity.IsAuthenticated) {
@@ -57,8 +68,7 @@ namespace Malsys.Web {
 			return base.GetVaryByCustomString(context, custom);
 		}
 
-		private IDependencyResolver buildDependencyResolver() {
-
+		private IDependencyResolver buildDependencyResolver(IAppSettingsProvider appSettings) {
 			var builder = new ContainerBuilder();
 
 			// registers all MVC controllers in this assembly
@@ -82,7 +92,9 @@ namespace Malsys.Web {
 			builder.RegisterType<UserAuthenticator>().As<IUserAuthenticator>().InstancePerHttpRequest();
 			builder.RegisterType<FormsAuthenticationProvider>().As<IAuthenticationProvider>().SingleInstance();
 
-			builder.RegisterType<AppSettingsProvider>().As<IAppSettingsProvider>().SingleInstance();
+			builder.Register(x => appSettings)
+				.As<IAppSettingsProvider>()
+				.SingleInstance();
 
 			string basePath = Server.MapPath("~/bin");  // path where DLL and theirs XML doc files are
 			var xmlDocReader = new XmlDocReader(basePath);
@@ -113,6 +125,11 @@ namespace Malsys.Web {
 				.ToList();
 			builder.Register(x => devDiaryEntries)
 				.As<IEnumerable<DevDiaryEntry>>()
+				.SingleInstance();
+
+			var captcha = new ReCaptcha(PrivateData.ReCaptchaPublic, PrivateData.ReCaptchaPrivate);
+			builder.Register(x => captcha)
+				.As<ICaptcha>()
 				.SingleInstance();
 
 			return new AutofacDependencyResolver(builder.Build());

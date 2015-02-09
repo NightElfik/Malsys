@@ -172,6 +172,9 @@
     <Reference Include="MvcContrib, Version=3.0.51.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\MvcContrib\MvcContrib.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="RazorGenerator.Mvc, Version=2.0.0.0, Culture=neutral, PublicKeyToken=7b26dc2a43f6a0d4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\RazorGenerator.Mvc.2.2.3\lib\net40\RazorGenerator.Mvc.dll</HintPath>
@@ -379,6 +382,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Infrastructure\IAppSettingsProvider.cs" />
+    <Compile Include="Infrastructure\ICaptcha.cs" />
     <Compile Include="Infrastructure\LatexHelper.cs" />
     <Compile Include="ExtensionsAndHelpers%27\UrlHelperExtensions.cs" />
     <Compile Include="Infrastructure\WhitespaceStripperViewPage.cs" />
@@ -417,6 +421,7 @@
       <DependentUpon>T4MVC.tt</DependentUpon>
     </Compile>
     <Compile Include="PreventRenderingAttribute.cs" />
+    <Compile Include="PrivateData.cs" />
     <Compile Include="ProcessController.generated.cs">
       <DependentUpon>T4MVC.tt</DependentUpon>
     </Compile>
@@ -536,6 +541,9 @@
     <Content Include="Js\jquery.validate.min.js.map">
       <DependentUpon>jquery.validate.min.js</DependentUpon>
     </Content>
+    <Content Include="Js\malsys.curveDesigner.min.js.map">
+      <DependentUpon>malsys.curveDesigner.min.js</DependentUpon>
+    </Content>
     <None Include="Js\malsys.js" />
     <Content Include="Img\Icons\application-resize-full.png" />
     <Content Include="Img\Icons\cross.png" />
@@ -547,6 +555,9 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>MinifyJs.tt</DependentUpon>
+    </Content>
+    <Content Include="Js\malsys.min.js.map">
+      <DependentUpon>malsys.min.js</DependentUpon>
     </Content>
     <None Include="Js\ThreeJs\Detector.js" />
     <Content Include="Js\ThreeJs\Detector.min.js.map">

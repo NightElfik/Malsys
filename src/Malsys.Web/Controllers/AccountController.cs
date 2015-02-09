@@ -3,38 +3,35 @@ using Malsys.Web.Entities;
 using Malsys.Web.Infrastructure;
 using Malsys.Web.Models;
 using Malsys.Web.Security;
-using Microsoft.Web.Helpers;
 
 namespace Malsys.Web.Controllers {
 	public partial class AccountController : Controller {
 
 		private readonly IUsersRepository usersRepo;
-
 		private readonly IUserAuthenticator userAuth;
+		private readonly ICaptcha captcha;
 
 
-		public AccountController(IUsersRepository usersRepo, IUserAuthenticator userAuth, IAppSettingsProvider appSettingsProvider) {
+		public AccountController(IUsersRepository usersRepo, IUserAuthenticator userAuth, ICaptcha captcha) {
 			this.usersRepo = usersRepo;
 			this.userAuth = userAuth;
-
-			ReCaptcha.PublicKey = appSettingsProvider[AppSettingsKeys.ReCaptchaPublicKey];
-			ReCaptcha.PrivateKey = appSettingsProvider[AppSettingsKeys.ReCaptchaPrivateKey];
+			this.captcha = captcha;
 		}
 
 
-
 		public virtual ActionResult Register() {
-			return View();
+			return View(new NewUserModel() { Captcha = captcha });
 		}
 
 		[HttpPost]
 		public virtual ActionResult Register(NewUserModel model) {
+			model.Captcha = captcha;
 
 			if (!ModelState.IsValid) {
 				return View(model);
 			}
 
-			if (!ReCaptcha.Validate()) {
+			if (!captcha.Validate(ControllerContext.HttpContext)) {
 				ModelState.AddModelError("", "Captcha is invalid.");
 				return View(model);
 			}

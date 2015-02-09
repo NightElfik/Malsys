@@ -1,19 +1,18 @@
-﻿@model string
+﻿@model object
+
 
 @{
+	// This view is little cheesy, I was too lazy co create model class to store email/captcha objects.
+	
 	ViewBag.Title = "Email to author";
+	ICaptcha captcha = Model as ICaptcha;
 }
 
 <h1>Email to author</h1>
 
 <div class="grid-100 mobile-grid-100 grid-parent hideLinks">
 	<div class="grid-50 mobile-grid-100 ">
-@if (Model != null) {
-	<p>
-		Marek Fišer &lt;@Html.EmailLink(Model)&gt;
-	</p>
-}
-else {
+@if (captcha != null) {
 	<p>
 		Feel free to contact me directly with an e-mail.
 		Please solve following captcha to display the e-mail.
@@ -23,13 +22,18 @@ else {
 
 		@Html.ValidationSummary(true)
 
-		@ReCaptcha.GetHtml(theme: "clean")
+		@captcha.Html()
 
 		<p>
 			<input type="submit" value="Show e-mail" />
 		</p>
 
 	}
+}
+else {
+	<p>
+		Marek Fišer &lt;@Html.EmailLink(Model as string)&gt;
+	</p>
 }
 	</div>
 </div>

@@ -5,7 +5,6 @@ using System.Web.Mvc;
 using Malsys.Web.Entities;
 using Malsys.Web.Infrastructure;
 using Malsys.Web.Models;
-using Microsoft.Web.Helpers;
 using MvcContrib.Pagination;
 
 namespace Malsys.Web.Controllers {
@@ -14,32 +13,32 @@ namespace Malsys.Web.Controllers {
 		private readonly IFeedbackDb feedbackDb;
 		private readonly IDateTimeProvider dateTimeProvider;
 		private readonly IUsersDb usersDb;
+		private readonly ICaptcha captcha;
 
 
 		public FeedbackController(IFeedbackDb feedbackDb, IDateTimeProvider dateTimeProvider,
-				IUsersDb usersDb, IAppSettingsProvider appSettingsProvider) {
+				IUsersDb usersDb, ICaptcha captcha) {
 
 			this.feedbackDb = feedbackDb;
 			this.dateTimeProvider = dateTimeProvider;
 			this.usersDb = usersDb;
-
-			ReCaptcha.PublicKey = appSettingsProvider[AppSettingsKeys.ReCaptchaPublicKey];
-			ReCaptcha.PrivateKey = appSettingsProvider[AppSettingsKeys.ReCaptchaPrivateKey];
+			this.captcha = captcha;
 		}
 
 
 		public virtual ActionResult Index() {
-			return View();
+			return View(new FeedbackModel() { Captcha = captcha });
 		}
 
 		[HttpPost]
 		public virtual ActionResult Index(FeedbackModel model) {
+			model.Captcha = captcha;
 
 			if (!ModelState.IsValid) {
 				return View(model);
 			}
 
-			if (!ReCaptcha.Validate()) {
+			if (!captcha.Validate(ControllerContext.HttpContext)) {
 				ModelState.AddModelError("", "Captcha invalid.");
 				return View(model);
 			}
@@ -82,19 +81,19 @@ namespace Malsys.Web.Controllers {
 
 
 		public virtual ActionResult EmailToAuthor() {
-			return View((string)null);
+			return View(captcha);
 		}
 
 		[HttpPost]
 		[ActionName("EmailToAuthor")]
 		public virtual ActionResult EmailToAuthorPost() {
 
-			if (ReCaptcha.Validate()) {
+			if (captcha.Validate(ControllerContext.HttpContext)) {
 				return View(model: "malsys@marekfiser.cz");
 			}
 			else {
 				ModelState.AddModelError("", "Captcha invalid.");
-				return View((string)null);
+				return View(captcha);
 			}
 
 		}

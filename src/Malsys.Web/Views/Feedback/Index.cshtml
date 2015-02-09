@@ -49,7 +49,7 @@
 		@Html.EditorForModel()
 		<br />
 
-		@ReCaptcha.GetHtml(theme: "clean")
+		@Model.Captcha.Html()
 
 		<p>
 			@Html.SubmitButton("Send")

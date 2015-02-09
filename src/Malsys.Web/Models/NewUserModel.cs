@@ -1,9 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using DataAnnotationsExtensions;
+using Malsys.Web.Infrastructure;
 
 namespace Malsys.Web.Models {
 	public class NewUserModel {
+		
+		[NotMapped]
+		public ICaptcha Captcha { get; set; }
 
 		[Required]
 		[StringLength(64, MinimumLength = 4)]

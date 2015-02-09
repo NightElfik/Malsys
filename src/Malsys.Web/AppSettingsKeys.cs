@@ -45,10 +45,15 @@ public class AppSettingsKeys {
 	/// Maximum process time for gallery inputs.
 	/// </summary>
 	public const string GalleryProcessTime = "ProcessTime_Gallery";
-
+	
 	/// <summary>
 	/// Maximum process time for trusted users in seconds.
 	/// </summary>
 	public const string TrustedUserProcessTime = "ProcessTime_Trusted";
+
+	/// <summary>
+	/// Path to private dir.
+	/// </summary>
+	public const string PrivateDir = "PrivateDir";
 
 }
