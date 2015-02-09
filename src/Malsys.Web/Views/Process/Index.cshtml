@@ -11,9 +11,7 @@
 
 @if (Model.IsEmpty) {
 	<div class="info msg">
-		If you don't know how to start writing L-systems, take a look in
-			@Html.ActionLink("Documentation", MVC.Documentation.Home.Index()) at
-			@Html.ActionLink("basic principles of L-system rewriting", MVC.Documentation.Home.BasicRewriting()).
+		If you don't know how to start writing L-systems check out @Html.ActionLink("Documentation", MVC.Documentation.Home.Index()) first.
 	</div>
 }
 

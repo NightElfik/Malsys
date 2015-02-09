@@ -52,7 +52,7 @@ However, primary intention of releasing this source code was to share some cool 
 Ho give you some idea I will try to list interesting features below.
 
 
-Thinks worth exploring
+Brief description and tips
 ----------------------
 Malsys is quite large project.
 I think that it is well written and some features are quite cool but it is hard to find them in the code.
