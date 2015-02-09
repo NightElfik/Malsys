@@ -197,7 +197,6 @@ namespace Malsys.Web {
 
 
 		public static HtmlString DisqusComments(string title, string id, string url) {
-
 			var req = HttpContext.Current.Request;
 			string currentDomain = req.Url.Scheme + System.Uri.SchemeDelimiter + req.Url.Host
 				+ (req.Url.IsDefaultPort ? "" : ":" + req.Url.Port);

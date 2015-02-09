@@ -5,8 +5,8 @@ namespace Malsys.Web {
 
 		public static string Hash(this DateTime dt) {
 			return Convert.ToBase64String(BitConverter.GetBytes(int.Parse(dt.ToString("MMddhhmmss"))))
-				.Replace('+','-')
-				.Replace('/','_')
+				.Replace('+', '-')
+				.Replace('/', '_')
 				.TrimEnd('=');
 		}
 

@@ -1,8 +1,4 @@
-﻿/**
-* Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
-* All rights reserved.
-*/
-
+﻿
 var controls = [];
 
 (function ($) {

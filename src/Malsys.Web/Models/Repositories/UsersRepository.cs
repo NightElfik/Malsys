@@ -4,7 +4,7 @@ using Malsys.Web.Entities;
 using Malsys.Web.Security;
 
 namespace Malsys.Web.Models.Repositories {
-	class UsersRepository : IUsersRepository {
+	internal class UsersRepository : IUsersRepository {
 
 		private readonly IUsersDb usersDb;
 		private readonly IDateTimeProvider dateTimeProvider;

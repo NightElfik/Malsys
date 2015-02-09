@@ -3,7 +3,7 @@ using System.Web.Mvc;
 using System.Web.Security;
 
 namespace Malsys.Web.Security {
-	class LightweightRoleProvider : RoleProvider {
+	internal class LightweightRoleProvider : RoleProvider {
 
 		public override void AddUsersToRoles(string[] usernames, string[] roleNames) {
 			throw new NotImplementedException();

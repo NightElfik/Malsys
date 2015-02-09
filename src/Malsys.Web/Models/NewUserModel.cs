@@ -6,7 +6,7 @@ namespace Malsys.Web.Models {
 	public class NewUserModel {
 
 		[Required]
-		[StringLength(64, MinimumLength=4)]
+		[StringLength(64, MinimumLength = 4)]
 		[Display(Name = "User name")]
 		public string UserName { get; set; }
 

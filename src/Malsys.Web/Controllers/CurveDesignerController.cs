@@ -20,7 +20,7 @@ namespace Malsys.Web.Controllers {
 		public virtual ActionResult Show(int size, bool? autoMirror, bool? checkFassRules) {
 			actionLogDb.Log("DesignerShow", ActionLogSignificance.Low, size.ToString());
 			return View(new DesignerModel() {
-				Size =  MathHelper.Clamp(size, 2, 9),
+				Size = MathHelper.Clamp(size, 2, 9),
 				AutoMirror = autoMirror ?? false,
 				CheckFassRules = checkFassRules ?? false
 			});

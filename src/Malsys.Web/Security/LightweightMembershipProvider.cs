@@ -3,7 +3,7 @@ using System.Web.Mvc;
 using System.Web.Security;
 
 namespace Malsys.Web.Security {
-	class LightweightMembershipProvider : MembershipProvider {
+	internal class LightweightMembershipProvider : MembershipProvider {
 
 		public override string ApplicationName {
 			get { throw new NotImplementedException(); }

@@ -1,5 +1,4 @@
-﻿using System.Data.Objects.DataClasses;
-using System.Linq;
+﻿using System.Linq;
 
 namespace Malsys.Web.Entities {
 	public interface IFeedbackDb : IActionLogDb {

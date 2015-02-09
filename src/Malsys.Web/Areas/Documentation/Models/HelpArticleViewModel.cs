@@ -5,7 +5,7 @@ using Malsys.Web.Models.Lsystem;
 
 namespace Malsys.Web.Areas.Documentation.Models {
 	public class HelpArticleViewModel : ArticleModelBase {
-		
+
 		public HelpArticle DisplayedArticle { get; set; }
 
 		public IEnumerable<HelpArticle> AllArticles;
@@ -14,6 +14,6 @@ namespace Malsys.Web.Areas.Documentation.Models {
 		public SimpleLsystemProcessor LsystemProcessor;
 
 		public ProcessManager ProcessManager;
-		
+
 	}
 }

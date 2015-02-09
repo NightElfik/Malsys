@@ -5,6 +5,7 @@
 *.suo
 *.vsmdi
 *.user
+*.js.map
 
 bin/
 obj/

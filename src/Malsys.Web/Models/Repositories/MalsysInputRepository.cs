@@ -16,7 +16,7 @@ using Malsys.Web.Models.Lsystem;
 namespace Malsys.Web.Models.Repositories {
 	public class MalsysInputRepository : IMalsysInputRepository {
 
-		const int urlIdLength = 8;  // must match with DB
+		private const int urlIdLength = 8;  // must match with DB
 
 		private readonly IUsersDb usersDb;
 		private readonly IInputDb inputDb;

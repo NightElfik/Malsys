@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Malsys.Web.Entities;
+﻿using Malsys.Web.Entities;
 
 namespace Malsys.Web.Models {
 	public interface IUsersRepository {

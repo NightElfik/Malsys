@@ -4,7 +4,7 @@ using System.Linq;
 using Malsys.Web.Entities;
 
 namespace Malsys.Web.Models.Repositories {
-	class DiscussionRepository : IDiscussionRepository {
+	internal class DiscussionRepository : IDiscussionRepository {
 
 		private readonly IDiscusDb discusDb;
 		private readonly IUsersDb usersDb;

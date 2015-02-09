@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
-using Malsys.Web.Areas.Documentation.Models;
 
 namespace Malsys.Web.ArticleTools {
 	public class SectionsManager {

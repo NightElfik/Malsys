@@ -8,7 +8,7 @@ namespace Malsys.Web.Areas.Administration.Models {
 	public class UserDetailModel {
 
 		[Key]
-		[HiddenInput(DisplayValue=false)]
+		[HiddenInput(DisplayValue = false)]
 		public int UserId { get; set; }
 
 		[Required]

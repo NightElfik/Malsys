@@ -27,7 +27,7 @@ namespace Malsys.Web.Entities {
 			Roles.DeleteObject(role);
 		}
 
-		#endregion
+		#endregion IUsersDb Members
 
 
 		#region IInputDb Members
@@ -80,7 +80,7 @@ namespace Malsys.Web.Entities {
 			SavedInputVotes.AddObject(vote);
 		}
 
-		#endregion
+		#endregion IInputDb Members
 
 
 		#region IFeedbackDb Members
@@ -93,7 +93,7 @@ namespace Malsys.Web.Entities {
 			Feedbacks.AddObject(feedback);
 		}
 
-		#endregion
+		#endregion IFeedbackDb Members
 
 
 		#region IDiscusDb Members
@@ -124,7 +124,7 @@ namespace Malsys.Web.Entities {
 			DiscusMessages.DeleteObject(discusMessage);
 		}
 
-		#endregion
+		#endregion IDiscusDb Members
 
 
 		#region IActionLogDb Members
@@ -135,7 +135,7 @@ namespace Malsys.Web.Entities {
 			ActionLogs.AddObject(actionLog);
 		}
 
-		#endregion
+		#endregion IActionLogDb Members
 
 
 	}

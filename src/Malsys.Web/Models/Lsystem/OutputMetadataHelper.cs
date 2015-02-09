@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
-using Microsoft.FSharp.Collections;
 
 namespace Malsys.Web.Models.Lsystem {
 	public static class OutputMetadataHelper {

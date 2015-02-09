@@ -24,7 +24,7 @@ namespace Malsys.Web.ArticleTools {
 				.Fmt(firstColumnPerc, extraClass, extraParentClass));
 		}
 
-		
+
 		public HtmlString NextColumn(int columnPerc = 50, string extraClass = "") {
 			Contract.Requires(columnPerc % 5 == 0 || columnPerc == 33 || columnPerc == 66);
 

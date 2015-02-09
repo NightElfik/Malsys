@@ -51,9 +51,4 @@ public class AppSettingsKeys {
 	/// </summary>
 	public const string TrustedUserProcessTime = "ProcessTime_Trusted";
 
-
-	public const string ReCaptchaPublicKey = "ReCaptcha_PublicKey";
-
-	public const string ReCaptchaPrivateKey = "ReCaptcha_PrivateKey";
-
 }

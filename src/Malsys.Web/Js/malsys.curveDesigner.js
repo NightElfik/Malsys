@@ -1,8 +1,4 @@
-﻿/**
-* Copyright © 2012 Marek Fišer [malsys@marekfiser.cz]
-* All rights reserved.
-*/
-/// <reference path="~/Js/jquery.js" />
+﻿/// <reference path="~/Js/jquery.js" />
 
 (function ($) {
 
