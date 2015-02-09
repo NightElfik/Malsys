@@ -9,7 +9,7 @@ open System.Runtime.InteropServices
 [<assembly: AssemblyConfiguration("")>]
 [<assembly: AssemblyCompany("Marek Fišer")>]
 [<assembly: AssemblyProduct("Malsys.Parsing")>]
-[<assembly: AssemblyCopyright("Copyright © Marek Fišer 2012 All rights reserved.")>]
+[<assembly: AssemblyCopyright("Created by Marek Fišer, published under the MIT license")>]
 [<assembly: AssemblyTrademark("")>]
 
 [<assembly: ComVisible(false)>]

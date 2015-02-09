@@ -8,7 +8,7 @@ namespace Malsys {
 		/// was already in dictionary and value was updated.
 		/// </summary>
 		/// <remarks>
-		/// This method really SHOULD be implemented by M$soft.
+		/// This method really SHOULD be implemented by Microsoft.
 		/// This implementation is far less effective than they could do (2 searches vs. 1).
 		/// </remarks>
 		/// <returns>

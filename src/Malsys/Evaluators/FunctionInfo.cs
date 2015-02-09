@@ -14,7 +14,7 @@ namespace Malsys.Evaluators {
 		/// Constant representing any parameters count on function.
 		/// </summary>
 		/// <remarks>
-		/// Yet another M$soft fail. I wanted to place this constant in interface BUT:
+		/// Yet another Microsoft fail. I wanted to place this constant in interface BUT:
 		/// In CIL it's possible to have const in interface, but C# does not support it.
 		/// </remarks>
 		public const int AnyParamsCount = int.MaxValue;

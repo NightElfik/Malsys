@@ -564,8 +564,6 @@
       <DependentUpon>Detector.min.js</DependentUpon>
     </Content>
     <None Include="Js\ThreeJs\Malsys.three.js" />
-    <Content Include="google4412977e75e1f8f1.html" />
-    <Content Include="humans.txt" />
     <Content Include="Js\ThreeJs\OBJMTLLoader.min.js.map">
       <DependentUpon>OBJMTLLoader.min.js</DependentUpon>
     </Content>

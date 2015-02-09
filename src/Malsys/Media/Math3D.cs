@@ -5,11 +5,11 @@ using System.Windows.Media.Media3D;
 
 namespace Malsys.Media {
 	/// <remarks>
-	/// I really don't know why guys from M$soft do not implement + or - on Point3D.
+	/// I really don't know why guys from Microsoft do not implement + or - on Point3D.
 	/// I know that I should adding vectors instead of points, but sometimes it is needed.
-	/// Point3D and Vector3D is nice example for type synonyms and that's a pity c# does not allow them!.
+	/// Point3D and Vector3D is nice example for type synonyms and that's a pity C# does not allow them!.
 	/// The actual type carries only semantic meaning, but operations should be the same on both
-	/// to avoid casting on to another.
+	/// to avoid casting one to another.
 	/// </remarks>
 	public static class Math3D {
 
