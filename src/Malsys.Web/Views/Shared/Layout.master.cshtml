@@ -64,7 +64,7 @@
 	<footer role="contentinfo" id="footer">
 		<div class="grid-container">
 			<div class="grid-25 mobile-grid-100">
-				<p>Copyright &copy; 2014 Marek Fišer</p>
+				<p>Copyright &copy; 2015 <a href="http://www.marekfiser.com/">Marek Fišer</a></p>
 
 				<div class="center">
 					<div class="g-plusone" data-size="medium" data-href="http://malsys.cz/"></div>
@@ -87,7 +87,7 @@
 					<li>@Html.ActionLink("FAQ", MVC.Documentation.Home.Faq())</li>
 				</ul>
 				<ul>
-					@StaticHtml.Link("Sounrces on GitHub", null, "https://github.com/NightElfik/Malsys", null, true)
+					@StaticHtml.Link("Fork me on GitHub", null, "https://github.com/NightElfik/Malsys", null, true)
 				</ul>
 			</div>
 			<div class="grid-25 mobile-grid-100">
@@ -105,9 +105,10 @@
 			</div>
 			<div class="grid-25 mobile-grid-100">
 				<h5>Other interesting websites</h5>
-				<a href="http://www.marekfiser.com" title="Marek's personal website">
-					Marek's personal website
-				</a>
+				<ul>
+					<li>@StaticHtml.Link("Marek's personal website", null, "http://www.marekfiser.com", null, true)</li>
+					<li>@StaticHtml.Link("Mausr - Marek's unicode symbols recognizer", null, "http://www.mausr.com", null, true)</li>
+				</ul>
 			</div>
 		</div>
 	</footer>
