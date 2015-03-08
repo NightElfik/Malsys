@@ -211,31 +211,31 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>04/06/2012 13:47:39</publishTime>
     </File>
     <File Include="bin/ExamplePlugin.dll">
-      <publishTime>02/08/2015 23:13:24</publishTime>
+      <publishTime>02/08/2015 23:37:18</publishTime>
     </File>
     <File Include="bin/log4net.dll">
       <publishTime>03/20/2014 21:29:31</publishTime>
     </File>
     <File Include="bin/Malsys.Ast.dll">
-      <publishTime>02/08/2015 23:13:07</publishTime>
+      <publishTime>02/08/2015 23:36:58</publishTime>
     </File>
     <File Include="bin/Malsys.BitmapRenderers.dll">
-      <publishTime>02/08/2015 23:13:33</publishTime>
+      <publishTime>02/08/2015 23:37:29</publishTime>
     </File>
     <File Include="bin/Malsys.Common.dll">
-      <publishTime>02/08/2015 23:12:58</publishTime>
+      <publishTime>02/08/2015 23:36:49</publishTime>
     </File>
     <File Include="bin/Malsys.dll">
-      <publishTime>02/08/2015 23:13:20</publishTime>
+      <publishTime>02/08/2015 23:37:13</publishTime>
     </File>
     <File Include="bin/Malsys.Parsing.dll">
-      <publishTime>02/08/2015 23:13:14</publishTime>
+      <publishTime>02/08/2015 23:37:06</publishTime>
     </File>
     <File Include="bin/Malsys.Web.dll">
-      <publishTime>02/08/2015 23:20:42</publishTime>
+      <publishTime>03/08/2015 12:36:17</publishTime>
     </File>
     <File Include="bin/Malsys.Web.XML">
-      <publishTime>02/08/2015 23:20:47</publishTime>
+      <publishTime>03/08/2015 12:36:22</publishTime>
     </File>
     <File Include="bin/Microsoft.Web.Helpers.dll">
       <publishTime>03/21/2014 01:43:26</publishTime>
@@ -700,7 +700,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>07/23/2014 03:58:58</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>02/08/2015 23:20:47</publishTime>
+      <publishTime>03/08/2015 12:36:27</publishTime>
     </File>
   </ItemGroup>
 </Project>
