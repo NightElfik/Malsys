@@ -33,6 +33,11 @@
 			this.statusStrip = new System.Windows.Forms.StatusStrip();
 			this.tsslStatus = new System.Windows.Forms.ToolStripStatusLabel();
 			this.tbMessages = new System.Windows.Forms.TextBox();
+			this.tsmiAbout = new System.Windows.Forms.ToolStripMenuItem();
+			this.tsmiAuthor = new System.Windows.Forms.ToolStripMenuItem();
+			this.tsmiWeb = new System.Windows.Forms.ToolStripMenuItem();
+			this.tsEmail = new System.Windows.Forms.ToolStripMenuItem();
+			this.tsmiGithub = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuStrip.SuspendLayout();
 			this.statusStrip.SuspendLayout();
 			this.SuspendLayout();
@@ -55,7 +60,8 @@
 			this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsmiProcess,
             this.tsmiPaste,
-            this.tsmiSetOutput});
+            this.tsmiSetOutput,
+            this.tsmiAbout});
 			this.menuStrip.Location = new System.Drawing.Point(0, 0);
 			this.menuStrip.Name = "menuStrip";
 			this.menuStrip.Size = new System.Drawing.Size(602, 24);
@@ -109,6 +115,45 @@
 			this.tbMessages.Size = new System.Drawing.Size(602, 71);
 			this.tbMessages.TabIndex = 4;
 			// 
+			// tsmiAbout
+			// 
+			this.tsmiAbout.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tsmiAuthor,
+            this.tsmiWeb,
+            this.tsEmail,
+            this.tsmiGithub});
+			this.tsmiAbout.Name = "tsmiAbout";
+			this.tsmiAbout.Size = new System.Drawing.Size(52, 20);
+			this.tsmiAbout.Text = "About";
+			// 
+			// tsmiAuthor
+			// 
+			this.tsmiAuthor.Name = "tsmiAuthor";
+			this.tsmiAuthor.Size = new System.Drawing.Size(274, 22);
+			this.tsmiAuthor.Text = "By Marek Fišer";
+			this.tsmiAuthor.Click += new System.EventHandler(this.tsmiAuthor_Click);
+			// 
+			// tsmiWeb
+			// 
+			this.tsmiWeb.Name = "tsmiWeb";
+			this.tsmiWeb.Size = new System.Drawing.Size(274, 22);
+			this.tsmiWeb.Text = "http://malsys.cz";
+			this.tsmiWeb.Click += new System.EventHandler(this.tsmiWeb_Click);
+			// 
+			// tsEmail
+			// 
+			this.tsEmail.Name = "tsEmail";
+			this.tsEmail.Size = new System.Drawing.Size(274, 22);
+			this.tsEmail.Text = "malsys@marekfiser.cz";
+			this.tsEmail.Click += new System.EventHandler(this.tsEmail_Click);
+			// 
+			// tsmiGithub
+			// 
+			this.tsmiGithub.Name = "tsmiGithub";
+			this.tsmiGithub.Size = new System.Drawing.Size(274, 22);
+			this.tsmiGithub.Text = "https://github.com/NightElfik/Malsys";
+			this.tsmiGithub.Click += new System.EventHandler(this.tsmiGithub_Click);
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -142,6 +187,11 @@
 		private System.Windows.Forms.ToolStripStatusLabel tsslStatus;
 		private System.Windows.Forms.ToolStripMenuItem tsmiPaste;
 		private System.Windows.Forms.TextBox tbMessages;
+		private System.Windows.Forms.ToolStripMenuItem tsmiAbout;
+		private System.Windows.Forms.ToolStripMenuItem tsmiAuthor;
+		private System.Windows.Forms.ToolStripMenuItem tsmiWeb;
+		private System.Windows.Forms.ToolStripMenuItem tsEmail;
+		private System.Windows.Forms.ToolStripMenuItem tsmiGithub;
 	}
 }
 

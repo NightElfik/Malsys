@@ -28,9 +28,8 @@ namespace Malsys.WinFormsUi {
 			InitializeComponent();
 
 			initializeMalsys();
-
-
-			tsslStatus.Text = "Working directory set to \"" + Properties.Settings.Default.WorkingDirectory + "\"";
+			
+			tsslStatus.Text = "Working directory set to \"" + Path.GetFullPath(Properties.Settings.Default.WorkingDirectory) + "\"";
 		}
 
 		private void initializeMalsys() {
@@ -106,7 +105,7 @@ namespace Malsys.WinFormsUi {
 			Properties.Settings.Default.WorkingDirectory = folderBrowserDialog.SelectedPath;
 			Properties.Settings.Default.Save();
 
-			tsslStatus.Text = "Working directory set to \"" + Properties.Settings.Default.WorkingDirectory + "\"";
+			tsslStatus.Text = "Working directory set to \"" + Path.GetFullPath(Properties.Settings.Default.WorkingDirectory) + "\"";
 
 
 		}
@@ -143,6 +142,22 @@ namespace Malsys.WinFormsUi {
 
 		private void tsmiPaste_Click(object sender, EventArgs e) {
 			tbSourceCode.Text = Clipboard.GetText();
+		}
+
+		private void tsmiAuthor_Click(object sender, EventArgs e) {
+			Process.Start("http://marekfiser.com");
+		}
+
+		private void tsmiWeb_Click(object sender, EventArgs e) {
+			Process.Start("http://malsys.com");
+		}
+
+		private void tsEmail_Click(object sender, EventArgs e) {
+			Process.Start("mailto:malsys@marekfiser.cz");
+		}
+
+		private void tsmiGithub_Click(object sender, EventArgs e) {			
+			Process.Start("https://github.com/NightElfik/Malsys");
 		}
 	}
 }
